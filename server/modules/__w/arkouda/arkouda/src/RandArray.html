@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>RandArray &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/RandArray.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,58 +224,58 @@
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt id="RandArray.raLogger">
-<em class="property">const </em><code class="sig-name descname">raLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RandArray.raLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.raLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">raLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#RandArray.raLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.fillInt">
-<em class="property">proc </em><code class="sig-name descname">fillInt</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">const aMin</em>, <em class="sig-param">const aMax</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillInt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.fillInt">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMin</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMax</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.fillInt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.fillUInt">
-<em class="property">proc </em><code class="sig-name descname">fillUInt</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">const aMin</em>, <em class="sig-param">const aMax</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillUInt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.fillUInt">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillUInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMin</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMax</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.fillUInt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.fillReal">
-<em class="property">proc </em><code class="sig-name descname">fillReal</code><span class="sig-paren">(</span><em class="sig-param">a: [] real</em>, <em class="sig-param">const aMin: numeric = 0.0</em>, <em class="sig-param">const aMax: numeric = 1.0</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillReal" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.fillReal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillReal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[]</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMin:</span> <span class="pre">numeric</span> <span class="pre">=</span> <span class="pre">0.0</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">aMax:</span> <span class="pre">numeric</span> <span class="pre">=</span> <span class="pre">1.0</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.fillReal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.fillBool">
-<em class="property">proc </em><code class="sig-name descname">fillBool</code><span class="sig-paren">(</span><em class="sig-param">a: [] bool</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillBool" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.fillBool">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[]</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.fillBool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.fillNormal">
-<em class="property">proc </em><code class="sig-name descname">fillNormal</code><span class="sig-paren">(</span><em class="sig-param">a: [?D] real</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillNormal" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.fillNormal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.fillNormal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
-<dt id="RandArray.charSet">
-<em class="property">enum </em><code class="sig-name descname">charSet</code> { Uppercase, Lowercase, Numeric, Printable, Binary }<a class="headerlink" href="#RandArray.charSet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.charSet">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">charSet</span></span> <span class="pre">{</span> <span class="pre">Uppercase,</span> <span class="pre">Lowercase,</span> <span class="pre">Numeric,</span> <span class="pre">Printable,</span> <span class="pre">Binary</span> <span class="pre">}</span><a class="headerlink" href="#RandArray.charSet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.str2CharSet">
-<em class="property">proc </em><code class="sig-name descname">str2CharSet</code><span class="sig-paren">(</span><em class="sig-param">str: string</em><span class="sig-paren">)</span>: charSet<a class="headerlink" href="#RandArray.str2CharSet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.str2CharSet">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">str2CharSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">str:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">charSet</span><a class="headerlink" href="#RandArray.str2CharSet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt id="RandArray.charBounds">
-<em class="property">var </em><code class="sig-name descname">charBounds</code>: map(keyType = charSet, valType = 2*(int), parSafe = false)<a class="headerlink" href="#RandArray.charBounds" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.charBounds">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">charBounds</span></span><span class="pre">:</span> <span class="pre">map(keyType</span> <span class="pre">=</span> <span class="pre">charSet,</span> <span class="pre">valType</span> <span class="pre">=</span> <span class="pre">2*(int),</span> <span class="pre">parSafe</span> <span class="pre">=</span> <span class="pre">false)</span><a class="headerlink" href="#RandArray.charBounds" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.newRandStringsUniformLength">
-<em class="property">proc </em><code class="sig-name descname">newRandStringsUniformLength</code><span class="sig-paren">(</span><em class="sig-param">const n: int</em>, <em class="sig-param">const minLen: int</em>, <em class="sig-param">const maxLen: int</em>, <em class="sig-param">characters: charSet = charSet.Uppercase</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsUniformLength" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.newRandStringsUniformLength">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newRandStringsUniformLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">minLen:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">maxLen:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">characters:</span> <span class="pre">charSet</span> <span class="pre">=</span> <span class="pre">charSet.Uppercase</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.newRandStringsUniformLength" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="RandArray.newRandStringsLogNormalLength">
-<em class="property">proc </em><code class="sig-name descname">newRandStringsLogNormalLength</code><span class="sig-paren">(</span><em class="sig-param">const n: int</em>, <em class="sig-param">const logMean: numeric</em>, <em class="sig-param">const logStd: numeric</em>, <em class="sig-param">characters: charSet = charSet.Uppercase</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsLogNormalLength" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="RandArray.newRandStringsLogNormalLength">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newRandStringsLogNormalLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">logMean:</span> <span class="pre">numeric</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">logStd:</span> <span class="pre">numeric</span></em>, <em class="sig-param"><span class="pre">characters:</span> <span class="pre">charSet</span> <span class="pre">=</span> <span class="pre">charSet.Uppercase</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">seedStr:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;None&quot;</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#RandArray.newRandStringsLogNormalLength" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -278,37 +285,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="RandMsg.html" class="btn btn-neutral float-right" title="RandMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="RadixSortLSD.html" class="btn btn-neutral float-left" title="RadixSortLSD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="RandMsg.html" class="btn btn-neutral float-right" title="RandMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="RadixSortLSD.html" class="btn btn-neutral float-left" title="RadixSortLSD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

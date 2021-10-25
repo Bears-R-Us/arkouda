@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Message &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Message.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,98 +224,98 @@
 </pre></div>
 </div>
 <dl class="chpl enum">
-<dt id="Message.MsgType">
-<em class="property">enum </em><code class="sig-name descname">MsgType</code> { NORMAL, WARNING, ERROR }<a class="headerlink" href="#Message.MsgType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MsgType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgType</span></span> <span class="pre">{</span> <span class="pre">NORMAL,</span> <span class="pre">WARNING,</span> <span class="pre">ERROR</span> <span class="pre">}</span><a class="headerlink" href="#Message.MsgType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
-<dt id="Message.MsgFormat">
-<em class="property">enum </em><code class="sig-name descname">MsgFormat</code> { STRING, BINARY }<a class="headerlink" href="#Message.MsgFormat" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MsgFormat">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgFormat</span></span> <span class="pre">{</span> <span class="pre">STRING,</span> <span class="pre">BINARY</span> <span class="pre">}</span><a class="headerlink" href="#Message.MsgFormat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
-<dt id="Message.MsgTuple">
-<em class="property">record </em><code class="sig-name descname">MsgTuple</code><a class="headerlink" href="#Message.MsgTuple" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MsgTuple">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">MsgTuple</span></span><a class="headerlink" href="#Message.MsgTuple" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulates the message string and message type.</p></li>
 </ul>
 <dl class="chpl attribute">
-<dt id="Message.MsgTuple.msg">
-<em class="property">var </em><code class="sig-name descname">msg</code>: string<a class="headerlink" href="#Message.MsgTuple.msg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MsgTuple.msg">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.MsgTuple.msg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.MsgTuple.msgType">
-<em class="property">var </em><code class="sig-name descname">msgType</code>: MsgType<a class="headerlink" href="#Message.MsgTuple.msgType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.MsgTuple.msgType">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><span class="pre">:</span> <span class="pre">MsgType</span><a class="headerlink" href="#Message.MsgTuple.msgType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
-<dt id="Message.ReplyMsg">
-<em class="property">class </em><code class="sig-name descname">ReplyMsg</code><a class="headerlink" href="#Message.ReplyMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.ReplyMsg">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ReplyMsg</span></span><a class="headerlink" href="#Message.ReplyMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulates state corresponding to a reply message sent back to</p></li>
 <li><p>the Arkouda client.</p></li>
 </ul>
 <dl class="chpl attribute">
-<dt id="Message.ReplyMsg.msg">
-<em class="property">var </em><code class="sig-name descname">msg</code>: string<a class="headerlink" href="#Message.ReplyMsg.msg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msg">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ReplyMsg.msg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.ReplyMsg.msgType">
-<em class="property">var </em><code class="sig-name descname">msgType</code>: MsgType<a class="headerlink" href="#Message.ReplyMsg.msgType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msgType">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><span class="pre">:</span> <span class="pre">MsgType</span><a class="headerlink" href="#Message.ReplyMsg.msgType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.ReplyMsg.msgFormat">
-<em class="property">var </em><code class="sig-name descname">msgFormat</code>: MsgFormat<a class="headerlink" href="#Message.ReplyMsg.msgFormat" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msgFormat">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgFormat</span></span><span class="pre">:</span> <span class="pre">MsgFormat</span><a class="headerlink" href="#Message.ReplyMsg.msgFormat" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.ReplyMsg.user">
-<em class="property">var </em><code class="sig-name descname">user</code>: string<a class="headerlink" href="#Message.ReplyMsg.user" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.user">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ReplyMsg.user" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
-<dt id="Message.RequestMsg">
-<em class="property">record </em><code class="sig-name descname">RequestMsg</code><a class="headerlink" href="#Message.RequestMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">RequestMsg</span></span><a class="headerlink" href="#Message.RequestMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulates state corresponding to a client request sent to the Arkouda server.</p></li>
 </ul>
 <dl class="chpl attribute">
-<dt id="Message.RequestMsg.user">
-<em class="property">var </em><code class="sig-name descname">user</code>: string<a class="headerlink" href="#Message.RequestMsg.user" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg.user">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.user" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.RequestMsg.token">
-<em class="property">var </em><code class="sig-name descname">token</code>: string<a class="headerlink" href="#Message.RequestMsg.token" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg.token">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.token" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.RequestMsg.cmd">
-<em class="property">var </em><code class="sig-name descname">cmd</code>: string<a class="headerlink" href="#Message.RequestMsg.cmd" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg.cmd">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.RequestMsg.format">
-<em class="property">var </em><code class="sig-name descname">format</code>: string<a class="headerlink" href="#Message.RequestMsg.format" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg.format">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">format</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.format" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="Message.RequestMsg.args">
-<em class="property">var </em><code class="sig-name descname">args</code>: string<a class="headerlink" href="#Message.RequestMsg.args" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.RequestMsg.args">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">args</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="Message.deserialize">
-<em class="property">proc </em><code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param">ref msg: RequestMsg</em>, <em class="sig-param">request: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Message.deserialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.deserialize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">RequestMsg</span></em>, <em class="sig-param"><span class="pre">request:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.deserialize" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Deserializes a JSON-formatted string to a RequestMsg object, where the</p></li>
 <li><p>JSON format is as follows:</p></li>
@@ -319,24 +326,24 @@
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="Message.serialize">
-<em class="property">proc </em><code class="sig-name descname">serialize</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">msgType: MsgType</em>, <em class="sig-param">msgFormat: MsgFormat</em>, <em class="sig-param">user: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#Message.serialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.serialize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgType:</span> <span class="pre">MsgType</span></em>, <em class="sig-param"><span class="pre">msgFormat:</span> <span class="pre">MsgFormat</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Message.serialize" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Generates a ReplyMsg object and serializes it into a JSON-formatted reply message</p></li>
 </ul>
 </dd></dl>
 
 <dl class="chpl data">
-<dt id="Message.Q">
-<em class="property">const </em><code class="sig-name descname">Q</code> = &quot;\&quot;&quot;<a class="headerlink" href="#Message.Q" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.Q">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">Q</span></span> <span class="pre">=</span> <span class="pre">&quot;\&quot;&quot;</span><a class="headerlink" href="#Message.Q" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>String constants for use in constructing JSON formatted messages</p></li>
 </ul>
 </dd></dl>
 
 <dl class="chpl data">
-<dt id="Message.QCQ">
-<em class="property">const </em><code class="sig-name descname">QCQ</code> = Q+:+Q<a class="headerlink" href="#Message.QCQ" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Message.QCQ">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">QCQ</span></span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">+</span> <span class="pre">:</span> <span class="pre">+</span> <span class="pre">Q</span><a class="headerlink" href="#Message.QCQ" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -346,37 +353,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="MsgProcessing.html" class="btn btn-neutral float-right" title="MsgProcessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="MsgProcessing.html" class="btn btn-neutral float-right" title="MsgProcessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

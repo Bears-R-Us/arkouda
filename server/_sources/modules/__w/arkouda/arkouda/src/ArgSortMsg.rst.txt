@@ -40,7 +40,7 @@ to permute the original array into sorted order
 
 .. data:: var mBins = 2**25
 
-.. data:: var lBins = 2**25*numLocales
+.. data:: var lBins = 2**25 * numLocales
 
 .. function:: proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws
 

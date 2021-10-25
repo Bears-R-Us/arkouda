@@ -44,9 +44,9 @@ or
 
    .. attribute:: var size: int
 
-   .. attribute:: var dom = {0..#size}
+   .. attribute:: var dom = {0.. # size}
 
-   .. attribute:: var numEmpty: int = size-2
+   .. attribute:: var numEmpty: int = size - 2
 
    .. attribute:: var isSorted: bool = false
 

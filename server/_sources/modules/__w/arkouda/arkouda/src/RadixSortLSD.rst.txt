@@ -28,7 +28,7 @@ Radix Sort Least Significant Digit
 
 .. data:: const numTasks = RSLSD_numTasks
 
-.. data:: const Tasks = {0..#numTasks}
+.. data:: const Tasks = {0.. # numTasks}
 
 .. data:: config param RSLSD_bitsPerDigit = 16
 

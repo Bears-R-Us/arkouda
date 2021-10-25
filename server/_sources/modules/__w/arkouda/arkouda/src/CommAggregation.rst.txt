@@ -17,7 +17,7 @@ or
 
    import CommAggregation;
 
-.. data:: param defaultBuffSize = if CHPL_COMM==ugni then 4096 else 8096
+.. data:: param defaultBuffSize = if CHPL_COMM == ugni then 4096 else 8096
 
 .. function:: proc newDstAggregator(type elemType, param useUnorderedCopy = false)
 

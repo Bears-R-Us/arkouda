@@ -87,5 +87,5 @@ or
    * String constants for use in constructing JSON formatted messages
    
 
-.. data:: const QCQ = Q+:+Q
+.. data:: const QCQ = Q + : + Q
 

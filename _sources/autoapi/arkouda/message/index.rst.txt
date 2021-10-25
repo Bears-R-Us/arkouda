@@ -28,7 +28,6 @@ Classes
 
    Derive from this class to define new enumerations.
 
-
    .. py:attribute:: STRING
       :annotation: = STRING
 
@@ -59,7 +58,6 @@ Classes
    Generic enumeration.
 
    Derive from this class to define new enumerations.
-
 
    .. py:attribute:: NORMAL
       :annotation: = NORMAL

@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>In1d &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/In1d.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,13 +224,13 @@
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt id="In1d.inLogger">
-<em class="property">const </em><code class="sig-name descname">inLogger</code> = new Logger(logLevel)<a class="headerlink" href="#In1d.inLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="In1d.inLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">inLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#In1d.inLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="In1d.in1dGlobalAr1Bcast">
-<em class="property">proc </em><code class="sig-name descname">in1dGlobalAr1Bcast</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr1Bcast" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="In1d.in1dGlobalAr1Bcast">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dGlobalAr1Bcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr1Bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Brute force:
 forward-way reduction per element of ar1 over ar2.
 Causes every element in ar1 to be broadcast/communicated over ar2.</p>
@@ -241,8 +248,8 @@ Causes every element in ar1 to be broadcast/communicated over ar2.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="In1d.in1dGlobalAr2Bcast">
-<em class="property">proc </em><code class="sig-name descname">in1dGlobalAr2Bcast</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr2Bcast" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="In1d.in1dGlobalAr2Bcast">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dGlobalAr2Bcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr2Bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Brute force:
 reverse-way serial-or-reduce for each element in ar2 over ar1.
 Causes every element in ar2 to be broadcast/communicated over ar1.</p>
@@ -260,8 +267,8 @@ Causes every element in ar2 to be broadcast/communicated over ar1.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="In1d.in1dAr2PerLocAssoc">
-<em class="property">proc </em><code class="sig-name descname">in1dAr2PerLocAssoc</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="In1d.in1dAr2PerLocAssoc">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dAr2PerLocAssoc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Put ar2 into an associative domain of int, per locale.
 Creates truth (boolean array) from the domain of ar1.
 ar1 and truth are distributed on the same locales.
@@ -284,8 +291,8 @@ with the result of the membership test.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="In1d.in1dSort">
-<em class="property">proc </em><code class="sig-name descname">in1dSort</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="In1d.in1dSort">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1dSort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ar1:</span> <span class="pre">[?aD1]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ar2:</span> <span class="pre">[?aD2]</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each value in the first array, check membership in the second array. This
 implementation uses a sort, which is best when the second array is large because
 it scales well in both time and memory.</p>
@@ -309,37 +316,29 @@ it scales well in both time and memory.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="In1dMsg.html" class="btn btn-neutral float-right" title="In1dMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="HistogramMsg.html" class="btn btn-neutral float-left" title="HistogramMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="In1dMsg.html" class="btn btn-neutral float-right" title="In1dMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="HistogramMsg.html" class="btn btn-neutral float-left" title="HistogramMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

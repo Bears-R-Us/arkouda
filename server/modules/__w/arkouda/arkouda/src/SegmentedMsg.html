@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>SegmentedMsg &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/SegmentedMsg.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,53 +224,53 @@
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt id="SegmentedMsg.smLogger">
-<em class="property">const </em><code class="sig-name descname">smLogger</code> = new Logger(logLevel)<a class="headerlink" href="#SegmentedMsg.smLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.smLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">smLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#SegmentedMsg.smLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.randomStringsMsg">
-<em class="property">proc </em><code class="sig-name descname">randomStringsMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.randomStringsMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.randomStringsMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">randomStringsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.randomStringsMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentLengthsMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentLengthsMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentLengthsMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentLengthsMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentLengthsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentLengthsMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedEfuncMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedEfuncMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedEfuncMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedEfuncMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedEfuncMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedEfuncMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedFindLocMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedFindLocMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedFindLocMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedFindLocMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedFindLocMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedFindLocMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedFindAllMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedFindAllMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedFindAllMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedFindAllMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedFindAllMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedFindAllMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.createPeelSymEntries">
-<em class="property">proc </em><code class="sig-name descname">createPeelSymEntries</code><span class="sig-paren">(</span><em class="sig-param">loname</em>, <em class="sig-param">lo</em>, <em class="sig-param">lvname</em>, <em class="sig-param">lv</em>, <em class="sig-param">roname</em>, <em class="sig-param">ro</em>, <em class="sig-param">rvname</em>, <em class="sig-param">rv</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedMsg.createPeelSymEntries" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.createPeelSymEntries">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createPeelSymEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loname</span></em>, <em class="sig-param"><span class="pre">lo</span></em>, <em class="sig-param"><span class="pre">lvname</span></em>, <em class="sig-param"><span class="pre">lv</span></em>, <em class="sig-param"><span class="pre">roname</span></em>, <em class="sig-param"><span class="pre">ro</span></em>, <em class="sig-param"><span class="pre">rvname</span></em>, <em class="sig-param"><span class="pre">rv</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.createPeelSymEntries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedPeelMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedPeelMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedPeelMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedPeelMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedPeelMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedPeelMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedHashMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedHashMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedHashMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedHashMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedHashMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedHashMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segmentedIndexMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedIndexMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segmentedIndexMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segmentedIndexMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedIndexMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segmentedIndexMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Assigns a segIntIndex, sliceIndex, or pdarrayIndex to the incoming payload</p></li>
 <li><p>consisting of a sub-command, object type, offset SymTab key, array SymTab</p></li>
@@ -286,50 +293,50 @@
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segIntIndex">
-<em class="property">proc </em><code class="sig-name descname">segIntIndex</code><span class="sig-paren">(</span><em class="sig-param">objtype: string</em>, <em class="sig-param">args: [] string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segIntIndex" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segIntIndex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segIntIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">objtype:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">args:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segIntIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the object corresponding to the index</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.convertPythonIndexToChapel">
-<em class="property">proc </em><code class="sig-name descname">convertPythonIndexToChapel</code><span class="sig-paren">(</span><em class="sig-param">pyidx: int</em>, <em class="sig-param">high: int</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#SegmentedMsg.convertPythonIndexToChapel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.convertPythonIndexToChapel">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">convertPythonIndexToChapel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pyidx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">high:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#SegmentedMsg.convertPythonIndexToChapel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allow Python-style negative indices.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segSliceIndex">
-<em class="property">proc </em><code class="sig-name descname">segSliceIndex</code><span class="sig-paren">(</span><em class="sig-param">objtype: string</em>, <em class="sig-param">args: [] string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segSliceIndex" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segSliceIndex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segSliceIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">objtype:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">args:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segSliceIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.convertPythonSliceToChapel">
-<em class="property">proc </em><code class="sig-name descname">convertPythonSliceToChapel</code><span class="sig-paren">(</span><em class="sig-param">start: int</em>, <em class="sig-param">stop: int</em>, <em class="sig-param">stride: int = 1</em><span class="sig-paren">)</span>: range(stridable = true)<a class="headerlink" href="#SegmentedMsg.convertPythonSliceToChapel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.convertPythonSliceToChapel">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">convertPythonSliceToChapel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">start:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">stop:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">stride:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">range(stridable</span> <span class="pre">=</span> <span class="pre">true)</span><a class="headerlink" href="#SegmentedMsg.convertPythonSliceToChapel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segPdarrayIndex">
-<em class="property">proc </em><code class="sig-name descname">segPdarrayIndex</code><span class="sig-paren">(</span><em class="sig-param">objtype: string</em>, <em class="sig-param">args: [] string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segPdarrayIndex" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segPdarrayIndex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segPdarrayIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">objtype:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">args:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segPdarrayIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segBinopvvMsg">
-<em class="property">proc </em><code class="sig-name descname">segBinopvvMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segBinopvvMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segBinopvvMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segBinopvvMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segBinopvvMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segBinopvsMsg">
-<em class="property">proc </em><code class="sig-name descname">segBinopvsMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segBinopvsMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segBinopvsMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segBinopvsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segBinopvsMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segIn1dMsg">
-<em class="property">proc </em><code class="sig-name descname">segIn1dMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segIn1dMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segIn1dMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segIn1dMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segIn1dMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SegmentedMsg.segGroupMsg">
-<em class="property">proc </em><code class="sig-name descname">segGroupMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#SegmentedMsg.segGroupMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SegmentedMsg.segGroupMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segGroupMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segGroupMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -339,37 +346,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ServerConfig.html" class="btn btn-neutral float-right" title="ServerConfig" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="SegmentedArray.html" class="btn btn-neutral float-left" title="SegmentedArray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="ServerConfig.html" class="btn btn-neutral float-right" title="ServerConfig" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SegmentedArray.html" class="btn btn-neutral float-left" title="SegmentedArray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

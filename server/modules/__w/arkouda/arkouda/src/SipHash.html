@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>SipHash &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/SipHash.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,51 +224,51 @@
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt id="SipHash.cROUNDS">
-<em class="property">param </em><code class="sig-name descname">cROUNDS</code> = 2<a class="headerlink" href="#SipHash.cROUNDS" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.cROUNDS">
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">cROUNDS</span></span> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#SipHash.cROUNDS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt id="SipHash.dROUNDS">
-<em class="property">param </em><code class="sig-name descname">dROUNDS</code> = 4<a class="headerlink" href="#SipHash.dROUNDS" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.dROUNDS">
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dROUNDS</span></span> <span class="pre">=</span> <span class="pre">4</span><a class="headerlink" href="#SipHash.dROUNDS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt id="SipHash.defaultSipHashKey">
-<em class="property">const </em><code class="sig-name descname">defaultSipHashKey</code>: [0..#16] uint(8) = for i in 0..#16 do i: uint(8)<a class="headerlink" href="#SipHash.defaultSipHashKey" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.defaultSipHashKey">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">defaultSipHashKey</span></span><span class="pre">:</span> <span class="pre">[0..#16]</span> <span class="pre">uint(8)</span> <span class="pre">=</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">0..</span> <span class="pre">#</span> <span class="pre">16</span> <span class="pre">do</span> <span class="pre">i:</span> <span class="pre">uint(8)</span><a class="headerlink" href="#SipHash.defaultSipHashKey" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt id="SipHash.shLogger">
-<em class="property">const </em><code class="sig-name descname">shLogger</code> = new Logger(logLevel)<a class="headerlink" href="#SipHash.shLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.shLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">shLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#SipHash.shLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SipHash.ROTL">
-<em class="property">proc </em><code class="sig-name descname">ROTL</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="headerlink" href="#SipHash.ROTL" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.ROTL">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ROTL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SipHash.ROTL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SipHash.sipHash64">
-<em class="property">proc </em><code class="sig-name descname">sipHash64</code><span class="sig-paren">(</span><em class="sig-param">msg: [] ?t</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: uint(64)<a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.sipHash64">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="SipHash.sipHash128">
-<em class="property">proc </em><code class="sig-name descname">sipHash128</code><span class="sig-paren">(</span><em class="sig-param">msg: [] ?t</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: 2*(uint(64))<a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="SipHash.sipHash128">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span><a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt>
-<em class="property">proc </em><code class="sig-name descname">sipHash64</code><span class="sig-paren">(</span><em class="sig-param">in val</em><span class="sig-paren">)</span>: uint(64)</dt>
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span></dt>
 <dd><ul class="simple">
 <li><p>Compute hash of a single value</p></li>
 </ul>
 </dd></dl>
 
 <dl class="chpl function">
-<dt>
-<em class="property">proc </em><code class="sig-name descname">sipHash128</code><span class="sig-paren">(</span><em class="sig-param">in val</em><span class="sig-paren">)</span>: 2*(uint(64))</dt>
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span></dt>
 <dd></dd></dl>
 
 </div>
@@ -271,37 +278,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="SortMsg.html" class="btn btn-neutral float-right" title="SortMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="ServerErrors.html" class="btn btn-neutral float-left" title="ServerErrors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="SortMsg.html" class="btn btn-neutral float-right" title="SortMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ServerErrors.html" class="btn btn-neutral float-left" title="ServerErrors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>ReductionMsg &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/ReductionMsg.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,33 +224,33 @@
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt id="ReductionMsg.rmLogger">
-<em class="property">const </em><code class="sig-name descname">rmLogger</code> = new Logger(logLevel)<a class="headerlink" href="#ReductionMsg.rmLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.rmLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">rmLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#ReductionMsg.rmLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.reductionMsg">
-<em class="property">proc </em><code class="sig-name descname">reductionMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.reductionMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.reductionMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reductionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.reductionMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.countReductionMsg">
-<em class="property">proc </em><code class="sig-name descname">countReductionMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.countReductionMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.countReductionMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">countReductionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.countReductionMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segCount">
-<em class="property">proc </em><code class="sig-name descname">segCount</code><span class="sig-paren">(</span><em class="sig-param">segments: [?D] int</em>, <em class="sig-param">upper: int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segCount" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segCount">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">upper:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">int</span><a class="headerlink" href="#ReductionMsg.segCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segmentedReductionMsg">
-<em class="property">proc </em><code class="sig-name descname">segmentedReductionMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.segmentedReductionMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segmentedReductionMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedReductionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segmentedReductionMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segSum">
-<em class="property">proc </em><code class="sig-name descname">segSum</code><span class="sig-paren">(</span><em class="sig-param">values: [] ?intype</em>, <em class="sig-param">segments: [?D] int</em>, <em class="sig-param">skipNan = false</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ReductionMsg.segSum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segSum">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segSum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">?intype</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">skipNan</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segSum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segmented Reductions of the form: seg&lt;Op&gt;(values:[] t, segments: [] int)
 Use &lt;segments&gt; as the boundary indices to divide &lt;values&gt; into chunks,
 and then reduce over each chunk using the operator &lt;Op&gt;. The return array
@@ -251,65 +258,65 @@ of reduced values is the same size as &lt;segments&gt;.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segProduct">
-<em class="property">proc </em><code class="sig-name descname">segProduct</code><span class="sig-paren">(</span><em class="sig-param">values: [] ?t</em>, <em class="sig-param">segments: [?D] int</em>, <em class="sig-param">skipNan = false</em><span class="sig-paren">)</span>: [D] real throws<a class="headerlink" href="#ReductionMsg.segProduct" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segProduct">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segProduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">skipNan</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segProduct" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segMean">
-<em class="property">proc </em><code class="sig-name descname">segMean</code><span class="sig-paren">(</span><em class="sig-param">values: [] ?t</em>, <em class="sig-param">segments: [?D] int</em>, <em class="sig-param">skipNan = false</em><span class="sig-paren">)</span>: [D] real throws<a class="headerlink" href="#ReductionMsg.segMean" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segMean">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segMean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">skipNan</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segMean" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segMin">
-<em class="property">proc </em><code class="sig-name descname">segMin</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] ?t</em>, <em class="sig-param">segments: [?D] int</em>, <em class="sig-param">skipNan = false</em><span class="sig-paren">)</span>: [D] t throws<a class="headerlink" href="#ReductionMsg.segMin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segMin">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">skipNan</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segMin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segMax">
-<em class="property">proc </em><code class="sig-name descname">segMax</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] ?t</em>, <em class="sig-param">segments: [?D] int</em>, <em class="sig-param">skipNan = false</em><span class="sig-paren">)</span>: [D] t throws<a class="headerlink" href="#ReductionMsg.segMax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segMax">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">skipNan</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segMax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segArgmin">
-<em class="property">proc </em><code class="sig-name descname">segArgmin</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] ?t</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: ([D] t, [D] int) throws<a class="headerlink" href="#ReductionMsg.segArgmin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segArgmin">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segArgmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">([D]</span> <span class="pre">t,</span> <span class="pre">[D]</span> <span class="pre">int)</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segArgmin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segArgmax">
-<em class="property">proc </em><code class="sig-name descname">segArgmax</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] ?t</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: ([D] t, [D] int) throws<a class="headerlink" href="#ReductionMsg.segArgmax" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segArgmax">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segArgmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">([D]</span> <span class="pre">t,</span> <span class="pre">[D]</span> <span class="pre">int)</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segArgmax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segAny">
-<em class="property">proc </em><code class="sig-name descname">segAny</code><span class="sig-paren">(</span><em class="sig-param">values: [] bool</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: [D] bool throws<a class="headerlink" href="#ReductionMsg.segAny" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segAny">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segAny</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segAny" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segAll">
-<em class="property">proc </em><code class="sig-name descname">segAll</code><span class="sig-paren">(</span><em class="sig-param">values: [] bool</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: [D] bool throws<a class="headerlink" href="#ReductionMsg.segAll" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segAll">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segAll" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segOr">
-<em class="property">proc </em><code class="sig-name descname">segOr</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] int</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: [D] int throws<a class="headerlink" href="#ReductionMsg.segOr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segOr">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segOr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segOr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
-<dt id="ReductionMsg.ResettingOrScanOp">
-<em class="property">class </em><code class="sig-name descname">ResettingOrScanOp</code>: ReduceScanOp<a class="headerlink" href="#ReductionMsg.ResettingOrScanOp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ResettingOrScanOp</span></span><span class="pre">:</span> <span class="pre">ReduceScanOp</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a bitwise OR scan, controlled by a reset flag. While
 * the reset flag is false, the accumulation of values proceeds as
 * normal. When a true is encountered, the state resets to the
 * identity.</p>
 <dl class="chpl attribute">
-<dt id="ReductionMsg.ResettingOrScanOp.eltType">
-<em class="property">type </em><code class="sig-name descname">eltType</code><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.eltType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.eltType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.eltType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="ReductionMsg.ResettingOrScanOp.value">
-<em class="property">var </em><code class="sig-name descname">value</code> = (false, 0)<a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.value" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.value">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">value</span></span> <span class="pre">=</span> <span class="pre">(false,</span> <span class="pre">0)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>value is a tuple comprising a flag and the actual result of
 segmented bitwise OR.</p>
 <p>The meaning of the flag depends on whether it belongs to an
@@ -322,57 +329,57 @@ have already been scanned, or for internal state, the flag means
 </dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.identity">
-<em class="property">proc </em><code class="sig-name descname">identity</code><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.identity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.identity">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.identity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.accumulate">
-<em class="property">proc </em><code class="sig-name descname">accumulate</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.accumulate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.accumulateOntoState">
-<em class="property">proc </em><code class="sig-name descname">accumulateOntoState</code><span class="sig-paren">(</span><em class="sig-param">ref state</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.accumulateOntoState">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulateOntoState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">state</span></em>, <em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.combine">
-<em class="property">proc </em><code class="sig-name descname">combine</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.combine" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.combine">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.combine" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.generate">
-<em class="property">proc </em><code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.generate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.generate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.generate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingOrScanOp.clone">
-<em class="property">proc </em><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.clone" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingOrScanOp.clone">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.clone" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segAnd">
-<em class="property">proc </em><code class="sig-name descname">segAnd</code><span class="sig-paren">(</span><em class="sig-param">values: [?vD] int</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span>: [D] int throws<a class="headerlink" href="#ReductionMsg.segAnd" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segAnd">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segAnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segAnd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
-<dt id="ReductionMsg.ResettingAndScanOp">
-<em class="property">class </em><code class="sig-name descname">ResettingAndScanOp</code>: ReduceScanOp<a class="headerlink" href="#ReductionMsg.ResettingAndScanOp" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ResettingAndScanOp</span></span><span class="pre">:</span> <span class="pre">ReduceScanOp</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a bitwise AND scan, controlled by a reset flag. While
 * the reset flag is false, the accumulation of values proceeds as
 * normal. When a true is encountered, the state resets to the
 * identity.</p>
 <dl class="chpl attribute">
-<dt id="ReductionMsg.ResettingAndScanOp.eltType">
-<em class="property">type </em><code class="sig-name descname">eltType</code><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.eltType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.eltType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.eltType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="ReductionMsg.ResettingAndScanOp.value">
-<em class="property">var </em><code class="sig-name descname">value</code> = (false, 18446744073709551615: int)<a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.value" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.value">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">value</span></span> <span class="pre">=</span> <span class="pre">(false,</span> <span class="pre">18446744073709551615:</span> <span class="pre">int)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.value" title="Permalink to this definition">¶</a></dt>
 <dd><p>value is a tuple comprising a flag and the actual result of
 segmented bitwise AND.</p>
 <p>The meaning of the flag depends on
@@ -385,55 +392,55 @@ have already been scanned, or for internal state, the flag means
 </dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.identity">
-<em class="property">proc </em><code class="sig-name descname">identity</code><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.identity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.identity">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.identity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.accumulate">
-<em class="property">proc </em><code class="sig-name descname">accumulate</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.accumulate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.accumulateOntoState">
-<em class="property">proc </em><code class="sig-name descname">accumulateOntoState</code><span class="sig-paren">(</span><em class="sig-param">ref state</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.accumulateOntoState">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulateOntoState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">state</span></em>, <em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.combine">
-<em class="property">proc </em><code class="sig-name descname">combine</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.combine" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.combine">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.combine" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.generate">
-<em class="property">proc </em><code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.generate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.generate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.generate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="ReductionMsg.ResettingAndScanOp.clone">
-<em class="property">proc </em><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.clone" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.ResettingAndScanOp.clone">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.clone" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segXor">
-<em class="property">proc </em><code class="sig-name descname">segXor</code><span class="sig-paren">(</span><em class="sig-param">values: [] int</em>, <em class="sig-param">segments: [?D] int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ReductionMsg.segXor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segXor">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segXor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segXor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.expandKeys">
-<em class="property">proc </em><code class="sig-name descname">expandKeys</code><span class="sig-paren">(</span><em class="sig-param">kD</em>, <em class="sig-param">segments: [?sD] int</em><span class="sig-paren">)</span>: [kD] int throws<a class="headerlink" href="#ReductionMsg.expandKeys" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.expandKeys">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">expandKeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">kD</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?sD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[kD]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.expandKeys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.segNumUnique">
-<em class="property">proc </em><code class="sig-name descname">segNumUnique</code><span class="sig-paren">(</span><em class="sig-param">values: [?kD] int</em>, <em class="sig-param">segments: [?sD] int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ReductionMsg.segNumUnique" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.segNumUnique">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segNumUnique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values:</span> <span class="pre">[?kD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?sD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.segNumUnique" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt id="ReductionMsg.stringtobool">
-<em class="property">proc </em><code class="sig-name descname">stringtobool</code><span class="sig-paren">(</span><em class="sig-param">str: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#ReductionMsg.stringtobool" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ReductionMsg.stringtobool">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringtobool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">str:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#ReductionMsg.stringtobool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -443,37 +450,29 @@ have already been scanned, or for internal state, the flag means
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="RegistrationMsg.html" class="btn btn-neutral float-right" title="RegistrationMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="RandMsg.html" class="btn btn-neutral float-left" title="RandMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="RegistrationMsg.html" class="btn btn-neutral float-right" title="RegistrationMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="RandMsg.html" class="btn btn-neutral float-left" title="RandMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

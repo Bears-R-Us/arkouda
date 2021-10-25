@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>KReduce &mdash; chpldoc 0.0.1 documentation</title>
   
@@ -13,10 +13,15 @@
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
+
   
+  
+
   
 
   
@@ -26,10 +31,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
@@ -51,7 +56,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
           
 
           
@@ -181,6 +186,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -192,7 +199,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/KReduce.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -217,8 +224,8 @@
 </pre></div>
 </div>
 <dl class="chpl class">
-<dt id="KReduce.kreduce">
-<em class="property">class </em><code class="sig-name descname">kreduce</code>: ReduceScanOp<a class="headerlink" href="#KReduce.kreduce" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">kreduce</span></span><span class="pre">:</span> <span class="pre">ReduceScanOp</span><a class="headerlink" href="#KReduce.kreduce" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p><a class="reference internal" href="#module-KReduce" title="KReduce"><code class="xref chpl chpl-class docutils literal notranslate"><span class="pre">KReduce</span></code></a> is a user defined reduction.
 Returns array of the k extreme values of an array of type eltType.
@@ -245,70 +252,70 @@ on an array, and then using a slice of these values
 to retrieve the first or last <cite>k</cite> indices from that
 sorted indice array.</p>
 <dl class="chpl attribute">
-<dt id="KReduce.kreduce.eltType">
-<em class="property">type </em><code class="sig-name descname">eltType</code><a class="headerlink" href="#KReduce.kreduce.eltType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.eltType">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">eltType</span></span><a class="headerlink" href="#KReduce.kreduce.eltType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="KReduce.kreduce.k">
-<em class="property">const </em><code class="sig-name descname">k</code>: int<a class="headerlink" href="#KReduce.kreduce.k" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.k">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">k</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#KReduce.kreduce.k" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="KReduce.kreduce.isMin">
-<em class="property">const </em><code class="sig-name descname">isMin</code> = true<a class="headerlink" href="#KReduce.kreduce.isMin" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.isMin">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">isMin</span></span> <span class="pre">=</span> <span class="pre">true</span><a class="headerlink" href="#KReduce.kreduce.isMin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt id="KReduce.kreduce.v">
-<em class="property">var </em><code class="sig-name descname">v</code> = new KExtreme(eltType = eltType, size = k, isMinReduction = isMin)<a class="headerlink" href="#KReduce.kreduce.v" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.v">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">v</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">KExtreme(eltType</span> <span class="pre">=</span> <span class="pre">eltType,</span> <span class="pre">size</span> <span class="pre">=</span> <span class="pre">k,</span> <span class="pre">isMinReduction</span> <span class="pre">=</span> <span class="pre">isMin)</span><a class="headerlink" href="#KReduce.kreduce.v" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.identity">
-<em class="property">proc </em><code class="sig-name descname">identity</code><a class="headerlink" href="#KReduce.kreduce.identity" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.identity">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">identity</span></span><a class="headerlink" href="#KReduce.kreduce.identity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.accumulateOntoState">
-<em class="property">proc </em><code class="sig-name descname">accumulateOntoState</code><span class="sig-paren">(</span><em class="sig-param">ref v</em>, <em class="sig-param">value: (eltType</em>, <em class="sig-param">int)</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.accumulateOntoState">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulateOntoState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">v</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">(eltType</span></em>, <em class="sig-param"><span class="pre">int)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.accumulate">
-<em class="property">proc </em><code class="sig-name descname">accumulate</code><span class="sig-paren">(</span><em class="sig-param">value: (eltType</em>, <em class="sig-param">int)</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.accumulate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.accumulate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">(eltType</span></em>, <em class="sig-param"><span class="pre">int)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.accumulate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt>
-<em class="property">proc </em><code class="sig-name descname">accumulate</code><span class="sig-paren">(</span><em class="sig-param">accumState: KExtreme(eltType)</em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">accumState:</span> <span class="pre">KExtreme(eltType)</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt>
-<em class="property">proc </em><code class="sig-name descname">accumulate</code><span class="sig-paren">(</span><em class="sig-param">accumState: []</em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">accumulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">accumState:</span> <span class="pre">[]</span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.combine">
-<em class="property">proc </em><code class="sig-name descname">combine</code><span class="sig-paren">(</span><em class="sig-param">state: borrowed kreduce(eltType)</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.combine" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.combine">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">state:</span> <span class="pre">borrowed</span> <span class="pre">kreduce(eltType)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.combine" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.generate">
-<em class="property">proc </em><code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.generate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.generate">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.generate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="KReduce.kreduce.clone">
-<em class="property">proc </em><code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.clone" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.kreduce.clone">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.kreduce.clone" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="KReduce.computeExtremaValuesAndInds">
-<em class="property">proc </em><code class="sig-name descname">computeExtremaValuesAndInds</code><span class="sig-paren">(</span><em class="sig-param">arr: [?D] ?t</em>, <em class="sig-param">kval: int</em>, <em class="sig-param">isMin = true</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaValuesAndInds" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.computeExtremaValuesAndInds">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeExtremaValuesAndInds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arr:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">kval:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">isMin</span> <span class="pre">=</span> <span class="pre">true</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaValuesAndInds" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Instinatiate the kreduce reduction class</p></li>
 <li><p>so that a custom <cite>k</cite> value can be</p></li>
@@ -319,16 +326,16 @@ sorted indice array.</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="KReduce.computeExtremaValues">
-<em class="property">proc </em><code class="sig-name descname">computeExtremaValues</code><span class="sig-paren">(</span><em class="sig-param">arr</em>, <em class="sig-param">kval: int</em>, <em class="sig-param">isMin = true</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaValues" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.computeExtremaValues">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeExtremaValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arr</span></em>, <em class="sig-param"><span class="pre">kval:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">isMin</span> <span class="pre">=</span> <span class="pre">true</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaValues" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Return the <cite>kval</cite> largest elements of an array <cite>arr</cite></p></li>
 </ul>
 </dd></dl>
 
 <dl class="chpl function">
-<dt id="KReduce.computeExtremaIndices">
-<em class="property">proc </em><code class="sig-name descname">computeExtremaIndices</code><span class="sig-paren">(</span><em class="sig-param">arr</em>, <em class="sig-param">kval: int</em>, <em class="sig-param">isMin = true</em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaIndices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="KReduce.computeExtremaIndices">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeExtremaIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arr</span></em>, <em class="sig-param"><span class="pre">kval:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">isMin</span> <span class="pre">=</span> <span class="pre">true</span></em><span class="sig-paren">)</span><a class="headerlink" href="#KReduce.computeExtremaIndices" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Return the indices of the <cite>kval</cite> largest</p></li>
 <li><p>elements of an array <cite>arr</cite></p></li>
@@ -342,37 +349,29 @@ sorted indice array.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="Logging.html" class="btn btn-neutral float-right" title="Logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="KExtremeMsg.html" class="btn btn-neutral float-left" title="KExtremeMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="Logging.html" class="btn btn-neutral float-right" title="Logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="KExtremeMsg.html" class="btn btn-neutral float-left" title="KExtremeMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2015
+        &#169; Copyright 2015.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

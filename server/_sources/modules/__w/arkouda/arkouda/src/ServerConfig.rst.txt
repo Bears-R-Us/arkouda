@@ -50,7 +50,7 @@ arkouda server config param and config const
    Arkouda version
    
 
-.. data:: config const serverConnectionInfo: string = getEnv(ARKOUDA_SERVER_CONNECTION_INFO, )
+.. data:: config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "")
 
    
    Write the server `hostname:port` to this file.
