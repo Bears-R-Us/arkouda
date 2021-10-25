@@ -14,7 +14,7 @@ jobs:
     if: github.repository == 'Bears-R-Us/arkouda'
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.24.1
+      image: chapel/chapel:1.25.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
