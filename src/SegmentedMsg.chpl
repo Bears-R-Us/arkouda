@@ -11,6 +11,7 @@ module SegmentedMsg {
   use RandArray;
   use IO;
   use GenSymIO only jsonToPdArray;
+  use Map;
 
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
@@ -156,6 +157,21 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc checkMatchStrings(segName: string, valName:string, st: borrowed SymTab) throws {
+    try {
+      st.checkTable(segName);
+      st.checkTable(valName);
+    }
+    catch {
+      throw getErrorWithContext(
+          msg="The Strings instance from which this Match is derived has been deleted",
+          lineNumber=getLineNumber(),
+          routineName=getRoutineName(),
+          moduleName=getModuleName(),
+          errorClass="MissingStringsError");
+    }
+  }
+
   proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
@@ -171,8 +187,7 @@ module SegmentedMsg {
     }
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    checkMatchStrings(segName, valName, st);
 
     const json = jsonToPdArray(patternJson, 1);
     const pattern: string = json[json.domain.low];
@@ -205,16 +220,19 @@ module SegmentedMsg {
       st.addEntry(rfullMatchBoolName, new shared SymEntry(fullMatchBools));
       st.addEntry(rfullMatchScanName, new shared SymEntry(fullMatchScan));
 
-      repMsg = "created %s+created %s+created %s+created %s+created %s+created %s+created %s+created %s+created %s+created %s".format(st.attrib(rNumMatchesName),
-                                                                                                                                      st.attrib(rStartsName),
-                                                                                                                                      st.attrib(rLensName),
-                                                                                                                                      st.attrib(rIndicesName),
-                                                                                                                                      st.attrib(rSearchBoolName),
-                                                                                                                                      st.attrib(rSearchScanName),
-                                                                                                                                      st.attrib(rMatchBoolName),
-                                                                                                                                      st.attrib(rMatchScanName),
-                                                                                                                                      st.attrib(rfullMatchBoolName),
-                                                                                                                                      st.attrib(rfullMatchScanName));
+      var createdMap = new map(keyType=string,valType=string);
+      createdMap.add("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      createdMap.add("Starts", "created %s".format(st.attrib(rStartsName)));
+      createdMap.add("Lens", "created %s".format(st.attrib(rLensName)));
+      createdMap.add("Indices", "created %s".format(st.attrib(rIndicesName)));
+      createdMap.add("SearchBool", "created %s".format(st.attrib(rSearchBoolName)));
+      createdMap.add("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      createdMap.add("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
+
+      repMsg = "%jt".format(createdMap);
     }
     else {
       var errorMsg = "%s".format(objtype);
@@ -232,8 +250,7 @@ module SegmentedMsg {
     const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    checkMatchStrings(segName, valName, st);
     st.checkTable(numMatchesName);
     st.checkTable(startsName);
     st.checkTable(lensName);

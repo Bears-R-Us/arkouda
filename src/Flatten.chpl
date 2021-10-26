@@ -48,6 +48,8 @@ module Flatten {
 
     :returns: Strings – Flattened substrings with delimiters removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array
   */
+  // DEPRECATED - All regex flatten calls now redirect to SegString.split
+  // TODO: Remove flattenRegex
   proc SegString.flattenRegex(delim: string, returnSegs: bool) throws {
     checkCompile(delim);
     ref origOffsets = this.offsets.a;
@@ -194,7 +196,7 @@ module Flatten {
     var valsIndexTransform = (+ scan writeToVal) - writeToVal;
     var offsIndexTransform = (+ scan nullByteLocations) - nullByteLocations + 1;
 
-    forall (origInd, splitValInd, offInd) in zip(this.values.aD, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
+    forall (origInd, origVal, splitValInd, offInd) in zip(this.values.aD, origVals, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
                                                                                                                var offAgg = newDstAggregator(int)) {
       // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
       if writeToVal[origInd] {
@@ -212,7 +214,7 @@ module Flatten {
         }
         else {
           // non-match location, copy origVal into splitVals
-          valAgg.copy(splitVals[splitValInd], origVals[origInd]);
+          valAgg.copy(splitVals[splitValInd], origVal);
         }
       }
     }

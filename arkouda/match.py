@@ -195,19 +195,19 @@ class Match:
                                        group_num,
                                        json.dumps([self.re]))
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
-        arrays = repMsg.split('+', maxsplit=9)
-        global_starts = create_pdarray(arrays[1])
-        global_lengths = create_pdarray(arrays[2])
-        global_indices = create_pdarray(arrays[3])
+        created_map = json.loads(repMsg)
+        global_starts = create_pdarray(created_map["Starts"])
+        global_lengths = create_pdarray(created_map["Lens"])
+        global_indices = create_pdarray(created_map["Indices"])
         if self._match_type == MatchType.SEARCH:
-            matched = create_pdarray(arrays[4])
-            indices = create_pdarray(arrays[5])
+            matched = create_pdarray(created_map["SearchBool"])
+            indices = create_pdarray(created_map["SearchInd"])
         elif self._match_type == MatchType.MATCH:
-            matched = create_pdarray(arrays[6])
-            indices = create_pdarray(arrays[7])
+            matched = create_pdarray(created_map["MatchBool"])
+            indices = create_pdarray(created_map["MatchInd"])
         elif self._match_type == MatchType.FULLMATCH:
-            matched = create_pdarray(arrays[8])
-            indices = create_pdarray(arrays[9])
+            matched = create_pdarray(created_map["FullMatchBool"])
+            indices = create_pdarray(created_map["FullMatchInd"])
         else:
             raise ValueError(f"{self._match_type} is not a MatchType")
         starts = global_starts[global_indices[matched]]

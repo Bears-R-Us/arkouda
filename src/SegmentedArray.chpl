@@ -578,10 +578,11 @@ module SegmentedArray {
 
       overMemLimit(matchLens.size * numBytes(int));
       var absoluteStarts: [makeDistDom(matchLens.size)] int;
-      forall (stringInd, matchInd) in zip(this.offsets.aD, indices) with (var absAgg = newDstAggregator(int)) {
-        for k in matchInd..#numMatches[stringInd] {
+      forall (off, numMatch, matchInd) in zip(origOffsets, numMatches, indices) with (var absAgg = newDstAggregator(int)) {
+        var localizedStarts = new lowLevelLocalizingSlice(matchStarts, matchInd..#numMatch);
+        for k in 0..#numMatch {
           // Each string has numMatches[stringInd] number of pattern matches, so matchOrigins needs to repeat stringInd for numMatches[stringInd] times
-          absAgg.copy(absoluteStarts[k], matchStarts[k] + origOffsets[stringInd]);
+          absAgg.copy(absoluteStarts[matchInd+k], localizedStarts.ptr[k] + off);
         }
       }
 
@@ -687,12 +688,13 @@ module SegmentedArray {
 
       forall (subOff, origOff, origLen) in zip(subbedOffsets, origOffsets, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var j = 0;
-        for i in origOff..#origLen {
-          if nonMatch[i] {
-            valAgg.copy(subbedVals[subOff+j], origVals[i]);
+        var localizedVals = new lowLevelLocalizingSlice(origVals, origOff..#origLen);
+        for i in 0..#origLen {
+          if nonMatch[origOff + i] {
+            valAgg.copy(subbedVals[subOff+j], localizedVals.ptr[i]);
             j += 1;
           }
-          else if matchStartBool[i] {
+          else if matchStartBool[origOff + i] {
             for k in repl {
               valAgg.copy(subbedVals[subOff+j], k:uint(8));
               j += 1;
@@ -716,6 +718,8 @@ module SegmentedArray {
 
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
+    // DEPRECATED - All substringSearchRegex calls now handled by Match objects on Client
+    // TODO: Remove substringSearchRegex
     proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
       var hits: [offsets.aD] bool = false;  // the answer
       checkCompile(pattern);

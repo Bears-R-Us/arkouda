@@ -278,6 +278,10 @@ class Strings:
         from arkouda.matcher import Matcher
         if isinstance(pattern, bytes):
             pattern = pattern.decode()
+        try:
+            re.compile(pattern)
+        except Exception as e:
+            raise ValueError(e)
         if pattern not in self._regex_dict:
             self._regex_dict[pattern] = Matcher(pattern=pattern,
                                                 parent_bytes_name=self.bytes.name,
@@ -606,19 +610,17 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("contains",
-                                             self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+            return self.search(substr).matched()
+        else:
+            cmd = "segmentedEfunc"
+            args = "{} {} {} {} {} {} {}".format("contains",
+                                                 self.objtype,
+                                                 self.offsets.name,
+                                                 self.bytes.name,
+                                                 "str",
+                                                 regex,
+                                                 json.dumps([substr]))
+            return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
     def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -667,19 +669,17 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("startswith",
-                                             self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+            return self.match(substr).matched()
+        else:
+            cmd = "segmentedEfunc"
+            args = "{} {} {} {} {} {} {}".format("startswith",
+                                                 self.objtype,
+                                                 self.offsets.name,
+                                                 self.bytes.name,
+                                                 "str",
+                                                 regex,
+                                                 json.dumps([substr]))
+            return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
     def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -728,19 +728,17 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("endswith",
-                                             self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+            return self.search(substr + '$').matched()
+        else:
+            cmd = "segmentedEfunc"
+            args = "{} {} {} {} {} {} {}".format("endswith",
+                                                 self.objtype,
+                                                 self.offsets.name,
+                                                 self.bytes.name,
+                                                 "str",
+                                                 regex,
+                                                 json.dumps([substr]))
+            return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
@@ -788,20 +786,22 @@ class Strings:
                 re.compile(delimiter)
             except Exception as e:
                 raise ValueError(e)
-        cmd = "segmentedFlatten"
-        args = "{}+{} {} {} {} {}".format(self.offsets.name,
-                                          self.bytes.name,
-                                          self.objtype,
-                                          return_segments,
-                                          regex,
-                                          json.dumps([delimiter]))
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
-        if return_segments:
-            arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return self.split(delimiter, return_segments=return_segments)
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            cmd = "segmentedFlatten"
+            args = "{}+{} {} {} {} {}".format(self.offsets.name,
+                                              self.bytes.name,
+                                              self.objtype,
+                                              return_segments,
+                                              regex,
+                                              json.dumps([delimiter]))
+            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
+            if return_segments:
+                arrays = repMsg.split('+', maxsplit=2)
+                return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            else:
+                arrays = repMsg.split('+', maxsplit=1)
+                return Strings(arrays[0], arrays[1])
     
     @typechecked
     def peel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,

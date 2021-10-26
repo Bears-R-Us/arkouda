@@ -28,6 +28,8 @@ These env vars can be used to configure your build of Arkouda when running `make
   - ARKOUDA_PRINT_PASSES_FILE : Setting this adds `--print-passes-file <file>` to the Chapel compiler flags and writes
     the associated "pass timing" output to the specified file.  This is mainly used in the nightly testing infrastructure.
   - CHPL_DEBUG_FLAGS : We add `--print-passes` automatically, but you can add additional flags here.
+  - REGEX_MAX_CAPTURES : Set this to an integer to change the maximum number of capture groups accessible using ``Match.group``
+    (set to 20 by default)
 
 #### Dependency Paths
 Most folks install anaconda and link to these libraries through Makefile.paths instructions.  If you have an alternative
