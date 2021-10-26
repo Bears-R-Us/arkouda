@@ -46,7 +46,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>(filename: str) → str</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>(filename: str) → List[str]</p></td>
 <td><p>This function calls the h5ls utility on a filename visible to the</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.read_hdf" title="arkouda.pdarrayIO.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
@@ -71,7 +71,7 @@
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayIO.ls_hdf">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></span><span class="sig-name descname"><span class="pre">ls_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.pdarrayIO.ls_hdf" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></span><span class="sig-name descname"><span class="pre">ls_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarrayIO.ls_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function calls the h5ls utility on a filename visible to the
 arkouda server.</p>
 <dl class="field-list simple">

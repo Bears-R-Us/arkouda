@@ -23,7 +23,7 @@ Functions
 
 
 
-.. py:function:: ls_hdf(filename: str) -> str
+.. py:function:: ls_hdf(filename: str) -> List[str]
 
    This function calls the h5ls utility on a filename visible to the
    arkouda server.

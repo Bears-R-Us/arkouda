@@ -338,8 +338,26 @@
 <dt class="sig sig-object chpl" id="GenSymIO.lshdfMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lshdfMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li><p>Spawns a separate Chapel process that executes and returns the</p></li>
-<li><p>result of the h5ls command</p></li>
+<li><p>Simulates the output of h5ls for top level datasets or groups</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>string formatted as json list</p>
+</dd>
+</dl>
+</li>
+<li><p>i.e. [“_arkouda_metadata”, “pda1”, “s1”]</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.simulate_h5ls">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">simulate_h5ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fid:</span> <span class="pre">C_HDF5.hid_t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.simulate_h5ls" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Simulate h5ls call by using HDF5 API (top level datasets and groups only, not recursive)</p></li>
+<li><p>This uses both internal call back functions as well as exter c functions defined above to</p></li>
+<li><p>work with the HDF5 API and handle the the data objects it passes between calls as opaque void*</p></li>
+<li><p>which can’t be used directly in chapel code.</p></li>
 </ul>
 </dd></dl>
 

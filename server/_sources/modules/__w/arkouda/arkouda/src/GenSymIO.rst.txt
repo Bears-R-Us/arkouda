@@ -81,8 +81,18 @@ or
 .. function:: proc lshdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
    
-   * Spawns a separate Chapel process that executes and returns the 
-   * result of the h5ls command
+   * Simulates the output of h5ls for top level datasets or groups
+   * :returns: string formatted as json list
+   * i.e. ["_arkouda_metadata", "pda1", "s1"]
+   
+
+.. function:: proc simulate_h5ls(fid: C_HDF5.hid_t): string throws
+
+   *
+   * Simulate h5ls call by using HDF5 API (top level datasets and groups only, not recursive)
+   * This uses both internal call back functions as well as exter c functions defined above to
+   * work with the HDF5 API and handle the the data objects it passes between calls as opaque void*
+   * which can't be used directly in chapel code.
    
 
 .. function:: proc checkCast(c: string, type toType): bool
