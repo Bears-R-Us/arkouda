@@ -176,12 +176,12 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         message = ak.ls_hdf('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
-        self.assertIn('int_tens_pdarray         Dataset', message)
+        self.assertIn('int_tens_pdarray', message)
         
 
         with self.assertRaises(RuntimeError) as cm:        
             ak.ls_hdf('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
-        self.assertIn('check file permissions or format', cm.exception.args[0])
+        self.assertIn('is not an HDF5 file', cm.exception.args[0])
 
     def testLsHdfEmpty(self):
         # Test filename empty/whitespace-only condition

@@ -14,7 +14,7 @@ ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
 
 @typechecked
-def ls_hdf(filename : str) -> str:
+def ls_hdf(filename : str) -> List[str]:
     """
     This function calls the h5ls utility on a filename visible to the
     arkouda server.
@@ -41,7 +41,7 @@ def ls_hdf(filename : str) -> str:
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    return cast(str,generic_msg(cmd="lshdf", args="{}".format(json.dumps([filename]))))
+    return json.loads(cast(str,generic_msg(cmd="lshdf", args="{}".format(json.dumps([filename])))))
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
@@ -317,8 +317,7 @@ def get_datasets(filename : str) -> List[str]:
     --------
     ls_hdf
     """
-    rep_msg = ls_hdf(filename)
-    datasets = [line.split()[0] for line in rep_msg.splitlines()]
+    datasets = ls_hdf(filename)
     # We can skip/remove the _arkouda_metadata group since it is an internal only construct
     if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
