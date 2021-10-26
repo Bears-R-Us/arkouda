@@ -5,6 +5,7 @@ module EfuncMsg
     
     use Time only;
     use Math only;
+    use BitOps;
     use Reflection;
     use ServerErrors;
     use Logging;
@@ -100,6 +101,22 @@ module EfuncMsg
                         // Put first array's attrib in repMsg and let common
                         // code append second array's attrib
                         repMsg += "created " + st.attrib(rname2) + "+";
+                    }
+                    when "popcount" {
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = popcount(e.a);
+                    }
+                    when "parity" {
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = parity(e.a);
+                    }
+                    when "clz" {
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = clz(e.a);
+                    }
+                    when "ctz" {
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = ctz(e.a);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);

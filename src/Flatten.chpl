@@ -1,33 +1,36 @@
 module Flatten {
   use ServerConfig;
 
+  use AryUtil;
   use SegmentedArray;
   use ServerErrors;
   use SymArrayDmap;
   use CommAggregation;
   use Reflection;
-  use Regexp;
+  use ArkoudaRegexCompat;
   use CPtr;
   use SegmentedArray only checkCompile, _unsafeCompileRegex;
 
   config const NULL_STRINGS_VALUE = 0:uint(8);
 
   /*
-    Convert a uint(8) array into bytes. Modeled after SegString.interpretAsString
-  */
-  inline proc interpretAsBytes(bytearray: [?D] uint(8)): bytes {
-    // Byte buffer must be local in order to make a C pointer
-    var localBytes: [{0..#D.size}] uint(8) = bytearray;
-    var cBytes = c_ptrTo(localBytes);
-    // Byte buffer is null-terminated, so length is buffer.size - 1
-    // The contents of the buffer should be copied out because cBytes will go out of scope
-    var b: bytes;
+     Interpret a region of a byte array as bytes. Modeled after interpretAsString
+   */
+  proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow=false): bytes {
+    var localSlice = new lowLevelLocalizingSlice(bytearray, region);
+    // Byte buffer is null-terminated, so length is region.size - 1
     try {
-      b = createBytesWithNewBuffer(cBytes, D.size-1, D.size);
+      if localSlice.isOwned {
+        localSlice.isOwned = false;
+        return createBytesWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else if borrow {
+        return createBytesWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else {
+        return createBytesWithNewBuffer(localSlice.ptr, region.size-1, region.size);
+      }
     } catch {
-      b = b"<error interpreting uint(8) as bytes>";
+      return b"<error interpreting uint(8) as bytes>";
     }
-    return b;
   }
 
   /*
@@ -61,23 +64,24 @@ module Flatten {
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {
+      var matchessize = 0 ;
       // for each string, find delim matches and set the positions of matches in writeToVal to false (non-matches will be copied to flattenedVals)
       // mark the locations of null bytes (the positions before original offsets and the last character of matches)
-      var matches = myRegex.matches(interpretAsBytes(origVals[off..#len]));
-      for m in matches {
-        var match: reMatch = m[0];
+      for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
+        var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
         // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
         for k in (off + match.offset:int)..#(match.size - 1) {
           writeAgg.copy(writeToVal[k], false);
         }
         // is writeToVal[(off + match.offset:int)..#(match.size - 1)] = false more efficient or for loop with aggregator?
         nbAgg.copy(nullByteLocations[off + match.offset:int + (match.size - 1)], true);
+        matchessize += 1;
       }
       if off != 0 {
         // the position before an offset is a null byte (except for off == 0)
         nbAgg.copy(nullByteLocations[off - 1], true);
       }
-      matchAgg.copy(numMatches[i], matches.size);
+      matchAgg.copy(numMatches[i], matchessize);
     }
 
     // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte

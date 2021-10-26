@@ -21,7 +21,7 @@ CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --
 else
 CHPL_FLAGS += --fast
 endif
-CHPL_FLAGS += -smemTrack=true
+CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # We have seen segfaults with cache remote at some node counts
@@ -116,10 +116,9 @@ check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.24.0 or newer is required)
 endif
-# Re-enable when support more than just one version again
-#ifeq ($(CHPL_VERSION_WARN),yes)
-#	$(warning Chapel 1.24.1 or newer is recommended)
-#endif
+ifeq ($(CHPL_VERSION_WARN),yes)
+	$(warning Chapel 1.25.0 or newer is recommended)
+endif
 
 CHPL_VERSION_122 := $(shell test $(CHPL_MINOR) -eq 22 && echo yes)
 ifeq ($(CHPL_VERSION_122),yes)
@@ -204,6 +203,12 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 24),1)
 	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/ge-124
 else
 	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/lt-124
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \>= 25),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-125
+else
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
 endif
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)

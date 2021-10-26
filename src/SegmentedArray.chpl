@@ -15,7 +15,7 @@ module SegmentedArray {
   use Reflection;
   use Logging;
   use ServerErrors;
-  use Regexp;
+  use ArkoudaRegexCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);
@@ -148,7 +148,7 @@ module SegmentedArray {
         end = offsets.a[idx+1] - 1;
       }
       // Take the slice of the bytearray and "cast" it to a chpl string
-      var s = interpretAsString(values.a[start..end]);
+      var s = interpretAsString(values.a, start..end);
       return s;
     }
 
@@ -505,9 +505,9 @@ module SegmentedArray {
                                                                                var lenAgg = newDstAggregator(int),
                                                                                var startAgg = newDstAggregator(bool),
                                                                                var matchAgg = newDstAggregator(int)) {
-        var matches = myRegex.matches(interpretAsString(origVals[off..#len]));
+        var matches = myRegex.matches(interpretAsString(origVals, off..#len, borrow=true));
         for m in matches {
-          var match: reMatch = m[0];
+          var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           lenAgg.copy(sparseLens[off + match.offset:int], match.size);
           startAgg.copy(matchStartBool[off + match.offset:int], true);
         }
@@ -616,19 +616,19 @@ module SegmentedArray {
         when SearchMode.contains {
           forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
             // regexp.search searches the receiving string for matches at any offset
-            h = myRegex.search(interpretAsString(va[o..#l])).matched;
+            h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
           }
         }
         when SearchMode.startsWith {
           forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
             // regexp.match only returns a match if the start of the string matches the pattern
-            h = myRegex.match(interpretAsString(va[o..#l])).matched;
+            h = myRegex.match(interpretAsString(va, o..#l, borrow=true)).matched;
           }
         }
         when SearchMode.endsWith {
           forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            var matches = myRegex.matches(interpretAsString(va[o..#l]));
-            var lastMatch: reMatch = matches[matches.size-1][0];
+            var matches = myRegex.matches(interpretAsString(va, o..#l, borrow=true));
+            var lastMatch = matches[matches.size-1][0];  // v1.24.x reMatch, 1.25.x regexMatch
             // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
             h = lastMatch.offset + lastMatch.size == l-1;
           }
@@ -638,7 +638,7 @@ module SegmentedArray {
             // regexp.match only returns a match if the start of the string matches the pattern
             // h = true iff len(match) == len(string) (-1 to account for null byte)
             // if no match is found reMatch.size returns -1
-            h = myRegex.match(interpretAsString(va[o..#l])).size == l-1;
+            h = myRegex.match(interpretAsString(va, o..#l, borrow=true)).size == l-1;
           }
         }
       }
@@ -745,7 +745,7 @@ module SegmentedArray {
       var rightStart: [offsets.aD] int;
 
       forall (o, len, i) in zip(oa, lengths, offsets.aD) with (var myRegex = _unsafeCompileRegex(delimiter)) {
-        var matches = myRegex.matches(interpretAsString(va[o..#len]));
+        var matches = myRegex.matches(interpretAsString(va, o..#len, borrow=true));
         if matches.size < times {
           // not enough occurances of delim, the entire string stays together, and the param args
           // determine whether it ends up on the left or right
@@ -765,7 +765,7 @@ module SegmentedArray {
         else {
           // The string can be peeled; figure out where to split
           var match_index: int = if left then (times - 1) else (matches.size - times);
-          var match: reMatch = matches[match_index][0];
+          var match = matches[match_index][0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           var j: int = o + match.offset: int;
           // j is now the start of the correct delimiter
           // tweak leftEnd and rightStart based on includeDelimiter
@@ -1375,20 +1375,25 @@ module SegmentedArray {
     }
   }
 
-  /* Convert an array of raw bytes into a Chapel string. */
-  inline proc interpretAsString(bytearray: [?D] uint(8)): string {
-    // Byte buffer must be local in order to make a C pointer
-    var localBytes: [{0..#D.size}] uint(8) = bytearray;
-    var cBytes = c_ptrTo(localBytes);
-    // Byte buffer is null-terminated, so length is buffer.size - 1
-    // The contents of the buffer should be copied out because cBytes will go out of scope
-    // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
-    var s: string;
+  /*
+     Interpret a region of a byte array as a Chapel string. If `borrow=false` a
+     new string is returned, otherwise the string borrows memory from the array
+     (reduces memory allocations if the string isn't needed after array)
+   */
+  proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow=false): string {
+    var localSlice = new lowLevelLocalizingSlice(bytearray, region);
+    // Byte buffer is null-terminated, so length is region.size - 1
     try {
-      s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
+      if localSlice.isOwned {
+        localSlice.isOwned = false;
+        return createStringWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else if borrow {
+        return createStringWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else {
+        return createStringWithNewBuffer(localSlice.ptr, region.size-1, region.size);
+      }
     } catch {
-      s = "<error interpreting bytes as string>";
+      return "<error interpreting bytes as string>";
     }
-    return s;
   }
 }

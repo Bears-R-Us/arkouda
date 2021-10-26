@@ -119,6 +119,8 @@ module AryUtil
 
             this.t = t;
             if region.isEmpty() {
+                this.ptr = c_nil;
+                this.isOwned = false;
                 return;
             }
             ref start = A[region.low];
