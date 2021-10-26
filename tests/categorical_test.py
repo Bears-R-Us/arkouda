@@ -258,7 +258,7 @@ class CategoricalTest(ArkoudaTest):
             self.assertCountEqual(x["cat1"].categories.to_ndarray().tolist(), c1.categories.to_ndarray().tolist())
             self.assertCountEqual(x["cat2"].categories.to_ndarray().tolist(), c2.categories.to_ndarray().tolist())
             self.assertCountEqual(x["pda1"].to_ndarray().tolist(), pda1.to_ndarray().tolist())
-            self.assertCountEqual(x["strings1"].offsets.to_ndarray().tolist(), strings1.offsets.to_ndarray().tolist())
+            self.assertCountEqual(x["strings1"].to_ndarray().tolist(), strings1.to_ndarray().tolist())
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()
