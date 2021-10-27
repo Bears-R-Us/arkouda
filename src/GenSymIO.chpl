@@ -102,12 +102,19 @@ module GenSymIO {
 
         if asSegStr {
             try {
-                var values = toSymEntry(st.lookup(rname), uint(8));
-                var offsets = segmentedCalcOffsets(values.a, values.aD);
-                var oname = st.nextName();
-                var offsetsEntry = new shared SymEntry(offsets);
-                st.addEntry(oname, offsetsEntry);
-                msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                st.checkTable(rname, "arrayMsg");
+                var g = st.lookup(rname);
+                if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
+                    var values = toSymEntry( (g:GenSymEntry), uint(8) );
+                    var offsets = segmentedCalcOffsets(values.a, values.aD);
+                    var oname = st.nextName();
+                    var offsetsEntry = new shared SymEntry(offsets);
+                    st.addEntry(oname, offsetsEntry);
+                    msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                } else {
+                    throw new Error("Unsupported Type %s".format(g.entryType));
+                }
+
             } catch e: Error {
                 msg = "Error creating offsets for SegString";
                 msgType = MsgType.ERROR;
@@ -161,8 +168,15 @@ module GenSymIO {
     proc tondarrayMsg(cmd: string, payload: string, st: 
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
-        var entry = st.lookup(payload);
-        overMemLimit(2*entry.size*entry.itemsize);
+        var abstractEntry = st.lookup(payload);
+        if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg.encode(); // return as bytes
+        }
+        var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
+        
+        overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = c_malloc(eltType, D.size);
@@ -1170,6 +1184,16 @@ module GenSymIO {
         var filename: string;
         var entry = st.lookup(arrayName);
         var writeOffsets = "true" == writeOffsetsFlag.strip().toLower();
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+            entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+            entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+            var errorMsg = "tohdfMsg Unsupported SymbolEntryType:%t".format(entry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
 
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
@@ -1183,17 +1207,17 @@ module GenSymIO {
         var warnFlag: bool;
 
         try {
-            select entry.dtype {
+            select entryDtype {
                 when DType.Int64 {
-                    var e = toSymEntry(entry, int);
+                    var e = toSymEntry(toGenSymEntry(entry), int);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
                 }
                 when DType.Float64 {
-                    var e = toSymEntry(entry, real);
+                    var e = toSymEntry(toGenSymEntry(entry), real);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Float64);
                 }
                 when DType.Bool {
-                    var e = toSymEntry(entry, bool);
+                    var e = toSymEntry(toGenSymEntry(entry), bool);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
                 when DType.UInt8 {
@@ -1211,7 +1235,7 @@ module GenSymIO {
                     warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
                 }
                 otherwise {
-                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entryDtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }

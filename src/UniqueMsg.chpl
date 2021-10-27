@@ -58,7 +58,7 @@ module UniqueMsg
                 var gEnt: borrowed GenSymEntry;
                 
                 try {  
-                    gEnt = st.lookup(name);
+                    gEnt = getGenericTypedArrayEntry(name, st);
                 } catch e: Error {
                     throw new owned ErrorWithContext("lookup for %s failed".format(name),
                                        getLineNumber(),
@@ -169,7 +169,7 @@ module UniqueMsg
         var gEnt: borrowed GenSymEntry;
         
         try {  
-            gEnt = st.lookup(name);
+            gEnt = getGenericTypedArrayEntry(name, st);
         } catch e: Error {
             throw new owned ErrorWithContext("lookup for %s failed".format(name),
                                getLineNumber(),

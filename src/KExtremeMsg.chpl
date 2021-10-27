@@ -42,7 +42,7 @@ module KExtremeMsg
 
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select(gEnt.dtype) {
             when (DType.Int64) {
@@ -103,7 +103,7 @@ module KExtremeMsg
         var (name, k, returnIndices) = payload.splitMsgToTuple(3);
 
         var vname = st.nextName();
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select(gEnt.dtype) {
             when (DType.Int64) {

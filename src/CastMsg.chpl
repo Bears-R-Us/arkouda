@@ -23,7 +23,7 @@ module CastMsg {
                                                  name,objtype,targetDtype,opt));
     select objtype {
       when "pdarray" {
-        var gse: borrowed GenSymEntry = st.lookup(name);
+        var gse: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         select (gse.dtype, targetDtype) {
             when (DType.Int64, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, int, int), MsgType.NORMAL);

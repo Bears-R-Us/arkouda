@@ -85,7 +85,7 @@ proc testInterleave(n: int) {
   t.stop("concatenate (append)");
   writeRep(repMsg);
   var cname = parseName(repMsg);
-  var c = toSymEntry(st.lookup(cname), int);
+  var c = toSymEntry(toGenSymEntry(st.lookup(cname)), int);
   var correct = && reduce (c.a[1..#(c.size-1)] == c.a[0..#(c.size-1)] + 1);
   correct &&= (+ reduce c.a) == n * (2*n + 1);
   writeln("Correct answer for append mode? >>> ", correct, " <<<");
@@ -96,7 +96,7 @@ proc testInterleave(n: int) {
   t.stop("concatenate (interleave)");
   writeRep(repMsg);
   var dname = parseName(repMsg);
-  var d = toSymEntry(st.lookup(dname), int);
+  var d = toSymEntry(toGenSymEntry(st.lookup(dname)), int);
   correct = (+ reduce d.a) == n * (2*n + 1);
   writeln("Correct answer for interleave mode? >>> ", correct, " <<<");
 }

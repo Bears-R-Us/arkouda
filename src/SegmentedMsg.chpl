@@ -30,8 +30,8 @@ module SegmentedMsg {
             "cmd: %s offsetsName: %s valuesName: %s".format(cmd, offsetsName, valuesName));
     st.checkTable(offsetsName);
     st.checkTable(valuesName);
-    var offsets = st.lookup(offsetsName);
-    var values = st.lookup(valuesName);
+    var offsets = getGenericTypedArrayEntry(offsetsName, st);
+    var values = getGenericTypedArrayEntry(valuesName, st);
     var segString = assembleSegStringFromParts(offsets, values, st);
 
     // NOTE: Clean-up, the client side pieces go out of scope and issue deletions on their own
@@ -337,10 +337,10 @@ module SegmentedMsg {
       when "Matcher" {
         const optName: string = if returnMatchOrig then st.nextName() else "";
         var strings = getSegString(name, st);
-        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(int);
-        var starts = st.lookup(startsName): borrowed SymEntry(int);
-        var lens = st.lookup(lensName): borrowed SymEntry(int);
-        var indices = st.lookup(indicesName): borrowed SymEntry(int);
+        var numMatches = getGenericTypedArrayEntry(numMatchesName, st): borrowed SymEntry(int);
+        var starts = getGenericTypedArrayEntry(startsName, st): borrowed SymEntry(int);
+        var lens = getGenericTypedArrayEntry(lensName, st): borrowed SymEntry(int);
+        var indices = getGenericTypedArrayEntry(indicesName,st): borrowed SymEntry(int);
 
         var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
         var retString = getSegString(off, val, st);
@@ -721,7 +721,7 @@ module SegmentedMsg {
         when "str" {
             var strings = getSegString(args[1], st);
             var iname = args[3];
-            var gIV: borrowed GenSymEntry = st.lookup(iname);
+            var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
             try {
                 select gIV.dtype {
                     when DType.Int64 {

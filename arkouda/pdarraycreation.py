@@ -826,6 +826,4 @@ def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars
                  NUMBER_FORMAT_STRINGS['float64'].format(logmean),
                  NUMBER_FORMAT_STRINGS['float64'].format(logstd),
                  seed))
-    left, right = cast(str, repMsg).split('+')
-    bytesSize:int_scalars = int(right.split()[-1])
-    return Strings(create_pdarray(left), bytesSize)
+    return Strings.from_return_msg(cast(str, repMsg))

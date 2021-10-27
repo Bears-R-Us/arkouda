@@ -41,7 +41,7 @@ proc main() {
     var payload = "True 1 1 False False [\"array\"] | [\"file_LOCALE*\"]";
     var repMsg = readAllHdfMsg(cmd, payload, st).msg;
     var id = parseIdFromReadAllHdfMsgCreated(repMsg);
-    var B = toSymEntry(st.lookup(id), int);
+    var B = toSymEntry(toGenSymEntry(st.lookup(id)), int);
     d.stop(printTime=false);
     if printTimes then writeln("read: %.2dr GiB/s (%.2drs)".format(GiB/d.elapsed(), d.elapsed()));
     forall (a, b) in zip (A.a, B.a) do assert(a == b);

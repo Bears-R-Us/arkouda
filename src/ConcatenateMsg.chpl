@@ -51,7 +51,6 @@ module ConcatenateMsg
         var dtype: DType;
         // Check that all arrays exist in the symbol table and have the same size
         for (rawName, i) in zip(names, 1..) {
-            // arrays[i] = st.lookup(name): borrowed GenSymEntry;
             var name: string;
             var valSize: int;
             select objtype {
@@ -85,32 +84,26 @@ module ConcatenateMsg
                     return new MsgTuple(errorMsg,MsgType.ERROR);                  
                 }
             }
-            var g: borrowed GenSymEntry;
+
+            st.checkTable(name, "concatenateMsg");
+            var abstractEntry = st.lookup(name);
+            var (entryDtype, entrySize, entryItemSize) = getArraySpecFromEntry(abstractEntry);
             
-            try { 
-                g = st.lookup(name);
-            } catch e : Error {
-                throw getErrorWithContext(
-                           msg="lookup for %s failed".format(name),
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="UnknownSymbolError");
-            }
-            if (i == 1) {dtype = g.dtype;}
-            else {
-                if (dtype != g.dtype) {
+            if (i == 1) {
+              dtype = entryDtype;
+            } else { // Check that all dtype's are the same across the list of arrays to concat
+                if (dtype != entryDtype) {
                     var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
-                                    dtype2str(g.dtype)));
+                                    dtype2str(entryDtype)));
                     cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg,MsgType.ERROR);
                 }
             }
             // accumulate size from each array size
-            size += g.size;
+            size += entrySize;
             if mode == "interleave" {
-              const dummyDomain = makeDistDom(g.size);
+              const dummyDomain = makeDistDom(entrySize);
               coforall loc in Locales {
                 on loc {
                   const mynumsegs = dummyDomain.localSubdomain().size;
@@ -122,7 +115,7 @@ module ConcatenateMsg
                    * way the low and high of the empty domain are computed. 
                    */
                   if (objtype == "str") && (mynumsegs > 0) {
-                    const stringEntry = toSegStringSymEntry(g);
+                    const stringEntry = toSegStringSymEntry(abstractEntry);
                     const e = stringEntry.offsetsEntry;
                     const firstSeg = e.a[e.aD.localSubdomain().low];
                     var mybytes: int;
@@ -175,10 +168,8 @@ module ConcatenateMsg
                 for (rawName, i) in zip(names, 1..) {
                     var (strName, legacy_placerholder) = rawName.splitMsgToTuple('+', 2);
                     var segString = getSegString(strName, st);
-                    // var thisSegs = toSymEntry(st.lookup(segName), int);
                     var thisSegs = segString.offsets;
                     var newSegs = thisSegs.a + valStart;
-                    // var thisVals = toSymEntry(st.lookup(valName), uint(8));
                     var thisVals = segString.values;
                     if mode == "interleave" {
                       coforall loc in Locales {
@@ -237,7 +228,7 @@ module ConcatenateMsg
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
-                            const o = toSymEntry(st.lookup(name), int);
+                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), int);
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
@@ -266,7 +257,7 @@ module ConcatenateMsg
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
-                            const o = toSymEntry(st.lookup(name), real);
+                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), real);
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
@@ -295,7 +286,7 @@ module ConcatenateMsg
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
-                            const o = toSymEntry(st.lookup(name), bool);
+                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), bool);
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {

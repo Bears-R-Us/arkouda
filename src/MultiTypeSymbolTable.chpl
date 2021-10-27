@@ -17,14 +17,14 @@ module MultiTypeSymbolTable
     class SymTab
     {
         /*
-        Associative domain of strings
+          Associative domain of strings
         */
         var registry: domain(string);
 
         /*
-        Map indexed by strings
+          Map indexed by strings
         */
-        var tab: map(string, shared GenSymEntry);
+        var tab: map(string, shared AbstractSymEntry);
 
         var nid = 0;
         /*
@@ -81,17 +81,17 @@ module MultiTypeSymbolTable
         // this addEntry takes stuff to create a new SymEntry
 
         /*
-        Takes args and creates a new SymEntry.
+            Takes args and creates a new SymEntry.
 
-        :arg name: name of the array
-        :type name: string
+            :arg name: name of the array
+            :type name: string
 
-        :arg len: length of array
-        :type len: int
+            :arg len: length of array
+            :type len: int
 
-        :arg t: type of array
+            :arg t: type of array
 
-        :returns: borrow of newly created `SymEntry(t)`
+            :returns: borrow of newly created `SymEntry(t)`
         */
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
             // check and throw if memory limit would be exceeded
@@ -107,23 +107,31 @@ module MultiTypeSymbolTable
             }
 
             tab.addOrSet(name, entry);
-            return tab.getBorrowed(name).toSymEntry(t);
+            // When we retrieve from table, it comes back as AbstractSymEntry so we need to cast it
+            // back to the original type. Since we know it already we can skip isAssignableTo check
+            return (tab.getBorrowed(name):borrowed GenSymEntry).toSymEntry(t);
         }
 
         /*
-        Takes an already created GenSymEntry and creates a new SymEntry.
+        Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.
 
         :arg name: name of the array
         :type name: string
 
-        :arg entry: Generic Sym Entry to convert
-        :type entry: GenSymEntry
+        :arg entry: AbstractSymEntry to convert
+        :type entry: AbstractSymEntry
 
-        :returns: borrow of newly created GenSymEntry
+        :returns: borrow of newly created AbstractSymEntry
         */
-        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry throws {
+        proc addEntry(name: string, in entry: shared AbstractSymEntry): borrowed AbstractSymEntry throws {
             // check and throw if memory limit would be exceeded
-            overMemLimit(entry.size*entry.itemsize);
+            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+                overMemLimit( (entry:GenSymEntry).size * (entry:GenSymEntry).itemsize);
+
+            } else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
+                // TODO invoke memory check ... maybe the mem check should be part of the SymbolType API?
+            }
+            
 
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -150,7 +158,7 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry throws {
+        proc addEntry(name: string, len: int, dtype: DType): borrowed AbstractSymEntry throws {
             select dtype {
                 when DType.Int64 { return addEntry(name, len, int); }
                 when DType.Float64 { return addEntry(name, len, real); }
@@ -199,22 +207,21 @@ module MultiTypeSymbolTable
         }
 
         
-        /*
-        Returns the sym entry associated with the provided name, if the sym entry exists
+        /**
+         * Returns the AbstractSymEntry associated with the provided name, if the AbstractSymEntry exists
+         * :arg name: string to index/query in the sym table
+         * :type name: string
 
-        :arg name: string to index/query in the sym table
-        :type name: string
-
-        :returns: sym entry or throws on error
-        :throws: `unkownSymbolError(name)`
-        */
-        proc lookup(name: string): borrowed GenSymEntry throws {
+         * :returns: AbstractSymEntry or throws on error
+         * :throws: `unkownSymbolError(name)`
+         */
+        proc lookup(name: string): borrowed AbstractSymEntry throws {
             checkTable(name, "lookup");
             return tab.getBorrowed(name);
         }
 
-        /*
-        checks to see if a symbol is defined if it is not it throws an exception 
+        /**
+         * checks to see if a symbol is defined if it is not it throws an exception 
         */
         proc checkTable(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
@@ -232,20 +239,20 @@ module MultiTypeSymbolTable
             }
         }
         
-        /*
-        Prints the SymTable in a pretty format (name,SymTable[name])
-        */
+        /**
+         * Prints the SymTable in a pretty format (name,SymTable[name])
+         */
         proc pretty() throws {
             for n in tab {
                 writeln("%10s = ".format(n), tab.getValue(n)); stdout.flush();
             }
         }
 
-        /*
-        returns total bytes in arrays in the symbol table
-        */
+        /**
+         * :returns: total bytes in arrays in the symbol table
+         */
         proc memUsed(): int {
-            var total: int = + reduce [e in tab.values()] e.size * e.itemsize;
+            var total: int = + reduce [e in tab.values()] e.getSizeEstimate();
             return total;
         }
         
@@ -336,14 +343,26 @@ module MultiTypeSymbolTable
         :arg name: name of entry to be formatted
         :type name: string
 
-        :arg item: Generic Sym Entry to be formatted (tab.getBorrowed(name))
-        :type item: GenSymEntry
+        :arg item: AbstractSymEntry to be formatted (tab.getBorrowed(name))
+        :type item: AbstractSymEntry
 
         :returns: JSON formatted dictionary
         */
-        proc formatEntry(name:string, item:borrowed GenSymEntry): string throws {
-            return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
+        proc formatEntry(name:string, abstractEntry:borrowed AbstractSymEntry): string throws {
+            if abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+                var item:borrowed GenSymEntry = toGenSymEntry(abstractEntry);
+                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
                               dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
+
+            } else if abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
+                var item:borrowed SegStringSymEntry = toSegStringSymEntry(abstractEntry);
+                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
+                              dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
+                              
+            } else {
+                return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
+                              dtype2str(DType.UNDEF), 0, 0, (0,), 0, registry.contains(name));
+            }
         }
 
         /*
@@ -357,11 +376,17 @@ module MultiTypeSymbolTable
         */
         proc attrib(name:string):string throws {
             checkTable(name, "attrib");
-            var s:string;
-            s = "%s %s %t %t %t %t".format(name, dtype2str(tab.getBorrowed(name).dtype), 
-                          tab.getBorrowed(name).size, tab.getBorrowed(name).ndim, 
-                          tab.getBorrowed(name).shape, tab.getBorrowed(name).itemsize);
-            return s;
+
+            var entry = tab.getBorrowed(name);
+            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+                var g:GenSymEntry = toGenSymEntry(entry);
+                return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+            } else if entry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
+                var g:SegStringSymEntry = toSegStringSymEntry(entry);
+                return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+            }
+            
+            throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
         }
 
         /*
@@ -380,12 +405,14 @@ module MultiTypeSymbolTable
         */
         proc datastr(name: string, thresh:int): string throws {
             checkTable(name, "datastr");
-            var u: borrowed GenSymEntry = tab.getBorrowed(name);
-            if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
-                var s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
-                return s;
-            }
+            var u: borrowed AbstractSymEntry = tab.getBorrowed(name);
+
+            // I don't think we need to do this check, but I'm keeping the code around for now.
+            // if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
+            //     var s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
+            //     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
+            //     return s;
+            // }
             return u.__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%t");
         }
 
@@ -406,14 +433,50 @@ module MultiTypeSymbolTable
         */
         proc datarepr(name: string, thresh:int): string throws {
             checkTable(name, "datarepr");
-            var u: borrowed GenSymEntry = tab.getBorrowed(name);
-            if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
-                var s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
-                return s;
+            var entry = tab.getBorrowed(name);
+            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+                var u: borrowed GenSymEntry = toGenSymEntry(entry);
+                if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
+                    var s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
+                    mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
+                    return s;
+                }
+                var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%t";
+                return u.__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
+            } else {
+                return "Unhandled type %s".format(entry.entryType);
             }
-            var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%t";
-            return u.__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
+
         }
-    }      
+    }
+
+    /**
+     * Convenience proc to retrieve GenSymEntry from SymTab
+     * Performs conversion from AbstractSymEntry to GenSymEntry
+     * You can pass a logger from the calling function for better error reporting.
+     */
+    proc getGenericTypedArrayEntry(name:string, st: borrowed SymTab): borrowed GenSymEntry throws {
+        var abstractEntry = st.lookup(name);
+        if ! abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to GenSymEntry".format(abstractEntry.entryType);
+            mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            throw new Error(errorMsg);
+        }
+        return (abstractEntry: borrowed GenSymEntry);
+    }
+
+    /**
+     * Convenience proc to retrieve SegStringSymEntry from SymTab
+     * Performs conversion from AbstractySymEntry to SegStringSymEntry
+     * You can pass a logger from the calling function for better error reporting.
+     */
+    proc getSegStringEntry(name:string, st: borrowed SymTab): borrowed SegStringSymEntry throws {
+        var abstractEntry = st.lookup(name);
+        if ! abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to SegStringSymEntry".format(abstractEntry.entryType);
+            mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            throw new Error(errorMsg);
+        }
+        return (abstractEntry: borrowed SegStringSymEntry);
+    }
 }

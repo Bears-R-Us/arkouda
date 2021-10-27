@@ -354,7 +354,7 @@ module MsgProcessing
         var (name, dtypestr, value) = payload.splitMsgToTuple(3);
         var dtype = str2dtype(dtypestr);
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));

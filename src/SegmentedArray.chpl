@@ -28,7 +28,14 @@ module SegmentedArray {
   class OutOfBoundsError: Error {}
 
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
-      return new owned SegString(name, st.lookup(name));
+      var abstractEntry = st.lookup(name);
+      if !abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
+          var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          throw new Error(errorMsg);
+      }
+      var entry:SegStringSymEntry = abstractEntry: borrowed SegStringSymEntry;
+      return new owned SegString(name, entry);
   }
 
   /*
@@ -102,9 +109,9 @@ module SegmentedArray {
      * This method should not be called directly. Instead, call one of the
      * getSegString factory methods.
      */
-    proc init(entryName:string, gse:borrowed GenSymEntry) {
+    proc init(entryName:string, entry:borrowed SegStringSymEntry) {
         name = entryName;
-        composite = toSegStringSymEntry(gse);
+        composite = entry;
         offsets = composite.offsetsEntry: shared SymEntry(int);
         values = composite.bytesEntry: shared SymEntry(uint(8));
         size = offsets.size;

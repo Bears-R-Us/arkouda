@@ -96,7 +96,7 @@ class Strings:
     def from_parts(offset_attrib: Union[pdarray, str], bytes_attrib: Union[pdarray, str]) -> Strings:
         """
         Factory method for creating a Strings object from an Arkouda server
-        response message
+        response where the arrays are separate components.
 
         Parameters
         ----------
