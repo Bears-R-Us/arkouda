@@ -220,19 +220,31 @@ module SegmentedMsg {
       st.addEntry(rfullMatchBoolName, new shared SymEntry(fullMatchBools));
       st.addEntry(rfullMatchScanName, new shared SymEntry(fullMatchScan));
 
-      var createdMap = new map(keyType=string,valType=string);
-      createdMap.add("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
-      createdMap.add("Starts", "created %s".format(st.attrib(rStartsName)));
-      createdMap.add("Lens", "created %s".format(st.attrib(rLensName)));
-      createdMap.add("Indices", "created %s".format(st.attrib(rIndicesName)));
-      createdMap.add("SearchBool", "created %s".format(st.attrib(rSearchBoolName)));
-      createdMap.add("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
-      createdMap.add("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
-      createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
-      createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
-      createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
-
-      repMsg = "%jt".format(createdMap);
+      // Map JSON formatting is broken in Chpl version 1.24, create manually to maintain backwards compatibility
+      // var createdMap = new map(keyType=string,valType=string);
+      // createdMap.add("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      // createdMap.add("Starts", "created %s".format(st.attrib(rStartsName)));
+      // createdMap.add("Lens", "created %s".format(st.attrib(rLensName)));
+      // createdMap.add("Indices", "created %s".format(st.attrib(rIndicesName)));
+      // createdMap.add("SearchBool", "created %s".format(st.attrib(rSearchBoolName)));
+      // createdMap.add("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      // createdMap.add("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      // createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      // createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      // createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
+      // repMsg = "%jt".format(createdMap);
+      repMsg = "{";
+      repMsg += "%jt: %jt,".format("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      repMsg += "%jt: %jt,".format("Starts", "created %s".format(st.attrib(rStartsName)));
+      repMsg += "%jt: %jt,".format("Lens", "created %s".format(st.attrib(rLensName)));
+      repMsg += "%jt: %jt,".format("Indices", "created %s".format(st.attrib(rIndicesName)));
+      repMsg += "%jt: %jt,".format("SearchBool","created %s".format(st.attrib(rSearchBoolName)));
+      repMsg += "%jt: %jt,".format("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      repMsg += "%jt: %jt,".format("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      repMsg += "%jt: %jt,".format("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      repMsg += "%jt: %jt,".format("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      repMsg += "%jt: %jt".format("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
+      repMsg += "}";
     }
     else {
       var errorMsg = "%s".format(objtype);
