@@ -18,6 +18,7 @@ class Match:
         self._lengths = lengths
         self._ends = starts + lengths
         self._indices = indices
+        self._parent_obj: object = None
         self.re = pattern
 
     def __str__(self):

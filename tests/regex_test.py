@@ -75,8 +75,8 @@ class RegexTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak_captures.group(40)
 
-        with self.assertRaises(RuntimeError):
-            ak.array(['1_2___', '____', '3', '__4___5____6___7', '']).search('_+').find_matches()
+        # verify fluid programming with Match object doesn't raise a RuntimeError
+        ak.array(['1_2___', '____', '3', '__4___5____6___7', '']).search('_+').find_matches()
 
     def test_sub(self):
         strings = ak.array(['', '____', '_1_2____', '3___4___', '5', '__6__', '___7', '__8___9____10____11'])

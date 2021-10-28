@@ -357,7 +357,7 @@ class Strings:
         >>> strings.search('_+')
         <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
         """
-        return self._get_matcher(pattern).get_match(MatchType.SEARCH)
+        return self._get_matcher(pattern).get_match(MatchType.SEARCH, self)
 
     @typechecked
     def match(self, pattern: Union[bytes, str_scalars]) -> Match:
@@ -380,7 +380,7 @@ class Strings:
         >>> strings.match('_+')
         <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
         """
-        return self._get_matcher(pattern).get_match(MatchType.MATCH)
+        return self._get_matcher(pattern).get_match(MatchType.MATCH, self)
 
     @typechecked()
     def fullmatch(self, pattern: Union[bytes, str_scalars]) -> Match:
@@ -403,7 +403,7 @@ class Strings:
         >>> strings.fullmatch('_+')
         <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=False; matched=False>
         """
-        return self._get_matcher(pattern).get_match(MatchType.FULLMATCH)
+        return self._get_matcher(pattern).get_match(MatchType.FULLMATCH, self)
 
     @typechecked()
     def split(self, pattern: Union[bytes, str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]:

@@ -61,7 +61,7 @@ class Matcher:
             self.full_match_ind = create_pdarray(created_map["FullMatchInd"])
             self.populated = True
 
-    def get_match(self, match_type: MatchType) -> Match:
+    def get_match(self, match_type: MatchType, parent: object = None) -> Match:
         """
         Create a Match object of type match_type
         """
@@ -78,14 +78,16 @@ class Matcher:
         else:
             raise ValueError(f"{match_type} is not a MatchType")
 
-        return Match(matched=matched,
-                     starts=self.starts[self.indices[matched]],
-                     lengths=self.lengths[self.indices[matched]],
-                     indices=indices,
-                     parent_bytes_name=self.parent_bytes_name,
-                     parent_offsets_name=self.parent_offsets_name,
-                     match_type=match_type,
-                     pattern=self.pattern)
+        match = Match(matched=matched,
+                      starts=self.starts[self.indices[matched]],
+                      lengths=self.lengths[self.indices[matched]],
+                      indices=indices,
+                      parent_bytes_name=self.parent_bytes_name,
+                      parent_offsets_name=self.parent_offsets_name,
+                      match_type=match_type,
+                      pattern=self.pattern)
+        match._parent_obj = parent
+        return match
 
     def split(self, maxsplit: int = 0, return_segments: bool = False):
         """
