@@ -20,6 +20,9 @@ class Matcher:
             re.compile(self.pattern)
         except Exception as e:
             raise ValueError(e)
+        if re.search(self.pattern, ''):
+            # TODO remove once changes from chapel issue #18639 are in arkouda
+            raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
         self.parent_bytes_name = parent_bytes_name
         self.parent_offsets_name = parent_offsets_name
         self.num_matches: pdarray
@@ -94,8 +97,6 @@ class Matcher:
         Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
         """
         from arkouda.strings import Strings
-        if re.search(self.pattern, ''):
-            raise ValueError("Cannot split with a pattern that matches the empty string")
         cmd = "segmentedSplit"
         args = "{} {} {} {} {} {}".format(self.objtype,
                                           self.parent_offsets_name,
@@ -141,8 +142,6 @@ class Matcher:
         If return_num_subs is True, return the number of substitutions that occurred
         """
         from arkouda.strings import Strings
-        if re.search(self.pattern, ''):
-            raise ValueError("Cannot sub with a pattern that matches the empty string")
         cmd = "segmentedSub"
         args = "{} {} {} {} {} {} {}".format(self.objtype,
                                              self.parent_offsets_name,

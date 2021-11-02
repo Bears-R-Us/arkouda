@@ -5,6 +5,37 @@ import re
 
 class RegexTest(ArkoudaTest):
 
+    def test_empty_string_patterns(self):
+        # For issue #959:
+        # verify ValueError is raised when methods which use Regex.matches have a pattern which matches the empty string
+        # TODO remove/change test once changes from chapel issue #18639 are in arkouda
+        s = ak.array(['one'])
+        for pattern in ['', '|', '^', '$']:
+            with self.assertRaises(ValueError):
+                s.search(pattern)
+            with self.assertRaises(ValueError):
+                s.match(pattern)
+            with self.assertRaises(ValueError):
+                s.fullmatch(pattern)
+            with self.assertRaises(ValueError):
+                s.split(pattern)
+            with self.assertRaises(ValueError):
+                s.sub(pattern, 'repl')
+            with self.assertRaises(ValueError):
+                s.findall(pattern)
+            with self.assertRaises(ValueError):
+                s.find_locations(pattern)
+            with self.assertRaises(ValueError):
+                s.contains(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.startswith(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.endswith(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.peel(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.flatten(pattern, regex=True)
+
     def test_match_objects(self):
         strings = ak.array(['', '____', '_1_2____', '3___4___', '5', '__6__', '___7', '__8___9____10____11'])
         pattern = '_+'

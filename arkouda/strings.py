@@ -877,6 +877,9 @@ class Strings:
                 re.compile(delimiter)
             except Exception as e:
                 raise ValueError(e)
+            if re.search(delimiter, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
         if times < 1:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"
