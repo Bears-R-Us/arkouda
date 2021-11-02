@@ -8,10 +8,9 @@ MatchType = Enum('MatchType', ['SEARCH', 'MATCH', 'FULLMATCH'])
 
 class Match:
     def __init__(self, matched: pdarray, starts: pdarray, lengths: pdarray, indices: pdarray,
-                 parent_bytes_name: str, parent_offsets_name: str, match_type: MatchType, pattern: str):
+                 parent_entry_name: str, match_type: MatchType, pattern: str):
         self._objtype = type(self).__name__
-        self._parent_bytes_name = parent_bytes_name
-        self._parent_offsets_name = parent_offsets_name
+        self._parent_entry_name = parent_entry_name
         self._match_type = match_type
         self._matched = matched
         self._starts = starts
@@ -135,8 +134,8 @@ class Match:
         from arkouda.strings import Strings
         cmd = "segmentedFindAll"
         args = "{} {} {} {} {} {} {} {}".format(self._objtype,
-                                                self._parent_offsets_name,
-                                                self._parent_bytes_name,
+                                                self._parent_entry_name,
+                                                "legacy_placeholder",
                                                 self._matched.name,
                                                 self._starts.name,
                                                 self._lengths.name,
@@ -145,10 +144,9 @@ class Match:
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)
 
     def group(self, group_num: int = 0, return_group_origins: bool = False):
         """
@@ -191,8 +189,8 @@ class Match:
         # We don't cache the locations of groups, find the location info and call findAll
         cmd = "segmentedFindLoc"
         args = "{} {} {} {} {}".format(self._objtype,
-                                       self._parent_offsets_name,
-                                       self._parent_bytes_name,
+                                       self._parent_entry_name,
+                                       "legacy_placeholder",
                                        group_num,
                                        json.dumps([self.re]))
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
@@ -215,8 +213,8 @@ class Match:
         lengths = global_lengths[global_indices[matched]]
         cmd = "segmentedFindAll"
         args = "{} {} {} {} {} {} {} {}".format(self._objtype,
-                                                self._parent_offsets_name,
-                                                self._parent_bytes_name,
+                                                self._parent_entry_name,
+                                                "legacy_placeholder",
                                                 matched.name,
                                                 starts.name,
                                                 lengths.name,
@@ -225,7 +223,6 @@ class Match:
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_group_origins:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)

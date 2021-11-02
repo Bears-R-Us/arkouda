@@ -56,8 +56,8 @@ module ConcatenateMsg
             var valSize: int;
             select objtype {
                 when "str" {
-                    var valName: string;
-                    (name, valName) = rawName.splitMsgToTuple('+', 2);
+                    var legacy_placeholder: string;
+                    (name, legacy_placeholder) = rawName.splitMsgToTuple('+', 2);
                     try {
                         // get the values/bytes portion of strings
                         var segString = getSegString(name, st);
@@ -72,7 +72,7 @@ module ConcatenateMsg
                            errorClass="UnknownSymbolError");                    
                     }
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "name: %s valName: %s".format(name,valName));
+                                             "name: %s legacy_placeholder: %s".format(name, legacy_placeholder));
                 }
                 when "pdarray" {
                     name = rawName;

@@ -353,9 +353,7 @@ class Strings:
         if pattern in self._regex_dict:
             matcher = self._regex_dict[pattern]
         elif create:
-            self._regex_dict[pattern] = Matcher(pattern=pattern,
-                                                parent_bytes_name=self.bytes.name,
-                                                parent_offsets_name=self.offsets.name)
+            self._regex_dict[pattern] = Matcher(pattern=pattern, parent_entry_name=self.entry.name)
             matcher = self._regex_dict[pattern]
         return matcher
 
