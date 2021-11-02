@@ -127,10 +127,7 @@ class CategoricalTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             cat._binop(1, '==')
-        self.assertEqual(('type of argument "other" must be one of (Categorical, str, str_);' +
-                          ' got int instead'), 
-                         cm.exception.args[0])
-    
+
     def testIn1d(self):
         vals = [i % 3 for i in range(10)]
         valsTwo = [i % 2 for i in range(10)]
