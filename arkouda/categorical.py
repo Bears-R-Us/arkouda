@@ -146,8 +146,13 @@ class Categorical:
         may override this limit by setting ak.maxTransferBytes to a larger
         value, but proceed with caution.
         """
-        idx = self.categories.to_ndarray()
-        valcodes = self.codes.to_ndarray()
+        if self.categories.size > self.codes.size:
+            newcat = self.reset_categories()
+            idx = newcat.categories.to_ndarray()
+            valcodes = newcat.codes.to_ndarray()
+        else:
+            idx = self.categories.to_ndarray()
+            valcodes = self.codes.to_ndarray()
         return idx[valcodes]
 
     def __iter__(self):
