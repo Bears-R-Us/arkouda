@@ -409,22 +409,22 @@ will fall in one contiguous block.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.findMatchLocations">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findMatchLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.findMatchLocations" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findMatchLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">groupNum:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.findMatchLocations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
-Note: the regular expression engine used, re2, does not support lookahead/lookbehind
 :arg pattern: The regex pattern used to find matches
 :type pattern: string
+:arg groupNum: The number of the capture group to be returned
+:type groupNum: int
 :returns: int64 pdarray – For each original string, the number of pattern matches and int64 pdarray – The start positons of pattern matches and int64 pdarray – The lengths of pattern matches</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.findAllMatches">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAllMatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">numMatchesEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">startsEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">lensEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">returnMatchOrig:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.findAllMatches" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAllMatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">numMatchesEntry:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">startsEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">lensEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">indicesEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">returnMatchOrig:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.findAllMatches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a SegString, return a new SegString only containing matches of the regex pattern,
 If returnMatchOrig is set to True, return a pdarray containing the index of the original string each pattern match is from
-Note: the regular expression engine used, re2, does not support lookahead/lookbehind
 :arg numMatchesEntry: For each string in SegString, the number of pattern matches
-:type numMatchesEntry: borrowed SymEntry(int)
+:type numMatchesEntry: borrowed SymEntry(int) or borrowed SysmEntry(bool)
 :arg startsEntry: The starting postions of pattern matches
 :type startsEntry: borrowed SymEntry(int)
 :arg lensEntry: The lengths of pattern matches
@@ -435,22 +435,29 @@ Note: the regular expression engine used, re2, does not support lookahead/lookbe
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="SegmentedArray.SegString.substringSearchRegex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearchRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">SearchMode</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.substringSearchRegex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
-<p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.sub">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">replStr:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">initCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">returnNumSubs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitute pattern matches with repl. If count is nonzero, at most count substitutions occur
+If returnNumSubs is set to True, the number of substitutions per string will be returned</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pattern</strong> : <em>string</em> – regex pattern to be applied to strings in SegString</p></li>
-<li><p><strong>mode</strong> : <em>SearchMode enum</em> – mode of search being performed (contains, startsWith, endsWith, match)</p></li>
+<li><p><strong>pattern</strong> : <em>string</em> – regex pattern used to find matches</p></li>
+<li><p><strong>replStr</strong> : <em>string</em> – the string to replace pattern matches with</p></li>
+<li><p><strong>initCount</strong> : <em>int</em> – If count is nonzero, at most count splits occur. If zero, substitute all occurences of pattern</p></li>
+<li><p><strong>returnNumSubs</strong> : <em>bool</em> – If True, also return the number of substitutions per string</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
+<dd class="field-even"><p>Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.substringSearchRegex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearchRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">SearchMode</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.substringSearchRegex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.substringSearch">

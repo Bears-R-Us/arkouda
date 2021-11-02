@@ -145,24 +145,24 @@ or
 
    .. method:: proc _unsafeCompileRegex(const pattern: ?t)
 
-   .. method:: proc findMatchLocations(const pattern: string) throws
+   .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
 
       
       Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
-      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
       :arg pattern: The regex pattern used to find matches
       :type pattern: string
+      :arg groupNum: The number of the capture group to be returned
+      :type groupNum: int
       :returns: int64 pdarray – For each original string, the number of pattern matches and int64 pdarray – The start positons of pattern matches and int64 pdarray – The lengths of pattern matches
       
 
-   .. method:: proc findAllMatches(const numMatchesEntry: borrowed SymEntry(int), const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws
+   .. method:: proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const indicesEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws
 
       
       Given a SegString, return a new SegString only containing matches of the regex pattern,
       If returnMatchOrig is set to True, return a pdarray containing the index of the original string each pattern match is from
-      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
       :arg numMatchesEntry: For each string in SegString, the number of pattern matches
-      :type numMatchesEntry: borrowed SymEntry(int)
+      :type numMatchesEntry: borrowed SymEntry(int) or borrowed SysmEntry(bool)
       :arg startsEntry: The starting postions of pattern matches
       :type startsEntry: borrowed SymEntry(int)
       :arg lensEntry: The lengths of pattern matches
@@ -172,21 +172,28 @@ or
       :returns: Strings – Only the portions of Strings which match pattern and (optional) int64 pdarray – For each pattern match, the index of the original string it was in
       
 
-   .. method:: proc substringSearchRegex(const pattern: string, mode: SearchMode) throws
+   .. method:: proc sub(pattern: string, replStr: string, initCount: int, returnNumSubs: bool) throws
 
       
-      Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      Substitute pattern matches with repl. If count is nonzero, at most count substitutions occur
+      If returnNumSubs is set to True, the number of substitutions per string will be returned
       
-      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
-      
-      :arg pattern: regex pattern to be applied to strings in SegString
+      :arg pattern: regex pattern used to find matches
       :type pattern: string
       
-      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
-      :type mode: SearchMode enum
+      :arg replStr: the string to replace pattern matches with
+      :type replStr: string
       
-      :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      :arg initCount: If count is nonzero, at most count splits occur. If zero, substitute all occurences of pattern
+      :type initCount: int
       
+      :arg returnNumSubs: If True, also return the number of substitutions per string
+      :type returnNumSubs: bool
+      
+      :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
+      
+
+   .. method:: proc substringSearchRegex(const pattern: string, mode: SearchMode) throws
 
    .. method:: proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws
 

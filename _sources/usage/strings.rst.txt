@@ -73,3 +73,35 @@ Given an array of strings where each string encodes a variable-length sequence d
   
   .. automethod:: arkouda.Strings.flatten
 
+Regular Expressions
+-------------------
+
+``Strings`` implements behavior similar to the re python library applied to every element. This functionality is based on Chapel's regex module which is built on google's re2. re2 sacrifices some functionality (notably lookahead/lookbehind) in exchange for guarantees that searches complete in linear time and in a fixed amount of stack space
+
+  .. automethod:: arkouda.Strings.search
+
+  .. automethod:: arkouda.Strings.match
+
+  .. automethod:: arkouda.Strings.fullmatch
+
+  .. automethod:: arkouda.Strings.split
+
+  .. automethod:: arkouda.Strings.findall
+
+  .. automethod:: arkouda.Strings.sub
+
+  .. automethod:: arkouda.Strings.subn
+
+  .. automethod:: arkouda.Strings.find_locations
+
+Match Object
+____________
+
+search, match, and fullmatch return a ``Match`` object which supports the following methods
+
+  .. automethod:: arkouda.match.Match.matched
+  .. automethod:: arkouda.match.Match.start
+  .. automethod:: arkouda.match.Match.end
+  .. automethod:: arkouda.match.Match.match_type
+  .. automethod:: arkouda.match.Match.find_matches
+  .. automethod:: arkouda.match.Match.group

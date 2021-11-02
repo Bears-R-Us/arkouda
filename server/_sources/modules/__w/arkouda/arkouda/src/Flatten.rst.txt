@@ -27,20 +27,22 @@ or
 
 .. method:: proc SegString.flattenRegex(delim: string, returnSegs: bool) throws
 
+.. method:: proc SegString.split(pattern: string, initMaxSplit: int, returnSegs: bool) throws
+
    
-   Given a SegString where each string encodes a variable-length sequence delimited by a regex,
-   flattenRegex unpacks the sequences into a flat array of individual elements.
+   Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
    If returnSegs is set to True, a mapping between the original strings and new array elements will be returned
    
-   Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+   :arg pattern: regex pattern used to split strings into substrings
+   :type pattern: string
    
-   :arg delim: regex delimter used to split strings into substrings
-   :type delim: string
+   :arg initMaxSplit: If maxsplit is nonzero, at most maxsplit splits occur. If zero, split on all occurences of pattern
+   :type initMaxSplit: int
    
    :arg returnSegs: If True, also return mapping of original strings to first substring in return array
    :type returnSegs: bool
    
-   :returns: Strings – Flattened substrings with delimiters removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array
+   :returns: Strings – Substrings with pattern matches removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array
    
 
 .. method:: proc SegString.flatten(delim: string, returnSegs: bool, regex: bool = false) throws

@@ -1,0 +1,54 @@
+:py:mod:`arkouda.matcher`
+=========================
+
+.. py:module:: arkouda.matcher
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.matcher.Matcher
+
+
+
+
+.. py:class:: Matcher(pattern: arkouda.dtypes.str_scalars, parent_bytes_name: str, parent_offsets_name: str)
+
+   .. py:attribute:: LocationsInfo
+      
+
+      
+
+   .. py:method:: find_locations(self) -> None
+
+      Populates Matcher object by finding the positions of matches
+
+
+   .. py:method:: get_match(self, match_type: arkouda.match.MatchType, parent: object = None) -> arkouda.match.Match
+
+      Create a Match object of type match_type
+
+
+   .. py:method:: split(self, maxsplit: int = 0, return_segments: bool = False)
+
+      Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+
+
+   .. py:method:: findall(self, return_match_origins: bool = False)
+
+      Return all non-overlapping matches of pattern in Strings as a new Strings object
+
+
+   .. py:method:: sub(self, repl: str, count: int = 0, return_num_subs: bool = False)
+
+      Return the Strings obtained by replacing non-overlapping occurrences of pattern with the replacement repl.
+      If count is nonzero, at most count substitutions occur
+      If return_num_subs is True, return the number of substitutions that occurred
+
+
+

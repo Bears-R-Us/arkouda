@@ -70,6 +70,12 @@ arkouda server config param and config const
    Indicates whether token authentication is being used for Akrouda server requests
    
 
+.. data:: config param regexMaxCaptures = 20
+
+   
+   Determines the maximum number of capture groups returned by Regex.matches
+   
+
 .. data:: const scLogger = new Logger(lLevel)
 
 .. function:: proc createConfig()

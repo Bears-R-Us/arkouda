@@ -21,3 +21,5 @@ or
 
 .. function:: proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc segmentedSplitMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+

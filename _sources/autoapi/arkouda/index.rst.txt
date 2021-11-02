@@ -19,6 +19,8 @@ Submodules
    io_util/index.rst
    join/index.rst
    logger/index.rst
+   match/index.rst
+   matcher/index.rst
    message/index.rst
    numeric/index.rst
    pdarrayIO/index.rst
@@ -3654,14 +3656,6 @@ Attributes
 
       :type: dtype
 
-   .. attribute:: regex_dict
-
-      Dictionary storing information on matches (cache of Strings.find_locations(pattern))
-      Keys - regex patterns
-      Values - tuples of pdarrays (numMatches, matchStarts, matchLens)
-
-      :type: Dict[str, Tuple[pdarray, pdarray, pdarray]]
-
    .. attribute:: logger
 
       Used for all logging operations
@@ -3745,15 +3739,24 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: cached_regex_patterns(self)
+   .. py:method:: cached_regex_patterns(self) -> List
 
-      Returns the regex patterns for which Strings.find_locations(pattern) have been cached
+      Returns the regex patterns for which Match objects have been cached
+
+
+   .. py:method:: purge_cached_regex_patterns(self) -> None
+
+      purges cached regex patterns
+
+
+   .. py:method:: _get_matcher(self, pattern: Union[bytes, arkouda.dtypes.str_scalars])
+
+      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
-          Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
       :param pattern: The regex pattern used to find matches
       :type pattern: str_scalars
@@ -3763,7 +3766,7 @@ Attributes
                 * *pdarray, int64* -- The lengths of pattern matches
 
       :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
-      :raises ValueError: Rasied if pattern is not a valid regex
+      :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
       .. seealso:: :obj:`Strings.findall`, :obj:`Strings.match`
@@ -3771,23 +3774,96 @@ Attributes
       .. rubric:: Examples
 
       >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-      >>> strings
-      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
       >>> num_matches, starts, lens = strings.find_locations('\d')
       >>> num_matches
       array([2, 2, 2, 2, 2])
       >>> starts
-      array([0, 9, 11, 20, 22, 31, 33, 42, 44, 53])
+      array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])
       >>> lens
       array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
 
 
+   .. py:method:: search(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object with the first location in each element where pattern produces a match.
+      Elements match if any part of the string matches the regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match if any part of the string matches the regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.search('_+')
+      <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+
+
+   .. py:method:: match(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object where elements match only if the beginning of the string matches the regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match only if the beginning of the string matches the regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.match('_+')
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+
+
+   .. py:method:: fullmatch(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
+
+      Returns a match object where elements match only if the whole string matches the regular expression pattern
+
+      :param pattern: Regex used to find matches
+      :type pattern: str
+
+      :returns: Match object where elements match only if the whole string matches the regular expression pattern
+      :rtype: Match
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.fullmatch('_+')
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=False; matched=False>
+
+
+   .. py:method:: split(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
+
+      Returns a new Strings split by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+
+      :param pattern: Regex used to split strings into substrings
+      :type pattern: str
+      :param maxsplit: The max number of pattern match occurences in each element to split.
+                       The default maxsplit=0 splits on all occurences
+      :type maxsplit: int
+      :param return_segments: If True, return mapping of original strings to first substring
+                              in return array.
+      :type return_segments: bool
+
+      :returns: * *Strings* -- Substrings with pattern matches removed
+                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
+                  in the return array
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.split('_+', maxsplit=2, return_segments=True)
+      (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+
+
    .. py:method:: findall(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]
 
-      Return all non-overlapping matches of pattern in Strings as a new Strings object
-          Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+      Return a new Strings containg all non-overlapping matches of pattern
 
-      :param pattern: The regex pattern used to find matches
+      :param pattern: Regex used to find matches
       :type pattern: str_scalars
       :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern match is from
       :type return_match_origins: bool
@@ -3796,21 +3872,73 @@ Attributes
                 * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
 
       :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
-      :raises ValueError: Rasied if pattern is not a valid regex
+      :raises ValueError: Raised if pattern is not a valid regex
       :raises RuntimeError: Raised if there is a server-side error thrown
 
-      .. seealso:: :obj:`Strings.find_locations`, :obj:`Strings.match`
+      .. seealso:: :obj:`Strings.find_locations`
 
       .. rubric:: Examples
 
-      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-      >>> strings
-      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-      >>> matches, match_origins = strings.findall('\d', return_match_origins = True)
-      >>> matches
-      array(['1', '1', '2', '2', '3', '3', '4', '4', '5', '5'])
-      >>> match_origins
-      array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.findall('_+', return_match_origins=True)
+      (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
+
+
+   .. py:method:: sub(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Strings
+
+      Return new Strings obtained by replacing non-overlapping occurrences of pattern with the replacement repl.
+      If count is nonzero, at most count substitutions occur
+
+      :param pattern: The regex to substitue
+      :type pattern: str_scalars
+      :param repl: The substring to replace pattern matches with
+      :type repl: str_scalars
+      :param count: The max number of pattern match occurences in each element to replace.
+                    The default count=0 replaces all occurences of pattern with repl
+      :type count: int
+
+      :returns: Strings with pattern matches replaced
+      :rtype: Strings
+
+      :raises TypeError: Raised if pattern or repl are not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.subn`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.sub(pattern='_+', repl='-', count=2)
+      array(['1-2-', '-', '3', '-4-5____6___7', ''])
+
+
+   .. py:method:: subn(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Tuple
+
+      Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
+
+      :param pattern: The regex to substitue
+      :type pattern: str_scalars
+      :param repl: The substring to replace pattern matches with
+      :type repl: str_scalars
+      :param count: The max number of pattern match occurences in each element to replace.
+                    The default count=0 replaces all occurences of pattern with repl
+      :type count: int
+
+      :returns: * *Strings* -- Strings with pattern matches replaced
+                * *pdarray, int64* -- The number of substitutions made for each element of Strings
+
+      :raises TypeError: Raised if pattern or repl are not bytes or str_scalars
+      :raises ValueError: Raised if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.sub`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+      >>> strings.subn(pattern='_+', repl='-', count=2)
+      (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
 
 
    .. py:method:: contains(self, substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray
@@ -3907,35 +4035,6 @@ Attributes
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
       >>> strings_end.endswith('ing \d', regex = True)
       array([True, True, True, True, True])
-
-
-   .. py:method:: match(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
-
-      For each element check whether the entire element matches the given regex, pattern.
-
-      Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
-
-      :param pattern: The regex in the form of string or byte array to search for
-      :type pattern: str_scalars
-
-      :returns: True for elements that match pattern, False otherwise
-      :rtype: pdarray, bool
-
-      :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
-      :raises ValueError: Rasied if pattern is not a valid regex
-      :raises RuntimeError: Raised if there is a server-side error thrown
-
-      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.startswith`, :obj:`Strings.endswith`
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-      >>> strings
-      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-      >>> strings.match('\d string \d')
-      array([True, True, True, True, True])
-      >>> strings.match('ing \d')
-      array([False, False, False, False, False])
 
 
    .. py:method:: flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]

@@ -25,9 +25,13 @@ or
 
 .. function:: proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc checkMatchStrings(segName: string, valName: string, st: borrowed SymTab) throws
+
 .. function:: proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st: borrowed SymTab) throws
 
