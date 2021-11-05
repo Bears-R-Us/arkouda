@@ -14,7 +14,7 @@ module SuffixArrayConstruction {
   :returns: boolean True iff pair (a1, a2) is less than or equal to pair (b1, b2)
   */
   inline proc leq_pairs(a1:int, a2:int, b1:int, b2:int): bool {
-    return((a1 < b1) || ((a1 == b1) && (a2 <= b2)));  // lexicographic order for pairs
+    return (a1 < b1) || ((a1 == b1) && (a2 <= b2));  // lexicographic order for pairs
   } 
 
   /*
@@ -26,7 +26,7 @@ module SuffixArrayConstruction {
   :returns: boolean True iff triple (a1, a2, a3) is less than or equal to pair (b1, b2, b3)
   */
   inline proc leq_triples(a1:int, a2:int, a3:int, b1:int, b2:int, b3:int): bool {
-    return((a1 < b1) || ((a1 == b1) && leq_pairs(a2, a3, b2, b3)));  // lexicographic order for triples
+    return (a1 < b1) || ((a1 == b1) && leq_pairs(a2, a3, b2, b3));  // lexicographic order for triples
   }
 
   /*
@@ -45,26 +45,17 @@ module SuffixArrayConstruction {
   :type: int
   */
   proc radixPass(a:[] int, b:[] int, r:[] ?t, n:int, K:int) where t == int || t == uint(8) {
-    var c: [0..K] t; // counter array
-    var x: t;
-    var i: int;
-    var tmp: t;
-    var sum=0: int;
+    var c: [0..K] t = 0;
 
-    forall x in c do x=0;
-    // calculate the number of different characters in a
-    for i in 0..n-1 do c[r[a[i]]] = c[r[a[i]]]+1;
+    // count the number of occurences of each character in a
+    for i in a[0..#n] do c[r[i]] += 1;
     // calculate the presum of c, so c[i] will be the starting position of different characters
-    for i in 0..K do {
-      tmp = c[i];
-      c[i] = sum;
-      sum += tmp;
-    }
+    c = (+ scan c) - c;
     // let b[j] store the position of each a[i] based on their order.
     // The same character but following the previous suffix will be put at the next position.
-    for i in 0..n-1  do {
-      b[c[r[a[i]]]] = a[i];
-      c[r[a[i]]] = c[r[a[i]]]+1;
+    for i in a[0..#n] {
+      b[c[r[i]]] = i;
+      c[r[i]] += 1;
     }
   }
 
@@ -81,136 +72,112 @@ module SuffixArrayConstruction {
   :arg K: Size of alphabet
   :type: int
   */
-  proc SuffixArraySkew(s: [] int, SA: [] int, n: int, K: int) {
-    var n0=(n+2)/3:int;
-    var n1=(n+1)/3:int;
-    var n2=n/3:int;
-    var n02=n0+n2:int;
-    var n12=n1+n2:int;
+  proc SuffixArraySkew(s:[] int, SA:[] int, n:int, K:int) {
+    var n0 = (n+2)/3: int;
+    var n1 = (n+1)/3: int;
+    var n2 = n/3: int;
+    var n02 = n0 + n2: int;
+    var n12 = n1 + n2: int;
     //number of elements meet i%3 = 0, 1, and 2.
     //s[i] is the ith suffix, i in 0..n-1
-    var s12:[0..n02+2] int;
-    s12[n02]=0;
-    s12[n02+1]=0;
-    s12[n02+2]=0;
+    var s12: [0..n02+2] int = 0;
     // Here n02 instead of n12=n1+n2 is used for the later s0 building based on n1 elements
-    var SA12:[0..n02+2] int;
-    SA12[n02]=0;
-    SA12[n02+1]=0;
-    SA12[n02+2]=0;
+    var SA12: [0..n02+2] int = 0;
 
-    var s0:[0..n0+2] int;
-    var SA0:[0..n0+2] int;
-    var i=0:int;
-    var j=0:int;
-    var k=0:int;
+    var s0: [0..n0+2] int;
+    var SA0: [0..n0+2] int;
+    var j = 0: int;
 
     // generate positions of mod 1 and mod 2 suffixes
     // n0-n1 is used for building s0, s1 has the same number of elements as s0
-    for i in 0..n+(n0-n1)-1 do {
-      if (i%3 != 0) {
+    for i in 0..n+(n0-n1)-1 {
+      if i%3 != 0 {
         s12[j] = i;
-        j=j+1;
+        j += 1;
       }
     }
     // lsb radix sort the mod 1 and mod 2 triples
-    var tmps:[0..n+2] int;
-    forall i in 0..n-2 do tmps[i]=s[i+2];
+    var tmps: [0..n+2] int;
+    forall i in 0..n-2 do tmps[i] = s[i+2];
     radixPass(s12, SA12, tmps, n02, K);
-    forall i in 0..n-1 do tmps[i]=s[i+1];
+    forall i in 0..n-1 do tmps[i] = s[i+1];
     radixPass(SA12, s12, tmps, n02, K);
-    radixPass(s12, SA12, s , n02, K);
+    radixPass(s12, SA12, s, n02, K);
     // find lexicographic names of triples
-    var name = 0:int, c0 = -1:int, c1 = -1:int, c2 = -1:int;
+    var name = 0: int, c0 = -1: int, c1 = -1: int, c2 = -1: int;
 
-    for i in 0..n02-1 do {
-      if (s[SA12[i]] != c0 || s[SA12[i]+1] != c1 || s[SA12[i]+2] != c2) {
-        name=name+1;
-        c0 = s[SA12[i]];
-        c1 = s[SA12[i]+1];
-        c2 = s[SA12[i]+2];
+    for i in SA12[0..#n02] {
+      if s[i] != c0 || s[i+1] != c1 || s[i+2] != c2 {
+        name += 1;
+        c0 = s[i];
+        c1 = s[i+1];
+        c2 = s[i+2];
       }
-      if (SA12[i] % 3 == 1) {
-        s12[SA12[i]/3] = name; // mapping the suffix to small alphabets
+      if i % 3 == 1 {
+        s12[i/3] = name; // mapping the suffix to small alphabets
       } // left half
       else {
-        s12[SA12[i]/3 + n0] = name;
+        s12[i/3 + n0] = name;
       } // right half
     }
 
     // recurse if names are not unique
-    if (name < n02) {
+    if name < n02 {
       SuffixArraySkew(s12, SA12, n02, name);
       // store unique names in s12 using the suffix array
-      for i in 0..n02-1 do s12[SA12[i]] = i + 1;
+      for i in 0..#n02 do s12[SA12[i]] = i+1;
       //restore the value of s12 since we will change its values during the procedure
     }
     else { // generate the suffix array of s12 directly
-      for i in 0..n02-1 do SA12[s12[i] - 1] = i;
+      for i in 0..#n02 do SA12[s12[i]-1] = i;
       // here SA12 is in fact the ISA array.
     }
     // stably sort the mod 0 suffixes from SA12 by their first character
-    j=0;
-    for i in 0..n02-1 do {
+    j = 0;
+    for i in SA12[0..#n02] {
       // here in fact we take advantage of the sorted SA12 to just sort s0 once to get its sorted array
       // at first we think the postion i%3=1 is the position
-      if (SA12[i] < n0) {
-        s0[j] = 3*SA12[i];
-        j=j+1;
+      if i < n0 {
+        s0[j] = 3*i;
+        j += 1;
       }
     }
     radixPass(s0, SA0, s, n0, K);
 
     // merge sorted SA0 suffixes and sorted SA12 suffixes
-    var p=0:int; // first s0 position
-    var t=n0-n1:int; //first s1 position
-    k=0;
-    var i1:int, j1:int;
-    var tmpk:int;
-    for tmpk in 0..n-1 do {
-      proc GetI():int {
-        if (SA12[t] < n0) {
-          return SA12[t] * 3 + 1;
-        }
-        else {
-          return (SA12[t]-n0) * 3 + 2;
-        }
+    var p = 0: int; // first s0 position
+    var t = n0-n1: int; //first s1 position
+    var k = 0: int;
+    for tmpk in 0..#n {
+      proc GetI(): int {
+        return if SA12[t] < n0 then SA12[t] * 3 + 1 else (SA12[t]-n0) * 3 + 2;
       }
-      i = GetI(); // pos of current offset 12 suffix
+      var i = GetI(); // pos of current offset 12 suffix
       j = SA0[p]; // pos of current offset 0 suffix
-      var flag:bool;
-      if (SA12[t] < n0) {
-        // different compares for mod 1 and mod 2 suffixes
-        // i % 3 =1
-        flag=leq_pairs(s[i], s12[SA12[t]+n0], s[j], s12[j/3]);
-      }
-      else {
-        // i % 3 =2
-        flag=leq_triples(s[i],s[i+1],s12[SA12[t]-n0+1], s[j], s[j+1], s12[j/3+n0]);
-      }
-      if (flag) {
+      var flag: bool = if SA12[t] < n0 then leq_pairs(s[i], s12[SA12[t]+n0], s[j], s12[j/3]) else leq_triples(s[i], s[i+1], s12[SA12[t]-n0+1], s[j], s[j+1], s12[j/3+n0]);
+      if flag {
         // suffix from SA12 is smaller
         SA[k] = i;
-        k=k+1;
-        t=t+1;
-        if (t == n02) {
+        k += 1;
+        t += 1;
+        if t == n02 {
           // done --- only SA0 suffixes left
-          forall (i1,j1) in zip (k..n-1, p..p+n-k-1) do SA[i1] = SA0[j1];
+          forall (i1,j1) in zip (k..n-1, p..#(n-k)) do SA[i1] = SA0[j1];
           break;
         }
       }
       else {
         // suffix from SA0 is smaller
         SA[k] = j;
-        k=k+1;
-        p=p+1;
-        var tmpt=t:int;
-        if (p == n0) {
+        k += 1;
+        p += 1;
+        var tmpt = t: int;
+        if p == n0 {
           // done --- only SA12 suffixes left
-          for i1 in tmpt..n02-1 do {
+          for i1 in tmpt..n02-1 {
             SA[k] = GetI();
-            t=t+1;
-            k=k+1;
+            t += 1;
+            k += 1;
           }
           break;
         }
