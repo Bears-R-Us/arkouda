@@ -736,7 +736,7 @@ module GenSymIO {
             var fileErrorMsg:string = "";
             var sizes: [filedom] int;
             var ty = getArrType(filenames[filedom.low],
-                                dsetlist[dsetdom.low]);;
+                                dsetlist[dsetdom.low]);
             var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
 
             for dsetname in dsetnames do {

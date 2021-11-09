@@ -6,6 +6,15 @@
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 
+/*
+ C++ functions
+ -------------
+ These C++ functions are used to call into the Arrow library
+ and are then called to by their corresponding C functions to
+ allow interoperability with Chapel. This means that all of the
+ C++ functions must return types that are C compatible.
+*/
+
 int cpp_getNumRows(const char* filename) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
   PARQUET_ASSIGN_OR_THROW(
@@ -120,6 +129,16 @@ const char* cpp_getVersionInfo(void) {
 void cpp_free_string(void* ptr) {
   free(ptr);
 }
+
+/*
+ C functions
+ -----------
+ These C functions provide no functionality, since the C++
+ Arrow library is being used, they merely call the C++ functions
+ to allow Chapel to call the C++ functions through C interoperability.
+ Each Arrow function must have a corresponding C function if wished
+ to be called by Chapel.
+*/
 
 extern "C" {
   int c_getNumRows(const char* chpl_str) {

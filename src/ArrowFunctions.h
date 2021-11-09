@@ -1,3 +1,4 @@
+// Wrap functions in C extern if compiling C++ object file
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -5,7 +6,11 @@ extern "C" {
   #define ARROWINT64 0
   #define ARROWINT32 1
   #define ARROWUNDEFINED -1
-  
+
+  // Each C++ function contains the actual implementation of the
+  // functionality, and there is a corresponding C function that
+  // Chapel can call into through C interoperability, since there
+  // is no C++ interoperability supported in Chapel today.
   int c_getNumRows(const char*);
   int cpp_getNumRows(const char*);
 
