@@ -151,8 +151,9 @@ module KExtremeMsg
            }
         }
     }
-    use arkouda_server;
+
     proc registerMe() {
+      use arkouda_server;
       var f = minkMsg;
       registerFunction("mink", f);
       f = maxkMsg;
