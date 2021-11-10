@@ -214,5 +214,9 @@ module CastMsg {
       castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
       return returnMsg;
   }
-  
+
+  proc registerMe() {
+    use CommandMap;
+    registerFunction("cast", castMsg);
+  }
 }

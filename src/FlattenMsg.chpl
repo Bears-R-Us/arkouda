@@ -94,4 +94,10 @@ module FlattenMsg {
     fmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+  
+  proc registerMe() {
+    use CommandMap;
+    registerFunction("segmentedFlatten", segFlattenMsg);
+    registerFunction("segmentedSplit", segmentedSplitMsg);
+  }
 }
