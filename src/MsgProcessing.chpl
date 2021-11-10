@@ -31,7 +31,6 @@ module MsgProcessing
     public use SegmentedMsg;
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
-    public use ArraySetopsMsg;
     public use CastMsg;
     public use BroadcastMsg;
     public use FlattenMsg;

@@ -237,4 +237,15 @@ module ArraySetopsMsg
             moduleName=getModuleName(),
             errorClass="ErrorWithContext");
     }
+    proc registerMe() {
+      use arkouda_server;
+      var f = intersect1dMsg;
+      registerFunction("intersect1d", f);
+      f = setdiff1dMsg;
+      registerFunction("setdiff1d", f);
+      f = setxor1dMsg;
+      registerFunction("setxor1d", f);
+      f = union1dMsg;
+      registerFunction("union1d", f);
+    }
 }
