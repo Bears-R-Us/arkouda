@@ -5,6 +5,8 @@ prototype module efuncTest
     use TestBase;
 
     use MsgProcessing;
+    use EfuncMsg;
+    use ReductionMsg;
 
     proc main() {
         writeln("Unit Test for efuncMsg");

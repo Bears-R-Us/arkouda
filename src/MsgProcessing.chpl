@@ -16,27 +16,6 @@ module MsgProcessing
 
     use AryUtil;
     
-    public use OperatorMsg;
-    public use RandMsg;
-    public use IndexingMsg;
-    public use UniqueMsg;
-    public use In1dMsg;
-    public use HistogramMsg;
-    public use ArgSortMsg;
-    public use SortMsg;
-    public use ReductionMsg;
-    public use FindSegmentsMsg;
-    public use EfuncMsg;
-    public use ConcatenateMsg;
-    public use SegmentedMsg;
-    public use JoinEqWithDTMsg;
-    public use RegistrationMsg;
-    public use ArraySetopsMsg;
-    public use KExtremeMsg;
-    public use CastMsg;
-    public use BroadcastMsg;
-    public use FlattenMsg;
-    
     private config const logLevel = ServerConfig.logLevel;
     const mpLogger = new Logger(logLevel);
     

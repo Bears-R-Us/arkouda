@@ -21,6 +21,9 @@ use SymArrayDmap;
 use ServerErrorStrings;
 use Message;
 
+use Map;
+use CommandMap, ServerRegistration;
+
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
 
@@ -69,6 +72,7 @@ proc main() {
                                                                  ServerPort, token);
         }
         
+        doRegister();
         serverMessage = adjustMsg(serverMessage);      
         serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         
@@ -290,118 +294,65 @@ proc main() {
              * messages the message is sent directly to minimize copies.
              */
             var repTuple: MsgTuple;
-
-            select cmd
-            {
-                when "array"             {repTuple = arrayMsg(cmd, args, payload, st);}
-                when "tondarray"         {
-                  var binaryRepMsg = tondarrayMsg(cmd, args, st);
-                  sendRepMsg(binaryRepMsg);
-                }
-                when "segStr-tondarray"  {
-                  var binaryRepMsg = segStrTondarrayMsg(cmd, args, st);
-                  sendRepMsg(binaryRepMsg);
-                }
-                when "cast"              {repTuple = castMsg(cmd, args, st);}
-                when "mink"              {repTuple = minkMsg(cmd, args, st);}
-                when "maxk"              {repTuple = maxkMsg(cmd, args, st);}
-                when "intersect1d"       {repTuple = intersect1dMsg(cmd, args, st);}
-                when "setdiff1d"         {repTuple = setdiff1dMsg(cmd, args, st);}
-                when "setxor1d"          {repTuple = setxor1dMsg(cmd, args, st);}
-                when "union1d"           {repTuple = union1dMsg(cmd, args, st);}
-                when "segStr-assemble"   {repTuple = assembleStringsMsg(cmd, args, st);}
-                when "segmentLengths"    {repTuple = segmentLengthsMsg(cmd, args, st);}
-                when "segmentedHash"     {repTuple = segmentedHashMsg(cmd, args, st);}
-                when "segmentedEfunc"    {repTuple = segmentedEfuncMsg(cmd, args, st);}
-                when "segmentedFindLoc"  {repTuple = segmentedFindLocMsg(cmd, args, st);}
-                when "segmentedFindAll"  {repTuple = segmentedFindAllMsg(cmd, args, st);}
-                when "segmentedPeel"     {repTuple = segmentedPeelMsg(cmd, args, st);}
-                when "segmentedSub"      {repTuple = segmentedSubMsg(cmd, args, st);}
-                when "segmentedSplit"    {repTuple = segmentedSplitMsg(cmd, args, st);}
-                when "segmentedIndex"    {repTuple = segmentedIndexMsg(cmd, args, st);}
-                when "segmentedBinopvv"  {repTuple = segBinopvvMsg(cmd, args, st);}
-                when "segmentedBinopvs"  {repTuple = segBinopvsMsg(cmd, args, st);}
-                when "segmentedGroup"    {repTuple = segGroupMsg(cmd, args, st);}
-                when "segmentedIn1d"     {repTuple = segIn1dMsg(cmd, args, st);}
-                when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
-                when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
-                when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
-                when "readAllParquet"    {repTuple = readAllParquetMsg(cmd, args, st);}
-                when "writeParquet"      {repTuple = toparquetMsg(cmd, args, st);}
-                when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
-                when "create"            {repTuple = createMsg(cmd, args, st);}
-                when "delete"            {repTuple = deleteMsg(cmd, args, st);}
-                when "binopvv"           {repTuple = binopvvMsg(cmd, args, st);}
-                when "binopvs"           {repTuple = binopvsMsg(cmd, args, st);}
-                when "binopsv"           {repTuple = binopsvMsg(cmd, args, st);}
-                when "opeqvv"            {repTuple = opeqvvMsg(cmd, args, st);}
-                when "opeqvs"            {repTuple = opeqvsMsg(cmd, args, st);}
-                when "efunc"             {repTuple = efuncMsg(cmd, args, st);}
-                when "efunc3vv"          {repTuple = efunc3vvMsg(cmd, args, st);}
-                when "efunc3vs"          {repTuple = efunc3vsMsg(cmd, args, st);}
-                when "efunc3sv"          {repTuple = efunc3svMsg(cmd, args, st);}
-                when "efunc3ss"          {repTuple = efunc3ssMsg(cmd, args, st);}
-                when "reduction"         {repTuple = reductionMsg(cmd, args, st);}
-                when "countReduction"    {repTuple = countReductionMsg(cmd, args, st);}
-                when "findSegments"      {repTuple = findSegmentsMsg(cmd, args, st);}
-                when "segmentedReduction"{repTuple = segmentedReductionMsg(cmd, args, st);}
-                when "broadcast"         {repTuple = broadcastMsg(cmd, args, st);}
-                when "arange"            {repTuple = arangeMsg(cmd, args, st);}
-                when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
-                when "randint"           {repTuple = randintMsg(cmd, args, st);}
-                when "randomNormal"      {repTuple = randomNormalMsg(cmd, args, st);}
-                when "randomStrings"     {repTuple = randomStringsMsg(cmd, args, st);}
-                when "histogram"         {repTuple = histogramMsg(cmd, args, st);}
-                when "in1d"              {repTuple = in1dMsg(cmd, args, st);}
-                when "unique"            {repTuple = uniqueMsg(cmd, args, st);}
-                when "value_counts"      {repTuple = value_countsMsg(cmd, args, st);}
-                when "set"               {repTuple = setMsg(cmd, args, st);}
-                when "info"              {repTuple = infoMsg(cmd, args, st);}
-                when "str"               {repTuple = strMsg(cmd, args, st);}
-                when "repr"              {repTuple = reprMsg(cmd, args, st);}
-                when "[int]"             {repTuple = intIndexMsg(cmd, args, st);}
-                when "[slice]"           {repTuple = sliceIndexMsg(cmd, args, st);}
-                when "[pdarray]"         {repTuple = pdarrayIndexMsg(cmd, args, st);}
-                when "[int]=val"         {repTuple = setIntIndexToValueMsg(cmd, args, st);}
-                when "[pdarray]=val"     {repTuple = setPdarrayIndexToValueMsg(cmd, args, st);}
-                when "[pdarray]=pdarray" {repTuple = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
-                when "[slice]=val"       {repTuple = setSliceIndexToValueMsg(cmd, args, st);}
-                when "[slice]=pdarray"   {repTuple = setSliceIndexToPdarrayMsg(cmd, args, st);}
-                when "argsort"           {repTuple = argsortMsg(cmd, args, st);}
-                when "coargsort"         {repTuple = coargsortMsg(cmd, args, st);}
-                when "concatenate"       {repTuple = concatenateMsg(cmd, args, st);}
-                when "sort"              {repTuple = sortMsg(cmd, args, st);}
-                when "joinEqWithDT"      {repTuple = joinEqWithDTMsg(cmd, args, st);}
-                when "getconfig"         {repTuple = getconfigMsg(cmd, args, st);}
-                when "getmemused"        {repTuple = getmemusedMsg(cmd, args, st);}
-                when "register"          {repTuple = registerMsg(cmd, args, st);}
-                when "attach"            {repTuple = attachMsg(cmd, args, st);}
-                when "unregister"        {repTuple = unregisterMsg(cmd, args, st);}
-                when "clear"             {repTuple = clearMsg(cmd, args, st);}               
-                when "connect" {
-                    if authenticate {
-                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
-                                                          ServerPort,user,token), MsgType.NORMAL);
-                    } else {
-                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), 
-                                                                                        MsgType.NORMAL);
-                    }
-                }
-                when "disconnect" {
-                    repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), 
-                                                                   MsgType.NORMAL);
-                }
-                when "noop" {
-                    repTuple = new MsgTuple("noop", MsgType.NORMAL);
-                }
-                when "ruok" {
-                    repTuple = new MsgTuple("imok", MsgType.NORMAL);
-                }
-                otherwise {
-                    repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
-                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
-                }
-            }
+            
+            if commandMap.contains(cmd) then
+              repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
+            else {
+              select cmd
+              {
+                  when "array"             {repTuple = arrayMsg(cmd, args, payload, st);}
+                  when "tondarray"         {
+                    var binaryRepMsg = tondarrayMsg(cmd, args, st);
+                    sendRepMsg(binaryRepMsg);
+                  }
+                  // TODO: this requires SegmentedMsg to be in included
+                  // in the build always; not sure best way to handle
+                  when "segStr-tondarray"  {
+                    use SegmentedMsg;
+                    var binaryRepMsg = segStrTondarrayMsg(cmd, args, st);
+                    sendRepMsg(binaryRepMsg);
+                  }
+                  when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
+                  when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
+                  when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
+                  when "readAllParquet"    {repTuple = readAllParquetMsg(cmd, args, st);}
+                  when "writeParquet"      {repTuple = toparquetMsg(cmd, args, st);}
+                  when "create"            {repTuple = createMsg(cmd, args, st);}
+                  when "delete"            {repTuple = deleteMsg(cmd, args, st);}
+                  when "arange"            {repTuple = arangeMsg(cmd, args, st);}
+                  when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
+                  when "set"               {repTuple = setMsg(cmd, args, st);}
+                  when "info"              {repTuple = infoMsg(cmd, args, st);}
+                  when "str"               {repTuple = strMsg(cmd, args, st);}
+                  when "repr"              {repTuple = reprMsg(cmd, args, st);}
+                  when "getconfig"         {repTuple = getconfigMsg(cmd, args, st);}
+                  when "getmemused"        {repTuple = getmemusedMsg(cmd, args, st);}
+                  when "clear"             {repTuple = clearMsg(cmd, args, st);}               
+                  when "connect" {
+                      if authenticate {
+                          repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
+                                                            ServerPort,user,token), MsgType.NORMAL);
+                      } else {
+                          repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), 
+                                                                                          MsgType.NORMAL);
+                      }
+                  }
+                  when "disconnect" {
+                      repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), 
+                                                                     MsgType.NORMAL);
+                  }
+                  when "noop" {
+                      repTuple = new MsgTuple("noop", MsgType.NORMAL);
+                  }
+                  when "ruok" {
+                      repTuple = new MsgTuple("imok", MsgType.NORMAL);
+                  }
+                  otherwise {
+                      repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+                      asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
+                  }
+              }
+           }
 
             /*
              * If the reply message is a string send it now
