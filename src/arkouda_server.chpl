@@ -22,6 +22,7 @@ use ServerErrorStrings;
 use Message;
 
 use Map;
+use ServerRegistration;
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
@@ -32,13 +33,12 @@ proc initArkoudaDirectory() {
     return arkDirectory;
 }
 
-proc typeGen(a: string, b: string, c: SymTab): MsgTuple throws {
+proc typeGen(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
   var rep = new MsgTuple("sports", MsgType.NORMAL);
   return rep;
 }
 
-//var f = typeGen;
-var f = minkMsg;
+var f = typeGen;
 
 var commandMap: map(string, f.type);
 
@@ -46,12 +46,7 @@ proc registerFunction(cmd: string, fcf: f.type) {
   commandMap.add(cmd, fcf);
 }
 
-//registerFunction("test-command", f);
-
-//var mk = minkMsg;
-registerFunction("mink", f);
-f = maxkMsg;
-registerFunction("maxk", f);
+doRegister();
 
 proc main() {
  
