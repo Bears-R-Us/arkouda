@@ -32,7 +32,6 @@ module MsgProcessing
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
     public use ArraySetopsMsg;
-    public use KExtremeMsg;
     public use CastMsg;
     public use BroadcastMsg;
     public use FlattenMsg;
