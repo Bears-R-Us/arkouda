@@ -14,8 +14,11 @@ from arkouda.strings import Strings
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
-           "from_series"
+           "from_series", "test_command"
           ]
+
+def test_command():
+    rep_msg = generic_msg(cmd='test-command')
 
 @typechecked
 def from_series(series : pd.Series, 
