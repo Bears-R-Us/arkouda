@@ -28,7 +28,6 @@ module MsgProcessing
     public use FindSegmentsMsg;
     public use EfuncMsg;
     public use ConcatenateMsg;
-    public use SegmentedMsg;
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
     public use CastMsg;
