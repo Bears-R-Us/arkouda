@@ -324,21 +324,6 @@ proc main() {
                     sendRepMsg(binaryRepMsg);
                   }
                   when "cast"              {repTuple = castMsg(cmd, args, st);}
-                  when "segmentLengths"    {repTuple = segmentLengthsMsg(cmd, args, st);}
-                  when "segStr-assemble"   {repTuple = assembleStringsMsg(cmd, args, st);}
-                  when "segmentedHash"     {repTuple = segmentedHashMsg(cmd, args, st);}
-                  when "segmentedEfunc"    {repTuple = segmentedEfuncMsg(cmd, args, st);}
-                  when "segmentedFindLoc"  {repTuple = segmentedFindLocMsg(cmd, args, st);}
-                  when "segmentedFindAll"  {repTuple = segmentedFindAllMsg(cmd, args, st);}
-                  when "segmentedPeel"     {repTuple = segmentedPeelMsg(cmd, args, st);}
-                  when "segmentedSub"      {repTuple = segmentedSubMsg(cmd, args, st);}
-                  when "segmentedSplit"    {repTuple = segmentedSplitMsg(cmd, args, st);}
-                  when "segmentedIndex"    {repTuple = segmentedIndexMsg(cmd, args, st);}
-                  when "segmentedBinopvv"  {repTuple = segBinopvvMsg(cmd, args, st);}
-                  when "segmentedBinopvs"  {repTuple = segBinopvsMsg(cmd, args, st);}
-                  when "segmentedGroup"    {repTuple = segGroupMsg(cmd, args, st);}
-                  when "segmentedIn1d"     {repTuple = segIn1dMsg(cmd, args, st);}
-                  when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
                   when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
                   when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
                   when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
@@ -365,7 +350,6 @@ proc main() {
                   when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
                   when "randint"           {repTuple = randintMsg(cmd, args, st);}
                   when "randomNormal"      {repTuple = randomNormalMsg(cmd, args, st);}
-                  when "randomStrings"     {repTuple = randomStringsMsg(cmd, args, st);}
                   when "histogram"         {repTuple = histogramMsg(cmd, args, st);}
                   when "in1d"              {repTuple = in1dMsg(cmd, args, st);}
                   when "unique"            {repTuple = uniqueMsg(cmd, args, st);}

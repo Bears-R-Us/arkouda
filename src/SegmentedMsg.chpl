@@ -942,4 +942,34 @@ module SegmentedMsg {
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+  
+  proc registerMe() {
+    use arkouda_server;
+    var f = segmentLengthsMsg;
+    registerFunction("segmentedLengths", f);
+    f = segmentedHashMsg;
+    registerFunction("segmentedHash", f);
+    f = segmentedEfuncMsg;
+    registerFunction("segmentedEfunc", f);
+    f = segmentedFindLocMsg;
+    registerFunction("segmentedFindLoc", f);
+    f = segmentedFindAllMsg;
+    registerFunction("segmentedFindAll", f);
+    f = segmentedPeelMsg;
+    registerFunction("segmentedPeel", f);
+    f = segmentedSubMsg;
+    registerFunction("segmentedSub", f);
+    f = segmentedIndexMsg;
+    registerFunction("segmentedIndex", f);
+    f = segBinopvvMsg;
+    registerFunction("segmentedBinopvv", f);
+    f = segBinopvsMsg;
+    registerFunction("segmentedBinopvs", f);
+    f = segGroupMsg;
+    registerFunction("segmentedGroup", f);
+    f = segIn1dMsg;
+    registerFunction("segmentedIn1d", f);
+    f = randomStringsMsg;
+    registerFunction("randomStrings", f);
+  }
 }
