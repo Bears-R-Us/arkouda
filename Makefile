@@ -202,6 +202,12 @@ else
 endif
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	@echo "proc doRegister() {" > src/ServerRegistration.chpl
+	@for mod in $(SERVER_MODULES) ; do \
+		echo "import $$mod;" >> src/ServerRegistration.chpl ; \
+		echo "$$mod.registerMe();" >> src/ServerRegistration.chpl ; \
+	done
+	@echo "}" >> src/ServerRegistration.chpl
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
