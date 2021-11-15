@@ -38,7 +38,7 @@ proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
   return rep;
 }
 
-var f = akMsgSignn;
+var f = akMsgSign;
 var commandMap: map(string, f.type);
 
 proc registerFunction(cmd: string, fcf: f.type) {
@@ -365,8 +365,6 @@ proc main() {
                   when "[pdarray]=pdarray" {repTuple = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
                   when "[slice]=val"       {repTuple = setSliceIndexToValueMsg(cmd, args, st);}
                   when "[slice]=pdarray"   {repTuple = setSliceIndexToPdarrayMsg(cmd, args, st);}
-                  when "argsort"           {repTuple = argsortMsg(cmd, args, st);}
-                  when "coargsort"         {repTuple = coargsortMsg(cmd, args, st);}
                   when "concatenate"       {repTuple = concatenateMsg(cmd, args, st);}
                   when "sort"              {repTuple = sortMsg(cmd, args, st);}
                   when "joinEqWithDT"      {repTuple = joinEqWithDTMsg(cmd, args, st);}
