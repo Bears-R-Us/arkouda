@@ -33,13 +33,12 @@ proc initArkoudaDirectory() {
     return arkDirectory;
 }
 
-proc typeGen(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
+proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
   var rep = new MsgTuple("sports", MsgType.NORMAL);
   return rep;
 }
 
-var f = typeGen;
-
+var f = akMsgSignn;
 var commandMap: map(string, f.type);
 
 proc registerFunction(cmd: string, fcf: f.type) {
