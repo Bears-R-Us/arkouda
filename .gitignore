@@ -34,4 +34,3 @@ test/IOSpeedTestMsg.good
 test/NanSpeedTest.good
 test/StringArgsortSpeedTest.good
 test/file_LOCALE0000
-src/ServerRegistration.chpl
