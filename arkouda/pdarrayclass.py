@@ -1096,7 +1096,7 @@ class pdarray:
         >>> a = ak.arange(0, 100, 1)
         >>> a.save_parquet('arkouda_range')
 
-        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.hdf``
+        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.parquet``
 
         The array can be read back in as follows
 
