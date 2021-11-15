@@ -373,4 +373,12 @@ module ArgSortMsg
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc registerMe() {
+      use arkouda_server;
+      var f = argsortMsg;
+      registerFunction("argsort", f);
+      f = coargsortMsg;
+      registerFunction("coargsort", f);
+    }
 }

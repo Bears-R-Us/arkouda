@@ -22,7 +22,6 @@ module MsgProcessing
     public use UniqueMsg;
     public use In1dMsg;
     public use HistogramMsg;
-    public use ArgSortMsg;
     public use SortMsg;
     public use ReductionMsg;
     public use FindSegmentsMsg;
