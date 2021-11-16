@@ -253,14 +253,10 @@ else
 endif
 
 # This is the main compilation statement section
-$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	@echo "proc doRegister() {" > src/ServerRegistration.chpl
-	@for mod in $(SERVER_MODULES) ; do \
-		echo "  import $$mod;" >> src/ServerRegistration.chpl ; \
-		echo "  $$mod.registerMe();" >> src/ServerRegistration.chpl ; \
-	done
-	@echo "}" >> src/ServerRegistration.chpl
+$(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	python3 src/serverModuleGen.py
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
+>>>>>>> d2c2a4e (Switch to using Python script and config file for optional modules:)
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
