@@ -271,7 +271,7 @@ class Strings:
         """
         self._regex_dict = dict()
 
-    def _get_matcher(self, pattern: Union[bytes, str_scalars]):
+    def _get_matcher(self, pattern: Union[bytes, str_scalars], create: bool = True):
         """
         internal function to fetch cached Matcher objects
         """
@@ -282,11 +282,15 @@ class Strings:
             re.compile(pattern)
         except Exception as e:
             raise ValueError(e)
-        if pattern not in self._regex_dict:
+        matcher = None
+        if pattern in self._regex_dict:
+            matcher = self._regex_dict[pattern]
+        elif create:
             self._regex_dict[pattern] = Matcher(pattern=pattern,
                                                 parent_bytes_name=self.bytes.name,
                                                 parent_offsets_name=self.offsets.name)
-        return self._regex_dict[pattern]
+            matcher = self._regex_dict[pattern]
+        return matcher
 
     @typechecked
     def find_locations(self, pattern: Union[bytes, str_scalars]) -> Tuple[pdarray, pdarray, pdarray]:
@@ -610,17 +614,18 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            return self.search(substr).matched()
-        else:
-            cmd = "segmentedEfunc"
-            args = "{} {} {} {} {} {} {}".format("contains",
-                                                 self.objtype,
-                                                 self.offsets.name,
-                                                 self.bytes.name,
-                                                 "str",
-                                                 regex,
-                                                 json.dumps([substr]))
-            return create_pdarray(generic_msg(cmd=cmd, args=args))
+            matcher = self._get_matcher(substr, create=False)
+            if matcher is not None:
+                return matcher.get_match(MatchType.SEARCH, self).matched()
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {} {}".format("contains",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
     def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -669,17 +674,18 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            return self.match(substr).matched()
-        else:
-            cmd = "segmentedEfunc"
-            args = "{} {} {} {} {} {} {}".format("startswith",
-                                                 self.objtype,
-                                                 self.offsets.name,
-                                                 self.bytes.name,
-                                                 "str",
-                                                 regex,
-                                                 json.dumps([substr]))
-            return create_pdarray(generic_msg(cmd=cmd, args=args))
+            matcher = self._get_matcher(substr, create=False)
+            if matcher is not None:
+                return matcher.get_match(MatchType.MATCH, self).matched()
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {} {}".format("startswith",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
     def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -728,17 +734,16 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            return self.search(substr + '$').matched()
-        else:
-            cmd = "segmentedEfunc"
-            args = "{} {} {} {} {} {} {}".format("endswith",
-                                                 self.objtype,
-                                                 self.offsets.name,
-                                                 self.bytes.name,
-                                                 "str",
-                                                 regex,
-                                                 json.dumps([substr]))
-            return create_pdarray(generic_msg(cmd=cmd, args=args))
+            return self.contains(substr + '$', regex=True)
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {} {}".format("endswith",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
