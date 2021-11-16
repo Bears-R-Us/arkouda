@@ -36,6 +36,7 @@ module MsgProcessing
     public use CastMsg;
     public use BroadcastMsg;
     public use FlattenMsg;
+    public use GraphMsg;
     
     private config const logLevel = ServerConfig.logLevel;
     const mpLogger = new Logger(logLevel);

@@ -371,6 +371,24 @@ proc main() {
                 when "attach"            {repTuple = attachMsg(cmd, args, st);}
                 when "unregister"        {repTuple = unregisterMsg(cmd, args, st);}
                 when "clear"             {repTuple = clearMsg(cmd, args, st);}               
+
+
+
+                when "segmentedGraphFile"   {repTuple = segGraphFileMsg(cmd, args, st);}
+                when "segmentedStreamFile"   {repTuple = segStreamFileMsg(cmd, args, st);}
+                when "segmentedStreamTri"   {repTuple = segStreamTriCntMsg(cmd, args, st);}
+                when "segmentedPLStreamTri"   {repTuple = segStreamPLTriCntMsg(cmd, args, st);}
+                when "segmentedHeadStreamTri"   {repTuple = segStreamHeadTriCntMsg(cmd, args, st);}
+                when "segmentedMidStreamTri"   {repTuple = segStreamMidTriCntMsg(cmd, args, st);}
+                when "segmentedTailStreamTri"   {repTuple = segStreamTailTriCntMsg(cmd, args, st);}
+                when "segmentedRMAT"     {repTuple = segrmatgenMsg(cmd, args, st);}
+                when "segmentedGraphBC"  {repTuple = segBCMsg(cmd, args, st);}
+                when "segmentedGraphBFS" {repTuple = segBFSMsg(cmd, args, st);}
+                when "segmentedGraphTri" {repTuple = segTriMsg(cmd, args, st);}
+                when "segmentedTruss"       {repTuple = segTrussMsg(cmd, args, st);}
+
+
+
                 when "connect" {
                     if authenticate {
                         repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
