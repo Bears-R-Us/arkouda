@@ -279,12 +279,13 @@ module GenSymIO {
             repMsg = "[";  // Manual json building Chapel <= 1.24.1
             var first = true;
             for i in items {
+                i = i.replace(Q, ESCAPED_QUOTES, -1);
                 if first {
                     first = false;
                 } else {
                     repMsg += ",";
                 }
-                repMsg += '"' + i + '"';
+                repMsg += Q + i + Q;
             }
             repMsg += "]";
         } catch e : Error {
@@ -686,6 +687,7 @@ module GenSymIO {
         var items: list(string);
         for rname in rnames {
             var (dsetName, akType, id) = rname;
+            dsetName = dsetName.replace(Q, ESCAPED_QUOTES, -1); // sanitize dsetName with respect to double quotes
             var item = "{" + Q + "dataset_name"+ QCQ + dsetName + Q +
                        "," + Q + "arkouda_type" + QCQ + akType + Q;
             select (akType) {
