@@ -205,7 +205,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.check_np_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">check_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.dtypes.check_np_dtype" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">check_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.dtypes.check_np_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assert that numpy dtype dt is one of the dtypes supported
 by arkouda, otherwise raise TypeError.</p>
 <dl class="field-list simple">
@@ -218,7 +218,7 @@ dt is not a np.dtype</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.translate_np_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">translate_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.dtypes.translate_np_dtype" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">translate_np_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.dtypes.translate_np_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split numpy dtype dt into its kind and byte size, raising
 TypeError for unsupported dtypes.</p>
 <dl class="field-list simple">
@@ -231,13 +231,13 @@ dt is not a np.dtype</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.resolve_scalar_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.dtypes.resolve_scalar_dtype" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.dtypes.resolve_scalar_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to infer what dtype arkouda_server should treat val as.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.get_byteorder">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">get_byteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.dtypes.get_byteorder" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">get_byteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.dtypes.get_byteorder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a concrete byteorder (turns ‘=’ into ‘&lt;’ or ‘&gt;’)</p>
 </dd></dl>
 
@@ -323,7 +323,7 @@ dt is not a np.dtype</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

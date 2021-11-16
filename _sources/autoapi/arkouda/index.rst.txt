@@ -3750,7 +3750,7 @@ Attributes
       purges cached regex patterns
 
 
-   .. py:method:: _get_matcher(self, pattern: Union[bytes, arkouda.dtypes.str_scalars])
+   .. py:method:: _get_matcher(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
 
       internal function to fetch cached Matcher objects
 
