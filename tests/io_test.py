@@ -590,6 +590,13 @@ class IOTest(ArkoudaTest):
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
 
+    def testHdfUnsanitizedNames(self):
+        # Test when quotes are part of the dataset name
+        my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
+            ak.read_all(f"{tmp_dirname}/bad_dataset_names*")
+
     def testInternalVersions(self):
         """
         Test loading internal arkouda hdf5 structuring by loading v0 and v1 files.
