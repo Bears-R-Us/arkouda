@@ -33,15 +33,9 @@ proc initArkoudaDirectory() {
     return arkDirectory;
 }
 
-proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
-  var rep = new MsgTuple("sports", MsgType.NORMAL);
-  return rep;
-}
+var commandMap: map(string, func(string, string, borrowed SymTab, MsgTuple));
 
-var f = akMsgSign;
-var commandMap: map(string, f.type);
-
-proc registerFunction(cmd: string, fcf: f.type) {
+proc registerFunction(cmd: string, fcf: func(string, string, borrowed SymTab, MsgTuple)) {
   commandMap.add(cmd, fcf);
 }
 

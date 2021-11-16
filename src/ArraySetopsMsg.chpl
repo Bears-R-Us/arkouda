@@ -239,13 +239,9 @@ module ArraySetopsMsg
     }
     proc registerMe() {
       use arkouda_server;
-      var f = intersect1dMsg;
-      registerFunction("intersect1d", f);
-      f = setdiff1dMsg;
-      registerFunction("setdiff1d", f);
-      f = setxor1dMsg;
-      registerFunction("setxor1d", f);
-      f = union1dMsg;
-      registerFunction("union1d", f);
+      registerFunction("intersect1d", intersect1dMsg);
+      registerFunction("setdiff1d", setdiff1dMsg);
+      registerFunction("setxor1d", setxor1dMsg);
+      registerFunction("union1d", union1dMsg);
     }
 }
