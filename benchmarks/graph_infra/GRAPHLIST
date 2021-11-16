@@ -4,3 +4,5 @@ arkouda.graph
 arkouda-string.graph
 # suite: Build Stats
 arkouda-comp.graph
+# suite: Sort Cases
+arkouda-sort-cases.graph
