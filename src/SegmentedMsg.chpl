@@ -910,31 +910,18 @@ module SegmentedMsg {
 
   proc registerMe() {
     use arkouda_server;
-    var f = segmentLengthsMsg;
-    registerFunction("segmentedLengths", f);
-    f = segmentedHashMsg;
-    registerFunction("segmentedHash", f);
-    f = segmentedEfuncMsg;
-    registerFunction("segmentedEfunc", f);
-    f = segmentedFindLocMsg;
-    registerFunction("segmentedFindLoc", f);
-    f = segmentedFindAllMsg;
-    registerFunction("segmentedFindAll", f);
-    f = segmentedPeelMsg;
-    registerFunction("segmentedPeel", f);
-    f = segmentedSubMsg;
-    registerFunction("segmentedSub", f);
-    f = segmentedIndexMsg;
-    registerFunction("segmentedIndex", f);
-    f = segBinopvvMsg;
-    registerFunction("segmentedBinopvv", f);
-    f = segBinopvsMsg;
-    registerFunction("segmentedBinopvs", f);
-    f = segGroupMsg;
-    registerFunction("segmentedGroup", f);
-    f = segIn1dMsg;
-    registerFunction("segmentedIn1d", f);
-    f = randomStringsMsg;
-    registerFunction("randomStrings", f);
+    registerFunction("segmentedLengths", segmentLengthsMsg);
+    registerFunction("segmentedHash", segmentedHashMsg);
+    registerFunction("segmentedEfunc", segmentedEfuncMsg);
+    registerFunction("segmentedFindLoc", segmentedFindLocMsg);
+    registerFunction("segmentedFindAll", segmentedFindAllMsg);
+    registerFunction("segmentedPeel", segmentedPeelMsg);
+    registerFunction("segmentedSub", segmentedSubMsg);
+    registerFunction("segmentedIndex", segmentedIndexMsg);
+    registerFunction("segmentedBinopvv", segBinopvvMsg);
+    registerFunction("segmentedBinopvs", segBinopvsMsg);
+    registerFunction("segmentedGroup", segGroupMsg);
+    registerFunction("segmentedIn1d", segIn1dMsg);
+    registerFunction("randomStrings", randomStringsMsg);
   }
 }
