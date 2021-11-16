@@ -89,3 +89,7 @@ or
 
 .. data:: const QCQ = Q + : + Q
 
+.. data:: const BSLASH = "\\"
+
+.. data:: const ESCAPED_QUOTES = BSLASH + Q
+
