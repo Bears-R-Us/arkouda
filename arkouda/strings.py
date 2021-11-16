@@ -614,6 +614,9 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
+            if re.search(substr, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
             matcher = self._get_matcher(substr, create=False)
             if matcher is not None:
                 return matcher.get_match(MatchType.SEARCH, self).matched()
@@ -674,6 +677,9 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
+            if re.search(substr, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
             matcher = self._get_matcher(substr, create=False)
             if matcher is not None:
                 return matcher.get_match(MatchType.MATCH, self).matched()
