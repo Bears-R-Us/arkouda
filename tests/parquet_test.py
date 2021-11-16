@@ -8,16 +8,15 @@ NUMFILES = 5
 verbose = True
 
 def compare_values(arr1, arr2):
-    for i in range(len(arr1)):
-        if arr1[i] != arr2[i]:
-            print(arr1[i], 'does not match', arr2[i], 'at index', i)
-            return 1
+    if (arr1 != arr2).all():
+        print("Arrays do not match")
+        return 1
     return 0
 
 def run_parquet_test(verbose=True):
     ak_arr = ak.randint(0, 2**32, SIZE)
     ak_arr.save_parquet("pq_testcorrect", "my-dset")
-    pq_arr = ak.read_parquet("pq_testcorrect", "my-dset")
+    pq_arr = ak.read_parquet("pq_testcorrect*", "my-dset")
     # get the dset from the dictionary in multi-locale cases
     for f in glob.glob('pq_test*'):
         os.remove(f)
@@ -31,7 +30,7 @@ def run_parquet_multi_file_test(verbose=True):
         test_arrs.append(ak.randint(0, 2**32, int(adjusted_size/NUMFILES)))
         test_arrs[i].save_parquet("pq_test" + str(i), "test-dset")
 
-    pq_arr = ak.read_parquet("pq_test", "test-dset")
+    pq_arr = ak.read_parquet("pq_test*", "test-dset")
     if len(pq_arr) != adjusted_size:
         print('Size of array read in was', str(len(pq_arr)), 'but should be', adjusted_size)
         failures += 1

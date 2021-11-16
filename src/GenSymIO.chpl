@@ -715,7 +715,7 @@ module GenSymIO {
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
-                var tmp = glob(filelist[0]+"*");
+                var tmp = glob(filelist[0]);
                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                       "glob expanded %s to %i files".format(filelist[0], tmp.size));
                 if tmp.size == 0 {
