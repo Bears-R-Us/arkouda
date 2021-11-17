@@ -227,7 +227,7 @@ module UniqueMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("unique", uniqueMsg);
       registerFunction("value_counts", value_countsMsg);
     }

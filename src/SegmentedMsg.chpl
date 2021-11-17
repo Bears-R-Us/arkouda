@@ -944,7 +944,7 @@ module SegmentedMsg {
   }
   
   proc registerMe() {
-    use arkouda_server;    
+    use ServerIncludes;
     registerFunction("segmentLengths", segmentLengthsMsg);
     registerFunction("segmentedHash", segmentedHashMsg);
     registerFunction("segmentedEfunc", segmentedEfuncMsg);

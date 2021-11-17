@@ -487,7 +487,7 @@ module ArgSortMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("argsort", argsortMsg);
       registerFunction("coargsort", coargsortMsg);
     }

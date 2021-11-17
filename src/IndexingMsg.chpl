@@ -722,7 +722,7 @@ module IndexingMsg
     }
     
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("[int]", intIndexMsg);
       registerFunction("[slice]", sliceIndexMsg);
       registerFunction("[pdarray]", pdarrayIndexMsg);

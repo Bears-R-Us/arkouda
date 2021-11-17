@@ -79,7 +79,7 @@ module HistogramMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("histogram", histogramMsg);
     }
 }

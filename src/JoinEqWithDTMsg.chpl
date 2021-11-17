@@ -371,7 +371,7 @@ module JoinEqWithDTMsg
     }// end joinEqWithDTMsg()
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("joinEqWithDT", joinEqWithDTMsg);
     }
 }// end module JoinEqWithDTMsg

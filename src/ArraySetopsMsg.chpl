@@ -238,7 +238,7 @@ module ArraySetopsMsg
             errorClass="ErrorWithContext");
     }
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("intersect1d", intersect1dMsg);
       registerFunction("setdiff1d", setdiff1dMsg);
       registerFunction("setxor1d", setxor1dMsg);
