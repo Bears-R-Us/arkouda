@@ -1,5 +1,3 @@
-import sys
-
 def GetModules(filename):
     with open(filename) as configfile:
         modules = configfile.readlines()
@@ -14,8 +12,9 @@ def GenerateServerIncludes(config_filename, reg_filename):
     serverfile = open(reg_filename, "w")
     serverfile.write("proc doRegister() {\n")
     for mod in GetModules(config_filename):
-        serverfile.write("  import " + mod + ";\n")
-        serverfile.write("  " + mod + ".registerMe();\n")
+        serverfile.write(f"  import {mod};\n  {mod}.registerMe();\n")
     serverfile.write("}\n")
 
-GenerateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
+if __name__ == "__main__":
+    import sys
+    GenerateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
