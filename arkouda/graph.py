@@ -494,6 +494,69 @@ def rmat_gen (lgNv:int, Ne_per_v:int, p:float, directed: int,weighted:int) ->\
            else:
                return GraphUD(*(cast(str,repMsg).split('+')))
 
+
+
+@typechecked
+def graph_bc(graph: Union[GraphD,GraphDW,GraphUD,GraphUDW]) -> pdarray:
+    """
+    This function generates the betweeness centrality values for every vertex 
+    in a given graph.
+    Parameters 
+    ----------
+        Graph data structure. 
+    Returns
+    -------
+    pdarray
+        The betweeness centrality value for each vertex. 
+    See Also
+    --------
+    Notes
+    -----
+    Raises
+    ------
+    Runtime error
+    """
+    cmd="segmentedGraphBC"  
+    if (int(graph.directed)>0):
+        if (int(graph.weighted)==0):
+            # directed unweighted GraphD
+            args = "{} {} {} {} {} {} {} {}".format(
+                graph.n_vertices,graph.n_edges,\
+                graph.directed,graph.weighted,\
+                graph.src.name,graph.dst.name,\
+                graph.start_i.name,graph.neighbour.name)
+        else:
+            # directed weighted GraphDW
+            args = "{} {} {} {} {} {} {} {} {} {}".format(
+                graph.n_vertices,graph.n_edges,\
+                graph.directed,graph.weighted,\
+                graph.src.name,graph.dst.name,\
+                graph.start_i.name,graph.neighbour.name,\
+                graph.v_weight.name,graph.e_weight.name)
+    else:
+        if (int(graph.weighted)==0):
+            # undirected unweighted GraphUD
+            args = "{} {} {} {} {} {} {} {} {} {} {} {}".format(
+                graph.n_vertices,graph.n_edges,\
+                graph.directed,graph.weighted,\
+                graph.src.name,graph.dst.name,\
+                graph.start_i.name,graph.neighbour.name,\
+                graph.srcR.name,graph.dstR.name,\
+                graph.start_iR.name,graph.neighbourR.name)
+        else:
+            # undirected weighted GraphUDW 
+            args = "{} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                graph.n_vertices,graph.n_edges,\
+                graph.directed,graph.weighted,\
+                graph.src.name,graph.dst.name,\
+                graph.start_i.name,graph.neighbour.name,\
+                graph.srcR.name,graph.dstR.name,\
+                graph.start_iR.name,graph.neighbourR.name,\
+                graph.v_weight.name,graph.e_weight.name)
+
+    repMsg = generic_msg(cmd=cmd,args=args)
+    return create_pdarray(repMsg)
+
 @typechecked
 def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> pdarray:
         """
@@ -561,15 +624,29 @@ def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> pda
         repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(repMsg)
 
+
+
 @typechecked
-def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> pdarray:
+def stream_file_read(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int)  -> Union[GraphD,GraphUD,GraphDW,GraphUDW]:
         """
-        This function is generating the breadth-first search vertices sequences in given graph
-        starting from the given root vertex
+        This function is used for creating a graph from a file.
+        The file should like this
+          1   5
+          13  9
+          4   8
+          7   6
+        This file means the edges are <1,5>,<13,9>,<4,8>,<7,6>. If additional column is added, it is the weight
+        of each edge.
+        Ne : the total number of edges of the graph
+        Nv : the total number of vertices of the graph
+        Ncol: how many column of the file. Ncol=2 means just edges (so no weight and weighted=0) 
+              and Ncol=3 means there is weight for each edge (so weighted=1). 
+        directed: 0 means undirected graph and 1 means directed graph
         Returns
         -------
-        pdarray
-            The bfs vertices results
+        Graph
+            The Graph class to represent the data
 
         See Also
         --------
@@ -581,50 +658,229 @@ def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> pda
         ------  
         RuntimeError
         """
-        cmd="segmentedGraphBFS"
-        DefaultRatio=-.60
-        RCMFlag=0
+        cmd = "segmentedStreamFile"
+        args="{} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor);
+        repMsg = generic_msg(cmd=cmd,args=args)
+        if (int(Ncol) >2) :
+             weighted=1
+        else:
+             weighted=0
+
+        if (directed!=0)  :
+           if (weighted!=0) :
+               return GraphDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphD(*(cast(str,repMsg).split('+')))
+        else:
+           if (weighted!=0) :
+               return GraphUDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphUD(*(cast(str,repMsg).split('+')))
+
+
+@typechecked
+def graph_triangle (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW]) -> pdarray:
+        """
+        This function will return the number of triangles in a static graph.
+        Returns
+        -------
+        pdarray
+            The total number of triangles.
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        cmd="segmentedGraphTri"
+        print("Yay pip3 actually worked")
         if (int(graph.directed)>0)  :
             if (int(graph.weighted)==0):
-              args = "{} {} {} {} {} {} {} {} {} {} {}".format(
-                 RCMFlag,\
+              args = "{} {} {} {} {} {} {} {}".format(
                  graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.weighted,\
                  graph.src.name,graph.dst.name,\
-                 graph.start_i.name,graph.neighbour.name,\
-                 root,DefaultRatio)
+                 graph.start_i.name,graph.neighbour.name )
             else:
-              args = "{} {} {} {} {} {} {} {} {} {} {} {} {}".format(
-                 RCMFlag,\
+              args = "{} {} {} {} {} {} {} {} {} {}".format(
                  graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.weighted,\
                  graph.src.name,graph.dst.name,\
                  graph.start_i.name,graph.neighbour.name,\
-                 graph.v_weight.name,graph.e_weight.name,\
-                 root,DefaultRatio)
+                 graph.v_weight.name,graph.e_weight.name )
         else:
+            print("I got here")
             if (int(graph.weighted)==0):
-              args = "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
-                 RCMFlag,\
+              args = "{} {} {} {} {} {} {} {} {} {} {} {}".format(
                  graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.weighted,\
                  graph.src.name,graph.dst.name,\
                  graph.start_i.name,graph.neighbour.name,\
                  graph.srcR.name,graph.dstR.name,\
-                 graph.start_iR.name,graph.neighbourR.name,\
-                 root,DefaultRatio)
+                 graph.start_iR.name,graph.neighbourR.name )
             else:
-              args = "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
-                 RCMFlag,\
+              args = "{} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
                  graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.weighted,\
                  graph.src.name,graph.dst.name,\
                  graph.start_i.name,graph.neighbour.name,\
                  graph.srcR.name,graph.dstR.name,\
                  graph.start_iR.name,graph.neighbourR.name,\
-                 graph.v_weight.name,graph.e_weight.name,\
-                 root,DefaultRatio)
+                 graph.v_weight.name,graph.e_weight.name)
 
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+        
+@typechecked
+def KTruss(graph: Union[GraphD,GraphDW,GraphUD,GraphUDW],kTrussValue:int) -> pdarray:
+        """
+        This function will return the number of triangles in a static graph for each edge
+        Returns
+        -------
+        pdarray
+            The total number of triangles incident to each edge.
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        cmd="segmentedTruss"
+        if (int(graph.directed)>0)  :
+            args = "{} {} {} {} {} {} {} {} {}".format(
+                 kTrussValue,\
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name )
+
+        else:
+            args = "{} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                 kTrussValue,\
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 graph.srcR.name,graph.dstR.name,\
+                 graph.start_iR.name,graph.neighbourR.name )
+
+        #repMsg = generic_msg(msg)
+        #args="{} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename);
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+
+
+
+@typechecked
+def graph_triangle_edge (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW],kTrussValue:int) -> pdarray:
+        """
+        This function will return the number of triangles in a static graph for each edge
+        Returns
+        -------
+        pdarray
+            The total number of triangles incident to each edge.
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        cmd="segmentedGraphTriEdge"
+        args = "{} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                 kTrussValue,\
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 graph.srcR.name,graph.dstR.name,\
+                 graph.start_iR.name,graph.neighbourR.name )
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+@typechecked
+def stream_tri_cnt(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int)  -> pdarray:
+        cmd = "segmentedStreamTri"
+        args="{} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor);
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+@typechecked
+def streamHead_tri_cnt(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int)  -> pdarray:
+        cmd = "segmentedHeadStreamTri"
+        args="{} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor);
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+@typechecked
+def streamMid_tri_cnt(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int)  -> pdarray:
+        cmd = "segmentedMidStreamTri"
+        args="{} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor);
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+@typechecked
+def streamTail_tri_cnt(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int)  -> pdarray:
+        cmd = "segmentedTailStreamTri"
+        args="{} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor);
+        #repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
+        return create_pdarray(repMsg)
+
+@typechecked
+def streamPL_tri_cnt(Ne:int, Nv:int,Ncol:int,directed:int, filename: str,\
+                     factor:int, case:int)  -> pdarray:
+        """
+        This function is used for creating a graph from a file.
+        The file should like this
+          1   5
+          13  9
+          4   8
+          7   6
+        This file means the edges are <1,5>,<13,9>,<4,8>,<7,6>. If additional column is added, it is the weight
+        of each edge.
+        Ne : the total number of edges of the graph
+        Nv : the total number of vertices of the graph
+        Ncol: how many column of the file. Ncol=2 means just edges (so no weight and weighted=0) 
+              and Ncol=3 means there is weight for each edge (so weighted=1). 
+        factor: the sampling graph will be 1/factor of the original one
+        case: 0 calculate the average, 1: using power law regression paramter 2: using normal regression parameter 
+        Returns
+        -------
+        Graph
+            The Graph class to represent the data
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        cmd = "segmentedPLStreamTri"
+        args="{} {} {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename,factor,case);
         repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(repMsg)
 
