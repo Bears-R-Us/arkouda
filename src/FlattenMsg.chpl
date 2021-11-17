@@ -101,7 +101,7 @@ module FlattenMsg {
   }
   
   proc registerMe() {
-    use arkouda_server;
+    use ServerIncludes;
     registerFunction("segmentedFlatten", segFlattenMsg);
     registerFunction("segmentedSplit", segmentedSplitMsg);
   }

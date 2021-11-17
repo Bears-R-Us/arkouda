@@ -9,7 +9,7 @@ module MyModuleMsg {
   }
 
   proc registerMe() {
-    use arkouda_server;
+    use ServerIncludes;
     registerFunction("test-command", myTestMsg);
   }
 }

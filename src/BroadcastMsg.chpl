@@ -112,7 +112,7 @@ module BroadcastMsg {
   }
 
   proc registerMe() {
-    use arkouda_server;
+    use ServerIncludes;
     registerFunction("broadcast", broadcastMsg);
   }
 }

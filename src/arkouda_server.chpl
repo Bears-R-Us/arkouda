@@ -22,7 +22,7 @@ use ServerErrorStrings;
 use Message;
 
 use Map;
-use ServerRegistration;
+use ServerIncludes, ServerRegistration;
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
@@ -32,20 +32,6 @@ proc initArkoudaDirectory() {
     initDirectory(arkDirectory);
     return arkDirectory;
 }
-
-proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
-  var rep = new MsgTuple("sports", MsgType.NORMAL);
-  return rep;
-}
-
-var f = akMsgSign;
-var commandMap: map(string, f.type);
-
-proc registerFunction(cmd: string, fcf: f.type) {
-  commandMap.add(cmd, fcf);
-}
-
-doRegister();
 
 proc main() {
  
@@ -86,6 +72,7 @@ proc main() {
                                                                  ServerPort, token);
         }
         
+        doRegister();
         serverMessage = adjustMsg(serverMessage);      
         serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         

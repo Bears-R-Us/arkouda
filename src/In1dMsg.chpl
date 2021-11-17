@@ -107,7 +107,7 @@ module In1dMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("in1d", in1dMsg);
     }
 }

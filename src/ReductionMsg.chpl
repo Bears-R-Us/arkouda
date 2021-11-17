@@ -963,11 +963,10 @@ module ReductionMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("segmentedReduction", segmentedReductionMsg);
       registerFunction("reduction", reductionMsg);
       registerFunction("countReduction", countReductionMsg);
     }
 
 }
-

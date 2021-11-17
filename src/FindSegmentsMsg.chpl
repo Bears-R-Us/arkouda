@@ -205,7 +205,7 @@ module FindSegmentsMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("findSegments", findSegmentsMsg);
     }
 }

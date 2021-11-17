@@ -693,7 +693,7 @@ module EfuncMsg
     }    
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("efunc", efuncMsg);
       registerFunction("efunc3vv", efunc3vvMsg);
       registerFunction("efunc3vs", efunc3vsMsg);

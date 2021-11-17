@@ -1698,7 +1698,7 @@ module OperatorMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("binopvv", binopvvMsg);
       registerFunction("binopvs", binopvsMsg);
       registerFunction("binopsv", binopsvMsg);

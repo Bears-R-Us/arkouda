@@ -71,7 +71,7 @@ module SortMsg
     }// end sortMsg()
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("sort", sortMsg);
     }
 }// end module SortMsg

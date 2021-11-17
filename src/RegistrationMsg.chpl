@@ -121,7 +121,7 @@ module RegistrationMsg
     }
 
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("register", registerMsg);
       registerFunction("attach", attachMsg);
       registerFunction("unregister", unregisterMsg);

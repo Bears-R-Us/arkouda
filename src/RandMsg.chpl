@@ -122,7 +122,7 @@ module RandMsg
     }
     
     proc registerMe() {
-      use arkouda_server;
+      use ServerIncludes;
       registerFunction("randint", randintMsg);
       registerFunction("randomNormal", randomNormalMsg);
     }
