@@ -237,6 +237,7 @@ module ArraySetopsMsg
             moduleName=getModuleName(),
             errorClass="ErrorWithContext");
     }
+    
     proc registerMe() {
       use CommandMap;
       registerFunction("intersect1d", intersect1dMsg);
