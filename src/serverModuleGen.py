@@ -1,3 +1,5 @@
+import sys
+
 def GetModules(filename):
     with open(filename) as configfile:
         modules = configfile.readlines()
@@ -16,4 +18,4 @@ def GenerateServerIncludes(config_filename, reg_filename):
         serverfile.write("  " + mod + ".registerMe();\n")
     serverfile.write("}\n")
 
-GenerateServerIncludes("ServerModules.cfg", "src/ServerRegistration.chpl")
+GenerateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
