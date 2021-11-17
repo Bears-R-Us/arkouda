@@ -50,6 +50,10 @@ ifdef ARKOUDA_HDF5_PATH
 $(eval $(call add-path,$(ARKOUDA_HDF5_PATH)))
 endif
 
+ifndef ARKOUDA_CONFIG_FILE
+ARKOUDA_CONFIG_FILE := $(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
+endif
+
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 .PHONY: install-deps
@@ -202,7 +206,7 @@ else
 endif
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	python3 src/serverModuleGen.py
+	python3 $(ARKOUDA_CONFIG_FILE)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
