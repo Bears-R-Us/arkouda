@@ -4,7 +4,7 @@ def GetModules(filename):
         ret = []
         for module in modules:
             module = module.rstrip()
-            if module[0] != '#':
+            if len(module) > 0 and module[0] != '#':
                 ret.append(module)
         return ret
 
