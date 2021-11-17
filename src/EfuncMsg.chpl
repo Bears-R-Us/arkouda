@@ -692,4 +692,12 @@ module EfuncMsg
       return C;
     }    
 
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("efunc", efuncMsg);
+      registerFunction("efunc3vv", efunc3vvMsg);
+      registerFunction("efunc3vs", efunc3vsMsg);
+      registerFunction("efunc3sv", efunc3svMsg);
+      registerFunction("efunc3ss", efunc3ssMsg);
+    }
 }

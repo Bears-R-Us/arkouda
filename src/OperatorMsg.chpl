@@ -1696,4 +1696,13 @@ module OperatorMsg
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("binopvv", binopvvMsg);
+      registerFunction("binopvs", binopvsMsg);
+      registerFunction("binopsv", binopsvMsg);
+      registerFunction("opeqvv", opeqvvMsg);
+      registerFunction("opeqvs", opeqvsMsg);
+    }
 }

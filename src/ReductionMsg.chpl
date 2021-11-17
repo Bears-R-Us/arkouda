@@ -961,5 +961,13 @@ module ReductionMsg
       else if str == "False" then return false;
       throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
+
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("segmentedReduction", segmentedReductionMsg);
+      registerFunction("reduction", reductionMsg);
+      registerFunction("countReduction", countReductionMsg);
+    }
+
 }
 

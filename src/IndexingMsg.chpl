@@ -719,5 +719,17 @@ module IndexingMsg
         repMsg = "%s success".format(pn);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
-    } 
+    }
+    
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("[int]", intIndexMsg);
+      registerFunction("[slice]", sliceIndexMsg);
+      registerFunction("[pdarray]", pdarrayIndexMsg);
+      registerFunction("[int]=val", setIntIndexToValueMsg);
+      registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg);
+      registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg);
+      registerFunction("[slice]=val", setSliceIndexToValueMsg);
+      registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg);
+    }
 }
