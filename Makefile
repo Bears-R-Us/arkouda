@@ -62,6 +62,10 @@ ifdef ARKOUDA_ARROW_PATH
 $(eval $(call add-path,$(ARKOUDA_ARROW_PATH)))
 endif
 
+ifndef ARKOUDA_CONFIG_FILE
+ARKOUDA_CONFIG_FILE := $(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
+endif
+
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 ifdef ARKOUDA_SERVER_PARQUET_SUPPORT
@@ -254,9 +258,8 @@ endif
 
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	python3 src/serverModuleGen.py
+	python3 $(ARKOUDA_CONFIG_FILE)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
->>>>>>> d2c2a4e (Switch to using Python script and config file for optional modules:)
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
