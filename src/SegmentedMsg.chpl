@@ -909,7 +909,7 @@ module SegmentedMsg {
   }
 
   proc registerMe() {
-    use ServerIncludes;
+    use CommandMap;
     registerFunction("segmentLengths", segmentLengthsMsg);
     registerFunction("segmentedHash", segmentedHashMsg);
     registerFunction("segmentedEfunc", segmentedEfuncMsg);

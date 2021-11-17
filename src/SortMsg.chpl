@@ -71,7 +71,7 @@ module SortMsg
     }// end sortMsg()
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("sort", sortMsg);
     }
 }// end module SortMsg

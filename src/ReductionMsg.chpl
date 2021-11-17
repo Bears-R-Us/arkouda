@@ -963,7 +963,7 @@ module ReductionMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("segmentedReduction", segmentedReductionMsg);
       registerFunction("reduction", reductionMsg);
       registerFunction("countReduction", countReductionMsg);

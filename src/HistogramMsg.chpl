@@ -79,7 +79,7 @@ module HistogramMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("histogram", histogramMsg);
     }
 }

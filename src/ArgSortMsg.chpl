@@ -375,7 +375,7 @@ module ArgSortMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("argsort", argsortMsg);
       registerFunction("coargsort", coargsortMsg);
     }

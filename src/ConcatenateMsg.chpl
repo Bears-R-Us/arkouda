@@ -324,7 +324,7 @@ module ConcatenateMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("concatenate", concatenateMsg);
     }
 }

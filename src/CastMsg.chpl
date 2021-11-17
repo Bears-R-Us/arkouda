@@ -217,7 +217,7 @@ module CastMsg {
   }
 
   proc registerMe() {
-    use ServerIncludes;
+    use CommandMap;
     registerFunction("cast", castMsg);
   }
 }

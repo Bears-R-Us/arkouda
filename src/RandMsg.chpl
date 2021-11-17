@@ -122,7 +122,7 @@ module RandMsg
     }
     
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("randint", randintMsg);
       registerFunction("randomNormal", randomNormalMsg);
     }

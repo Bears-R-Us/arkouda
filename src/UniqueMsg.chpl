@@ -229,7 +229,7 @@ module UniqueMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("unique", uniqueMsg);
       registerFunction("value_counts", value_countsMsg);
     }

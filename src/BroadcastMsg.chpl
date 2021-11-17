@@ -112,7 +112,7 @@ module BroadcastMsg {
   }
 
   proc registerMe() {
-    use ServerIncludes;
+    use CommandMap;
     registerFunction("broadcast", broadcastMsg);
   }
 }

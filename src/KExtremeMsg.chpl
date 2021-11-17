@@ -153,7 +153,7 @@ module KExtremeMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("mink", minkMsg);
       registerFunction("maxk", maxkMsg);
     }
