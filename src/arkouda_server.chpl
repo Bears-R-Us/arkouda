@@ -305,11 +305,13 @@ proc main() {
                     var binaryRepMsg = tondarrayMsg(cmd, args, st);
                     sendRepMsg(binaryRepMsg);
                   }
+                  // TODO: this requires SegmentedMsg to be in included
+                  // in the build always; not sure best way to handle
                   when "segStr-tondarray"  {
+                    use SegmentedMsg;
                     var binaryRepMsg = segStrTondarrayMsg(cmd, args, st);
                     sendRepMsg(binaryRepMsg);
                   }
-                  when "cast"              {repTuple = castMsg(cmd, args, st);}
                   when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
                   when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
                   when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
