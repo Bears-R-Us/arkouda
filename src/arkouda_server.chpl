@@ -330,49 +330,14 @@ proc main() {
                   when "writeParquet"      {repTuple = toparquetMsg(cmd, args, st);}
                   when "create"            {repTuple = createMsg(cmd, args, st);}
                   when "delete"            {repTuple = deleteMsg(cmd, args, st);}
-                  when "binopvv"           {repTuple = binopvvMsg(cmd, args, st);}
-                  when "binopvs"           {repTuple = binopvsMsg(cmd, args, st);}
-                  when "binopsv"           {repTuple = binopsvMsg(cmd, args, st);}
-                  when "opeqvv"            {repTuple = opeqvvMsg(cmd, args, st);}
-                  when "opeqvs"            {repTuple = opeqvsMsg(cmd, args, st);}
-                  when "efunc"             {repTuple = efuncMsg(cmd, args, st);}
-                  when "efunc3vv"          {repTuple = efunc3vvMsg(cmd, args, st);}
-                  when "efunc3vs"          {repTuple = efunc3vsMsg(cmd, args, st);}
-                  when "efunc3sv"          {repTuple = efunc3svMsg(cmd, args, st);}
-                  when "efunc3ss"          {repTuple = efunc3ssMsg(cmd, args, st);}
-                  when "reduction"         {repTuple = reductionMsg(cmd, args, st);}
-                  when "countReduction"    {repTuple = countReductionMsg(cmd, args, st);}
-                  when "findSegments"      {repTuple = findSegmentsMsg(cmd, args, st);}
-                  when "segmentedReduction"{repTuple = segmentedReductionMsg(cmd, args, st);}
-                  when "broadcast"         {repTuple = broadcastMsg(cmd, args, st);}
                   when "arange"            {repTuple = arangeMsg(cmd, args, st);}
                   when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
-                  when "randint"           {repTuple = randintMsg(cmd, args, st);}
-                  when "randomNormal"      {repTuple = randomNormalMsg(cmd, args, st);}
-                  when "histogram"         {repTuple = histogramMsg(cmd, args, st);}
-                  when "in1d"              {repTuple = in1dMsg(cmd, args, st);}
-                  when "unique"            {repTuple = uniqueMsg(cmd, args, st);}
-                  when "value_counts"      {repTuple = value_countsMsg(cmd, args, st);}
                   when "set"               {repTuple = setMsg(cmd, args, st);}
                   when "info"              {repTuple = infoMsg(cmd, args, st);}
                   when "str"               {repTuple = strMsg(cmd, args, st);}
                   when "repr"              {repTuple = reprMsg(cmd, args, st);}
-                  when "[int]"             {repTuple = intIndexMsg(cmd, args, st);}
-                  when "[slice]"           {repTuple = sliceIndexMsg(cmd, args, st);}
-                  when "[pdarray]"         {repTuple = pdarrayIndexMsg(cmd, args, st);}
-                  when "[int]=val"         {repTuple = setIntIndexToValueMsg(cmd, args, st);}
-                  when "[pdarray]=val"     {repTuple = setPdarrayIndexToValueMsg(cmd, args, st);}
-                  when "[pdarray]=pdarray" {repTuple = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
-                  when "[slice]=val"       {repTuple = setSliceIndexToValueMsg(cmd, args, st);}
-                  when "[slice]=pdarray"   {repTuple = setSliceIndexToPdarrayMsg(cmd, args, st);}
-                  when "concatenate"       {repTuple = concatenateMsg(cmd, args, st);}
-                  when "sort"              {repTuple = sortMsg(cmd, args, st);}
-                  when "joinEqWithDT"      {repTuple = joinEqWithDTMsg(cmd, args, st);}
                   when "getconfig"         {repTuple = getconfigMsg(cmd, args, st);}
                   when "getmemused"        {repTuple = getmemusedMsg(cmd, args, st);}
-                  when "register"          {repTuple = registerMsg(cmd, args, st);}
-                  when "attach"            {repTuple = attachMsg(cmd, args, st);}
-                  when "unregister"        {repTuple = unregisterMsg(cmd, args, st);}
                   when "clear"             {repTuple = clearMsg(cmd, args, st);}               
                   when "connect" {
                       if authenticate {

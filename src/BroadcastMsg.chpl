@@ -110,4 +110,9 @@ module BroadcastMsg {
     bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);    
   }
+
+  proc registerMe() {
+    use arkouda_server;
+    registerFunction("broadcast", broadcastMsg);
+  }
 }

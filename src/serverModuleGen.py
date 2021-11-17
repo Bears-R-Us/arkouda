@@ -3,7 +3,7 @@ def GetModules(filename):
         modules = configfile.readlines()
         ret = []
         for module in modules:
-            module = module.rstrip()
+            module = (module.rstrip()).lstrip()
             if len(module) > 0 and module[0] != '#':
                 ret.append(module)
         return ret

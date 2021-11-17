@@ -326,4 +326,9 @@ module ConcatenateMsg
             }
         }
     }
+
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("concatenate", concatenateMsg);
+    }
 }

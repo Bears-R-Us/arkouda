@@ -104,4 +104,9 @@ module SortMsg
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end sortMsg()
+
+    proc registerMe() {
+      use arkouda_server;
+      registerFunction("sort", sortMsg);
+    }
 }// end module SortMsg
