@@ -137,7 +137,7 @@ module RegistrationMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("register", registerMsg);
       registerFunction("attach", attachMsg);
       registerFunction("unregister", unregisterMsg);

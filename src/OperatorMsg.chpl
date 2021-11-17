@@ -1698,7 +1698,7 @@ module OperatorMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("binopvv", binopvvMsg);
       registerFunction("binopvs", binopvsMsg);
       registerFunction("binopsv", binopsvMsg);

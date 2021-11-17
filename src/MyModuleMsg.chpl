@@ -9,7 +9,7 @@ module MyModuleMsg {
   }
 
   proc registerMe() {
-    use ServerIncludes;
+    use CommandMap;
     registerFunction("test-command", myTestMsg);
   }
 }

@@ -371,7 +371,7 @@ module JoinEqWithDTMsg
     }// end joinEqWithDTMsg()
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("joinEqWithDT", joinEqWithDTMsg);
     }
 }// end module JoinEqWithDTMsg

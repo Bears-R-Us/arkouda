@@ -22,7 +22,7 @@ use ServerErrorStrings;
 use Message;
 
 use Map;
-use ServerIncludes, ServerRegistration;
+use CommandMap, ServerRegistration;
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);

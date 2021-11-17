@@ -96,7 +96,7 @@ module FlattenMsg {
   }
   
   proc registerMe() {
-    use ServerIncludes;
+    use CommandMap;
     registerFunction("segmentedFlatten", segFlattenMsg);
     registerFunction("segmentedSplit", segmentedSplitMsg);
   }

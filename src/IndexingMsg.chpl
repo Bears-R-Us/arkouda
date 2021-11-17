@@ -722,7 +722,7 @@ module IndexingMsg
     }
     
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("[int]", intIndexMsg);
       registerFunction("[slice]", sliceIndexMsg);
       registerFunction("[pdarray]", pdarrayIndexMsg);

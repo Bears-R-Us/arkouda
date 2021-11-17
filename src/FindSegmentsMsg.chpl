@@ -206,7 +206,7 @@ module FindSegmentsMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("findSegments", findSegmentsMsg);
     }
 }

@@ -107,7 +107,7 @@ module In1dMsg
     }
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("in1d", in1dMsg);
     }
 }

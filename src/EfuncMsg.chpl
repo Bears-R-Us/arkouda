@@ -693,7 +693,7 @@ module EfuncMsg
     }    
 
     proc registerMe() {
-      use ServerIncludes;
+      use CommandMap;
       registerFunction("efunc", efuncMsg);
       registerFunction("efunc3vv", efunc3vvMsg);
       registerFunction("efunc3vs", efunc3vsMsg);
