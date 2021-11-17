@@ -1,8 +1,12 @@
 def GetModules(filename):
     with open(filename) as configfile:
         modules = configfile.readlines()
-        modules = [module.rstrip() for module in modules]
-        return modules
+        ret = []
+        for module in modules:
+            module = module.rstrip()
+            if module[0] != '#':
+                ret.append(module)
+        return ret
 
 def GenerateServerIncludes(config_filename, reg_filename):
     serverfile = open(reg_filename, "w")
@@ -12,4 +16,4 @@ def GenerateServerIncludes(config_filename, reg_filename):
         serverfile.write("  " + mod + ".registerMe();\n")
     serverfile.write("}\n")
 
-GenerateServerIncludes("ServerModuleConfig.txt", "src/ServerRegistration.chpl")
+GenerateServerIncludes("ServerModules.cfg", "src/ServerRegistration.chpl")
