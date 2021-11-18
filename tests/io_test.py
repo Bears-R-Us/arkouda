@@ -176,12 +176,12 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         message = ak.ls_hdf('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
-        self.assertIn('int_tens_pdarray         Dataset', message)
+        self.assertIn('int_tens_pdarray', message)
         
 
         with self.assertRaises(RuntimeError) as cm:        
             ak.ls_hdf('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
-        self.assertIn('check file permissions or format', cm.exception.args[0])
+        self.assertIn('is not an HDF5 file', cm.exception.args[0])
 
     def testLsHdfEmpty(self):
         # Test filename empty/whitespace-only condition
@@ -589,6 +589,13 @@ class IOTest(ArkoudaTest):
             # Now load it back in
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
+
+    def testHdfUnsanitizedNames(self):
+        # Test when quotes are part of the dataset name
+        my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
+            ak.read_all(f"{tmp_dirname}/bad_dataset_names*")
 
     def testInternalVersions(self):
         """

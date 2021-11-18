@@ -27,6 +27,7 @@ pdarrayIterThreshDefVal = 100
 pdarrayIterThresh  = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
+regexMaxCaptures: int = -1
 
 logger = getArkoudaLogger(name='Arkouda Client') 
 clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
@@ -91,7 +92,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
     """
-    global context, socket, pspStr, connected, serverConfig, verbose, username, token
+    global context, socket, pspStr, connected, serverConfig, verbose, username, token, regexMaxCaptures
 
     logger.debug("ZMQ version: {}".format(zmq.zmq_version()))
 
@@ -147,6 +148,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
                       'this may cause some commands to fail or behave ' +
                       'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, serverConfig['arkoudaVersion']), RuntimeWarning)
+    regexMaxCaptures = serverConfig['regexMaxCaptures']  # type:ignore
     clientLogger.info(return_message)
 
 def _parse_url(url : str) -> Tuple[str,int,Optional[str]]:

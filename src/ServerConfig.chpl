@@ -57,6 +57,11 @@ module ServerConfig
     */
     config const authenticate : bool = false;
 
+    /*
+    Determines the maximum number of capture groups returned by Regex.matches
+    */
+    config param regexMaxCaptures = 20;
+
     private config const lLevel = ServerConfig.logLevel;
     const scLogger = new Logger(lLevel);
    
@@ -94,6 +99,7 @@ module ServerConfig
             const LocaleConfigs: [LocaleSpace] owned LocaleConfig;
             const authenticate: bool;
             const logLevel: LogLevel;
+            const regexMaxCaptures: int;
             const byteorder: string;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -113,6 +119,7 @@ module ServerConfig
             LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
             authenticate = authenticate,
             logLevel = logLevel,
+            regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder()
         );
 
@@ -136,7 +143,7 @@ module ServerConfig
     Get the physical memory available on this locale
     */ 
     proc getPhysicalMemHere() {
-        use MemDiagnostics;
+        use Memory.Diagnostics;
         return here.physicalMemory();
     }
 
@@ -156,7 +163,7 @@ module ServerConfig
     Get the memory used on this locale
     */
     proc getMemUsed() {
-        use MemDiagnostics;
+        use Memory.Diagnostics;
         return memoryUsed();
     }
 

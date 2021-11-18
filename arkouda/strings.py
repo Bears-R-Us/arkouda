@@ -13,7 +13,8 @@ from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
 import re
-from arkouda.infoclass import information, list_symbol_table
+from arkouda.infoclass import information
+from arkouda.match import Match, MatchType
 
 __all__ = ['Strings']
 
@@ -39,10 +40,6 @@ class Strings:
         The sizes of each dimension of the array
     dtype : dtype
         The dtype is ak.str
-    regex_dict: Dict[str, Tuple[pdarray, pdarray, pdarray]]
-        Dictionary storing information on matches (cache of Strings.find_locations(pattern))
-        Keys - regex patterns
-        Values - tuples of pdarrays (numMatches, matchStarts, matchLens)
     logger : ArkoudaLogger
         Used for all logging operations
         
@@ -106,7 +103,7 @@ class Strings:
 
         self.dtype = npstr
         self.name:Optional[str] = None
-        self.regex_dict: Dict = dict()
+        self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
@@ -260,20 +257,45 @@ class Strings:
                         format(self.objtype, self.offsets.name, self.bytes.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
-    def cached_regex_patterns(self):
+    @typechecked
+    def cached_regex_patterns(self) -> List:
         """
-        Returns the regex patterns for which Strings.find_locations(pattern) have been cached
+        Returns the regex patterns for which Match objects have been cached
         """
-        sym_tab = list_symbol_table()
-        self.regex_dict = {key: val for key, val in self.regex_dict.items() if
-                           all([pda.name in sym_tab for pda in val])}
-        return self.regex_dict.keys()
+        return list(self._regex_dict.keys())
+
+    @typechecked
+    def purge_cached_regex_patterns(self) -> None:
+        """
+        purges cached regex patterns
+        """
+        self._regex_dict = dict()
+
+    def _get_matcher(self, pattern: Union[bytes, str_scalars], create: bool = True):
+        """
+        internal function to fetch cached Matcher objects
+        """
+        from arkouda.matcher import Matcher
+        if isinstance(pattern, bytes):
+            pattern = pattern.decode()
+        try:
+            re.compile(pattern)
+        except Exception as e:
+            raise ValueError(e)
+        matcher = None
+        if pattern in self._regex_dict:
+            matcher = self._regex_dict[pattern]
+        elif create:
+            self._regex_dict[pattern] = Matcher(pattern=pattern,
+                                                parent_bytes_name=self.bytes.name,
+                                                parent_offsets_name=self.offsets.name)
+            matcher = self._regex_dict[pattern]
+        return matcher
 
     @typechecked
     def find_locations(self, pattern: Union[bytes, str_scalars]) -> Tuple[pdarray, pdarray, pdarray]:
         """
         Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
-            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Parameters
         ----------
@@ -294,7 +316,7 @@ class Strings:
         TypeError
             Raised if the pattern parameter is not bytes or str_scalars
         ValueError
-            Rasied if pattern is not a valid regex
+            Raised if pattern is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -305,45 +327,129 @@ class Strings:
         Examples
         --------
         >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-        >>> strings
-        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
         >>> num_matches, starts, lens = strings.find_locations('\\d')
         >>> num_matches
         array([2, 2, 2, 2, 2])
         >>> starts
-        array([0, 9, 11, 20, 22, 31, 33, 42, 44, 53])
+        array([0, 9, 0, 9, 0, 9, 0, 9, 0, 9])
         >>> lens
         array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
         """
-        if isinstance(pattern, bytes):
-            pattern = pattern.decode()
-        sym_tab = list_symbol_table()
-        if pattern not in self.regex_dict or any([pda.name not in sym_tab for pda in self.regex_dict[pattern]]):
-            # run find_locations if we don't have the result of find_locations(pattern) cached or any of the references have gone stale
-            try:
-                re.compile(pattern)
-            except Exception as e:
-                raise ValueError(e)
-            cmd = "segmentedFindLoc"
-            args = "{} {} {} {}".format(self.objtype,
-                                        self.offsets.name,
-                                        self.bytes.name,
-                                        json.dumps([pattern]))
-            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
-            arrays = repMsg.split('+', maxsplit=2)
-            self.regex_dict[pattern] = (create_pdarray(arrays[0]), create_pdarray(arrays[1]), create_pdarray(arrays[2]))
-        return self.regex_dict[pattern]
+        matcher = self._get_matcher(pattern)
+        matcher.find_locations()
+        return matcher.num_matches, matcher.starts, matcher.lengths
+
+    @typechecked
+    def search(self, pattern: Union[bytes, str_scalars]) -> Match:
+        """
+        Returns a match object with the first location in each element where pattern produces a match.
+        Elements match if any part of the string matches the regular expression pattern
+
+        Parameters
+        ----------
+        pattern: str
+            Regex used to find matches
+
+        Returns
+        -------
+        Match
+            Match object where elements match if any part of the string matches the regular expression pattern
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.search('_+')
+        <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+        """
+        return self._get_matcher(pattern).get_match(MatchType.SEARCH, self)
+
+    @typechecked
+    def match(self, pattern: Union[bytes, str_scalars]) -> Match:
+        """
+        Returns a match object where elements match only if the beginning of the string matches the regular expression pattern
+
+        Parameters
+        ----------
+        pattern: str
+            Regex used to find matches
+
+        Returns
+        -------
+        Match
+            Match object where elements match only if the beginning of the string matches the regular expression pattern
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.match('_+')
+        <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+        """
+        return self._get_matcher(pattern).get_match(MatchType.MATCH, self)
+
+    @typechecked()
+    def fullmatch(self, pattern: Union[bytes, str_scalars]) -> Match:
+        """
+        Returns a match object where elements match only if the whole string matches the regular expression pattern
+
+        Parameters
+        ----------
+        pattern: str
+            Regex used to find matches
+
+        Returns
+        -------
+        Match
+            Match object where elements match only if the whole string matches the regular expression pattern
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.fullmatch('_+')
+        <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=False; matched=False>
+        """
+        return self._get_matcher(pattern).get_match(MatchType.FULLMATCH, self)
+
+    @typechecked()
+    def split(self, pattern: Union[bytes, str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]:
+        """
+        Returns a new Strings split by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+
+        Parameters
+        ----------
+        pattern: str
+            Regex used to split strings into substrings
+        maxsplit: int
+            The max number of pattern match occurences in each element to split.
+            The default maxsplit=0 splits on all occurences
+        return_segments: bool
+            If True, return mapping of original strings to first substring
+            in return array.
+
+        Returns
+        -------
+        Strings
+            Substrings with pattern matches removed
+        pdarray, int64 (optional)
+            For each original string, the index of first corresponding substring
+            in the return array
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.split('_+', maxsplit=2, return_segments=True)
+        (array(['1', '2', '', '', '', '3', '', '4', '5____6___7', '']), array([0 3 5 6 9]))
+        """
+        return self._get_matcher(pattern).split(maxsplit, return_segments)
 
     @typechecked
     def findall(self, pattern: Union[bytes, str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]:
         """
-        Return all non-overlapping matches of pattern in Strings as a new Strings object
-            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+        Return a new Strings containg all non-overlapping matches of pattern
 
         Parameters
         ----------
         pattern: str_scalars
-            The regex pattern used to find matches
+            Regex used to find matches
         return_match_origins: bool
             If True, return a pdarray containing the index of the original string each pattern match is from
 
@@ -359,41 +465,110 @@ class Strings:
         TypeError
             Raised if the pattern parameter is not bytes or str_scalars
         ValueError
-            Rasied if pattern is not a valid regex
+            Raised if pattern is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
         See Also
         --------
-        Strings.find_locations, Strings.match
+        Strings.find_locations
 
         Examples
         --------
-        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-        >>> strings
-        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-        >>> matches, match_origins = strings.findall('\\d', return_match_origins = True)
-        >>> matches
-        array(['1', '1', '2', '2', '3', '3', '4', '4', '5', '5'])
-        >>> match_origins
-        array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.findall('_+', return_match_origins=True)
+        (array(['_', '___', '____', '__', '___', '____', '___']), array([0 0 1 3 3 3 3]))
         """
-        num_matches, starts, lens = self.find_locations(pattern)
-        cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
-                                             num_matches.name,
-                                             starts.name,
-                                             lens.name,
-                                             return_match_origins)
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
-        if return_match_origins:
-            arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
-        else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+        return self._get_matcher(pattern).findall(return_match_origins)
+
+    @typechecked()
+    def sub(self, pattern: Union[bytes, str_scalars], repl: Union[bytes, str_scalars], count: int = 0) -> Strings:
+        """
+        Return new Strings obtained by replacing non-overlapping occurrences of pattern with the replacement repl.
+        If count is nonzero, at most count substitutions occur
+
+        Parameters
+        ----------
+        pattern: str_scalars
+            The regex to substitue
+        repl: str_scalars
+            The substring to replace pattern matches with
+        count: int
+            The max number of pattern match occurences in each element to replace.
+            The default count=0 replaces all occurences of pattern with repl
+
+        Returns
+        -------
+        Strings
+            Strings with pattern matches replaced
+
+        Raises
+        ------
+        TypeError
+            Raised if pattern or repl are not bytes or str_scalars
+        ValueError
+            Raised if pattern is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.subn
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.sub(pattern='_+', repl='-', count=2)
+        array(['1-2-', '-', '3', '-4-5____6___7', ''])
+        """
+        if isinstance(repl, bytes):
+            repl = repl.decode()
+        return self._get_matcher(pattern).sub(repl, count)
+
+    @typechecked()
+    def subn(self, pattern: Union[bytes, str_scalars], repl: Union[bytes, str_scalars], count: int = 0) -> Tuple:
+        """
+        Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
+
+        Parameters
+        ----------
+        pattern: str_scalars
+            The regex to substitue
+        repl: str_scalars
+            The substring to replace pattern matches with
+        count: int
+            The max number of pattern match occurences in each element to replace.
+            The default count=0 replaces all occurences of pattern with repl
+
+        Returns
+        -------
+        Strings
+            Strings with pattern matches replaced
+        pdarray, int64
+            The number of substitutions made for each element of Strings
+
+        Raises
+        ------
+        TypeError
+            Raised if pattern or repl are not bytes or str_scalars
+        ValueError
+            Raised if pattern is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.sub
+
+        Examples
+        --------
+        >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
+        >>> strings.subn(pattern='_+', repl='-', count=2)
+        (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
+        """
+        if isinstance(repl, bytes):
+            repl = repl.decode()
+        return self._get_matcher(pattern).sub(repl, count, return_num_subs=True)
 
     @typechecked
     def contains(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -439,10 +614,12 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
+            if re.search(substr, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+            matcher = self._get_matcher(substr, create=False)
+            if matcher is not None:
+                return matcher.get_match(MatchType.SEARCH, self).matched()
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("contains",
                                              self.objtype,
@@ -500,10 +677,12 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
+            if re.search(substr, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+            matcher = self._get_matcher(substr, create=False)
+            if matcher is not None:
+                return matcher.get_match(MatchType.MATCH, self).matched()
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("startswith",
                                              self.objtype,
@@ -561,10 +740,7 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if regex:
-            try:
-                re.compile(substr)
-            except Exception as e:
-                raise ValueError(e)
+            return self.contains(substr + '$', regex=True)
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("endswith",
                                              self.objtype,
@@ -573,62 +749,6 @@ class Strings:
                                              "str",
                                              regex,
                                              json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
-
-    @typechecked
-    def match(self, pattern: Union[bytes, str_scalars]) -> pdarray:
-        """
-        For each element check whether the entire element matches the given regex, pattern.
-
-        Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
-
-        Parameters
-        ----------
-        pattern: str_scalars
-            The regex in the form of string or byte array to search for
-
-        Returns
-        -------
-        pdarray, bool
-            True for elements that match pattern, False otherwise
-
-        Raises
-        ------
-        TypeError
-            Raised if the pattern parameter is not bytes or str_scalars
-        ValueError
-            Rasied if pattern is not a valid regex
-        RuntimeError
-            Raised if there is a server-side error thrown
-
-        See Also
-        --------
-        Strings.contains, Strings.startswith, Strings.endswith
-
-        Examples
-        --------
-        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-        >>> strings
-        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-        >>> strings.match('\\d string \\d')
-        array([True, True, True, True, True])
-        >>> strings.match('ing \\d')
-        array([False, False, False, False, False])
-        """
-        if isinstance(pattern, bytes):
-            pattern = pattern.decode()
-        try:
-            re.compile(pattern)
-        except Exception as e:
-            raise ValueError(e)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("match",
-                                             self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
-                                             "str",
-                                             True,  # regex flag is always True for match
-                                             json.dumps([pattern]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
@@ -677,27 +797,29 @@ class Strings:
                 re.compile(delimiter)
             except Exception as e:
                 raise ValueError(e)
-        cmd = "segmentedFlatten"
-        args = "{}+{} {} {} {} {}".format(self.offsets.name,
-                                          self.bytes.name,
-                                          self.objtype,
-                                          return_segments,
-                                          regex,
-                                          json.dumps([delimiter]))
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
-        if return_segments:
-            arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return self.split(delimiter, return_segments=return_segments)
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            cmd = "segmentedFlatten"
+            args = "{}+{} {} {} {} {}".format(self.offsets.name,
+                                              self.bytes.name,
+                                              self.objtype,
+                                              return_segments,
+                                              regex,
+                                              json.dumps([delimiter]))
+            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
+            if return_segments:
+                arrays = repMsg.split('+', maxsplit=2)
+                return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            else:
+                arrays = repMsg.split('+', maxsplit=1)
+                return Strings(arrays[0], arrays[1])
     
     @typechecked
     def peel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
              includeDelimiter: bool = False, keepPartial: bool = False,
              fromRight: bool = False, regex: bool = False) -> Tuple:
         """
-        Peel off one or more delimited fields from each string (similar 
+        Peel off one or more delimited fields from each string (similar
         to string.partition), returning two new arrays of strings.
         *Warning*: This function is experimental and not guaranteed to work.
 
@@ -706,15 +828,15 @@ class Strings:
         delimiter: Union[bytes, str_scalars]
             The separator where the split will occur
         times: Union[int, np.int64]
-            The number of times the delimiter is sought, i.e. skip over 
+            The number of times the delimiter is sought, i.e. skip over
             the first (times-1) delimiters
         includeDelimiter: bool
-            If true, append the delimiter to the end of the first return 
-            array. By default, it is prepended to the beginning of the 
+            If true, append the delimiter to the end of the first return
+            array. By default, it is prepended to the beginning of the
             second return array.
         keepPartial: bool
-            If true, a string that does not contain <times> instances of 
-            the delimiter will be returned in the first array. By default, 
+            If true, a string that does not contain <times> instances of
+            the delimiter will be returned in the first array. By default,
             such strings are returned in the second array.
         fromRight: bool
             If true, peel from the right instead of the left (see also rpeel)
@@ -726,23 +848,23 @@ class Strings:
         -------
         Tuple[Strings, Strings]
             left: Strings
-                The field(s) peeled from the end of each string (unless 
+                The field(s) peeled from the end of each string (unless
                 fromRight is true)
             right: Strings
-                The remainder of each string after peeling (unless fromRight 
+                The remainder of each string after peeling (unless fromRight
                 is true)
- 
+
         Raises
         ------
         TypeError
             Raised if the delimiter parameter is not byte or str_scalars, if
-            times is not int64, or if includeDelimiter, keepPartial, or 
+            times is not int64, or if includeDelimiter, keepPartial, or
             fromRight is not bool
         ValueError
             Raised if times is < 1 or if delimiter is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
-        
+
         See Also
         --------
         rpeel, stick, lstick
@@ -766,6 +888,9 @@ class Strings:
                 re.compile(delimiter)
             except Exception as e:
                 raise ValueError(e)
+            if re.search(delimiter, ''):
+                # TODO remove once changes from chapel issue #18639 are in arkouda
+                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
         if times < 1:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"

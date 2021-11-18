@@ -22,10 +22,17 @@ else
 CHPL_FLAGS += --fast
 endif
 CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # We have seen segfaults with cache remote at some node counts
 CHPL_FLAGS += --no-cache-remote
+
+# For configs that use a fixed heap, but still have first-touch semantics
+# (gasnet-ibv-large) interleave large allocations to reduce the performance hit
+# from getting progressively worse NUMA affinity due to memory reuse.
+CHPL_HELP := $(shell $(CHPL) --devel --help)
+ifneq (,$(findstring interleave-memory,$(CHPL_HELP)))
+CHPL_FLAGS += --interleave-memory
+endif
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
@@ -43,13 +50,7 @@ ifdef ARKOUDA_HDF5_PATH
 $(eval $(call add-path,$(ARKOUDA_HDF5_PATH)))
 endif
 
-# For configs that use a fixed heap, but still have first-touch semantics
-# (gasnet-ibv-large) interleave large allocations to reduce the performance hit
-# from getting progressively worse NUMA affinity due to memory reuse.
-CHPL_HELP := $(shell $(CHPL) --devel --help)
-ifneq (,$(findstring interleave-memory,$(CHPL_HELP)))
-CHPL_FLAGS += --interleave-memory
-endif
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5
@@ -120,11 +121,6 @@ ifeq ($(CHPL_VERSION_WARN),yes)
 	$(warning Chapel 1.25.0 or newer is recommended)
 endif
 
-CHPL_VERSION_122 := $(shell test $(CHPL_MINOR) -eq 22 && echo yes)
-ifeq ($(CHPL_VERSION_122),yes)
-CHPL_FLAGS += --instantiate-max 512
-endif
-
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
 	@echo "Checking for ZMQ"
@@ -191,19 +187,13 @@ ifdef ARKOUDA_PRINT_PASSES_FILE
 	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
 endif
 
+ifdef REGEX_MAX_CAPTURES
+	REGEX_MAX_CAPTURES_FLAG = -sregexMaxCaptures=$(REGEX_MAX_CAPTURES)
+endif
+
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-# The Memory module was moved to Memory.Diagnostics in 1.24. Due to how
-# resolution of use and import statements works, we have to conditionally
-# use one of two definitions of a wrapper module as a workaround.
-# Resolving Chapel issue #17438 or making 1.24 the minimum required version
-# would fix this.
-ifeq ($(shell expr $(CHPL_MINOR) \>= 24),1)
-	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/ge-124
-else
-	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/lt-124
-endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 25),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-125
@@ -212,7 +202,7 @@ else
 endif
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean

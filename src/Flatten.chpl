@@ -48,6 +48,8 @@ module Flatten {
 
     :returns: Strings – Flattened substrings with delimiters removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array
   */
+  // DEPRECATED - All regex flatten calls now redirect to SegString.split
+  // TODO: Remove flattenRegex
   proc SegString.flattenRegex(delim: string, returnSegs: bool) throws {
     checkCompile(delim);
     ref origOffsets = this.offsets.a;
@@ -64,7 +66,7 @@ module Flatten {
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {
-      var matchessize = 0 ;
+      var matchessize = 0;
       // for each string, find delim matches and set the positions of matches in writeToVal to false (non-matches will be copied to flattenedVals)
       // mark the locations of null bytes (the positions before original offsets and the last character of matches)
       for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
@@ -131,6 +133,103 @@ module Flatten {
       segments = (+ scan numMatches) - numMatches + segmentsDom;
     }
     return (flattenedOffsets, flattenedVals, segments);
+  }
+
+  /*
+    Split string by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+    If returnSegs is set to True, a mapping between the original strings and new array elements will be returned
+
+    :arg pattern: regex pattern used to split strings into substrings
+    :type pattern: string
+
+    :arg initMaxSplit: If maxsplit is nonzero, at most maxsplit splits occur. If zero, split on all occurences of pattern
+    :type initMaxSplit: int
+
+    :arg returnSegs: If True, also return mapping of original strings to first substring in return array
+    :type returnSegs: bool
+
+    :returns: Strings – Substrings with pattern matches removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array
+  */
+  proc SegString.split(pattern: string, initMaxSplit: int, returnSegs: bool) throws {
+    // This function is extremely similar to regexFlatten but with a maxSplit cap
+    checkCompile(pattern);
+    ref origOffsets = this.offsets.a;
+    ref origVals = this.values.a;
+    const lengths = this.getLengths();
+
+    overMemLimit((this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
+    var numMatches: [this.offsets.aD] int;
+    var writeToVal: [this.values.aD] bool = true;
+    var nullByteLocations: [this.values.aD] bool = false;
+
+    // maxSplit = 0 means replace all occurances, so we set maxsplit equal to 10**9
+    var maxsplit = if initMaxSplit == 0 then 10**9:int else initMaxSplit;
+    // since the pattern matches are variable length, we don't know what the size of splitVals should be until we've found the matches
+    forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern.encode()),
+                                                                             var writeAgg = newDstAggregator(bool),
+                                                                             var nbAgg = newDstAggregator(bool),
+                                                                             var matchAgg = newDstAggregator(int)) {
+      var matchessize = 0;
+      // for each string, find pattern matches and set the positions of matches in writeToVal to false (non-matches will be copied to splitVals)
+      // mark the locations of null bytes (the positions before original offsets and the last character of matches)
+      for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
+        var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
+        // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
+        for k in (off + match.offset:int)..#(match.size - 1) {
+          writeAgg.copy(writeToVal[k], false);
+        }
+        nbAgg.copy(nullByteLocations[off + match.offset:int + (match.size - 1)], true);
+        matchessize += 1;
+        if matchessize == maxsplit { break; }
+      }
+      if off != 0 {
+        // the position before an offset is a null byte (except for off == 0)
+        nbAgg.copy(nullByteLocations[off - 1], true);
+      }
+      matchAgg.copy(numMatches[i], matchessize);
+    }
+    // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
+    var splitVals: [makeDistDom(+ reduce writeToVal)] uint(8);
+    // Each match is replaced with a null byte, so new offsets.size = totalNumMatches + old offsets.size
+    var splitOffsets: [makeDistDom((+ reduce numMatches) + this.offsets.size)] int;
+
+    var valsIndexTransform = (+ scan writeToVal) - writeToVal;
+    var offsIndexTransform = (+ scan nullByteLocations) - nullByteLocations + 1;
+
+    forall (origInd, origVal, splitValInd, offInd) in zip(this.values.aD, origVals, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
+                                                                                                               var offAgg = newDstAggregator(int)) {
+      // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
+      if writeToVal[origInd] {
+        if origInd == 0 {
+          // offset 0 edge case
+          offAgg.copy(splitOffsets[0], 0);
+        }
+        if nullByteLocations[origInd] {
+          // nullbyte location, copy nullbyte into splitVals
+          valAgg.copy(splitVals[splitValInd], NULL_STRINGS_VALUE);
+          if origInd != this.values.aD.high {
+            // offset points to position after null byte
+            offAgg.copy(splitOffsets[offInd], splitValInd + 1);
+          }
+        }
+        else {
+          // non-match location, copy origVal into splitVals
+          valAgg.copy(splitVals[splitValInd], origVal);
+        }
+      }
+    }
+
+     // build segments mapping from original Strings to flattenedStrings
+    const segmentsDom = if returnSegs then this.offsets.aD else makeDistDom(0);
+    var segments: [segmentsDom] int;
+    if returnSegs {
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * numMatches.size);
+      // each match results in a new element (it is replaced with a null byte)
+      // so the mapping is a running sum of all previous replacements plus the curent index
+      segments = (+ scan numMatches) - numMatches + segmentsDom;
+    }
+    return (splitOffsets, splitVals, segments);
   }
 
   proc SegString.flatten(delim: string, returnSegs: bool, regex: bool = false) throws {

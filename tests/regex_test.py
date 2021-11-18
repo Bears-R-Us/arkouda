@@ -1,8 +1,144 @@
 from context import arkouda as ak
 from base_test import ArkoudaTest
+import re
 
 
 class RegexTest(ArkoudaTest):
+
+    def test_empty_string_patterns(self):
+        # For issue #959:
+        # verify ValueError is raised when methods which use Regex.matches have a pattern which matches the empty string
+        # TODO remove/change test once changes from chapel issue #18639 are in arkouda
+        s = ak.array(['one'])
+        for pattern in ['', '|', '^', '$']:
+            with self.assertRaises(ValueError):
+                s.search(pattern)
+            with self.assertRaises(ValueError):
+                s.match(pattern)
+            with self.assertRaises(ValueError):
+                s.fullmatch(pattern)
+            with self.assertRaises(ValueError):
+                s.split(pattern)
+            with self.assertRaises(ValueError):
+                s.sub(pattern, 'repl')
+            with self.assertRaises(ValueError):
+                s.findall(pattern)
+            with self.assertRaises(ValueError):
+                s.find_locations(pattern)
+            with self.assertRaises(ValueError):
+                s.contains(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.startswith(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.endswith(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.peel(pattern, regex=True)
+            with self.assertRaises(ValueError):
+                s.flatten(pattern, regex=True)
+
+    def test_match_objects(self):
+        strings = ak.array(['', '____', '_1_2____', '3___4___', '5', '__6__', '___7', '__8___9____10____11'])
+        pattern = '_+'
+
+        ak_search = strings.search(pattern)
+        ak_match = strings.match(pattern)
+        ak_fullmatch = strings.fullmatch(pattern)
+
+        re_search = [re.search(pattern, strings[i]) for i in range(strings.size)]
+        re_match = [re.match(pattern, strings[i]) for i in range(strings.size)]
+        re_fullmatch = [re.fullmatch(pattern, strings[i]) for i in range(strings.size)]
+
+        self.assertListEqual(ak_search.matched().to_ndarray().tolist(), [m is not None for m in re_search])
+        self.assertListEqual(ak_match.matched().to_ndarray().tolist(), [m is not None for m in re_match])
+        self.assertListEqual(ak_fullmatch.matched().to_ndarray().tolist(), [m is not None for m in re_fullmatch])
+
+        self.assertListEqual(ak_search.start().to_ndarray().tolist(),
+                             [m.start() for m in re_search if m is not None])
+        self.assertListEqual(ak_match.start().to_ndarray().tolist(),
+                             [m.start() for m in re_match if m is not None])
+        self.assertListEqual(ak_fullmatch.start().to_ndarray().tolist(),
+                             [m.start() for m in re_fullmatch if m is not None])
+
+        self.assertListEqual(ak_search.end().to_ndarray().tolist(),
+                             [m.end() for m in re_search if m is not None])
+        self.assertListEqual(ak_match.end().to_ndarray().tolist(),
+                             [m.end() for m in re_match if m is not None])
+        self.assertListEqual(ak_fullmatch.end().to_ndarray().tolist(),
+                             [m.end() for m in re_fullmatch if m is not None])
+
+        self.assertEqual(ak_search.match_type(), 'SEARCH')
+        self.assertEqual(ak_match.match_type(), 'MATCH')
+        self.assertEqual(ak_fullmatch.match_type(), 'FULLMATCH')
+
+        search_matches, search_origins = ak_search.find_matches(return_match_origins=True)
+        match_matches, match_origins = ak_match.find_matches(return_match_origins=True)
+        fullmatch_matches, fullmatch_origins = ak_fullmatch.find_matches(return_match_origins=True)
+        self.assertListEqual(search_matches.to_ndarray().tolist(),
+                             [m.string[m.start():m.end()] for m in re_search if m is not None])
+        self.assertListEqual(search_origins.to_ndarray().tolist(),
+                             [i for i in range(len(re_search)) if re_search[i] is not None])
+        self.assertListEqual(match_matches.to_ndarray().tolist(),
+                             [m.string[m.start():m.end()] for m in re_match if m is not None])
+        self.assertListEqual(match_origins.to_ndarray().tolist(),
+                             [i for i in range(len(re_match)) if re_match[i] is not None])
+        self.assertListEqual(fullmatch_matches.to_ndarray().tolist(),
+                             [m.string[m.start():m.end()] for m in re_fullmatch if m is not None])
+        self.assertListEqual(fullmatch_origins.to_ndarray().tolist(),
+                             [i for i in range(len(re_fullmatch)) if re_fullmatch[i] is not None])
+
+        # Capture Groups
+        tug_of_war = ak.array(["Isaac Newton, physicist", '<--calculus-->', 'Gottfried Leibniz, mathematician'])
+        ak_captures = tug_of_war.search("(\\w+) (\\w+)")
+        re_captures = [re.search("(\\w+) (\\w+)", tug_of_war[i]) for i in range(tug_of_war.size)]
+        self.assertListEqual(ak_captures.group().to_ndarray().tolist(),
+                             [m.group() for m in re_captures if m is not None])
+        self.assertListEqual(ak_captures.group(1).to_ndarray().tolist(),
+                             [m.group(1) for m in re_captures if m is not None])
+        self.assertListEqual(ak_captures.group(2).to_ndarray().tolist(),
+                             [m.group(2) for m in re_captures if m is not None])
+
+        group, group_origins = ak_captures.group(1, return_group_origins=True)
+        self.assertListEqual(group_origins.to_ndarray().tolist(),
+                             [i for i in range(len(re_captures)) if re_captures[i] is not None])
+
+        with self.assertRaises(ValueError):
+            ak_captures.group(-1)
+        with self.assertRaises(ValueError):
+            ak_captures.group(40)
+
+        # verify fluid programming with Match object doesn't raise a RuntimeError
+        ak.array(['1_2___', '____', '3', '__4___5____6___7', '']).search('_+').find_matches()
+
+    def test_sub(self):
+        strings = ak.array(['', '____', '_1_2____', '3___4___', '5', '__6__', '___7', '__8___9____10____11'])
+        pattern = '_+'
+        # test short repl
+        repl = '-'
+        count = 3
+        re_sub = [re.sub(pattern, repl, strings[i], count) for i in range(strings.size)]
+        re_sub_counts = [re.subn(pattern, repl, strings[i], count)[1] for i in range(strings.size)]
+        ak_sub, ak_sub_counts = strings.subn(pattern, repl, count)
+        self.assertListEqual(re_sub, ak_sub.to_ndarray().tolist())
+        self.assertListEqual(re_sub_counts, ak_sub_counts.to_ndarray().tolist())
+
+        # test long repl
+        repl = '---------'
+        count = 3
+        re_sub = [re.sub(pattern, repl, strings[i], count) for i in range(strings.size)]
+        re_sub_counts = [re.subn(pattern, repl, strings[i], count)[1] for i in range(strings.size)]
+        ak_sub, ak_sub_counts = strings.subn(pattern, repl, count)
+        self.assertListEqual(re_sub, ak_sub.to_ndarray().tolist())
+        self.assertListEqual(re_sub_counts, ak_sub_counts.to_ndarray().tolist())
+
+    def test_split(self):
+        strings = ak.array(['', '____', '_1_2____', '3___4___', '5', '__6__', '___7', '__8___9____10____11'])
+        pattern = '_+'
+        maxsplit = 3
+        split, split_map = strings.split(pattern, maxsplit, return_segments=True)
+        for i in range(strings.size):
+            re_split = re.split(pattern, strings[i], maxsplit)
+            ak_split = split[split_map[i]:] if i == strings.size-1 else split[split_map[i]:split_map[i+1]]
+            self.assertListEqual(re_split, ak_split.to_ndarray().tolist())
 
     def test_regex_contains(self):
         digit_strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
@@ -31,24 +167,11 @@ class RegexTest(ArkoudaTest):
         self.assertTrue(aaa_strings.endswith('ing a+', regex=True).all())
         self.assertFalse(aaa_strings.endswith('a+ str', regex=True).any())
 
-    def test_regex_match(self):
-        digit_strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
-        self.assertTrue(digit_strings.match('\\d string \\d').all())
-        # the following are false because the regex is not an exact match of any digit_strings
-        self.assertFalse(digit_strings.match('ing \\d').any())
-        self.assertFalse(digit_strings.match('\\d str').any())
-
-        aaa_strings = ak.array(['{} string {}'.format('a'*i, 'a'*i) for i in range(1, 6)])
-        self.assertTrue(aaa_strings.match('a+ string a+').all())
-        # the following are false because the regex is not an exact match of any aaa_strings
-        self.assertFalse(aaa_strings.match('ing a+').any())
-        self.assertFalse(aaa_strings.match('a+ str').any())
-
     def test_regex_find_locations(self):
         strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
 
         expected_num_matches = [2, 2, 2, 2, 2]
-        expected_starts = [0, 9, 11, 20, 22, 31, 33, 42, 44, 53]
+        expected_starts = [0, 9, 0, 9, 0, 9, 0, 9, 0, 9]
         expected_lens = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         actual_num_matches, actual_starts, actual_lens = strings.find_locations('\\d')
         self.assertListEqual(expected_num_matches, actual_num_matches.to_ndarray().tolist())
@@ -56,7 +179,7 @@ class RegexTest(ArkoudaTest):
         self.assertListEqual(expected_lens, actual_lens.to_ndarray().tolist())
 
         expected_num_matches = [1, 1, 1, 1, 1]
-        expected_starts = [2, 13, 24, 35, 46]
+        expected_starts = [2, 2, 2, 2, 2]
         expected_lens = [8, 8, 8, 8, 8]
         actual_num_matches, actual_starts, actual_lens = strings.find_locations('string \\d')
         self.assertListEqual(expected_num_matches, actual_num_matches.to_ndarray().tolist())

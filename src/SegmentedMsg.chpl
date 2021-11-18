@@ -11,6 +11,7 @@ module SegmentedMsg {
   use RandArray;
   use IO;
   use GenSymIO only jsonToPdArray;
+  use Map;
 
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
@@ -156,10 +157,185 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc checkMatchStrings(segName: string, valName:string, st: borrowed SymTab) throws {
+    try {
+      st.checkTable(segName);
+      st.checkTable(valName);
+    }
+    catch {
+      throw getErrorWithContext(
+          msg="The Strings instance from which this Match is derived has been deleted",
+          lineNumber=getLineNumber(),
+          routineName=getRoutineName(),
+          moduleName=getModuleName(),
+          errorClass="MissingStringsError");
+    }
+  }
+
   proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, segName, valName, patternJson) = payload.splitMsgToTuple(4);
+    var (objtype, segName, valName, groupNumStr, patternJson) = payload.splitMsgToTuple(5);
+    var groupNum: int;
+    try {
+      groupNum = groupNumStr:int;
+    }
+    catch {
+      var errorMsg = "groupNum could not be interpretted as an int: %s)".format(groupNumStr);
+      saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      throw new owned IllegalArgumentError(errorMsg);
+    }
+
+    // check to make sure symbols defined
+    checkMatchStrings(segName, valName, st);
+
+    const json = jsonToPdArray(patternJson, 1);
+    const pattern: string = json[json.domain.low];
+
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                   "cmd: %s objtype: %t".format(cmd, objtype));
+
+    if objtype == "Matcher" || objtype  == "Match" {
+      const rNumMatchesName = st.nextName();
+      const rStartsName = st.nextName();
+      const rLensName = st.nextName();
+      const rIndicesName = st.nextName();
+      const rSearchBoolName = st.nextName();
+      const rSearchScanName = st.nextName();
+      const rMatchBoolName = st.nextName();
+      const rMatchScanName = st.nextName();
+      const rfullMatchBoolName = st.nextName();
+      const rfullMatchScanName = st.nextName();
+      var strings = getSegString(segName, valName, st);
+
+      var (numMatches, matchStarts, matchLens, matchesIndices, searchBools, searchScan, matchBools, matchScan, fullMatchBools, fullMatchScan) = strings.findMatchLocations(pattern, groupNum);
+      st.addEntry(rNumMatchesName, new shared SymEntry(numMatches));
+      st.addEntry(rStartsName, new shared SymEntry(matchStarts));
+      st.addEntry(rLensName, new shared SymEntry(matchLens));
+      st.addEntry(rIndicesName, new shared SymEntry(matchesIndices));
+      st.addEntry(rSearchBoolName, new shared SymEntry(searchBools));
+      st.addEntry(rSearchScanName, new shared SymEntry(searchScan));
+      st.addEntry(rMatchBoolName, new shared SymEntry(matchBools));
+      st.addEntry(rMatchScanName, new shared SymEntry(matchScan));
+      st.addEntry(rfullMatchBoolName, new shared SymEntry(fullMatchBools));
+      st.addEntry(rfullMatchScanName, new shared SymEntry(fullMatchScan));
+
+      // Map JSON formatting is broken in Chpl version 1.24, create manually to maintain backwards compatibility
+      // var createdMap = new map(keyType=string,valType=string);
+      // createdMap.add("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      // createdMap.add("Starts", "created %s".format(st.attrib(rStartsName)));
+      // createdMap.add("Lens", "created %s".format(st.attrib(rLensName)));
+      // createdMap.add("Indices", "created %s".format(st.attrib(rIndicesName)));
+      // createdMap.add("SearchBool", "created %s".format(st.attrib(rSearchBoolName)));
+      // createdMap.add("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      // createdMap.add("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      // createdMap.add("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      // createdMap.add("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      // createdMap.add("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
+      // repMsg = "%jt".format(createdMap);
+      repMsg = "{";
+      repMsg += "%jt: %jt,".format("NumMatches", "created %s".format(st.attrib(rNumMatchesName)));
+      repMsg += "%jt: %jt,".format("Starts", "created %s".format(st.attrib(rStartsName)));
+      repMsg += "%jt: %jt,".format("Lens", "created %s".format(st.attrib(rLensName)));
+      repMsg += "%jt: %jt,".format("Indices", "created %s".format(st.attrib(rIndicesName)));
+      repMsg += "%jt: %jt,".format("SearchBool","created %s".format(st.attrib(rSearchBoolName)));
+      repMsg += "%jt: %jt,".format("SearchInd", "created %s".format(st.attrib(rSearchScanName)));
+      repMsg += "%jt: %jt,".format("MatchBool", "created %s".format(st.attrib(rMatchBoolName)));
+      repMsg += "%jt: %jt,".format("MatchInd", "created %s".format(st.attrib(rMatchScanName)));
+      repMsg += "%jt: %jt,".format("FullMatchBool", "created %s".format(st.attrib(rfullMatchBoolName)));
+      repMsg += "%jt: %jt".format("FullMatchInd", "created %s".format(st.attrib(rfullMatchScanName)));
+      repMsg += "}";
+    }
+    else {
+      var errorMsg = "%s".format(objtype);
+      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (objtype, segName, valName, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(8);
+    const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
+
+    // check to make sure symbols defined
+    checkMatchStrings(segName, valName, st);
+    st.checkTable(numMatchesName);
+    st.checkTable(startsName);
+    st.checkTable(lensName);
+    st.checkTable(indicesName);
+
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                   "cmd: %s objtype: %t".format(cmd, objtype));
+
+    select objtype {
+      when "Matcher" {
+        const rSegName = st.nextName();
+        const rValName = st.nextName();
+        const optName: string = if returnMatchOrig then st.nextName() else "";
+        var strings = getSegString(segName, valName, st);
+        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(int);
+        var starts = st.lookup(startsName): borrowed SymEntry(int);
+        var lens = st.lookup(lensName): borrowed SymEntry(int);
+        var indices = st.lookup(indicesName): borrowed SymEntry(int);
+
+        var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
+        st.addEntry(rSegName, new shared SymEntry(off));
+        st.addEntry(rValName, new shared SymEntry(val));
+        repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
+        if returnMatchOrig {
+          st.addEntry(optName, new shared SymEntry(matchOrigins));
+          repMsg += "+created %s".format(st.attrib(optName));
+        }
+      }
+      when "Match" {
+        const rSegName = st.nextName();
+        const rValName = st.nextName();
+        const optName: string = if returnMatchOrig then st.nextName() else "";
+        var strings = getSegString(segName, valName, st);
+        // numMatches is the matched boolean array for Match objects
+        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(bool);
+        var starts = st.lookup(startsName): borrowed SymEntry(int);
+        var lens = st.lookup(lensName): borrowed SymEntry(int);
+        var indices = st.lookup(indicesName): borrowed SymEntry(int);
+
+        var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, indices, returnMatchOrig);
+        st.addEntry(rSegName, new shared SymEntry(off));
+        st.addEntry(rValName, new shared SymEntry(val));
+        repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
+        if returnMatchOrig {
+          st.addEntry(optName, new shared SymEntry(matchOrigins));
+          repMsg += "+created %s".format(st.attrib(optName));
+        }
+      }
+      // when "Match" do numMatch SymEntry(bool) AND ?t in FindAll declaration in Strings idk if "for k in matchInd..#numMatches[stringInd]" will still work
+      otherwise {
+        var errorMsg = "%s".format(objtype);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+      }
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (objtype, segName, valName, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(7);
+    const returnNumSubs: bool = returnNumSubsStr.toLower() == "true";
+    var count: int;
+    try {
+      count = countStr:int;
+    }
+    catch {
+      var errorMsg = "Count could not be interpretted as an int: %s)".format(countStr);
+      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      throw new owned IllegalArgumentError(errorMsg);
+    }
 
     // check to make sure symbols defined
     st.checkTable(segName);
@@ -172,61 +348,17 @@ module SegmentedMsg {
                    "cmd: %s objtype: %t".format(cmd, objtype));
 
     select objtype {
-      when "str" {
-        const rNumMatchesName = st.nextName();
-        const rStartsName = st.nextName();
-        const rLensName = st.nextName();
-        var strings = getSegString(segName, valName, st);
-        var (numMatches, matchStarts, matchLens) = strings.findMatchLocations(pattern);
-        st.addEntry(rNumMatchesName, new shared SymEntry(numMatches));
-        st.addEntry(rStartsName, new shared SymEntry(matchStarts));
-        st.addEntry(rLensName, new shared SymEntry(matchLens));
-        repMsg = "created %s+created %s+created %s".format(st.attrib(rNumMatchesName),
-                                                           st.attrib(rStartsName),
-                                                           st.attrib(rLensName));
-      }
-      otherwise {
-        var errorMsg = "%s".format(objtype);
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
-      }
-    }
-    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-    return new MsgTuple(repMsg, MsgType.NORMAL);
-  }
-
-  proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var pn = Reflection.getRoutineName();
-    var repMsg: string;
-    var (objtype, segName, valName, numMatchesName, startsName, lensName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
-    const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
-
-    // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
-    st.checkTable(numMatchesName);
-    st.checkTable(startsName);
-    st.checkTable(lensName);
-
-    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                   "cmd: %s objtype: %t".format(cmd, objtype));
-
-    select objtype {
-      when "str" {
+      when "Matcher" {
         const rSegName = st.nextName();
         const rValName = st.nextName();
-        const optName: string = if returnMatchOrig then st.nextName() else "";
-        var strings = getSegString(segName, valName, st);
-        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(int);
-        var starts = st.lookup(startsName): borrowed SymEntry(int);
-        var lens = st.lookup(lensName): borrowed SymEntry(int);
-
-        var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, returnMatchOrig);
+        const optName: string = if returnNumSubs then st.nextName() else "";
+        const strings = getSegString(segName, valName, st);
+        var (off, val, numSubs) = strings.sub(pattern, repl, count, returnNumSubs);
         st.addEntry(rSegName, new shared SymEntry(off));
         st.addEntry(rValName, new shared SymEntry(val));
         repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
-        if returnMatchOrig {
-          st.addEntry(optName, new shared SymEntry(matchOrigins));
+        if returnNumSubs {
+          st.addEntry(optName, new shared SymEntry(numSubs));
           repMsg += "+created %s".format(st.attrib(optName));
         }
       }
