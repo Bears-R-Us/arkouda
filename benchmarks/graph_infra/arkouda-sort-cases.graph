@@ -1,12 +1,12 @@
-perfkeys: uniform int64 16-bit average rate =, uniform int64 32-bit average rate =, uniform int64 64-bit average rate =, uniform float64 (0, 1) average rate =
+perfkeys: uniform int64 16-bit average rate =, uniform int64 32-bit average rate =, uniform int64 64-bit average rate =, uniform float64 average rate =
 graphkeys: 16-bit, 32-bit, 64-bit, float64
-files: sort-cases.dat
+files: sort-cases.dat, sort-cases.dat, sort-cases.dat, sort-cases.dat
 graphtitle: Uniformly Distributed Data
 ylabel: Performance (GiB/s)
 
 perfkeys: power-law int64 average rate =, power-law float64 average rate =
 graphkeys: int64 32-bit, float64
-files: sort-cases.dat
+files: sort-cases.dat, sort-cases.dat
 graphtitle: Power-Law Distributed Data
 ylabel: Performance (GiB/s)
 
@@ -18,7 +18,7 @@ ylabel: Performance (GiB/s)
 
 perfkeys: block-sorted concat int64 average rate =, block-sorted interleaved int64 average rate =
 graphkeys: concatenated int64 32-bit, interleaved int64 32-bit
-files: sort-cases.dat
+files: sort-cases.dat, sort-cases.dat
 graphtitle: Combinations of Sorted Arrays
 ylabel: Performance (GiB/s)
 
