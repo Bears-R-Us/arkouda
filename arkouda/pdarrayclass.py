@@ -1043,6 +1043,80 @@ class pdarray:
                            format(self.name, dataset, m, json_array, self.dtype)))
 
     @typechecked
+    def save_parquet(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+        """
+        Save the pdarray to Parquet. The result is a collection of Parquet files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in Parquet files (must not already exist)
+        mode : str {'truncate'}
+            By default, truncate (overwrite) output files, if they exist.
+            Append is currently not supported.
+
+        Returns
+        -------
+        string message indicating result of save operation
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        ValueError
+            Raised if there is an error in parsing the prefix path pointing to
+            file write location or if the mode parameter is neither truncate
+            nor append
+        TypeError
+            Raised if any one of the prefix_path, dataset, or mode parameters
+            is not a string
+
+        See Also
+        --------
+        save, save_all, load, read_hdf, read_all
+
+        Notes
+        -----
+        The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+
+        Output files have names of the form ``<prefix_path>_LOCALE<i>.parquet``, where ``<i>``
+        ranges from 0 to ``numLocales``. If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 100, 1)
+        >>> a.save_parquet('arkouda_range')
+
+        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.parquet``
+
+        The array can be read back in as follows
+
+        >>> b = ak.read_parquet('arkouda_range')
+        >>> (a == b).all()
+        True
+        """
+        if mode.lower() in 'truncate':
+            m = 0
+        else: # TODO: add support for the append mode
+            raise ValueError("Currently only the 'truncate' mode is supported")
+        
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+        return cast(str, generic_msg(cmd="writeParquet", args="{} {} {} {}".\
+                                     format(self.name, dataset, json_array, self.dtype)))
+    
+    @typechecked
     def register(self, user_defined_name: str) -> pdarray:
         """
         Register this pdarray with a user defined name in the arkouda server

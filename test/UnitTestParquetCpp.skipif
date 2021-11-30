@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if [[ -n $CHPL_HOME ]]; then
+  export PATH="$PATH:$CHPL_HOME/bin/$CHPL_HOST_BIN_SUBDIR"
+fi
+
+PARENT_DIR=$(dirname $(cd $(dirname $0) ; pwd))
+ARKOUDA_HOME=${ARKOUDA_HOME:-$PARENT_DIR}
+
+compile() {
+  make -C ../ compile-arrow-cpp > /dev/null 2> /dev/null
+
+  if [ $? -eq 0 ]; then
+      echo False
+  else
+      echo True
+  fi
+}
+compile

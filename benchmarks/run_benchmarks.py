@@ -24,6 +24,9 @@ BENCHMARKS = ['stream', 'argsort', 'coargsort', 'groupby', 'aggregate', 'gather'
               'array_transfer', 'IO', 'str-argsort', 'str-coargsort',
               'str-groupby', 'str-gather', 'substring_search', 'flatten']
 
+if os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'):
+    BENCHMARKS.append('parquetIO')
+
 def get_chpl_util_dir():
     """ Get the Chapel directory that contains graph generation utilities. """
     CHPL_HOME = os.getenv('CHPL_HOME')

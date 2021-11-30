@@ -94,6 +94,12 @@ files: IO.dat, IO.dat
 graphtitle: IO Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: write Average rate =, read Average rate =
+graphkeys: Write GiB/s, Read GiB/s
+files: parquetIO.dat, parquetIO.dat
+graphtitle: Parquet IO Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =
 graphkeys: non-regex with literal substring GiB/s, regex with literal substring GiB/s, regex with pattern GiB/s
 files: substring_search.dat, substring_search.dat, substring_search.dat
