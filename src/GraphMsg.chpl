@@ -111,6 +111,9 @@ module GraphMsg {
                       //    dst[curline]=b:int;
                       //}
                       curline+=1;
+                      if curline>srclocal.high {
+                          break;
+                      }
                   } 
                   if (curline<=srclocal.high) {
                      //writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
