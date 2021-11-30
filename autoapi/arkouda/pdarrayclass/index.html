@@ -1053,6 +1053,65 @@ dataset with the same name already exists, a <code class="docutils literal notra
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.save_parquet">
+<span class="sig-name descname"><span class="pre">save_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.save_parquet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the pdarray to Parquet. The result is a collection of Parquet files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path. Each locale saves its chunk of the array to its
+corresponding file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in Parquet files (must not already exist)</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'}</em>) – By default, truncate (overwrite) output files, if they exist.
+Append is currently not supported.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string message indicating result of save operation</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>ValueError</strong> – Raised if there is an error in parsing the prefix path pointing to
+file write location or if the mode parameter is neither truncate
+nor append</p></li>
+<li><p><strong>TypeError</strong> – Raised if any one of the prefix_path, dataset, or mode parameters
+is not a string</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.save" title="arkouda.pdarrayclass.pdarray.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The prefix_path must be visible to the arkouda server and the user must
+have write permission.</p>
+<p>Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;.parquet</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code>. If any of the output files already exist and
+the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
+and the number of output files is less than the number of locales or a
+dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save_parquet</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Array is saved in numLocales files with names like <code class="docutils literal notranslate"><span class="pre">tmp/arkouda_range_LOCALE0.parquet</span></code></p>
+<p>The array can be read back in as follows</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this pdarray with a user defined name in the arkouda server

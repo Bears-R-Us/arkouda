@@ -1,0 +1,43 @@
+.. default-domain:: chpl
+
+.. module:: Parquet
+
+Parquet
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use Parquet;
+
+
+or
+
+.. code-block:: chapel
+
+   import Parquet;
+
+.. data:: var ARROWINT64: c_int
+
+.. data:: var ARROWINT32: c_int
+
+.. data:: var ARROWUNDEFINED: c_int
+
+.. enum:: enum ArrowTypes { int64, int32, notimplemented }
+
+.. function:: proc getVersionInfo()
+
+.. function:: proc getSubdomains(lengths: [?FD] int)
+
+.. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
+
+.. function:: proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string)
+
+.. function:: proc getArrSize(filename: string)
+
+.. function:: proc getArrType(filename: string, colname: string)
+
+.. function:: proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize)
+
+.. function:: proc write1DDistArrayParquet(filename: string, dsetname, A)
+

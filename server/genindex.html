@@ -126,6 +126,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/RandMsg.html">RandMsg</a></li>
@@ -335,12 +336,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ArgSortMsg.html#module-ArgSortMsg">ArgSortMsg (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ArgSortMsg.html#ArgSortMsg.argsortMsg">argsortMsg() (in module ArgSortMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError">ArgumentError (class in ServerErrors)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_KEY">ARKOUDA_HDF5_ARKOUDA_VERSION_KEY (in module GenSymIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE">ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE (in module GenSymIO)</a>
@@ -362,6 +363,14 @@
       <li><a href="modules/__w/arkouda/arkouda/src/ArraySetops.html#module-ArraySetops">ArraySetops (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ArraySetopsMsg.html#module-ArraySetopsMsg">ArraySetopsMsg (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.ARROWINT32">ARROWINT32 (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.ARROWINT64">ARROWINT64 (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.ArrowTypes">ArrowTypes (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.ARROWUNDEFINED">ARROWUNDEFINED (in module Parquet)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#module-AryUtil">AryUtil (module)</a>
 </li>
@@ -596,7 +605,11 @@
       <li><a href="modules/__w/arkouda/arkouda/src/Extremas.html#Extremas.KExtreme.dom">dom (Extremas.KExtreme attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.domain_intersection">domain_intersection() (in module GenSymIO)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.domain_intersection">(in module Parquet)</a>
 </li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Extremas.html#Extremas.KExtreme.doSort">doSort() (Extremas.KExtreme method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.dROUNDS">dROUNDS (in module SipHash)</a>
@@ -795,6 +808,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Security.html#Security.getArkoudaToken">getArkoudaToken() (in module Security)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.getArrSize">getArrSize() (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.getArrType">getArrType() (in module Parquet)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.getBitWidth">getBitWidth() (in module RadixSortLSD)</a>, <a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.getBitWidth">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.getBitWidth">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.getBitWidth">[3]</a>
@@ -839,6 +856,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.getSegString">getSegString() (in module SegmentedArray)</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.getSegString">[1]</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.getSubdomains">getSubdomains() (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.getVersionInfo">getVersionInfo() (in module Parquet)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.getWriteDsetName">getWriteDsetName() (in module GenSymIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.gsLogger">gsLogger (in module GenSymIO)</a>
@@ -851,6 +872,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.SegString.hash">hash() (SegmentedArray.SegString method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.hasParquetSupport">hasParquetSupport (in module ServerConfig)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.HDF5FileFormatError">HDF5FileFormatError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.HDF5RankError">HDF5RankError (class in GenSymIO)</a>
@@ -859,10 +882,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Histogram.html#Histogram.hgLogger">hgLogger (in module Histogram)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/HistogramMsg.html#HistogramMsg.hgmLogger">hgmLogger (in module HistogramMsg)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/HistogramMsg.html#HistogramMsg.hgmLogger">hgmLogger (in module HistogramMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Histogram.html#module-Histogram">Histogram (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Histogram.html#Histogram.histogramGlobalAtomic">histogramGlobalAtomic() (in module Histogram)</a>
@@ -1259,6 +1282,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#module-Parquet">Parquet (module)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.parseJson">parseJson() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/IndexingMsg.html#IndexingMsg.pdarrayIndexMsg">pdarrayIndexMsg() (in module IndexingMsg)</a>
@@ -1281,10 +1306,10 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.pretty">pretty() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.printAry">printAry() (in module AryUtil)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.printAry">printAry() (in module AryUtil)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.printDate">printDate (Logging.Logger attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.printOwnership">printOwnership() (in module AryUtil)</a>
@@ -1359,14 +1384,18 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.readAllHdfMsg">readAllHdfMsg() (in module GenSymIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.readAllParquetMsg">readAllParquetMsg() (in module GenSymIO)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.readFilesByName">readFilesByName() (in module Parquet)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ReductionMsg.html#module-ReductionMsg">ReductionMsg (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ReductionMsg.html#ReductionMsg.reductionMsg">reductionMsg() (in module ReductionMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.regexMaxCaptures">regexMaxCaptures (in module ServerConfig)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.regexMaxCaptures">regexMaxCaptures (in module ServerConfig)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/RegistrationMsg.html#RegistrationMsg.registerMsg">registerMsg() (in module RegistrationMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/RegistrationMsg.html#module-RegistrationMsg">RegistrationMsg (module)</a>
@@ -1655,6 +1684,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.tondarrayMsg">tondarrayMsg() (in module GenSymIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.toparquetMsg">toparquetMsg() (in module GenSymIO)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.toSymEntry">toSymEntry() (in module MultiTypeSymEntry)</a>
 
       <ul>
@@ -1757,11 +1788,15 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/EfuncMsg.html#EfuncMsg.where_helper">where_helper() (in module EfuncMsg)</a>, <a href="modules/__w/arkouda/arkouda/src/EfuncMsg.html#EfuncMsg.where_helper">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/EfuncMsg.html#EfuncMsg.where_helper">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/EfuncMsg.html#EfuncMsg.where_helper">[3]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/NumPyDType.html#NumPyDType.whichDtype">whichDtype() (in module NumPyDType)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.write1DDistArray">write1DDistArray() (in module GenSymIO)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.write1DDistArrayParquet">write1DDistArrayParquet() (in module Parquet)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/Parquet.html#Parquet.writeDistArrayToParquet">writeDistArrayToParquet() (in module Parquet)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError">WriteModeError (class in ServerErrors)</a>
 </li>

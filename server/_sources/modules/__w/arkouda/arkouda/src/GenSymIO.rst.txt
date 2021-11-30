@@ -114,6 +114,8 @@ or
    * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
    
 
+.. function:: proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
 .. function:: proc _buildReadAllHdfMsgJson(rnames: list(3*(string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
 
    *
@@ -239,6 +241,8 @@ or
 .. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
 
 .. function:: proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws
 

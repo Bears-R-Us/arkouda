@@ -15,6 +15,7 @@ Functions
 
    arkouda.pdarrayIO.ls_hdf
    arkouda.pdarrayIO.read_hdf
+   arkouda.pdarrayIO.read_parquet
    arkouda.pdarrayIO.read_all
    arkouda.pdarrayIO.load
    arkouda.pdarrayIO.get_datasets
@@ -79,6 +80,47 @@ Functions
    (a single filename is a valid expression, so it will work) and is
    expanded with glob to read all matching files. Use ``get_datasets`` to
    show the names of datasets in HDF5 files.
+
+   If dsetName is not present in all files, a TypeError is raised.
+
+
+.. py:function:: read_parquet(filenames: Union[str, List[str]], dsetname: Union[str, List[str]] = 'array', strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+
+   Read a single dataset from multiple Parquet files into an Arkouda
+   pdarray object.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param dsetName: The name of the dataset (must be the same across all files).
+                    Defaults to 'array'.
+   :type dsetName: str
+   :param strictTypes: If True (default), require all dtypes in all files to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset, the contents of both will be read into an int64 pdarray.
+   :type strictTypes: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
+
+   :returns: A pdarray instance pointing to the server-side data
+   :rtype: pdarray
+
+   :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
+       nor a list of strings
+   :raises ValueError: Raised if all datasets are not present in all parquet files
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
+
+   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files. Use ``get_datasets`` to
+   show the names of datasets in Parquet files.
 
    If dsetName is not present in all files, a TypeError is raised.
 

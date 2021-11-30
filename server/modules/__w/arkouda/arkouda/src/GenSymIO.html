@@ -128,6 +128,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -410,6 +411,11 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.readAllParquetMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readAllParquetMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.readAllParquetMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="GenSymIO._buildReadAllHdfMsgJson">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_buildReadAllHdfMsgJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rnames:</span> <span class="pre">list(3*(string))</span></em>, <em class="sig-param"><span class="pre">allowErrors:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">fileErrorCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fileErrors:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO._buildReadAllHdfMsgJson" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
@@ -647,6 +653,11 @@
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="GenSymIO.tohdfMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tohdfMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.tohdfMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.toparquetMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toparquetMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.toparquetMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

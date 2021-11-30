@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>FlattenMsg &mdash; chpldoc 0.0.1 documentation</title>
+  <title>Parquet &mdash; chpldoc 0.0.1 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="GenSymIO" href="GenSymIO.html" />
-    <link rel="prev" title="Flatten" href="Flatten.html" /> 
+    <link rel="next" title="RadixSortLSD" href="RadixSortLSD.html" />
+    <link rel="prev" title="OperatorMsg" href="OperatorMsg.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,7 +110,7 @@
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Flatten.html">Flatten</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">FlattenMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FlattenMsg.html">FlattenMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Histogram.html">Histogram</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -128,7 +128,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -195,13 +195,13 @@
     
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>FlattenMsg</li>
+      <li>Parquet</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/FlattenMsg.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Parquet.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -214,29 +214,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-FlattenMsg"></span><div class="section" id="flattenmsg">
-<h1>FlattenMsg<a class="headerlink" href="#flattenmsg" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-Parquet"></span><div class="section" id="parquet">
+<h1>Parquet<a class="headerlink" href="#parquet" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">FlattenMsg</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Parquet</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">FlattenMsg</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Parquet</span><span class="p">;</span>
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="FlattenMsg.fmLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">fmLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#FlattenMsg.fmLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Parquet.ARROWINT64">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ARROWINT64</span></span><span class="pre">:</span> <span class="pre">c_int</span><a class="headerlink" href="#Parquet.ARROWINT64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="Parquet.ARROWINT32">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ARROWINT32</span></span><span class="pre">:</span> <span class="pre">c_int</span><a class="headerlink" href="#Parquet.ARROWINT32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="Parquet.ARROWUNDEFINED">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ARROWUNDEFINED</span></span><span class="pre">:</span> <span class="pre">c_int</span><a class="headerlink" href="#Parquet.ARROWUNDEFINED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="Parquet.ArrowTypes">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ArrowTypes</span></span> <span class="pre">{</span> <span class="pre">int64,</span> <span class="pre">int32,</span> <span class="pre">notimplemented</span> <span class="pre">}</span><a class="headerlink" href="#Parquet.ArrowTypes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="FlattenMsg.segFlattenMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segFlattenMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#FlattenMsg.segFlattenMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Parquet.getVersionInfo">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getVersionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getVersionInfo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="FlattenMsg.segmentedSplitMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segmentedSplitMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#FlattenMsg.segmentedSplitMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Parquet.getSubdomains">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSubdomains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lengths:</span> <span class="pre">[?FD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getSubdomains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.domain_intersection">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.domain_intersection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.readFilesByName">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readFilesByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sizes:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.readFilesByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.getArrSize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getArrSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.getArrType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">colname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getArrType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.writeDistArrayToParquet">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeDistArrayToParquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filename</span></em>, <em class="sig-param"><span class="pre">dsetname</span></em>, <em class="sig-param"><span class="pre">rowGroupSize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.writeDistArrayToParquet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.write1DDistArrayParquet">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write1DDistArrayParquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetname</span></em>, <em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.write1DDistArrayParquet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -247,8 +292,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="GenSymIO.html" class="btn btn-neutral float-right" title="GenSymIO" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="Flatten.html" class="btn btn-neutral float-left" title="Flatten" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="RadixSortLSD.html" class="btn btn-neutral float-right" title="RadixSortLSD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="OperatorMsg.html" class="btn btn-neutral float-left" title="OperatorMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
