@@ -10,7 +10,7 @@ module ArgSortMsg
 
     use Time only;
     use Math only;
-    use Sort only;
+    private use Sort;
     use Reflection only;
     
     use PrivateDist;
@@ -46,6 +46,39 @@ module ArgSortMsg
     var mBins = 2**25;
     var lBins = 2**25 * numLocales;
 
+    enum SortAlgorithms {
+      RadixSortLSD,
+      TwoArrayRadixSort
+    };
+    config const defaultSortAlgorithm: SortAlgorithms = SortAlgorithms.RadixSortLSD;
+
+    // proc DefaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
+    // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
+    
+    import Reflection.canResolveMethod;
+    record ContrivedComparator {
+      const dc = new DefaultComparator();
+      proc keyPart(a, i: int) {
+        if canResolveMethod(dc, "keyPart", a, 0) {
+          return dc.keyPart(a, i);
+        } else if isTuple(a) {
+          return tupleKeyPart(a, i);
+        } else {
+          compilerError("No keyPart method for eltType ", a.type:string);
+        }
+      }
+      proc tupleKeyPart(x: _tuple, i:int) {
+        const (_, part) = dc.keyPart(x(i), 1);
+        if i >= x.size {
+          return (-1, 0:part.type);
+        } else {
+          return (0, part);
+        }
+      }
+    }
+    
+    const myDefaultComparator = new ContrivedComparator();
+
     /* Perform one step in a multi-step argsort, starting with an initial 
        permutation vector and further permuting it in the manner required
        to sort an array of keys.
@@ -65,7 +98,7 @@ module ArgSortMsg
                   agg.copy(newai, olda[idx]);
               }
               // Generate the next incremental permutation
-              deltaIV = radixSortLSD_ranks(newa);
+              deltaIV = argsortDefault(newa);
           }
           when DType.Float64 {
               var e = toSymEntry(g, real);
@@ -74,7 +107,7 @@ module ArgSortMsg
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
                   agg.copy(newai, olda[idx]);
               }
-              deltaIV = radixSortLSD_ranks(newa);
+              deltaIV = argsortDefault(newa);
           }
           otherwise { throw getErrorWithContext(
                                 msg="Unsupported DataType: %t".format(dtype2str(g.dtype)),
@@ -100,7 +133,7 @@ module ArgSortMsg
       forall (nh, idx) in zip(newHashes, iv) with (var agg = newSrcAggregator((2*uint))) {
         agg.copy(nh, hashes[idx]);
       }
-      var deltaIV = radixSortLSD_ranks(newHashes);
+      var deltaIV = argsortDefault(newHashes);
       // var (newOffsets, newVals) = s[iv];
       // var deltaIV = newStr.argGroup();
       var newIV: [aD] int;
@@ -305,12 +338,28 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    proc argsortDefault(A:[?D] ?t):[D] int throws {
+    proc argsortDefault(A:[?D] ?t, algorithm:SortAlgorithms=defaultSortAlgorithm):[D] int throws {
       var t1 = Time.getCurrentTime();
-      //var AI = [(a, i) in zip(A, D)] (a, i);
-      //Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
-      //var iv = [(a, i) in AI] i;
-      var iv = radixSortLSD_ranks(A);
+      var iv: [D] int;
+      select algorithm {
+        when SortAlgorithms.TwoArrayRadixSort {
+          var AI = [(a, i) in zip(A, D)] (a, i);
+          Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
+          iv = [(a, i) in AI] i;
+        }
+        when SortAlgorithms.RadixSortLSD {
+          iv = radixSortLSD_ranks(A);
+        }
+        otherwise {
+          throw getErrorWithContext(
+                                    msg="Unrecognized sorting algorithm: %s".format(algorithm:string),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+                  );
+        }
+      }
       try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                              "argsort time = %i".format(Time.getCurrentTime() - t1));
       return iv;
@@ -321,8 +370,21 @@ module ArgSortMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (objtype, name) = payload.splitMsgToTuple(2);
-
+        var (objtype, name, algoName) = payload.splitMsgToTuple(3);
+        var algorithm: SortAlgorithms = defaultSortAlgorithm;
+        if algoName != "" {
+          try {
+            algorithm = algoName: SortAlgorithms;
+          } catch {
+            throw getErrorWithContext(
+                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+                  );
+          }
+        }
         // get next symbol name
         var ivname = st.nextName();
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -338,7 +400,7 @@ module ArgSortMsg
             select (gEnt.dtype) {
                 when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
-                    var iv = argsortDefault(e.a);
+                    var iv = argsortDefault(e.a, algorithm=algorithm);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 when (DType.Float64) {
