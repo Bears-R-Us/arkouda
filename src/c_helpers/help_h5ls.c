@@ -12,7 +12,8 @@ herr_t c_get_HDF5_obj_type(hid_t loc_id, const char *name, H5O_type_t *obj_type)
 {
     herr_t status;
     H5O_info_t info_t;
-    status = H5Oget_info_by_name1(loc_id, name, &info_t, H5P_DEFAULT);
+    H5O_info_t* info_t_ptr = &info_t;
+    status = H5Oget_info_by_name(loc_id, name, info_t_ptr, H5P_DEFAULT);
     *obj_type = info_t.type;
     return status;
 }

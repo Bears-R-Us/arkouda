@@ -13,6 +13,10 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
+
+# We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
+CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
+
 CHPL_DEBUG_FLAGS += --print-passes
 ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
@@ -248,6 +252,7 @@ else
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
 endif
 
+# This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
