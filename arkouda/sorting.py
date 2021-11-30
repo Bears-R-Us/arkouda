@@ -6,12 +6,15 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
 from arkouda.dtypes import int64, float64
+from enum import Enum
 
 numeric_dtypes = {float64,int64}
 
-__all__ = ["argsort", "coargsort", "sort"]
+__all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
 
-def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: ignore
+SortingAlgorithm = Enum('SortingAlgorithm', ['RadixSortLSD', 'TwoArrayRadixSort'])
+
+def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray: # type: ignore
     """
     Return the permutation that sorts the array.
     
@@ -57,11 +60,11 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
     else:
         name = pda.name
-    repMsg = generic_msg(cmd="argsort", args="{} {}".format(pda.objtype, name))
+    repMsg = generic_msg(cmd="argsort", args="{} {} {}".format(algorithm.name, pda.objtype, name))
     return create_pdarray(cast(str,repMsg))
 
 
-def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']]) -> pdarray:  # type: ignore
+def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:  # type: ignore
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
@@ -129,8 +132,10 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']]) -> pdarr
             raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
     if size == 0:
         return zeros(0, dtype=int64)
-    repMsg = generic_msg(cmd="coargsort", args="{:n} {} {}".format(len(arrays), 
-                                                                   ' '.join(anames), ' '.join(atypes)))
+    repMsg = generic_msg(cmd="coargsort", args="{} {:n} {} {}".format(algorithm.name,
+                                                                      len(arrays), 
+                                                                      ' '.join(anames),
+                                                                      ' '.join(atypes)))
     return create_pdarray(cast(str, repMsg))
 
 @typechecked
