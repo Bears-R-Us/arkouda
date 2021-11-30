@@ -68,9 +68,23 @@ module ArgSortMsg
         }
       }
       proc tupleKeyPart(x: _tuple, i:int) {
-        const (_, part) = dc.keyPart(x(i), 1);
+        var part: uint(64);
+        for param j in 0..<x.size {
+          if i == j {
+            // get the part, ignore the section
+            const p = dc.keyPart(x(j), 0)(1);
+            // assuming result of keyPart is int or uint <= 64 bits
+            part = p:uint(64); 
+            // If the number is signed, invert the top bit, so that
+            // the negative numbers sort below the positive numbers
+            if isInt(p) {
+              const one:uint(64) = 1;
+              part = part ^ (one << 63);
+            }
+          }
+        }
         if i >= x.size {
-          return (-1, 0:part.type);
+          return (-1, 0:uint(64));
         } else {
           return (0, part);
         }
@@ -163,7 +177,21 @@ module ArgSortMsg
     proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (nstr, rest) = payload.splitMsgToTuple(2);
+      var (algoName, nstr, rest) = payload.splitMsgToTuple(3);
+      var algorithm: SortAlgorithms = defaultSortAlgorithm;
+      if algoName != "" {
+        try {
+          algorithm = algoName: SortAlgorithms;
+        } catch {
+          throw getErrorWithContext(
+                                    msg="Unrecognized sorting algorithm: %s".format(algoName),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="NotImplementedError"
+                                    );
+        }
+      }
       var n = nstr:int; // number of arrays to sort
       var fields = rest.split();
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
@@ -296,7 +324,7 @@ module ArgSortMsg
               }
           }
 
-          var iv = argsortDefault(merged);
+          var iv = argsortDefault(merged, algorithm=algorithm);
           st.addEntry(ivname, new shared SymEntry(iv));
 
           var repMsg = "created " + st.attrib(ivname);
@@ -370,7 +398,7 @@ module ArgSortMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (objtype, name, algoName) = payload.splitMsgToTuple(3);
+        var (algoName, objtype, name) = payload.splitMsgToTuple(3);
         var algorithm: SortAlgorithms = defaultSortAlgorithm;
         if algoName != "" {
           try {
