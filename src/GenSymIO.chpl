@@ -1367,13 +1367,13 @@ module GenSymIO {
                  * slice is the null uint(8) character. If it is not, this means the last string 
                  * in the current locale (idx) spans the current AND next locale.
                  */
-                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
+                var charArray = A.localSlice(locDom);
+                if charArray[charArray.domain.high] != NULL_STRINGS_VALUE {
                     /*
                      * Retrieve the chars array slice from this locale and populate the charList
                      * that will be updated per left and/or right shuffle operations until the 
                      * final char list is assembled
                      */ 
-                    var charArray = A.localSlice(locDom);
                     var charList : list(uint(8)) = new list(charArray);
 
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1989,7 +1989,7 @@ module GenSymIO {
                 * string on the locale completes within the locale. Otherwise,
                 * the last string spans to the next locale.
                 */
-                if charArray.back() == NULL_STRINGS_VALUE {
+                if charArray[charArray.domain.high] == NULL_STRINGS_VALUE {
                     endsWithCompleteString[idx] = true;
                 } else {
                     endsWithCompleteString[idx] = false;
@@ -2001,14 +2001,15 @@ module GenSymIO {
 
                 /*
                 * If the first locale (locale 0), the first segment is retrieved
-                * via segsArray.front(), corresponding to 0. Otherwise, find the 
-                * first occurrence of the null uint(8) char and the firstSeg is the
-                * next non-null char. The lastSeg in all cases is the final segsArray
-                * element retrieved via segsArray.back()
+                * via segsArray[segsArray.domain.low], corresponding to 0.
+                * Otherwise, find the first occurrence of the null uint(8) char
+                * and the firstSeg is the next non-null char. The lastSeg in
+                * all cases is the final segsArray element retrieved via
+                * segsArray[segsArray.domain.high]
                 */
                 if idx == 0 {
-                    firstSeg = segsArray.front();
-                    lastSeg = segsArray.back();
+                    firstSeg = segsArray[segsArray.domain.low];
+                    lastSeg = segsArray[segsArray.domain.high];
                     gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                     "Locale idx:%t firstSeg:%t, lastSeg:%t".format(idx, firstSeg, lastSeg));
                 } else {
@@ -2016,7 +2017,7 @@ module GenSymIO {
                     if nullString {
                         firstSeg = fSeg + 1;
                     }
-                    lastSeg = segsArray.back();
+                    lastSeg = segsArray[segsArray.domain.high];
                 }
 
                 /*
