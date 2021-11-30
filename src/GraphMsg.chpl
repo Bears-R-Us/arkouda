@@ -113,9 +113,11 @@ module GraphMsg {
                       curline+=1;
                   } 
                   if (curline<=srclocal.high) {
-                     writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                     writeln("The input file ",FileName, " does not give enough edges for locale ", here.id);
-                     writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                     //writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                     //writeln("The input file ",FileName, " does not give enough edges for locale ", here.id);
+                     var outMsg="The input file " + FileName + " does not give enough edges for locale " + here.id:string;
+                     smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+                     //writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
                   }
                   forall i in src.localSubdomain() {
                   //     src[i]=src[i]+(src[i]==dst[i]);
@@ -379,11 +381,15 @@ module GraphMsg {
       readLinebyLine();
       timer.stop();
 
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$ Reading File takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$ Reading File takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
+
+      var outMsg="Reading File takes " + timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
 
       timer.clear();
       timer.start();
@@ -614,13 +620,14 @@ module GraphMsg {
                     numCurF=SetNextF.size;
 
                     if (numCurF>0) {
-                        var tmpary:[0..numCurF-1] int;
+                        //var tmpary:[0..numCurF-1] int;
                         var sortary:[0..numCurF-1] int;
                         var numary:[0..numCurF-1] int;
                         var tmpa=0:int;
-                        forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
-                            a=b;
-                        }
+                        var tmpary=SetNextF.toArray();
+                        //forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
+                        //    a=b;
+                        //}
                         forall i in 0..numCurF-1 {
                              numary[i]=neighbour[tmpary[i]];
                         }
@@ -713,9 +720,9 @@ module GraphMsg {
                 on loc {
                   forall i in src.localSubdomain(){
                         if src[i]>dst[i] {
-                           var tmpx=src[i];
-                           src[i]=dst[i];
-                           dst[i]=tmpx;
+                           //var tmpx=src[i];
+                           src[i]<=>dst[i];
+                           //dst[i]=tmpx;
                         }
                    }
                 }
@@ -807,17 +814,12 @@ module GraphMsg {
 
       var srcNameR, dstNameR, startNameR, neiNameR:string;
       if (directed!=0) {//for directed graph
-          if (weighted!=0) {// for weighted graph
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
-                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
-          } else {// for unweighted graph
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+          repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ;
-
-          }
+          if (weighted!=0) {// for weighted graph
+              repMsg +=  '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } 
       } else {//for undirected graph
 
           srcNameR = st.nextName();
@@ -832,28 +834,24 @@ module GraphMsg {
           st.addEntry(dstNameR, dstEntryR);
           st.addEntry(startNameR, startEntryR);
           st.addEntry(neiNameR, neiEntryR);
-          if (weighted!=0) {// for weighted graph
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
-                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) +
-                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) +
-                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
-          } else {// for unweighted graph
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+          repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
                     '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) +
                     '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ;
-          }
+          if (weighted!=0) {// for weighted graph
+              repMsg +=  '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } 
 
       }
       timer.stop();
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$Sorting Edges takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$Sorting Edges takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      outMsg="Sorting Edges takes "+ timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -1256,11 +1254,13 @@ module GraphMsg {
              var v_weight = makeDistArray(Nv,int);
              rmat_gen();
              timer.stop();
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
+             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
              timer.clear();
              timer.start();
              combine_sort();
@@ -1297,11 +1297,13 @@ module GraphMsg {
           } else {
              rmat_gen();
              timer.stop();
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
+             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
              timer.clear();
              timer.start();
              //twostep_sort();
@@ -1648,11 +1650,13 @@ module GraphMsg {
           if (weighted!=0) {
              rmat_gen();
              timer.stop();
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
+             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             // writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
              timer.clear();
              timer.start();
              combine_sort();
@@ -1727,11 +1731,13 @@ module GraphMsg {
 
              rmat_gen();
              timer.stop();
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
+             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
              timer.clear();
              timer.start();
              //twostep_sort();
@@ -1782,11 +1788,13 @@ module GraphMsg {
           }// end unweighted graph
       }// end undirected graph
       timer.stop();
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$$$$$$ sorting RMAT graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$$$$$$ sorting RMAT graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+      var outMsg="sorting RMAT graph takes "+timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);      
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -2028,11 +2036,11 @@ module GraphMsg {
               cur_level+=1;
               //writeln("cur level=",cur_level);
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
@@ -4038,19 +4046,25 @@ module GraphMsg {
               RPG=0;
               cur_level+=1;
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg= "number of top-down = "+ topdown:string+ " number of bottom-up="+bottomup:string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          //writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
             TotalLocal+=localNum[i];
             TotalRemote+=remoteNum[i];
           }
-          writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
+          outMsg="Local Ratio="+ ((TotalLocal):real/(TotalLocal+TotalRemote):real):string + "Total Local Access=" + TotalLocal:string +" Total Remote Access=" + TotalRemote:string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          //writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
           return "success";
       }//end of co_d1_bfs_kernel_u
 
@@ -4134,7 +4148,9 @@ module GraphMsg {
                   co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
                   timer.stop();
-                  writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
+                  //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
+                  var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
+                  smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
 
                   /*
                   depth=-1;
@@ -4328,7 +4344,9 @@ module GraphMsg {
                   co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
                   timer.stop();
-                  writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
+                  var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
+                  smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+                  //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
                   /*
                   depth=-1;
                   depth[root]=0;
@@ -4490,7 +4508,9 @@ module GraphMsg {
           }
       }
       timer.stop();
-      writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+      //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+      var outMsg= "graph BFS takes "+timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
 
