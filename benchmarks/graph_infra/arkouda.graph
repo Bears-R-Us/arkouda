@@ -64,6 +64,12 @@ files: reduce.dat, reduce.dat, reduce.dat, reduce.dat
 graphtitle: Reduce Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: Medium average rate =, Large average rate =
+graphkeys: Medium GiB/s, Large GiB/s
+files: in1d.dat, in1d.dat
+graphtitle: in1d Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: intersect1d Average rate =, union1d Average rate =, setxor1d Average rate =, setdiff1d Average rate =
 graphkeys: Intersect GiB/s, Union GiB/s, Xor GiB/s, Diff GiB/s
 files: setops.dat, setops.dat, setops.dat, setops.dat
