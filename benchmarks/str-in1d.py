@@ -11,7 +11,7 @@ LARGE = 10**6 + 1
 MAXSTRLEN = 5
 
 def time_ak_in1d(size, trials):
-    print(">>> arkouda int64 in1d")
+    print(">>> arkouda string in1d")
     cfg = ak.get_config()
     N = size * cfg["numLocales"]
     a = ak.random_strings_uniform(1, MAXSTRLEN, N)
