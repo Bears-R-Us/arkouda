@@ -46,11 +46,11 @@ module ArgSortMsg
     var mBins = 2**25;
     var lBins = 2**25 * numLocales;
 
-    enum SortAlgorithms {
+    enum SortingAlgorithm {
       RadixSortLSD,
       TwoArrayRadixSort
     };
-    config const defaultSortAlgorithm: SortAlgorithms = SortAlgorithms.RadixSortLSD;
+    config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD;
 
     // proc DefaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
     // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
@@ -199,10 +199,10 @@ module ArgSortMsg
       param pn = Reflection.getRoutineName();
       var repMsg: string;
       var (algoName, nstr, rest) = payload.splitMsgToTuple(3);
-      var algorithm: SortAlgorithms = defaultSortAlgorithm;
+      var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
-          algorithm = algoName: SortAlgorithms;
+          algorithm = algoName: SortingAlgorithm;
         } catch {
           throw getErrorWithContext(
                                     msg="Unrecognized sorting algorithm: %s".format(algoName),
@@ -387,16 +387,16 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    proc argsortDefault(A:[?D] ?t, algorithm:SortAlgorithms=defaultSortAlgorithm):[D] int throws {
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm):[D] int throws {
       var t1 = Time.getCurrentTime();
       var iv: [D] int;
       select algorithm {
-        when SortAlgorithms.TwoArrayRadixSort {
+        when SortingAlgorithm.TwoArrayRadixSort {
           var AI = [(a, i) in zip(A, D)] (a, i);
           Sort.TwoArrayRadixSort.twoArrayRadixSort(AI, comparator=myDefaultComparator);
           iv = [(a, i) in AI] i;
         }
-        when SortAlgorithms.RadixSortLSD {
+        when SortingAlgorithm.RadixSortLSD {
           iv = radixSortLSD_ranks(A);
         }
         otherwise {
@@ -420,10 +420,10 @@ module ArgSortMsg
         var repMsg: string; // response message
         // split request into fields
         var (algoName, objtype, name) = payload.splitMsgToTuple(3);
-        var algorithm: SortAlgorithms = defaultSortAlgorithm;
+        var algorithm: SortingAlgorithm = defaultSortAlgorithm;
         if algoName != "" {
           try {
-            algorithm = algoName: SortAlgorithms;
+            algorithm = algoName: SortingAlgorithm;
           } catch {
             throw getErrorWithContext(
                                     msg="Unrecognized sorting algorithm: %s".format(algoName),
