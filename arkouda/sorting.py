@@ -139,7 +139,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     return create_pdarray(cast(str, repMsg))
 
 @typechecked
-def sort(pda : pdarray) -> pdarray:
+def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays; 
     for Strings, use argsort.
@@ -182,5 +182,5 @@ def sort(pda : pdarray) -> pdarray:
         return zeros(0, dtype=int64)
     if pda.dtype not in numeric_dtypes:
         raise ValueError("ak.sort supports float64 or int64, not {}".format(pda.dtype))
-    repMsg = generic_msg(cmd="sort", args="{}".format(pda.name))
+    repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
     return create_pdarray(cast(str,repMsg))
