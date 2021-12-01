@@ -121,55 +121,62 @@ def check_coargsort(N_per_locale):
 class CoargsortTest(ArkoudaTest):
 
     def test_int(self):
-        check_int(10**3)
+        for algo in ak.SortingAlgorithm:
+            check_int(10**3, algo)
 
     def test_float(self):
-        check_float(10**3)
+        for algo in ak.SortingAlgorithm:
+            check_float(10**3, algo)
 
     def test_int_float(self):
-        check_int_float(10**3)
+        for algo in ak.SortingAlgorithm:
+            check_int_float(10**3, algo)
 
     def test_large(self):
-        check_large(10**3)
+        for algo in ak.SortingAlgorithm:
+            check_large(10**3, algo)
         
     def test_error_handling(self):
         ones = ak.ones(100)
         short_ones = ak.ones(10)
-        
-        with self.assertRaises(ValueError):
-            ak.coargsort([ones, short_ones])
-            
-        with self.assertRaises(TypeError):
-            ak.coargsort([list(range(0,10)), [0]])
+
+        for algo in ak.SortingAlgorithm:
+            with self.assertRaises(ValueError):
+                ak.coargsort([ones, short_ones], algo)
+
+        for algo in ak.SortingAlgorithm:
+            with self.assertRaises(TypeError):
+                ak.coargsort([list(range(0,10)), [0]], algo)
 
     def test_coargsort_categorical(self):
         string = ak.array(['a', 'b', 'a', 'b', 'c'])
         cat = ak.Categorical(string)
         cat_from_codes = ak.Categorical.from_codes(codes=ak.array([0, 1, 0, 1, 2]),
                                                    categories=ak.array(['a', 'b', 'c']))
-        str_perm = ak.coargsort([string])
-        str_sorted = string[str_perm].to_ndarray()
+        for algo in ak.SortingAlgorithm:
+            str_perm = ak.coargsort([string], algo)
+            str_sorted = string[str_perm].to_ndarray()
 
-        # coargsort on categorical
-        cat_perm = ak.coargsort([cat])
-        cat_sorted = cat[cat_perm].to_ndarray()
-        self.assertTrue((str_sorted == cat_sorted).all())
+            # coargsort on categorical
+            cat_perm = ak.coargsort([cat], algo)
+            cat_sorted = cat[cat_perm].to_ndarray()
+            self.assertTrue((str_sorted == cat_sorted).all())
 
-        # coargsort on categorical.from_codes
-        # coargsort sorts using codes, the order isn't guaranteed, only grouping
-        from_codes_perm = ak.coargsort([cat_from_codes])
-        from_codes_sorted = cat_from_codes[from_codes_perm].to_ndarray()
-        self.assertTrue((['a', 'a', 'b', 'b', 'c'] == from_codes_sorted).all())
+            # coargsort on categorical.from_codes
+            # coargsort sorts using codes, the order isn't guaranteed, only grouping
+            from_codes_perm = ak.coargsort([cat_from_codes], algo)
+            from_codes_sorted = cat_from_codes[from_codes_perm].to_ndarray()
+            self.assertTrue((['a', 'a', 'b', 'b', 'c'] == from_codes_sorted).all())
 
-        # coargsort on 2 categoricals (one from_codes)
-        cat_perm = ak.coargsort([cat, cat_from_codes])
-        cat_sorted = cat[cat_perm].to_ndarray()
-        self.assertTrue((str_sorted == cat_sorted).all())
+            # coargsort on 2 categoricals (one from_codes)
+            cat_perm = ak.coargsort([cat, cat_from_codes], algo)
+            cat_sorted = cat[cat_perm].to_ndarray()
+            self.assertTrue((str_sorted == cat_sorted).all())
 
-        # coargsort on mixed strings and categoricals
-        mixed_perm = ak.coargsort([cat, string, cat_from_codes])
-        mixed_sorted = cat_from_codes[mixed_perm].to_ndarray()
-        self.assertTrue((str_sorted == mixed_sorted).all())
+            # coargsort on mixed strings and categoricals
+            mixed_perm = ak.coargsort([cat, string, cat_from_codes], algo)
+            mixed_sorted = cat_from_codes[mixed_perm].to_ndarray()
+            self.assertTrue((str_sorted == mixed_sorted).all())
 
 
 def create_parser():
