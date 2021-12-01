@@ -68,25 +68,46 @@ module ArgSortMsg
         }
       }
       proc tupleKeyPart(x: _tuple, i:int) {
+        proc makePart(y): uint(64) {
+          var part: uint(64);
+          // get the part, ignore the section
+          const p = dc.keyPart(y, 0)(1);
+          // assuming result of keyPart is int or uint <= 64 bits
+          part = p:uint(64); 
+          // If the number is signed, invert the top bit, so that
+          // the negative numbers sort below the positive numbers
+          if isInt(p) {
+            const one:uint(64) = 1;
+            part = part ^ (one << 63);
+          }
+          return part;
+        }
         var part: uint(64);
-        for param j in 0..<x.size {
-          if i == j {
-            // get the part, ignore the section
-            const p = dc.keyPart(x(j), 0)(1);
-            // assuming result of keyPart is int or uint <= 64 bits
-            part = p:uint(64); 
-            // If the number is signed, invert the top bit, so that
-            // the negative numbers sort below the positive numbers
-            if isInt(p) {
-              const one:uint(64) = 1;
-              part = part ^ (one << 63);
+        if isTuple(x[0]) && (x.size == 2) {
+          for param j in 0..<x[0].size {
+            if i == j {
+              part = makePart(x[0][j]);
             }
           }
-        }
-        if i >= x.size {
-          return (-1, 0:uint(64));
+          if i == x[0].size {
+            part = makePart(x[1]);
+          }
+          if i > x[0].size {
+            return (-1, 0:uint(64));
+          } else {
+            return (0, part);
+          }
         } else {
-          return (0, part);
+          for param j in 0..<x.size {
+            if i == j {
+              part = makePart(x[j]);
+            }
+          }
+          if i >= x.size {
+            return (-1, 0:uint(64));
+          } else {
+            return (0, part);
+          }
         }
       }
     }
