@@ -134,6 +134,7 @@ Functions
    arkouda.save_all
    arkouda.read_parquet
    arkouda.broadcast
+   arkouda.join_on_eq_with_dt
    arkouda.enableVerbose
    arkouda.disableVerbose
    arkouda.isSupportedInt
@@ -4564,6 +4565,35 @@ Attributes
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
+
+
+.. py:function:: join_on_eq_with_dt(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[int, numpy.int64], pred: str, result_limit: Union[int, numpy.int64] = 1000) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+   Performs an inner-join on equality between two integer arrays where
+   the time-window predicate is also true
+
+   :param a1: pdarray to be joined
+   :type a1: pdarray, int64
+   :param a2: pdarray to be joined
+   :type a2: pdarray, int64
+   :param t1: timestamps in millis corresponding to the a1 pdarray
+   :type t1: pdarray
+   :param t2: timestamps in millis corresponding to the a2 pdarray
+   :type t2: pdarray,
+   :param dt: time delta
+   :type dt: Union[int,np.int64]
+   :param pred: time window predicate
+   :type pred: str
+   :param result_limit: size limit for returned result
+   :type result_limit: Union[int,np.int64]
+
+   :returns: * **result_array_one** (*pdarray, int64*) -- a1 indices where a1 == a2
+             * **result_array_one** (*pdarray, int64*) -- a2 indices where a2 == a1
+
+   :raises TypeError: Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or
+       result_limit is not an int
+   :raises ValueError: if a1, a2, t1, or t2 dtype is not int64, pred is not
+       'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
 
 
 .. py:class:: Categorical(values, **kwargs)

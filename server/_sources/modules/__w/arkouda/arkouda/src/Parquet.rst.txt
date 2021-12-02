@@ -37,7 +37,7 @@ or
 
 .. function:: proc getArrType(filename: string, colname: string)
 
-.. function:: proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize)
+.. function:: proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize) throws
 
-.. function:: proc write1DDistArrayParquet(filename: string, dsetname, A)
+.. function:: proc write1DDistArrayParquet(filename: string, dsetname, A) throws
 
