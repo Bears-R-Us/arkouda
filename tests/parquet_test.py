@@ -24,10 +24,8 @@ class ParquetTest(ArkoudaTest):
         test_arrs = []
         elems = ak.randint(0, 2**32, adjusted_size)
         per_arr = int(adjusted_size/NUMFILES)
-        print(elems)
         for i in range(NUMFILES):
             test_arrs.append(elems[(i*per_arr):(i*per_arr)+per_arr])
-            print(test_arrs[i])
             test_arrs[i].save_parquet("pq_test" + str(i), "test-dset")
 
         pq_arr = ak.read_parquet("pq_test*", "test-dset")
