@@ -277,6 +277,41 @@ to permute the original array into sorted order</p>
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lBins</span></span> <span class="pre">=</span> <span class="pre">2**25</span> <span class="pre">*</span> <span class="pre">numLocales</span><a class="headerlink" href="#ArgSortMsg.lBins" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="ArgSortMsg.SortingAlgorithm">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SortingAlgorithm</span></span> <span class="pre">{</span> <span class="pre">RadixSortLSD,</span> <span class="pre">TwoArrayRadixSort</span> <span class="pre">}</span><a class="headerlink" href="#ArgSortMsg.SortingAlgorithm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ArgSortMsg.defaultSortAlgorithm">
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">defaultSortAlgorithm</span></span><span class="pre">:</span> <span class="pre">SortingAlgorithm</span> <span class="pre">=</span> <span class="pre">SortingAlgorithm.RadixSortLSD</span><a class="headerlink" href="#ArgSortMsg.defaultSortAlgorithm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="ArgSortMsg.ContrivedComparator">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">ContrivedComparator</span></span><a class="headerlink" href="#ArgSortMsg.ContrivedComparator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="ArgSortMsg.ContrivedComparator.dc">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">dc</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">DefaultComparator()</span><a class="headerlink" href="#ArgSortMsg.ContrivedComparator.dc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArgSortMsg.ContrivedComparator.keyPart">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">keyPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a</span></em>, <em class="sig-param"><span class="pre">i:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArgSortMsg.ContrivedComparator.keyPart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ArgSortMsg.ContrivedComparator.tupleKeyPart">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupleKeyPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">_tuple</span></em>, <em class="sig-param"><span class="pre">i:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ArgSortMsg.ContrivedComparator.tupleKeyPart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ArgSortMsg.myDefaultComparator">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myDefaultComparator</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">ContrivedComparator()</span><a class="headerlink" href="#ArgSortMsg.myDefaultComparator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArgSortMsg.incrementalArgSort">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementalArgSort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">g:</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">iv:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ArgSortMsg.incrementalArgSort" title="Permalink to this definition">¶</a></dt>
@@ -299,7 +334,7 @@ new level of the sorting key.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ArgSortMsg.argsortDefault">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argsortDefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ArgSortMsg.argsortDefault" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argsortDefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">algorithm:</span> <span class="pre">SortingAlgorithm</span> <span class="pre">=</span> <span class="pre">defaultSortAlgorithm</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[D]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#ArgSortMsg.argsortDefault" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

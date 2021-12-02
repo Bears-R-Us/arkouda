@@ -42,6 +42,20 @@ to permute the original array into sorted order
 
 .. data:: var lBins = 2**25 * numLocales
 
+.. enum:: enum SortingAlgorithm { RadixSortLSD, TwoArrayRadixSort }
+
+.. data:: config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD
+
+.. record:: ContrivedComparator
+
+   .. attribute:: const dc = new DefaultComparator()
+
+   .. method:: proc keyPart(a, i: int)
+
+   .. method:: proc tupleKeyPart(x: _tuple, i: int)
+
+.. data:: const myDefaultComparator = new ContrivedComparator()
+
 .. function:: proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws
 
    Perform one step in a multi-step argsort, starting with an initial 
@@ -57,7 +71,7 @@ to permute the original array into sorted order
    new level of the sorting key.
    
 
-.. function:: proc argsortDefault(A: [?D] ?t): [D] int throws
+.. function:: proc argsortDefault(A: [?D] ?t, algorithm: SortingAlgorithm = defaultSortAlgorithm): [D] int throws
 
 .. function:: proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
