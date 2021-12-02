@@ -84,12 +84,12 @@ module Parquet {
     return ArrowTypes.notimplemented;
   }
 
-  proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize) {
+  proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize) throws {
     extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
                                      dsetname, numelems, rowGroupSize);
     var filenames: [0..#A.targetLocales().size] string;
     for i in 0..#A.targetLocales().size {
-      var suffix = i: string;
+      var suffix = '%04i'.format(i): string;
       filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
     }
 
@@ -102,7 +102,7 @@ module Parquet {
       }
   }
 
-  proc write1DDistArrayParquet(filename: string, dsetname, A) {
+  proc write1DDistArrayParquet(filename: string, dsetname, A) throws {
     writeDistArrayToParquet(A, filename, dsetname, ROWGROUPS);
     return false;
   }
