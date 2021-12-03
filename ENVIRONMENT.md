@@ -60,3 +60,6 @@ Also see the python tests [README](tests/README.md) for more information on Pyth
   - ARKOUDA_KEY_FILE : Client env var for keyfile when using ssh tunnel
   - ARKOUDA_PASSWORD : Client env var for password when using ssh tunnel
   - ARKOUDA_LOG_LEVEL : Client env var to control client side Logging Level
+
+## Building with Parquet
+  - ARKOUDA_SERVER_PARQUET_SUPPORT : Env var to control if the server is built with Parquet support; if set, Parquet will be built, regardless of value
