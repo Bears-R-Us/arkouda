@@ -3,9 +3,11 @@ from __future__ import annotations
 import itertools
 from typing import cast, Tuple, List, Optional, Union, Dict
 from typeguard import typechecked
+
+import arkouda.dtypes
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, \
-     unregister_pdarray_by_name, RegistrationError
+     unregister_pdarray_by_name
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import npstr, int_scalars, str_scalars
@@ -18,6 +20,11 @@ from arkouda.match import Match, MatchType
 
 __all__ = ['Strings']
 
+# Command strings for message passing to arkouda server, specific to Strings
+CMD_ASSEMBLE = "segStr-assemble"
+CMD_TO_NDARRAY = "segStr-tondarray"
+
+
 class Strings:
     """
     Represents an array of strings whose data resides on the
@@ -26,10 +33,11 @@ class Strings:
 
     Attributes
     ----------
-    offsets : pdarray
-        The starting indices for each string
-    bytes : pdarray
-        The raw bytes of all strings, joined by nulls
+    entry : pdarray
+        Encapsulation of a Segmented Strings array contained on
+        the arkouda server.  This is a composite of
+         - offsets array: starting indices for each string
+         - bytes array: raw bytes of all strings joined by nulls
     size : int_scalars
         The number of strings in the array
     nbytes : int_scalars
@@ -53,18 +61,93 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib : Union[pdarray,str], 
-                 bytes_attrib : Union[pdarray,str]) -> None:
+    @staticmethod
+    def from_return_msg(rep_msg: str) -> Strings:
+        """
+        Factory method for creating a Strings object from an Arkouda server
+        response message
+
+        Parameters
+        ----------
+        rep_msg : str
+            Server response message currently of form
+            `created name type size ndim shape itemsize+created bytes.size 1234`
+
+        Returns
+        -------
+        Strings
+            object representing a segmented strings array on the server
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's an error converting a server-returned str-descriptor
+
+        Notes
+        -----
+        We really don't have an itemsize because these are variable length strings.
+        In the future we could probably use this position to store the total bytes.
+        """
+        left, right = cast(str, rep_msg).split('+')
+        bytes_size: int_scalars = int(right.split()[-1])
+        return Strings(create_pdarray(left), bytes_size)
+
+    @staticmethod
+    def from_parts(offset_attrib: Union[pdarray, str], bytes_attrib: Union[pdarray, str]) -> Strings:
+        """
+        Factory method for creating a Strings object from an Arkouda server
+        response where the arrays are separate components.
+
+        Parameters
+        ----------
+        offset_attrib : Union[pdarray, str]
+            the array containing the offsets
+        bytes_attrib : Union[pdarray, str]
+            the array containing the string values
+
+        Returns
+        -------
+        Strings
+            object representing a segmented strings array on the server
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's an error converting a server-returned str-descriptor
+
+        Notes
+        -----
+        This factory method is used when we construct the parts of a Strings
+        object on the client side and transfer the offsets & bytes separately
+        to the server.  This results in two entries in the symbol table and we
+        need to instruct the server to assemble the into a composite entity.
+        """
+        if not isinstance(offset_attrib, pdarray):
+            try:
+                offset_attrib = create_pdarray(offset_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
+        if not isinstance(bytes_attrib, pdarray):
+            try:
+                bytes_attrib = create_pdarray(bytes_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
+        # Now we have two pdarray objects
+        args = f"{offset_attrib.name} {bytes_attrib.name}"  # type: ignore
+        response = cast(str, generic_msg(cmd=CMD_ASSEMBLE, args=args))
+        return Strings.from_return_msg(response)
+
+    def __init__(self, strings_pdarray: pdarray, bytes_size: int_scalars) -> None:
         """
         Initializes the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
         
         Parameters
         ----------
-        offset_attrib : Union[pdarray, str]
-            the array containing the offsets 
-        bytes_attrib : Union[pdarray, str]
-            the array containing the string values    
+        strings_pdarray : pdarray
+            the array containing the meta-info on a server side strings object
+        bytes_size : int_scalars
+            length of the bytes array contained on the server aka total bytes
             
         Returns
         -------
@@ -79,25 +162,12 @@ class Strings:
             Raised if there's an error in generating instance attributes 
             from either the offset_attrib or bytes_attrib parameter 
         """
-        if isinstance(offset_attrib, pdarray):
-            self.offsets = offset_attrib
-        else:
-            try:
-                self.offsets = create_pdarray(offset_attrib)
-            except Exception as e:
-                raise RuntimeError(e)
-        if isinstance(bytes_attrib, pdarray):
-            self.bytes = bytes_attrib
-        else:
-            try:
-                self.bytes = create_pdarray(bytes_attrib)
-            except Exception as e:
-                raise RuntimeError(e)
+        self.entry: pdarray = strings_pdarray
         try:
-            self.size = self.offsets.size
-            self.nbytes = self.bytes.size
-            self.ndim = self.offsets.ndim
-            self.shape = self.offsets.shape
+            self.size = self.entry.size
+            self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
+            self.ndim = self.entry.ndim
+            self.shape = self.entry.shape
         except Exception as e:
             raise ValueError(e)   
 
@@ -163,17 +233,17 @@ class Strings:
             cmd = "segmentedBinopvv"
             args = "{} {} {} {} {} {} {}".format(op,
                                                  self.objtype,
-                                                 self.offsets.name,
-                                                 self.bytes.name,
+                                                 self.entry.name,
+                                                 "legacy_placeholder",
                                                  other.objtype,
-                                                 other.offsets.name,
-                                                 other.bytes.name)
+                                                 other.entry.name,
+                                                 other.entry.name)
         elif resolve_scalar_dtype(other) == 'str':
             cmd = "segmentedBinopvs"
             args = "{} {} {} {} {} {}".format(op,
                                                               self.objtype,
-                                                              self.offsets.name,
-                                                              self.bytes.name,
+                                                              self.entry.name,
+                                                              "legacy_placeholder",
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
@@ -197,8 +267,8 @@ class Strings:
                 cmd = "segmentedIndex"
                 args = " {} {} {} {} {}".format('intIndex',
                                                 self.objtype,
-                                                self.offsets.name,
-                                                self.bytes.name,
+                                                self.entry.name,
+                                                "legacy_placeholder",
                                                 key)
                 repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
@@ -212,14 +282,13 @@ class Strings:
             cmd = "segmentedIndex"
             args = " {} {} {} {} {} {} {}".format('sliceIndex',
                                                   self.objtype,
-                                                  self.offsets.name,
-                                                  self.bytes.name,
+                                                  self.entry.name,
+                                                  "legacy_placeholder",
                                                   start,
                                                   stop,
                                                   stride)
             repMsg = generic_msg(cmd=cmd, args=args)
-            offsets, values = repMsg.split('+')
-            return Strings(offsets, values);
+            return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
@@ -229,12 +298,11 @@ class Strings:
             cmd = "segmentedIndex"
             args = "{} {} {} {} {}".format('pdarrayIndex',
                                                          self.objtype,
-                                                         self.offsets.name,
-                                                         self.bytes.name,
+                                                         self.entry.name,
+                                                         "legacy_placeholder",
                                                          key.name)
             repMsg = generic_msg(cmd=cmd,args=args)
-            offsets, values = repMsg.split('+')
-            return Strings(offsets, values)
+            return Strings.from_return_msg(repMsg)
         else:
             raise TypeError("unsupported pdarray index type {}".format(key.__class__.__name__))
 
@@ -253,8 +321,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         cmd = "segmentLengths"
-        args = "{} {} {}".\
-                        format(self.objtype, self.offsets.name, self.bytes.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
@@ -286,9 +353,7 @@ class Strings:
         if pattern in self._regex_dict:
             matcher = self._regex_dict[pattern]
         elif create:
-            self._regex_dict[pattern] = Matcher(pattern=pattern,
-                                                parent_bytes_name=self.bytes.name,
-                                                parent_offsets_name=self.offsets.name)
+            self._regex_dict[pattern] = Matcher(pattern=pattern, parent_entry_name=self.entry.name)
             matcher = self._regex_dict[pattern]
         return matcher
 
@@ -623,8 +688,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("contains",
                                              self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
+                                             self.entry.name,
+                                             "legacy_placeholder",
                                              "str",
                                              regex,
                                              json.dumps([substr]))
@@ -686,8 +751,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("startswith",
                                              self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
+                                             self.entry.name,
+                                             "legacy_placeholder",
                                              "str",
                                              regex,
                                              json.dumps([substr]))
@@ -744,8 +809,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("endswith",
                                              self.objtype,
-                                             self.offsets.name,
-                                             self.bytes.name,
+                                             self.entry.name,
+                                             "legacy_placeholder",
                                              "str",
                                              regex,
                                              json.dumps([substr]))
@@ -800,8 +865,8 @@ class Strings:
             return self.split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
-            args = "{}+{} {} {} {} {}".format(self.offsets.name,
-                                              self.bytes.name,
+            args = "{}+{} {} {} {} {}".format(self.entry.name,
+                                              "legacy_placeholder",
                                               self.objtype,
                                               return_segments,
                                               regex,
@@ -809,10 +874,10 @@ class Strings:
             repMsg = cast(str, generic_msg(cmd=cmd, args=args))
             if return_segments:
                 arrays = repMsg.split('+', maxsplit=2)
-                return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+                return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
             else:
                 arrays = repMsg.split('+', maxsplit=1)
-                return Strings(arrays[0], arrays[1])
+                return Strings.from_return_msg(repMsg)
     
     @typechecked
     def peel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
@@ -896,8 +961,8 @@ class Strings:
         cmd = "segmentedPeel"
         args = "{} {} {} {} {} {} {} {} {} {} {}".format("peel",
                                                          self.objtype,
-                                                         self.offsets.name,
-                                                         self.bytes.name,
+                                                         self.entry.name,
+                                                         "legacy_placeholder",
                                                          "str",
                                                          NUMBER_FORMAT_STRINGS['int64'].format(times),
                                                          NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
@@ -907,9 +972,10 @@ class Strings:
                                                          json.dumps([delimiter]))
         repMsg = generic_msg(cmd=cmd, args=args)
         arrays = cast(str, repMsg).split('+', maxsplit=3)
-        leftStr = Strings(arrays[0], arrays[1])
-        rightStr = Strings(arrays[2], arrays[3])
-        return leftStr, rightStr
+        # first two created are left Strings, last two are right strings
+        left_str = Strings.from_return_msg("+".join(arrays[0:2]))
+        right_str = Strings.from_return_msg("+".join(arrays[2:4]))
+        return left_str, right_str
 
     def rpeel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
               includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False):
@@ -1021,15 +1087,15 @@ class Strings:
         args = "{} {} {} {} {} {} {} {} {}".\
                             format("stick",
                             self.objtype,
-                            self.offsets.name,
-                            self.bytes.name,
+                            self.entry.name,
+                            "legacy_placeholder",
                             other.objtype,
-                            other.offsets.name,
-                            other.bytes.name,
+                            other.entry.name,
+                            "legacy_placeholder",
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
-        repMsg = generic_msg(cmd=cmd,args=args)
-        return Strings(*cast(str,repMsg).split('+'))
+        rep_msg = generic_msg(cmd=cmd,args=args)
+        return Strings.from_return_msg(cast(str, rep_msg))
 
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
@@ -1094,9 +1160,9 @@ class Strings:
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
         """
+        # TODO fix this to return a single pdarray of hashes
         cmd = "segmentedHash"
-        args = "{} {} {}".format(self.objtype, self.offsets.name, 
-                                              self.bytes.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         repMsg = generic_msg(cmd=cmd,args=args)
         h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
@@ -1132,8 +1198,7 @@ class Strings:
             creating the pdarray encapsulating the return message
         """
         cmd = "segmentedGroup"
-        args = "{} {} {}".\
-                           format(self.objtype, self.offsets.name, self.bytes.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def to_ndarray(self) -> np.ndarray:
@@ -1170,9 +1235,9 @@ class Strings:
         numpy.ndarray
         """
         # Get offsets and append total bytes for length calculation
-        npoffsets = np.hstack((self.offsets.to_ndarray(), np.array([self.nbytes])))
+        npoffsets = np.hstack((self._comp_to_ndarray("offsets"), np.array([self.nbytes])))
         # Get contents of strings (will error if too large)
-        npvalues = self.bytes.to_ndarray()
+        npvalues = self._comp_to_ndarray("values")
         # Compute lengths, discounting null terminators
         lengths = np.diff(npoffsets) - 1
         # Numpy dtype is based on max string length
@@ -1182,6 +1247,62 @@ class Strings:
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
+
+    def _comp_to_ndarray(self, comp: str) -> np.ndarray:
+        """
+        This is an internal helper function to perform the to_ndarray for one
+        of the string components.
+
+        Parameters
+        ----------
+        comp : str
+            The strings component to request
+
+        Returns
+        -------
+        np.ndarray
+            A numpy ndarray with the same attributes and data as the pdarray
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown, if the pdarray size
+            exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+            received does not match expected number of bytes
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting client.maxTransferBytes to a larger
+        value, but proceed with caution.
+        """
+        from arkouda.client import maxTransferBytes
+        # Total number of bytes in the array data
+        my_sz, my_dt = (self.size, arkouda.dtypes.int64) if comp == "offsets" else (self.nbytes, arkouda.dtypes.uint8)
+        array_bytes = my_sz * my_dt.itemsize
+
+        # Guard against overflowing client memory
+        if array_bytes > maxTransferBytes:
+            raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
+                               'client.maxTransferBytes to allow'))
+        # The reply from the server will be a bytes object
+        rep_msg = generic_msg(cmd=CMD_TO_NDARRAY, args="{} {}".format(self.entry.name, comp), recv_binary=True)
+
+        # Make sure the received data has the expected length
+        if len(rep_msg) != array_bytes:
+            raise RuntimeError(f"Expected {array_bytes} bytes but received {len(rep_msg)}")
+
+        # The server sends us native-endian bytes so we need to account for that.
+        # Since bytes are immutable, we need to copy the np array to be mutable
+        dt = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
+        if arkouda.dtypes.get_server_byteorder() == 'big':
+            dt = dt.newbyteorder('>')
+        else:
+            dt = dt.newbyteorder('<')
+        return np.frombuffer(rep_msg, dt).copy()
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
@@ -1242,7 +1363,7 @@ class Strings:
             raise ValueError(e)
 
         cmd = "tohdf"
-        args = f"{self.bytes.name} {dataset} {m} {json_array} {self.dtype} {self.offsets.name} {save_offsets}"
+        args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {self.entry.name} {save_offsets}"
         return cast(str, generic_msg(cmd, args))
 
     def is_registered(self) -> np.bool_:
@@ -1263,11 +1384,7 @@ class Strings:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        parts_registered = [np.bool_(self.offsets.is_registered()), self.bytes.is_registered()]
-        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-            raise RegistrationError(f"Not all registerable components of Strings {self.name} are registered.")
-
-        return np.bool_(np.any(parts_registered))
+        return np.bool_(self.entry.is_registered())
 
     def _list_component_names(self) -> List[str]:
         """
@@ -1282,7 +1399,7 @@ class Strings:
         List[str]
             List of all component names
         """
-        return list(itertools.chain.from_iterable([self.offsets._list_component_names(), self.bytes._list_component_names()]))
+        return list(itertools.chain.from_iterable([self.entry._list_component_names()]))
 
     def info(self) -> str:
         """
@@ -1311,8 +1428,7 @@ class Strings:
         -------
         None
         """
-        self.offsets.pretty_print_info()
-        self.bytes.pretty_print_info()
+        self.entry.pretty_print_info()
 
     @typechecked
     def register(self, user_defined_name: str) -> Strings:
@@ -1353,8 +1469,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        self.offsets.register(f"{user_defined_name}.offsets")
-        self.bytes.register(f"{user_defined_name}.bytes")
+        self.entry.register(user_defined_name)
         self.name = user_defined_name
         return self
 
@@ -1384,8 +1499,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
         """
-        self.offsets.unregister()
-        self.bytes.unregister()
+        self.entry.unregister()
         self.name = None
 
     @staticmethod
@@ -1419,8 +1533,8 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        s = Strings(pdarray.attach(f"{user_defined_name}.offsets"),
-                    pdarray.attach(f"{user_defined_name}.bytes"))
+        rep_msg:str = cast(str, generic_msg(cmd="attach", args="{}".format(user_defined_name)))
+        s = Strings.from_return_msg(rep_msg)
         s.name = user_defined_name
         return s
 
@@ -1439,5 +1553,4 @@ class Strings:
         --------
         register, unregister, attach, is_registered
         """
-        unregister_pdarray_by_name(f"{user_defined_name}.bytes")
-        unregister_pdarray_by_name(f"{user_defined_name}.offsets")
+        unregister_pdarray_by_name(user_defined_name)

@@ -52,8 +52,8 @@ module In1dMsg
         // get next symbol name
         var rname = st.nextName();
 
-        var gAr1: borrowed GenSymEntry = st.lookup(name);
-        var gAr2: borrowed GenSymEntry = st.lookup(sname);
+        var gAr1: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gAr2: borrowed GenSymEntry = getGenericTypedArrayEntry(sname, st);
         
         iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "cmd: %s pdarray1: %s pdarray2: %s invert: %t new pdarray name: %t".format(

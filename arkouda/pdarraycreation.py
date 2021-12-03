@@ -189,7 +189,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         args = f"{encoded_np.dtype.name} {encoded_np.size} seg_string={True}"
         rep_msg = generic_msg(cmd='array', args=args, payload=_array_memview(encoded_np), send_binary=True)
         parts = cast(str, rep_msg).split('+', maxsplit=3)
-        return Strings(parts[0], parts[1])
+        return Strings.from_parts(parts[0], parts[1])
 
     # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
@@ -760,7 +760,7 @@ def random_strings_uniform(minlen : int_scalars, maxlen : int_scalars,
                  NUMBER_FORMAT_STRINGS['int64'].format(minlen),
                  NUMBER_FORMAT_STRINGS['int64'].format(maxlen),
                  seed))
-    return Strings(*(cast(str,repMsg).split('+')))
+    return Strings.from_return_msg(cast(str, repMsg))
 
 @typechecked
 def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars, 
@@ -826,4 +826,4 @@ def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars
                  NUMBER_FORMAT_STRINGS['float64'].format(logmean),
                  NUMBER_FORMAT_STRINGS['float64'].format(logstd),
                  seed))
-    return Strings(*(cast(str,repMsg).split('+')))
+    return Strings.from_return_msg(cast(str, repMsg))

@@ -82,8 +82,8 @@ prototype module UnitTestArgSort
         writeRep(repMsg);
         var cofname = parseName(repMsg);
         writeln("Checking that arrays are cosorted");
-        var coa = toSymEntry(st.lookup(coaname), int);
-        var cof = toSymEntry(st.lookup(cofname), real);
+        var coa = toSymEntry(toGenSymEntry(st.lookup(coaname)), int);
+        var cof = toSymEntry(toGenSymEntry(st.lookup(cofname)), real);
         var allSorted: atomic bool = true;
         forall (a, f, i) in zip(coa.a[1..], cof.a[1..], coa.aD.low+1..) {
           ref coaa = coa.a;

@@ -248,7 +248,7 @@ module JoinEqWithDTMsg
         // lookup arguments and check types
         // !!!!! check for DType.Int64 on all of these !!!!!
         // !!!!! check matching length on some arguments !!!!!
-        var a1Ent: borrowed GenSymEntry = st.lookup(a1_name);
+        var a1Ent: borrowed GenSymEntry = getGenericTypedArrayEntry(a1_name, st);
         if (a1Ent.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(a1Ent.dtype)),
@@ -259,7 +259,7 @@ module JoinEqWithDTMsg
         }
         var a1 = toSymEntry(a1Ent, int);
         
-        var g2SegEnt: borrowed GenSymEntry = st.lookup(g2Seg_name);
+        var g2SegEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(g2Seg_name, st);
         if (g2SegEnt.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(g2SegEnt.dtype)),
@@ -270,7 +270,7 @@ module JoinEqWithDTMsg
         }
         var g2Seg = toSymEntry(g2SegEnt, int);
         
-        var g2UkeysEnt: borrowed GenSymEntry = st.lookup(g2Ukeys_name);
+        var g2UkeysEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(g2Ukeys_name, st);
         if (g2UkeysEnt.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(g2UkeysEnt.dtype)),
@@ -290,7 +290,7 @@ module JoinEqWithDTMsg
         }
         var g2Ukeys = toSymEntry(g2UkeysEnt, int);
         
-        var g2PermEnt: borrowed GenSymEntry = st.lookup(g2Perm_name);
+        var g2PermEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(g2Perm_name, st);
         if (g2PermEnt.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(g2PermEnt.dtype)),
@@ -302,7 +302,7 @@ module JoinEqWithDTMsg
         }
         var g2Perm = toSymEntry(g2PermEnt, int);
         
-        var t1Ent: borrowed GenSymEntry = st.lookup(t1_name);
+        var t1Ent: borrowed GenSymEntry = getGenericTypedArrayEntry(t1_name, st);
         if (t1Ent.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(t1Ent.dtype)),
@@ -323,7 +323,7 @@ module JoinEqWithDTMsg
         }
         var t1 = toSymEntry(t1Ent, int);
         
-        var t2Ent: borrowed GenSymEntry = st.lookup(t2_name);
+        var t2Ent: borrowed GenSymEntry = getGenericTypedArrayEntry(t2_name, st);
         if (t2Ent.dtype != DType.Int64) {
             throw getErrorWithContext(
                         msg=incompatibleArgumentsError(pn, dtype2str(t2Ent.dtype)),

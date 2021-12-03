@@ -232,22 +232,21 @@ module ArgSortMsg
       // Check that all arrays exist in the symbol table and have the same size
       var hasStr = false;
       for (name, objtype, i) in zip(names, types, 1..) {
-        // arrays[i] = st.lookup(name): borrowed GenSymEntry;
         var thisSize: int;
         select objtype {
           when "pdarray" {
-            var g = st.lookup(name);
+            var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
           }
           when "str" {
             var (myNames, _) = name.splitMsgToTuple('+', 2);
-            var g = st.lookup(myNames);
+            var g = getSegStringEntry(myNames, st);
             thisSize = g.size;
             hasStr = true;
           }
           when "category" {
             // passed only Categorical.codes.name to be sorted on
-            var g = st.lookup(name);
+            var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
           }
           otherwise {
@@ -288,7 +287,7 @@ module ArgSortMsg
 
         for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
           // TODO checkSorted and exclude array if already sorted?
-          var g: borrowed GenSymEntry = st.lookup(name);
+          var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
           select g.dtype {
               when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
               when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
@@ -315,7 +314,7 @@ module ArgSortMsg
           var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
           var curDigit = numDigits - totalDigits;
           for (name, nBits, neg) in zip(names, bitWidths, negs) {
-              var g: borrowed GenSymEntry = st.lookup(name);
+              var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
               proc mergeArray(type t) {
                 var e = toSymEntry(g, t);
                 ref A = e.a;
@@ -367,17 +366,18 @@ module ArgSortMsg
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
       st.addEntry(rname, size, int);
-      var iv = toSymEntry(st.lookup(rname), int);
+      var iv = toSymEntry(getGenericTypedArrayEntry(rname, st), int);
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
         if (types[j] == "str") {
-          var (myNames1,myNames2) = names[i].splitMsgToTuple('+', 2);
-          var strings = getSegString(myNames1, myNames2, st);
+          // TODO remove legacy_placeholder
+          var (myNames1, legacy_placeholder) = names[i].splitMsgToTuple('+', 2);
+          var strings = getSegString(myNames1, st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
-          var g: borrowed GenSymEntry = st.lookup(names[i]);
+          var g: borrowed GenSymEntry = getGenericTypedArrayEntry(names[i], st);
           // Perform the coArgSort and store in the new SymEntry
           iv.a = incrementalArgSort(g, iv.a);
         }
@@ -441,7 +441,7 @@ module ArgSortMsg
 
         select objtype {
           when "pdarray" {
-            var gEnt: borrowed GenSymEntry = st.lookup(name);
+            var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
             overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
@@ -465,8 +465,9 @@ module ArgSortMsg
             }
           }
           when "str" {
-            var (names1, names2) = name.splitMsgToTuple('+', 2);
-            var strings = getSegString(names1, names2, st);
+            // TODO remove legacy_placeholder
+            var (names1, legacy_placeholder) = name.splitMsgToTuple('+', 2);
+            var strings = getSegString(names1, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));

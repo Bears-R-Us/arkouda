@@ -25,7 +25,7 @@ module IndexingMsg
         var idx = try! idxStr:int;
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                     "%s %s %i".format(cmd, name, idx));
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
          
         select (gEnt.dtype) {
              when (DType.Int64) {
@@ -80,7 +80,7 @@ module IndexingMsg
 
         // get next symbol name
         var rname = st.nextName();
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %t new name: %s".format(
@@ -127,8 +127,8 @@ module IndexingMsg
         // get next symbol name
         var rname = st.nextName();
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "cmd: %s name: %s gX: %t gIV: %t".format(
@@ -244,7 +244,7 @@ module IndexingMsg
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                "%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -321,8 +321,8 @@ module IndexingMsg
         var (name, iname, dtypeStr, value) = payload.splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "cmd: %s gX: %s gIV: %s value: %s".format(cmd,st.attrib(name),
@@ -424,9 +424,9 @@ module IndexingMsg
         // split request into fields
         var (name, iname, yname) = payload.splitMsgToTuple(3);
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        var gY: borrowed GenSymEntry = st.lookup(yname);
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
+        var gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
         
         if logLevel == LogLevel.DEBUG {
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -561,7 +561,7 @@ module IndexingMsg
                        "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
                                   dtype2str(dtype), value));
         
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -652,8 +652,8 @@ module IndexingMsg
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                         "%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        var gY: borrowed GenSymEntry = st.lookup(yname);
+        var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {      

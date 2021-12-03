@@ -50,7 +50,7 @@ module FindSegmentsMsg
         var ktypes = fields[low+nkeys..#nkeys]; // objtypes
         var size: int;
         // Check all the argument arrays before doing anything
-        var gPerm = st.lookup(pname);
+        var gPerm = getGenericTypedArrayEntry(pname, st);
         if (gPerm.dtype != DType.Int64) { 
             var errorMsg = notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); 
             fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -63,13 +63,13 @@ module FindSegmentsMsg
           var thisType: DType;
           select objtype {
               when "pdarray" {
-                  var g = st.lookup(name);
+                  var g = getGenericTypedArrayEntry(name, st);
                   thisSize = g.size;
                   thisType = g.dtype;
               }
               when "str" {
                   var (myNames,_) = name.splitMsgToTuple('+', 2);
-                  var g = st.lookup(myNames);
+                  var g = getSegStringEntry(name, st); //st.lookup(myNames); Is this a segstring or gensym entry?
                   thisSize = g.size;
                   thisType = g.dtype;
               }
@@ -120,7 +120,7 @@ module FindSegmentsMsg
         for (name, objtype) in zip(knames, ktypes) {
           select objtype {
             when "pdarray" {
-              var g: borrowed GenSymEntry = st.lookup(name);
+              var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
               var k = toSymEntry(g,int); // key array
               ref ka = k.a; // ref to key array
               // Permute the key array to grouped order
@@ -132,10 +132,11 @@ module FindSegmentsMsg
               [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
             }
             when "str" {
-              var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
+              // TODO remvove legacy_placeholder
+              var (myNames1,legacy_placeholder) = name.splitMsgToTuple('+', 2);
               fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
-              var str = getSegString(myNames1, myNames2, st);
+                                  "findSegmentsMessage myNames1: {} legacy_placeholder: {}".format(myNames1,legacy_placeholder));
+              var str = getSegString(myNames1, st);
               var (permOffsets, permVals) = str[pa];
               const ref D = permOffsets.domain;
               var permLengths: [D] int;

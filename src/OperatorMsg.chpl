@@ -40,8 +40,8 @@ module OperatorMsg
         var (op, aname, bname) = payload.splitMsgToTuple(3);
 
         var rname = st.nextName();
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        var right: borrowed GenSymEntry = st.lookup(bname);
+        var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
+        var right: borrowed GenSymEntry = getGenericTypedArrayEntry(bname, st);
         
         omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
              "cmd: %t op: %t left pdarray: %t right pdarray: %t".format(
@@ -508,7 +508,7 @@ module OperatorMsg
 
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        var left: borrowed GenSymEntry = st.lookup(aname);
+        var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "op: %s dtype: %t pdarray: %t scalar: %t".format(
@@ -954,7 +954,7 @@ module OperatorMsg
 
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        var right: borrowed GenSymEntry = st.lookup(aname);
+        var right: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
         
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                  "command = %t op = %t scalar dtype = %t scalar = %t pdarray = %t".format(
@@ -1397,8 +1397,8 @@ module OperatorMsg
         var (op, aname, bname) = payload.splitMsgToTuple(3);
 
         // retrieve left and right pdarray objects      
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        var right: borrowed GenSymEntry = st.lookup(bname);
+        var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
+        var right: borrowed GenSymEntry = getGenericTypedArrayEntry(bname, st);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
@@ -1575,7 +1575,7 @@ module OperatorMsg
                         "cmd: %s op: %s aname: %s dtype: %s scalar: %s".format(
                                                  cmd,op,aname,dtype2str(dtype),value));
 
-        var left: borrowed GenSymEntry = st.lookup(aname);
+        var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
  
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "op: %t pdarray: %t scalar: %t".format(op,st.attrib(aname),value));
