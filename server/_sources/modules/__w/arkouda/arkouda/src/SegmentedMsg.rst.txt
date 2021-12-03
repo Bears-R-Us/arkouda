@@ -19,13 +19,32 @@ or
 
 .. data:: const smLogger = new Logger(logLevel)
 
+.. function:: proc assembleStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   *
+   * Procedure for assembling disjoint Strings-object / SegString parts
+   * This should be a transitional procedure for current client procedure
+   * of building and passing the two components separately.  Eventually
+   * we'll either encapsulate both parts in a single message or do the
+   * parsing and offsets construction on the server.
+   
+
+.. function:: proc segStrTondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws
+
+.. function:: proc _tondarrayMsg(entry): bytes throws
+
+   
+   * Outputs the pdarray as a Numpy ndarray in the form of a 
+   * Chapel Bytes object
+   
+
 .. function:: proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc segmentLengthsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
-.. function:: proc checkMatchStrings(segName: string, valName: string, st: borrowed SymTab) throws
+.. function:: proc checkMatchStrings(name: string, st: borrowed SymTab) throws
 
 .. function:: proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
@@ -33,7 +52,7 @@ or
 
 .. function:: proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
-.. function:: proc createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st: borrowed SymTab) throws
+.. function:: proc createPeelSymEntries(lo, lv, ro, rv, st: borrowed SymTab) throws
 
 .. function:: proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

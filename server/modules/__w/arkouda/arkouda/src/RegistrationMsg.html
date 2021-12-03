@@ -264,6 +264,32 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="RegistrationMsg.isStringAttrib">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isStringAttrib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">attrs:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#RegistrationMsg.isStringAttrib" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Determine if the attributes belong to a SegString</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg attrs</dt>
+<dd class="field-odd"><p>attributes from SymTab</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type attrs</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="RegistrationMsg.unregisterMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unregisterMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#RegistrationMsg.unregisterMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a unregister message</p>

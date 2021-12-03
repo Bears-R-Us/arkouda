@@ -230,6 +230,33 @@
 <dd></dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedMsg.assembleStringsMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">assembleStringsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.assembleStringsMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Procedure for assembling disjoint Strings-object / SegString parts</p></li>
+<li><p>This should be a transitional procedure for current client procedure</p></li>
+<li><p>of building and passing the two components separately.  Eventually</p></li>
+<li><p>we’ll either encapsulate both parts in a single message or do the</p></li>
+<li><p>parsing and offsets construction on the server.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedMsg.segStrTondarrayMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrTondarrayMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.segStrTondarrayMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedMsg._tondarrayMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_tondarrayMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg._tondarrayMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Outputs the pdarray as a Numpy ndarray in the form of a</p></li>
+<li><p>Chapel Bytes object</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedMsg.randomStringsMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">randomStringsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.randomStringsMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -246,7 +273,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedMsg.checkMatchStrings">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkMatchStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">valName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.checkMatchStrings" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkMatchStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.checkMatchStrings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -266,7 +293,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedMsg.createPeelSymEntries">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createPeelSymEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loname</span></em>, <em class="sig-param"><span class="pre">lo</span></em>, <em class="sig-param"><span class="pre">lvname</span></em>, <em class="sig-param"><span class="pre">lv</span></em>, <em class="sig-param"><span class="pre">roname</span></em>, <em class="sig-param"><span class="pre">ro</span></em>, <em class="sig-param"><span class="pre">rvname</span></em>, <em class="sig-param"><span class="pre">rv</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.createPeelSymEntries" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createPeelSymEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lo</span></em>, <em class="sig-param"><span class="pre">lv</span></em>, <em class="sig-param"><span class="pre">ro</span></em>, <em class="sig-param"><span class="pre">rv</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedMsg.createPeelSymEntries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

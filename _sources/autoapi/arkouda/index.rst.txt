@@ -3709,21 +3709,18 @@ Attributes
 
    
 
-.. py:class:: Strings(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str])
+.. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
 
    Represents an array of strings whose data resides on the
    arkouda server. The user should not call this class directly;
    rather its instances are created by other arkouda functions.
 
-   .. attribute:: offsets
+   .. attribute:: entry
 
-      The starting indices for each string
-
-      :type: pdarray
-
-   .. attribute:: bytes
-
-      The raw bytes of all strings, joined by nulls
+      Encapsulation of a Segmented Strings array contained on
+      the arkouda server.  This is a composite of
+       - offsets array: starting indices for each string
+       - bytes array: raw bytes of all strings joined by nulls
 
       :type: pdarray
 
@@ -3778,6 +3775,51 @@ Attributes
       :annotation: = str
 
       
+
+   .. py:method:: from_return_msg(rep_msg: str) -> Strings
+      :staticmethod:
+
+      Factory method for creating a Strings object from an Arkouda server
+      response message
+
+      :param rep_msg: Server response message currently of form
+                      `created name type size ndim shape itemsize+created bytes.size 1234`
+      :type rep_msg: str
+
+      :returns: object representing a segmented strings array on the server
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+
+      .. rubric:: Notes
+
+      We really don't have an itemsize because these are variable length strings.
+      In the future we could probably use this position to store the total bytes.
+
+
+   .. py:method:: from_parts(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str]) -> Strings
+      :staticmethod:
+
+      Factory method for creating a Strings object from an Arkouda server
+      response where the arrays are separate components.
+
+      :param offset_attrib: the array containing the offsets
+      :type offset_attrib: Union[pdarray, str]
+      :param bytes_attrib: the array containing the string values
+      :type bytes_attrib: Union[pdarray, str]
+
+      :returns: object representing a segmented strings array on the server
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there's an error converting a server-returned str-descriptor
+
+      .. rubric:: Notes
+
+      This factory method is used when we construct the parts of a Strings
+      object on the client side and transfer the offsets & bytes separately
+      to the server.  This results in two entries in the symbol table and we
+      need to instruct the server to assemble the into a composite entity.
+
 
    .. py:method:: __iter__(self)
       :abstractmethod:
@@ -4411,6 +4453,32 @@ Attributes
       array(['hello', 'my', 'world'], dtype='<U5')
       >>> type(a.to_ndarray())
       numpy.ndarray
+
+
+   .. py:method:: _comp_to_ndarray(self, comp: str) -> numpy.ndarray
+
+      This is an internal helper function to perform the to_ndarray for one
+      of the string components.
+
+      :param comp: The strings component to request
+      :type comp: str
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
 
 
    .. py:method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True) -> str

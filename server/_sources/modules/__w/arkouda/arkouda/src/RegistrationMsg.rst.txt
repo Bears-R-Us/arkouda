@@ -47,6 +47,15 @@ or
    :returns: MsgTuple response message
    
 
+.. function:: proc isStringAttrib(attrs: string): bool throws
+
+   
+   * Determine if the attributes belong to a SegString
+   * :arg attrs: attributes from SymTab
+   * :type attrs: string
+   * :returns: bool
+   
+
 .. function:: proc unregisterMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
    

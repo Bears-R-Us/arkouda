@@ -17,6 +17,71 @@ or
 
    import MultiTypeSymEntry;
 
+.. data:: const genLogger = new Logger(logLevel)
+
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, CompositeSymEntry, SegStringSymEntry, CategoricalSymEntry, GroupBySymEntry, AnythingSymEntry, UnknownSymEntry, None }
+
+   *
+   * Internal Types we can use to build our Symbol type hierarchy.
+   * We are making the types a little more concrete than using Strings
+   
+
+
+.. class:: AbstractSymEntry
+
+   *
+   * This is the root of our SymbolTable Entry / Typing system.
+   * All other SymEntry classes should inherit from this class
+   * or one of its ancestors and ultimately everything should
+   * be assignable/coercible to this class.
+   * 
+   * All subclasses should set & add their type to the `assignableTypes`
+   * set so we can maintain & determine the type hierarchy.
+   
+
+
+   .. attribute:: var entryType: SymbolEntryType
+
+   .. attribute:: var assignableTypes: set(SymbolEntryType)
+
+   .. method:: proc init()
+
+   .. method:: proc isAssignableTo(entryType: SymbolEntryType): bool
+
+      *
+      * This can be used to help determine if a class can be
+      * assigned / coerced / cast to another one in its hierarchy.
+      
+
+   .. method:: proc getSizeEstimate(): int
+
+      *
+      * This is a hook for the ServerConfig.overMemLimit procedure
+      * All concrete classes should override this method
+      
+
+   .. method:: proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+
+      *
+      * Formats and returns data in this entry up to the specified threshold. 
+      * Arrays of size less than threshold will be printed in their entirety. 
+      * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      *
+      * :arg thresh: threshold for data to return
+      * :type thresh: int
+      *
+      * :arg prefix: String to prepend to the front of the data string
+      * :type prefix: string
+      *
+      * :arg suffix: String to append to the tail of the data string
+      * :type suffix: string
+      *
+      * :arg baseFormat: String which represents the base format string for the data type
+      * :type baseFormat: string
+      *
+      * :returns: s (string) containing the array data
+      
+
 .. function:: proc toSymEntry(gse: borrowed GenSymEntry, type etype)
 
    Casts a GenSymEntry to the specified type and returns it.
@@ -28,7 +93,7 @@ or
     :type etype: type
    
 
-.. class:: GenSymEntry
+.. class:: GenSymEntry : AbstractSymEntry
 
    This is a dummy class to avoid having to talk about specific
    instantiations of SymEntry. 
@@ -46,6 +111,8 @@ or
 
    .. method:: proc init(type etype, len: int = 0)
 
+   .. method:: override proc getSizeEstimate(): int
+
    .. method:: proc toSymEntry(type etype)
 
       Cast this `GenSymEntry` to `borrowed SymEntry(etype)`
@@ -56,26 +123,26 @@ or
       :type etype: type
       
 
-   .. method:: proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+   .. method:: override proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       
       Formats and returns data in this entry up to the specified threshold. 
       Arrays of size less than threshold will be printed in their entirety. 
       Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
       
-          :arg thresh: threshold for data to return
-          :type thresh: int
+        :arg thresh: threshold for data to return
+        :type thresh: int
       
-          :arg prefix: String to prepend to the front of the data string
-          :type prefix: string
+        :arg prefix: String to prepend to the front of the data string
+        :type prefix: string
       
-          :arg suffix: String to append to the tail of the data string
-          :type suffix: string
+        :arg suffix: String to append to the tail of the data string
+        :type suffix: string
       
-          :arg baseFormat: String which represents the base format string for the data type
-          :type baseFormat: string
+        :arg baseFormat: String which represents the base format string for the data type
+        :type baseFormat: string
       
-          :returns: s (string) containing the array data
+        :returns: s (string) containing the array data
       
 
 .. class:: SymEntry : GenSymEntry
@@ -155,4 +222,96 @@ or
       
           :returns: s (string) containing the array data
       
+
+.. class:: CompositeSymEntry : AbstractSymEntry
+
+   *
+   * The base parent class for SymbolEntries that are composites
+   * of other entry types.
+   
+
+
+   .. method:: proc init()
+
+.. function:: proc createTypedSymEntry(len: int, type t) throws
+
+   *
+   * Factory method for creating a typed SymEntry and checking mem limits
+   * :arg len: the number of elements to allocate
+   * :type len: int
+   * 
+   * :arg t: the element type
+   * :type t: type
+   
+
+.. class:: SegStringSymEntry : CompositeSymEntry
+
+   .. attribute:: type etype = string
+
+   .. attribute:: var offsetsEntry: shared SymEntry(int)
+
+   .. attribute:: var bytesEntry: shared SymEntry(uint(8))
+
+   .. attribute:: var dtype: DType
+
+   .. attribute:: var itemsize: int
+
+   .. attribute:: var size: int
+
+   .. attribute:: var ndim: int = 1
+
+   .. attribute:: var shape: 1*(int) = (0,)
+
+   .. method:: proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype)
+
+   .. method:: override proc getSizeEstimate(): int
+
+   .. method:: override proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+
+      *
+      * Formats and returns data in this entry up to the specified threshold. 
+      * Arrays of size less than threshold will be printed in their entirety. 
+      * Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      *
+      * :arg thresh: threshold for data to return
+      * :type thresh: int
+      *
+      * :arg prefix: String to prepend to the front of the data string
+      * :type prefix: string
+      *
+      * :arg suffix: String to append to the tail of the data string
+      * :type suffix: string
+      *
+      * :arg baseFormat: String which represents the base format string for the data type
+      * :type baseFormat: string
+      *
+      * :returns: s (string) containing the array data
+      
+
+.. function:: proc toGenSymEntry(entry: borrowed AbstractSymEntry) throws
+
+   *
+   * Helper proc to cast AbstrcatSymEntry to GenSymEntry
+   
+
+.. function:: proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws
+
+   *
+   * Helper proc to cast AbstrcatSymEntry to SegStringSymEntry
+   
+
+.. function:: proc getArraySpecFromEntry(entry: borrowed AbstractSymEntry) throws
+
+   *
+   * Temporary shim to ease transition to Typed Symbol Table Entries.
+   * This attempts to retrieve the Dtype, size/array-length, and itemsize from a SymbolTable
+   * entry if the entry type supports it. Returns default tuple of valuse otherwise.
+   * 
+   * :arg entry: AbstractSymEntry or descendant
+   * :type entry: borrowed AbstractSymEntry
+   * :retruns: tuple of (dtype, entry.size, entry.itemsize)
+   * 
+   * Note: entry.size is generally the number of elements in the array
+   *       and is more synonymous with length
+   
 

@@ -17,7 +17,7 @@ Classes
 
 
 
-.. py:class:: Matcher(pattern: arkouda.dtypes.str_scalars, parent_bytes_name: str, parent_offsets_name: str)
+.. py:class:: Matcher(pattern: arkouda.dtypes.str_scalars, parent_entry_name: str)
 
    .. py:attribute:: LocationsInfo
       

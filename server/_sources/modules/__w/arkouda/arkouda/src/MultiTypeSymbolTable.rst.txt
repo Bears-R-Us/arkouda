@@ -30,7 +30,7 @@ or
       Associative domain of strings
       
 
-   .. attribute:: var tab: map(string, shared GenSymEntry)
+   .. attribute:: var tab: map(string, shared AbstractSymEntry)
 
       
       Map indexed by strings
@@ -64,21 +64,21 @@ or
       :returns: borrow of newly created `SymEntry(t)`
       
 
-   .. method:: proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry throws
+   .. method:: proc addEntry(name: string, in entry: shared AbstractSymEntry): borrowed AbstractSymEntry throws
 
       
-      Takes an already created GenSymEntry and creates a new SymEntry.
+      Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.
       
       :arg name: name of the array
       :type name: string
       
-      :arg entry: Generic Sym Entry to convert
-      :type entry: GenSymEntry
+      :arg entry: AbstractSymEntry to convert
+      :type entry: AbstractSymEntry
       
-      :returns: borrow of newly created GenSymEntry
+      :returns: borrow of newly created AbstractSymEntry
       
 
-   .. method:: proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry throws
+   .. method:: proc addEntry(name: string, len: int, dtype: DType): borrowed AbstractSymEntry throws
 
       
       Creates a symEntry from array name, length, and DType
@@ -111,34 +111,33 @@ or
       Clears all unregistered entries from the symTable
       
 
-   .. method:: proc lookup(name: string): borrowed GenSymEntry throws
+   .. method:: proc lookup(name: string): borrowed AbstractSymEntry throws
 
+      *
+      * Returns the AbstractSymEntry associated with the provided name, if the AbstractSymEntry exists
+      * :arg name: string to index/query in the sym table
+      * :type name: string
       
-      Returns the sym entry associated with the provided name, if the sym entry exists
-      
-      :arg name: string to index/query in the sym table
-      :type name: string
-      
-      :returns: sym entry or throws on error
-      :throws: `unkownSymbolError(name)`
+      * :returns: AbstractSymEntry or throws on error
+      * :throws: `unkownSymbolError(name)`
       
 
    .. method:: proc checkTable(name: string, calling_func = "check") throws
 
-      
-      checks to see if a symbol is defined if it is not it throws an exception 
+      *
+      * checks to see if a symbol is defined if it is not it throws an exception 
       
 
    .. method:: proc pretty() throws
 
-      
-      Prints the SymTable in a pretty format (name,SymTable[name])
+      *
+      * Prints the SymTable in a pretty format (name,SymTable[name])
       
 
    .. method:: proc memUsed(): int
 
-      
-      returns total bytes in arrays in the symbol table
+      *
+      * :returns: total bytes in arrays in the symbol table
       
 
    .. method:: proc dump(name: string): string throws
@@ -189,7 +188,7 @@ or
       :returns: array of JSON formatted strings
       
 
-   .. method:: proc formatEntry(name: string, item: borrowed GenSymEntry): string throws
+   .. method:: proc formatEntry(name: string, abstractEntry: borrowed AbstractSymEntry): string throws
 
       
       Returns formatted string for an info entry.
@@ -197,8 +196,8 @@ or
       :arg name: name of entry to be formatted
       :type name: string
       
-      :arg item: Generic Sym Entry to be formatted (tab.getBorrowed(name))
-      :type item: GenSymEntry
+      :arg item: AbstractSymEntry to be formatted (tab.getBorrowed(name))
+      :type item: AbstractSymEntry
       
       :returns: JSON formatted dictionary
       
@@ -249,4 +248,20 @@ or
       
       :returns: s (string) containing the array data
       
+
+.. function:: proc getGenericTypedArrayEntry(name: string, st: borrowed SymTab): borrowed GenSymEntry throws
+
+   *
+   * Convenience proc to retrieve GenSymEntry from SymTab
+   * Performs conversion from AbstractSymEntry to GenSymEntry
+   * You can pass a logger from the calling function for better error reporting.
+   
+
+.. function:: proc getSegStringEntry(name: string, st: borrowed SymTab): borrowed SegStringSymEntry throws
+
+   *
+   * Convenience proc to retrieve SegStringSymEntry from SymTab
+   * Performs conversion from AbstractySymEntry to SegStringSymEntry
+   * You can pass a logger from the calling function for better error reporting.
+   
 
