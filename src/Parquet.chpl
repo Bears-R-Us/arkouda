@@ -13,6 +13,7 @@ module Parquet {
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;
   extern var ARROWUNDEFINED: c_int;
+  extern var ARROWERROR: c_int;
 
   enum ArrowTypes { int64, int32, notimplemented };
 
@@ -90,7 +91,7 @@ module Parquet {
             var col: [filedom] int;
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
                                   dsetname.localize().c_str(), filedom.size,
-                                  c_ptrTo(pqErr.errMsg)) < 0 {
+                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }
             A[filedom] = col;
@@ -106,7 +107,7 @@ module Parquet {
     
     var size = c_getNumRows(filename.localize().c_str(),
                             c_ptrTo(pqErr.errMsg));
-    if size == -1 {
+    if size == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
     return size;
@@ -118,7 +119,7 @@ module Parquet {
     var arrType = c_getType(filename.localize().c_str(),
                             colname.localize().c_str(),
                             c_ptrTo(pqErr.errMsg));
-    if arrType < 0 {
+    if arrType == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
     
@@ -148,7 +149,7 @@ module Parquet {
         var locArr = A[locDom];
         if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
                                   dsetname.localize().c_str(), locDom.size, rowGroupSize,
-                                  c_ptrTo(pqErr.errMsg)) < 0 {
+                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
           pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
         }
       }

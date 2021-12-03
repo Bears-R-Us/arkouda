@@ -6,6 +6,7 @@ extern "C" {
   #define ARROWINT64 0
   #define ARROWINT32 1
   #define ARROWUNDEFINED -1
+  #define ARROWERROR -1
 
   // Each C++ function contains the actual implementation of the
   // functionality, and there is a corresponding C function that

@@ -27,7 +27,7 @@
     auto result = cmd;                                          \
     if(!result.ok()) {                                          \
       *errMsg = strdup(result.status().message().c_str());      \
-      return -1;                                                \
+      return ARROWERROR;                                        \
     }                                                           \
     res = result.ValueOrDie();                                  \
   }
@@ -37,7 +37,7 @@
 // argument should be the Arrow function to execute.
 #define ARROWSTATUS_OK(cmd)                     \
   if(!check_status_ok(cmd, errMsg))             \
-    return -1;
+    return ARROWERROR;
 
 bool check_status_ok(arrow::Status status, char** errMsg) {
   if(!status.ok()) {
@@ -87,8 +87,7 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     std::string dname(colname);
     std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
     *errMsg = strdup(msg.c_str());
-    // TODO: revisit this -1, is this what we want?
-    return -1;
+    return ARROWERROR;
   }
   auto myType = sc -> field(idx) -> type();
 
@@ -126,8 +125,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
     std::string dname(colname);
     std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
     *errMsg = strdup(msg.c_str());
-    // TODO: revisit this -1, is this what we want?
-    return -1;
+    return ARROWERROR;
   }
 
   int ty = cpp_getType(filename, colname, errMsg);
