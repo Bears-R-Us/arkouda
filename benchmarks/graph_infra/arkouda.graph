@@ -64,6 +64,12 @@ files: reduce.dat, reduce.dat, reduce.dat, reduce.dat
 graphtitle: Reduce Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: Medium average rate =, Large average rate =
+graphkeys: Medium GiB/s, Large GiB/s
+files: in1d.dat, in1d.dat
+graphtitle: in1d Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: intersect1d Average rate =, union1d Average rate =, setxor1d Average rate =, setdiff1d Average rate =
 graphkeys: Intersect GiB/s, Union GiB/s, Xor GiB/s, Diff GiB/s
 files: setops.dat, setops.dat, setops.dat, setops.dat
@@ -86,6 +92,12 @@ perfkeys: write Average rate =, read Average rate =
 graphkeys: Write GiB/s, Read GiB/s
 files: IO.dat, IO.dat
 graphtitle: IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate =, read Average rate =
+graphkeys: Write GiB/s, Read GiB/s
+files: parquetIO.dat, parquetIO.dat
+graphtitle: Parquet IO Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =

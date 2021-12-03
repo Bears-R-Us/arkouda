@@ -645,6 +645,168 @@ module GenSymIO {
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }
 
+    proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        if !hasParquetSupport {
+            throw getErrorWithContext(
+                   msg="Arkouda has been built without Parquet support",
+                   lineNumber=getLineNumber(),
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(),
+                   errorClass="ParquetBuildError");
+        } else {
+            use Parquet;
+            var repMsg: string;
+            // May need a more robust delimiter then " | "
+            var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
+            var strictTypes: bool = true;
+            if (strictFlag.toLower().strip() == "false") {
+              strictTypes = false;
+            }
+
+            var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
+            if allowErrors {
+                gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
+            }
+
+            // Test arg casting so we can send error message instead of failing
+            if (!checkCast(ndsetsStr, int)) {
+                var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
+                gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+            if (!checkCast(nfilesStr, int)) {
+              var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+              gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+              return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+
+            var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+            var ndsets = ndsetsStr:int; // Error checked above
+            var nfiles = nfilesStr:int; // Error checked above
+            var dsetlist: [0..#ndsets] string;
+            var filelist: [0..#nfiles] string;
+
+            try {
+                dsetlist = jsonToPdArray(jsondsets, ndsets);
+            } catch {
+                var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
+                                                   1, jsondsets);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            try {
+                filelist = jsonToPdArray(jsonfiles, nfiles);
+            } catch {
+                var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            var dsetdom = dsetlist.domain;
+            var filedom = filelist.domain;
+            var dsetnames: [dsetdom] string;
+            var filenames: [filedom] string;
+            dsetnames = dsetlist;
+
+            if filelist.size == 1 {
+                if filelist[0].strip().size == 0 {
+                    var errorMsg = "filelist was empty.";
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+                var tmp = glob(filelist[0]);
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "glob expanded %s to %i files".format(filelist[0], tmp.size));
+                if tmp.size == 0 {
+                    var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+                // Glob returns filenames in weird order. Sort for consistency
+                sort(tmp);
+                filedom = tmp.domain;
+                filenames = tmp;
+            } else {
+                filenames = filelist;
+            }
+
+            var fileErrors: list(string);
+            var fileErrorCount:int = 0;
+            var fileErrorMsg:string = "";
+            var sizes: [filedom] int;
+            var ty = getArrType(filenames[filedom.low],
+                                dsetlist[dsetdom.low]);
+            var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+
+            for dsetname in dsetnames do {
+                for (i, fname) in zip(filedom, filenames) {
+                    var hadError = false;
+                    try {
+                        // not using the type for now since it is only implemented for ints
+                        // also, since Parquet files have a `numRows` that isn't specifc
+                        // to dsetname like for HDF5, we only need to get this once per
+                        // file, regardless of how many datasets we are reading
+                        sizes[i] = getArrSize(fname);
+                    } catch e: FileNotFoundError {
+                        fileErrorMsg = "File %s not found".format(fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: PermissionError {
+                        fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: DatasetNotFoundError {
+                        fileErrorMsg = "Dataset %s not found in file %s".format(dsetname,fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: SegArrayError {
+                        fileErrorMsg = "SegmentedArray error: %s".format(e.message());
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e : Error {
+                        fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    }
+
+                    // This may need to be adjusted for this all-in-one approach
+                    if hadError {
+                      // Keep running total, but we'll only report back the first 10
+                      if fileErrorCount < 10 {
+                        fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                      }
+                      fileErrorCount += 1;
+                    }
+                }
+                // This is handled in the readFilesByName() function
+                var subdoms: [filedom] domain(1);
+                var len: int;
+                var nSeg: int;
+                len = + reduce sizes;
+
+                // Only integer is implemented for now, do nothing if the Parquet
+                // file has a different type
+                if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
+                  var entryVal = new shared SymEntry(len, int);
+                  readFilesByName(entryVal.a, filenames, sizes, dsetname);
+                  var valName = st.nextName();
+                  st.addEntry(valName, entryVal);
+                  rnames.append((dsetname, "pdarray", valName));
+                }
+            }
+
+            repMsg = _buildReadAllHdfMsgJson(rnames, false, 0, fileErrors, st);
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg,MsgType.NORMAL);
+        }
+    }
+    
     /**
      * Construct json object to be returned from readAllHdfMsg
      * :arg rnames: List of (DataSetName, arkouda_type, id of SymEntry) for items read from HDF5 files
@@ -1237,6 +1399,71 @@ module GenSymIO {
         }
     }
 
+    proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        if !hasParquetSupport {
+            throw getErrorWithContext(
+                   msg="Arkouda has been built without Parquet support",
+                   lineNumber=getLineNumber(),
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(),
+                   errorClass="ParquetBuildError");
+        } else {
+            use Parquet;
+            var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
+            var filename: string;
+            var entry = st.lookup(arrayName);
+
+            try {
+              filename = jsonToPdArray(jsonfile, 1)[0];
+            } catch {
+              var errorMsg = "Could not decode json filenames via tempfile " +
+                "(%i files: %s)".format(1, jsonfile);
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            var warnFlag: bool;
+
+            try {
+              select entry.dtype {
+                  when DType.Int64 {
+                    var e = toSymEntry(entry, int);
+                    warnFlag = write1DDistArrayParquet(filename, dsetname, e.a);
+                  }
+                  otherwise {
+                    var errorMsg = "Writing Parquet files is only supported for int arrays";
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                }
+            } catch e: FileNotFoundError {
+              var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: MismatchedAppendError {
+              var errorMsg = "Mismatched append %s".format(e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: WriteModeError {
+              var errorMsg = "Write mode error %s".format(e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: Error {
+              var errorMsg = "problem writing to file %s".format(e);
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            if warnFlag {
+              var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+              return new MsgTuple(warnMsg, MsgType.WARNING);
+            } else {
+              var repMsg = "wrote array to file";
+              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+        }
+    }
+    
     /*
      * Writes out the two pdarrays composing a Strings object to hdf5.
      */
@@ -1367,13 +1594,13 @@ module GenSymIO {
                  * slice is the null uint(8) character. If it is not, this means the last string 
                  * in the current locale (idx) spans the current AND next locale.
                  */
-                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
+                var charArray = A.localSlice(locDom);
+                if charArray[charArray.domain.high] != NULL_STRINGS_VALUE {
                     /*
                      * Retrieve the chars array slice from this locale and populate the charList
                      * that will be updated per left and/or right shuffle operations until the 
                      * final char list is assembled
                      */ 
-                    var charArray = A.localSlice(locDom);
                     var charList : list(uint(8)) = new list(charArray);
 
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1989,7 +2216,7 @@ module GenSymIO {
                 * string on the locale completes within the locale. Otherwise,
                 * the last string spans to the next locale.
                 */
-                if charArray.back() == NULL_STRINGS_VALUE {
+                if charArray[charArray.domain.high] == NULL_STRINGS_VALUE {
                     endsWithCompleteString[idx] = true;
                 } else {
                     endsWithCompleteString[idx] = false;
@@ -2001,14 +2228,15 @@ module GenSymIO {
 
                 /*
                 * If the first locale (locale 0), the first segment is retrieved
-                * via segsArray.front(), corresponding to 0. Otherwise, find the 
-                * first occurrence of the null uint(8) char and the firstSeg is the
-                * next non-null char. The lastSeg in all cases is the final segsArray
-                * element retrieved via segsArray.back()
+                * via segsArray[segsArray.domain.low], corresponding to 0.
+                * Otherwise, find the first occurrence of the null uint(8) char
+                * and the firstSeg is the next non-null char. The lastSeg in
+                * all cases is the final segsArray element retrieved via
+                * segsArray[segsArray.domain.high]
                 */
                 if idx == 0 {
-                    firstSeg = segsArray.front();
-                    lastSeg = segsArray.back();
+                    firstSeg = segsArray[segsArray.domain.low];
+                    lastSeg = segsArray[segsArray.domain.high];
                     gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                     "Locale idx:%t firstSeg:%t, lastSeg:%t".format(idx, firstSeg, lastSeg));
                 } else {
@@ -2016,7 +2244,7 @@ module GenSymIO {
                     if nullString {
                         firstSeg = fSeg + 1;
                     }
-                    lastSeg = segsArray.back();
+                    lastSeg = segsArray[segsArray.domain.high];
                 }
 
                 /*

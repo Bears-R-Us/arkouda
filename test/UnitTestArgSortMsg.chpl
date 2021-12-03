@@ -22,7 +22,7 @@ prototype module UnitTestArgSort
 
         // sort it and return iv in symbol table
         var cmd = "argsort";
-        reqMsg = try! "pdarray %s".format(aname);
+        reqMsg = try! "%s pdarray %s".format(ArgSortMsg.SortingAlgorithm.RadixSortLSD: string, aname);
         writeReq(reqMsg);
         var d: Diags;
         d.start();
@@ -57,7 +57,7 @@ prototype module UnitTestArgSort
 
         // cosort both int and real arrays and return iv in symbol table
         cmd = "coargsort";
-        reqMsg = try! "%i %s %s pdarray pdarray".format(2, aname, fname);
+        reqMsg = try! "%s %i %s %s pdarray pdarray".format(ArgSortMsg.SortingAlgorithm.RadixSortLSD: string, 2, aname, fname);
         writeReq(reqMsg);
         d.start();
         repMsg = coargsortMsg(cmd=cmd, payload=reqMsg, st).msg;

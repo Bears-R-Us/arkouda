@@ -9,9 +9,10 @@ class SortTest(ArkoudaTest):
 
     def testSort(self):
         pda = ak.randint(0,100,100)
-        spda = ak.sort(pda)
-        maxIndex = spda.argmax()
-        self.assertTrue(maxIndex > 0)
+        for algo in ak.SortingAlgorithm:
+            spda = ak.sort(pda, algo)
+            maxIndex = spda.argmax()
+            self.assertTrue(maxIndex > 0)
 
     def testBitBoundaryHardcode(self):
 
@@ -19,17 +20,19 @@ class SortTest(ArkoudaTest):
         a = ak.array([1, -1, 32767]) # 16 bit
         b = ak.array([1,  0, 32768]) # 16 bit
         c = ak.array([1, -1, 32768]) # 17 bit
-        assert ak.is_sorted(ak.sort(a))
-        assert ak.is_sorted(ak.sort(b))
-        assert ak.is_sorted(ak.sort(c))
+        for algo in ak.SortingAlgorithm:
+            assert ak.is_sorted(ak.sort(a, algo))
+            assert ak.is_sorted(ak.sort(b, algo))
+            assert ak.is_sorted(ak.sort(c, algo))
 
         # test hardcoded 64-bit boundaries with and without negative values
         d = ak.array([1, -1, 2**63-1])
         e = ak.array([1,  0, 2**63-1])
         f = ak.array([1, -2**63, 2**63-1])
-        assert ak.is_sorted(ak.sort(d))
-        assert ak.is_sorted(ak.sort(e))
-        assert ak.is_sorted(ak.sort(f))
+        for algo in ak.SortingAlgorithm:
+            assert ak.is_sorted(ak.sort(d, algo))
+            assert ak.is_sorted(ak.sort(e, algo))
+            assert ak.is_sorted(ak.sort(f, algo))
 
     def testBitBoundary(self):
 
@@ -37,28 +40,30 @@ class SortTest(ArkoudaTest):
         L = -2**15
         U = 2**16
         a = ak.randint(L, U, 100)
-        assert ak.is_sorted(ak.sort(a))
+        for algo in ak.SortingAlgorithm:
+            assert ak.is_sorted(ak.sort(a, algo))
 
     def testErrorHandling(self):
         
         # Test RuntimeError from bool NotImplementedError
         akbools = ak.randint(0, 1, 1000, dtype=ak.bool)   
         bools = ak.randint(0, 1, 1000, dtype=bool) 
-     
-        with self.assertRaises(ValueError) as cm:
-            ak.sort(akbools)
-        self.assertEqual('ak.sort supports float64 or int64, not bool', 
-                         cm.exception.args[0])
+
+        for algo in ak.SortingAlgorithm:
+            with self.assertRaises(ValueError) as cm:
+                ak.sort(akbools, algo)
+            self.assertEqual('ak.sort supports float64 or int64, not bool',
+                             cm.exception.args[0])
         
-        with self.assertRaises(ValueError) as cm:
-            ak.sort(bools)
-        self.assertEqual('ak.sort supports float64 or int64, not bool', 
-                         cm.exception.args[0])        
+            with self.assertRaises(ValueError) as cm:
+                ak.sort(bools, algo)
+            self.assertEqual('ak.sort supports float64 or int64, not bool', 
+                             cm.exception.args[0])        
         
-        # Test TypeError from sort attempt on non-pdarray
-        with self.assertRaises(TypeError):
-            ak.sort(list(range(0,10)))  
+            # Test TypeError from sort attempt on non-pdarray
+            with self.assertRaises(TypeError):
+                ak.sort(list(range(0,10)), algo)  
                 
-        # Test attempt to sort Strings object, which is unsupported
-        with self.assertRaises(TypeError):
-            ak.sort(ak.array(['String {}'.format(i) for i in range(0,10)]))
+            # Test attempt to sort Strings object, which is unsupported
+            with self.assertRaises(TypeError):
+                ak.sort(ak.array(['String {}'.format(i) for i in range(0,10)]), algo)
