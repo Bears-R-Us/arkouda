@@ -1443,7 +1443,7 @@ module GenSymIO {
             use Parquet;
             var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
             var filename: string;
-            var entry = st.lookup(arrayName);
+            var entry = getGenericTypedArrayEntry(arrayName, st);
 
             try {
               filename = jsonToPdArray(jsonfile, 1)[0];
