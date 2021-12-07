@@ -298,6 +298,10 @@ proc main() {
                   var binaryRepMsg = tondarrayMsg(cmd, args, st);
                   sendRepMsg(binaryRepMsg);
                 }
+                when "segStr-tondarray"  {
+                  var binaryRepMsg = segStrTondarrayMsg(cmd, args, st);
+                  sendRepMsg(binaryRepMsg);
+                }
                 when "cast"              {repTuple = castMsg(cmd, args, st);}
                 when "mink"              {repTuple = minkMsg(cmd, args, st);}
                 when "maxk"              {repTuple = maxkMsg(cmd, args, st);}
@@ -305,6 +309,7 @@ proc main() {
                 when "setdiff1d"         {repTuple = setdiff1dMsg(cmd, args, st);}
                 when "setxor1d"          {repTuple = setxor1dMsg(cmd, args, st);}
                 when "union1d"           {repTuple = union1dMsg(cmd, args, st);}
+                when "segStr-assemble"   {repTuple = assembleStringsMsg(cmd, args, st);}
                 when "segmentLengths"    {repTuple = segmentLengthsMsg(cmd, args, st);}
                 when "segmentedHash"     {repTuple = segmentedHashMsg(cmd, args, st);}
                 when "segmentedEfunc"    {repTuple = segmentedEfuncMsg(cmd, args, st);}
@@ -321,6 +326,8 @@ proc main() {
                 when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
                 when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
                 when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
+                when "readAllParquet"    {repTuple = readAllParquetMsg(cmd, args, st);}
+                when "writeParquet"      {repTuple = toparquetMsg(cmd, args, st);}
                 when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
                 when "create"            {repTuple = createMsg(cmd, args, st);}
                 when "delete"            {repTuple = deleteMsg(cmd, args, st);}

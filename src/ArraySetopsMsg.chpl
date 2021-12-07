@@ -45,8 +45,8 @@ module ArraySetopsMsg
         
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
         
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -95,8 +95,8 @@ module ArraySetopsMsg
 
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
 
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -145,8 +145,8 @@ module ArraySetopsMsg
 
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
 
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -194,8 +194,8 @@ module ArraySetopsMsg
 
       var vname = st.nextName();
 
-      var gEnt: borrowed GenSymEntry = st.lookup(name);
-      var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
       
       var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
       var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);

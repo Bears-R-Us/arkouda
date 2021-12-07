@@ -79,11 +79,11 @@ proc test_tohdfMsg(t: borrowed Test) throws {
         var segString = getSegString(s_offsets, s_values, st); // from SegmentedArray
         var cmd = "tohdf";
         // payload -> arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag
-        var payload = segString.valueName + " strings 0 [" + Q+fWithOffsets+Q + "] strings " + segString.offsetName + " true";
+        var payload = segString.name + " strings 0 [" + Q+fWithOffsets+Q + "] strings " + segString.name + " true";
         var msg = tohdfMsg(cmd, payload, st);
         t.assertTrue(msg.msg.strip() == "wrote array to file");
         
-        payload = segString.valueName + " strings 0 [" + Q+fNoOffsets+Q + "] strings " + segString.offsetName + " false";
+        payload = segString.name + " strings 0 [" + Q+fNoOffsets+Q + "] strings " + segString.name + " false";
         msg = tohdfMsg(cmd, payload, st);
         t.assertTrue(msg.msg.strip() == "wrote array to file");
     }
@@ -104,18 +104,12 @@ proc test_readAllHdfMsg(t: borrowed Test) throws {
     // Exercise the basic read functionality with & without offsets and then again using dataset names
     var payload = "false 1 1 false false [\"strings\"] | [\"resources/UnitTestHDF5_withOffsets_LOCALE0000\"]";
     var msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    var (id, pos) = parseIdFromReadAllHdfMsgCreated(msg.msg);
-    t.assertTrue(id == "id_2"); // offsets
-    (id, pos) = parseIdFromReadAllHdfMsgCreated(msg.msg, pos);
-    t.assertTrue(id == "id_1");
+    t.assertTrue(msg.msg.find("created id_1 str 5 1 (5) 1+created bytes.size 24") > 0);
 
     // Same test built with calcOffsets true & noOffsets file
     payload = "false 1 1 false true [\"strings\"] | [\"resources/UnitTestHDF5_noOffsets_LOCALE0000\"]";
     msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    (id, pos) = parseIdFromReadAllHdfMsgCreated(msg.msg);
-    t.assertTrue(id == "id_4"); // offsets
-    (id, pos) = parseIdFromReadAllHdfMsgCreated(msg.msg, pos);
-    t.assertTrue(id == "id_3"); // values
+    t.assertTrue(msg.msg.find("created id_2 str 5 1 (5) 1+created bytes.size 24") > 0);
 }
 
 /**

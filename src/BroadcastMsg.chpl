@@ -20,7 +20,7 @@ module BroadcastMsg {
     var (permName, segName, valName, usePermStr, sizeStr) = payload.splitMsgToTuple(5);
     const size = sizeStr: int;
     // Segments must be an int64 array
-    const gs = st.lookup(segName);
+    const gs = getGenericTypedArrayEntry(segName, st);
     if gs.dtype != DType.Int64 {
       throw new owned ErrorWithContext("Segments array must have dtype int64",
                                        getLineNumber(),
@@ -30,7 +30,7 @@ module BroadcastMsg {
     }
     const segs = toSymEntry(gs, int);
     // Check that values exists (can be any dtype)
-    const gv = st.lookup(valName);
+    const gv = getGenericTypedArrayEntry(valName, st);
     // Name of result array
     const rname = st.nextName();
     // This operation has two modes: one uses a permutation to reorder the answer,
@@ -38,7 +38,7 @@ module BroadcastMsg {
     const usePerm: bool = usePermStr.toLower() == 'true';
     if usePerm {
       // If using a permutation, the array must be int64 and same size as the size parameter
-      const gp = st.lookup(permName);
+      const gp = getGenericTypedArrayEntry(permName, st);
       if gp.dtype != DType.Int64 {
         throw new owned ErrorWithContext("Permutation array must have dtype int64",
                                          getLineNumber(),

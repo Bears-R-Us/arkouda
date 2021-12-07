@@ -24,6 +24,7 @@ module GenSymIO {
     use ServerConfig;
     use Search;
     use IndexingMsg;
+    use SegmentedArray;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
@@ -101,12 +102,19 @@ module GenSymIO {
 
         if asSegStr {
             try {
-                var values = toSymEntry(st.lookup(rname), uint(8));
-                var offsets = segmentedCalcOffsets(values.a, values.aD);
-                var oname = st.nextName();
-                var offsetsEntry = new shared SymEntry(offsets);
-                st.addEntry(oname, offsetsEntry);
-                msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                st.checkTable(rname, "arrayMsg");
+                var g = st.lookup(rname);
+                if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
+                    var values = toSymEntry( (g:GenSymEntry), uint(8) );
+                    var offsets = segmentedCalcOffsets(values.a, values.aD);
+                    var oname = st.nextName();
+                    var offsetsEntry = new shared SymEntry(offsets);
+                    st.addEntry(oname, offsetsEntry);
+                    msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                } else {
+                    throw new Error("Unsupported Type %s".format(g.entryType));
+                }
+
             } catch e: Error {
                 msg = "Error creating offsets for SegString";
                 msgType = MsgType.ERROR;
@@ -160,8 +168,15 @@ module GenSymIO {
     proc tondarrayMsg(cmd: string, payload: string, st: 
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
-        var entry = st.lookup(payload);
-        overMemLimit(2*entry.size*entry.itemsize);
+        var abstractEntry = st.lookup(payload);
+        if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg.encode(); // return as bytes
+        }
+        var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
+        
+        overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = c_malloc(eltType, D.size);
@@ -279,12 +294,13 @@ module GenSymIO {
             repMsg = "[";  // Manual json building Chapel <= 1.24.1
             var first = true;
             for i in items {
+                i = i.replace(Q, ESCAPED_QUOTES, -1);
                 if first {
                     first = false;
                 } else {
                     repMsg += ",";
                 }
-                repMsg += '"' + i + '"';
+                repMsg += Q + i + Q;
             }
             repMsg += "]";
         } catch e : Error {
@@ -574,23 +590,25 @@ module GenSymIO {
                     // Load the strings bytes/values first
                     var entryVal = new shared SymEntry(len, uint(8));
                     read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME, skips);
-                    var valName = st.nextName();
-                    st.addEntry(valName, entryVal);
 
-                    // Either load or derive the offsets array based on user preference
-                    var offsetsName = st.nextName();
-                    if (calcStringOffsets || nSeg < 1) {
+                    proc _buildEntryCalcOffsets(): shared SymEntry throws {
                         var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
-                        var offsetsEntry = new shared SymEntry(offsetsArray);
-                        st.addEntry(offsetsName, offsetsEntry);
-                    } else {
+                        return new shared SymEntry(offsetsArray);
+                    }
+
+                    proc _buildEntryLoadOffsets() throws {
                         var offsetsEntry = new shared SymEntry(nSeg, int);
                         read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME, skips);
                         fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
-                        st.addEntry(offsetsName, offsetsEntry);
+                        return offsetsEntry;
                     }
 
-                    rnames.append((dsetName, "seg_string", "%s+%s".format(offsetsName, valName)));
+                    var entrySeg = if (calcStringOffsets || nSeg < 1) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+
+                    var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+                    // TODO fix the transformation to json after rebasing.
+                    // rnames = rnames + "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes)+ " , ";
+                    rnames.append((dsetName, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
@@ -644,6 +662,168 @@ module GenSymIO {
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }
 
+    proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        if !hasParquetSupport {
+            throw getErrorWithContext(
+                   msg="Arkouda has been built without Parquet support",
+                   lineNumber=getLineNumber(),
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(),
+                   errorClass="ParquetBuildError");
+        } else {
+            use Parquet;
+            var repMsg: string;
+            // May need a more robust delimiter then " | "
+            var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
+            var strictTypes: bool = true;
+            if (strictFlag.toLower().strip() == "false") {
+              strictTypes = false;
+            }
+
+            var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
+            if allowErrors {
+                gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
+            }
+
+            // Test arg casting so we can send error message instead of failing
+            if (!checkCast(ndsetsStr, int)) {
+                var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
+                gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+                return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+            if (!checkCast(nfilesStr, int)) {
+              var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+              gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+              return new MsgTuple(errMsg, MsgType.ERROR);
+            }
+
+            var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+            var ndsets = ndsetsStr:int; // Error checked above
+            var nfiles = nfilesStr:int; // Error checked above
+            var dsetlist: [0..#ndsets] string;
+            var filelist: [0..#nfiles] string;
+
+            try {
+                dsetlist = jsonToPdArray(jsondsets, ndsets);
+            } catch {
+                var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
+                                                   1, jsondsets);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            try {
+                filelist = jsonToPdArray(jsonfiles, nfiles);
+            } catch {
+                var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            var dsetdom = dsetlist.domain;
+            var filedom = filelist.domain;
+            var dsetnames: [dsetdom] string;
+            var filenames: [filedom] string;
+            dsetnames = dsetlist;
+
+            if filelist.size == 1 {
+                if filelist[0].strip().size == 0 {
+                    var errorMsg = "filelist was empty.";
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+                var tmp = glob(filelist[0]);
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "glob expanded %s to %i files".format(filelist[0], tmp.size));
+                if tmp.size == 0 {
+                    var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+                // Glob returns filenames in weird order. Sort for consistency
+                sort(tmp);
+                filedom = tmp.domain;
+                filenames = tmp;
+            } else {
+                filenames = filelist;
+            }
+
+            var fileErrors: list(string);
+            var fileErrorCount:int = 0;
+            var fileErrorMsg:string = "";
+            var sizes: [filedom] int;
+            var ty = getArrType(filenames[filedom.low],
+                                dsetlist[dsetdom.low]);
+            var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+
+            for dsetname in dsetnames do {
+                for (i, fname) in zip(filedom, filenames) {
+                    var hadError = false;
+                    try {
+                        // not using the type for now since it is only implemented for ints
+                        // also, since Parquet files have a `numRows` that isn't specifc
+                        // to dsetname like for HDF5, we only need to get this once per
+                        // file, regardless of how many datasets we are reading
+                        sizes[i] = getArrSize(fname);
+                    } catch e: FileNotFoundError {
+                        fileErrorMsg = "File %s not found".format(fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: PermissionError {
+                        fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: DatasetNotFoundError {
+                        fileErrorMsg = "Dataset %s not found in file %s".format(dsetname,fname);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e: SegArrayError {
+                        fileErrorMsg = "SegmentedArray error: %s".format(e.message());
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    } catch e : Error {
+                        fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                        hadError = true;
+                        if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                    }
+
+                    // This may need to be adjusted for this all-in-one approach
+                    if hadError {
+                      // Keep running total, but we'll only report back the first 10
+                      if fileErrorCount < 10 {
+                        fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                      }
+                      fileErrorCount += 1;
+                    }
+                }
+                // This is handled in the readFilesByName() function
+                var subdoms: [filedom] domain(1);
+                var len: int;
+                var nSeg: int;
+                len = + reduce sizes;
+
+                // Only integer is implemented for now, do nothing if the Parquet
+                // file has a different type
+                if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
+                  var entryVal = new shared SymEntry(len, int);
+                  readFilesByName(entryVal.a, filenames, sizes, dsetname);
+                  var valName = st.nextName();
+                  st.addEntry(valName, entryVal);
+                  rnames.append((dsetname, "pdarray", valName));
+                }
+            }
+
+            repMsg = _buildReadAllHdfMsgJson(rnames, false, 0, fileErrors, st);
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg,MsgType.NORMAL);
+        }
+    }
+    
     /**
      * Construct json object to be returned from readAllHdfMsg
      * :arg rnames: List of (DataSetName, arkouda_type, id of SymEntry) for items read from HDF5 files
@@ -686,6 +866,7 @@ module GenSymIO {
         var items: list(string);
         for rname in rnames {
             var (dsetName, akType, id) = rname;
+            dsetName = dsetName.replace(Q, ESCAPED_QUOTES, -1); // sanitize dsetName with respect to double quotes
             var item = "{" + Q + "dataset_name"+ QCQ + dsetName + Q +
                        "," + Q + "arkouda_type" + QCQ + akType + Q;
             select (akType) {
@@ -693,8 +874,8 @@ module GenSymIO {
                     item +="," + Q + "created" + QCQ + "created " + st.attrib(id) + Q + "}";
                 }
                 when ("seg_string") {
-                    var (segName, valName) = id.splitMsgToTuple("+", 2);
-                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created " + st.attrib(valName) + Q + "}";
+                    var (segName, nBytes) = id.splitMsgToTuple("+", 2);
+                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created bytes.size " + nBytes + Q + "}";
                 }
                 otherwise {
                     item += "}";
@@ -1167,6 +1348,16 @@ module GenSymIO {
         var filename: string;
         var entry = st.lookup(arrayName);
         var writeOffsets = "true" == writeOffsetsFlag.strip().toLower();
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+            entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+            entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+            var errorMsg = "tohdfMsg Unsupported SymbolEntryType:%t".format(entry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
 
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
@@ -1180,30 +1371,35 @@ module GenSymIO {
         var warnFlag: bool;
 
         try {
-            select entry.dtype {
+            select entryDtype {
                 when DType.Int64 {
-                    var e = toSymEntry(entry, int);
+                    var e = toSymEntry(toGenSymEntry(entry), int);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
                 }
                 when DType.Float64 {
-                    var e = toSymEntry(entry, real);
+                    var e = toSymEntry(toGenSymEntry(entry), real);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Float64);
                 }
                 when DType.Bool {
-                    var e = toSymEntry(entry, bool);
+                    var e = toSymEntry(toGenSymEntry(entry), bool);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
                 when DType.UInt8 {
                     /*
                      * Look up the values and segments arrays, both of which are needed to write
                      * uint8 arrays such as Strings out to external systems.
+                     * UPDATE: with SegStringSymEntry, it's now encapsulated, also UInt8 is a #legacy_placeholder
+                     *         The type is now DType.Strings so this should be unreachable
                      */
-                    var e = toSymEntry(entry, uint(8));
-                    var segsEntry = st.lookup(segsName);
-                    var s_e = toSymEntry(segsEntry, int);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8, s_e.a, writeOffsets);
-                } otherwise {
-                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                when DType.Strings {
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                otherwise {
+                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entryDtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
@@ -1235,6 +1431,71 @@ module GenSymIO {
         }
     }
 
+    proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        if !hasParquetSupport {
+            throw getErrorWithContext(
+                   msg="Arkouda has been built without Parquet support",
+                   lineNumber=getLineNumber(),
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(),
+                   errorClass="ParquetBuildError");
+        } else {
+            use Parquet;
+            var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
+            var filename: string;
+            var entry = getGenericTypedArrayEntry(arrayName, st);
+
+            try {
+              filename = jsonToPdArray(jsonfile, 1)[0];
+            } catch {
+              var errorMsg = "Could not decode json filenames via tempfile " +
+                "(%i files: %s)".format(1, jsonfile);
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+
+            var warnFlag: bool;
+
+            try {
+              select entry.dtype {
+                  when DType.Int64 {
+                    var e = toSymEntry(entry, int);
+                    warnFlag = write1DDistArrayParquet(filename, dsetname, e.a);
+                  }
+                  otherwise {
+                    var errorMsg = "Writing Parquet files is only supported for int arrays";
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+                }
+            } catch e: FileNotFoundError {
+              var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: MismatchedAppendError {
+              var errorMsg = "Mismatched append %s".format(e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: WriteModeError {
+              var errorMsg = "Write mode error %s".format(e.message());
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            } catch e: Error {
+              var errorMsg = "problem writing to file %s".format(e);
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            if warnFlag {
+              var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+              return new MsgTuple(warnMsg, MsgType.WARNING);
+            } else {
+              var repMsg = "wrote array to file";
+              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+        }
+    }
+    
     /*
      * Writes out the two pdarrays composing a Strings object to hdf5.
      */
@@ -1365,13 +1626,13 @@ module GenSymIO {
                  * slice is the null uint(8) character. If it is not, this means the last string 
                  * in the current locale (idx) spans the current AND next locale.
                  */
-                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
+                var charArray = A.localSlice(locDom);
+                if charArray[charArray.domain.high] != NULL_STRINGS_VALUE {
                     /*
                      * Retrieve the chars array slice from this locale and populate the charList
                      * that will be updated per left and/or right shuffle operations until the 
                      * final char list is assembled
                      */ 
-                    var charArray = A.localSlice(locDom);
                     var charList : list(uint(8)) = new list(charArray);
 
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1987,7 +2248,7 @@ module GenSymIO {
                 * string on the locale completes within the locale. Otherwise,
                 * the last string spans to the next locale.
                 */
-                if charArray.back() == NULL_STRINGS_VALUE {
+                if charArray[charArray.domain.high] == NULL_STRINGS_VALUE {
                     endsWithCompleteString[idx] = true;
                 } else {
                     endsWithCompleteString[idx] = false;
@@ -1999,14 +2260,15 @@ module GenSymIO {
 
                 /*
                 * If the first locale (locale 0), the first segment is retrieved
-                * via segsArray.front(), corresponding to 0. Otherwise, find the 
-                * first occurrence of the null uint(8) char and the firstSeg is the
-                * next non-null char. The lastSeg in all cases is the final segsArray
-                * element retrieved via segsArray.back()
+                * via segsArray[segsArray.domain.low], corresponding to 0.
+                * Otherwise, find the first occurrence of the null uint(8) char
+                * and the firstSeg is the next non-null char. The lastSeg in
+                * all cases is the final segsArray element retrieved via
+                * segsArray[segsArray.domain.high]
                 */
                 if idx == 0 {
-                    firstSeg = segsArray.front();
-                    lastSeg = segsArray.back();
+                    firstSeg = segsArray[segsArray.domain.low];
+                    lastSeg = segsArray[segsArray.domain.high];
                     gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                     "Locale idx:%t firstSeg:%t, lastSeg:%t".format(idx, firstSeg, lastSeg));
                 } else {
@@ -2014,7 +2276,7 @@ module GenSymIO {
                     if nullString {
                         firstSeg = fSeg + 1;
                     }
-                    lastSeg = segsArray.back();
+                    lastSeg = segsArray[segsArray.domain.high];
                 }
 
                 /*

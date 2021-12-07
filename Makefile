@@ -13,6 +13,10 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
+
+# We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
+CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
+
 CHPL_DEBUG_FLAGS += --print-passes
 ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
@@ -37,7 +41,12 @@ endif
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
-CHPL_FLAGS += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
+ifneq ("$(wildcard $(1)/lib64)","")
+  INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib64
+  CHPL_FLAGS    += -I$(1)/include -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
+endif
+INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib
+CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
@@ -49,11 +58,25 @@ endif
 ifdef ARKOUDA_HDF5_PATH
 $(eval $(call add-path,$(ARKOUDA_HDF5_PATH)))
 endif
+ifdef ARKOUDA_ARROW_PATH
+$(eval $(call add-path,$(ARKOUDA_ARROW_PATH)))
+endif
 
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
+ifdef ARKOUDA_SERVER_PARQUET_SUPPORT
+  CHPL_FLAGS += -lparquet -larrow
+  OPTIONAL_CHECKS += check-arrow
+  OPTIONAL_SERVER_FLAGS += -shasParquetSupport
+  ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
+  ARROW_CPP += $(ARROW_FILE_NAME).cpp
+  ARROW_H += $(ARROW_FILE_NAME).h
+  ARROW_O += $(ARROW_FILE_NAME).o
+endif
+
+
 .PHONY: install-deps
-install-deps: install-zmq install-hdf5
+install-deps: install-zmq install-hdf5 install-arrow
 
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
@@ -88,6 +111,20 @@ install-hdf5:
 	rm -rf $(HDF5_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
 
+ARROW_VER := 6.0.0
+ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
+ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
+ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
+ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
+ARROW_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
+install-arrow:
+	@echo "Installing Apache Arrow/Parquet"
+	rm -rf $(ARROW_BUILD_DIR) $(ARROW_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	cd $(DEP_BUILD_DIR) && curl -sL $(ARROW_LINK) | tar xz
+	cd $(ARROW_BUILD_DIR)/cpp && cmake -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON $(ARROW_OPTIONS) . && make && make install
+	rm -rf $(ARROW_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
 
 # System Environment
 ifdef LD_RUN_PATH
@@ -105,9 +142,16 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-chpl check-zmq check-hdf5
+CHECK_DEPS = check-chpl check-zmq check-hdf5 $(OPTIONAL_CHECKS)
 endif
 check-deps: $(CHECK_DEPS)
+
+.PHONY: compile-arrow-cpp
+compile-arrow-cpp: $(ARROW_CPP) $(ARROW_H)
+	$(CXX) -O3 -std=c++11 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS)
+
+$(ARROW_O): $(ARROW_CPP) $(ARROW_H)
+	make compile-arrow-cpp
 
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
 CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 24 && echo yes)
@@ -132,6 +176,13 @@ HDF5_CHECK = $(DEP_INSTALL_DIR)/checkHDF5.chpl
 check-hdf5: $(HDF5_CHECK)
 	@echo "Checking for HDF5"
 	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
+
+ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
+check-arrow: $(ARROW_CHECK) $(ARROW_O)
+	@echo "Checking for Arrow"
+	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@ -shasParquetSupport
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
@@ -201,8 +252,9 @@ else
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
 endif
 
-$(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
+# This is the main compilation statement section
+$(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
