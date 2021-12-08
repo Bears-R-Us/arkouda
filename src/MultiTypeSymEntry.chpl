@@ -29,6 +29,7 @@ module MultiTypeSymEntry
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
                 GroupBySymEntry,      // GroupBy
+                GraphSymEntry,        // Segmented Graph Array
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,

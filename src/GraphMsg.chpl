@@ -38,7 +38,13 @@ module GraphMsg {
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
   
+  private proc xlocal(x :int, low:int, high:int):bool {
+      return low<=x && x<=high;
+  }
 
+  private proc xremote(x :int, low:int, high:int):bool {
+      return !xlocal(x, low, high);
+  }
 
   // directly read a graph from given file and build the SegGraph class in memory
   proc segGraphFileMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -265,13 +271,6 @@ module GraphMsg {
                        var vertexBegin=src[edgeBegin];
                        var vertexEnd=src[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -381,8 +380,11 @@ module GraphMsg {
           }
       }
 
-      readLinebyLine();
+      // readLinebyLine sets ups src, dst, start_i, neightbor and if present e_weights so lets config them in our Graph
+
+      readLinebyLine(); // Sets up src, dst, start_i, neighbor, and if present e_weights
       timer.stop();
+      
 
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
@@ -530,13 +532,6 @@ module GraphMsg {
                            var vertexBeginR=srcR[edgeBegin];
                            var vertexEndR=srcR[edgeEnd];
 
-                           proc xlocal(x :int, low:int, high:int):bool{
-                                      if (low<=x && x<=high) {
-                                          return true;
-                                      } else {
-                                          return false;
-                                      }
-                           }
                            var switchratio=(numCurF:real)/nf.size:real;
                            if (switchratio<GivenRatio) {//top down
                                topdown+=1;
@@ -786,67 +781,37 @@ module GraphMsg {
 
       }
 
-
+      // Make a composable SegGraph object that we can store in a GraphSymEntry later
+      var graph = new shared SegGraph(Ne, Nv, directed==1);
+      graph.withSRC(new shared SymEntry(src):GenSymEntry)
+           .withDST(new shared SymEntry(dst):GenSymEntry)
+           .withSTART_IDX(new shared SymEntry(start_i):GenSymEntry)
+           .withNEIGHBOR(new shared SymEntry(neighbour):GenSymEntry);
+           
       var ewName ,vwName:string;
       if (weighted!=0) {
         fillInt(v_weight,1,1000);
         //fillRandom(v_weight,0,100);
-        ewName = st.nextName();
-        vwName = st.nextName();
-        var vwEntry = new shared SymEntry(v_weight);
-        var ewEntry = new shared SymEntry(e_weight);
-        st.addEntry(vwName, vwEntry);
-        st.addEntry(ewName, ewEntry);
+        graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
+             .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
       }
-      var srcName = st.nextName();
-      var dstName = st.nextName();
-      var startName = st.nextName();
-      var neiName = st.nextName();
-      var srcEntry = new shared SymEntry(src);
-      var dstEntry = new shared SymEntry(dst);
-      var startEntry = new shared SymEntry(start_i);
-      var neiEntry = new shared SymEntry(neighbour);
-      st.addEntry(srcName, srcEntry);
-      st.addEntry(dstName, dstEntry);
-      st.addEntry(startName, startEntry);
-      st.addEntry(neiName, neiEntry);
+
       var sNv=Nv:string;
       var sNe=Ne:string;
       var sDirected=directed:string;
       var sWeighted=weighted:string;
 
       var srcNameR, dstNameR, startNameR, neiNameR:string;
-      if (directed!=0) {//for directed graph
-          repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ;
-          if (weighted!=0) {// for weighted graph
-              repMsg +=  '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
-          } 
-      } else {//for undirected graph
-
-          srcNameR = st.nextName();
-          dstNameR = st.nextName();
-          startNameR = st.nextName();
-          neiNameR = st.nextName();
-          var srcEntryR = new shared SymEntry(srcR);
-          var dstEntryR = new shared SymEntry(dstR);
-          var startEntryR = new shared SymEntry(start_iR);
-          var neiEntryR = new shared SymEntry(neighbourR);
-          st.addEntry(srcNameR, srcEntryR);
-          st.addEntry(dstNameR, dstEntryR);
-          st.addEntry(startNameR, startEntryR);
-          st.addEntry(neiNameR, neiEntryR);
-          repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
-                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) +
-                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ;
-          if (weighted!=0) {// for weighted graph
-              repMsg +=  '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
-          } 
-
+      if ( directed==0 ) { // for undirected graph
+          graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
+               .withDST_R(new shared SymEntry(dstR):GenSymEntry)
+               .withSTART_IDX_R(new shared SymEntry(start_iR):GenSymEntry)
+               .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
       }
+      var graphEntryName = st.nextName();
+      var graphSymEntry = new shared GraphSymEntry(graph);
+      st.addEntry(graphEntryName, graphSymEntry);
+      repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted + '+created ' + graphEntryName; 
       timer.stop();
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
@@ -858,9 +823,6 @@ module GraphMsg {
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
-
-
-
 
   proc segrmatgenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
@@ -893,6 +855,8 @@ module GraphMsg {
       //var e_weight=makeDistArray(Nv,int);
       //var v_weight=makeDistArray(Nv,int);
 
+      // SegGraph object where we will compose with various components
+      var graph = new shared SegGraph(n_vertices, n_edges, directed==1);
 
       coforall loc in Locales  {
           on loc {
@@ -922,7 +886,6 @@ module GraphMsg {
       var sNe:string;
       var sDirected:string;
       var sWeighted:string;
-
 
       proc rmat_gen() {
              var a = p;
@@ -1068,28 +1031,20 @@ module GraphMsg {
                  }
              }
       }
-      proc set_common_symtable(): string throws {
-             srcName = st.nextName();
-             dstName = st.nextName();
-             startName = st.nextName();
-             neiName = st.nextName();
-             var srcEntry = new shared SymEntry(src);
-             var dstEntry = new shared SymEntry(dst);
-             var startEntry = new shared SymEntry(start_i);
-             var neiEntry = new shared SymEntry(neighbour);
-             st.addEntry(srcName, srcEntry);
-             st.addEntry(dstName, dstEntry);
-             st.addEntry(startName, startEntry);
-             st.addEntry(neiName, neiEntry);
-             sNv=Nv:string;
-             sNe=Ne:string;
-             sDirected=directed:string;
-             sWeighted=weighted:string;
-             return "success";
+
+      proc set_common_symtable(): SegGraph throws {
+          graph.withSRC(new shared SymEntry(src):GenSymEntry)
+               .withDST(new shared SymEntry(dst):GenSymEntry)
+               .withSTART_IDX(new shared SymEntry(start_i):GenSymEntry)
+               .withNEIGHBOR(new shared SymEntry(neighbour):GenSymEntry);
+
+          sNv=Nv:string;
+          sNe=Ne:string;
+          sDirected=directed:string;
+          sWeighted=weighted:string;
+
+          return graph;
       }
-
-
-
 
       proc RCM() throws {
             
@@ -1141,13 +1096,6 @@ module GraphMsg {
                        var vertexBegin=src[edgeBegin];
                        var vertexEnd=src[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -1284,18 +1232,16 @@ module GraphMsg {
              //fillRandom(e_weight,0,100);
              fillInt(v_weight,1,1000);
              //fillRandom(v_weight,0,100);
-             ewName = st.nextName();
-             vwName = st.nextName();
-             var vwEntry = new shared SymEntry(v_weight);
-             var ewEntry = new shared SymEntry(e_weight);
-             try! st.addEntry(vwName, vwEntry);
-             try! st.addEntry(ewName, ewEntry);
-      
+
+             // Add the common components to the SegGraph object
              set_common_symtable();
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
-                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+             graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry);
+             graph.withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
+
+             // Store SegGraph object in SymTab
+             var gName = st.nextName();
+             st.addEntry(gName, new shared GraphSymEntry(graph));
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
 
           } else {
              rmat_gen();
@@ -1321,10 +1267,13 @@ module GraphMsg {
                     set_neighbour();
              }
 
+             // Add the common components to the SegGraph object
              set_common_symtable();
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ; 
+
+             // Store SegGraph object in SymTab
+             var gName = st.nextName();
+             st.addEntry(gName, new shared GraphSymEntry(graph));
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
           }
       }// end for directed graph
       else {
@@ -1394,13 +1343,6 @@ module GraphMsg {
                            var vertexBeginR=srcR[edgeBegin];
                            var vertexEndR=srcR[edgeEnd];
 
-                           proc xlocal(x :int, low:int, high:int):bool{
-                                      if (low<=x && x<=high) {
-                                          return true;
-                                      } else {
-                                          return false;
-                                      }
-                           }
                            var switchratio=(numCurF:real)/nf.size:real;
                            if (switchratio<GivenRatio) {//top down
                                topdown+=1;
@@ -1559,6 +1501,15 @@ module GraphMsg {
           //lengthR=0;
           //neighbourR=0;
           var srcNameR, dstNameR, startNameR, neiNameR:string;
+          
+          // Convenience proc to add Reverse components to the SegGraph object
+          proc addReverseComponentsToSegGraph():SegGraph throws {
+              graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
+                   .withDST_R(new shared SymEntry(dstR):GenSymEntry)
+                   .withSTART_IDX_R(new shared SymEntry(start_iR):GenSymEntry)
+                   .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
+              return graph;
+          }
         
           proc combine_sortR() throws {
              /* we cannot use the coargsort version because it will break the memory limit */
@@ -1623,30 +1574,13 @@ module GraphMsg {
 
           }// end combine_sortR
 
-          proc    set_neighbourR(){
+          proc set_neighbourR(){
              for i in 0..Ne-1 do {
                 neighbourR[srcR[i]]+=1;
                 if (start_iR[srcR[i]] ==-1){
                     start_iR[srcR[i]]=i;
                 }
              }
-          }
-
-          proc   set_common_symtableR():string throws {
-          //proc   set_common_symtableR() {
-             srcNameR = st.nextName();
-             dstNameR = st.nextName();
-             startNameR = st.nextName();
-             neiNameR = st.nextName();
-             var srcEntryR = new shared SymEntry(srcR);
-             var dstEntryR = new shared SymEntry(dstR);
-             var startEntryR = new shared SymEntry(start_iR);
-             var neiEntryR = new shared SymEntry(neighbourR);
-             st.addEntry(srcNameR, srcEntryR);
-             st.addEntry(dstNameR, dstEntryR);
-             st.addEntry(startNameR, startEntryR);
-             st.addEntry(neiNameR, neiEntryR);
-             return "success";
           }
 
 
@@ -1711,24 +1645,18 @@ module GraphMsg {
              //fillRandom(e_weight,0,100);
              fillInt(v_weight,1,1000);
              //fillRandom(v_weight,0,100);
-             ewName = st.nextName();
-             vwName = st.nextName();
-             var vwEntry = new shared SymEntry(v_weight);
-             var ewEntry = new shared SymEntry(e_weight);
-             st.addEntry(vwName, vwEntry);
-             st.addEntry(ewName, ewEntry);
              // end of weighted!=0
-      
-             set_common_symtable();
-             set_common_symtableR();
- 
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
-                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
-                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) + 
-                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
 
+             // Set up the common components, reverse components, and weights
+             set_common_symtable();
+             addReverseComponentsToSegGraph();
+             graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
+                  .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
+
+             // Store SegGraph object in SymTab
+             var gName = st.nextName();
+             st.addEntry(gName, new shared GraphSymEntry(graph));
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
 
           } else {
 
@@ -1779,14 +1707,14 @@ module GraphMsg {
 
              }
 
+             // Set up the common components, reverse components
              set_common_symtable();
-             set_common_symtableR();
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
-                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
-                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
-                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
-                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ; 
-
+             addReverseComponentsToSegGraph();
+             
+             // Store SegGraph object in SymTab
+             var gName = st.nextName();
+             st.addEntry(gName, new shared GraphSymEntry(graph));
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
 
           }// end unweighted graph
       }// end undirected graph
@@ -1802,14 +1730,12 @@ module GraphMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-
-
   proc segBFSMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
       //var (n_verticesN,n_edgesN,directedN,weightedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
       //    = payload.decode().splitMsgToTuple(10);
-      var (RCMs,n_verticesN,n_edgesN,directedN,weightedN,restpart )
-          = payload.splitMsgToTuple(6);
+      var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
+          = payload.splitMsgToTuple(7);
       var Nv=n_verticesN:int;
       var Ne=n_edgesN:int;
       var Directed=directedN:int;
@@ -1830,8 +1756,8 @@ module GraphMsg {
       var root:int;
       var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
       var srcRN, dstRN, startRN, neighbourRN:string;
-       
-
+      var gEntry:borrowed GraphSymEntry = getGraphSymEntry(graphEntryName, st);
+      var ag = gEntry.graph;
 
       proc _d1_bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
           var cur_level=0;
@@ -1897,21 +1823,6 @@ module GraphMsg {
           //SPG=0;
           RPG=0;
 
-          proc xlocal(x :int, low:int, high:int):bool{
-                     if (low<=x && x<=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
-
-          proc xremote(x :int, low:int, high:int):bool{
-                     if (low>=x || x>=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
           coforall loc in Locales   {
               on loc {
                  if (xlocal(root,vertexBeginG[here.id],vertexEndG[here.id]) ) {
@@ -2133,21 +2044,6 @@ module GraphMsg {
           //SPG=0;
           RPG=0;
 
-          proc xlocal(x :int, low:int, high:int):bool{
-                     if (low<=x && x<=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
-
-          proc xremote(x :int, low:int, high:int):bool{
-                     if (low>=x || x>=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
           coforall loc in Locales   {
               on loc {
                  if (xlocal(root,vertexBeginG[here.id],vertexEndG[here.id]) || 
@@ -2367,13 +2263,6 @@ module GraphMsg {
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -2506,13 +2395,6 @@ module GraphMsg {
                        var vertexBegin=src[edgeBegin];
                        var vertexEnd=src[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -2617,14 +2499,6 @@ module GraphMsg {
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
-
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -2725,9 +2599,6 @@ module GraphMsg {
           return "success";
       }//end of fo_set_bfs_kernel_u
 
-
-
-
       proc fo_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
@@ -2765,14 +2636,6 @@ module GraphMsg {
                        var vertexEnd=src[edgeEnd];
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
-
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
 
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
@@ -2875,8 +2738,6 @@ module GraphMsg {
           return "success";
       }//end of fo_domain_bfs_kernel_u
 
-
-
       proc fo_d1_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -2963,21 +2824,6 @@ module GraphMsg {
           //SPG=0;
           RPG=0;
 
-          proc xlocal(x :int, low:int, high:int):bool{
-                     if (low<=x && x<=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
-
-          proc xremote(x :int, low:int, high:int):bool{
-                     if (low>=x || x>=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
           coforall loc in Locales   {
               on loc {
                  if (xlocal(root,vertexBeginG[here.id],vertexEndG[here.id]) || 
@@ -3246,7 +3092,6 @@ module GraphMsg {
           return "success";
       }//end of fo_d1_bfs_kernel_u
 
-
       proc co_bag_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
@@ -3285,13 +3130,6 @@ module GraphMsg {
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
 
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
                            topdown+=1;
@@ -3393,9 +3231,6 @@ module GraphMsg {
           return "success";
       }//end of co_bag_bfs_kernel_u
 
-
-
-
       proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
@@ -3434,14 +3269,6 @@ module GraphMsg {
                        var vertexEnd=src[edgeEnd];
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
-
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
 
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
@@ -3543,9 +3370,6 @@ module GraphMsg {
           return "success";
       }//end of co_set_bfs_kernel_u
 
-
-
-
       proc co_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
@@ -3583,14 +3407,6 @@ module GraphMsg {
                        var vertexEnd=src[edgeEnd];
                        var vertexBeginR=srcR[edgeBegin];
                        var vertexEndR=srcR[edgeEnd];
-
-                       proc xlocal(x :int, low:int, high:int):bool{
-                                  if (low<=x && x<=high) {
-                                      return true;
-                                  } else {
-                                      return false;
-                                  }
-                       }
 
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
@@ -3693,8 +3509,6 @@ module GraphMsg {
           return "success";
       }//end of co_domain_bfs_kernel_u
 
-
-
       proc co_d1_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -3781,21 +3595,6 @@ module GraphMsg {
           //SPG=0;
           RPG=0;
 
-          proc xlocal(x :int, low:int, high:int):bool{
-                     if (low<=x && x<=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
-
-          proc xremote(x :int, low:int, high:int):bool{
-                     if (low>=x || x>=high) {
-                            return true;
-                     } else {
-                            return false;
-                     }
-          }
           coforall loc in Locales   {
               on loc {
                  if (xlocal(root,vertexBeginG[here.id],vertexEndG[here.id]) || 
@@ -4096,24 +3895,40 @@ module GraphMsg {
                   root=0;
               }
               depth[root]=0;
-              var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
-                                 startN,neighbourN,vweightN,eweightN, st);
-              fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
+
+            //   var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
+            //                      startN,neighbourN,vweightN,eweightN, st);
+            //   fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
+              fo_bag_bfs_kernel(
+                  toSymEntry(ag.getNEIGHBOR(), int).a,
+                  toSymEntry(ag.getSTART_IDX(), int).a,
+                  toSymEntry(ag.getSRC(), int).a,
+                  toSymEntry(ag.getDST(), int).a,
+                  1, GivenRatio);
+
               repMsg=return_depth();
 
           } else {
               var ratios:string;
 
               (srcN, dstN, startN, neighbourN,rootN,ratios )=restpart.splitMsgToTuple(6);
-              var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
-                      startN,neighbourN,st);
+            //   var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
+            //           startN,neighbourN,st);
+
               root=rootN:int;
               var GivenRatio=ratios:real;
               if (RCMFlag>0) {
                   root=0;
               }
               depth[root]=0;
-              fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
+            //   fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
+              fo_bag_bfs_kernel(
+                  toSymEntry(ag.getNEIGHBOR(), int).a,
+                  toSymEntry(ag.getSTART_IDX(), int).a,
+                  toSymEntry(ag.getSRC(), int).a,
+                  toSymEntry(ag.getDST(), int).a,
+                  1, GivenRatio);
+
               repMsg=return_depth();
           }
       }
@@ -4122,10 +3937,11 @@ module GraphMsg {
               var ratios:string;
               (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN,vweightN,eweightN, rootN, ratios)=
                    restpart.splitMsgToTuple(12);
-              var ag = new owned SegGraphUDW(Nv,Ne,Directed,Weighted,
-                      srcN,dstN, startN,neighbourN,
-                      srcRN,dstRN, startRN,neighbourRN,
-                      vweightN,eweightN, st);
+            //   var ag = new owned SegGraphUDW(Nv,Ne,Directed,Weighted,
+            //           srcN,dstN, startN,neighbourN,
+            //           srcRN,dstRN, startRN,neighbourRN,
+            //           vweightN,eweightN, st);
+
               root=rootN:int;
               if (RCMFlag>0) {
                   root=0;
@@ -4138,8 +3954,20 @@ module GraphMsg {
                   GivenRatio=-1.0* GivenRatio;
                   //co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                   //         ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
-                  fo_bag_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
-                           ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,1,GivenRatio);
+                //   fo_bag_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
+                //            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,1,GivenRatio);
+                  fo_bag_bfs_kernel_u(
+                      toSymEntry(ag.getNEIGHBOR(), int).a,
+                      toSymEntry(ag.getSTART_IDX(), int).a,
+                      toSymEntry(ag.getSRC(), int).a,
+                      toSymEntry(ag.getDST(), int).a,
+                      toSymEntry(ag.getNEIGHBOR_R(), int).a,
+                      toSymEntry(ag.getSTART_IDX_R(), int).a,
+                      toSymEntry(ag.getSRC_R(), int).a,
+                      toSymEntry(ag.getDST_R(), int).a,
+                      1, GivenRatio
+                  );
+                  
                   repMsg=return_depth();
  
               } else {// do batch test
@@ -4148,8 +3976,19 @@ module GraphMsg {
                   timer.stop();
                   timer.clear();
                   timer.start();
-                  co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
-                           ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
+                //   co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
+                //            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
+                  co_d1_bfs_kernel_u(
+                      toSymEntry(ag.getNEIGHBOR(), int).a,
+                      toSymEntry(ag.getSTART_IDX(), int).a,
+                      toSymEntry(ag.getSRC(), int).a,
+                      toSymEntry(ag.getDST(), int).a,
+                      toSymEntry(ag.getNEIGHBOR_R(), int).a,
+                      toSymEntry(ag.getSTART_IDX_R(), int).a,
+                      toSymEntry(ag.getSRC_R(), int).a,
+                      toSymEntry(ag.getDST_R(), int).a,
+                      GivenRatio
+                  );
                   timer.stop();
                   //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
                   var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
@@ -4319,10 +4158,6 @@ module GraphMsg {
               var ratios:string;
               (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN, rootN,ratios )=
                    restpart.splitMsgToTuple(10);
-              var ag = new owned SegGraphUD(Nv,Ne,Directed,Weighted,
-                      srcN,dstN, startN,neighbourN,
-                      srcRN,dstRN, startRN,neighbourRN,
-                      st);
 
               root=rootN:int;
               if (RCMFlag>0) {
@@ -4336,16 +4171,33 @@ module GraphMsg {
                   GivenRatio=-1.0*GivenRatio;
                   //co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                   //         ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
-                  fo_bag_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
-                           ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,1,GivenRatio);
+                  fo_bag_bfs_kernel_u(
+                      toSymEntry(ag.getNEIGHBOR(), int).a,
+                      toSymEntry(ag.getSTART_IDX(), int).a,
+                      toSymEntry(ag.getSRC(), int).a,
+                      toSymEntry(ag.getDST(), int).a,
+                      toSymEntry(ag.getNEIGHBOR_R(), int).a,
+                      toSymEntry(ag.getSTART_IDX_R(), int).a,
+                      toSymEntry(ag.getSRC_R(), int).a,
+                      toSymEntry(ag.getDST_R(), int).a,
+                      1, GivenRatio);
+                  
                   repMsg=return_depth();
  
               } else {// do batch test
                   timer.stop();
                   timer.clear();
                   timer.start();
-                  co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
-                           ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
+                  co_d1_bfs_kernel_u(
+                      toSymEntry(ag.getNEIGHBOR(), int).a,
+                      toSymEntry(ag.getSTART_IDX(), int).a,
+                      toSymEntry(ag.getSRC(), int).a,
+                      toSymEntry(ag.getDST(), int).a,
+                      toSymEntry(ag.getNEIGHBOR_R(), int).a,
+                      toSymEntry(ag.getSTART_IDX_R(), int).a,
+                      toSymEntry(ag.getSRC_R(), int).a,
+                      toSymEntry(ag.getDST_R(), int).a,
+                      GivenRatio);
                   timer.stop();
                   var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
                   smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
@@ -4518,15 +4370,6 @@ module GraphMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
 
   }
-
-
-
-
-
-
-
-
-
 
 }
 

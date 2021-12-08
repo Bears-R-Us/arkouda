@@ -1,460 +1,126 @@
 module GraphArray {
 
-  use AryUtil;
-  use CPtr;
-  use MultiTypeSymbolTable;
-  use MultiTypeSymEntry;
-  use CommAggregation;
-  use UnorderedCopy;
-  use SipHash;
-  use SegStringSort;
-  use RadixSortLSD only radixSortLSD_ranks;
-  use PrivateDist;
-  use ServerConfig;
-  use Unique;
-  use Time only Timer, getCurrentTime;
-  use Reflection;
-  use Logging;
-  use ServerErrors;
-  use ArkoudaRegexCompat;
+    use AryUtil;
+    use MultiTypeSymEntry;
+    use ServerConfig;
+    use Reflection;
+    use Logging;
+    use ServerErrors;
+    use NumPyDType;
+    use Map;
 
-  private config const logLevel = ServerConfig.logLevel;
-  const saLogger = new Logger(logLevel);
+    private config const logLevel = ServerConfig.logLevel;
+    const graphLogger = new Logger(logLevel);
 
-  private config param useHash = true;
-  param SegmentedArrayUseHash = useHash;
+    // These are the component Key names stored in our components map
+    enum Component {
+        SRC,          // The source of every edge in the graph,array value
+        SRC_R,        // Reverse of SRC
+        DST,          // The destination of every vertex in the graph,array value
+        DST_R,        // Reverse of DST
+        START_IDX,    // The starting index of every vertex in src and dst
+        START_IDX_R,  // Reverse of START_IDX
+        NEIGHBOR,     // Numer of neighbors for a vertex  
+        NEIGHBOR_R,   // 
+        EDGE_WEIGHT,  // Edge weight
+        VERTEX_WEIGHT // Vertex weight
+    }
 
-  private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
+    /**
+    * We use several arrays and intgers to represent a graph 
+    * Instances are ephemeral, not stored in the symbol table. Instead, attributes
+    * of this class refer to symbol table entries that persist. This class is a
+    * convenience for bundling those persistent objects and defining graph-relevant
+    * operations.
+    * Now we  copy from SegSArray, we need change more in the future to fit a graph
+    */
+    class SegGraph {
 
-  class OutOfBoundsError: Error {}
+        /* Map to hold various components of our Graph; use enum Component values as map keys */
+        var components = new map(Component, shared GenSymEntry, parSafe=false);
 
+        /* Total number of vertices */
+        var n_vertices : int;
 
+        /* Total number of edges */
+        var n_edges : int;
 
+        /* The graph is directed (True) or undirected (False)*/
+        var directed : bool;
 
-  /**
-   * We use several arrays and intgers to represent a graph 
-   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
-   * of this class refer to symbol table entries that persist. This class is a
-   * convenience for bundling those persistent objects and defining graph-relevant
-   * operations.
-   * Now we  copy from SegSArray, we need change more in the future to fit a graph
-   */
-  class SegGraph {
- 
-    /*    The starting indices for each string*/
-    var n_vertices : int;
+        /**
+        * Init the basic graph object, we'll compose the pieces in
+        * using the withCOMPONENT methods.
+        */
+        proc init(num_v:int, num_e:int, directed:bool) {
+            this.n_vertices = num_v;
+            this.n_edges = num_e;
+            this.directed = directed;
+        }
 
-    /*    The starting indices for each string*/
-    var n_edges : int;
+        proc isDirected():bool { return this.directed; }
 
-    /*    The graph is directed (True) or undirected (False)*/
-    var directed : bool;
+        /* Use the withCOMPONENT methods to compose the graph object */
+        proc withSRC(a:shared GenSymEntry):SegGraph { components.add(Component.SRC, a); return this; }
+        proc withSRC_R(a:shared GenSymEntry):SegGraph { components.add(Component.SRC_R, a); return this; }
+        
+        proc withDST(a:shared GenSymEntry):SegGraph { components.add(Component.DST, a); return this; }
+        proc withDST_R(a:shared GenSymEntry):SegGraph { components.add(Component.DST_R, a); return this; }
+        
+        proc withSTART_IDX(a:shared GenSymEntry):SegGraph { components.add(Component.START_IDX, a); return this; }
+        proc withSTART_IDX_R(a:shared GenSymEntry):SegGraph { components.add(Component.START_IDX_R, a); return this; }
 
-    /*    The source of every edge in the graph, name */
-    var srcName : string;
+        proc withNEIGHBOR(a:shared GenSymEntry):SegGraph { components.add(Component.NEIGHBOR, a); return this; }
+        proc withNEIGHBOR_R(a:GenSymEntry):SegGraph { components.add(Component.NEIGHBOR_R, a); return this; }
 
-    /*    The source of every edge in the graph,array value */
-    var src: borrowed SymEntry(int);
+        proc withEDGE_WEIGHT(a:shared GenSymEntry):SegGraph { components.add(Component.EDGE_WEIGHT, a); return this; }
+        proc withVERTEX_WEIGHT(a:shared GenSymEntry):SegGraph { components.add(Component.VERTEX_WEIGHT, a); return this; }
 
-    /*    The destination of every vertex in the graph,name */
-    var dstName : string;
-
-    /*    The destination of every vertex in the graph,array value */
-    var dst: borrowed SymEntry(int);
-
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var startName : string;
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var start_i: borrowed SymEntry(int);
-
-    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
-     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
-     */
-    var neighbourName : string;
-
-    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
-     */
-    var neighbour : borrowed SymEntry(int);
-
-
-    /*    The weitht of every vertex in the graph,name */
-    var v_weightName : string;
-
-    /*    The weitht of every vertex in the graph,array value */
-    var v_weight: borrowed SymEntry(int);
-
-    /*    The weitht of every edge in the graph, name */
-    var e_weightName : string;
-
-    /*    The weitht of every edge in the graph, array value */
-    var e_weight : borrowed SymEntry(int);
-
-
-
-    /* 
-     * The following version we will init differnt kind of arrays
-     * this is for src, dst, start_i, neighbour, v_weight and e_weight arrays
-     */
-    proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
-               startNameA:string,neiNameA: string, vweiNameA: string, 
-               eweiNameA:string, st: borrowed SymTab) {
-      n_vertices=numv;
-      n_edges=nume;
-      directed=dire;
-      
-
-      srcName = srcNameA;
-      // The try! is needed here because init cannot throw
-      var gs = try! st.lookup(srcName);
-      var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
-      src=tmpsrc;
-
-      dstName = dstNameA;
-      // The try! is needed here because init cannot throw
-      var ds = try! st.lookup(dstName);
-      var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
-      dst=tmpdst;
-
-      startName = startNameA;
-      // The try! is needed here because init cannot throw
-      var starts = try! st.lookup(startName);
-      var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
-      start_i=tmpstart_i;
-
-      neighbourName = neiNameA;
-      // The try! is needed here because init cannot throw
-      var neis = try! st.lookup(neighbourName);
-      var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
-      neighbour=tmpneighbour;
-
-      v_weightName = vweiNameA;
-      // The try! is needed here because init cannot throw
-      var vweis = try! st.lookup(v_weightName);
-      // I want this to be borrowed, but that throws a lifetime error
-      var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
-      v_weight=tmpv_weight;
-
-      e_weightName = eweiNameA;
-      // The try! is needed here because init cannot throw
-      var eweis = try! st.lookup(e_weightName);
-      var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
-      e_weight=tmpe_weight;
+        proc hasSRC():bool { return components.contains(Component.SRC); }
+        proc hasSRC_R():bool { return components.contains(Component.SRC_R); }
+        proc hasDST():bool { return components.contains(Component.DST); }
+        proc hasDST_R():bool { return components.contains(Component.DST_R); }
+        proc hasSTART_IDX():bool { return components.contains(Component.START_IDX); }
+        proc hasSTART_IDX_R():bool { return components.contains(Component.START_IDX_R); }
+        proc hasNEIGHBOR():bool { return components.contains(Component.NEIGHBOR); }
+        proc hasNEIGHBOR_R():bool { return components.contains(Component.NEIGHBOR_R); }
+        proc hasEDGE_WEIGHT():bool { return components.contains(Component.EDGE_WEIGHT); }
+        proc hasVERTEX_WEIGHT():bool { return components.contains(Component.VERTEX_WEIGHT); }
+        
+        proc getSRC() { return components.getBorrowed(Component.SRC); }
+        proc getSRC_R() { return components.getBorrowed(Component.SRC_R); }
+        proc getDST() { return components.getBorrowed(Component.DST); }
+        proc getDST_R() { return components.getBorrowed(Component.DST_R); }
+        proc getSTART_IDX() { return components.getBorrowed(Component.START_IDX); }
+        proc getSTART_IDX_R() { return components.getBorrowed(Component.START_IDX_R); }
+        proc getNEIGHBOR() { return components.getBorrowed(Component.NEIGHBOR); }
+        proc getNEIGHBOR_R() { return components.getBorrowed(Component.NEIGHBOR_R); }
+        proc getEDGE_WEIGHT() { return components.getBorrowed(Component.EDGE_WEIGHT); }
+        proc getVERTEX_WEIGHT() { return components.getBorrowed(Component.VERTEX_WEIGHT); }
 
     }
 
+    /**
+    * GraphSymEntry is the wrapper class around SegGraph
+    * so it may be stored in the Symbol Table (SymTab)
+    */
+    class GraphSymEntry:CompositeSymEntry {
+        var dtype = NumPyDType.DType.UNDEF;
+        var graph: shared SegGraph;
 
-  } // class SegGraph
-
-
-
-
-  /**
-   * We use several arrays and intgers to represent a basic directed graph 
-   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
-   * of this class refer to symbol table entries that persist. This class is a
-   * convenience for bundling those persistent objects and defining graph-relevant
-   * operations.
-   * Now we  copy from SegSArray, we need change more in the future to fit a graph
-   */
-  class SegGraphD {
- 
-    /*    The starting indices for each string*/
-    var n_vertices : int;
-
-    /*    The starting indices for each string*/
-    var n_edges : int;
-
-    /*    The graph is directed (True) or undirected (False)*/
-    var directed=1 : int;
-
-    /*    The graph is directed (True) or undirected (False)*/
-    var weighted=0 : int;
-
-    /*    The source of every edge in the graph, name */
-    var srcName : string;
-
-    /*    The source of every edge in the graph,array value */
-    var src: borrowed SymEntry(int);
-
-    /*    The destination of every vertex in the graph,name */
-    var dstName : string;
-
-    /*    The destination of every vertex in the graph,array value */
-    var dst: borrowed SymEntry(int);
-
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var startName : string;
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var start_i: borrowed SymEntry(int);
-
-    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
-     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
-     */
-    var neighbourName : string;
-
-    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
-     */
-    var neighbour : borrowed SymEntry(int);
-
-
-    /* 
-     * The following version we will init differnt kind of arrays
-     * this is for src, dst, start_i, neighbour, v_weight and e_weight arrays
-     */
-    proc init( numv:int, nume:int, dire:int,wei:int, 
-               srcNameA: string, dstNameA: string, 
-               startNameA:string,neiNameA: string,  
-               st: borrowed SymTab) {
-      n_vertices=numv;
-      n_edges=nume;
-      directed=dire;
-      weighted=wei;
-      
-      srcName = srcNameA;
-      // The try! is needed here because init cannot throw
-      var gs = try! st.lookup(srcName);
-      var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
-      src=tmpsrc;
-
-      dstName = dstNameA;
-      // The try! is needed here because init cannot throw
-      var ds = try! st.lookup(dstName);
-      var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
-      dst=tmpdst;
-
-      startName = startNameA;
-      // The try! is needed here because init cannot throw
-      var starts = try! st.lookup(startName);
-      var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
-      start_i=tmpstart_i;
-
-      neighbourName = neiNameA;
-      // The try! is needed here because init cannot throw
-      var neis = try! st.lookup(neighbourName);
-      var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
-      neighbour=tmpneighbour;
-    }
-  } // class SegGraphD
-
-
-
-  /**
-   * We use several arrays and intgers to represent a weighted directed graph 
-   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
-   * of this class refer to symbol table entries that persist. This class is a
-   * convenience for bundling those persistent objects and defining graph-relevant
-   * operations.
-   * Now we  copy from SegSArray, we need change more in the future to fit a graph
-   */
-  class SegGraphDW:SegGraphD {
- 
-
-    /*    The weitht of every vertex in the graph,name */
-    var v_weightName : string;
-
-    /*    The weitht of every vertex in the graph,array value */
-    var v_weight: borrowed SymEntry(int);
-
-    /*    The weitht of every edge in the graph, name */
-    var e_weightName : string;
-
-    /*    The weitht of every edge in the graph, array value */
-    var e_weight : borrowed SymEntry(int);
-
-
-
-    /* 
-     * The following version we will init differnt kind of arrays
-     * this is for src, dst, start_i, neighbour, v_weight and e_weight arrays
-     */
-    proc init( numv:int, nume:int, dire:int,wei:int, 
-               srcNameA: string, dstNameA: string, 
-               startNameA:string,neiNameA: string, 
-               vweiNameA: string, eweiNameA:string, 
-               st: borrowed SymTab) {
-          super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string, 
-                           st: borrowed SymTab);
-          v_weightName = vweiNameA;
-          // The try! is needed here because init cannot throw
-          var vweis = try! st.lookup(v_weightName);
-          var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
-          v_weight=tmpv_weight;
-
-          e_weightName = eweiNameA;
-          // The try! is needed here because init cannot throw
-          var eweis = try! st.lookup(e_weightName);
-          var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
-          e_weight=tmpe_weight;
-    }
-  } // class SegGraphDW
-
-
-
-
-  /**
-   * We use several arrays and intgers to represent an undirected graph 
-   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
-   * of this class refer to symbol table entries that persist. This class is a
-   * convenience for bundling those persistent objects and defining graph-relevant
-   * operations.
-   * Now we  copy from SegSArray, we need change more in the future to fit a graph
-   */
-  class SegGraphUD:SegGraphD {
- 
-    /*    The source of every edge in the graph, name */
-    var srcNameR : string;
-
-    /*    The source of every edge in the graph,array value */
-    var srcR: borrowed SymEntry(int);
-
-    /*    The destination of every vertex in the graph,name */
-    var dstNameR : string;
-
-    /*    The destination of every vertex in the graph,array value */
-    var dstR: borrowed SymEntry(int);
-
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var startNameR : string;
-
-    /*    The starting index  of every vertex in src and dst the ,name */
-    var start_iR: borrowed SymEntry(int);
-
-    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
-     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
-     */
-    var neighbourNameR : string;
-
-    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
-     */
-    var neighbourR : borrowed SymEntry(int);
-
-
-    /* 
-     * The following version we will init differnt kind of arrays
-     * this is for src, dst, start_i, neighbour, v_weight and e_weight arrays
-     */
-    proc init( numv:int, nume:int, dire:int,wei:int, 
-               srcNameA: string, dstNameA: string, 
-               startNameA:string,neiNameA: string, 
-               srcNameAR: string, dstNameAR: string, 
-               startNameAR:string,neiNameAR: string, 
-               st: borrowed SymTab) {
-      
-
-          super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string,
-                           st: borrowed SymTab);
-
-          srcNameR = srcNameAR;
-          // The try! is needed here because init cannot throw
-          var gsR = try! st.lookup(srcNameR);
-          var tmpsrcR = toSymEntry(gsR, int): unmanaged SymEntry(int);
-          srcR=tmpsrcR;
-
-          dstNameR = dstNameAR;
-          // The try! is needed here because init cannot throw
-          var dsR = try! st.lookup(dstNameR);
-          var tmpdstR = toSymEntry(dsR, int): unmanaged SymEntry(int);
-          dstR=tmpdstR;
-
-          startNameR = startNameAR;
-          // The try! is needed here because init cannot throw
-          var startsR = try! st.lookup(startNameR);
-          var tmpstart_iR = toSymEntry(startsR, int): unmanaged SymEntry(int);
-          start_iR=tmpstart_iR;
-
-          neighbourNameR = neiNameAR;
-          // The try! is needed here because init cannot throw
-          var neisR = try! st.lookup(neighbourNameR);
-          var tmpneighbourR = toSymEntry(neisR, int): unmanaged SymEntry(int);
-          neighbourR=tmpneighbourR;
-
+        proc init(segGraph: shared SegGraph) {
+            super.init();
+            this.entryType = SymbolEntryType.GraphSymEntry;
+            assignableTypes.add(this.entryType);
+            this.graph = segGraph;
+        }
     }
 
-
-  } // class SegGraphUD
-
-
-
-
-  /**
-   * We use several arrays and intgers to represent a weighted and undirected graph 
-   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
-   * of this class refer to symbol table entries that persist. This class is a
-   * convenience for bundling those persistent objects and defining graph-relevant
-   * operations.
-   * Now we  copy from SegSArray, we need change more in the future to fit a graph
-   */
-  class SegGraphUDW:SegGraphUD {
- 
-
-    /*    The weitht of every vertex in the graph,name */
-    var v_weightName : string;
-
-    /*    The weitht of every vertex in the graph,array value */
-    var v_weight: borrowed SymEntry(int);
-
-    /*    The weitht of every edge in the graph, name */
-    var e_weightName : string;
-
-    /*    The weitht of every edge in the graph, array value */
-    var e_weight : borrowed SymEntry(int);
-
-
-
-    /* 
-     * The following version we will init differnt kind of arrays
-     * this is for src, dst, start_i, neighbour, v_weight and e_weight arrays
-     */
-    proc init( numv:int, nume:int, dire:int,wei:int,
-               srcNameA: string, dstNameA: string, 
-               startNameA:string,neiNameA: string, 
-               srcNameAR: string, dstNameAR: string, 
-               startNameAR:string,neiNameAR: string, 
-               vweiNameA: string, eweiNameA:string, 
-               st: borrowed SymTab) {
-
-      super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string,
-                           srcNameAR: string, dstNameAR: string, 
-                           startNameAR:string,neiNameAR: string, 
-                           st: borrowed SymTab);
-
-      v_weightName = vweiNameA;
-      // The try! is needed here because init cannot throw
-      var vweis = try! st.lookup(v_weightName);
-      // I want this to be borrowed, but that throws a lifetime error
-      var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
-      v_weight=tmpv_weight;
-
-      e_weightName = eweiNameA;
-      // The try! is needed here because init cannot throw
-      var eweis = try! st.lookup(e_weightName);
-      var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
-      e_weight=tmpe_weight;
-
+    /**
+    * Helper proc to cat AbstractSymEntry to GraphSymEntry
+    */
+    proc toGraphSymEntry(entry: borrowed AbstractSymEntry): borrowed GraphSymEntry throws {
+        return (entry: borrowed GraphSymEntry);
     }
-
-  } // class SegGraphUDW
-
-
-
-
-
-
-
-
 
 }
