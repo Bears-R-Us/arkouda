@@ -110,7 +110,7 @@ module ServerConfig
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
 
-        var arrowVNum: string;
+        var arrowVNum = "Unsupported";
         if hasParquetSupport {
           use SysCTypes, CPtr;
           extern proc c_getVersionInfo(): c_string;
@@ -122,8 +122,6 @@ module ServerConfig
           }
           arrowVNum = try! createStringWithNewBuffer(cVersionString,
                                                      strlen(cVersionString));
-        } else {
-          arrowVNum = "Not built";
         }
         
         const cfg = new owned Config(
