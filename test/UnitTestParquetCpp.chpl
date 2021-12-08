@@ -13,7 +13,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   defer {
     c_free_string(errMsg);
   }
-  var causeError = "asdasdasd":c_string;
+  var causeError = "cause-error":c_string;
   
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;

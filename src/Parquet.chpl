@@ -32,7 +32,6 @@ module Parquet {
       extern proc strlen(a): int;
       var err;
       try! err = createStringWithNewBuffer(errMsg, strlen(errMsg));
-      // free error message before throw since it can't be used again
       throw getErrorWithContext(
                      msg=err,
                      lineNumber,
