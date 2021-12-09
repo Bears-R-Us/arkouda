@@ -106,35 +106,77 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
 
 int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
-
-  std::shared_ptr<arrow::io::ReadableFile> infile;
-  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename,arrow::default_memory_pool()),
-                 infile);
-
-  std::unique_ptr<parquet::arrow::FileReader> reader;
-  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
-
-  std::shared_ptr<arrow::ChunkedArray> array;
-
-  std::shared_ptr<arrow::Schema> sc;
-  std::shared_ptr<arrow::Schema>* out = &sc;
-  ARROWSTATUS_OK(reader->GetSchema(out));
-
-  if(!reader->ReadColumn(sc -> GetFieldIndex(colname), &array).ok()) {
-    std::string fname(filename);
-    std::string dname(colname);
-    std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
-    *errMsg = strdup(msg.c_str());
-    return ARROWERROR;
-  }
-
   int ty = cpp_getType(filename, colname, errMsg);
-  std::shared_ptr<arrow::Array> regular = array->chunk(0);
-
+  
+  // Since Arrow type matches Chapel type, we can batch read
   if(ty == ARROWINT64) {
-    COPYTOCHAPEL(Int64Array, regular);
-  } else if(ty == ARROWINT32) {
-    COPYTOCHAPEL(Int32Array, regular);
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+      parquet::ParquetFileReader::OpenFile(filename, false);
+
+    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+    int num_row_groups = file_metadata->num_row_groups();
+    int num_columns = file_metadata->num_columns();
+
+    int i = 0;
+    for (int r = 0; r < num_row_groups; ++r) {
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+        parquet_reader->RowGroup(r);
+
+      int64_t values_read = 0;
+      int64_t rows_read = 0;
+      int numToRead = 1000;
+
+      std::shared_ptr<parquet::ColumnReader> column_reader;
+      ARROW_UNUSED(rows_read);  // prevent warning in release build
+
+      int idx = file_metadata -> schema() -> ColumnIndex(colname);
+
+      if(idx < 0) {
+        std::string fname(filename);
+        std::string dname(colname);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+      
+      // Get the Column Reader for the specified column
+      column_reader = row_group_reader->Column(idx);
+      parquet::Int64Reader* int64_reader =
+        static_cast<parquet::Int64Reader*>(column_reader.get());
+
+      // Read all the rows in the column
+      while (int64_reader->HasNext()) {
+        rows_read = int64_reader->ReadBatch(numToRead, nullptr, nullptr, &chpl_ptr[i], &values_read);
+        i+=numToRead;
+      }
+    }
+  } else {
+    std::shared_ptr<arrow::io::ReadableFile> infile;
+    ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename,arrow::default_memory_pool()),
+                   infile);
+
+    std::unique_ptr<parquet::arrow::FileReader> reader;
+    ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
+    std::shared_ptr<arrow::ChunkedArray> array;
+
+    std::shared_ptr<arrow::Schema> sc;
+    std::shared_ptr<arrow::Schema>* out = &sc;
+    ARROWSTATUS_OK(reader->GetSchema(out));
+
+    if(!reader->ReadColumn(sc -> GetFieldIndex(colname), &array).ok()) {
+      std::string fname(filename);
+      std::string dname(colname);
+      std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+
+    std::shared_ptr<arrow::Array> regular = array->chunk(0);
+
+    if(ty == ARROWINT32) {
+      COPYTOCHAPEL(Int32Array, regular);
+    }
   }
   return 0;
 }
