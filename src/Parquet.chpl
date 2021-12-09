@@ -30,8 +30,12 @@ module Parquet {
 
     proc parquetError(lineNumber, routineName, moduleName) throws {
       extern proc strlen(a): int;
-      var err;
-      try! err = createStringWithNewBuffer(errMsg, strlen(errMsg));
+      var err: string;
+      try {
+        err = createStringWithNewBuffer(errMsg, strlen(errMsg));
+      } catch e {
+        err = "Error converting Parquet error message to Chapel string";
+      }
       throw getErrorWithContext(
                      msg=err,
                      lineNumber,
@@ -49,8 +53,13 @@ module Parquet {
     defer {
       c_free_string(cVersionString: c_void_ptr);
     }
-    var ret = try! createStringWithNewBuffer(cVersionString,
-                                             strlen(cVersionString));
+    var ret: string;
+    try {
+      ret = createStringWithNewBuffer(cVersionString,
+                                strlen(cVersionString));
+    } catch e {
+      ret = "Error converting Arrow version message to Chapel string";
+    }
     return ret;
   }
   
