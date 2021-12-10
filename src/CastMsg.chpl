@@ -23,7 +23,7 @@ module CastMsg {
                                                  name,objtype,targetDtype,opt));
     select objtype {
       when "pdarray" {
-        var gse: borrowed GenSymEntry = st.lookup(name);
+        var gse: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         select (gse.dtype, targetDtype) {
             when (DType.Int64, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, int, int), MsgType.NORMAL);
@@ -93,8 +93,7 @@ module CastMsg {
         }
       }
       when "str" {
-          const (segName, valName) = name.splitMsgToTuple("+", 2);
-          const strings = getSegString(segName, valName, st);
+          const strings = getSegString(name, st);
           select targetDtype {
               when "int64" {
                   return new MsgTuple(castStringToSymEntry(strings, st, int), MsgType.NORMAL);
@@ -120,7 +119,7 @@ module CastMsg {
         castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
-      }
+    }
   }
 
   proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, 

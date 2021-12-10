@@ -35,7 +35,7 @@ module ReductionMsg
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "cmd: %s reductionop: %s name: %s".format(cmd,reductionop,name));
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -224,7 +224,7 @@ module ReductionMsg
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "cmd: %s segments_name: %s size: %s".format(cmd,segments_name, size));
 
-      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {    
           var errorMsg = "Array of segment offsets must be int dtype";
@@ -267,8 +267,8 @@ module ReductionMsg
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".format(
                                        cmd,values_name,segments_name,op,skipNan));
-        var gVal: borrowed GenSymEntry = st.lookup(values_name);
-        var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+        var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
+        var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
         var segments = toSymEntry(gSeg, int);
         if (segments == nil) {
             var errorMsg = "Error: array of segment offsets must be int dtype";
