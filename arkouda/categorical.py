@@ -283,7 +283,7 @@ class Categorical:
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.categories[self.codes[key]]
         else:
-            return Categorical.from_codes(self.codes[key], self.categories)
+            return Categorical.from_codes(self.codes[key], self.categories).reset_categories()
 
     def reset_categories(self) -> Categorical:
         """
@@ -450,16 +450,18 @@ class Categorical:
         >>> ak.in1d(cat,catTwo)
         array([False, False, False, False, False])
         """
-        if isinstance(test,Categorical):
-            categoriesisin = in1d(self.categories, test.categories)
+        reset_cat = self.reset_categories()
+        if isinstance(test, Categorical):
+            categoriesisin = in1d(reset_cat.categories, test.reset_categories().categories)
         else:
-            categoriesisin = in1d(self.categories, test)
-        return categoriesisin[self.codes]
+            categoriesisin = in1d(reset_cat.categories, test)
+        return categoriesisin[reset_cat.codes]
 
     def unique(self) -> Categorical:
         #__doc__ = unique.__doc__
-        return Categorical.from_codes(arange(self.categories.size), 
-                                      self.categories)
+        reset_cat = self.reset_categories()
+        return Categorical.from_codes(arange(reset_cat.categories.size),
+                                      reset_cat.categories)
 
     def group(self) -> pdarray:
         """
