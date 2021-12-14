@@ -1,6 +1,8 @@
 module Parquet {
   use SysCTypes, CPtr, IO;
   use ServerErrors, ServerConfig;
+  // Use reflection for error information
+  use Reflection;
   if hasParquetSupport {
     require "ArrowFunctions.h";
     require "ArrowFunctions.o";
@@ -11,8 +13,37 @@ module Parquet {
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;
   extern var ARROWUNDEFINED: c_int;
+  extern var ARROWERROR: c_int;
 
   enum ArrowTypes { int64, int32, notimplemented };
+
+  record parquetErrorMsg {
+    var errMsg: c_ptr(uint(8));
+    proc init() {
+      errMsg = c_nil;
+    }
+    
+    proc deinit() {
+      extern proc c_free_string(ptr);
+      c_free_string(errMsg);
+    }
+
+    proc parquetError(lineNumber, routineName, moduleName) throws {
+      extern proc strlen(a): int;
+      var err: string;
+      try {
+        err = createStringWithNewBuffer(errMsg, strlen(errMsg));
+      } catch e {
+        err = "Error converting Parquet error message to Chapel string";
+      }
+      throw getErrorWithContext(
+                     msg=err,
+                     lineNumber,
+                     routineName,
+                     moduleName,
+                     errorClass="ParquetError");
+    }
+  }
   
   proc getVersionInfo() {
     extern proc c_getVersionInfo(): c_string;
@@ -22,8 +53,13 @@ module Parquet {
     defer {
       c_free_string(cVersionString: c_void_ptr);
     }
-    var ret = try! createStringWithNewBuffer(cVersionString,
-                                             strlen(cVersionString));
+    var ret: string;
+    try {
+      ret = createStringWithNewBuffer(cVersionString,
+                                strlen(cVersionString));
+    } catch e {
+      ret = "Error converting Arrow version message to Chapel string";
+    }
     return ret;
   }
   
@@ -48,11 +84,12 @@ module Parquet {
     return {low..high by stride};
   }
   
-  proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string) {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems);
+  proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
 
     coforall loc in A.targetLocales() do on loc {
+      var pqErr = new parquetErrorMsg();
       var locFiles = filenames;
       var locFiledoms = subdoms;
       for (filedom, filename) in zip(locFiledoms, locFiles) {
@@ -60,8 +97,11 @@ module Parquet {
           const intersection = domain_intersection(locdom, filedom);
           if intersection.size > 0 {
             var col: [filedom] int;
-            // TODO: errors
-            c_readColumnByName(filename.localize().c_str(), c_ptrTo(col), dsetname.localize().c_str(), filedom.size);
+            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                  dsetname.localize().c_str(), filedom.size,
+                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+            }
             A[filedom] = col;
           }
         }
@@ -69,16 +109,28 @@ module Parquet {
     }
   }
 
-  proc getArrSize(filename: string) {
-    extern proc c_getNumRows(chpl_str): int;
-    var size = c_getNumRows(filename.localize().c_str());
+  proc getArrSize(filename: string) throws {
+    extern proc c_getNumRows(chpl_str, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+    
+    var size = c_getNumRows(filename.localize().c_str(),
+                            c_ptrTo(pqErr.errMsg));
+    if size == ARROWERROR {
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    }
     return size;
   }
 
-  proc getArrType(filename: string, colname: string) {
-    extern proc c_getType(filename, colname): c_int;
+  proc getArrType(filename: string, colname: string) throws {
+    extern proc c_getType(filename, colname, errMsg): c_int;
+    var pqErr = new parquetErrorMsg();
     var arrType = c_getType(filename.localize().c_str(),
-                            colname.localize().c_str());
+                            colname.localize().c_str(),
+                            c_ptrTo(pqErr.errMsg));
+    if arrType == ARROWERROR {
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    }
+    
     if arrType == ARROWINT64 then return ArrowTypes.int64;
     else if arrType == ARROWINT32 then return ArrowTypes.int32;
     return ArrowTypes.notimplemented;
@@ -86,24 +138,44 @@ module Parquet {
 
   proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize) throws {
     extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
-                                     dsetname, numelems, rowGroupSize);
+                                       dsetname, numelems, rowGroupSize,
+                                       errMsg): int;
     var filenames: [0..#A.targetLocales().size] string;
     for i in 0..#A.targetLocales().size {
       var suffix = '%04i'.format(i): string;
       filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
     }
+    var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
 
+    var warnFlag = processParquetFilenames(filenames, matchingFilenames);
+    
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+        var pqErr = new parquetErrorMsg();
         const myFilename = filenames[idx];
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
-        c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0, dsetname.localize().c_str(), locDom.size, rowGroupSize);
+        if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
+                                  dsetname.localize().c_str(), locDom.size, rowGroupSize,
+                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+          pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+        }
       }
+    return warnFlag;
+  }
+      
+
+  proc processParquetFilenames(filenames: [] string, matchingFilenames: [] string) throws {
+    var warnFlag: bool;
+    if matchingFilenames.size > 0 {
+      warnFlag = true;
+    } else {
+      warnFlag = false;
+    }
+    return warnFlag;
   }
 
   proc write1DDistArrayParquet(filename: string, dsetname, A) throws {
-    writeDistArrayToParquet(A, filename, dsetname, ROWGROUPS);
-    return false;
+    return writeDistArrayToParquet(A, filename, dsetname, ROWGROUPS);
   }
 }

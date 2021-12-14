@@ -5,6 +5,47 @@
 #include <arrow/io/api.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
+#include <parquet/column_reader.h>
+
+/*
+  Arrow Error Helpers
+  -------------------
+  Arrow provides PARQUETASSIGNORTHROW and other similar macros
+  to help with error handling, but since we are doing something
+  unique (passing back the error message to Chapel to be displayed),
+  these helpers are similar to the provided macros but matching our
+  functionality. 
+*/
+
+// The `ARROWRESULT_OK` macro should be used when trying to
+// assign the result of an Arrow/Parquet function to a value that can
+// potentially throw an error, so the argument `cmd` is the Arrow
+// command to execute and `res` is the desired variable to store the
+// result
+#define ARROWRESULT_OK(cmd, res)                                \
+  {                                                             \
+    auto result = cmd;                                          \
+    if(!result.ok()) {                                          \
+      *errMsg = strdup(result.status().message().c_str());      \
+      return ARROWERROR;                                        \
+    }                                                           \
+    res = result.ValueOrDie();                                  \
+  }
+
+// The `ARROWSTATUS_OK` macro should be used when calling an
+// Arrow/Parquet function that returns a status. The `cmd`
+// argument should be the Arrow function to execute.
+#define ARROWSTATUS_OK(cmd)                     \
+  if(!check_status_ok(cmd, errMsg))             \
+    return ARROWERROR;
+
+bool check_status_ok(arrow::Status status, char** errMsg) {
+  if(!status.ok()) {
+    *errMsg = strdup(status.message().c_str());
+    return false;
+  }
+  return true;
+}
 
 /*
  C++ functions
@@ -15,37 +56,39 @@
  C++ functions must return types that are C compatible.
 */
 
-int cpp_getNumRows(const char* filename) {
+int cpp_getNumRows(const char* filename, char** errMsg) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
-  PARQUET_ASSIGN_OR_THROW(
-      infile,
-      arrow::io::ReadableFile::Open(filename,
-                                    arrow::default_memory_pool()));
+  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                 infile);
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-  PARQUET_THROW_NOT_OK(
-    parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+  
   return reader -> parquet_reader() -> metadata() -> num_rows();
 }
 
-int cpp_getType(const char* filename, const char* colname) {
+int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
-  PARQUET_ASSIGN_OR_THROW(
-      infile,
-      arrow::io::ReadableFile::Open(filename,
-                                    arrow::default_memory_pool()));
+  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                 infile);
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-  PARQUET_THROW_NOT_OK(
-      parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
 
   std::shared_ptr<arrow::Schema> sc;
   std::shared_ptr<arrow::Schema>* out = &sc;
-  PARQUET_THROW_NOT_OK(reader->GetSchema(out));
+  ARROWSTATUS_OK(reader->GetSchema(out));
 
   int idx = sc -> GetFieldIndex(colname);
-  if(idx == -1) // TODO: error colname not in schema
-    idx = 0;
+  // Since this doesn't actually throw a Parquet error, we have to generate
+  // our own error message for this case
+  if(idx == -1) {
+    std::string fname(filename);
+    std::string dname(colname);
+    std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+    *errMsg = strdup(msg.c_str());
+    return ARROWERROR;
+  }
   auto myType = sc -> field(idx) -> type();
 
   if(myType == arrow::int64())
@@ -56,57 +99,57 @@ int cpp_getType(const char* filename, const char* colname) {
     return ARROWUNDEFINED;
 }
 
-void cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems) {
+#define COPYTOCHAPEL(arrowtype, chunk)                                      \
+  auto int_arr = std::static_pointer_cast<arrow::arrowtype>(chunk); \
+  for(int i = 0; i < numElems; i++) \
+    chpl_ptr[i] = int_arr->Value(i);
+
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
 
   std::shared_ptr<arrow::io::ReadableFile> infile;
-  PARQUET_ASSIGN_OR_THROW(
-      infile,
-      arrow::io::ReadableFile::Open(filename,
-                                    arrow::default_memory_pool()));
+  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename,arrow::default_memory_pool()),
+                 infile);
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-  PARQUET_THROW_NOT_OK(
-      parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
   std::shared_ptr<arrow::ChunkedArray> array;
 
   std::shared_ptr<arrow::Schema> sc;
   std::shared_ptr<arrow::Schema>* out = &sc;
-  PARQUET_THROW_NOT_OK(reader->GetSchema(out));
+  ARROWSTATUS_OK(reader->GetSchema(out));
 
-  auto idx = sc -> GetFieldIndex(colname);
+  if(!reader->ReadColumn(sc -> GetFieldIndex(colname), &array).ok()) {
+    std::string fname(filename);
+    std::string dname(colname);
+    std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+    *errMsg = strdup(msg.c_str());
+    return ARROWERROR;
+  }
 
-  // TODO: error: schema does not contain dsetname
-  if(idx == -1)
-    idx = 0;
-
-  PARQUET_THROW_NOT_OK(reader->ReadColumn(idx, &array));
-
-  int ty = cpp_getType(filename, colname);
+  int ty = cpp_getType(filename, colname, errMsg);
   std::shared_ptr<arrow::Array> regular = array->chunk(0);
 
   if(ty == ARROWINT64) {
-    auto int_arr = std::static_pointer_cast<arrow::Int64Array>(regular);
-
-    for(int i = 0; i < numElems; i++)
-      chpl_ptr[i] = int_arr->Value(i);
+    COPYTOCHAPEL(Int64Array, regular);
   } else if(ty == ARROWINT32) {
-      auto int_arr = std::static_pointer_cast<arrow::Int32Array>(regular);
-
-      for(int i = 0; i < numElems; i++)
-        chpl_ptr[i] = int_arr->Value(i);
+    COPYTOCHAPEL(Int32Array, regular);
   }
+  return 0;
 }
 
-void cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
-                              int colnum, const char* dsetname, int numelems,
-                              int rowGroupSize) {
+int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
+                             int colnum, const char* dsetname, int numelems,
+                             int rowGroupSize, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
   arrow::Int64Builder i64builder;
-  for(int i = 0; i < numelems; i++)
-    PARQUET_THROW_NOT_OK(i64builder.AppendValues({chpl_ptr[i]}));
+  arrow::Status status;
+  for(int i = 0; i < numelems; i++) {
+    ARROWSTATUS_OK(i64builder.AppendValues({chpl_ptr[i]}));
+  }
   std::shared_ptr<arrow::Array> i64array;
-  PARQUET_THROW_NOT_OK(i64builder.Finish(&i64array));
+  ARROWSTATUS_OK(i64builder.Finish(&i64array));
 
   std::shared_ptr<arrow::Schema> schema = arrow::schema(
                  {arrow::field(dsetname, arrow::int64())});
@@ -114,12 +157,11 @@ void cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
   auto table = arrow::Table::Make(schema, {i64array});
 
   std::shared_ptr<arrow::io::FileOutputStream> outfile;
-  PARQUET_ASSIGN_OR_THROW(
-      outfile,
-      arrow::io::FileOutputStream::Open(filename));
+  ARROWRESULT_OK(arrow::io::FileOutputStream::Open(filename),
+                 outfile);
 
-  PARQUET_THROW_NOT_OK(
-      parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), outfile, rowGroupSize));
+  ARROWSTATUS_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), outfile, rowGroupSize));
+  return 0;
 }
 
 const char* cpp_getVersionInfo(void) {
@@ -141,23 +183,23 @@ void cpp_free_string(void* ptr) {
 */
 
 extern "C" {
-  int c_getNumRows(const char* chpl_str) {
-    return cpp_getNumRows(chpl_str);
+  int c_getNumRows(const char* chpl_str, char** errMsg) {
+    return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  void c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems) {
-    cpp_readColumnByName(filename, chpl_arr, colname, numElems);
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, errMsg);
   }
 
-  int c_getType(const char* filename, const char* colname) {
-    return cpp_getType(filename, colname);
+  int c_getType(const char* filename, const char* colname, char** errMsg) {
+    return cpp_getType(filename, colname, errMsg);
   }
 
-  void c_writeColumnToParquet(const char* filename, void* chpl_arr,
-                              int colnum, const char* dsetname, int numelems,
-                              int rowGroupSize) {
-    cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
-                             numelems, rowGroupSize);
+  int c_writeColumnToParquet(const char* filename, void* chpl_arr,
+                             int colnum, const char* dsetname, int numelems,
+                             int rowGroupSize, char** errMsg) {
+    return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
+                                    numelems, rowGroupSize, errMsg);
   }
 
   const char* c_getVersionInfo(void) {
