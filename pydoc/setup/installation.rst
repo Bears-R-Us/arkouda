@@ -48,17 +48,17 @@ We recommend adding the arkouda root directory to your ``PATH`` environment vari
 Install the Client
 ******************
 
-There are two ways to install the python client. It is available from the Python Package Index (PyPI) with:
+You can install the client via
 
 .. code-block:: bash
 
-   pip3 install arkouda
+   pip3 install path/to/local/arkouda/repo
 
 If you are planning to contribute to arkouda as a developer, you may wish to install an editable version linked to your local copy of the github repo:
 
 .. code-block:: bash
 
-   pip3 install -e path/to/local/arkouda/repo
+   pip3 install -e path/to/local/arkouda/repo[dev]
 
 
 

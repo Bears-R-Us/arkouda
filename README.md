@@ -4,10 +4,6 @@
 ## _NOTE_: Arkouda is under the MIT license.
 
 ## Online Documentation
-[Arkouda Online Documentation](https://arkouda.readthedocs.io/en/latest/)
-
-[Arkouda PDF Documentation](https://arkouda.readthedocs.io/_/downloads/en/latest/pdf/)
-
 [Arkouda docs at Github Pages](https://bears-r-us.github.io/arkouda/)
 
 ## Nightly Arkouda Performance Charts
