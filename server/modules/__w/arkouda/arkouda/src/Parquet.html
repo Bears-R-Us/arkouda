@@ -239,10 +239,40 @@
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ARROWUNDEFINED</span></span><span class="pre">:</span> <span class="pre">c_int</span><a class="headerlink" href="#Parquet.ARROWUNDEFINED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="Parquet.ARROWERROR">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ARROWERROR</span></span><span class="pre">:</span> <span class="pre">c_int</span><a class="headerlink" href="#Parquet.ARROWERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Parquet.ArrowTypes">
 <em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ArrowTypes</span></span> <span class="pre">{</span> <span class="pre">int64,</span> <span class="pre">int32,</span> <span class="pre">notimplemented</span> <span class="pre">}</span><a class="headerlink" href="#Parquet.ArrowTypes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="Parquet.parquetErrorMsg">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">parquetErrorMsg</span></span><a class="headerlink" href="#Parquet.parquetErrorMsg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Parquet.parquetErrorMsg.errMsg">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errMsg</span></span><span class="pre">:</span> <span class="pre">c_ptr(uint(8))</span><a class="headerlink" href="#Parquet.parquetErrorMsg.errMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Parquet.parquetErrorMsg.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.parquetErrorMsg.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Parquet.parquetErrorMsg.deinit">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.parquetErrorMsg.deinit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Parquet.parquetErrorMsg.parquetError">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parquetError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">moduleName</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.parquetErrorMsg.parquetError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Parquet.getVersionInfo">
@@ -261,22 +291,27 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Parquet.readFilesByName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readFilesByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sizes:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.readFilesByName" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readFilesByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sizes:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.readFilesByName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Parquet.getArrSize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getArrSize" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.getArrSize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Parquet.getArrType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">colname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Parquet.getArrType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArrType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">colname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.getArrType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Parquet.writeDistArrayToParquet">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeDistArrayToParquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filename</span></em>, <em class="sig-param"><span class="pre">dsetname</span></em>, <em class="sig-param"><span class="pre">rowGroupSize</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.writeDistArrayToParquet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Parquet.processParquetFilenames">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">processParquetFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">matchingFilenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Parquet.processParquetFilenames" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

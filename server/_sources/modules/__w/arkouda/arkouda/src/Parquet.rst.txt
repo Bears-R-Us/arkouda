@@ -23,7 +23,19 @@ or
 
 .. data:: var ARROWUNDEFINED: c_int
 
+.. data:: var ARROWERROR: c_int
+
 .. enum:: enum ArrowTypes { int64, int32, notimplemented }
+
+.. record:: parquetErrorMsg
+
+   .. attribute:: var errMsg: c_ptr(uint(8))
+
+   .. method:: proc init()
+
+   .. method:: proc deinit()
+
+   .. method:: proc parquetError(lineNumber, routineName, moduleName) throws
 
 .. function:: proc getVersionInfo()
 
@@ -31,13 +43,15 @@ or
 
 .. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
 
-.. function:: proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string)
+.. function:: proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string) throws
 
-.. function:: proc getArrSize(filename: string)
+.. function:: proc getArrSize(filename: string) throws
 
-.. function:: proc getArrType(filename: string, colname: string)
+.. function:: proc getArrType(filename: string, colname: string) throws
 
 .. function:: proc writeDistArrayToParquet(A, filename, dsetname, rowGroupSize) throws
+
+.. function:: proc processParquetFilenames(filenames: [] string, matchingFilenames: [] string) throws
 
 .. function:: proc write1DDistArrayParquet(filename: string, dsetname, A) throws
 
