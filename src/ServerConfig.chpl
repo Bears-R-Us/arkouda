@@ -125,14 +125,13 @@ module ServerConfig
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder()
         );
+        return try! "%jt".format(cfg);
 
-        return cfg;
     }
-    private const cfg = createConfig();
+    private const cfgStr = createConfig();
 
     proc getConfig(): string {
-        var res: string = try! "%jt".format(cfg);
-        return res;
+        return cfgStr;
     }
 
     proc getEnv(name: string, default=""): string {
