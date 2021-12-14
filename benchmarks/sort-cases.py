@@ -33,39 +33,39 @@ def check_sorted(s):
     else:
         return is_cosorted(s)
 
-def do_argsort(data):
-    if isinstance(data, ak.pdarray):
-        return ak.argsort(data)
-    elif isinstance(data, ak.Strings):
-        return ak.argsort(data)
+def do_argsort(data, algo):
+    if isinstance(data, (ak.pdarray, ak.Strings)):
+        return ak.argsort(data, algo)
     else:
-        return ak.coargsort(data)
+        return ak.coargsort(data, algo)
 
 def check_correctness(data):
     '''
     Only check accuracy of sorting, do not measure performance
     '''
-    perm = do_argsort(data)
-    s = apply_perm(data, perm)
-    assert check_sorted(s)
+    for algo in ak.SortingAlgorithm:
+        perm = do_argsort(data, algo)
+        s = apply_perm(data, perm)
+        assert check_sorted(s)
     
 def time_sort(name, data, trials):
     '''
     Measure both performance and correctness of sorting
     '''
-    timings = []
-    for i in range(trials):
-        start = time.time()
-        perm = do_argsort(data)
-        end = time.time()
-        timings.append(end - start)
-    tavg = sum(timings) / trials
-    nbytes = get_nbytes(data)
-    print("{} average time = {:.4f} sec".format(name, tavg))
-    bytes_per_sec = nbytes / tavg
-    print("{} average rate = {:.4f} GiB/sec".format(name, bytes_per_sec/2**30))
-    s = apply_perm(data, perm)
-    assert check_sorted(s)
+    for algo in ak.SortingAlgorithm:
+        timings = []
+        for i in range(trials):
+            start = time.time()
+            perm = do_argsort(data, algo)
+            end = time.time()
+            timings.append(end - start)
+        tavg = sum(timings) / trials
+        nbytes = get_nbytes(data)
+        print("{} {} average time = {:.4f} sec".format(name, algo.name, tavg))
+        bytes_per_sec = nbytes / tavg
+        print("{} {} average rate = {:.4f} GiB/sec".format(name, algo.name, bytes_per_sec/2**30))
+        s = apply_perm(data, perm)
+        assert check_sorted(s)
     
 def random_uniform(N):
     '''
