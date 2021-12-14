@@ -34,3 +34,15 @@ class ParquetTest(ArkoudaTest):
 
         for f in glob.glob('pq_test*'):
             os.remove(f)
+
+    def test_wrong_dset_name(self):
+        ak_arr = ak.randint(0, 2**32, SIZE)
+        ak_arr.save_parquet("pq_test", "test-dset-name")
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.read_parquet("pq_test*", "wrong-dset-name")
+        self.assertIn("wrong-dset-name does not exist in file", cm.exception.args[0])
+
+        for f in glob.glob("pq_test*"):
+            os.remove(f)
+        
