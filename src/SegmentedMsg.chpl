@@ -958,5 +958,6 @@ module SegmentedMsg {
     registerFunction("segmentedGroup", segGroupMsg);
     registerFunction("segmentedIn1d", segIn1dMsg);
     registerFunction("randomStrings", randomStringsMsg);
+    registerFunction("segStr-assemble", assembleStringsMsg);
   }
 }
