@@ -12,6 +12,9 @@ def GenerateServerIncludes(config_filename, reg_filename):
     serverfile = open(reg_filename, "w")
     serverfile.write("proc doRegister() {\n")
     for mod in GetModules(config_filename):
+        if "/" in mod:
+            serverfile.write(f"  require \"{mod}\";\n")
+            mod = mod.split("/")[-1] # get only module name, not path
         serverfile.write(f"  import {mod};\n  {mod}.registerMe();\n")
     serverfile.write("}\n")
 
