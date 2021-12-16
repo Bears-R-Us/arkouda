@@ -105,7 +105,7 @@ Classes
 
       
 
-   .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None) -> Categorical
+   .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, uses_all_categories=False) -> Categorical
       :classmethod:
 
       Make a Categorical from codes and categories arrays. If codes and
