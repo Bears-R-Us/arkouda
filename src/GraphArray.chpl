@@ -252,8 +252,50 @@ module GraphArray {
    * operations.
    * Now we  copy from SegSArray, we need change more in the future to fit a graph
    */
-  class SegGraphDW:SegGraphD {
+  class SegGraphDW {
  
+
+    /*    The starting indices for each string*/
+    var n_vertices : int;
+
+    /*    The starting indices for each string*/
+    var n_edges : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var directed=1 : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var weighted=0 : int;
+
+    /*    The source of every edge in the graph, name */
+    var srcName : string;
+
+    /*    The source of every edge in the graph,array value */
+    var src: borrowed SymEntry(int);
+
+    /*    The destination of every vertex in the graph,name */
+    var dstName : string;
+
+    /*    The destination of every vertex in the graph,array value */
+    var dst: borrowed SymEntry(int);
+
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var startName : string;
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var start_i: borrowed SymEntry(int);
+
+    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
+     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
+     */
+    var neighbourName : string;
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
+     */
+    var neighbour : borrowed SymEntry(int);
+
 
     /*    The weitht of every vertex in the graph,name */
     var v_weightName : string;
@@ -278,10 +320,37 @@ module GraphArray {
                startNameA:string,neiNameA: string, 
                vweiNameA: string, eweiNameA:string, 
                st: borrowed SymTab) {
-          super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string, 
-                           st: borrowed SymTab);
+
+          n_vertices=numv;
+          n_edges=nume;
+          directed=dire;
+          weighted=wei;
+      
+          srcName = srcNameA;
+          // The try! is needed here because init cannot throw
+          var gs = try! st.lookup(srcName);
+          var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
+          src=tmpsrc;
+
+          dstName = dstNameA;
+          // The try! is needed here because init cannot throw
+          var ds = try! st.lookup(dstName);
+          var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
+          dst=tmpdst;
+
+          startName = startNameA;
+          // The try! is needed here because init cannot throw
+          var starts = try! st.lookup(startName);
+          var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
+          start_i=tmpstart_i;
+
+          neighbourName = neiNameA;
+          // The try! is needed here because init cannot throw
+          var neis = try! st.lookup(neighbourName);
+          var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+          neighbour=tmpneighbour;
+
+
           v_weightName = vweiNameA;
           // The try! is needed here because init cannot throw
           var vweis = try! st.lookup(v_weightName);
@@ -307,8 +376,50 @@ module GraphArray {
    * operations.
    * Now we  copy from SegSArray, we need change more in the future to fit a graph
    */
-  class SegGraphUD:SegGraphD {
+  class SegGraphUD {
  
+
+    /*    The starting indices for each string*/
+    var n_vertices : int;
+
+    /*    The starting indices for each string*/
+    var n_edges : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var directed=0 : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var weighted=0 : int;
+
+    /*    The source of every edge in the graph, name */
+    var srcName : string;
+
+    /*    The source of every edge in the graph,array value */
+    var src: borrowed SymEntry(int);
+
+    /*    The destination of every vertex in the graph,name */
+    var dstName : string;
+
+    /*    The destination of every vertex in the graph,array value */
+    var dst: borrowed SymEntry(int);
+
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var startName : string;
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var start_i: borrowed SymEntry(int);
+
+    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
+     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
+     */
+    var neighbourName : string;
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
+     */
+    var neighbour : borrowed SymEntry(int);
+
     /*    The source of every edge in the graph, name */
     var srcNameR : string;
 
@@ -351,10 +462,36 @@ module GraphArray {
                st: borrowed SymTab) {
       
 
-          super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string,
-                           st: borrowed SymTab);
+          n_vertices=numv;
+          n_edges=nume;
+          directed=dire;
+          weighted=wei;
+      
+          srcName = srcNameA;
+          // The try! is needed here because init cannot throw
+          var gs = try! st.lookup(srcName);
+          var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
+          src=tmpsrc;
+
+          dstName = dstNameA;
+          // The try! is needed here because init cannot throw
+          var ds = try! st.lookup(dstName);
+          var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
+          dst=tmpdst;
+
+          startName = startNameA;
+          // The try! is needed here because init cannot throw
+          var starts = try! st.lookup(startName);
+          var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
+          start_i=tmpstart_i;
+
+          neighbourName = neiNameA;
+          // The try! is needed here because init cannot throw
+          var neis = try! st.lookup(neighbourName);
+          var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+          neighbour=tmpneighbour;
+
+
 
           srcNameR = srcNameAR;
           // The try! is needed here because init cannot throw
@@ -396,8 +533,82 @@ module GraphArray {
    * operations.
    * Now we  copy from SegSArray, we need change more in the future to fit a graph
    */
-  class SegGraphUDW:SegGraphUD {
+  class SegGraphUDW {
  
+
+
+
+    /*    The starting indices for each string*/
+    var n_vertices : int;
+
+    /*    The starting indices for each string*/
+    var n_edges : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var directed=0 : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var weighted=0 : int;
+
+    /*    The source of every edge in the graph, name */
+    var srcName : string;
+
+    /*    The source of every edge in the graph,array value */
+    var src: borrowed SymEntry(int);
+
+    /*    The destination of every vertex in the graph,name */
+    var dstName : string;
+
+    /*    The destination of every vertex in the graph,array value */
+    var dst: borrowed SymEntry(int);
+
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var startName : string;
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var start_i: borrowed SymEntry(int);
+
+    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
+     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
+     */
+    var neighbourName : string;
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
+     */
+    var neighbour : borrowed SymEntry(int);
+
+    /*    The source of every edge in the graph, name */
+    var srcNameR : string;
+
+    /*    The source of every edge in the graph,array value */
+    var srcR: borrowed SymEntry(int);
+
+    /*    The destination of every vertex in the graph,name */
+    var dstNameR : string;
+
+    /*    The destination of every vertex in the graph,array value */
+    var dstR: borrowed SymEntry(int);
+
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var startNameR : string;
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var start_iR: borrowed SymEntry(int);
+
+    /*  The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
+     *  neighbour[v+1]-neighbour[v] if v<n_vertices-1 or n_edges-neighbour[v] if v=n_vertices-1
+     */
+    var neighbourNameR : string;
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
+     */
+    var neighbourR : borrowed SymEntry(int);
+
+
 
     /*    The weitht of every vertex in the graph,name */
     var v_weightName : string;
@@ -425,25 +636,76 @@ module GraphArray {
                vweiNameA: string, eweiNameA:string, 
                st: borrowed SymTab) {
 
-      super.init(numv:int, nume:int, dire:int, wei:int,
-                           srcNameA: string, dstNameA: string,
-                           startNameA:string,neiNameA: string,
-                           srcNameAR: string, dstNameAR: string, 
-                           startNameAR:string,neiNameAR: string, 
-                           st: borrowed SymTab);
 
-      v_weightName = vweiNameA;
-      // The try! is needed here because init cannot throw
-      var vweis = try! st.lookup(v_weightName);
-      // I want this to be borrowed, but that throws a lifetime error
-      var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
-      v_weight=tmpv_weight;
+          n_vertices=numv;
+          n_edges=nume;
+          directed=dire;
+          weighted=wei;
+      
+          srcName = srcNameA;
+          // The try! is needed here because init cannot throw
+          var gs = try! st.lookup(srcName);
+          var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
+          src=tmpsrc;
 
-      e_weightName = eweiNameA;
-      // The try! is needed here because init cannot throw
-      var eweis = try! st.lookup(e_weightName);
-      var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
-      e_weight=tmpe_weight;
+          dstName = dstNameA;
+          // The try! is needed here because init cannot throw
+          var ds = try! st.lookup(dstName);
+          var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
+          dst=tmpdst;
+
+          startName = startNameA;
+          // The try! is needed here because init cannot throw
+          var starts = try! st.lookup(startName);
+          var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
+          start_i=tmpstart_i;
+
+          neighbourName = neiNameA;
+          // The try! is needed here because init cannot throw
+          var neis = try! st.lookup(neighbourName);
+          var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+          neighbour=tmpneighbour;
+
+
+
+          srcNameR = srcNameAR;
+          // The try! is needed here because init cannot throw
+          var gsR = try! st.lookup(srcNameR);
+          var tmpsrcR = toSymEntry(gsR, int): unmanaged SymEntry(int);
+          srcR=tmpsrcR;
+
+          dstNameR = dstNameAR;
+          // The try! is needed here because init cannot throw
+          var dsR = try! st.lookup(dstNameR);
+          var tmpdstR = toSymEntry(dsR, int): unmanaged SymEntry(int);
+          dstR=tmpdstR;
+
+          startNameR = startNameAR;
+          // The try! is needed here because init cannot throw
+          var startsR = try! st.lookup(startNameR);
+          var tmpstart_iR = toSymEntry(startsR, int): unmanaged SymEntry(int);
+          start_iR=tmpstart_iR;
+
+          neighbourNameR = neiNameAR;
+          // The try! is needed here because init cannot throw
+          var neisR = try! st.lookup(neighbourNameR);
+          var tmpneighbourR = toSymEntry(neisR, int): unmanaged SymEntry(int);
+          neighbourR=tmpneighbourR;
+
+
+
+          v_weightName = vweiNameA;
+          // The try! is needed here because init cannot throw
+          var vweis = try! st.lookup(v_weightName);
+          // I want this to be borrowed, but that throws a lifetime error
+          var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
+          v_weight=tmpv_weight;
+
+          e_weightName = eweiNameA;
+          // The try! is needed here because init cannot throw
+          var eweis = try! st.lookup(e_weightName);
+          var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
+          e_weight=tmpe_weight;
 
     }
 
