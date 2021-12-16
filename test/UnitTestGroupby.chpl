@@ -56,12 +56,12 @@ prototype module UnitTestGroupby
     
     // create random keys array
     var kname = nameForRandintMsg(LEN, DType.Int64, 0, NKEYS, st);
-    var kg = st.lookup(kname);
+    var kg = toGenSymEntry(st.lookup(kname));
     var keys = toSymEntry(kg, int);
 
     // create random vals array
     var vname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
-    var vg = st.lookup(vname);
+    var vg = toGenSymEntry(st.lookup(vname));
     var vals = toSymEntry(vg, int);
 
     writeln("Key: value");
@@ -94,9 +94,9 @@ prototype module UnitTestGroupby
       d.stop("findSegmentsMsg");
     }
     var (segname, ukiname) = parseTwoNames(repMsg);
-    var segg = st.lookup(segname);
+    var segg = toGenSymEntry(st.lookup(segname));
     var segs = toSymEntry(segg, int);
-    var ukig = st.lookup(ukiname);
+    var ukig = toGenSymEntry(st.lookup(ukiname));
     var ukeyinds = toSymEntry(ukig, int);
 
     // get unique keys
@@ -107,7 +107,7 @@ prototype module UnitTestGroupby
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var ukname = parseName(repMsg);
-    var ukg = st.lookup(ukname);
+    var ukg = toGenSymEntry(st.lookup(ukname));
     var ukeys = toSymEntry(ukg, int);
 
     writeln("Unique key: segment start");
@@ -122,7 +122,7 @@ prototype module UnitTestGroupby
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var svname = parseName(repMsg);
-    var svg = st.lookup(svname);
+    var svg = toGenSymEntry(st.lookup(svname));
     var svals = toSymEntry(svg, int);
 
     writeln("Sorted vals");
@@ -141,7 +141,7 @@ prototype module UnitTestGroupby
     } 
     writeRep(repMsg);
     var redname = parseName(repMsg);
-    var redg = st.lookup(redname);
+    var redg = toGenSymEntry(st.lookup(redname));
     var red = toSymEntry(redg, int);
 
     writeln("Key: reduced value");

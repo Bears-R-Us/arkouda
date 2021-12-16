@@ -13,7 +13,7 @@ class Matcher:
     LocationsInfo = frozenset(["num_matches", "starts", "lengths", "search_bool", "search_ind", "match_bool",
                                "match_ind", "full_match_bool", "full_match_ind"])
 
-    def __init__(self, pattern: str_scalars, parent_bytes_name: str, parent_offsets_name: str) -> None:
+    def __init__(self, pattern: str_scalars, parent_entry_name: str) -> None:
         self.objtype = type(self).__name__
         try:
             self.pattern = pattern
@@ -23,8 +23,7 @@ class Matcher:
         if re.search(self.pattern, ''):
             # TODO remove once changes from chapel issue #18639 are in arkouda
             raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
-        self.parent_bytes_name = parent_bytes_name
-        self.parent_offsets_name = parent_offsets_name
+        self.parent_entry_name = parent_entry_name
         self.num_matches: pdarray
         self.starts: pdarray
         self.lengths: pdarray
@@ -46,8 +45,8 @@ class Matcher:
         if not self.populated or any([getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]):
             cmd = "segmentedFindLoc"
             args = "{} {} {} {} {}".format(self.objtype,
-                                           self.parent_offsets_name,
-                                           self.parent_bytes_name,
+                                           self.parent_entry_name,
+                                           "legacy_placeholder",
                                            0,  # groupNum is 0 for regular matches
                                            json.dumps([self.pattern]))
             repMsg = cast(str, generic_msg(cmd=cmd, args=args))
@@ -85,8 +84,7 @@ class Matcher:
                       starts=self.starts[self.indices[matched]],
                       lengths=self.lengths[self.indices[matched]],
                       indices=indices,
-                      parent_bytes_name=self.parent_bytes_name,
-                      parent_offsets_name=self.parent_offsets_name,
+                      parent_entry_name=self.parent_entry_name,
                       match_type=match_type,
                       pattern=self.pattern)
         match._parent_obj = parent
@@ -99,18 +97,17 @@ class Matcher:
         from arkouda.strings import Strings
         cmd = "segmentedSplit"
         args = "{} {} {} {} {} {}".format(self.objtype,
-                                          self.parent_offsets_name,
-                                          self.parent_bytes_name,
+                                          self.parent_entry_name,
+                                          "legacy_placeholder",
                                           maxsplit,
                                           return_segments,
                                           json.dumps([self.pattern]))
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)
 
     def findall(self, return_match_origins: bool = False):
         """
@@ -120,8 +117,8 @@ class Matcher:
         self.find_locations()
         cmd = "segmentedFindAll"
         args = "{} {} {} {} {} {} {} {}".format(self.objtype,
-                                                self.parent_offsets_name,
-                                                self.parent_bytes_name,
+                                                self.parent_entry_name,
+                                                "legacy_placeholder",
                                                 self.num_matches.name,
                                                 self.starts.name,
                                                 self.lengths.name,
@@ -130,10 +127,9 @@ class Matcher:
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)
 
     def sub(self, repl: str, count: int = 0, return_num_subs: bool = False):
         """
@@ -144,8 +140,8 @@ class Matcher:
         from arkouda.strings import Strings
         cmd = "segmentedSub"
         args = "{} {} {} {} {} {} {}".format(self.objtype,
-                                             self.parent_offsets_name,
-                                             self.parent_bytes_name,
+                                             self.parent_entry_name,
+                                             "legacy_placeholder",
                                              repl,
                                              count,
                                              return_num_subs,
@@ -153,7 +149,6 @@ class Matcher:
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_num_subs:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)

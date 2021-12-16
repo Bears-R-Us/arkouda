@@ -24,14 +24,13 @@ module FlattenMsg {
       when "str" {
         const rSegName = st.nextName();
         const rValName = st.nextName();
-        const optName: string = if returnSegs then st.nextName() else "";
-        var (segName, valName) = name.splitMsgToTuple('+', 2);
-        const strings = getSegString(segName, valName, st);
+        var (stringsName, legacy_placeholder) = name.splitMsgToTuple('+', 2);
+        const strings = getSegString(stringsName, st);
         var (off, val, segs) = strings.flatten(delim, returnSegs, regex);
-        st.addEntry(rSegName, new shared SymEntry(off));
-        st.addEntry(rValName, new shared SymEntry(val));
-        repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
+        var stringsObj = getSegString(off, val, st);
+        repMsg = "created %s+created bytes.size %t".format(st.attrib(stringsObj.name), stringsObj.nBytes);
         if returnSegs {
+          const optName: string = st.nextName();
           st.addEntry(optName, new shared SymEntry(segs));
           repMsg += "+created %s".format(st.attrib(optName));
         }
@@ -51,7 +50,7 @@ module FlattenMsg {
   proc segmentedSplitMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, segName, valName, maxsplitStr, returnSegsStr, patternJson) = payload.splitMsgToTuple(6);
+    var (objtype, name, legacy_placeholder, maxsplitStr, returnSegsStr, patternJson) = payload.splitMsgToTuple(6);
     const returnSegs: bool = returnSegsStr.toLower() == "true";
     var maxsplit: int;
     try {
@@ -64,8 +63,7 @@ module FlattenMsg {
     }
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    st.checkTable(name);
 
     const json = jsonToPdArray(patternJson, 1);
     const pattern: string = json[json.domain.low];
@@ -75,14 +73,11 @@ module FlattenMsg {
 
     select objtype {
       when "Matcher" {
-        const rSegName = st.nextName();
-        const rValName = st.nextName();
         const optName: string = if returnSegs then st.nextName() else "";
-        const strings = getSegString(segName, valName, st);
+        const strings = getSegString(name, st);
         var (off, val, segs) = strings.split(pattern, maxsplit, returnSegs);
-        st.addEntry(rSegName, new shared SymEntry(off));
-        st.addEntry(rValName, new shared SymEntry(val));
-        repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
+        var retString = getSegString(off, val, st);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
         if returnSegs {
           st.addEntry(optName, new shared SymEntry(segs));
           repMsg += "+created %s".format(st.attrib(optName));

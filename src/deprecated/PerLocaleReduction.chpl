@@ -17,9 +17,13 @@ module PerLocaleReduction {
     use PrivateDist;
     use RadixSortLSD;
     use ReductionMsg;
+    use Logging;
 
     private config const reductionDEBUG = false;
     private config const lBins = 2**25 * numLocales;
+
+    private config const logLevel = ServerConfig.logLevel;
+    const plrLogger = new Logger(logLevel);
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
     proc localArgsortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -32,7 +36,7 @@ module PerLocaleReduction {
         var ivname = st.nextName();
         if v {writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -155,7 +159,7 @@ module PerLocaleReduction {
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
+        var kEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(kname, st);
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -249,7 +253,7 @@ module PerLocaleReduction {
       var rname = st.nextName();
       if v {writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
-      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {
           var errorMsg = "Error: array of segment offsets must be int dtype";
@@ -291,11 +295,11 @@ module PerLocaleReduction {
       var rname = st.nextName();
       if v {writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
-      var gKey: borrowed GenSymEntry = st.lookup(keys_name);
+      var gKey: borrowed GenSymEntry = getGenericTypedArrayEntry(keys_name, st);
       if (gKey.dtype != DType.Int64) {return unrecognizedTypeError(pn, dtype2str(gKey.dtype));}
       var keys = toSymEntry(gKey, int);
-      var gVal: borrowed GenSymEntry = st.lookup(values_name);
-      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
+      var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       select (gVal.dtype) {

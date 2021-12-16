@@ -24,6 +24,7 @@ module GenSymIO {
     use ServerConfig;
     use Search;
     use IndexingMsg;
+    use SegmentedArray;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
@@ -101,12 +102,19 @@ module GenSymIO {
 
         if asSegStr {
             try {
-                var values = toSymEntry(st.lookup(rname), uint(8));
-                var offsets = segmentedCalcOffsets(values.a, values.aD);
-                var oname = st.nextName();
-                var offsetsEntry = new shared SymEntry(offsets);
-                st.addEntry(oname, offsetsEntry);
-                msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                st.checkTable(rname, "arrayMsg");
+                var g = st.lookup(rname);
+                if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
+                    var values = toSymEntry( (g:GenSymEntry), uint(8) );
+                    var offsets = segmentedCalcOffsets(values.a, values.aD);
+                    var oname = st.nextName();
+                    var offsetsEntry = new shared SymEntry(offsets);
+                    st.addEntry(oname, offsetsEntry);
+                    msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+                } else {
+                    throw new Error("Unsupported Type %s".format(g.entryType));
+                }
+
             } catch e: Error {
                 msg = "Error creating offsets for SegString";
                 msgType = MsgType.ERROR;
@@ -160,8 +168,15 @@ module GenSymIO {
     proc tondarrayMsg(cmd: string, payload: string, st: 
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
-        var entry = st.lookup(payload);
-        overMemLimit(2*entry.size*entry.itemsize);
+        var abstractEntry = st.lookup(payload);
+        if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg.encode(); // return as bytes
+        }
+        var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
+        
+        overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = c_malloc(eltType, D.size);
@@ -575,23 +590,25 @@ module GenSymIO {
                     // Load the strings bytes/values first
                     var entryVal = new shared SymEntry(len, uint(8));
                     read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME, skips);
-                    var valName = st.nextName();
-                    st.addEntry(valName, entryVal);
 
-                    // Either load or derive the offsets array based on user preference
-                    var offsetsName = st.nextName();
-                    if (calcStringOffsets || nSeg < 1) {
+                    proc _buildEntryCalcOffsets(): shared SymEntry throws {
                         var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
-                        var offsetsEntry = new shared SymEntry(offsetsArray);
-                        st.addEntry(offsetsName, offsetsEntry);
-                    } else {
+                        return new shared SymEntry(offsetsArray);
+                    }
+
+                    proc _buildEntryLoadOffsets() throws {
                         var offsetsEntry = new shared SymEntry(nSeg, int);
                         read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME, skips);
                         fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
-                        st.addEntry(offsetsName, offsetsEntry);
+                        return offsetsEntry;
                     }
 
-                    rnames.append((dsetName, "seg_string", "%s+%s".format(offsetsName, valName)));
+                    var entrySeg = if (calcStringOffsets || nSeg < 1) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+
+                    var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+                    // TODO fix the transformation to json after rebasing.
+                    // rnames = rnames + "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes)+ " , ";
+                    rnames.append((dsetName, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
@@ -857,8 +874,8 @@ module GenSymIO {
                     item +="," + Q + "created" + QCQ + "created " + st.attrib(id) + Q + "}";
                 }
                 when ("seg_string") {
-                    var (segName, valName) = id.splitMsgToTuple("+", 2);
-                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created " + st.attrib(valName) + Q + "}";
+                    var (segName, nBytes) = id.splitMsgToTuple("+", 2);
+                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created bytes.size " + nBytes + Q + "}";
                 }
                 otherwise {
                     item += "}";
@@ -1331,6 +1348,16 @@ module GenSymIO {
         var filename: string;
         var entry = st.lookup(arrayName);
         var writeOffsets = "true" == writeOffsetsFlag.strip().toLower();
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+            entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+            entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+            var errorMsg = "tohdfMsg Unsupported SymbolEntryType:%t".format(entry.entryType);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
 
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
@@ -1344,30 +1371,35 @@ module GenSymIO {
         var warnFlag: bool;
 
         try {
-            select entry.dtype {
+            select entryDtype {
                 when DType.Int64 {
-                    var e = toSymEntry(entry, int);
+                    var e = toSymEntry(toGenSymEntry(entry), int);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
                 }
                 when DType.Float64 {
-                    var e = toSymEntry(entry, real);
+                    var e = toSymEntry(toGenSymEntry(entry), real);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Float64);
                 }
                 when DType.Bool {
-                    var e = toSymEntry(entry, bool);
+                    var e = toSymEntry(toGenSymEntry(entry), bool);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
                 when DType.UInt8 {
                     /*
                      * Look up the values and segments arrays, both of which are needed to write
                      * uint8 arrays such as Strings out to external systems.
+                     * UPDATE: with SegStringSymEntry, it's now encapsulated, also UInt8 is a #legacy_placeholder
+                     *         The type is now DType.Strings so this should be unreachable
                      */
-                    var e = toSymEntry(entry, uint(8));
-                    var segsEntry = st.lookup(segsName);
-                    var s_e = toSymEntry(segsEntry, int);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8, s_e.a, writeOffsets);
-                } otherwise {
-                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                when DType.Strings {
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                otherwise {
+                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entryDtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
@@ -1411,7 +1443,7 @@ module GenSymIO {
             use Parquet;
             var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
             var filename: string;
-            var entry = st.lookup(arrayName);
+            var entry = getGenericTypedArrayEntry(arrayName, st);
 
             try {
               filename = jsonToPdArray(jsonfile, 1)[0];

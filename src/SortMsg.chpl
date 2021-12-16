@@ -48,7 +48,7 @@ module SortMsg
       // get next symbol name
       var sortedName = st.nextName();
 
-      var gEnt: borrowed GenSymEntry = st.lookup(name);
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
       // check and throw if over memory limit
       overMemLimit(((2 + 1) * gEnt.size * gEnt.itemsize)
