@@ -1,5 +1,6 @@
 module Message {
     use IO;
+    use FileIO;
     use Reflection;
     use ServerErrors;
 
@@ -66,6 +67,21 @@ module Message {
        return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, 
                                                         msgFormat=msgFormat, user=user));
    }
+
+    /*
+     * Converts the JSON array to a pdarray
+     */
+    proc jsonToPdArray(json: string, size: int) throws {
+        var f = opentmp(); defer { ensureClose(f); }
+        var w = f.writer();
+        w.write(json);
+        w.close();
+        var r = f.reader(start=0);
+        var array: [0..#size] string;
+        r.readf("%jt", array);
+        r.close();
+        return array;
+    }
 
     /*
      * String constants for use in constructing JSON formatted messages

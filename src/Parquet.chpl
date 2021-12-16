@@ -1,6 +1,18 @@
 module Parquet {
   use SysCTypes, CPtr, IO;
   use ServerErrors, ServerConfig;
+  use FileIO;
+  use FileSystem;
+  use GenSymIO;
+  use List;
+  use Logging;
+  use Message;
+  use MultiTypeSymbolTable;
+  use MultiTypeSymEntry;
+  use NumPyDType;
+  use Sort;
+
+
   // Use reflection for error information
   use Reflection;
   if hasParquetSupport {
@@ -8,6 +20,9 @@ module Parquet {
     require "ArrowFunctions.o";
   }
 
+  private config const logLevel = ServerConfig.logLevel;
+  const pqLogger = new Logger(logLevel);
+  
   private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
   // Undocumented for now, just for internal experiments
   private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
@@ -75,17 +90,6 @@ module Parquet {
     return (subdoms, (+ reduce lengths));
   }
 
-  proc domain_intersection(d1: domain(1), d2: domain(1)) {
-    var low = max(d1.low, d2.low);
-    var high = min(d1.high, d2.high);
-    if (d1.stride !=1) && (d2.stride != 1) {
-      //TODO: change this to throw
-      halt("At least one domain must have stride 1");
-    }
-    var stride = max(d1.stride, d2.stride);
-    return {low..high by stride};
-  }
-  
   proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string) throws {
     extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
@@ -180,4 +184,238 @@ module Parquet {
   proc write1DDistArrayParquet(filename: string, dsetname, A) throws {
     return writeDistArrayToParquet(A, filename, dsetname, ROWGROUPS);
   }
+
+    proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      if !hasParquetSupport {
+          throw getErrorWithContext(
+                  msg="Arkouda has been built without Parquet support",
+                  lineNumber=getLineNumber(),
+                  routineName=getRoutineName(), 
+                  moduleName=getModuleName(),
+                  errorClass="ParquetBuildError");
+      } else {
+          use Parquet;
+          var repMsg: string;
+          // May need a more robust delimiter then " | "
+          var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
+          var strictTypes: bool = true;
+          if (strictFlag.toLower().strip() == "false") {
+            strictTypes = false;
+          }
+
+          var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
+          if allowErrors {
+              pqLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
+          }
+
+          // Test arg casting so we can send error message instead of failing
+          if (!checkCast(ndsetsStr, int)) {
+              var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
+              pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+              return new MsgTuple(errMsg, MsgType.ERROR);
+          }
+          if (!checkCast(nfilesStr, int)) {
+            var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+            pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+            return new MsgTuple(errMsg, MsgType.ERROR);
+          }
+
+          var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+          var ndsets = ndsetsStr:int; // Error checked above
+          var nfiles = nfilesStr:int; // Error checked above
+          var dsetlist: [0..#ndsets] string;
+          var filelist: [0..#nfiles] string;
+
+          try {
+              dsetlist = jsonToPdArray(jsondsets, ndsets);
+          } catch {
+              var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
+                                                  1, jsondsets);
+              pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+
+          try {
+              filelist = jsonToPdArray(jsonfiles, nfiles);
+          } catch {
+              var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+              pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+
+          var dsetdom = dsetlist.domain;
+          var filedom = filelist.domain;
+          var dsetnames: [dsetdom] string;
+          var filenames: [filedom] string;
+          dsetnames = dsetlist;
+
+          if filelist.size == 1 {
+              if filelist[0].strip().size == 0 {
+                  var errorMsg = "filelist was empty.";
+                  pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return new MsgTuple(errorMsg, MsgType.ERROR);
+              }
+              var tmp = glob(filelist[0]);
+              pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "glob expanded %s to %i files".format(filelist[0], tmp.size));
+              if tmp.size == 0 {
+                  var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+                  pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return new MsgTuple(errorMsg, MsgType.ERROR);
+              }
+              // Glob returns filenames in weird order. Sort for consistency
+              sort(tmp);
+              filedom = tmp.domain;
+              filenames = tmp;
+          } else {
+              filenames = filelist;
+          }
+
+          var fileErrors: list(string);
+          var fileErrorCount:int = 0;
+          var fileErrorMsg:string = "";
+          var sizes: [filedom] int;
+          var ty = getArrType(filenames[filedom.low],
+                              dsetlist[dsetdom.low]);
+          var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+
+          for dsetname in dsetnames do {
+              for (i, fname) in zip(filedom, filenames) {
+                  var hadError = false;
+                  try {
+                      // not using the type for now since it is only implemented for ints
+                      // also, since Parquet files have a `numRows` that isn't specifc
+                      // to dsetname like for HDF5, we only need to get this once per
+                      // file, regardless of how many datasets we are reading
+                      sizes[i] = getArrSize(fname);
+                  } catch e: FileNotFoundError {
+                      fileErrorMsg = "File %s not found".format(fname);
+                      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                      hadError = true;
+                      if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                  } catch e: PermissionError {
+                      fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                      hadError = true;
+                      if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                  } catch e: DatasetNotFoundError {
+                      fileErrorMsg = "Dataset %s not found in file %s".format(dsetname,fname);
+                      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                      hadError = true;
+                      if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                  } catch e: SegArrayError {
+                      fileErrorMsg = "SegmentedArray error: %s".format(e.message());
+                      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                      hadError = true;
+                      if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                  } catch e : Error {
+                      fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                      hadError = true;
+                      if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                  }
+
+                  // This may need to be adjusted for this all-in-one approach
+                  if hadError {
+                    // Keep running total, but we'll only report back the first 10
+                    if fileErrorCount < 10 {
+                      fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                    }
+                    fileErrorCount += 1;
+                  }
+              }
+              // This is handled in the readFilesByName() function
+              var subdoms: [filedom] domain(1);
+              var len: int;
+              var nSeg: int;
+              len = + reduce sizes;
+
+              // Only integer is implemented for now, do nothing if the Parquet
+              // file has a different type
+              if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
+                var entryVal = new shared SymEntry(len, int);
+                readFilesByName(entryVal.a, filenames, sizes, dsetname);
+                var valName = st.nextName();
+                st.addEntry(valName, entryVal);
+                rnames.append((dsetname, "pdarray", valName));
+              }
+          }
+
+          repMsg = _buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
+          pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return new MsgTuple(repMsg,MsgType.NORMAL);
+      }
+  }
+
+  proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    if !hasParquetSupport {
+        throw getErrorWithContext(
+                msg="Arkouda has been built without Parquet support",
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(), 
+                moduleName=getModuleName(),
+                errorClass="ParquetBuildError");
+    } else {
+        use Parquet;
+        var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
+        var filename: string;
+        var entry = getGenericTypedArrayEntry(arrayName, st);
+
+        try {
+          filename = jsonToPdArray(jsonfile, 1)[0];
+        } catch {
+          var errorMsg = "Could not decode json filenames via tempfile " +
+            "(%i files: %s)".format(1, jsonfile);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        var warnFlag: bool;
+
+        try {
+          select entry.dtype {
+              when DType.Int64 {
+                var e = toSymEntry(entry, int);
+                warnFlag = write1DDistArrayParquet(filename, dsetname, e.a);
+              }
+              otherwise {
+                var errorMsg = "Writing Parquet files is only supported for int arrays";
+                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+              }
+            }
+        } catch e: FileNotFoundError {
+          var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } catch e: MismatchedAppendError {
+          var errorMsg = "Mismatched append %s".format(e.message());
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } catch e: WriteModeError {
+          var errorMsg = "Write mode error %s".format(e.message());
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } catch e: Error {
+          var errorMsg = "problem writing to file %s".format(e);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+        if warnFlag {
+          var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+          return new MsgTuple(warnMsg, MsgType.WARNING);
+        } else {
+          var repMsg = "wrote array to file";
+          pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return new MsgTuple(repMsg, MsgType.NORMAL);
+        }
+    }
+  }
+
+  proc registerMe() {
+    use CommandMap;
+    registerFunction("readAllParquet", readAllParquetMsg);
+    registerFunction("writeParquet", toparquetMsg);
+  }
+
 }
