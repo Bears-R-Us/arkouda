@@ -180,9 +180,16 @@ def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, 
         except:
             raise TypeError(('a must be a pdarray, np.ndarray, or convertible to' +
                             ' a numpy array'))
-    # Only rank 1 arrays currently supported
+    # Return multi-dimensional arrayview
     if a.ndim != 1:
-        raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
+        # TODO add order
+        if a.dtype.name in NumericDTypes:
+            flat_a = array(a.flatten())
+            if isinstance(flat_a, pdarray):
+                # break into parts so mypy doesn't think we're calling reshape on a Strings
+                return flat_a.reshape(a.shape)
+        else:
+            raise TypeError('Must be an iterable or have a numeric DType')
     # Check if array of strings
     if 'U' in a.dtype.kind:
         # encode each string and add a null byte terminator
