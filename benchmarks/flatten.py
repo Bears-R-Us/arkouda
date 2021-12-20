@@ -12,7 +12,7 @@ def time_flatten(N, trials):
 
     thirds = [ak.cast(ak.arange(i, N*3, 3), 'str') for i in range(3)]
     thickrange = thirds[0].stick(thirds[1], delimiter='_').stick(thirds[2], delimiter='_')
-    nbytes = thickrange.bytes.size * thickrange.bytes.itemsize
+    nbytes = thickrange.nbytes * thickrange.entry.itemsize
 
     non_regex_times = []
     regex_literal_times = []

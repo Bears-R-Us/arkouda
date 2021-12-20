@@ -43,7 +43,7 @@ module EfuncMsg
         var (efunc, name) = payload.splitMsgToTuple(2);
         var rname = st.nextName();
         
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "cmd: %s efunc: %s pdarray: %s".format(cmd,efunc,st.attrib(name)));
@@ -244,9 +244,9 @@ module EfuncMsg
         var (efunc, name1, name2, name3) = payload.splitMsgToTuple(4);
         var rname = st.nextName();
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        var g2: borrowed GenSymEntry = st.lookup(name2);
-        var g3: borrowed GenSymEntry = st.lookup(name3);
+        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
+        var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
+        var g3: borrowed GenSymEntry = getGenericTypedArrayEntry(name3, st);
         if !((g1.size == g2.size) && (g2.size == g3.size)) {
             var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
@@ -340,8 +340,8 @@ module EfuncMsg
             "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
              cmd,efunc,value,dtype,name1,name2,rname));
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        var g2: borrowed GenSymEntry = st.lookup(name2);
+        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
+        var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
         if !(g1.size == g2.size) {
             var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
@@ -436,8 +436,8 @@ module EfuncMsg
             "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
              cmd,efunc,value,dtype,name1,name2,rname));
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        var g2: borrowed GenSymEntry = st.lookup(name2);
+        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
+        var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
         if !(g1.size == g2.size) {
             var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
@@ -533,7 +533,7 @@ module EfuncMsg
             "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s dtype2: %s name: %s rname: %s".format(
              cmd,efunc,value1,dtype1,value2,dtype2,name1,rname));
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
+        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         select (g1.dtype, dtype1, dtype1) {
             when (DType.Bool, DType.Int64, DType.Int64) {
                 var e1 = toSymEntry(g1, bool);

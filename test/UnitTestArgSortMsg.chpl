@@ -22,7 +22,7 @@ prototype module UnitTestArgSort
 
         // sort it and return iv in symbol table
         var cmd = "argsort";
-        reqMsg = try! "pdarray %s".format(aname);
+        reqMsg = try! "%s pdarray %s".format(ArgSortMsg.SortingAlgorithm.RadixSortLSD: string, aname);
         writeReq(reqMsg);
         var d: Diags;
         d.start();
@@ -57,7 +57,7 @@ prototype module UnitTestArgSort
 
         // cosort both int and real arrays and return iv in symbol table
         cmd = "coargsort";
-        reqMsg = try! "%i %s %s pdarray pdarray".format(2, aname, fname);
+        reqMsg = try! "%s %i %s %s pdarray pdarray".format(ArgSortMsg.SortingAlgorithm.RadixSortLSD: string, 2, aname, fname);
         writeReq(reqMsg);
         d.start();
         repMsg = coargsortMsg(cmd=cmd, payload=reqMsg, st).msg;
@@ -82,8 +82,8 @@ prototype module UnitTestArgSort
         writeRep(repMsg);
         var cofname = parseName(repMsg);
         writeln("Checking that arrays are cosorted");
-        var coa = toSymEntry(st.lookup(coaname), int);
-        var cof = toSymEntry(st.lookup(cofname), real);
+        var coa = toSymEntry(toGenSymEntry(st.lookup(coaname)), int);
+        var cof = toSymEntry(toGenSymEntry(st.lookup(cofname)), real);
         var allSorted: atomic bool = true;
         forall (a, f, i) in zip(coa.a[1..], cof.a[1..], coa.aD.low+1..) {
           ref coaa = coa.a;

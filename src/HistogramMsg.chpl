@@ -32,7 +32,7 @@ module HistogramMsg
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "cmd: %s name: %s bins: %i rname: %s".format(cmd, name, bins, rname));
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         // helper nested procedure
         proc histogramHelper(type t) throws {

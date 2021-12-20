@@ -15,7 +15,7 @@ def time_substring_search(N, trials, seed):
 
     # each string in test_substring contains '1 string 1' with random strings before and after
     test_substring = start.stick(end, delimiter='1 string 1')
-    nbytes = test_substring.bytes.size * test_substring.bytes.itemsize
+    nbytes = test_substring.nbytes * test_substring.entry.itemsize
 
     non_regex_times = []
     regex_literal_times = []

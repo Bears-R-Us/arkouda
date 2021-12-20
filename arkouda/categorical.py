@@ -85,11 +85,12 @@ class Categorical:
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.name : Optional[str] = None
+        self.uses_all_categories = kwargs['uses_all_categories'] if 'uses_all_categories' in kwargs else True
 
     @classmethod
     @typechecked
-    def from_codes(cls, codes : pdarray, categories : Strings, 
-                          permutation=None, segments=None) -> Categorical:
+    def from_codes(cls, codes: pdarray, categories: Strings,
+                   permutation=None, segments=None, uses_all_categories=False) -> Categorical:
         """
         Make a Categorical from codes and categories arrays. If codes and 
         categories have already been pre-computed, this constructor saves 
@@ -121,7 +122,7 @@ class Categorical:
         if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
         return cls(None, codes=codes, categories=categories, 
-                            permutation=permutation, segments=segments)
+                   permutation=permutation, segments=segments, uses_all_categories=uses_all_categories)
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -283,7 +284,7 @@ class Categorical:
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.categories[self.codes[key]]
         else:
-            return Categorical.from_codes(self.codes[key], self.categories)
+            return Categorical.from_codes(self.codes[key], self.categories).reset_categories()
 
     def reset_categories(self) -> Categorical:
         """
@@ -301,8 +302,8 @@ class Categorical:
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
         newvals = g.broadcast(arange(idx.size), permute=True)
-        return Categorical.from_codes(newvals, idx, permutation=g.permutation, 
-                                      segments=g.segments)
+        return Categorical.from_codes(newvals, idx, permutation=g.permutation,
+                                      segments=g.segments, uses_all_categories=True)
 
     @typechecked
     def contains(self, substr : str) -> pdarray:
@@ -450,16 +451,19 @@ class Categorical:
         >>> ak.in1d(cat,catTwo)
         array([False, False, False, False, False])
         """
-        if isinstance(test,Categorical):
-            categoriesisin = in1d(self.categories, test.categories)
+        reset_cat = self if self.uses_all_categories else self.reset_categories()
+        if isinstance(test, Categorical):
+            reset_test = test if test.uses_all_categories else test.reset_categories()
+            categoriesisin = in1d(reset_cat.categories, reset_test.categories)
         else:
-            categoriesisin = in1d(self.categories, test)
-        return categoriesisin[self.codes]
+            categoriesisin = in1d(reset_cat.categories, test)
+        return categoriesisin[reset_cat.codes]
 
     def unique(self) -> Categorical:
         #__doc__ = unique.__doc__
-        return Categorical.from_codes(arange(self.categories.size), 
-                                      self.categories)
+        reset_cat = self if self.uses_all_categories else self.reset_categories()
+        return Categorical.from_codes(arange(reset_cat.categories.size), reset_cat.categories,
+                                      uses_all_categories=reset_cat.uses_all_categories)
 
     def group(self) -> pdarray:
         """
