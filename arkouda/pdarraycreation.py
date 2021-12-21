@@ -14,7 +14,7 @@ from arkouda.strings import Strings
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
-           "from_series"
+           "from_series", "array2D", "randint2D"
           ]
 
 @typechecked
@@ -208,6 +208,12 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     rep_msg = generic_msg(cmd='array', args=args, payload=aview, send_binary=True)
     return create_pdarray(rep_msg)
 
+def array2D(val, m, n) -> Union[pdarray, Strings]:
+    from arkouda.client import maxTransferBytes
+    # Only rank 1 arrays currently supported
+    args = f"{val} {m} {n}"
+    rep_msg = generic_msg(cmd='array2d', args=args)
+    return create_pdarray(rep_msg)
 
 def _array_memview(a) -> memoryview:
     if ((get_byteorder(a.dtype) == '<' and get_server_byteorder() == 'big') or
@@ -613,6 +619,21 @@ def randint(low : numeric_scalars, high : numeric_scalars,
 
     repMsg = generic_msg(cmd='randint', args='{} {} {} {} {}'.\
                          format(sizestr, dtype.name, lowstr, highstr, seed))
+    return create_pdarray(repMsg)
+
+def randint2D(low : numeric_scalars, high : numeric_scalars, 
+              m : int_scalars, n : int_scalars, dtype=int64, seed : int_scalars=None) -> pdarray:
+    if high < low:
+        raise ValueError("size must be > 0 and high > low")
+    dtype = akdtype(dtype) # normalize dtype
+    # check dtype for error
+    if dtype.name not in DTypes:
+        raise TypeError("unsupported dtype {}".format(dtype))
+    lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
+    highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
+
+    repMsg = generic_msg(cmd='randint2d', args='{} {} {} {} {}'.\
+                         format(lowstr, highstr, m, n, seed))
     return create_pdarray(repMsg)
 
 @typechecked
