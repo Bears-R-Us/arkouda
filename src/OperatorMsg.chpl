@@ -47,7 +47,11 @@ module OperatorMsg
              "cmd: %t op: %t left pdarray: %t right pdarray: %t".format(
                                           cmd,op,st.attrib(aname),st.attrib(bname)));
 
-        select (left.dtype, right.dtype) {
+        var l = toSymEntry(left,int);
+        var r = toSymEntry(right,int);
+        var e = st.addEntry(rname, l.size, int);;
+        return doBinOp(l, r, e, op, rname, pn, st);
+        /*select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
                 var r = toSymEntry(right,int);
@@ -480,14 +484,14 @@ module OperatorMsg
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
                 return new MsgTuple(errorMsg, MsgType.ERROR);                                          
             }
-        }
+        }*/
 
         repMsg = "created %s".format(st.attrib(rname));
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc doBinOp(l, r, e, op, rname, pn, st) throws {;
+    proc doBinOp(l, r, e, op, rname, pn, st) throws {
       select op
         {
           when "+" {

@@ -68,6 +68,8 @@ module Arr2DMsg {
     var rname = st.nextName();
     var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
     var right: borrowed GenSymEntry = getGenericTypedArrayEntry(bname, st);
+    // TODO: get actual m and n dimensions from left/right instead
+    // of hardcoding a 2x2 array
     var e = st.addEntry2D(rname, 2, 2, int);
 
     var l = left: SymEntry2D(int);
