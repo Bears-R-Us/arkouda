@@ -486,6 +486,62 @@ module OperatorMsg
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc doBinOp(l, r, e, op, rname, pn, st) throws {;
+      select op
+        {
+          when "+" {
+            e.a = l.a + r.a;
+          }
+          when "-" {
+            e.a = l.a - r.a;
+          }
+          when "*" {
+            e.a = l.a * r.a;
+          }
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
+          }
+          when "%" { // modulo
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
+          }
+          when "<<" {
+            e.a = l.a << r.a;
+          }                    
+          when ">>" {
+            e.a = l.a >> r.a;
+          }
+          when "<<<" {
+            e.a = rotl(l.a, r.a);
+          }
+          when ">>>" {
+            e.a = rotr(l.a, r.a);
+          }
+          when "&" {
+            e.a = l.a & r.a;
+          }                    
+          when "|" {
+            e.a = l.a | r.a;
+          }                    
+          when "^" {
+            e.a = l.a ^ r.a;
+          }    
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    
     /*
     Parse and respond to binopvs message.
     vs == vector op scalar

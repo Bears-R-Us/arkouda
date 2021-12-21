@@ -10,6 +10,8 @@ module Arr2DMsg {
   use Reflection;
   use RandArray;
 
+  use OperatorMsg;
+
   proc array2DMsg(cmd: string, args: string, st: borrowed SymTab): MsgTuple throws {
     var (val, mStr, nStr) = args.splitMsgToTuple(" ", 3);
     var m = mStr: int;
@@ -56,9 +58,44 @@ module Arr2DMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc binopvv2DMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
+    param pn = Reflection.getRoutineName();
+    var repMsg: string; // response message
+
+    // split request into fields
+    var (op, aname, bname) = payload.splitMsgToTuple(3);
+
+    var rname = st.nextName();
+    var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
+    var right: borrowed GenSymEntry = getGenericTypedArrayEntry(bname, st);
+    var e = st.addEntry2D(rname, 2, 2, int);
+
+    var l = left: SymEntry2D(int);
+    var r = right: SymEntry2D(int);
+
+    return doBinOp(l, r, e, op, rname, pn, st);
+  }
+
+  proc SymTab.addEntry2D(name: string, m, n, type t): borrowed SymEntry2D(t) throws {
+    if t == bool {overMemLimit(m*n);} else {overMemLimit(m*n*numBytes(t));}
+            
+    var entry = new shared SymEntry2D(m, n, t);
+    if (tab.contains(name)) {
+      mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "redefined symbol: %s ".format(name));
+    } else {
+      mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "adding symbol: %s ".format(name));            
+    }
+
+    tab.addOrSet(name, entry);
+    return (tab.getBorrowed(name):borrowed GenSymEntry): SymEntry2D(int);
+  }
+
   proc registerMe() {
     use CommandMap;
     registerFunction("array2d", array2DMsg);
     registerFunction("randint2d", randint2DMsg);
+    registerFunction("binopvv2d", binopvv2DMsg);
   }
 }

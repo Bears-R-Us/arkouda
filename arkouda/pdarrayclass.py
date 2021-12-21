@@ -204,7 +204,7 @@ class pdarray:
         if isinstance(other, pdarray):
             if self.size != other.size:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
-            cmd = "binopvv"
+            cmd = "binopvv2d"
             args= "{} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(cmd=cmd,args=args)
             return create_pdarray(repMsg)
