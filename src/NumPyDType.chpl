@@ -3,7 +3,7 @@ module NumPyDType
 {
     /* In chapel the types int and real defalut to int(64) and real(64).
        We also need other types like float32, int32, etc */
-    enum DType {Int64, Float64, Bool, UInt8, UNDEF, Strings}; 
+    enum DType {Int64, Float64, Bool, UInt8, UNDEF, Strings, Datetime64, Timedelta64}; 
 
     /* 
     Take a chapel type and returns the matching DType 
@@ -33,6 +33,8 @@ module NumPyDType
       if (dt == DType.Float64) { return 8; }
       if (dt == DType.Bool) { return 1; }
       if (dt == DType.UInt8) { return 1; }
+      if (dt == DType.Datetime64) { return 8; }
+      if (dt == DType.Timedelta64) { return 8; }
       return 0;
     }
 
@@ -49,6 +51,8 @@ module NumPyDType
         if dstr == "bool" {return DType.Bool;}
         if dstr == "uint8" {return DType.UInt8;}
         if dstr == "str" {return DType.Strings;}
+        if dstr == "datetime64" {return DType.Datetime64;}
+        if dstr == "timedelta64" {return DType.Timedelta64;}
         return DType.UNDEF;
     }
     
@@ -65,6 +69,8 @@ module NumPyDType
         if dtype == DType.Bool {return "bool";}
         if dtype == DType.UInt8 {return "uint8";}
         if dtype == DType.Strings {return "str";}
+        if dtype == DType.Datetime64 {return "datetime64";}
+        if dtype == DType.Timedelta64 {return "timedelta64";}
         return "UNDEF";
     }
 

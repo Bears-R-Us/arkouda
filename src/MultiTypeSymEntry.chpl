@@ -24,6 +24,7 @@ module MultiTypeSymEntry
             TypedArraySymEntry, // Parent type for Arrays with a dtype, legacy->GenSymEntry
                 PrimitiveTypedArraySymEntry, // int, uint8, bool, etc.
                 ComplexTypedArraySymEntry,   // DateTime, TimeDelta, IP Address, etc.
+                    TimeEntry,
         
             CompositeSymEntry, // Parent type for things which are composites of arrays
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
