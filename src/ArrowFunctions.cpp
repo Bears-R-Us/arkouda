@@ -147,7 +147,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       // Read all the rows in the column
       while (int64_reader->HasNext()) {
         rows_read = int64_reader->ReadBatch(numToRead, nullptr, nullptr, &chpl_ptr[i], &values_read);
-        i+=numToRead;
+        i+=values_read;
       }
     }
   } else {
