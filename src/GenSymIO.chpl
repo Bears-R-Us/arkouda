@@ -25,6 +25,7 @@ module GenSymIO {
     use Search;
     use IndexingMsg;
     use SegmentedArray;
+    use TimeEntry;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
@@ -79,6 +80,10 @@ module GenSymIO {
 
         proc bytesToSymEntry(size:int, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var entry = new shared SymEntry(size, t);
+            return castAndStore(entry, t, st, data);
+        }
+        
+        proc castAndStore(entry, type t, st: borrowed SymTab, ref data:bytes): string throws {
             var localA = makeArrayFromPtr(data.c_str():c_void_ptr:c_ptr(t), size:uint);
             entry.a = localA;
             var name = st.nextName();
@@ -94,6 +99,9 @@ module GenSymIO {
             rname = bytesToSymEntry(size, bool, st, data);
         } else if dtype == DType.UInt8 {
             rname = bytesToSymEntry(size, uint(8), st, data);
+        } else if (dtype == DType.Datetime64) || (dtype == DType.Timedelta64) {
+            var entry = new shared TimeEntry(size, dtype);
+            rname = castAndStore(entry, int, st, data);
         } else {
             msg = "Unhandled data type %s".format(dtypeBytes);
             msgType = MsgType.ERROR;
@@ -169,14 +177,6 @@ module GenSymIO {
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
         var abstractEntry = st.lookup(payload);
-        if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
-            var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
-        }
-        var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
-        
-        overMemLimit(2 * entry.getSizeEstimate());
 
         proc distArrToBytes(A: [?D] ?eltType) {
             var ptr = c_malloc(eltType, D.size);
@@ -186,18 +186,34 @@ module GenSymIO {
             return createBytesWithOwnedBuffer(ptr:c_ptr(uint(8)), size, size);
         }
 
-        if entry.dtype == DType.Int64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, int).a);
-        } else if entry.dtype == DType.Float64 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, real).a);
-        } else if entry.dtype == DType.Bool {
-            arrayBytes = distArrToBytes(toSymEntry(entry, bool).a);
-        } else if entry.dtype == DType.UInt8 {
-            arrayBytes = distArrToBytes(toSymEntry(entry, uint(8)).a);
+        if abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
+          var entry:borrowed GenSymEntry = abstractEntry: borrowed GenSymEntry;
+        
+          overMemLimit(2 * entry.getSizeEstimate());
+
+          select entry.dtype {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
+              arrayBytes = distArrToBytes(toSymEntry(entry, int).a);
+            }
+            when DType.Float64 {
+              arrayBytes = distArrToBytes(toSymEntry(entry, real).a);
+            }
+            when DType.Bool {
+              arrayBytes = distArrToBytes(toSymEntry(entry, bool).a);
+            }
+            when DType.UInt8 {
+              arrayBytes = distArrToBytes(toSymEntry(entry, uint(8)).a);
+            }
+            otherwise {
+              var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
+              gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return errorMsg.encode(); // return as bytes
+            }
+          }
         } else {
-            var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg.encode(); // return as bytes
+          var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
+          gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return errorMsg.encode(); // return as bytes
         }
 
        return arrayBytes;
@@ -478,6 +494,7 @@ module GenSymIO {
         }
         var segArrayFlags: [filedom] bool;
         var dclasses: [filedom] C_HDF5.hid_t;
+        var dtypes: [filedom] DType;
         var bytesizes: [filedom] int;
         var signFlags: [filedom] bool;
         var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
@@ -492,7 +509,7 @@ module GenSymIO {
             for (i, fname) in zip(filedom, filenames) {
                 var hadError = false;
                 try {
-                    (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName, calcStringOffsets);
+                    (segArrayFlags[i], dclasses[i], dtypes[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName, calcStringOffsets);
                 } catch e: FileNotFoundError {
                     fileErrorMsg = "File %s not found".format(fname);
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
@@ -535,10 +552,11 @@ module GenSymIO {
             }
             const isSegArray = segArrayFlags[filedom.first];
             const dataclass = dclasses[filedom.first];
+            const dtype = dtypes[filedom.first];
             const bytesize = bytesizes[filedom.first];
             const isSigned = signFlags[filedom.first];
-            for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-              if ((sa != isSegArray) || (dc != dataclass)) {
+            for (name, sa, dc, dt, bs, sf) in zip(filenames, segArrayFlags, dclasses, dtypes, bytesizes, signFlags) {
+              if ((sa != isSegArray) || (dc != dataclass) || (dt != dtype)) {
                   var errorMsg = "Inconsistent dtype in dataset %s of file %s".format(dsetName, name);
                   gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                   return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -611,26 +629,38 @@ module GenSymIO {
                     rnames.append((dsetName, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
-                    var entryInt = new shared SymEntry(len, int);
-                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                  "Initialized int entry for dataset %s".format(dsetName));
-
-                    read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName, skips);
-                    var rname = st.nextName();
-                    
-                    /*
-                     * Since boolean pdarrays are saved to and read from HDF5 as ints, confirm whether this
-                     * is actually a boolean dataset. If so, (1) convert the SymEntry pdarray to a boolean 
-                     * pdarray, (2) create a new SymEntry of type bool, (3) set the SymEntry pdarray 
-                     * reference to the bool pdarray, and (4) add the entry to the SymTable
+                    /* H5T_INTEGER class can hold any of:
+                     *   - Datetime64 or Timedelta64
+                     *   - Bool
+                     *   - Int64
                      */
-                    if isBooleanDataset(filenames[0],dsetName) {
-                        //var a_bool = entryInt.a:bool;
+                    var rname = st.nextName();
+                    if (dtype == DType.Datetime64) || (dtype == DType.Timedelta64) {
+                        // TO DO: support arbitrary units
+                        var entryTime = new shared TimeEntry(len, dtype);
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "Initialized time entry for dataset %s".format(dsetName));
+
+                        read_files_into_distributed_array(entryTime.a, subdoms, filenames, dsetName, skips);
+                        st.addEntry(rname, entryTime);
+                    } else if isBooleanDataset(filenames[0],dsetName) {
+                        /*
+                         * Since boolean pdarrays are saved to and read from HDF5 as ints, confirm whether this
+                         * is actually a boolean dataset. If so, (1) convert the SymEntry pdarray to a boolean 
+                         * pdarray, (2) create a new SymEntry of type bool, (3) set the SymEntry pdarray 
+                         * reference to the bool pdarray, and (4) add the entry to the SymTable
+                         */
                         var entryBool = new shared SymEntry(len, bool);
-                        entryBool.a = entryInt.a:bool;
+                        var tempInt = makeDistArray(len, int);
+                        read_files_into_distributed_array(tempInt, subdoms, filenames, dsetName, skips);
+                        entryBool.a = tempInt:bool;
                         st.addEntry(rname, entryBool);
                     } else {
-                        // Not a boolean dataset, so add original SymEntry to SymTable
+                        var entryInt = new shared SymEntry(len, int);
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "Initialized int entry for dataset %s".format(dsetName));
+
+                        read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName, skips);
                         st.addEntry(rname, entryInt);
                     }
                     rnames.append((dsetName, "pdarray", rname));
@@ -995,6 +1025,7 @@ module GenSymIO {
         }
 
         var dataclass: C_HDF5.H5T_class_t;
+        var dtype: DType;
         var bytesize: int;
         var isSigned: bool;
         var isSegArray: bool;
@@ -1006,7 +1037,7 @@ module GenSymIO {
             if isStringsDataset(file_id, dsetName) {
                 if ( !skipSegStringOffsets ) {
                     var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
-                    var (offsetClass, offsetByteSize, offsetSign) = 
+                    var (offsetClass, offsetDType, offsetByteSize, offsetSign) = 
                                             try get_dataset_info(file_id, offsetDset);
                     if (offsetClass != C_HDF5.H5T_INTEGER) {
                         throw getErrorWithContext(
@@ -1019,15 +1050,16 @@ module GenSymIO {
                     }
                 }
                 var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
-                try (dataclass, bytesize, isSigned) = 
+                try (dataclass, dtype, bytesize, isSigned) = 
                                            try get_dataset_info(file_id, valueDset);
                 isSegArray = true;
             } else if isBooleanDataset(file_id, dsetName) {
                 var booleanDset = dsetName + "/" + "booleans";
-                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, booleanDset);
+                (dataclass, dtype, bytesize, isSigned) = get_dataset_info(file_id, booleanDset);
+                dtype = DType.Bool;
                 isSegArray = false;            
             } else {
-                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                (dataclass, dtype, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
                 isSegArray = false;
             }
         } catch e : Error {
@@ -1039,7 +1071,7 @@ module GenSymIO {
                 moduleName=getModuleName(),
                 errorClass='Error');
         }
-        return (isSegArray, dataclass, bytesize, isSigned);
+        return (isSegArray, dataclass, dtype, bytesize, isSigned);
     }
 
 
@@ -1085,11 +1117,44 @@ module GenSymIO {
         }
         var datatype = C_HDF5.H5Dget_type(dset);
         var dataclass = C_HDF5.H5Tget_class(datatype);
+        var dtype = get_dtype_from_attrib(dset, dataclass);
         var bytesize = C_HDF5.H5Tget_size(datatype):int;
         var isSigned = (C_HDF5.H5Tget_sign(datatype) == C_HDF5.H5T_SGN_2);
         C_HDF5.H5Tclose(datatype);
         C_HDF5.H5Dclose(dset);
-        return (dataclass, bytesize, isSigned);
+        return (dataclass, dtype, bytesize, isSigned);
+    }
+
+    proc get_dtype_from_attrib(dset_id, dataclass) throws {
+        var attr_id = C_HDF5.H5Aopen_by_name(dset_id,
+                                             ".".c_str(),
+                                             "dtype".c_str(),
+                                             C_HDF5.H5P_DEFAULT,
+                                             C_HDF5.H5P_DEFAULT);
+        var dtype: DType;
+        select dataclass {
+            when C_HDF5.H5T_INTEGER { dtype = DType.Int64; }
+            when C_HDF5.H5T_FLOAT { dtype = DType.Float64; }
+            otherwise { dtype = DType.UNDEF; }
+        }
+        if (attr_id >= 0) {
+          var info: C_HDF5.H5A_info_t;
+          C_HDF5.H5Aget_info(attr_id, info);
+          var nameLen = (info.data_size):int;
+          var dtNameBuf: [0..#(nameLen+1)] uint(8);
+          var dttype = C_HDF5.H5Aget_type(attr_id);
+          var success = C_HDF5.H5Aread(attr_id, dttype, c_ptrTo(dtNameBuf):c_void_ptr);
+          if (success >= 0) {
+            var dtName = createStringWithBorrowedBuffer(c_ptrTo(dtNameBuf), nameLen, nameLen+1);
+            if (dtName.find("M8") >= 0) {
+              dtype = DType.Datetime64;
+            } else if (dtName.find("m8") >= 0) {
+              dtype = DType.Timedelta64;
+            }
+          }
+          C_HDF5.H5Aclose(attr_id);
+        }
+        return dtype;
     }
 
     class HDF5RankError: Error {
@@ -1372,9 +1437,9 @@ module GenSymIO {
 
         try {
             select entryDtype {
-                when DType.Int64 {
+                when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                     var e = toSymEntry(toGenSymEntry(entry), int);
-                    warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
+                    warnFlag = write1DDistArray(filename, mode, dsetName, e.a, entryDtype);
                 }
                 when DType.Float64 {
                     var e = toSymEntry(toGenSymEntry(entry), real);
@@ -1964,8 +2029,48 @@ module GenSymIO {
             } else {
                 H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
             }
+            writeDTypeAsAttrib(myFileID, myDsetName, array_type);
         }
         return warnFlag;
+    }
+
+    /*
+     * Saves the numpy dtype code as an attribute of the HDF5 dataset
+     */
+    proc writeDTypeAsAttrib(file_id, dsetName: string, dtype: DType) {
+      var dtName: string;
+      select dtype {
+        when DType.Int64 { dtName = "<i8"; }
+        when DType.Float64 { dtName = "<f8"; }
+        when DType.Bool { dtName = "|b1"; }
+        when DType.UInt8 { dtName = "|u1"; }
+        when DType.Datetime64 { dtName = "<M8[ns]"; }
+        when DType.Timedelta64 { dtName = "<m8[ns]"; }
+        otherwise { dtName = ""; }
+      }
+      var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+      // C string type in HDF5
+      var memtype = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
+      // Set the size of the string to include the null terminator
+      C_HDF5.H5Tset_size(memtype, (dtName.numBytes+1):C_HDF5.hsize_t);
+      // Silly way of saying "rank-1 array with one element"
+      var dims: [0..#1] C_HDF5.hsize_t;
+      dims[0] = 1: C_HDF5.hsize_t;
+      // Allocate the attribute
+      var space = C_HDF5.H5Screate_simple(1: C_HDF5.hsize_t, c_ptrTo(dims), nil);
+      var attr_id = C_HDF5.H5Acreate2(dset,
+                                     "dtype".c_str(),
+                                     memtype,
+                                     space,
+                                     C_HDF5.H5P_DEFAULT,
+                                     C_HDF5.H5P_DEFAULT);
+      // Write the actual value
+      C_HDF5.H5Awrite(attr_id, memtype, dtName.c_str():c_void_ptr);
+      // Clean up
+      C_HDF5.H5Aclose(attr_id);
+      C_HDF5.H5Sclose(space);
+      C_HDF5.H5Tclose(memtype);
+      C_HDF5.H5Dclose(dset);
     }
     
     /*
