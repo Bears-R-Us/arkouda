@@ -1,4 +1,4 @@
-module TimeEntry {
+module TimeEntryModule {
   use MultiTypeSymEntry;
   use MultiTypeSymbolTable;
   use Reflection;
@@ -30,18 +30,67 @@ module TimeEntry {
                               TimeUnit.Microseconds => 10**3,
                               TimeUnit.Nanoseconds => 1];
 
-  /*
-   * Shortcut to get a TimeEntry directly from the symbol table by name.
+  // Defines supported operations with time-related dtypes
+
+  private const supportedTimeOps =
+      [(DType.Datetime64, '==', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '!=', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '<', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '<=', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '>', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '>=', DType.Datetime64) => DType.Bool,
+       (DType.Datetime64, '-', DType.Datetime64) => DType.Timedelta64,
+       (DType.Datetime64, '+', DType.Timedelta64) => DType.Datetime64,
+       (DType.Datetime64, '-', DType.Timedelta64) => DType.Datetime64,
+       (DType.Datetime64, '/', DType.Timedelta64) => DType.Float64,
+       (DType.Datetime64, '//', DType.Timedelta64) => DType.Int64,
+       (DType.Datetime64, '%', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Datetime64, '+=', DType.Timedelta64) => DType.Datetime64,
+       (DType.Datetime64, '-=', DType.Timedelta64) => DType.Datetime64,
+       (DType.Timedelta64, '==', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '!=', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '<', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '<=', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '>', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '>=', DType.Timedelta64) => DType.Bool,
+       (DType.Timedelta64, '+', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '+=', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '-', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '-=', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '/', DType.Timedelta64) => DType.Float64,
+       (DType.Timedelta64, '//', DType.Timedelta64) => DType.Int64,
+       (DType.Timedelta64, '%', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '%=', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Timedelta64, '+', DType.Datetime64) => DType.Datetime64,
+       (DType.Timedelta64, '*', DType.Int64) => DType.Timedelta64,
+       (DType.Timedelta64, '*=', DType.Int64) => DType.Timedelta64,
+       (DType.Timedelta64, '/', DType.Int64) => DType.Timedelta64,
+       // (DType.Timedelta64, '/=', DType.Int64) => DType.Timedelta64,
+       // (DType.Timedelta64, '//', DType.Int64) => DType.Int64,
+       (DType.Timedelta64, '*', DType.Float64) => DType.Timedelta64,
+       (DType.Timedelta64, '*=', DType.Float64) => DType.Timedelta64,
+       (DType.Timedelta64, '/', DType.Float64) => DType.Timedelta64,
+       (DType.Timedelta64, '/=', DType.Float64) => DType.Timedelta64,
+       // (DType.Timedelta64, '//', DType.Float64) => DType.Float64,
+       (DType.Int64, '*', DType.Timedelta64) => DType.Timedelta64,
+       (DType.Float64, '*', DType.Timedelta64) => DType.Timedelta64];
+    
+  /* 
+   * Get the return dtype of "<leftDType> <op> <rightDType>". If not supported, 
+   * throw an error. If neither type is time-related, return UNDEF.
    */
-  proc getTimeEntry(name: string, st: borrowed SymTab): borrowed TimeEntry throws {
-    var abstractEntry = st.lookup(name);
-    if !abstractEntry.isAssignableTo(SymbolEntryType.TimeEntry) {
-      var errorMsg = "Error: Cannot interpret %s as TimeEntry".format(abstractEntry.entryType);
-      tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
-      throw new Error(errorMsg);
+  proc checkTimeOpCompatibility(leftDType: DType, op: string, rightDType: DType): DType throws {
+    if (leftDType == DType.Datetime64) || (leftDType == DType.Timedelta64) || (rightDType == DType.Datetime64) || (rightDType == DType.Timedelta64) {
+      if supportedTimeOps.domain.contains((leftDType, op, rightDType)) {
+        return supportedTimeOps[(leftDType, op, rightDType)];
+      } else {
+        var errorMsg = "Error: operation (%s %s %s) not implemented".format(leftDType:string, rightDType:string, op);
+        tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+        throw new Error(errorMsg);
+      }
+    } else {
+      return DType.UNDEF;
     }
-    var entry = toSymEntry(toGenSymEntry(abstractEntry), int): borrowed TimeEntry(int);
-    return entry;
   }
 
   /*

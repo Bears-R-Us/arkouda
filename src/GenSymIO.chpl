@@ -25,7 +25,7 @@ module GenSymIO {
     use Search;
     use IndexingMsg;
     use SegmentedArray;
-    use TimeEntry;
+    use TimeEntryModule;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
