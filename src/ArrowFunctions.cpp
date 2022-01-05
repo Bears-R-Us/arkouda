@@ -124,7 +124,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       int64_t values_read = 0;
       int64_t rows_read = 0;
-      int numToRead = 1000;
+      int numToRead = 10000;
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
       ARROW_UNUSED(rows_read);  // prevent warning in release build
