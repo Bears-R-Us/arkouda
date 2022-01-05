@@ -104,7 +104,7 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   for(int i = 0; i < numElems; i++) \
     chpl_ptr[i] = int_arr->Value(i);
 
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
   int ty = cpp_getType(filename, colname, errMsg);
   
@@ -124,7 +124,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       int64_t values_read = 0;
       int64_t rows_read = 0;
-      int numToRead = 10000;
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
       ARROW_UNUSED(rows_read);  // prevent warning in release build
@@ -146,7 +145,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       // Read all the rows in the column
       while (int64_reader->HasNext()) {
-        rows_read = int64_reader->ReadBatch(numToRead, nullptr, nullptr, &chpl_ptr[i], &values_read);
+        rows_read = int64_reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
         i+=values_read;
       }
     }
@@ -229,8 +228,8 @@ extern "C" {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
-    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, errMsg);
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {

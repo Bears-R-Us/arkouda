@@ -16,10 +16,10 @@ extern "C" {
   int cpp_getNumRows(const char*, char** errMsg);
 
   int c_readColumnByName(const char* filename, void* chpl_arr,
-                         const char* colname, int numElems,
+                         const char* colname, int numElems, int batchSize,
                          char** errMsg);
   int cpp_readColumnByName(const char* filename, void* chpl_arr,
-                           const char* colname, int numElems,
+                           const char* colname, int numElems, int batchSize,
                            char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
