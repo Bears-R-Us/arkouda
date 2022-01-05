@@ -1,4 +1,4 @@
-module TimeClasses {
+module TimeEntry {
   use MultiTypeSymEntry;
   use MultiTypeSymbolTable;
   use Reflection;
