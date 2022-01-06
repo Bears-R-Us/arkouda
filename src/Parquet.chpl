@@ -9,7 +9,7 @@ module Parquet {
   }
 
   private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
-  private config const batchSize = 8192;
+  private config const batchSize = getEnvInt("ARKOUDA_PARQUET_BATCH_SIZE", 8192);
 
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;

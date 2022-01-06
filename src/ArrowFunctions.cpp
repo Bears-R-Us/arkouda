@@ -113,15 +113,13 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
     int num_columns = file_metadata->num_columns();
 
     int i = 0;
-    for (int r = 0; r < num_row_groups; ++r) {
+    for (int r = 0; r < num_row_groups; r++) {
       std::shared_ptr<parquet::RowGroupReader> row_group_reader =
         parquet_reader->RowGroup(r);
 
       int64_t values_read = 0;
-      int64_t rows_read = 0;
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
-      ARROW_UNUSED(rows_read);  // prevent warning in release build
 
       int idx = file_metadata -> schema() -> ColumnIndex(colname);
 
@@ -142,7 +140,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
         // Read all the rows in the column
         while (reader->HasNext()) {
-          rows_read = reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
       } else {
@@ -153,7 +151,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         while (reader->HasNext()) {
           int val;
           // read only single elements to avoid allocating a new buffer for int32 elements
-          rows_read = reader->ReadBatch(1, nullptr, nullptr, &val, &values_read);
+          (void)reader->ReadBatch(1, nullptr, nullptr, &val, &values_read);
           chpl_ptr[i] = val;
           i+=values_read;
         }
