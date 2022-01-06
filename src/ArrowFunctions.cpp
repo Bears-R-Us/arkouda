@@ -149,8 +149,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
         // Read all the rows in the column
         while (reader->HasNext()) {
-          int val;
-          // read only single elements to avoid allocating a new buffer for int32 elements
+          int32_t val;
+          // Can't read directly into chpl_ptr because it is int64
           (void)reader->ReadBatch(1, nullptr, nullptr, &val, &values_read);
           chpl_ptr[i] = val;
           i+=values_read;
