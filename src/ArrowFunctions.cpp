@@ -110,7 +110,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
     std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
     int num_row_groups = file_metadata->num_row_groups();
-    int num_columns = file_metadata->num_columns();
 
     int i = 0;
     for (int r = 0; r < num_row_groups; r++) {
@@ -156,8 +155,9 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         free(tmpArr);
       }
     }
+    return 0;
   }
-  return 0;
+  return ARROWUNDEFINED;
 }
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
