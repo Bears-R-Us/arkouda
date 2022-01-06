@@ -103,7 +103,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
   auto chpl_ptr = (int64_t*)chpl_arr;
   int ty = cpp_getType(filename, colname, errMsg);
   
-  // Since Arrow type matches Chapel type, we can batch read
+  // Currently only supports int64 and int32 Arrow types
   if(ty == ARROWINT64 || ty == ARROWINT32) {
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
@@ -131,14 +131,12 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         return ARROWERROR;
       }
       
-      // Get the Column Reader for the specified column
       column_reader = row_group_reader->Column(idx);
 
       if(ty == ARROWINT64) {
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
 
-        // Read all the rows in the column
         while (reader->HasNext()) {
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
@@ -147,14 +145,15 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::Int32Reader* reader =
           static_cast<parquet::Int32Reader*>(column_reader.get());
 
-        // Read all the rows in the column
+        int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
         while (reader->HasNext()) {
-          int32_t val;
           // Can't read directly into chpl_ptr because it is int64
-          (void)reader->ReadBatch(1, nullptr, nullptr, &val, &values_read);
-          chpl_ptr[i] = val;
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+          for (int64_t j = 0; j < values_read; j++)
+            chpl_ptr[i+j] = (int64_t)tmpArr[j];
           i+=values_read;
         }
+        free(tmpArr);
       }
     }
   }
