@@ -7,6 +7,7 @@ module BroadcastMsg {
   use ServerConfig;
   use Logging;
   use Message;
+  use TimeEntryModule;
 
   private config const logLevel = ServerConfig.logLevel;
   const bmLogger = new Logger(logLevel);
@@ -71,6 +72,11 @@ module BroadcastMsg {
           var res = st.addEntry(rname, size, bool);
           res.a = broadcast(perm.a, segs.a, vals.a);
         }
+        when DType.Datetime64, DType.Timedelta64 {
+          const vals = toSymEntry(gv, int);
+          var res = st.addTimeEntry(rname, size, gv.dtype);
+          res.a = broadcast(perm.a, segs.a, vals.a);
+        }
         otherwise {
           throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
                                            getLineNumber(),
@@ -95,6 +101,11 @@ module BroadcastMsg {
         when DType.Bool {
           const vals = toSymEntry(gv, bool);
           var res = st.addEntry(rname, size, bool);
+          res.a = broadcast(segs.a, vals.a, size);
+        }
+        when DType.Datetime64, DType.Timedelta64 {
+          const vals = toSymEntry(gv, int);
+          var res = st.addTimeEntry(rname, size, gv.dtype);
           res.a = broadcast(segs.a, vals.a, size);
         }
         otherwise {

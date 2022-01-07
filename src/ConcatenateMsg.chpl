@@ -15,6 +15,7 @@ module ConcatenateMsg
     use ServerErrorStrings;
     use CommAggregation;
     use PrivateDist;
+    use TimeEntryModule;
     
     use AryUtil;
     
@@ -220,93 +221,51 @@ module ConcatenateMsg
                 var rname = st.nextName();
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                              "creating pdarray %s of type %t".format(rname,dtype));
+                proc doConcat(target:[]?t) throws {
+                    var start: int = 0;
+                    for (name, i) in zip(names, 1..) {
+                        // lookup and cast operand to copy from
+                        const o = toSymEntry(getGenericTypedArrayEntry(name, st), t);
+                        if mode == "interleave" {
+                            coforall loc in Locales {
+                                on loc {
+                                    const size = o.aD.localSubdomain().size;
+                                    target[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                    blockstarts[here.id] += size;
+                                }
+                            }
+                        } else {
+                            // copy array into concatenation array
+                            forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(t)) {
+                                agg.copy(target[start+i], v);
+                            }
+                            // update new start for next array copy
+                            start += o.size;
+                        }
+                    }
+                    cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                }
                 select (dtype) {
                     when DType.Int64 {
                         // create array to copy into
                         var e = st.addEntry(rname, size, int);
-                        var start: int;
-                        start = 0;
-                        for (name, i) in zip(names, 1..) {
-                            // lookup and cast operand to copy from
-                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), int);
-                            if mode == "interleave" {
-                              coforall loc in Locales {
-                                on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
-                                  blockstarts[here.id] += size;
-                                }
-                              }
-                            } else {
-                              ref ea = e.a;
-                              // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(int)) {
-                                agg.copy(ea[start+i], v);
-                              }
-                              // update new start for next array copy
-                              start += o.size;
-                            }
-                        }
-                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                        doConcat(e.a);
                     }
                     when DType.Float64 {
                         // create array to copy into
                         var e = st.addEntry(rname, size, real);
                         var start: int;
-                        start = 0;
-                        for (name, i) in zip(names, 1..) {
-                            // lookup and cast operand to copy from
-                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), real);
-                            if mode == "interleave" {
-                              coforall loc in Locales {
-                                on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
-                                  blockstarts[here.id] += size;
-                                }
-                              }
-                            } else {
-                              ref ea = e.a;
-                              // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(real)) {
-                                agg.copy(ea[start+i], v);
-                              }
-                              // update new start for next array copy
-                              start += o.size;
-                            }
-                        }
-                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                        doConcat(e.a);
                     }
                     when DType.Bool {
                         // create array to copy into
                         var e = st.addEntry(rname, size, bool);
-                        var start: int;
-                        start = 0;
-                        for (name, i) in zip(names, 1..) {
-                            // lookup and cast operand to copy from
-                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), bool);
-                            if mode == "interleave" {
-                              coforall loc in Locales {
-                                on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
-                                  blockstarts[here.id] += size;
-                                }
-                              }
-                            } else {
-                              ref ea = e.a;
-                              // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(bool)) {
-                                agg.copy(ea[start+i], v);
-                              }
-                              // update new start for next array copy
-                              start += o.size;
-                            }
-                        }
-                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "created concatenated pdarray: %s".format(st.attrib(rname)));
+                        doConcat(e.a);
+                    }
+                    when DType.Datetime64, DType.Timedelta64 {
+                        var e = st.addTimeEntry(rname, size, dtype);
+                        doConcat(e.a);
                     }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);

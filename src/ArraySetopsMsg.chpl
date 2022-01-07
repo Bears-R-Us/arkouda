@@ -54,7 +54,7 @@ module ArraySetopsMsg
         overMemLimit(intersect_maxMem);
 
         select(gEnt.dtype) {
-          when (DType.Int64) {
+          when DType.Int64, DType.Datetime64, DType.Timedelta64 {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
                  asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                             

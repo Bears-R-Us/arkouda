@@ -10,25 +10,25 @@ module TimeEntryModule {
 
   // Supported units for time objects
   enum TimeUnit {
-    Weeks,
-    Days,
-    Hours,
-    Minutes,
-    Seconds,
-    Milliseconds,
-    Microseconds,
-    Nanoseconds
+    weeks,
+    days,
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
+    microseconds,
+    nanoseconds
   }
 
   // Factors for converting units to nanoseconds (pandas standard)
-  private const get_factor = [TimeUnit.Weeks => 7*24*60*60*10**9,
-                              TimeUnit.Days => 24*60*60*10**9,
-                              TimeUnit.Hours => 60*60*10**9,
-                              TimeUnit.Minutes => 60*10**9,
-                              TimeUnit.Seconds => 10**9,
-                              TimeUnit.Milliseconds => 10**6,
-                              TimeUnit.Microseconds => 10**3,
-                              TimeUnit.Nanoseconds => 1];
+  private const get_factor = [TimeUnit.weeks => 7*24*60*60*10**9,
+                              TimeUnit.days => 24*60*60*10**9,
+                              TimeUnit.hours => 60*60*10**9,
+                              TimeUnit.minutes => 60*10**9,
+                              TimeUnit.seconds => 10**9,
+                              TimeUnit.milliseconds => 10**6,
+                              TimeUnit.microseconds => 10**3,
+                              TimeUnit.nanoseconds => 1];
 
   // Defines supported operations with time-related dtypes
 
@@ -125,10 +125,10 @@ module TimeEntryModule {
    * for the reuse of a lot of Int64 code.
    */
   class TimeEntry: SymEntry {
-    var unit: TimeUnit = TimeUnit.Nanoseconds;
+    var unit: TimeUnit = TimeUnit.nanoseconds;
     var factor: int = 1;
     
-    proc init(len: int = 0, dtype: DType, unit: TimeUnit = TimeUnit.Nanoseconds) {
+    proc init(len: int = 0, dtype: DType, unit: TimeUnit = TimeUnit.nanoseconds) {
       super.init(len, int);
       this.entryType = SymbolEntryType.TimeEntry;
       this.assignableTypes.add(SymbolEntryType.TimeEntry);
@@ -137,7 +137,7 @@ module TimeEntryModule {
       this.factor = get_factor(unit);
     }
 
-    proc init(array: [?D] int, dtype: DType, unit: TimeUnit = TimeUnit.Nanoseconds) {
+    proc init(array: [?D] int, dtype: DType, unit: TimeUnit = TimeUnit.nanoseconds) {
       super.init(array);
       this.entryType = SymbolEntryType.TimeEntry;
       this.assignableTypes.add(SymbolEntryType.TimeEntry);

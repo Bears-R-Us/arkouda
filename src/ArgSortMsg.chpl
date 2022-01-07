@@ -29,6 +29,7 @@ module ArgSortMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use TimeEntryModule;
 
     private config const logLevel = ServerConfig.logLevel;
     const asLogger = new Logger(logLevel);
@@ -123,7 +124,7 @@ module ArgSortMsg
       var deltaIV: [aD] int;
       // Discover the dtype of the entry holding the keys array
       select g.dtype {
-          when DType.Int64 {
+          when DType.Int64, DType.Datetime64, DType.Timedelta64 {
               var e = toSymEntry(g, int);
               // Permute the keys array with the initial iv
               var newa: [e.aD] int;
@@ -289,7 +290,7 @@ module ArgSortMsg
           // TODO checkSorted and exclude array if already sorted?
           var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
           select g.dtype {
-              when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+              when DType.Int64, DType.Datetime64, DType.Timedelta64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
               when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
               otherwise { 
                   throw getErrorWithContext(
@@ -330,7 +331,7 @@ module ArgSortMsg
                 curDigit += r.size;
               }
               select g.dtype {
-                when DType.Int64   { mergeArray(int); }
+                when DType.Int64, DType.Datetime64, DType.Timedelta64   { mergeArray(int); }
                 when DType.Float64 { mergeArray(real); }
                 otherwise { 
                     throw getErrorWithContext(

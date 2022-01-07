@@ -10,6 +10,7 @@ module CastMsg {
   use ServerErrorStrings;
   use ServerConfig;
   use CommAggregation;
+  use TimeEntryModule;
 
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
@@ -39,6 +40,12 @@ module CastMsg {
             }
             when (DType.Int64, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, int), MsgType.NORMAL);
+            }
+            when (DType.Int64, "datetime64") {
+                return new MsgTuple(castGenSymEntryToTime(gse, st, int, DType.Datetime64, opt), MsgType.NORMAL);
+            }
+            when (DType.Int64, "timedelta64") {
+                return new MsgTuple(castGenSymEntryToTime(gse, st, int, DType.Timedelta64, opt), MsgType.NORMAL);
             }
             when (DType.UInt8, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint(8), int), MsgType.NORMAL);        
@@ -70,6 +77,12 @@ module CastMsg {
             when (DType.Float64, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, real), MsgType.NORMAL);
             }
+            when (DType.Float64, "datetime64") {
+                return new MsgTuple(castGenSymEntryToTime(gse, st, real, DType.Datetime64, opt), MsgType.NORMAL);
+            }
+            when (DType.Float64, "timedelta64") {
+                return new MsgTuple(castGenSymEntryToTime(gse, st, real, DType.Timedelta64, opt), MsgType.NORMAL);
+            }
             when (DType.Bool, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, bool, int), MsgType.NORMAL);
             }
@@ -84,6 +97,12 @@ module CastMsg {
             }
             when (DType.Bool, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, bool), MsgType.NORMAL);
+            }
+            when (DType.Datetime64, "int64"), (DType.Timedelta64, "int64") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, int), MsgType.NORMAL);
+            }
+            when (DType.Datetime64, "float64"), (DType.Timedelta64, "float64") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, real), MsgType.NORMAL);
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
@@ -213,6 +232,32 @@ module CastMsg {
       var returnMsg = "created " + st.attrib(name);
       castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
       return returnMsg;
+  }
+
+  proc castGenSymEntryToTime(gse: borrowed GenSymEntry, st: borrowed SymTab,
+                             type fromType, dtype:DType, unitStr:string): string throws {
+    var unit: TimeUnit;
+    try {
+      unit = unitStr:TimeUnit;
+    } catch {
+      var errorMsg = "Could not interpret %s as TimeUnit".format(unitStr);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
+      return "Error: %s".format(errorMsg);
+    }
+    const before = toSymEntry(gse, fromType);
+    const name = st.nextName();
+    try {
+      var after = new shared TimeEntry(before.a:int, dtype, unit=unit);
+      st.addEntry(name, after);
+    } catch e: IllegalArgumentError {
+      var errorMsg = "bad value in cast from %s to int".format(fromType:string);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
+      return "Error: %s".format(errorMsg);
+    }
+
+    var returnMsg = "created " + st.attrib(name);
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+    return returnMsg;
   }
   
 }
