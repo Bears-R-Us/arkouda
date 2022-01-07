@@ -89,7 +89,7 @@ module FindSegmentsMsg
                   return new MsgTuple(errorMsg, MsgType.ERROR);                        
               }
           }
-          if (thisType != DType.Int64) { 
+          if (thisType != DType.Int64) && (thisType != DType.Datetime64) && (thisType != DType.Timedelta64) { 
               var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
               fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return new MsgTuple(errorMsg, MsgType.ERROR);

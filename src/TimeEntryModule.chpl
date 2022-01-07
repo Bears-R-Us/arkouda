@@ -163,7 +163,15 @@ module TimeEntryModule {
     /*
      * Round times downwards to the nearest specified unit.
      */
-    proc floor(freq: TimeUnit) {
+    proc floor(freqStr: string) throws {
+      var freq: TimeUnit;
+      try {
+        freq = freqStr: TimeUnit;
+      } catch {
+        var errorMsg = "Error: unable to interpret %s as TimeUnit".format(freqStr);
+        tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+        throw new Error(errorMsg);
+      }
       const f = get_factor(freq);
       var newa = this.a / f;
       return new shared TimeEntry(newa, this.dtype, unit=freq);
@@ -172,7 +180,15 @@ module TimeEntryModule {
     /*
      * Round times upwards to the nearest specified unit.
      */
-    proc ceil(freq: TimeUnit) {
+    proc ceil(freqStr: string) throws {
+      var freq: TimeUnit;
+      try {
+        freq = freqStr: TimeUnit;
+      } catch {
+        var errorMsg = "Error: unable to interpret %s as TimeUnit".format(freqStr);
+        tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+        throw new Error(errorMsg);
+      }
       const f = get_factor(freq);
       var newa = (this.a + (f - 1)) / f;
       return new shared TimeEntry(newa, this.dtype, unit=freq);
@@ -182,7 +198,15 @@ module TimeEntryModule {
      * Round times to the nearest specified unit (values exactly
      * halfway between round to the nearest even unit).
      */
-    proc round(freq: TimeUnit) {
+    proc round(freqStr: string) throws {
+      var freq: TimeUnit;
+      try {
+        freq = freqStr: TimeUnit;
+      } catch {
+        var errorMsg = "Error: unable to interpret %s as TimeUnit".format(freqStr);
+        tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+        throw new Error(errorMsg);
+      }
       const f = get_factor(freq);
       var newa: [this.aD] int;
       forall (x, y) in zip(this.a, newa) {

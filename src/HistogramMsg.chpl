@@ -64,7 +64,7 @@ module HistogramMsg
         }
 
         select (gEnt.dtype) {
-            when (DType.Int64)   {histogramHelper(int);}
+            when DType.Int64, DType.Datetime64, DType.Timedelta64   {histogramHelper(int);}
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);

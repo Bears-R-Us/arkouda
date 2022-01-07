@@ -14,6 +14,7 @@ module EfuncMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     private use SipHash;
+    use TimeEntryModule;
     
     use AryUtil;
 
@@ -40,7 +41,7 @@ module EfuncMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message; attributes of returned array(s) will be appended to this string
         // split request into fields
-        var (efunc, name) = payload.splitMsgToTuple(2);
+        var (efunc, name, opt) = payload.splitMsgToTuple(3);
         var rname = st.nextName();
         
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -208,6 +209,48 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when DType.Datetime64, DType.Timedelta64 {
+                var e = toSymEntry(gEnt,int): borrowed TimeEntry(int);
+                select efunc
+                {
+                    when "abs" {
+                        st.addEntry(rname, new shared TimeEntry(Math.abs(e.a), e.dtype));
+                    }
+                    when "floor" {
+                        st.addEntry(rname, e.floor(opt));
+                    }
+                    when "ceil" {
+                        st.addEntry(rname, e.ceil(opt));
+                    }
+                    when "round" {
+                        st.addEntry(rname, e.round(opt));
+                    }
+                    when "hash64" {
+                        overMemLimit(numBytes(int) * e.size);
+                        var a = st.addEntry(rname, e.size, int);
+                        forall (ai, x) in zip(a.a, e.a) {
+                            ai = sipHash64(x): int(64);
+                        }
+                    }
+                    when "hash128" {
+                        overMemLimit(numBytes(int) * e.size * 2);
+                        var rname2 = st.nextName();
+                        var a1 = st.addEntry(rname2, e.size, int);
+                        var a2 = st.addEntry(rname, e.size, int);
+                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+                            (a1i, a2i) = sipHash128(x): (int(64), int(64));
+                        }
+                        // Put first array's attrib in repMsg and let common
+                        // code append second array's attrib
+                        repMsg += "created " + st.attrib(rname2) + "+";
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                               
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }

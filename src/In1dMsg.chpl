@@ -60,7 +60,9 @@ module In1dMsg
                                    cmd,st.attrib(name),st.attrib(sname),invert,rname));
 
         select (gAr1.dtype, gAr2.dtype) {
-            when (DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Datetime64),
+                 (DType.Timedelta64, DType.Timedelta64) {
                 var ar1 = toSymEntry(gAr1,int);
                 var ar2 = toSymEntry(gAr2,int);
 
