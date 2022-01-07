@@ -12,6 +12,7 @@ module IndexingMsg
     use MultiTypeSymbolTable;
 
     use CommAggregation;
+    use TimeEntryModule;
 
     private config const logLevel = ServerConfig.logLevel;
     const imLogger = new Logger(logLevel);
@@ -28,7 +29,7 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
          
         select (gEnt.dtype) {
-             when (DType.Int64) {
+             when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                  var e = toSymEntry(gEnt, int);
                  repMsg = "item %s %t".format(dtype2str(e.dtype),e.a[idx]);
 
@@ -88,7 +89,12 @@ module IndexingMsg
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
-            var a = st.addEntry(rname, slice.size, t);
+            var a: borrowed SymEntry(t);
+            if (t == int) && ((gEnt.dtype == DType.Datetime64) || (gEnt.dtype == DType.Timedelta64)) {
+              a = st.addTimeEntry(rname, slice.size, gEnt.dtype);
+            } else {
+              a = st.addEntry(rname, slice.size, t);
+            }
             ref ea = e.a;
             ref aa = a.a;
             forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
@@ -100,7 +106,7 @@ module IndexingMsg
         }
         
         select(gEnt.dtype) {
-            when (DType.Int64) {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                 return sliceHelper(int);
             }
             when (DType.Float64) {
@@ -138,12 +144,6 @@ module IndexingMsg
         proc ivInt64Helper(type XType): MsgTuple throws {
             var e = toSymEntry(gX,XType);
             var iv = toSymEntry(gIV,int);
-            if (e.size == 0) && (iv.size == 0) {
-                var a = st.addEntry(rname, 0, XType);
-                var repMsg = "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
@@ -156,7 +156,17 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
-            var a = st.addEntry(rname, iv.size, XType);
+            var a: borrowed SymEntry(XType);
+            if (XType == int) && ((gX.dtype == DType.Datetime64) || (gX.dtype == DType.Timedelta64)) {
+                a = st.addTimeEntry(rname, iv.size, gX.dtype);
+            } else {
+                a = st.addEntry(rname, iv.size, XType);
+            }
+            if (e.size == 0) && (iv.size == 0) {
+                var repMsg = "created " + st.attrib(rname);
+                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+                return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
             //[i in iv.aD] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
             ref a2 = e.a;
             ref iva = iv.a;
@@ -175,7 +185,11 @@ module IndexingMsg
             var e = toSymEntry(gX,XType);
             var truth = toSymEntry(gIV,bool);
             if (e.size == 0) && (truth.size == 0) {
-                var a = st.addEntry(rname, 0, XType);
+              if (XType == int) && ((gX.dtype == DType.Datetime64) || (gX.dtype == DType.Timedelta64)) {
+                    st.addTimeEntry(rname, 0, gX.dtype);
+                } else {
+                    st.addEntry(rname, 0, XType);
+                }
                 var repMsg = "created " + st.attrib(rname);
                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
                 return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -186,8 +200,12 @@ module IndexingMsg
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                               "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-
-            var a = st.addEntry(rname, pop, XType);
+            var a: borrowed SymEntry(XType);            
+            if (XType == int) && ((gX.dtype == DType.Datetime64) || (gX.dtype == DType.Timedelta64)) {
+                a = st.addTimeEntry(rname, pop, gX.dtype);
+            } else {
+                a = st.addEntry(rname, pop, XType);
+            }
             //[i in e.aD] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
             ref ead = e.aD;
             ref ea = e.a;
@@ -205,10 +223,14 @@ module IndexingMsg
         }
         
         select(gX.dtype, gIV.dtype) {
-            when (DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Int64),
+                 (DType.Timedelta64, DType.Int64) {
                 return ivInt64Helper(int);
             }
-            when (DType.Int64, DType.Bool) {
+            when (DType.Int64, DType.Bool),
+                 (DType.Datetime64, DType.Bool),
+                 (DType.Timedelta64, DType.Bool) {
                 return ivBoolHelper(int);
             }
             when (DType.Float64, DType.Int64) {
@@ -247,7 +269,9 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype, dtype) {
-             when (DType.Int64, DType.Int64) {
+             when (DType.Int64, DType.Int64),
+                  (DType.Datetime64, DType.Datetime64),
+                  (DType.Timedelta64, DType.Timedelta64) {
                  var e = toSymEntry(gEnt,int);
                  var val = try! value:int;
                  e.a[idx] = val;
@@ -390,10 +414,14 @@ module IndexingMsg
         }
         
         select(gX.dtype, gIV.dtype, dtype) {
-            when (DType.Int64, DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Int64, DType.Datetime64),
+                 (DType.Timedelta64, DType.Int64, DType.Timedelta64) {
               return ivInt64Helper(int, int);
             }
-            when (DType.Int64, DType.Bool, DType.Int64) {
+            when (DType.Int64, DType.Bool, DType.Int64),
+                 (DType.Datetime64, DType.Bool, DType.Datetime64),
+                 (DType.Timedelta64, DType.Bool, DType.Timedelta64) {
               return ivBoolHelper(int, int);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
@@ -510,10 +538,14 @@ module IndexingMsg
         }
 
         select(gX.dtype, gIV.dtype, gY.dtype) {
-            when (DType.Int64, DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Int64, DType.Datetime64),
+                 (DType.Timedelta64, DType.Int64, DType.Timedelta64) {
                 return ivInt64Helper(int);
             }
-            when (DType.Int64, DType.Bool, DType.Int64) {
+            when (DType.Int64, DType.Bool, DType.Int64),
+                 (DType.Datetime64, DType.Bool, DType.Datetime64),
+                 (DType.Timedelta64, DType.Bool, DType.Timedelta64) {
                 return ivBoolHelper(int);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
@@ -564,7 +596,9 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Datetime64),
+                 (DType.Timedelta64, DType.Timedelta64) {
                 var e = toSymEntry(gEnt,int);
                 var val = try! value:int;
                 e.a[slice] = val;
@@ -663,7 +697,9 @@ module IndexingMsg
         }
 
         select (gX.dtype, gY.dtype) {
-            when (DType.Int64, DType.Int64) {
+            when (DType.Int64, DType.Int64),
+                 (DType.Datetime64, DType.Datetime64),
+                 (DType.Timedelta64, DType.Timedelta64) {
                 var x = toSymEntry(gX,int);
                 var y = toSymEntry(gY,int);
                 x.a[slice] = y.a;
