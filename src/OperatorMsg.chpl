@@ -15,6 +15,7 @@ module OperatorMsg
     use Reflection;
     use Logging;
     use Message;
+    use TimeEntryModule;
     
     private config const logLevel = ServerConfig.logLevel;
     const omLogger = new Logger(logLevel);
@@ -474,6 +475,214 @@ module OperatorMsg
                     }
                 }
             }
+            when (DType.Datetime64, DType.Datetime64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a == r.a;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a != r.a;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a < r.a;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a <= r.a;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a > r.a;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a >= r.a;
+                    }
+                    when "-" {
+                      var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a - r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Datetime64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a + r.a;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a - r.a;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, l.size, real);
+                        e.a = l.a:real / r.a:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = l.a / r.a;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a % r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a == r.a;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a != r.a;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a < r.a;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a <= r.a;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a > r.a;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a >= r.a;
+                    }
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a + r.a;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a - r.a;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, l.size, real);
+                        e.a = l.a:real / r.a:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = l.a / r.a;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a % r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Datetime64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a + r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Int64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a * r.a;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real / r.a:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Float64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, real);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real * r.a):int;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real / r.a):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Int64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a * r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Float64, DType.Timedelta64) {
+                var l = toSymEntry(left, real);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a * r.a:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,
                                   "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
@@ -914,6 +1123,214 @@ module OperatorMsg
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
                         return new MsgTuple(errorMsg, MsgType.ERROR);                         
+                    }
+                }
+            }
+            when (DType.Datetime64, DType.Datetime64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a == val;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a != val;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a < val;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a <= val;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a > val;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a >= val;
+                    }
+                    when "-" {
+                      var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a - val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Datetime64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a + val;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a - val;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, l.size, real);
+                        e.a = l.a:real / val:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = l.a / val;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a % val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a == val;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a != val;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a < val;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a <= val;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a > val;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a >= val;
+                    }
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a + val;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a - val;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, l.size, real);
+                        e.a = l.a:real / val:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = l.a / val;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a % val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Datetime64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Datetime64);
+                        e.a = l.a + val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Int64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a * val;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real / val:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Float64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real * val):int;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a:real / val):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Int64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var val = value: int;
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = l.a * val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Float64, DType.Timedelta64) {
+                var l = toSymEntry(left, real);
+                var val = value: int;;
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, l.size, DType.Timedelta64);
+                        e.a = (l.a * val:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
                     }
                 }
             }
@@ -1363,6 +1780,214 @@ module OperatorMsg
                     }
                 }
             }
+            when (DType.Datetime64, DType.Datetime64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val == r.a;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val != r.a;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val < r.a;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val <= r.a;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val > r.a;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val >= r.a;
+                    }
+                    when "-" {
+                      var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val - r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Datetime64, DType.Timedelta64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Datetime64);
+                        e.a = val + r.a;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Datetime64);
+                        e.a = val - r.a;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, r.size, real);
+                        e.a = val:real / r.a:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, r.size, int);
+                        e.a = val / r.a;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val % r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Timedelta64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "==" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val == r.a;
+                    }
+                    when "!=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val != r.a;
+                    }
+                    when "<" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val < r.a;
+                    }
+                    when "<=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val <= r.a;
+                    }
+                    when ">" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val > r.a;
+                    }
+                    when ">=" {
+                        var e = st.addEntry(rname, r.size, bool);
+                        e.a = val >= r.a;
+                    }
+                    when "+" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val + r.a;
+                    }
+                    when "-" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val - r.a;
+                    }
+                    when "/" {
+                        var e = st.addEntry(rname, r.size, real);
+                        e.a = val:real / r.a:real;
+                    }
+                    when "//" {
+                        var e = st.addEntry(rname, r.size, int);
+                        e.a = val / r.a;
+                    }
+                    when "%" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val % r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Datetime64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Datetime64);
+                        e.a = val + r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Int64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val * r.a;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = (val:real / r.a:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Float64) {
+                var val = value:int;
+                var r = toSymEntry(right, real);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = (val:real * r.a):int;
+                    }
+                    when "/" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = (val:real / r.a):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Int64, DType.Timedelta64) {
+                var val = value:int;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = val * r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
+            when (DType.Float64, DType.Timedelta64) {
+                var val = value:real;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "*" {
+                        var e = st.addTimeEntry(rname, r.size, DType.Timedelta64);
+                        e.a = (val * r.a:real):int;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
+                    }
+                }
+            }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,
                                      "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");
@@ -1537,6 +2162,62 @@ module OperatorMsg
                     }
                 }
             }
+            when (DType.Datetime64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op
+                {
+                    when "+=" {l.a += r.a;}
+                    when "-=" {l.a -= r.a;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op
+                {
+                    when "+=" {l.a += r.a;}
+                    when "-=" {l.a -= r.a;}
+                    when "%=" {l.a %= r.a;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Int64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, int);
+                select op
+                {
+                    when "*=" {l.a *= r.a;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Float64) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, real);
+                select op
+                {
+                    when "*=" {l.a = (l.a:real * r.a):int;}
+                    when "/=" {l.a = (l.a:real / r.a):int;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,
                                   "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
@@ -1681,6 +2362,62 @@ module OperatorMsg
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                    }
+                }
+            }
+            when (DType.Datetime64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var val = value:int;
+                select op
+                {
+                    when "+=" {l.a += val;}
+                    when "-=" {l.a -= val;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Timedelta64) {
+                var l = toSymEntry(left, int);
+                var val = value:int;
+                select op
+                {
+                    when "+=" {l.a += val;}
+                    when "-=" {l.a -= val;}
+                    when "%=" {l.a %= val;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Int64) {
+                var l = toSymEntry(left, int);
+                var val = value:int;
+                select op
+                {
+                    when "*=" {l.a *= val;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Timedelta64, DType.Float64) {
+                var l = toSymEntry(left, int);
+                var val = value:real;
+                select op
+                {
+                    when "*=" {l.a = (l.a: real * val):int;}
+                    when "/=" {l.a = (l.a:real / val):int;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }

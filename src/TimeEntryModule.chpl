@@ -93,6 +93,27 @@ module TimeEntryModule {
     }
   }
 
+  proc SymTab.addTimeEntry(name: string, len: int, dtype: DType): borrowed TimeEntry throws {
+    var entry = new shared TimeEntry(len, dtype);
+    this.addEntry(name, entry);
+    // The lookup is necessary because if the return of this.addEntry is used,
+    // the compiler throws an error about being unable to return a scoped variable
+    var abstract = this.lookup(name);
+    var se = toSymEntry(toGenSymEntry(abstract), int);
+    return se: borrowed TimeEntry(int);
+  }
+
+  proc getTimeEntry(name, st: borrowed SymTab): borrowed TimeEntry throws {
+    var abstract = st.lookup(name);
+    if !abstract.isAssignableTo(SymbolEntryType.TimeEntry) {
+      var errorMsg = "Error: SymbolEntryType %s is not assignable to TimeEntry".format(abstract.entryType);
+        tcLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+        throw new Error(errorMsg);
+    }
+    var se = toSymEntry(toGenSymEntry(abstract), int);
+    return se: borrowed TimeEntry(int);
+  }
+
   /*
    * Both Datetime and Timedelta are specializations of SymEntry(int). They store
    * the same data as a normal Int64 array, but with three differences:

@@ -1,6 +1,6 @@
 use UnitTest;
 use TestBase;
-use TimeEntry;
+use TimeEntryModule;
 use GenSymIO;
 use Message;
 import FileSystem;
@@ -9,16 +9,15 @@ config const size = 1_000;
 config const file_path = "resources/tmp_UnitTestHDF5";
 
 proc createDatetime(name: string, st: borrowed SymTab) {
+  // Create and store a TimeEntry
+  var dt = st.addTimeEntry(name, size, DType.Datetime64);
   // Step by 1 second starting from a few days before 2020
   const start = 50*365*24*60*60*10**9;
   const step = 10**9;
-  const a = makeDistArray(size, int);
-  forall (ai, d) in zip(a, start..#size by step) {
+  //const a = makeDistArray(size, int);
+  forall (ai, d) in zip(dt.a, start..#size by step) {
     ai = d;
   }
-  // Create and store a TimeEntry
-  var dt = new shared TimeEntry(a, DType.Datetime64);
-  st.addEntry(name, dt);
   return dt;
 }
 
