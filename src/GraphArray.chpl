@@ -108,38 +108,38 @@ module GraphArray {
 
       srcName = srcNameA;
       // The try! is needed here because init cannot throw
-      var gs = try! st.lookup(srcName);
+      var gs = try! getGenericTypedArrayEntry(srcName, st);
       var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
       src=tmpsrc;
 
       dstName = dstNameA;
       // The try! is needed here because init cannot throw
-      var ds = try! st.lookup(dstName);
+      var ds = try! getGenericTypedArrayEntry(dstName, st);
       var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
       dst=tmpdst;
 
       startName = startNameA;
       // The try! is needed here because init cannot throw
-      var starts = try! st.lookup(startName);
+      var starts = try! getGenericTypedArrayEntry(startName, st);
       var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
       start_i=tmpstart_i;
 
       neighbourName = neiNameA;
       // The try! is needed here because init cannot throw
-      var neis = try! st.lookup(neighbourName);
+      var neis = try! getGenericTypedArrayEntry(neighbourName, st);
       var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
       neighbour=tmpneighbour;
 
       v_weightName = vweiNameA;
       // The try! is needed here because init cannot throw
-      var vweis = try! st.lookup(v_weightName);
+      var vweis = try! getGenericTypedArrayEntry(v_weightName, st);
       // I want this to be borrowed, but that throws a lifetime error
       var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
       v_weight=tmpv_weight;
 
       e_weightName = eweiNameA;
       // The try! is needed here because init cannot throw
-      var eweis = try! st.lookup(e_weightName);
+      var eweis = try! getGenericTypedArrayEntry(e_weightName, st);
       var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
       e_weight=tmpe_weight;
 
@@ -218,25 +218,25 @@ module GraphArray {
       
       srcName = srcNameA;
       // The try! is needed here because init cannot throw
-      var gs = try! st.lookup(srcName);
+      var gs = try! getGenericTypedArrayEntry(srcName, st);
       var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
       src=tmpsrc;
 
       dstName = dstNameA;
       // The try! is needed here because init cannot throw
-      var ds = try! st.lookup(dstName);
+      var ds = try! getGenericTypedArrayEntry(dstName, st);
       var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
       dst=tmpdst;
 
       startName = startNameA;
       // The try! is needed here because init cannot throw
-      var starts = try! st.lookup(startName);
+      var starts = try! getGenericTypedArrayEntry(startName, st);
       var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
       start_i=tmpstart_i;
 
       neighbourName = neiNameA;
       // The try! is needed here because init cannot throw
-      var neis = try! st.lookup(neighbourName);
+      var neis = try! getGenericTypedArrayEntry(neighbourName, st);
       var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
       neighbour=tmpneighbour;
     }
@@ -328,38 +328,38 @@ module GraphArray {
       
           srcName = srcNameA;
           // The try! is needed here because init cannot throw
-          var gs = try! st.lookup(srcName);
+          var gs = try! getGenericTypedArrayEntry(srcName, st);
           var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
           src=tmpsrc;
 
           dstName = dstNameA;
           // The try! is needed here because init cannot throw
-          var ds = try! st.lookup(dstName);
+          var ds = try! getGenericTypedArrayEntry(dstName, st);
           var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
           dst=tmpdst;
 
           startName = startNameA;
           // The try! is needed here because init cannot throw
-          var starts = try! st.lookup(startName);
+          var starts = try! getGenericTypedArrayEntry(startName, st);
           var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
           start_i=tmpstart_i;
 
           neighbourName = neiNameA;
           // The try! is needed here because init cannot throw
-          var neis = try! st.lookup(neighbourName);
+          var neis = try! getGenericTypedArrayEntry(neighbourName, st);
           var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
           neighbour=tmpneighbour;
 
 
           v_weightName = vweiNameA;
           // The try! is needed here because init cannot throw
-          var vweis = try! st.lookup(v_weightName);
+          var vweis = try! getGenericTypedArrayEntry(v_weightName, st);
           var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
           v_weight=tmpv_weight;
 
           e_weightName = eweiNameA;
           // The try! is needed here because init cannot throw
-          var eweis = try! st.lookup(e_weightName);
+          var eweis = try! getGenericTypedArrayEntry(e_weightName, st);
           var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
           e_weight=tmpe_weight;
     }
@@ -469,25 +469,25 @@ module GraphArray {
       
           srcName = srcNameA;
           // The try! is needed here because init cannot throw
-          var gs = try! st.lookup(srcName);
+          var gs = try! getGenericTypedArrayEntry(srcName, st);
           var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
           src=tmpsrc;
 
           dstName = dstNameA;
           // The try! is needed here because init cannot throw
-          var ds = try! st.lookup(dstName);
+          var ds = try! getGenericTypedArrayEntry(dstName, st);
           var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
           dst=tmpdst;
 
           startName = startNameA;
           // The try! is needed here because init cannot throw
-          var starts = try! st.lookup(startName);
+          var starts = try! getGenericTypedArrayEntry(startName, st);
           var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
           start_i=tmpstart_i;
 
           neighbourName = neiNameA;
           // The try! is needed here because init cannot throw
-          var neis = try! st.lookup(neighbourName);
+          var neis = try! getGenericTypedArrayEntry(neighbourName, st);
           var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
           neighbour=tmpneighbour;
 
@@ -495,25 +495,25 @@ module GraphArray {
 
           srcNameR = srcNameAR;
           // The try! is needed here because init cannot throw
-          var gsR = try! st.lookup(srcNameR);
+          var gsR = try! getGenericTypedArrayEntry(srcNameR, st);
           var tmpsrcR = toSymEntry(gsR, int): unmanaged SymEntry(int);
           srcR=tmpsrcR;
 
           dstNameR = dstNameAR;
           // The try! is needed here because init cannot throw
-          var dsR = try! st.lookup(dstNameR);
+          var dsR = try! getGenericTypedArrayEntry(dstNameR, st);
           var tmpdstR = toSymEntry(dsR, int): unmanaged SymEntry(int);
           dstR=tmpdstR;
 
           startNameR = startNameAR;
           // The try! is needed here because init cannot throw
-          var startsR = try! st.lookup(startNameR);
+          var startsR = try! getGenericTypedArrayEntry(startNameR, st);
           var tmpstart_iR = toSymEntry(startsR, int): unmanaged SymEntry(int);
           start_iR=tmpstart_iR;
 
           neighbourNameR = neiNameAR;
           // The try! is needed here because init cannot throw
-          var neisR = try! st.lookup(neighbourNameR);
+          var neisR = try! getGenericTypedArrayEntry(neighbourNameR, st);
           var tmpneighbourR = toSymEntry(neisR, int): unmanaged SymEntry(int);
           neighbourR=tmpneighbourR;
 
@@ -644,25 +644,25 @@ module GraphArray {
       
           srcName = srcNameA;
           // The try! is needed here because init cannot throw
-          var gs = try! st.lookup(srcName);
+          var gs = try! getGenericTypedArrayEntry(srcName, st);
           var tmpsrc = toSymEntry(gs, int): unmanaged SymEntry(int);
           src=tmpsrc;
 
           dstName = dstNameA;
           // The try! is needed here because init cannot throw
-          var ds = try! st.lookup(dstName);
+          var ds = try! getGenericTypedArrayEntry(dstName, st);
           var tmpdst = toSymEntry(ds, int): unmanaged SymEntry(int);
           dst=tmpdst;
 
           startName = startNameA;
           // The try! is needed here because init cannot throw
-          var starts = try! st.lookup(startName);
+          var starts = try! getGenericTypedArrayEntry(startName, st);
           var tmpstart_i = toSymEntry(starts, int): unmanaged SymEntry(int);
           start_i=tmpstart_i;
 
           neighbourName = neiNameA;
           // The try! is needed here because init cannot throw
-          var neis = try! st.lookup(neighbourName);
+          var neis = try! getGenericTypedArrayEntry(neighbourName, st);
           var tmpneighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
           neighbour=tmpneighbour;
 
@@ -670,25 +670,25 @@ module GraphArray {
 
           srcNameR = srcNameAR;
           // The try! is needed here because init cannot throw
-          var gsR = try! st.lookup(srcNameR);
+          var gsR = try! getGenericTypedArrayEntry(srcNameR, st);
           var tmpsrcR = toSymEntry(gsR, int): unmanaged SymEntry(int);
           srcR=tmpsrcR;
 
           dstNameR = dstNameAR;
           // The try! is needed here because init cannot throw
-          var dsR = try! st.lookup(dstNameR);
+          var dsR = try! getGenericTypedArrayEntry(dstNameR, st);
           var tmpdstR = toSymEntry(dsR, int): unmanaged SymEntry(int);
           dstR=tmpdstR;
 
           startNameR = startNameAR;
           // The try! is needed here because init cannot throw
-          var startsR = try! st.lookup(startNameR);
+          var startsR = try! getGenericTypedArrayEntry(startNameR, st);
           var tmpstart_iR = toSymEntry(startsR, int): unmanaged SymEntry(int);
           start_iR=tmpstart_iR;
 
           neighbourNameR = neiNameAR;
           // The try! is needed here because init cannot throw
-          var neisR = try! st.lookup(neighbourNameR);
+          var neisR = try! getGenericTypedArrayEntry(neighbourNameR, st);
           var tmpneighbourR = toSymEntry(neisR, int): unmanaged SymEntry(int);
           neighbourR=tmpneighbourR;
 
@@ -696,14 +696,14 @@ module GraphArray {
 
           v_weightName = vweiNameA;
           // The try! is needed here because init cannot throw
-          var vweis = try! st.lookup(v_weightName);
+          var vweis = try! getGenericTypedArrayEntry(v_weightName, st);
           // I want this to be borrowed, but that throws a lifetime error
           var tmpv_weight = toSymEntry(vweis, int): unmanaged SymEntry(int);
           v_weight=tmpv_weight;
 
           e_weightName = eweiNameA;
           // The try! is needed here because init cannot throw
-          var eweis = try! st.lookup(e_weightName);
+          var eweis = try! getGenericTypedArrayEntry(e_weightName, st);
           var tmpe_weight = toSymEntry(eweis, int): unmanaged SymEntry(int);
           e_weight=tmpe_weight;
 
