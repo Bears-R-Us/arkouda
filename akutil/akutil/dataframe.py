@@ -4,10 +4,15 @@ from collections import UserDict
 from tabulate import tabulate
 from warnings import warn
 import akutil as aku
+from akutil.segarray import SegArray
 import arkouda as ak
 import pandas as pd
 import numpy as np
+import random
 
+# This is necessary for displaying DataFrames with BitVector columns,
+# because pandas _html_repr automatically truncates the number of displayed bits
+pd.set_option('display.max_colwidth', 64)
 
 __all__ = [
         "DataFrame",
@@ -16,6 +21,49 @@ __all__ = [
         "invert_permutation",
         "intx",
     ]
+
+def groupby_operators(cls):
+        for name in [ 'all','any','argmax','argmin','max','mean','min','nunique','prod','sum','OR', 'AND', 'XOR' ] :
+            setattr(cls,name, cls._make_aggop(name))
+        return cls
+
+@groupby_operators
+class GroupBy:
+    """A DataFrame that has been grouped by a subset of columns"""
+    
+    def __init__(self,gb,df):
+        self.gb = gb
+        self.df = df
+        for attr in [ 'nkeys','size','permutation','unique_keys','segments' ]:
+            setattr(self, attr, getattr(gb,attr) )
+    @classmethod
+    def _make_aggop(cls, opname):
+        def aggop(self,colname):
+                
+                return aku.Series( self.gb.aggregate(self.df.data[colname], opname))
+        return aggop
+    def count(self):
+        return aku.Series( self.gb.count() )
+    
+    def broadcast(self, x, permute=True):
+        """Fill each group’s segment with a constant value.
+        
+        Parameters
+        ----------
+        
+        x :  Either a Series or a pdarray
+        
+        Returns
+        -------
+        A aku.Series with the Index of the original frame and the values of the broadcast.
+        """
+        
+        if isinstance(x, aku.Series):
+            data = self.gb.broadcast(x.values, permute=permute)
+        else:
+            data = self.gb.broadcast(x, permute=permute)
+        return aku.Series(data=data, index=self.df['index'])
+
 
 """
 DataFrame structure based on Arkouda arrays.
@@ -71,12 +119,24 @@ class DataFrame(UserDict):
     DataFrame(['userID', 'day'] [6 rows : 96 B])
     """
 
+    COLUMN_CLASSES = (ak.pdarray, ak.Strings, ak.Categorical, SegArray)
+
     def __init__(self, initialdata=None):
         super().__init__()
 
+        if isinstance(initialdata, DataFrame):
+            # Copy constructor
+            self._size = initialdata._size
+            self._bytes = initialdata._bytes
+            self._empty = initialdata._empty 
+            self._columns = initialdata._columns 
+            self.data = initialdata.data 
+            self.update_size()
+            return 
+
         # Some metadata about this dataframe.
-        self._size = None
-        self._bytes = None
+        self._size = 0
+        self._bytes = 0
         self._empty = True
 
         # Initial attempts to keep an order on the columns
@@ -91,30 +151,24 @@ class DataFrame(UserDict):
             # Initial data is a dictionary of arkouda arrays
             if type(initialdata) == dict:
                 for key, val in initialdata.items():
-                    if not isinstance(val, (ak.pdarray, ak.Strings)):
-                        raise ValueError("Values must be either ak.pdarray or ak.Strings.")
+                    if not isinstance(val, self.COLUMN_CLASSES):
+                        raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     sizes.add(val.size)
                     if len(sizes) > 1:
                         raise ValueError("Input arrays must have equal size.")
                     self._empty = False
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
-                    self._columns.append(key)
-
-                # Update the dataframe indices and metadata.
-                self._size = sizes.pop()
-                # If the index column was passed in, use that instead of
-                # creating a new one.
-                if self.data['index'] is None:
-                    self.data['index'] = ak.arange(0, self._size, 1)
+                    if key != 'index':
+                        self._columns.append(key)
 
             # Initial data is a list of arkouda arrays
             elif type(initialdata) == list:
                 # Create string IDs for the columns
                 keys = [str(x) for x in range(len(initialdata))]
                 for key, col in zip(keys, initialdata):
-                    if not isinstance(col, (ak.pdarray, ak.Strings)):
-                        raise ValueError("Values must be either ak.pdarray or ak.Strings.")
+                    if not isinstance(col, self.COLUMN_CLASSES):
+                        raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
                     sizes.add(col.size)
                     if len(sizes) > 1:
                         raise ValueError("Input arrays must have equal size.")
@@ -123,18 +177,19 @@ class DataFrame(UserDict):
                     # Update the column index
                     self._columns.append(key)
 
-                # Update the dataframe indices and metadata.
-                self._size = sizes.pop()
-                # If the index column was passed in, use that instead of
-                # creating a new one.
-                if self.data['index'] is None:
-                    self.data['index'] = ak.arange(0, self._size, 1)
-
             # Initial data is invalid.
             else:
-                raise ValueError("Initialize with dict or list of ak.pdarray or ak.Strings.")
+                raise ValueError(f"Initialize with dict or list of {self.COLUMN_CLASSES}.")
 
-        self.update_size()
+            # Update the dataframe indices and metadata.
+            if len(sizes) > 0:
+                self._size = sizes.pop()
+            # If the index column was passed in, use that instead of
+            # creating a new one.
+            if self.data['index'] is None:
+                self.data['index'] = ak.arange(0, self._size, 1)
+
+            self.update_size()
 
     def __delitem__(self, key):
         # This function is a backdoor to messing up the indices and columns.
@@ -155,13 +210,11 @@ class DataFrame(UserDict):
     def __getitem__(self, key):
         # Select rows using an integer pdarray
         if isinstance(key,ak.pdarray):
-            result = DataFrame()
-            for k in self.data.keys():
-                result.data[k] = UserDict.__getitem__(self, k)[key]
-                result._columns.append(k)
-            result._empty = False
-            return result
-
+            result = {}
+            for k in self._columns:
+                result[k] = UserDict.__getitem__(self, k)[key]
+            return DataFrame(initialdata=result)
+            
         # Select rows or columns using a list
         if isinstance(key, list):
             result = DataFrame()
@@ -201,13 +254,14 @@ class DataFrame(UserDict):
 
         # Select rows using a slice
         elif isinstance(key, slice):
-            result = DataFrame()
+            # result = DataFrame()
+            data = {}
             s = key
-            for k in self.data.keys():
-                result.data[k] = UserDict.__getitem__(self,k)[s.start:s.stop:s.step]
-                result._columns.append(k)
-            result._empty = False
-            return result
+            for k in self._columns:
+                data[k] = UserDict.__getitem__(self,k)[s.start:s.stop:s.step]
+                # result._columns.append(k)
+            # result._empty = False
+            return DataFrame(initialdata=data)
 
         else:
             raise IndexError("Invalid selector: unknown error.")
@@ -241,8 +295,8 @@ class DataFrame(UserDict):
 
         # Set a single column in the dataframe using a an arkouda array
         elif type(key) == str:
-            if not isinstance(value, (ak.pdarray, ak.Strings)):
-                raise ValueError("This operation requires ak.pdarray or ak.Strings.")
+            if not isinstance(value, self.COLUMN_CLASSES):
+                raise ValueError(f"Column must be one of {self.COLUMN_CLASSES}.")
             elif self._size is not None and self._size != value.size:
                 raise ValueError("Expected size {} but received size {}.".format(self.size, value.size))
             else:
@@ -262,6 +316,12 @@ class DataFrame(UserDict):
             self.data['index'] = ak.arange(0, self._size, 1)
 
     def __len__(self):
+        """
+        Return the number of rows
+        """
+        return self.size
+
+    def _ncols(self):
         """
         Only count the non-index columns.
         """
@@ -298,60 +358,58 @@ class DataFrame(UserDict):
             rows = " row"
         return 'DataFrame(['+keystr+'], {:,}'.format(self._size)+rows+', '+str(mem)+')'
 
+    def _get_head_tail(self):
+        if self._empty:
+            return pd.DataFrame()
+        self.update_size()
+        maxrows = pd.get_option('display.max_rows')
+        if self._size <= maxrows:
+            newdf = aku.DataFrame()
+            for col in self._columns:
+                if isinstance(self[col], ak.Categorical):
+                    newdf[col] = self[col].categories[self[col].codes]
+                else:
+                    newdf[col] = self[col]
+            return newdf.to_pandas(retain_index=True)
+        # Being 1 above the threshold caises the PANDAS formatter to split the data frame vertically
+        idx = ak.array(list(range(maxrows//2+1)) + list(range(self._size - (maxrows//2), self._size)))
+        newdf = aku.DataFrame()
+        for col in self._columns[1:]:
+            if isinstance(self[col], ak.Categorical):
+                newdf[col] = self[col].categories[self[col].codes[idx]]
+            else:
+                newdf[col] = self[col][idx]
+        newdf['index'] = self['index'][idx]
+        return newdf.to_pandas(retain_index=True)
+
+    def _shape_str(self):
+        return "{} rows x {} columns".format(self.size,self._ncols() ) 
+
     def __repr__(self):
         """
         Return ascii-formatted version of the dataframe.
         """
 
-        if self._empty:
-            return 'DataFrame([ -- ][ 0 rows : 0 B])'
-
-        self.update_size()
-        # This is needed as workaround for when there are bool columns
-        prt = self[:100]
-
-        fmts = []
-        for key,val in prt.items():
-            if isinstance(val, ak.Strings):
-                fmts.append(None)
-            elif isinstance(val, ak.pdarray) and val.dtype == 'int64':
-                fmts.append('.0f')
-            elif isinstance(val, ak.pdarray) and val.dtype == 'float':
-                fmts.append('.5g')
-            # This is a hack since tabulate doesn't recognize ak.bool
-            elif isinstance(val, ak.pdarray) and val.dtype == 'bool':
-                prt[key] = ak.array([str(x) for x in val])
-        fmts = tuple(fmts)
-
-        return tabulate(prt, prt.keys(), showindex=False, floatfmt=fmts)
+        prt = self._get_head_tail()
+        with pd.option_context("display.show_dimensions", False):
+            retval = prt.__repr__()
+        retval += self._shape_str()
+        return retval
 
     def _repr_html_(self):
         """
         Return html-formatted version of the dataframe.
         """
 
-        if self._empty:
-            return 'DataFrame([ -- ][ 0 rows : 0 B])'
+        prt = self._get_head_tail()
+        with pd.option_context("display.show_dimensions", False):
+            retval = prt._repr_html_()
+        retval += "<p>" + self._shape_str() + "</p>"
+        return retval
 
-        self.update_size()
-        # This is needed as workaround for when there are bool columns
-        prt = self[:100]
-
-        fmts = []
-        for key,val in prt.items():
-            if isinstance(val, ak.Strings):
-                fmts.append(None)
-            elif isinstance(val, ak.pdarray) and val.dtype == 'int64':
-                fmts.append('.0f')
-            elif isinstance(val, ak.pdarray) and val.dtype == 'float':
-                fmts.append('.5g')
-            # This is a hack since tabulate doesn't recognize ak.bool
-            elif isinstance(val, ak.pdarray) and val.dtype == 'bool':
-                prt[key] = ak.array([str(x) for x in val])
-        fmts = tuple(fmts)
-
-        return tabulate(prt, prt.keys(), tablefmt='html', floatfmt=fmts)
-
+    def _ipython_key_completions_(self):
+        return self._columns
+        
     def drop(self, keys):
         """
         Drop a column or columns from the dataframe, in-place.
@@ -376,6 +434,48 @@ class DataFrame(UserDict):
             self.data['index'] = None
             self._empty = True
         self.update_size()
+
+    def drop_duplicates(self, subset=None, keep='first'):
+        """
+        Drops duplcated rows and returns resulting DataFrame. 
+        
+        If a subset of the columns are provided then only one instance of each 
+        duplicated row will be returned (keep determines which row).
+
+        Parameters
+        ----------
+        subset : Iterable of column names to use to dedupe.
+        keep : {'first', 'last'}, default 'first'
+            Determines which duplicates (if any) to keep.
+
+        Returns
+        -------
+        DataFrame
+            DataFrame with duplicates removed.
+        """
+        if self._empty:
+            return self 
+
+        if not subset:
+            subset = self._columns[1:]
+
+        if len(subset) == 1:
+            if not subset[0] in self.data:
+                raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
+            _ = ak.GroupBy(self.data[subset[0]])
+
+        else:
+            for col in subset:
+                if not col in self.data:
+                    raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
+
+            _ = ak.GroupBy([self.data[col] for col in subset])
+
+        if keep=='last':
+            _segment_ends = ak.concatenate([_.segments[1:]-1, ak.array([_.permutation.size-1])])
+            return self[_.permutation[_segment_ends]]
+        else:
+            return self[_.permutation[_.segments]]
 
     @property
     def size(self):
@@ -489,9 +589,53 @@ class DataFrame(UserDict):
         else:
             self._size = sizes.pop()
 
-    def append(self, other):
+    def rename(self, mapper):
         """
-        Concatenate data from 'other' onto the end of this DataFrame.
+        Rename columns in-place according to a mapping.
+
+        Parameters
+        ----------
+        mapper : callable or dict-like
+            Function or dictionary mapping existing column names to 
+            new column names. Nonexistent names will not raise an
+            error.
+
+        Returns
+        -------
+        self
+            Renaming occurs in-place, but result is also returned,
+            for compatibility.
+        """
+
+        if callable(mapper):
+            # Do not rename index, start at 1
+            for i in range(1, len(self._columns)):
+                oldname = self._columns[i]
+                newname = mapper(oldname)
+                # Only rename if name has changed
+                if newname != oldname:
+                    self._columns[i] = newname
+                    self.data[newname] = self.data[oldname]
+                    del self.data[oldname]
+        elif isinstance(mapper, dict):
+            for oldname, newname in mapper.items():
+                # Only rename if name has changed
+                if newname != oldname:
+                    try:
+                        i = self._columns.index(oldname)
+                        self._columns[i] = newname
+                        self.data[newname] = self.data[oldname]
+                        del self.data[oldname]
+                    except:
+                        pass
+        else:
+            raise TypeError("Argument must be callable or dict-like")
+        return self
+
+
+    def append(self, other, ordered=True):
+        """
+        Concatenate data from 'other' onto the end of this DataFrame, in place.
 
         Explicitly, use the arkouda concatenate function to append the data
         from each column in other to the end of self. This operation is done
@@ -503,30 +647,30 @@ class DataFrame(UserDict):
         ----------
         other : DataFrame
             The DataFrame object whose data will be appended to this DataFrame.
-
-        Notes
-        -----
-            Within arkouda, String arrays can not be concatenated. Until this
-            is possible from within arkouda, dataframes that have columns of
-            string type are unable to be appended.
+        ordered: bool
+            If False, allow rows to be interleaved for better performance (but
+            data within a row remains together). By default, append all rows
+            to the end, in input order.
+        
+        Returns
+        -------
+        self
+            Appending occurs in-place, but result is returned for compatibility.
         """
 
         # Do nothing if the other dataframe is empty
         if other.empty:
-            return
+            return self
 
         # Check all the columns to make sure they can be concatenated
         self.update_size()
-        for key in self.keys():
-            if isinstance(self[key], ak.Strings):
-                raise ValueError("Cannot concatenate dataframes with ak.String arrays.")
-
+        
         keyset = set(self.keys())
         keylist = list(self.keys())
 
         # Allow for starting with an empty dataframe
-        if keyset == {'index'}:
-            self.data = other.data
+        if self.empty:
+            self = other.copy()
         # Keys don't match
         elif (keyset != set(other.keys())):
             raise KeyError(f"Key mismatch; keys must be identical in both DataFrames.")
@@ -534,13 +678,42 @@ class DataFrame(UserDict):
         else:
             tmp_data = {}
             for key in keylist:
-                tmp_data[key] = ak.concatenate([self[key], other[key]])
+                try:
+                    tmp_data[key] = aku.concatenate([self[key], other[key]], ordered=ordered)
+                except TypeError as e:
+                    raise TypeError("Incompatible types for column {}: {} vs {}".format(key, type(self[key]), type(other[key]))) from e
             self.data = tmp_data
 
         # Clean up
         self.reset_index()
         self.update_size()
         self._empty = False
+        return self
+
+    @classmethod
+    def concat(cls, items, ordered=True):
+        if len(items) == 0:
+            return cls()
+        first = True
+        for df in items:
+            # Allow for an empty dataframe
+            if df.empty or set(df.keys()) == {'index'}:
+                continue
+            if first:
+                columnset = set(df.keys())
+                columnlist = df._columns
+                first = False
+            else:
+                if set(df.keys()) != columnset:
+                    raise KeyError("Cannot concatenate DataFrames with mismatched columns")
+        # if here, columns match
+        ret = cls()
+        for col in columnlist:
+            try:
+                ret[col] = aku.concatenate([df[col] for df in items], ordered=ordered)
+            except TypeError as e:
+                raise TypeError("Incompatible types for column {}".format(col))
+        return ret
 
     def head(self, n=5):
         """
@@ -595,19 +768,39 @@ class DataFrame(UserDict):
             return self
         return self[self._size - n:]
 
-    def GroupBy(self, keys):
+    def sample(self, n=5):
         """
-        Create the arkouda GroupBy object.
+        Return a random sample of `n` rows.
+
+        Parameters
+        ----------
+        n : int (default=5)
+            Number of rows to return.
+
+        Returns
+        -------
+        akutil.DataFrame
+            The sampled `n` rows of the DataFrame.
+        """
+        self.update_size()
+        if self._size <= n:
+            return self
+        return self[ak.array(random.sample(range(self._size), n))]
+
+    def GroupBy(self, keys,use_series=False):
+        """
+        Group the dataframe by a column or a list of columns.
 
         Parameters
         ----------
         keys : string or list
             An (ordered) list of column names or a single string to group by.
+        use_series : If True, returns an akutil.GroupBy oject. Otherwise an arkouda GroupBy object
 
         Returns
         -------
         GroupBy
-            An arkouda GroupBy object.
+            Either an akutil GroupBy or an arkouda GroupBy object.
 
         See Also
         --------
@@ -615,12 +808,18 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
-        if type(keys) == str:
-            return ak.GroupBy(self[keys])
+        if isinstance(keys,str):
+            cols = self.data[keys]
+        elif not isinstance(keys,list):
+            raise TypeError("keys must be a colum name or a list of column names")
         elif len(keys) == 1:
-            return ak.GroupBy(self[keys[0]])
+            cols = self.data[keys[0]]
         else:
-            return ak.GroupBy([self[col] for col in keys])
+            cols = [ self.data[col] for col in keys]
+        gb = ak.GroupBy(cols)
+        if use_series:
+            gb = GroupBy(gb,self)
+        return gb
 
     def memory_usage(self, unit='GB'):
         """
@@ -654,13 +853,13 @@ class DataFrame(UserDict):
             return "{:} KB".format(int(self._bytes / KB))
         return "{:.2f} GB".format(self._bytes / GB)
 
-    def to_pandas(self, datalimit=ak.maxTransferBytes, retain_index=False):
+    def to_pandas(self, datalimit=ak.client.maxTransferBytes, retain_index=False):
         """
         Send this DataFrame to a pandas DataFrame.
 
         Parameters
         ----------
-        datalimit : int (default=arkouda.maxTransferBytes)
+        datalimit : int (default=arkouda.client.maxTransferBytes)
             The maximum number size, in megabytes to transfer. The requested
             DataFrame will be converted to a pandas DataFrame only if the
             estimated size of the DataFrame does not exceed this value.
@@ -725,7 +924,27 @@ class DataFrame(UserDict):
         else:
             return pd.DataFrame(data=pandas_data)
 
-    def argsort(self, key):
+    def save(self, path, index=False):
+        '''
+        Save DataFrame to disk, preserving column names.
+
+        Parameters
+        ----------
+        path : str
+            File path to save data
+        index : bool
+            If True, save the index column. By default, do not save the index.
+
+        Notes
+        -----
+        This method saves one file per locale of the arkouda server. All
+        files are prefixed by the path argument and suffixed by their
+        locale number.
+        '''
+        tosave = {k:v for k, v in self.data.items() if (index or k != "index")}
+        ak.save_all(tosave, path)
+
+    def argsort(self, key, ascending=True):
         """
         Return the permutation that sorts the dataframe by `key`.
 
@@ -741,10 +960,16 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return None
-        return ak.argsort(self[key])
+            return ak.array([], dtype=ak.int64)
+        if ascending:
+            return ak.argsort(self[key])
+        else:
+            if isinstance(self[key], ak.pdarray) and self[key].dtype in (ak.int64, ak.float64):
+                return ak.argsort(-self[key])
+            else:
+                return ak.argsort(self[key])[ak.arange(self.size-1, -1, -1)]
 
-    def coargsort(self, keys):
+    def coargsort(self, keys, ascending=True):
         """
         Return the permutation that sorts the dataframe by `keys`.
 
@@ -760,25 +985,28 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return None
+            return ak.array([], dtype=ak.int64)
         arrays = []
         for key in keys:
             arrays.append(self[key])
+        i = ak.coargsort(arrays)
+        if not ascending:
+            i = i[ak.arange(self.size-1, -1, -1)]
+        return i
 
-        return ak.coargsort(arrays)
 
-
-    def sort(self, key=None):
+    def sort_values(self, by=None, ascending=True):
         """
-        Sort the DataFrame by a single key.
+        Sort the DataFrame by one or more columns.
 
-        If no key is selected, sort by the first key returned by
-        self.data.keys().
+        If no column is specified, all columns are used.
 
         Parameters
         ----------
-        key : str
-            The name of the column to sort by.
+        key : str or list/tuple of str
+            The name(s) of the column(s) to sort by.
+        ascending : bool
+            Sort values in ascending (default) or descending order.
 
         See Also
         --------
@@ -786,13 +1014,19 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return None
-        if key not in self.keys():
-            key = list(self.keys())[1]
-        perm = ak.argsort(self[key])
-        # Note this operation permutes the index column
-        for k, v in self.data.items():
-            self[k] = v[perm]
+            return ak.array([], dtype=ak.int64)
+        if by is None:
+            if len(self._columns) == 2:
+                i = self.argsort(self._columns[1], ascending=ascending)
+            else:
+                i = self.coargsort(self._columns[1:], ascending=ascending)
+        elif isinstance(by, str):
+            i = self.argsort(by, ascending=ascending)
+        elif isinstance(by, (list, tuple)):
+            i = self.coargsort(by, ascending=ascending)
+        else:
+            raise TypeError("Column name(s) must be str or list/tuple of str")
+        return self[i]
 
     def apply_permutation(self, perm):
         """
@@ -806,7 +1040,7 @@ class DataFrame(UserDict):
         ----------
         perm : ak.pdarray
             A permutation array. Should be the same size as the data
-            arrays, and should consist of the integers (1,size) in
+            arrays, and should consist of the integers [0,size-1] in
             some order. Very minimal testing is done to ensure this
             is a permutation.
 
@@ -815,7 +1049,7 @@ class DataFrame(UserDict):
         sort
         """
 
-        if perm.sum() != (perm.size * (perm.size - 1))/ 2:
+        if (perm.min() != 0) or (perm.max() != perm.size - 1):
             raise ValueError("The indicated permutation is invalid.")
         if ak.unique(perm).size != perm.size:
             raise ValueError("The indicated permutation is invalid.")
@@ -850,14 +1084,14 @@ class DataFrame(UserDict):
 
         if isinstance(keys, str):
             keys = [keys]
-        gb = self.GroupBy(keys)
+        gb = self.GroupBy(keys,use_series=False)
         vals, cts = gb.count()
         if not high:
             positions = ak.where(cts >= low, 1, 0)
         else:
             positions = ak.where(((cts >= low) & (cts <= high)), 1, 0)
 
-        broadcast = gb.broadcast(positions)
+        broadcast = gb.broadcast(positions, permute=False)
         broadcast = (broadcast == 1)
         return broadcast[aku.invert_permutation(gb.permutation)]
 
@@ -886,7 +1120,7 @@ class DataFrame(UserDict):
         """
 
         if deep:
-            res = aku.DataFrame()
+            res = DataFrame()
             res._size = self._size
             res._bytes = self._bytes
             res._empty = self._empty
@@ -898,6 +1132,19 @@ class DataFrame(UserDict):
             return res
         else:
             return aku.DataFrame(self.data)
+    def groupby(self,keys,use_series=True):
+        """Group the dataframe by a column or a list of columns.  Alias for GroupBy
+
+        Parameters
+        ----------
+        keys : a single column name or a list of column names
+        use_series : Change return type to Arkouda Groupby object.
+
+        Returns
+        -------
+        An aku.Groupby instance
+        """
+        return self.GroupBy(keys,use_series)
 
 def sorted(df, column=False):
     """
@@ -922,7 +1169,7 @@ def sorted(df, column=False):
         A sorted copy of the original DataFrame.
     """
 
-    if not isinstance(df, aku.DataFrame):
+    if not isinstance(df, DataFrame):
         raise TypeError("The sorted operation requires an DataFrame.")
     result = DataFrame(df.data)
     result.sort(column)
@@ -1007,7 +1254,7 @@ def intersect(a, b, positions=True, unique=False):
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
-            counts = gb.broadcast(cnt)
+            counts = gb.broadcast(cnt, permute=False)
 
             # Same, in original order
             tmp = counts[:]
@@ -1040,7 +1287,7 @@ def intersect(a, b, positions=True, unique=False):
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
-            counts = gb.broadcast(cnt)
+            counts = gb.broadcast(cnt, permute=False)
 
             # Restore the original order
             tmp = counts[:]
@@ -1050,8 +1297,8 @@ def intersect(a, b, positions=True, unique=False):
             # Broadcast back up one more level
             countsa = counts[:a0.size]
             countsb = counts[a0.size:]
-            counts2a = gba.broadcast(countsa)
-            counts2b = gbb.broadcast(countsb)
+            counts2a = gba.broadcast(countsa, permute=False)
+            counts2b = gbb.broadcast(countsb, permute=False)
 
             # Restore the original orders
             tmp = counts2a[:]

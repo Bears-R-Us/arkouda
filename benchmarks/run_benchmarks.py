@@ -19,10 +19,12 @@ from util import *
 
 logging.basicConfig(level=logging.INFO)
 
-BENCHMARKS = ['stream', 'argsort', 'coargsort', 'groupby', 'aggregate', 'gather', 'scatter',
-              'reduce', 'scan', 'noop', 'setops', 'array_create',
-              'array_transfer', 'IO', 'str-argsort', 'str-coargsort',
-              'str-groupby', 'str-gather', 'substring_search', 'flatten']
+BENCHMARKS = [
+    'stream', 'argsort', 'coargsort', 'groupby', 'aggregate', 'gather',
+    'scatter', 'reduce', 'in1d', 'scan', 'noop', 'setops', 'array_create',
+    'array_transfer', 'IO', 'str-argsort', 'str-coargsort', 'str-groupby',
+    'str-gather', 'str-in1d', 'substring_search', 'flatten',
+]
 
 if os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'):
     BENCHMARKS.append('parquetIO')

@@ -336,6 +336,7 @@ module MultiTypeSymEntry
         var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
 
         proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
+            super.init();
             this.entryType = SymbolEntryType.SegStringSymEntry;
             assignableTypes.add(this.entryType);
 

@@ -38,6 +38,7 @@ module GraphMsg {
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
   
+
   private proc xlocal(x :int, low:int, high:int):bool {
       return low<=x && x<=high;
   }
@@ -270,6 +271,7 @@ module GraphMsg {
                        var edgeEnd=src.localSubdomain().high;
                        var vertexBegin=src[edgeBegin];
                        var vertexEnd=src[edgeEnd];
+
 
                        var switchratio=(numCurF:real)/nf.size:real;
                        if (switchratio<GivenRatio) {//top down
@@ -788,10 +790,6 @@ module GraphMsg {
            .withSTART_IDX(new shared SymEntry(start_i):GenSymEntry)
            .withNEIGHBOR(new shared SymEntry(neighbour):GenSymEntry);
            
-      var ewName ,vwName:string;
-      if (weighted!=0) {
-        fillInt(v_weight,1,1000);
-        //fillRandom(v_weight,0,100);
         graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
              .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
       }
@@ -824,6 +822,8 @@ module GraphMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+
+
   proc segrmatgenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sdire,swei,RCMs )
@@ -855,9 +855,10 @@ module GraphMsg {
       //var e_weight=makeDistArray(Nv,int);
       //var v_weight=makeDistArray(Nv,int);
 
+
       // SegGraph object where we will compose with various components
       var graph = new shared SegGraph(n_vertices, n_edges, directed==1);
-
+ 
       coforall loc in Locales  {
           on loc {
               forall i in src.localSubdomain() {
@@ -874,10 +875,6 @@ module GraphMsg {
               }
           }
       }
-      //start_i=-1;
-      //neighbour=0;
-      //src=1;
-      //dst=1;
       var srcName:string ;
       var dstName:string ;
       var startName:string ;
@@ -887,7 +884,7 @@ module GraphMsg {
       var sDirected:string;
       var sWeighted:string;
 
-      proc rmat_gen() {
+       proc rmat_gen() {
              var a = p;
              var b = (1.0 - a)/ 3.0:real;
              var c = b;
@@ -1032,6 +1029,7 @@ module GraphMsg {
              }
       }
 
+
       proc set_common_symtable(): SegGraph throws {
           graph.withSRC(new shared SymEntry(src):GenSymEntry)
                .withDST(new shared SymEntry(dst):GenSymEntry)
@@ -1046,6 +1044,7 @@ module GraphMsg {
           return graph;
       }
 
+  
       proc RCM() throws {
             
           var cmary: [0..Nv-1] int;
@@ -1232,7 +1231,7 @@ module GraphMsg {
              //fillRandom(e_weight,0,100);
              fillInt(v_weight,1,1000);
              //fillRandom(v_weight,0,100);
-
+ 
              // Add the common components to the SegGraph object
              set_common_symtable();
              graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry);
@@ -1242,7 +1241,7 @@ module GraphMsg {
              var gName = st.nextName();
              st.addEntry(gName, new shared GraphSymEntry(graph));
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
-
+ 
           } else {
              rmat_gen();
              timer.stop();
@@ -1274,7 +1273,7 @@ module GraphMsg {
              var gName = st.nextName();
              st.addEntry(gName, new shared GraphSymEntry(graph));
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
-          }
+           }
       }// end for directed graph
       else {
           // only for undirected graph, we only declare R variables here
@@ -1501,7 +1500,8 @@ module GraphMsg {
           //lengthR=0;
           //neighbourR=0;
           var srcNameR, dstNameR, startNameR, neiNameR:string;
-          
+
+
           // Convenience proc to add Reverse components to the SegGraph object
           proc addReverseComponentsToSegGraph():SegGraph throws {
               graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
@@ -1510,7 +1510,8 @@ module GraphMsg {
                    .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
               return graph;
           }
-        
+
+
           proc combine_sortR() throws {
              /* we cannot use the coargsort version because it will break the memory limit */
              param bitsPerDigit = RSLSD_bitsPerDigit;
@@ -1575,7 +1576,7 @@ module GraphMsg {
           }// end combine_sortR
 
           proc set_neighbourR(){
-             for i in 0..Ne-1 do {
+              for i in 0..Ne-1 do {
                 neighbourR[srcR[i]]+=1;
                 if (start_iR[srcR[i]] ==-1){
                     start_iR[srcR[i]]=i;
@@ -1583,7 +1584,23 @@ module GraphMsg {
              }
           }
 
+          proc   set_common_symtableR():string throws {
+             srcNameR = st.nextName();
+             dstNameR = st.nextName();
+             startNameR = st.nextName();
+             neiNameR = st.nextName();
+             var srcEntryR = new shared SymEntry(srcR);
+             var dstEntryR = new shared SymEntry(dstR);
+             var startEntryR = new shared SymEntry(start_iR);
+             var neiEntryR = new shared SymEntry(neighbourR);
+             st.addEntry(srcNameR, srcEntryR);
+             st.addEntry(dstNameR, dstEntryR);
+             st.addEntry(startNameR, startEntryR);
+             st.addEntry(neiNameR, neiEntryR);
+             return "success";
+          }
 
+ 
           if (weighted!=0) {
              rmat_gen();
              timer.stop();
@@ -1657,7 +1674,7 @@ module GraphMsg {
              var gName = st.nextName();
              st.addEntry(gName, new shared GraphSymEntry(graph));
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
-
+ 
           } else {
 
              rmat_gen();
@@ -1715,7 +1732,7 @@ module GraphMsg {
              var gName = st.nextName();
              st.addEntry(gName, new shared GraphSymEntry(graph));
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
-
+ 
           }// end unweighted graph
       }// end undirected graph
       timer.stop();
@@ -1734,7 +1751,7 @@ module GraphMsg {
       var repMsg: string;
       //var (n_verticesN,n_edgesN,directedN,weightedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
       //    = payload.decode().splitMsgToTuple(10);
-      var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
+       var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
           = payload.splitMsgToTuple(7);
       var Nv=n_verticesN:int;
       var Ne=n_edgesN:int;
@@ -1758,7 +1775,7 @@ module GraphMsg {
       var srcRN, dstRN, startRN, neighbourRN:string;
       var gEntry:borrowed GraphSymEntry = getGraphSymEntry(graphEntryName, st);
       var ag = gEntry.graph;
-
+ 
       proc _d1_bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
           var cur_level=0;
           var numCurF=1:int;//flag for stopping loop
@@ -2599,7 +2616,7 @@ module GraphMsg {
           return "success";
       }//end of fo_set_bfs_kernel_u
 
-      proc fo_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
+       proc fo_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -3231,7 +3248,8 @@ module GraphMsg {
           return "success";
       }//end of co_bag_bfs_kernel_u
 
-      proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
+
+proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -3896,6 +3914,7 @@ module GraphMsg {
               }
               depth[root]=0;
 
+
             //   var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
             //                      startN,neighbourN,vweightN,eweightN, st);
             //   fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
@@ -3906,22 +3925,19 @@ module GraphMsg {
                   toSymEntry(ag.getDST(), int).a,
                   1, GivenRatio);
 
-              repMsg=return_depth();
+               repMsg=return_depth();
 
           } else {
               var ratios:string;
 
               (srcN, dstN, startN, neighbourN,rootN,ratios )=restpart.splitMsgToTuple(6);
-            //   var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
-            //           startN,neighbourN,st);
-
               root=rootN:int;
               var GivenRatio=ratios:real;
               if (RCMFlag>0) {
                   root=0;
               }
               depth[root]=0;
-            //   fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
+             //   fo_bag_bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,1,GivenRatio);
               fo_bag_bfs_kernel(
                   toSymEntry(ag.getNEIGHBOR(), int).a,
                   toSymEntry(ag.getSTART_IDX(), int).a,
@@ -3929,7 +3945,7 @@ module GraphMsg {
                   toSymEntry(ag.getDST(), int).a,
                   1, GivenRatio);
 
-              repMsg=return_depth();
+               repMsg=return_depth();
           }
       }
       else {
@@ -3937,11 +3953,6 @@ module GraphMsg {
               var ratios:string;
               (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN,vweightN,eweightN, rootN, ratios)=
                    restpart.splitMsgToTuple(12);
-            //   var ag = new owned SegGraphUDW(Nv,Ne,Directed,Weighted,
-            //           srcN,dstN, startN,neighbourN,
-            //           srcRN,dstRN, startRN,neighbourRN,
-            //           vweightN,eweightN, st);
-
               root=rootN:int;
               if (RCMFlag>0) {
                   root=0;
@@ -3954,7 +3965,7 @@ module GraphMsg {
                   GivenRatio=-1.0* GivenRatio;
                   //co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                   //         ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
-                //   fo_bag_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
+                 //   fo_bag_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                 //            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,1,GivenRatio);
                   fo_bag_bfs_kernel_u(
                       toSymEntry(ag.getNEIGHBOR(), int).a,
@@ -3976,6 +3987,7 @@ module GraphMsg {
                   timer.stop();
                   timer.clear();
                   timer.start();
+ 
                 //   co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                 //            ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
                   co_d1_bfs_kernel_u(
@@ -4158,7 +4170,7 @@ module GraphMsg {
               var ratios:string;
               (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN, rootN,ratios )=
                    restpart.splitMsgToTuple(10);
-
+ 
               root=rootN:int;
               if (RCMFlag>0) {
                   root=0;
@@ -4171,7 +4183,7 @@ module GraphMsg {
                   GivenRatio=-1.0*GivenRatio;
                   //co_d1_bfs_kernel_u(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a,
                   //         ag.neighbourR.a, ag.start_iR.a,ag.srcR.a,ag.dstR.a,GivenRatio);
-                  fo_bag_bfs_kernel_u(
+                   fo_bag_bfs_kernel_u(
                       toSymEntry(ag.getNEIGHBOR(), int).a,
                       toSymEntry(ag.getSTART_IDX(), int).a,
                       toSymEntry(ag.getSRC(), int).a,
@@ -4182,12 +4194,13 @@ module GraphMsg {
                       toSymEntry(ag.getDST_R(), int).a,
                       1, GivenRatio);
                   
-                  repMsg=return_depth();
+                   repMsg=return_depth();
  
               } else {// do batch test
                   timer.stop();
                   timer.clear();
                   timer.start();
+ 
                   co_d1_bfs_kernel_u(
                       toSymEntry(ag.getNEIGHBOR(), int).a,
                       toSymEntry(ag.getSTART_IDX(), int).a,
@@ -4371,6 +4384,6 @@ module GraphMsg {
 
   }
 
-}
+ }
 
 

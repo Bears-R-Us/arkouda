@@ -169,17 +169,17 @@ class Clusterer:
             num_sub_clusters = num_unique_labels - ak.where(min_group_label >= 0, 1, 0)
 
             # Update sizes
-            count_bc = bylevel.broadcast(c)
+            count_bc = bylevel.broadcast(c, permute=False)
             sizes = ak.zeros(num_nodes, dtype=ak.int64)
             sizes[perm] = count_bc
 
             # Update labels to max (negative) in group
-            labels_bc = bylevel.broadcast(max_group_labels)
+            labels_bc = bylevel.broadcast(max_group_labels, permute=False)
             labels = ak.zeros(num_nodes, dtype=ak.int64)
             labels[perm] = labels_bc
 
             # Update stability
-            stability_bc = bylevel.broadcast(max_group_stability)
+            stability_bc = bylevel.broadcast(max_group_stability, permute=False)
             stability = ak.zeros(num_nodes, dtype=ak.float64)
             stability[perm] = stability_bc
 
@@ -206,7 +206,7 @@ class Clusterer:
                 selection_data.append(update_df)
 
                 # Update the labels
-                labels_bc = bylevel.broadcast(new_labels_positioned)
+                labels_bc = bylevel.broadcast(new_labels_positioned, permute=False)
                 new_labels = ak.zeros(num_nodes, dtype=ak.int64)
                 new_labels[perm] = labels_bc
                 tmp = ak.where(new_labels < 0, new_labels, labels)
@@ -225,7 +225,7 @@ class Clusterer:
                     selection_data['parent'][-1 * old] = -1 * new
 
             # Set new cluster stability to 0
-            new_label_bc = bylevel.broadcast(new_labels_positioned)
+            new_label_bc = bylevel.broadcast(new_labels_positioned, permute=False)
             tmp = ak.zeros(labels.size, dtype=np.int64)
             tmp[perm] = new_label_bc
             stability[tmp < 0] = 0

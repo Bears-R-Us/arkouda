@@ -234,6 +234,22 @@ class CategoricalTest(ArkoudaTest):
             print(f"==> cat_from_hdf.size:{cat_from_hdf.size}")
             self.assertTrue(cat_from_hdf.size == num_elems-1)
 
+    def test_unused_categories_logic(self):
+        """
+        Test that Categoricals built from_codes and from slices that have unused categories behave correctly
+        """
+        s = ak.array([str(i) for i in range(10)])
+        s12 = s[1:3]
+        cat = ak.Categorical(s)
+        cat12 = cat[1:3]
+        self.assertListEqual(ak.in1d(s, s12).to_ndarray().tolist(), ak.in1d(cat, cat12).to_ndarray().tolist())
+        self.assertSetEqual(set(ak.unique(s12).to_ndarray().tolist()), set(ak.unique(cat12).to_ndarray().tolist()))
+
+        cat_from_codes = ak.Categorical.from_codes(ak.array([1, 2]), s)
+        self.assertListEqual(ak.in1d(s, s12).to_ndarray().tolist(), ak.in1d(cat, cat_from_codes).to_ndarray().tolist())
+        self.assertSetEqual(set(ak.unique(s12).to_ndarray().tolist()), set(ak.unique(cat_from_codes).to_ndarray().tolist()))
+
+
     def testSaveAndLoadCategoricalMulti(self):
         """
         Test to build a pseudo dataframe with multiple categoricals, pdarrays, strings objects and successfully
