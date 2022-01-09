@@ -7,6 +7,7 @@ module MultiTypeSymbolTable
     use Logging;
     
     use MultiTypeSymEntry;
+    use GraphArray;
     use Map;
     use IO;
     
@@ -478,5 +479,19 @@ module MultiTypeSymbolTable
             throw new Error(errorMsg);
         }
         return (abstractEntry: borrowed SegStringSymEntry);
+    }
+
+    /**
+     * Convenience proc to retrieve GraphSymEntry from SymTab
+     * Performs conversion from AbstractySymEntry to GraphSymEntry
+     */
+    proc getGraphSymEntry(name:string, st: borrowed SymTab): borrowed GraphSymEntry throws {
+        var abstractEntry:borrowed AbstractSymEntry = st.lookup(name);
+        if ! abstractEntry.isAssignableTo(SymbolEntryType.GraphSymEntry) {
+            var errorMsg = "Error: SymbolEntryType %s is not assignable to GraphSymEntry".format(abstractEntry.entryType);
+            mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            throw new Error(errorMsg);
+        }
+        return (abstractEntry: borrowed GraphSymEntry);
     }
 }
