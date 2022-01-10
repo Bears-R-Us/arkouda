@@ -45,7 +45,7 @@ def ls_hdf(filename : str) -> List[str]:
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
-             strictTypes: bool=True, allow_errors:bool = False, calc_string_offsets:bool = False) \
+             strictTypes: bool=True, allow_errors:bool = False, calc_string_offsets:bool = True) \
           -> Union[pdarray, Strings]:
     """
     Read a single dataset from multiple HDF5 files into an Arkouda
@@ -209,7 +209,7 @@ def read_all(filenames : Union[str, List[str]],
              iterative: bool = False,
              strictTypes: bool = True,
              allow_errors: bool = False,
-             calc_string_offsets = False)\
+             calc_string_offsets = True)\
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
@@ -331,7 +331,7 @@ def read_all(filenames : Union[str, List[str]],
 
 
 @typechecked
-def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray,Strings]:
+def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = True) -> Union[pdarray,Strings]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
