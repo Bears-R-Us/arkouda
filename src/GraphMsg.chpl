@@ -14,7 +14,7 @@ module GraphMsg {
   use IO;
 
 
-  use GenSymIO only jsonToPdArray,jsonToPdArrayInt;
+  use GenSymIO only jsonToPdArray;
   use SymArrayDmap;
   use Random;
   use RadixSortLSD;
@@ -38,6 +38,8 @@ module GraphMsg {
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
   
+  config const start_min_degree = 1000000;
+  var tmpmindegree=start_min_degree;
 
   private proc xlocal(x :int, low:int, high:int):bool {
       return low<=x && x<=high;
@@ -47,126 +49,23 @@ module GraphMsg {
       return !xlocal(x, low, high);
   }
 
-  // directly read a graph from given file and build the SegGraph class in memory
-  proc segGraphFileMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var (NeS,NvS,ColS,DirectedS, FileName,RCMs,DegreeSortS) = payload.splitMsgToTuple(7);
-      //writeln("======================Graph Reading=====================");
-      var Ne=NeS:int;
-      var Nv=NvS:int;
-      var NumCol=ColS:int;
-      var directed=DirectedS:int;
-      var weighted=0:int;
-      var timer: Timer;
-      var RCMFlag=RCMs:int;
-      var DegreeSortFlag=DegreeSortS:int;
-      if NumCol>2 {
-           weighted=1;
-      }
-
-      timer.start();
-      var src=makeDistArray(Ne,int);
-      var dst=makeDistArray(Ne,int);
-      var neighbour=makeDistArray(Nv,int);
-      var start_i=makeDistArray(Nv,int);
-      var depth=makeDistArray(Nv,int);
-
-      var e_weight = makeDistArray(Ne,int);
-      var v_weight = makeDistArray(Nv,int);
-
-      var iv=makeDistArray(Ne,int);
-
-      var srcR=makeDistArray(Ne,int);
-      var dstR=makeDistArray(Ne,int);
-      var neighbourR=makeDistArray(Nv,int);
-      var start_iR=makeDistArray(Nv,int);
-      ref  ivR=iv;
-
-      var linenum=0:int;
-
-      var repMsg: string;
-
-      var startpos, endpos:int;
-      var sort_flag:int;
-      var filesize:int;
-
-      proc readLinebyLine() throws {
-           coforall loc in Locales  {
-              on loc {
-                  var f = open(FileName, iomode.r);
-                  var r = f.reader(kind=ionative);
-                  var line:string;
-                  var a,b,c:string;
-                  var curline=0:int;
-                  var srclocal=src.localSubdomain();
-                  var dstlocal=dst.localSubdomain();
-                  var ewlocal=e_weight.localSubdomain();
-
-                  while r.readline(line) {
-                      if NumCol==2 {
-                           (a,b)=  line.splitMsgToTuple(2);
-                      } else {
-                           (a,b,c)=  line.splitMsgToTuple(3);
-                            if ewlocal.contains(curline){
-                                e_weight[curline]=c:int;
-                            }
-                      }
-                      if srclocal.contains(curline) {
-                          src[curline]=a:int;
-                          dst[curline]=b:int;
-                      }
-                      //if dstlocal.contains(curline) {
-                      //    dst[curline]=b:int;
-                      //}
-                      curline+=1;
-                      if curline>srclocal.high {
-                          break;
-                      }
-                  } 
-                  if (curline<=srclocal.high) {
-                     //writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                     //writeln("The input file ",FileName, " does not give enough edges for locale ", here.id);
-                     var outMsg="The input file " + FileName + " does not give enough edges for locale " + here.id:string;
-                     smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-                     //writeln("XXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                  }
-                  forall i in src.localSubdomain() {
-                  //     src[i]=src[i]+(src[i]==dst[i]);
-                       src[i]=src[i]%Nv;
-                       dst[i]=dst[i]%Nv;
-                  }
-                  forall i in start_i.localSubdomain()  {
-                       start_i[i]=-1;
-                  }
-                  forall i in neighbour.localSubdomain()  {
-                       neighbour[i]=0;
-                  }
-                  forall i in start_iR.localSubdomain()  {
-                       start_iR[i]=-1;
-                  }
-                  forall i in neighbourR.localSubdomain()  {
-                       neighbourR[i]=0;
-                  }
-                  r.close();
-                  f.close();
-               }// end on loc
-           }//end coforall
-      }//end readLinebyLine
-      
-
-      proc combine_sort() throws {
+      /* 
+       * we sort the combined array [src dst] here
+       */
+  private proc combine_sort( src:[?D1] int, dst:[?D2] int, e_weight:[?D3] int,  weighted: bool, sortw=false: bool ) {
              param bitsPerDigit = RSLSD_bitsPerDigit;
              var bitWidths: [0..1] int;
              var negs: [0..1] bool;
              var totalDigits: int;
-             var size=Ne: int;
+             var size=D1.size;
+             //var size=Ne: int;
+             var iv:[D1] int;
 
              for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
                        (bitWidth, neg) = getBitWidth(ary); 
                        totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
              }
              proc mergedArgsort(param numDigits) throws {
-                    //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-                    //             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
                     var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
                     var curDigit = numDigits - totalDigits;
                     for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
@@ -184,7 +83,12 @@ module GraphMsg {
                         }
                         mergeArray(int); 
                     }
-                    var tmpiv = argsortDefault(merged);
+                    var tmpiv:[D1]int;
+                    try {
+                        tmpiv =  argsortDefault(merged);
+                    } catch {
+                        try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"error");
+                    }    
                     return tmpiv;
              }
 
@@ -202,35 +106,39 @@ module GraphMsg {
                       iv = mergedArgsort(32); 
                  }
                  if (totalDigits >32) {    
-                      return "Error, TotalDigits >32";
+                      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"TotalDigits >32");
+                      //return false;
                  }
 
-             } catch e: Error {
-                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                      e.message());
-                    return "Error: %t".format(e.message());
+             } catch {
+                  try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "error" );
+                  //return false;
              }
              var tmpedges=src[iv];
              src=tmpedges;
              tmpedges=dst[iv];
              dst=tmpedges;
-             if (weighted){
+             if (weighted ){
                 tmpedges=e_weight[iv];
                 e_weight=tmpedges;
              }
 
-             return "success";
-      }//end combine_sort
+             //return true;
+  }//end combine_sort
 
-
-      proc RCM() throws {
-            
+      /*
+       * here we preprocess the graph using reverse Cuthill.McKee algorithm to improve the locality
+       */
+  private proc RCM( src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int, depth:[?D5] int,e_weight:[?D6] int,weighted :bool )  {
+          var Ne=D1.size;
+          var Nv=D3.size;            
           var cmary: [0..Nv-1] int;
           var indexary:[0..Nv-1] int;
+          var iv:[D1] int;
           depth=-1;
           proc smallVertex() :int {
-                var tmpmindegree=1000000:int;
-                var minindex=0:int;
+                var minindex:int;
                 for i in 0..Nv-1 {
                    if (neighbour[i]<tmpmindegree) && (neighbour[i]>0) {
                       tmpmindegree=neighbour[i];
@@ -245,21 +153,17 @@ module GraphMsg {
           cmary[0]=x;
           depth[x]=0;
 
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
           var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
           var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(x);
           var numCurF=1:int;
-          var GivenRatio=0.021:int;
+          var GivenRatio=0.021:real;
           var topdown=0:int;
           var bottomup=0:int;
           var LF=1:int;
           var cur_level=0:int;
           
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -293,14 +197,7 @@ module GraphMsg {
                            }//end coforall
                        }else {// bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -320,7 +217,6 @@ module GraphMsg {
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
                 numCurF=SetNextF.size;
 
                 if (numCurF>0) {
@@ -334,15 +230,18 @@ module GraphMsg {
                     forall i in 0..numCurF-1 {
                          numary[i]=neighbour[tmpary[i]];
                     }
-
-                    var tmpiv = argsortDefault(numary);
+                    var tmpiv:[D1]int;
+                    try {
+                        tmpiv =  argsortDefault(numary);
+                    } catch {
+                        try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"error");
+                    }    
                     sortary=tmpary[tmpiv];
                     cmary[currentindex+1..currentindex+numCurF]=sortary;
                     currentindex=currentindex+numCurF;
                 }
 
 
-                //SetCurF<=>SetNextF;
                 SetCurF=SetNextF;
                 SetNextF.clear();
           }//end while  
@@ -370,122 +269,26 @@ module GraphMsg {
           }
           dst=tmpary;
 
-          return "success";
-      }//end RCM
+          neighbour=0;
+          start_i=-1;
+          combine_sort( src, dst,e_weight,weighted, true);
+          set_neighbour(src,start_i,neighbour);
+          //return true;
+  }//end RCM
 
-      proc set_neighbour(){ 
-          for i in 0..Ne-1 do {
-             neighbour[src[i]]+=1;
-             if (start_i[src[i]] ==-1){
-                 start_i[src[i]]=i;
-             }
-          }
-      }
-
-      // readLinebyLine sets ups src, dst, start_i, neightbor and if present e_weights so lets config them in our Graph
-
-      readLinebyLine(); // Sets up src, dst, start_i, neighbor, and if present e_weights
-      timer.stop();
-      
-
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$ Reading File takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
-
-      var outMsg="Reading File takes " + timer.elapsed():string;
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-
-      timer.clear();
-      timer.start();
-      combine_sort();
-      set_neighbour();
-
-      if (directed==0) { //undirected graph
-
-          proc combine_sortR() throws {
-             /* we cannot use the coargsort version because it will break the memory limit */
-             param bitsPerDigit = RSLSD_bitsPerDigit;
-             var bitWidths: [0..1] int;
-             var negs: [0..1] bool;
-             var totalDigits: int;
-             var size=Ne: int;
-             for (bitWidth, ary, neg) in zip(bitWidths, [srcR,dstR], negs) {
-                 (bitWidth, neg) = getBitWidth(ary); 
-                 totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
-
-             }
-             proc mergedArgsort(param numDigits) throws {
-               //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-               //          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-               var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-               var curDigit = numDigits - totalDigits;
-               for (ary , nBits, neg) in zip([srcR,dstR], bitWidths, negs) {
-                  proc mergeArray(type t) {
-                     ref A = ary;
-                     const r = 0..#nBits by bitsPerDigit;
-                     for rshift in r {
-                        const myDigit = (r.high - rshift) / bitsPerDigit;
-                        const last = myDigit == 0;
-                        forall (m, a) in zip(merged, A) {
-                             m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
-                        }
-                     }
-                     curDigit += r.size;
-                  }
-                  mergeArray(int); 
-               }
-               var tmpiv = argsortDefault(merged);
-               return tmpiv;
-             } 
-
-             try {
-                 if totalDigits <=  2 { 
-                      ivR = mergedArgsort( 2); 
-                 }
-                 if (totalDigits >  2) && ( totalDigits <=  8) { 
-                      ivR =  mergedArgsort( 8); 
-                 }
-                 if (totalDigits >  8) && ( totalDigits <=  16) { 
-                      ivR = mergedArgsort(16); 
-                 }
-                 if (totalDigits >  16) && ( totalDigits <=  32) { 
-                      ivR = mergedArgsort(32); 
-                 }
-             } catch e: Error {
-                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                      e.message());
-                    return "Error: %t".format(e.message());
-             }
-
-             var tmpedges = srcR[ivR]; 
-             srcR=tmpedges;
-             tmpedges = dstR[ivR]; 
-             dstR=tmpedges;
-             return "success";
-
-          }// end combine_sortR
-
-
-          proc set_neighbourR(){
-             for i in 0..Ne-1 do {
-                neighbourR[srcR[i]]+=1;
-                if (start_iR[srcR[i]] ==-1){
-                    start_iR[srcR[i]]=i;
-                }
-             }
-          }
-          proc RCM_u() throws {
-            
+  //proc RCM_u() throws {
+  private proc RCM_u( src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int, 
+                      srcR:[?D5] int, dstR:[?D6] int, start_iR:[?D7] int, neighbourR:[?D8] int, 
+                      depth:[?D9] int, e_weight:[?D10] int, weighted:bool )  {
+              var Ne=D1.size;
+              var Nv=D3.size;
               var cmary: [0..Nv-1] int;
               var indexary:[0..Nv-1] int;
               var depth:[0..Nv-1] int;
+              var iv:[D1] int;
               depth=-1;
               proc smallVertex() :int {
-                    var tmpmindegree=1000000:int;
-                    var minindex=0:int;
+                    var minindex:int;
                     for i in 0..Nv-1 {
                        if (neighbour[i]<tmpmindegree) && (neighbour[i]>0) {
                           tmpmindegree=neighbour[i];
@@ -500,21 +303,17 @@ module GraphMsg {
               cmary[0]=x;
               depth[x]=0;
 
-              //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-              //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
               var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
               var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
               SetCurF.add(x);
               var numCurF=1:int;
-              var GivenRatio=0.25:int;
+              var GivenRatio=0.25:real;
               var topdown=0:int;
               var bottomup=0:int;
               var LF=1:int;
               var cur_level=0:int;
           
               while (numCurF>0) {
-                    //writeln("SetCurF=");
-                    //writeln(SetCurF);
                     coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                        on loc {
                            ref srcf=src;
@@ -567,14 +366,7 @@ module GraphMsg {
                                }//end coforall
                            }else {// bottom up
                                bottomup+=1;
-                               //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                               //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                               //   if depth[i]==-1 {
-                               //      UnVisitedSet.add(i);
-                               //   }
-                               //}
                                forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                               //forall i in UnVisitedSet  with (ref SetNextF) {
                                   if depth[i]==-1 {
                                       var    numNF=nf[i];
                                       var    edgeId=sf[i];
@@ -590,14 +382,7 @@ module GraphMsg {
 
                                   }
                                }
-                               //UnVisitedSet.clear();
-                               //forall i in vertexBeginR..vertexEndR with (ref UnVisitedSet) {
-                               //   if depth[i]==-1 {
-                               //      UnVisitedSet.add(i);
-                               //   }
-                               //}
                                forall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                               //forall i in UnVisitedSet  with (ref SetNextF) {
                                   if depth[i]==-1 {
                                       var    numNF=nfR[i];
                                       var    edgeId=sfR[i];
@@ -616,11 +401,9 @@ module GraphMsg {
                        }//end on loc
                     }//end coforall loc
                     cur_level+=1;
-                    //numCurF=SetNextF.getSize();
                     numCurF=SetNextF.size;
 
                     if (numCurF>0) {
-                        //var tmpary:[0..numCurF-1] int;
                         var sortary:[0..numCurF-1] int;
                         var numary:[0..numCurF-1] int;
                         var tmpa=0:int;
@@ -631,15 +414,18 @@ module GraphMsg {
                         forall i in 0..numCurF-1 {
                              numary[i]=neighbour[tmpary[i]];
                         }
-
-                        var tmpiv = argsortDefault(numary);
+                        var tmpiv:[D1] int;
+                        try {
+                           tmpiv =  argsortDefault(numary);
+                        } catch {
+                             try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"error");
+                        }    
                         sortary=tmpary[tmpiv];
                         cmary[currentindex+1..currentindex+numCurF]=sortary;
                         currentindex=currentindex+numCurF;
                     }
 
 
-                    //SetCurF<=>SetNextF;
                     SetCurF=SetNextF;
                     SetNextF.clear();
               }//end while  
@@ -666,40 +452,58 @@ module GraphMsg {
               }
               dst=tmpary;
  
-              return "success";
-          }//end RCM_u
+              neighbour=0;
+              start_i=-1;
+        
+              combine_sort( src, dst,e_weight,weighted, true);
+              set_neighbour(src,start_i,neighbour);
+              coforall loc in Locales  {
+                  on loc {
+                      forall i in srcR.localSubdomain(){
+                            srcR[i]=dst[i];
+                            dstR[i]=src[i];
+                       }
+                  }
+               }
+               neighbourR=0;
+               start_iR=-1;
+               combine_sort( srcR, dstR,e_weight,weighted, false);
+               set_neighbour(srcR,start_iR,neighbourR);
+               //return true;
+  }//end RCM_u
 
-
-          coforall loc in Locales  {
-              on loc {
-                  forall i in srcR.localSubdomain(){
-                        srcR[i]=dst[i];
-                        dstR[i]=src[i];
-                   }
-              }
+  private proc set_neighbour(src:[?D1]int, start_i :[?D2] int, neighbour :[?D3] int ){ 
+          var Ne=D1.size;
+          for i in 0..Ne-1 do {
+             neighbour[src[i]]+=1;
+             if (start_i[src[i]] ==-1){
+                 start_i[src[i]]=i;
+             }
           }
-          combine_sortR();
-          set_neighbourR();
+  }
 
-          if (DegreeSortFlag>0) {
-             var DegreeArray=makeDistArray(Nv,int);
-             var VertexArray=makeDistArray(Nv,int);
-             var tmpedge=makeDistArray(Ne,int);
+
+  private proc degree_sort(src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int,e_weight:[?D5] int,neighbourR:[?D6] int,weighted:bool) {
+             var DegreeArray, VertexArray: [D3] int;
+             var tmpedge:[D1] int;
+             var Nv=D3.size;
+             var iv:[D1] int;
              coforall loc in Locales  {
                 on loc {
                   forall i in neighbour.localSubdomain(){
                         DegreeArray[i]=neighbour[i]+neighbourR[i];
-                        //writeln("Degree of vertex ",i," =",DegreeArray[i]," =",neighbour[i]," +",neighbourR[i]);
                    }
                 }
              }
-             //writeln("degree array=",DegreeArray);
-             var tmpiv = argsortDefault(DegreeArray);
+             var tmpiv:[D1] int;
+             try {
+                 tmpiv =  argsortDefault(DegreeArray);
+             } catch {
+                  try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"error");
+             }
              forall i in 0..Nv-1 {
                  VertexArray[tmpiv[i]]=i;
-                 //writeln("Old vertex",tmpiv[i], " -> ",i);
              }
-             //writeln("relabeled vertex array=",VertexArray);
              coforall loc in Locales  {
                 on loc {
                   forall i in src.localSubdomain(){
@@ -720,21 +524,23 @@ module GraphMsg {
                 on loc {
                   forall i in src.localSubdomain(){
                         if src[i]>dst[i] {
-                           //var tmpx=src[i];
                            src[i]<=>dst[i];
-                           //dst[i]=tmpx;
                         }
                    }
                 }
              }
 
-
-             combine_sort();
+             combine_sort( src, dst,e_weight,weighted, true);
              neighbour=0;
              start_i=-1;
-             set_neighbour();
+             set_neighbour(src,start_i,neighbour);
 
+  }
 
+  private  proc degree_sort_u(src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int,
+                      srcR:[?D5] int, dstR:[?D6] int, start_iR:[?D7] int, neighbourR:[?D8] int,e_weight:[?D9] int,weighted:bool) {
+
+             degree_sort(src, dst, start_i, neighbour,e_weight,neighbourR,weighted);
              coforall loc in Locales  {
                on loc {
                   forall i in srcR.localSubdomain(){
@@ -743,55 +549,174 @@ module GraphMsg {
                    }
                }
              }
-             combine_sortR();
+             combine_sort( srcR, dstR,e_weight,weighted, true);
              neighbourR=0;
              start_iR=-1;
-             set_neighbourR();
+             set_neighbour(srcR,start_iR,neighbourR);
 
-          }
-          if (RCMFlag>0) {
-             RCM_u();
-             neighbour=0;
-             start_i=-1;
-             combine_sort();
-             set_neighbour();
-             coforall loc in Locales  {
-                  on loc {
-                      forall i in srcR.localSubdomain(){
-                            srcR[i]=dst[i];
-                            dstR[i]=src[i];
-                       }
-                  }
-              }
-              neighbourR=0;
-              start_iR=-1;
-              combine_sortR();
-              set_neighbourR();
+  }
 
-          }   
-      }//end of undirected
-      else {
+  // directly read a graph from given file and build the SegGraph class in memory
+  proc segGraphFileMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var (NeS,NvS,ColS,DirectedS, FileName,RCMs,DegreeSortS) = payload.splitMsgToTuple(7);
+      var Ne=NeS:int;
+      var Nv=NvS:int;
+      var NumCol=ColS:int;
+      var directed=false:bool;
+      var weighted=false:bool;
+      var timer: Timer;
+      var RCMFlag=false:bool;
+      var DegreeSortFlag=false:bool;
 
-        if (RCMFlag>0) {
-           RCM();
-           neighbour=0;
-           start_i=-1;
-           combine_sort();
-           set_neighbour();
+      timer.start();
 
-        }
+      if (DirectedS:int)==1 {
+          directed=true;
+      }
+      if NumCol>2 {
+           weighted=true;
+      }
+      if (DegreeSortS:int)==1 {
+          DegreeSortFlag=true;
+      }
+      if (RCMs:int)==1 {
+          RCMFlag=true;
+      }
+      var src=makeDistArray(Ne,int);
+      //var edgeD:domain;
+      //var vertexD:domain;
+      var edgeD=src.domain;
+      var neighbour=makeDistArray(Nv,int);
+      var vertexD=neighbour.domain;
+      var dst,e_weight,srcR,dstR, iv: [edgeD] int ;
+      var start_i, depth,neighbourR, start_iR, v_weight : [vertexD] int;
 
+      ref  ivR=iv;
+
+      var linenum=0:int;
+
+      var repMsg: string;
+
+      var startpos, endpos:int;
+      var sort_flag:int;
+      var filesize:int;
+      var tmpmindegree=start_min_degree;
+
+      try {
+           var f = open(FileName, iomode.r);
+           // we check if the file can be opened correctly
+           f.close();
+      } catch {
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      "Open file error");
       }
 
+      proc readLinebyLine() throws {
+           coforall loc in Locales  {
+              on loc {
+                  var f = open(FileName, iomode.r);
+                  var r = f.reader(kind=ionative);
+                  var line:string;
+                  var a,b,c:string;
+                  var curline=0:int;
+                  var srclocal=src.localSubdomain();
+                  var ewlocal=e_weight.localSubdomain();
+
+                  while r.readline(line) {
+                      if NumCol==2 {
+                           (a,b)=  line.splitMsgToTuple(2);
+                      } else {
+                           (a,b,c)=  line.splitMsgToTuple(3);
+                            if ewlocal.contains(curline){
+                                e_weight[curline]=c:int;
+                            }
+                      }
+                      if srclocal.contains(curline) {
+                          src[curline]=(a:int)%Nv;
+                          dst[curline]=(b:int)%Nv;
+                      }
+                      curline+=1;
+                      if curline>srclocal.high {
+                          break;
+                      }
+                  } 
+                  if (curline<=srclocal.high) {
+                     var outMsg="The input file " + FileName + " does not give enough edges for locale " + here.id:string;
+                     smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+                  }
+                  forall i in start_i.localSubdomain()  {
+                       start_i[i]=-1;
+                  }
+                  forall i in start_iR.localSubdomain()  {
+                       start_iR[i]=-1;
+                  }
+                  r.close();
+                  f.close();
+               }// end on loc
+           }//end coforall
+      }//end readLinebyLine
+      
+      // readLinebyLine sets ups src, dst, start_i, neightbor and if present e_weights so lets config them in our Graph
+
+      readLinebyLine(); 
+      timer.stop();
+      
+
+      var outMsg="Reading File takes " + timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+
+
+      timer.clear();
+      timer.start();
+      combine_sort( src, dst,e_weight,weighted, true);
+      set_neighbour(src,start_i,neighbour);
+
       // Make a composable SegGraph object that we can store in a GraphSymEntry later
-      var graph = new shared SegGraph(Ne, Nv, directed==1);
+      var graph = new shared SegGraph(Ne, Nv, directed);
       graph.withSRC(new shared SymEntry(src):GenSymEntry)
            .withDST(new shared SymEntry(dst):GenSymEntry)
            .withSTART_IDX(new shared SymEntry(start_i):GenSymEntry)
            .withNEIGHBOR(new shared SymEntry(neighbour):GenSymEntry);
-           
-        graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
-             .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
+
+      if (!directed) { //undirected graph
+          coforall loc in Locales  {
+              on loc {
+                  forall i in srcR.localSubdomain(){
+                        srcR[i]=dst[i];
+                        dstR[i]=src[i];
+                   }
+              }
+          }
+          combine_sort( srcR, dstR,e_weight,weighted, true);
+          set_neighbour(srcR,start_iR,neighbourR);
+
+          if (DegreeSortFlag) {
+             degree_sort_u(src, dst, start_i, neighbour, srcR, dstR, start_iR, neighbourR,e_weight,weighted);
+          }
+          if (RCMFlag) {
+             RCM_u(src, dst, start_i, neighbour, srcR, dstR, start_iR, neighbourR, depth,e_weight,weighted);
+          }   
+
+
+          graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
+               .withDST_R(new shared SymEntry(dstR):GenSymEntry)
+               .withSTART_IDX_R(new shared SymEntry(start_iR):GenSymEntry)
+               .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
+
+      }//end of undirected
+      else {
+        if (DegreeSortFlag) {
+             //degree_sort(src, dst, start_i, neighbour,e_weight);
+        }
+        if (RCMFlag) {
+             RCM(src, dst, start_i, neighbour, depth,e_weight,weighted);
+        }
+
+      }
+
+      if (weighted) {
+           graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
+                .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
       }
 
       var sNv=Nv:string;
@@ -799,23 +724,11 @@ module GraphMsg {
       var sDirected=directed:string;
       var sWeighted=weighted:string;
 
-      var srcNameR, dstNameR, startNameR, neiNameR:string;
-      if ( directed==0 ) { // for undirected graph
-          graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
-               .withDST_R(new shared SymEntry(dstR):GenSymEntry)
-               .withSTART_IDX_R(new shared SymEntry(start_iR):GenSymEntry)
-               .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
-      }
       var graphEntryName = st.nextName();
       var graphSymEntry = new shared GraphSymEntry(graph);
       st.addEntry(graphEntryName, graphSymEntry);
       repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted + '+created ' + graphEntryName; 
       timer.stop();
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$Sorting Edges takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-      //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       outMsg="Sorting Edges takes "+ timer.elapsed():string;
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -828,13 +741,31 @@ module GraphMsg {
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sdire,swei,RCMs )
           = payload.splitMsgToTuple(6);
-      //writeln(slgNv, sNe_per_v, sp, sdire,swei,rest);
+
       var lgNv = slgNv: int;
       var Ne_per_v = sNe_per_v: int;
       var p = sp: real;
-      var directed=sdire : int;
-      var weighted=swei : int;
-      var RCMFlag=RCMs : int;
+      //var directed=sdire : int;
+      var directed=false:bool;
+      //var weighted=swei : int;
+      var weighted=false:bool;
+      //var RCMFlag=RCMs : int;
+      var RCMFlag=false:bool;
+      var DegreeSortFlag=false:bool;
+      var tmpmindegree=start_min_degree;
+
+      if (sdire : int)==1 {
+          directed=true;
+      }
+      if (swei : int)==1 {
+          weighted=true;
+      }
+      
+      if (RCMs:int)==1 {
+          RCMFlag=true;
+      }
+
+
 
       var Nv = 2**lgNv:int;
       // number of edges
@@ -846,18 +777,15 @@ module GraphMsg {
       var n_vertices=Nv;
       var n_edges=Ne;
       var src=makeDistArray(Ne,int);
-      var dst=makeDistArray(Ne,int);
+      var edgeD=src.domain;
+
       var neighbour=makeDistArray(Nv,int);
-      var start_i=makeDistArray(Nv,int);
+      var vertexD=neighbour.domain;
     
-      var iv=makeDistArray(Ne,int);
 
-      //var e_weight=makeDistArray(Nv,int);
-      //var v_weight=makeDistArray(Nv,int);
+      var dst,e_weight,srcR,dstR, iv: [edgeD] int ;
+      var start_i, depth,neighbourR, start_iR, v_weight : [vertexD] int;
 
-
-      // SegGraph object where we will compose with various components
-      var graph = new shared SegGraph(n_vertices, n_edges, directed==1);
  
       coforall loc in Locales  {
           on loc {
@@ -884,7 +812,7 @@ module GraphMsg {
       var sDirected:string;
       var sWeighted:string;
 
-       proc rmat_gen() {
+      proc rmat_gen() {
              var a = p;
              var b = (1.0 - a)/ 3.0:real;
              var c = b;
@@ -941,805 +869,78 @@ module GraphMsg {
                            }       
                        }
              }
-             //src=src%Nv;
-             //dst=dst%Nv;
 
-             //remove self loop
-             //src=src+(src==dst);
-             //src=src%Nv;
       }//end rmat_gen
       
-      proc combine_sort() throws {
-             param bitsPerDigit = RSLSD_bitsPerDigit;
-             var bitWidths: [0..1] int;
-             var negs: [0..1] bool;
-             var totalDigits: int;
-             var size=Ne: int;
-
-             for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
-                       (bitWidth, neg) = getBitWidth(ary); 
-                       totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
-             }
-             proc mergedArgsort(param numDigits) throws {
-                    //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-                    //             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-                    var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-                    var curDigit = numDigits - totalDigits;
-                    for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
-                        proc mergeArray(type t) {
-                            ref A = ary;
-                            const r = 0..#nBits by bitsPerDigit;
-                            for rshift in r {
-                                 const myDigit = (r.high - rshift) / bitsPerDigit;
-                                 const last = myDigit == 0;
-                                 forall (m, a) in zip(merged, A) {
-                                     m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
-                                 }
-                            }
-                            curDigit += r.size;
-                        }
-                        mergeArray(int); 
-                    }
-                    var tmpiv = argsortDefault(merged);
-                    return tmpiv;
-             }
-
-             try {
-                 if totalDigits <=  2 { 
-                      iv = mergedArgsort( 2); 
-                 }
-                 if (totalDigits >  2) && ( totalDigits <=  8) { 
-                      iv =  mergedArgsort( 8); 
-                 }
-                 if (totalDigits >  8) && ( totalDigits <=  16) { 
-                      iv = mergedArgsort(16); 
-                 }
-                 if (totalDigits >  16) && ( totalDigits <=  32) { 
-                      iv = mergedArgsort(32); 
-                 }
-                 if (totalDigits >32)  {
-                       return "Error, TotalDigits >32";
-                 }
-
-             } catch e: Error {
-                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                      e.message());
-                    return "Error: %t".format(e.message());
-             }
-             var tmpedges=src[iv];
-             src=tmpedges;
-             tmpedges=dst[iv];
-             dst=tmpedges;
-             // we need to change the weight order too to make them consistent 
-             //if (weighted){
-             //   tmpedges=e_weight[iv];
-             //   e_weight=tmpedges;
-             //}
-             return "success";
-
-      }//end combine_sort
-
-      proc set_neighbour(){
-             for i in 0..Ne-1 do {
-                 neighbour[src[i]]+=1;
-                 if (start_i[src[i]] ==-1){
-                      start_i[src[i]]=i;
-                      //writeln("assign index ",i, " to vertex ",src[i]);
-                 }
-             }
-      }
 
 
-      proc set_common_symtable(): SegGraph throws {
-          graph.withSRC(new shared SymEntry(src):GenSymEntry)
+      rmat_gen();
+      timer.stop();
+      var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+      timer.clear();
+      timer.start();
+
+
+ 
+      combine_sort( src, dst,e_weight,weighted, true);
+      set_neighbour(src,start_i,neighbour);
+
+      // Make a composable SegGraph object that we can store in a GraphSymEntry later
+      var graph = new shared SegGraph(Ne, Nv, directed);
+      graph.withSRC(new shared SymEntry(src):GenSymEntry)
                .withDST(new shared SymEntry(dst):GenSymEntry)
                .withSTART_IDX(new shared SymEntry(start_i):GenSymEntry)
                .withNEIGHBOR(new shared SymEntry(neighbour):GenSymEntry);
 
-          sNv=Nv:string;
-          sNe=Ne:string;
-          sDirected=directed:string;
-          sWeighted=weighted:string;
-
-          return graph;
-      }
-
-  
-      proc RCM() throws {
-            
-          var cmary: [0..Nv-1] int;
-          var indexary:[0..Nv-1] int;
-          var depth:[0..Nv-1] int;
-          depth=-1;
-          proc smallVertex() :int {
-                var tmpmindegree=1000000:int;
-                var minindex=0:int;
-                for i in 0..Nv-1 {
-                   if (neighbour[i]<tmpmindegree) && (neighbour[i]>0) {
-                      tmpmindegree=neighbour[i];
-                      minindex=i;
-                   }
-                }
-                return minindex;
-          }
-
-          var currentindex=0:int;
-          var x=smallVertex();
-          cmary[0]=x;
-          depth[x]=0;
-
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
-          SetCurF.add(x);
-          var numCurF=1:int;
-          var GivenRatio=0.021:int;
-          var topdown=0:int;
-          var bottomup=0:int;
-          var LF=1:int;
-          var cur_level=0:int;
-          
-          while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
-                coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
-                   on loc {
-                       ref srcf=src;
-                       ref df=dst;
-                       ref nf=neighbour;
-                       ref sf=start_i;
-
-                       var edgeBegin=src.localSubdomain().low;
-                       var edgeEnd=src.localSubdomain().high;
-                       var vertexBegin=src[edgeBegin];
-                       var vertexEnd=src[edgeEnd];
-
-                       var switchratio=(numCurF:real)/nf.size:real;
-                       if (switchratio<GivenRatio) {//top down
-                           topdown+=1;
-                           forall i in SetCurF with (ref SetNextF) {
-                              if ((xlocal(i,vertexBegin,vertexEnd)) ) {// current edge has the vertex
-                                  var    numNF=nf[i];
-                                  var    edgeId=sf[i];
-                                  var nextStart=max(edgeId,edgeBegin);
-                                  var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                  ref NF=df[nextStart..nextEnd];
-                                  forall j in NF with (ref SetNextF){
-                                         if (depth[j]==-1) {
-                                               depth[j]=cur_level+1;
-                                               SetNextF.add(j);
-                                         }
-                                  }
-                              } 
-                           }//end coforall
-                       }else {// bottom up
-                           bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
-                           forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
-                              if depth[i]==-1 {
-                                  var    numNF=nf[i];
-                                  var    edgeId=sf[i];
-                                  var nextStart=max(edgeId,edgeBegin);
-                                  var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                  ref NF=df[nextStart..nextEnd];
-                                  forall j in NF with (ref SetNextF){
-                                         if (SetCurF.contains(j)) {
-                                               depth[i]=cur_level+1;
-                                               SetNextF.add(i);
-                                         }
-                                  }
-
-                              }
-                           }
+      if (!directed) { //undirected graph
+              coforall loc in Locales  {
+                  on loc {
+                      forall i in srcR.localSubdomain(){
+                            srcR[i]=dst[i];
+                            dstR[i]=src[i];
                        }
-                   }//end on loc
-                }//end coforall loc
-                cur_level+=1;
-                //numCurF=SetNextF.getSize();
-                numCurF=SetNextF.size;
-
-                if (numCurF>0) {
-                    var tmpary:[0..numCurF-1] int;
-                    var sortary:[0..numCurF-1] int;
-                    var numary:[0..numCurF-1] int;
-                    var tmpa=0:int;
-                    forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
-                        a=b;
-                    }
-                    forall i in 0..numCurF-1 {
-                         numary[i]=neighbour[tmpary[i]];
-                    }
-
-                    var tmpiv = argsortDefault(numary);
-                    sortary=tmpary[tmpiv];
-                    cmary[currentindex+1..currentindex+numCurF]=sortary;
-                    currentindex=currentindex+numCurF;
-                }
-
-
-                //SetCurF<=>SetNextF;
-                SetCurF=SetNextF;
-                SetNextF.clear();
-          }//end while  
-
-          if (currentindex+1<Nv) {
-                 forall i in 0..Nv-1 with (+reduce currentindex) {
-                     if depth[i]==-1 {
-                       cmary[currentindex+1]=i;
-                       currentindex+=1;  
-                     }
-                 }
-          }
-          cmary.reverse();
-          forall i in 0..Nv-1{
-              indexary[cmary[i]]=i;
-          }
-
-          var tmpary:[0..Ne-1] int;
-          forall i in 0..Ne-1 {
-                  tmpary[i]=indexary[src[i]];
-          }
-          src=tmpary;
-          forall i in 0..Ne-1 {
-                  tmpary[i]=indexary[dst[i]];
-          }
-          dst=tmpary;
-
-          return "success";
-      }//end RCM
-
-
-      if (directed!=0) {// for directed graph
-          if (weighted!=0) { // for weighted graph
-             //var e_weight: [0..Ne-1] int;
-             //var v_weight: [0..Nv-1] int;
-             var e_weight = makeDistArray(Ne,int);
-             var v_weight = makeDistArray(Nv,int);
-             rmat_gen();
-             timer.stop();
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
-             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             timer.clear();
-             timer.start();
-             combine_sort();
-             set_neighbour();
-
-
-             if (RCMFlag>0) {
-                    RCM();
-                    neighbour=0;
-                    start_i=-1;
-                    combine_sort();
-                    set_neighbour();
-             }
-
-
-             var ewName ,vwName:string;
-             fillInt(e_weight,1,1000);
-             //fillRandom(e_weight,0,100);
-             fillInt(v_weight,1,1000);
-             //fillRandom(v_weight,0,100);
- 
-             // Add the common components to the SegGraph object
-             set_common_symtable();
-             graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry);
-             graph.withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
-
-             // Store SegGraph object in SymTab
-             var gName = st.nextName();
-             st.addEntry(gName, new shared GraphSymEntry(graph));
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
- 
-          } else {
-             rmat_gen();
-             timer.stop();
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
-             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             timer.clear();
-             timer.start();
-             //twostep_sort();
-             combine_sort();
-             set_neighbour();
-
-             if (RCMFlag>0) {
-                    RCM();
-                    neighbour=0;
-                    start_i=-1;
-                    combine_sort();
-                    set_neighbour();
-             }
-
-             // Add the common components to the SegGraph object
-             set_common_symtable();
-
-             // Store SegGraph object in SymTab
-             var gName = st.nextName();
-             st.addEntry(gName, new shared GraphSymEntry(graph));
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
-           }
-      }// end for directed graph
-      else {
-          // only for undirected graph, we only declare R variables here
-          var srcR=makeDistArray(Ne,int);
-          var dstR=makeDistArray(Ne,int);
-          var neighbourR=makeDistArray(Nv,int);
-          var start_iR=makeDistArray(Nv,int);
-          ref  ivR=iv;
-
-
-
-          proc RCM_u() throws {
-            
-              var cmary: [0..Nv-1] int;
-              var indexary:[0..Nv-1] int;
-              var depth:[0..Nv-1] int;
-              depth=-1;
-              proc smallVertex() :int {
-                    var tmpmindegree=1000000:int;
-                    var minindex=0:int;
-                    for i in 0..Nv-1 {
-                       if (neighbour[i]<tmpmindegree) && (neighbour[i]>0) {
-                          tmpmindegree=neighbour[i];
-                          minindex=i;
-                       }
-                    }
-                    return minindex;
+                  }
               }
+              combine_sort(srcR,dstR,e_weight, weighted, false);
+              set_neighbour(srcR,start_iR,neighbourR);
 
-              var currentindex=0:int;
-              var x=smallVertex();
-              cmary[0]=x;
-              depth[x]=0;
-
-              //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-              //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-              var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-              var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
-              SetCurF.add(x);
-              var numCurF=1:int;
-              var GivenRatio=0.25:int;
-              var topdown=0:int;
-              var bottomup=0:int;
-              var LF=1:int;
-              var cur_level=0:int;
-          
-              while (numCurF>0) {
-                    //writeln("SetCurF=");
-                    //writeln(SetCurF);
-                    coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
-                       on loc {
-                           ref srcf=src;
-                           ref df=dst;
-                           ref nf=neighbour;
-                           ref sf=start_i;
-
-                           ref srcfR=srcR;
-                           ref dfR=dstR;
-                           ref nfR=neighbourR;
-                           ref sfR=start_iR;
-
-                           var edgeBegin=src.localSubdomain().low;
-                           var edgeEnd=src.localSubdomain().high;
-                           var vertexBegin=src[edgeBegin];
-                           var vertexEnd=src[edgeEnd];
-                           var vertexBeginR=srcR[edgeBegin];
-                           var vertexEndR=srcR[edgeEnd];
-
-                           var switchratio=(numCurF:real)/nf.size:real;
-                           if (switchratio<GivenRatio) {//top down
-                               topdown+=1;
-                               forall i in SetCurF with (ref SetNextF) {
-                                  if ((xlocal(i,vertexBegin,vertexEnd)) ) {// current edge has the vertex
-                                      var    numNF=nf[i];
-                                      var    edgeId=sf[i];
-                                      var nextStart=max(edgeId,edgeBegin);
-                                      var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                      ref NF=df[nextStart..nextEnd];
-                                      forall j in NF with (ref SetNextF){
-                                             if (depth[j]==-1) {
-                                                   depth[j]=cur_level+1;
-                                                   SetNextF.add(j);
-                                             }
-                                      }
-                                  } 
-                                  if ((xlocal(i,vertexBeginR,vertexEndR)) )  {
-                                      var    numNF=nfR[i];
-                                      var    edgeId=sfR[i];
-                                      var nextStart=max(edgeId,edgeBegin);
-                                      var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                      ref NF=dfR[nextStart..nextEnd];
-                                      forall j in NF with (ref SetNextF)  {
-                                             if (depth[j]==-1) {
-                                                   depth[j]=cur_level+1;
-                                                   SetNextF.add(j);
-                                             }
-                                      }
-                                  }
-                               }//end coforall
-                           }else {// bottom up
-                               bottomup+=1;
-                               //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                               //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                               //   if depth[i]==-1 {
-                               //      UnVisitedSet.add(i);
-                               //   }
-                               //}
-                               forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                               //forall i in UnVisitedSet  with (ref SetNextF) {
-                                  if depth[i]==-1 {
-                                      var    numNF=nf[i];
-                                      var    edgeId=sf[i];
-                                      var nextStart=max(edgeId,edgeBegin);
-                                      var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                      ref NF=df[nextStart..nextEnd];
-                                      forall j in NF with (ref SetNextF){
-                                             if (SetCurF.contains(j)) {
-                                                   depth[i]=cur_level+1;
-                                                   SetNextF.add(i);
-                                             }
-                                      }
-
-                                  }
-                               }
-                               //UnVisitedSet.clear();
-                               //forall i in vertexBeginR..vertexEndR with (ref UnVisitedSet) {
-                               //   if depth[i]==-1 {
-                               //      UnVisitedSet.add(i);
-                               //   }
-                               //}
-                               forall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                               //forall i in UnVisitedSet  with (ref SetNextF) {
-                                  if depth[i]==-1 {
-                                      var    numNF=nfR[i];
-                                      var    edgeId=sfR[i];
-                                      var nextStart=max(edgeId,edgeBegin);
-                                      var nextEnd=min(edgeEnd,edgeId+numNF-1);
-                                      ref NF=dfR[nextStart..nextEnd];
-                                      forall j in NF with (ref SetNextF)  {
-                                             if (SetCurF.contains(j)) {
-                                                   depth[i]=cur_level+1;
-                                                   SetNextF.add(i);
-                                             }
-                                      }
-                                  }
-                               }
-                           }
-                       }//end on loc
-                    }//end coforall loc
-                    cur_level+=1;
-                    //numCurF=SetNextF.getSize();
-                    numCurF=SetNextF.size;
-
-                    if (numCurF>0) {
-                        var tmpary:[0..numCurF-1] int;
-                        var sortary:[0..numCurF-1] int;
-                        var numary:[0..numCurF-1] int;
-                        var tmpa=0:int;
-                        forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
-                            a=b;
-                        }
-                        forall i in 0..numCurF-1 {
-                             numary[i]=neighbour[tmpary[i]];
-                        }
-
-                        var tmpiv = argsortDefault(numary);
-                        sortary=tmpary[tmpiv];
-                        cmary[currentindex+1..currentindex+numCurF]=sortary;
-                        currentindex=currentindex+numCurF;
-                    }
-
-
-                    //SetCurF<=>SetNextF;
-                    SetCurF=SetNextF;
-                    SetNextF.clear();
-              }//end while  
-              if (currentindex+1<Nv) {
-                 forall i in 0..Nv-1 with (+reduce currentindex) {
-                     if depth[i]==-1 {
-                       cmary[currentindex+1]=i;
-                       currentindex+=1;  
-                     }
-                 }
+              if (DegreeSortFlag) {
+                 degree_sort_u(src, dst, start_i, neighbour, srcR, dstR, start_iR, neighbourR,e_weight,weighted);
               }
-              cmary.reverse();
-              forall i in 0..Nv-1{
-                  indexary[cmary[i]]=i;
-              }
-    
-              var tmpary:[0..Ne-1] int;
-              forall i in 0..Ne-1 {
-                      tmpary[i]=indexary[src[i]];
-              }
-              src=tmpary;
-              forall i in 0..Ne-1 {
-                      tmpary[i]=indexary[dst[i]];
-              }
-              dst=tmpary;
- 
-              return "success";
-          }//end RCM_u
+              if (RCMFlag) {
+                 RCM_u( src, dst, start_i, neighbour, srcR, dstR, start_iR, neighbourR, depth,e_weight,weighted);
+              }   
 
-
-
-          coforall loc in Locales  {
-              on loc {
-                  forall i in srcR.localSubdomain(){
-                        srcR[i]=dst[i];
-                        dstR[i]=src[i];
-                   }
-              }
-          }
-          coforall loc in Locales  {
-              on loc {
-                           forall i in start_iR.localSubdomain() {
-                                 start_iR[i]=-1;
-                           }       
-                           forall i in neighbourR.localSubdomain() {
-                                 neighbourR[i]=0;
-                           }       
-              }
-          }
-          //start_iR=-1;
-          //lengthR=0;
-          //neighbourR=0;
-          var srcNameR, dstNameR, startNameR, neiNameR:string;
-
-
-          // Convenience proc to add Reverse components to the SegGraph object
-          proc addReverseComponentsToSegGraph():SegGraph throws {
               graph.withSRC_R(new shared SymEntry(srcR):GenSymEntry)
                    .withDST_R(new shared SymEntry(dstR):GenSymEntry)
                    .withSTART_IDX_R(new shared SymEntry(start_iR):GenSymEntry)
                    .withNEIGHBOR_R(new shared SymEntry(neighbourR):GenSymEntry);
-              return graph;
-          }
+      }//end of undirected
+      else {
+            if (DegreeSortFlag) {
+                 degree_sort(src, dst, start_i, neighbour,e_weight,neighbourR,weighted);
+            }
+            if (RCMFlag) {
+                 RCM( src, dst, start_i, neighbour, depth,e_weight,weighted);
+            }
 
+      }//end of 
+      if (weighted) {
+               fillInt(e_weight,1,1000);
+               fillInt(v_weight,1,1000);
+               graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
+                    .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
+      }
+      var gName = st.nextName();
+      st.addEntry(gName, new shared GraphSymEntry(graph));
+      repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
 
-          proc combine_sortR() throws {
-             /* we cannot use the coargsort version because it will break the memory limit */
-             param bitsPerDigit = RSLSD_bitsPerDigit;
-             var bitWidths: [0..1] int;
-             var negs: [0..1] bool;
-             var totalDigits: int;
-             var size=Ne: int;
-             for (bitWidth, ary, neg) in zip(bitWidths, [srcR,dstR], negs) {
-                 (bitWidth, neg) = getBitWidth(ary); 
-                 totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
-
-             }
-             proc mergedArgsort(param numDigits) throws {
-               //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-               //          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-               var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-               var curDigit = numDigits - totalDigits;
-               for (ary , nBits, neg) in zip([srcR,dstR], bitWidths, negs) {
-                  proc mergeArray(type t) {
-                     ref A = ary;
-                     const r = 0..#nBits by bitsPerDigit;
-                     for rshift in r {
-                        const myDigit = (r.high - rshift) / bitsPerDigit;
-                        const last = myDigit == 0;
-                        forall (m, a) in zip(merged, A) {
-                             m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
-                        }
-                     }
-                     curDigit += r.size;
-                  }
-                  mergeArray(int); 
-               }
-               var tmpiv = argsortDefault(merged);
-               return tmpiv;
-             } 
-
-             try {
-                 if totalDigits <=  2 { 
-                      ivR = mergedArgsort( 2); 
-                 }
-                 if (totalDigits >  2) && ( totalDigits <=  8) { 
-                      ivR =  mergedArgsort( 8); 
-                 }
-                 if (totalDigits >  8) && ( totalDigits <=  16) { 
-                      ivR = mergedArgsort(16); 
-                 }
-                 if (totalDigits >  16) && ( totalDigits <=  32) { 
-                      ivR = mergedArgsort(32); 
-                 }
-             } catch e: Error {
-                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                      e.message());
-                    return "Error: %t".format(e.message());
-             }
-             var tmpedges=srcR[ivR];
-             srcR=tmpedges;
-             tmpedges = dstR[ivR]; 
-             dstR=tmpedges;
-             return "success";
-             
-
-          }// end combine_sortR
-
-          proc set_neighbourR(){
-              for i in 0..Ne-1 do {
-                neighbourR[srcR[i]]+=1;
-                if (start_iR[srcR[i]] ==-1){
-                    start_iR[srcR[i]]=i;
-                }
-             }
-          }
-
-          proc   set_common_symtableR():string throws {
-             srcNameR = st.nextName();
-             dstNameR = st.nextName();
-             startNameR = st.nextName();
-             neiNameR = st.nextName();
-             var srcEntryR = new shared SymEntry(srcR);
-             var dstEntryR = new shared SymEntry(dstR);
-             var startEntryR = new shared SymEntry(start_iR);
-             var neiEntryR = new shared SymEntry(neighbourR);
-             st.addEntry(srcNameR, srcEntryR);
-             st.addEntry(dstNameR, dstEntryR);
-             st.addEntry(startNameR, startEntryR);
-             st.addEntry(neiNameR, neiEntryR);
-             return "success";
-          }
-
- 
-          if (weighted!=0) {
-             rmat_gen();
-             timer.stop();
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
-             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             // writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             timer.clear();
-             timer.start();
-             combine_sort();
-             set_neighbour();
-
-
-             coforall loc in Locales  {
-                       on loc {
-                           forall i in srcR.localSubdomain() {
-                                 srcR[i]=dst[i];
-                                 dstR[i]=src[i];
-                           }       
-                       }
-             }
-             //srcR = dst;
-             //dstR = src;
-             //twostep_sortR(); 
-             combine_sortR();
-             set_neighbourR();
-
-             if (RCMFlag>0) {
-                    RCM_u();
-                    neighbour=0;
-                    start_i=-1;
-                    combine_sort();
-                    set_neighbour();
-                    coforall loc in Locales  {
-                              on loc {
-                                  forall i in srcR.localSubdomain() {
-                                        srcR[i]=dst[i];
-                                        dstR[i]=src[i];
-                                  }       
-                              }
-                    }
-                    neighbourR=0;
-                    start_iR=-1;
-                    combine_sortR();
-                    set_neighbourR();
-
-             }
-             //only for weighted  graph
-             var ewName ,vwName:string;
-             var e_weight = makeDistArray(Ne,int);
-             var v_weight = makeDistArray(Nv,int);
-             //var e_weight: [0..Ne-1] int;
-             //var v_weight: [0..Nv-1] int;
-
-             fillInt(e_weight,1,1000);
-             //fillRandom(e_weight,0,100);
-             fillInt(v_weight,1,1000);
-             //fillRandom(v_weight,0,100);
-             // end of weighted!=0
-
-             // Set up the common components, reverse components, and weights
-             set_common_symtable();
-             addReverseComponentsToSegGraph();
-             graph.withEDGE_WEIGHT(new shared SymEntry(e_weight):GenSymEntry)
-                  .withVERTEX_WEIGHT(new shared SymEntry(v_weight):GenSymEntry);
-
-             // Store SegGraph object in SymTab
-             var gName = st.nextName();
-             st.addEntry(gName, new shared GraphSymEntry(graph));
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
- 
-          } else {
-
-             rmat_gen();
-             timer.stop();
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$$$$$$ RMAT graph generating takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-             var outMsg="RMAT generate the graph takes "+timer.elapsed():string;
-             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
-             timer.clear();
-             timer.start();
-             //twostep_sort();
-             combine_sort();
-             set_neighbour();
-
-
-             coforall loc in Locales  {
-                       on loc {
-                           forall i in srcR.localSubdomain() {
-                                 srcR[i]=dst[i];
-                                 dstR[i]=src[i];
-                           }       
-                       }
-             }
-             combine_sortR();
-             set_neighbourR();
-             if (RCMFlag>0) {
-                    RCM_u();
-                    neighbour=0;
-                    start_i=-1;
-                    combine_sort();
-                    set_neighbour();
-                    coforall loc in Locales  {
-                              on loc {
-                                  forall i in srcR.localSubdomain() {
-                                        srcR[i]=dst[i];
-                                        dstR[i]=src[i];
-                                  }       
-                              }
-                    }
-                    neighbourR=0;
-                    start_iR=-1;
-                    combine_sortR();
-                    set_neighbourR();
-
-             }
-
-             // Set up the common components, reverse components
-             set_common_symtable();
-             addReverseComponentsToSegGraph();
-             
-             // Store SegGraph object in SymTab
-             var gName = st.nextName();
-             st.addEntry(gName, new shared GraphSymEntry(graph));
-             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted + '+created ' + gName;
- 
-          }// end unweighted graph
-      }// end undirected graph
       timer.stop();
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       //writeln("$$$$$$$$$$$$$$$$$ sorting RMAT graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-      var outMsg="sorting RMAT graph takes "+timer.elapsed():string;
+      outMsg="sorting RMAT graph takes "+timer.elapsed():string;
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);      
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
       //writeln("$$$$$$$$$$$$  $$$$$$$$$$$$$$$$$$$$$$$");
@@ -1749,8 +950,6 @@ module GraphMsg {
 
   proc segBFSMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
-      //var (n_verticesN,n_edgesN,directedN,weightedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
-      //    = payload.decode().splitMsgToTuple(10);
        var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
           = payload.splitMsgToTuple(7);
       var Nv=n_verticesN:int;
@@ -1760,6 +959,9 @@ module GraphMsg {
       var depthName:string;
       var RCMFlag=RCMs:int;
       var timer:Timer;
+
+
+
       timer.start();
       var depth=makeDistArray(Nv,int);
       coforall loc in Locales  {
@@ -1826,18 +1028,11 @@ module GraphMsg {
                    CMaxSize=MaxBufSize[i];
               }
           }
-          //writeln("CMaxSize=",CMaxSize);
           var localArrayG=makeDistArray(numLocales*CMaxSize,int);//current frontier elements
-          //var localArrayNG=makeDistArray(numLocales*CMaxSize,int);// next frontier in the same locale
-          //var sendArrayG=makeDistArray(numLocales*CMaxSize,int);// next frontier in other locales
           var recvArrayG=makeDistArray(numLocales*numLocales*CMaxSize,int);//hold the current frontier elements
           var LPG=makeDistArray(numLocales,int);// frontier pointer to current position
-          //var LPNG=makeDistArray(numLocales,int);// next frontier pointer to current position
-          //var SPG=makeDistArray(numLocales,int);// receive buffer
           var RPG=makeDistArray(numLocales*numLocales,int);//pointer to the current position can receive element
           LPG=0;
-          //LPNG=0;
-          //SPG=0;
           RPG=0;
 
           coforall loc in Locales   {
@@ -1879,16 +1074,10 @@ module GraphMsg {
                                          if (depth[j]==-1) {
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
-                                                    //writeln("2 My locale=", here.id," Add ", j, " into local");
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
-                                                    //writeln("3 My locale=", here.id," Add ", j, " into remote");
                                                }
                                          }
                                   }
@@ -1896,19 +1085,15 @@ module GraphMsg {
                        
                               if (RemoteSet.size>0) {//there is vertex to be sent
                                   remoteNum[here.id]+=RemoteSet.size;
-                                  //writeln("6-0 My locale=", here.id," there are remote element =",RemoteSet);
                                   coforall localeNum in 0..numLocales-1  { 
                                          var ind=0:int;
-                                         //for k in RemoteSet with ( +reduce ind) (var agg= newDstAggregator(int)) {
                                          var agg= newDstAggregator(int); 
                                          for k in RemoteSet {
-                                                //writeln("6-2 My locale=", here.id," test remote element ", k);
                                                 if (xlocal(k,vertexBeginG[localeNum],vertexEndG[localeNum])){
                                                      agg.copy(recvArrayG[localeNum*numLocales*CMaxSize+
                                                                          here.id*CMaxSize+ind] ,k);
                                                      ind+=1;
                                                      
-                                                     //writeln("6 My locale=", here.id,"send", k, "to locale= ",localeNum," number=", ind, " send element=", recvArrayG[localeNum*numLocales*CMaxSize+ here.id*CMaxSize+ind-1]);
                                                 }
                                          }
                                          RPG[localeNum*numLocales+here.id]=ind;
@@ -1922,17 +1107,12 @@ module GraphMsg {
                        localNum[here.id]+=LocalSet.size;
                        var mystart=here.id*CMaxSize;
                        forall (a,b)  in zip (localArrayG[mystart..mystart+LocalSet.size-1],LocalSet.toArray()) {
-                              //writeln("7-0 My locale=", here.id,"  a=",a, " b=",b);
                               a=b;
                        }
                        var tmp=0;
                        for i in LocalSet {
-                              //writeln("7-1 My locale=", here.id,"  element i=",i," tmp=",tmp);
-                              //localArrayG[mystart+tmp]=i;
-                              //writeln("7-2 My locale=", here.id,"  local array [tmp]=",localArrayG[mystart+tmp]," tmp=",tmp);
                               tmp+=1;
                        }
-                       //writeln("7 My locale=", here.id,"  local set=",LocalSet, "to local array and size= ",LocalSet.size, " local array=",localArrayG[mystart..mystart+LocalSet.size-1]);
                    }
                    LocalSet.clear();
                    RemoteSet.clear();
@@ -1948,17 +1128,14 @@ module GraphMsg {
                                recvArrayG[CMaxSize*numLocales*i+here.id*CMaxSize..
                                           CMaxSize*numLocales*i+here.id*CMaxSize+RPG[numLocales*i+here.id]-1];
                            LPG[here.id]=LPG[here.id]+RPG[numLocales*i+here.id];
-                           //writeln("8 My locale=", here.id," after colloect array=",localArrayG[mystart..mystart+LPG[here.id]-1]);
                        }
                          
                    }
                   }//end on loc
               }//end coforall loc
               numCurF=0;
-              //writeln("10-0 LPG=",LPG);
               for iL in 0..(numLocales-1)  {
                    if LPG[iL] >0 {
-                       //writeln("10  locale ",iL, " has ",LPG[iL], " elements");
                        numCurF=1;
                        break;
                    }
@@ -1967,18 +1144,13 @@ module GraphMsg {
               cur_level+=1;
               //writeln("cur level=",cur_level);
           }//end while  
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
             TotalLocal+=localNum[i];
             TotalRemote+=remoteNum[i];
           }
-          writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
+          //writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
           return "success";
       }//end of_d1_bfs_kernel
 
@@ -2047,18 +1219,11 @@ module GraphMsg {
                    CMaxSize=MaxBufSize[i];
               }
           }
-          //writeln("CMaxSize=",CMaxSize);
           var localArrayG=makeDistArray(numLocales*CMaxSize,int);//current frontier elements
-          //var localArrayNG=makeDistArray(numLocales*CMaxSize,int);// next frontier in the same locale
-          //var sendArrayG=makeDistArray(numLocales*CMaxSize,int);// next frontier in other locales
           var recvArrayG=makeDistArray(numLocales*numLocales*CMaxSize,int);//hold the current frontier elements
           var LPG=makeDistArray(numLocales,int);// frontier pointer to current position
-          //var LPNG=makeDistArray(numLocales,int);// next frontier pointer to current position
-          //var SPG=makeDistArray(numLocales,int);// receive buffer
           var RPG=makeDistArray(numLocales*numLocales,int);//pointer to the current position can receive element
           LPG=0;
-          //LPNG=0;
-          //SPG=0;
           RPG=0;
 
           coforall loc in Locales   {
@@ -2067,7 +1232,6 @@ module GraphMsg {
                                  xlocal(root,vertexBeginRG[here.id],vertexEndRG[here.id])) {
                    localArrayG[CMaxSize*here.id]=root;
                    LPG[here.id]=1;
-                   //writeln("1 Add root=",root," into locale ",here.id);
                  }
               }
           }
@@ -2093,9 +1257,7 @@ module GraphMsg {
                    var RemoteSet=new set(int,parSafe = true);//use set to keep the next remote frontier
 
                    var mystart=here.id*CMaxSize;//start index 
-                   //writeln("1-1 my locale=",here.id, ",has ", LPG[here.id], " elements=",localArrayG[mystart..mystart+LPG[here.id]-1],",startposition=",mystart);
                    coforall i in localArrayG[mystart..mystart+LPG[here.id]-1] with (ref LocalSet, ref RemoteSet)  {
-                            // each locale just processes its local vertices
                               if xlocal(i,vertexBeginG[here.id],vertexEndG[here.id]) {
                                   // i in src, current edge has the vertex
                                   var    numNF=nf[i];
@@ -2108,17 +1270,11 @@ module GraphMsg {
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
-                                                    //writeln("2 My locale=", here.id," Add ", j, " into local");
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
-                                                    //writeln("3 My locale=", here.id," Add ", j, " into remote");
                                                }
                                          }
                                   }
@@ -2134,17 +1290,11 @@ module GraphMsg {
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
-                                                    //writeln("4 reverse My locale=", here.id,"Add ", j, "into local");
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
-                                                    //writeln("5 reverse My locale=", here.id,"Add ", j, "into remote");
                                                }
                                          }
                                   }
@@ -2152,20 +1302,16 @@ module GraphMsg {
                        
                               if (RemoteSet.size>0) {//there is vertex to be sent
                                   remoteNum[here.id]+=RemoteSet.size;
-                                  //writeln("6-0 My locale=", here.id," there are remote element =",RemoteSet);
                                   coforall localeNum in 0..numLocales-1  { 
                                          var ind=0:int;
-                                         //for k in RemoteSet with ( +reduce ind) (var agg= newDstAggregator(int)) {
                                          var agg= newDstAggregator(int); 
                                          for k in RemoteSet {
-                                                //writeln("6-2 My locale=", here.id," test remote element ", k);
                                                 if (xlocal(k,vertexBeginG[localeNum],vertexEndG[localeNum])||
                                                     xlocal(k,vertexBeginRG[localeNum],vertexEndRG[localeNum])){
                                                      agg.copy(recvArrayG[localeNum*numLocales*CMaxSize+
                                                                          here.id*CMaxSize+ind] ,k);
                                                      ind+=1;
                                                      
-                                                     //writeln("6 My locale=", here.id,"send", k, "to locale= ",localeNum," number=", ind, " send element=", recvArrayG[localeNum*numLocales*CMaxSize+ here.id*CMaxSize+ind-1]);
                                                 }
                                          }
                                          RPG[localeNum*numLocales+here.id]=ind;
@@ -2179,21 +1325,15 @@ module GraphMsg {
                        localNum[here.id]+=LocalSet.size;
                        var mystart=here.id*CMaxSize;
                        forall (a,b)  in zip (localArrayG[mystart..mystart+LocalSet.size-1],LocalSet.toArray()) {
-                              //writeln("7-0 My locale=", here.id,"  a=",a, " b=",b);
                               a=b;
                        }
                        var tmp=0;
                        for i in LocalSet {
-                              //writeln("7-1 My locale=", here.id,"  element i=",i," tmp=",tmp);
-                              //localArrayG[mystart+tmp]=i;
-                              //writeln("7-2 My locale=", here.id,"  local array [tmp]=",localArrayG[mystart+tmp]," tmp=",tmp);
                               tmp+=1;
                        }
-                       //writeln("7 My locale=", here.id,"  local set=",LocalSet, "to local array and size= ",LocalSet.size, " local array=",localArrayG[mystart..mystart+LocalSet.size-1]);
                    }
                    LocalSet.clear();
                    RemoteSet.clear();
-                   //LPNG[here.id]=0;
                   }//end on loc
               }//end coforall loc
               coforall loc in Locales {
@@ -2205,17 +1345,14 @@ module GraphMsg {
                                recvArrayG[CMaxSize*numLocales*i+here.id*CMaxSize..
                                           CMaxSize*numLocales*i+here.id*CMaxSize+RPG[numLocales*i+here.id]-1];
                            LPG[here.id]=LPG[here.id]+RPG[numLocales*i+here.id];
-                           //writeln("8 My locale=", here.id," after colloect array=",localArrayG[mystart..mystart+LPG[here.id]-1]);
                        }
                          
                    }
                   }//end on loc
               }//end coforall loc
               numCurF=0;
-              //writeln("10-0 LPG=",LPG);
               for iL in 0..(numLocales-1)  {
                    if LPG[iL] >0 {
-                       //writeln("10  locale ",iL, " has ",LPG[iL], " elements");
                        numCurF=1;
                        break;
                    }
@@ -2224,18 +1361,16 @@ module GraphMsg {
               cur_level+=1;
               //writeln("cur level=",cur_level);
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
             TotalLocal+=localNum[i];
             TotalRemote+=remoteNum[i];
           }
-          writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
+          outMsg="Local Ratio="+ ((TotalLocal):real/(TotalLocal+TotalRemote):real):string+"Total Local Access="+TotalLocal:string+ " , Total Remote Access="+ TotalRemote:string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of _d1_bfs_kernel_u
 
@@ -2243,24 +1378,13 @@ module GraphMsg {
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
-          //var SetCurF: domain(int);//use domain to keep the current frontier
-          //var SetNextF:domain(int);//use domain to keep the next frontier
           var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
           var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
           var topdown=0:int;
           var bottomup=0:int;
-          //var GivenRatio=0.22:int;
-          //writeln("THE GIVEN RATIO IS ");
-          //writeln(GivenRatio);
-
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -2313,14 +1437,7 @@ module GraphMsg {
                            }//end coforall
                        }else {// bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -2336,14 +1453,7 @@ module GraphMsg {
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -2363,20 +1473,13 @@ module GraphMsg {
                 }//end coforall loc
                 cur_level+=1;
                 numCurF=SetNextF.getSize();
-                //numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
-                //SetCurF=SetNextF;
-                //SetCurF.clear();
                 SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$number of top down = ",topdown, " number of bottom up=", bottomup,"$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+" number of bottom up="+(bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of fo_bag_bfs_kernel_u
 
@@ -2384,21 +1487,14 @@ module GraphMsg {
       proc fo_bag_bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
-          //var SetCurF: domain(int);//use domain to keep the current frontier
-          //var SetNextF:domain(int);//use domain to keep the next frontier
           var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
           var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
           var topdown=0:int;
           var bottomup=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -2432,14 +1528,7 @@ module GraphMsg {
                            }//end coforall
                        }else {// bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -2460,20 +1549,13 @@ module GraphMsg {
                 }//end coforall loc
                 cur_level+=1;
                 numCurF=SetNextF.getSize();
-                //numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
-                //SetCurF=SetNextF;
-                //SetCurF.clear();
                 SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$number of top down = ",topdown, " number of bottom up=", bottomup,"$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of fo_bag_bfs_kernel
 
@@ -2482,10 +1564,6 @@ module GraphMsg {
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
-          //var SetCurF: domain(int);//use domain to keep the current frontier
-          //var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
           var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
           var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
@@ -2493,10 +1571,7 @@ module GraphMsg {
           var topdown=0:int;
           var bottomup=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -2549,14 +1624,7 @@ module GraphMsg {
                            }//end coforall
                        }else {//bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -2572,14 +1640,7 @@ module GraphMsg {
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -2598,21 +1659,15 @@ module GraphMsg {
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
                 numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
                 SetCurF=SetNextF;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$number of top down = ",topdown, " number of bottom up=", bottomup,"$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+
           return "success";
       }//end of fo_set_bfs_kernel_u
 
@@ -2622,19 +1677,12 @@ module GraphMsg {
           var cur_level=0;
           var SetCurF: domain(int);//use domain to keep the current frontier
           var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
           var topdown=0:int;
           var bottomup=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -2687,14 +1735,7 @@ module GraphMsg {
                            }//end coforall
                        } else {//bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -2710,14 +1751,7 @@ module GraphMsg {
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            forall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //forall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -2737,28 +1771,21 @@ module GraphMsg {
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
                 numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
                 SetCurF=SetNextF;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$number of top down = ",topdown, " number of bottom up=", bottomup,"$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of fo_domain_bfs_kernel_u
 
       proc fo_d1_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int,GivenRatio:real):string throws{
           var cur_level=0;
-          var numCurF=1:int;//flag for stopping loop
+          var numCurF:int=1;
           var topdown=0:int;
           var bottomup=0:int;
 
@@ -2829,16 +1856,10 @@ module GraphMsg {
               }
           }
           var localArrayG=makeDistArray(numLocales*CMaxSize,int);//current frontier elements
-          //var localArrayNG=makeDistArray(numLocales*CMaxSize,int);// next frontier in the same locale
-          //var sendArrayG=makeDistArray(numLocales*CMaxSize,int);// next frontier in other locales
           var recvArrayG=makeDistArray(numLocales*numLocales*CMaxSize,int);//hold the current frontier elements
           var LPG=makeDistArray(numLocales,int);// frontier pointer to current position
-          //var LPNG=makeDistArray(numLocales,int);// next frontier pointer to current position
-          //var SPG=makeDistArray(numLocales,int);// receive buffer
           var RPG=makeDistArray(numLocales*numLocales,int);//pointer to the current position can receive element
           LPG=0;
-          //LPNG=0;
-          //SPG=0;
           RPG=0;
 
           coforall loc in Locales   {
@@ -2865,8 +1886,6 @@ module GraphMsg {
                    ref sfR=start_iR;
 
 
-                   //var aggdst= newDstAggregator(int);
-                   //var aggsrc= newSrcAggregator(int);
                    var LocalSet= new set(int,parSafe = true);//use set to keep the next local frontier, 
                                                              //vertex in src or srcR
                    var RemoteSet=new set(int,parSafe = true);//use set to keep the next remote frontier
@@ -2893,14 +1912,10 @@ module GraphMsg {
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
                                                }
                                          }
@@ -2917,14 +1932,10 @@ module GraphMsg {
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
                                                }
                                          }
@@ -2937,15 +1948,12 @@ module GraphMsg {
                                   coforall localeNum in 0..numLocales-1  { 
                                        if localeNum != here.id{
                                          var ind=0:int;
-                                         //for k in RemoteSet with ( +reduce ind) (var agg= newDstAggregator(int)) {
                                          var agg= newDstAggregator(int); 
                                          for k in RemoteSet {
                                                 if (xlocal(k,vertexBeginG[localeNum],vertexEndG[localeNum])||
                                                     xlocal(k,vertexBeginRG[localeNum],vertexEndRG[localeNum])){
                                                      agg.copy(recvArrayG[localeNum*numLocales*CMaxSize+
                                                                          here.id*CMaxSize+ind] ,k);
-                                                     //recvArrayG[localeNum*numLocales*CMaxSize+
-                                                     //                    here.id*CMaxSize+ind]=k;
                                                      ind+=1;
                                                      
                                                 }
@@ -2959,12 +1967,6 @@ module GraphMsg {
                    }// end of top down
                    else {  //bottom up
                        bottomup+=1;
-                       //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                       //forall i in BoundBeginG[here.id]..BoundEndG[here.id] with (ref UnVisitedSet) {
-                       //       if depth[i]==-1 {
-                       //          UnVisitedSet.add(i);
-                       //       }
-                       //}
                        proc FrontierHas(x:int):bool{
                             var returnval=false;
                             coforall i in 0..numLocales-1 with (ref returnval) {
@@ -2983,7 +1985,6 @@ module GraphMsg {
 
                        forall i in BoundBeginG[here.id]..BoundEndG[here.id]
                                                    with (ref LocalSet, ref RemoteSet)  {
-                       //forall i in UnVisitedSet  with (ref LocalSet, ref RemoteSet)  {
                           if (depth[i]==-1) {
                               if xlocal(i,vertexBeginG[here.id],vertexEndG[here.id]) {
                                   var    numNF=nf[i];
@@ -3063,7 +2064,6 @@ module GraphMsg {
                    }
                    LocalSet.clear();
                    RemoteSet.clear();
-                   //LPNG[here.id]=0;
                   }//end on loc
               }//end coforall loc
               coforall loc in Locales {
@@ -3085,27 +2085,24 @@ module GraphMsg {
               numCurF=0;
               for iL in 0..(numLocales-1)  {
                    if LPG[iL] >0 {
-                       //numCurF=1;
                        numCurF+=LPG[iL];
-                       //break;
                    }
               }
               RPG=0;
               cur_level+=1;
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
             TotalLocal+=localNum[i];
             TotalRemote+=remoteNum[i];
           }
-          writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
+          outMsg="Local Ratio="+ ((TotalLocal):real/(TotalLocal+TotalRemote):real):string +"Total Local Access="+ (TotalLocal:string) +" , Total Remote Access="+ (TotalRemote:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of fo_d1_bfs_kernel_u
 
@@ -3113,21 +2110,14 @@ module GraphMsg {
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
-          //var SetCurF: domain(int);//use domain to keep the current frontier
-          //var SetNextF:domain(int);//use domain to keep the next frontier
           var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
           var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
           var bottomup=0:int;
           var topdown=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -3180,14 +2170,7 @@ module GraphMsg {
                            }//end coforall
                        }else {// bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
 
-                           //coforall i in UnVisitedSet with (ref SetNextF) {
                            coforall i in vertexBegin..vertexEnd  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
@@ -3204,14 +2187,7 @@ module GraphMsg {
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            coforall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //coforall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -3231,20 +2207,13 @@ module GraphMsg {
                 }//end coforall loc
                 cur_level+=1;
                 numCurF=SetNextF.getSize();
-                //numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
-                //SetCurF=SetNextF;
-                //SetCurF.clear();
                 SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of co_bag_bfs_kernel_u
 
@@ -3253,10 +2222,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
-          //var SetCurF: domain(int);//use domain to keep the current frontier
-          //var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
           var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
           var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
@@ -3265,10 +2230,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
           var bottomup=0:int;
           var topdown=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -3321,14 +2283,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                            }//end coforall
                        }else {//bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            coforall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //coforall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -3344,14 +2299,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            coforall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //coforall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -3370,21 +2318,14 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
                 numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
                 SetCurF=SetNextF;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of co_set_bfs_kernel_u
 
@@ -3394,19 +2335,12 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
           var cur_level=0;
           var SetCurF: domain(int);//use domain to keep the current frontier
           var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
           var bottomup=0:int;
           var topdown=0:int;
 
-          //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                //writeln("SetCurF=");
-                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
                    on loc {
                        ref srcf=src;
@@ -3459,14 +2393,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                            }//end coforall
                        } else {//bottom up
                            bottomup+=1;
-                           //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                           //forall i in vertexBegin..vertexEnd  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            coforall i in vertexBegin..vertexEnd  with (ref SetNextF) {
-                           //coforall i in UnVisitedSet with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
@@ -3482,14 +2409,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
 
                               }
                            }
-                           //UnVisitedSet.clear();
-                           //forall i in vertexBeginR..vertexEndR  with (ref UnVisitedSet) {
-                           //   if depth[i]==-1 {
-                           //      UnVisitedSet.add(i);
-                           //   }
-                           //}
                            coforall i in vertexBeginR..vertexEndR  with (ref SetNextF) {
-                           //coforall i in UnVisitedSet  with (ref SetNextF) {
                               if depth[i]==-1 {
                                   var    numNF=nfR[i];
                                   var    edgeId=sfR[i];
@@ -3509,21 +2429,14 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
                 numCurF=SetNextF.size;
-                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                //numCurF=SetNextF.size;
                 SetCurF=SetNextF;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
                 SetNextF.clear();
           }//end while  
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+          var outMsg="Search Radius = "+ (cur_level+1):string;
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
           return "success";
       }//end of co_domain_bfs_kernel_u
 
@@ -3601,16 +2514,10 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
               }
           }
           var localArrayG=makeDistArray(numLocales*CMaxSize,int);//current frontier elements
-          //var localArrayNG=makeDistArray(numLocales*CMaxSize,int);// next frontier in the same locale
-          //var sendArrayG=makeDistArray(numLocales*CMaxSize,int);// next frontier in other locales
           var recvArrayG=makeDistArray(numLocales*numLocales*CMaxSize,int);//hold the current frontier elements
           var LPG=makeDistArray(numLocales,int);// frontier pointer to current position
-          //var LPNG=makeDistArray(numLocales,int);// next frontier pointer to current position
-          //var SPG=makeDistArray(numLocales,int);// receive buffer
           var RPG=makeDistArray(numLocales*numLocales,int);//pointer to the current position can receive element
           LPG=0;
-          //LPNG=0;
-          //SPG=0;
           RPG=0;
 
           coforall loc in Locales   {
@@ -3637,8 +2544,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                    ref sfR=start_iR;
 
 
-                   //var aggdst= newDstAggregator(int);
-                   //var aggsrc= newSrcAggregator(int);
                    var LocalSet= new set(int,parSafe = true);//use set to keep the next local frontier, 
                                                              //vertex in src or srcR
                    var RemoteSet=new set(int,parSafe = true);//use set to keep the next remote frontier
@@ -3652,9 +2557,7 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                        topdown+=1;
                        coforall i in localArrayG[mystart..mystart+LPG[here.id]-1] 
                                                    with (ref LocalSet, ref RemoteSet)  {
-                            // each locale just processes its local vertices
                               if xlocal(i,vertexBeginG[here.id],vertexEndG[here.id]) {
-                                  // i in src, current edge has the vertex
                                   var    numNF=nf[i];
                                   var    edgeId=sf[i];
                                   var nextStart=max(edgeId,edgeBeginG[here.id]);
@@ -3665,14 +2568,10 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
                                                }
                                          }
@@ -3689,14 +2588,10 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                                                depth[j]=cur_level+1;
                                                if (xlocal(j,vertexBeginG[here.id],vertexEndG[here.id]) ||
                                                    xlocal(j,vertexBeginRG[here.id],vertexEndRG[here.id])) {
-                                                    //localArrayNG[mystart+LPNG[here.id]]=j; 
-                                                    //LPNG[here.id]+=1;
                                                     LocalSet.add(j);
                                                } 
                                                if (xremote(j,HvertexBeginG[here.id],TvertexEndG[here.id]) ||
                                                    xremote(j,HvertexBeginRG[here.id],TvertexEndRG[here.id])) {
-                                                    //sendArrayG[mystart+SPG[here.id]]=j;                 
-                                                    //SPG[here.id]+=1;
                                                     RemoteSet.add(j);
                                                }
                                          }
@@ -3709,15 +2604,12 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                                   coforall localeNum in 0..numLocales-1  { 
                                        if localeNum != here.id{
                                          var ind=0:int;
-                                         //for k in RemoteSet with ( +reduce ind) (var agg= newDstAggregator(int)) {
                                          var agg= newDstAggregator(int); 
                                          for k in RemoteSet {
                                                 if (xlocal(k,vertexBeginG[localeNum],vertexEndG[localeNum])||
                                                     xlocal(k,vertexBeginRG[localeNum],vertexEndRG[localeNum])){
                                                      agg.copy(recvArrayG[localeNum*numLocales*CMaxSize+
                                                                          here.id*CMaxSize+ind] ,k);
-                                                     //recvArrayG[localeNum*numLocales*CMaxSize+
-                                                     //                    here.id*CMaxSize+ind]=k;
                                                      ind+=1;
                                                      
                                                 }
@@ -3737,7 +2629,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                                 if (xlocal(x,vertexBeginG[i],vertexEndG[i]) ||
                                     xlocal(x,vertexBeginRG[i],vertexEndRG[i])) {
                                     var mystart=i*CMaxSize;
-                                    //coforall j in localArrayG[mystart..mystart+LPG[i]-1] with (ref returnval){
                                     for j in localArrayG[mystart..mystart+LPG[i]-1] {
                                          if j==x {
                                             returnval=true;
@@ -3749,15 +2640,8 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                             return returnval;
                        }
 
-                       //var UnVisitedSet= new set(int,parSafe = true);//use set to keep the unvisited vertices
-                       //forall i in BoundBeginG[here.id]..BoundEndG[here.id]  with (ref UnVisitedSet) {
-                       //       if depth[i]==-1 {
-                       //          UnVisitedSet.add(i);
-                       //       }
-                       //}
                        coforall i in BoundBeginG[here.id]..BoundEndG[here.id]
                                                    with (ref LocalSet, ref RemoteSet)  {
-                       //coforall i in UnVisitedSet with (ref LocalSet, ref RemoteSet)  {
                           if (depth[i]==-1) {
                               if xlocal(i,vertexBeginG[here.id],vertexEndG[here.id]) {
                                   var    numNF=nf[i];
@@ -3837,7 +2721,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                    }
                    LocalSet.clear();
                    RemoteSet.clear();
-                   //LPNG[here.id]=0;
                   }//end on loc
               }//end coforall loc
               coforall loc in Locales {
@@ -3866,25 +2749,18 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
               RPG=0;
               cur_level+=1;
           }//end while  
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$Search Radius = ", cur_level+1,"$$$$$$$$$$$$$$$$$$$$$$");
           var outMsg="Search Radius = "+ (cur_level+1):string;
           smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-          outMsg= "number of top-down = "+ topdown:string+ " number of bottom-up="+bottomup:string;
+          outMsg="number of top down = "+(topdown:string)+ " number of bottom up="+ (bottomup:string);
           smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-          //writeln("$$$$$$$$number of top-down = ", topdown, " number of bottom-up=",bottomup, "$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-          //writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           var TotalLocal=0:int;
           var TotalRemote=0:int;
           for i in 0..numLocales-1 {
             TotalLocal+=localNum[i];
             TotalRemote+=remoteNum[i];
           }
-          outMsg="Local Ratio="+ ((TotalLocal):real/(TotalLocal+TotalRemote):real):string + "Total Local Access=" + TotalLocal:string +" Total Remote Access=" + TotalRemote:string;
+          outMsg="Local Ratio="+ ((TotalLocal):real/(TotalLocal+TotalRemote):real):string + "Total Local Access=" + (TotalLocal:string) +" Total Remote Access=" + (TotalRemote:string);
           smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-          //writeln("Local Ratio=", (TotalLocal):real/(TotalLocal+TotalRemote):real,"Total Local Access=",TotalLocal," , Total Remote Access=",TotalRemote);
           return "success";
       }//end of co_d1_bfs_kernel_u
 
@@ -3904,7 +2780,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
       if (Directed!=0) {
           if (Weighted!=0) {
               var ratios:string;
-              //var pn = Reflection.getRoutineName();
                (srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN,ratios)=
                    restpart.splitMsgToTuple(8);
               root=rootN:int;
@@ -4002,7 +2877,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                       GivenRatio
                   );
                   timer.stop();
-                  //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
                   var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
                   smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
 
@@ -4214,7 +3088,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
                   timer.stop();
                   var outMsg= "graph BFS takes "+timer.elapsed():string+ " for Co D Hybrid version";
                   smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
-                  //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), " for Co D Hybrid version $$$$$$$$$$$$$$$$$$");
                   /*
                   depth=-1;
                   depth[root]=0;
