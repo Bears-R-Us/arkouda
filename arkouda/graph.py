@@ -4,7 +4,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.logger import getArkoudaLogger
-import numpy as np 
+#import numpy as np 
 from arkouda.dtypes import npstr as akstr
 from arkouda.dtypes import int64 as akint
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
@@ -76,7 +76,7 @@ class Graph:
             self.n_edges=cast(int,args[1])
             self.directed=cast(int,args[2])
             self.weighted=cast(int,args[3])
-            self.name=cast(string,args[4])
+            self.name=cast(str,args[4])
         except Exception as e:
             raise RuntimeError(e)
         

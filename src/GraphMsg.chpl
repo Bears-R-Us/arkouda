@@ -402,10 +402,7 @@ module GraphMsg {
                         var sortary:[0..numCurF-1] int;
                         var numary:[0..numCurF-1] int;
                         var tmpa=0:int;
-                        //var tmpary=SetNextF.toArray();
-                        forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
-                            a=b;
-                        }
+                        var tmpary=SetNextF.toArray();
                         forall i in 0..numCurF-1 {
                              numary[i]=neighbour[tmpary[i]];
                         }
