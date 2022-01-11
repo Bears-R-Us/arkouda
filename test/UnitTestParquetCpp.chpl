@@ -3,7 +3,7 @@ use UnitTest;
 use TestBase;
 
 proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, errMsg): int;
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
   extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
                                      dsetname, numelems, rowGroupSize,
                                      errMsg): int;
@@ -25,7 +25,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 
   var b: [0..#size] int;
 
-  if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, 10000, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -35,6 +35,34 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
     return 0;
   } else {
     writeln("FAILED: read/write");
+    return 1;
+  }
+}
+
+proc testInt32Read() {
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
+  extern proc c_free_string(a);
+  extern proc strlen(a): int;
+  var errMsg: c_ptr(uint(8));
+  defer {
+    c_free_string(errMsg);
+  }
+  
+  var a: [0..#50] int;
+  var expected: [0..#50] int;
+  for i in 0..#50 do expected[i] = i;
+  
+  if(c_readColumnByName("resources/int32.parquet".c_str(), c_ptrTo(a),
+                        "array".c_str(), 50, 1, c_ptrTo(errMsg)) < 0) {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+  }
+
+  if a.equals(expected) then
+    return 0;
+  else {
+    writeln("FAILED: int32 read");
     return 1;
   }
 }
@@ -99,6 +127,7 @@ proc testVersionInfo() {
     return 1;
   }
 }
+
 proc main() {
   var errors = 0;
 
@@ -107,6 +136,7 @@ proc main() {
   const dsetname = "my-dset-name-test".c_str();
   
   errors += testReadWrite(filename, dsetname, size);
+  errors += testInt32Read();
   errors += testGetNumRows(filename, size);
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();

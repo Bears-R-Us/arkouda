@@ -99,44 +99,65 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWUNDEFINED;
 }
 
-#define COPYTOCHAPEL(arrowtype, chunk)                                      \
-  auto int_arr = std::static_pointer_cast<arrow::arrowtype>(chunk); \
-  for(int i = 0; i < numElems; i++) \
-    chpl_ptr[i] = int_arr->Value(i);
-
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
-
-  std::shared_ptr<arrow::io::ReadableFile> infile;
-  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename,arrow::default_memory_pool()),
-                 infile);
-
-  std::unique_ptr<parquet::arrow::FileReader> reader;
-  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
-
-  std::shared_ptr<arrow::ChunkedArray> array;
-
-  std::shared_ptr<arrow::Schema> sc;
-  std::shared_ptr<arrow::Schema>* out = &sc;
-  ARROWSTATUS_OK(reader->GetSchema(out));
-
-  if(!reader->ReadColumn(sc -> GetFieldIndex(colname), &array).ok()) {
-    std::string fname(filename);
-    std::string dname(colname);
-    std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
-    *errMsg = strdup(msg.c_str());
-    return ARROWERROR;
-  }
-
   int ty = cpp_getType(filename, colname, errMsg);
-  std::shared_ptr<arrow::Array> regular = array->chunk(0);
+  
+  // Currently only supports int64 and int32 Arrow types
+  if(ty == ARROWINT64 || ty == ARROWINT32) {
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+      parquet::ParquetFileReader::OpenFile(filename, false);
 
-  if(ty == ARROWINT64) {
-    COPYTOCHAPEL(Int64Array, regular);
-  } else if(ty == ARROWINT32) {
-    COPYTOCHAPEL(Int32Array, regular);
+    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+    int num_row_groups = file_metadata->num_row_groups();
+
+    int i = 0;
+    for (int r = 0; r < num_row_groups; r++) {
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+        parquet_reader->RowGroup(r);
+
+      int64_t values_read = 0;
+
+      std::shared_ptr<parquet::ColumnReader> column_reader;
+
+      int idx = file_metadata -> schema() -> ColumnIndex(colname);
+
+      if(idx < 0) {
+        std::string dname(colname);
+        std::string fname(filename);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+      
+      column_reader = row_group_reader->Column(idx);
+
+      if(ty == ARROWINT64) {
+        parquet::Int64Reader* reader =
+          static_cast<parquet::Int64Reader*>(column_reader.get());
+
+        while (reader->HasNext()) {
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          i+=values_read;
+        }
+      } else {
+        parquet::Int32Reader* reader =
+          static_cast<parquet::Int32Reader*>(column_reader.get());
+
+        int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
+        while (reader->HasNext()) {
+          // Can't read directly into chpl_ptr because it is int64
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+          for (int64_t j = 0; j < values_read; j++)
+            chpl_ptr[i+j] = (int64_t)tmpArr[j];
+          i+=values_read;
+        }
+        free(tmpArr);
+      }
+    }
+    return 0;
   }
-  return 0;
+  return ARROWUNDEFINED;
 }
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
@@ -187,8 +208,8 @@ extern "C" {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, char** errMsg) {
-    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, errMsg);
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {

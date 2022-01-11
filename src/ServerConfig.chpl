@@ -301,4 +301,10 @@ module ServerConfig
       return tup;
     }
 
+    proc getEnvInt(name: string, default: int): int {
+      extern proc getenv(name : c_string) : c_string;
+      var strval = getenv(name.localize().c_str()): string;
+      if strval.isEmpty() { return default; }
+      return try! strval: int;
+    }
 }
