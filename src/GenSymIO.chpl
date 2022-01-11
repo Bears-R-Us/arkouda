@@ -603,7 +603,7 @@ module GenSymIO {
                         return offsetsEntry;
                     }
 
-                    var entrySeg = if (calcStringOffsets || nSeg < 1) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+                    var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
 
                     var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
                     // TODO fix the transformation to json after rebasing.
