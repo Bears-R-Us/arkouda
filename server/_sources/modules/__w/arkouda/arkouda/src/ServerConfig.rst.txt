@@ -130,3 +130,5 @@ arkouda server config param and config const
 
 .. method:: proc bytes.splitMsgToTuple(sep: bytes, param numChunks: int)
 
+.. function:: proc getEnvInt(name: string, default: int): int
+
