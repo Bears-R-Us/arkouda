@@ -107,13 +107,11 @@ module GraphMsg {
                  }
                  if (totalDigits >32) {    
                       smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"TotalDigits >32");
-                      //return false;
                  }
 
              } catch {
                   try! smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "error" );
-                  //return false;
              }
              var tmpedges=src[iv];
              src=tmpedges;
@@ -124,7 +122,6 @@ module GraphMsg {
                 e_weight=tmpedges;
              }
 
-             //return true;
   }//end combine_sort
 
       /*
@@ -273,10 +270,8 @@ module GraphMsg {
           start_i=-1;
           combine_sort( src, dst,e_weight,weighted, true);
           set_neighbour(src,start_i,neighbour);
-          //return true;
   }//end RCM
 
-  //proc RCM_u() throws {
   private proc RCM_u( src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int, 
                       srcR:[?D5] int, dstR:[?D6] int, start_iR:[?D7] int, neighbourR:[?D8] int, 
                       depth:[?D9] int, e_weight:[?D10] int, weighted:bool )  {
@@ -407,10 +402,10 @@ module GraphMsg {
                         var sortary:[0..numCurF-1] int;
                         var numary:[0..numCurF-1] int;
                         var tmpa=0:int;
-                        var tmpary=SetNextF.toArray();
-                        //forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
-                        //    a=b;
-                        //}
+                        //var tmpary=SetNextF.toArray();
+                        forall (a,b)  in zip (tmpary,SetNextF.toArray()) {
+                            a=b;
+                        }
                         forall i in 0..numCurF-1 {
                              numary[i]=neighbour[tmpary[i]];
                         }
@@ -971,7 +966,6 @@ module GraphMsg {
                            }       
                   }
       }
-      //var depth=-1: [0..Nv-1] int;
       var root:int;
       var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
       var srcRN, dstRN, startRN, neighbourRN:string;
@@ -1116,7 +1110,6 @@ module GraphMsg {
                    }
                    LocalSet.clear();
                    RemoteSet.clear();
-                   //LPNG[here.id]=0;
                   }//end on loc
               }//end coforall loc
               coforall loc in Locales {
@@ -1142,7 +1135,6 @@ module GraphMsg {
               }
               RPG=0;
               cur_level+=1;
-              //writeln("cur level=",cur_level);
           }//end while  
           var TotalLocal=0:int;
           var TotalRemote=0:int;
@@ -1359,7 +1351,6 @@ module GraphMsg {
               }
               RPG=0;
               cur_level+=1;
-              //writeln("cur level=",cur_level);
           }//end while  
           var outMsg="Search Radius = "+ (cur_level+1):string;
           smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
