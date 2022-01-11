@@ -18,6 +18,7 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use RadixSortLSD;
+    use TimeEntryModule;
 
     private config const lBins = 2**25 * numLocales;
 
@@ -201,6 +202,78 @@ module ReductionMsg
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return new MsgTuple(errorMsg, MsgType.ERROR);                        
+                    }
+                }
+            }
+            when DType.Datetime64, DType.Timedelta64 {
+                var e = toSymEntry(gEnt,int);
+                var retType = dtype2str(gEnt.dtype);
+                select reductionop
+                {
+                    when "any" {
+                        var val:string;
+                        var sum = + reduce (e.a != 0);
+                        if sum != 0 {val = "True";} else {val = "False";}
+                        repMsg = "bool %s".format(val);
+                    }
+                    when "all" {
+                        var val:string;
+                        var sum = + reduce (e.a != 0);
+                        if sum == e.aD.size {val = "True";} else {val = "False";}
+                       repMsg = "bool %s".format(val);
+                    }
+                    when "sum" {
+                        if gEnt.dtype == DType.Datetime64 {
+                            var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                            rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
+                        var val = + reduce e.a;
+                        repMsg = "%s %i".format(retType, val);
+                    }
+                    when "min" {
+                      var val = min reduce e.a;
+                      repMsg = "%s %i".format(retType, val);
+                    }
+                    when "max" {
+                        var val = max reduce e.a;
+                        repMsg = "%s %i".format(retType, val);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        repMsg = "int64 %i".format(minLoc);
+                    }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        repMsg = "int64 %i".format(maxLoc);
+                    }
+                    when "is_sorted" {
+                        ref ea = e.a;
+                        var sorted = isSorted(ea);
+                        var val: string;
+                        if sorted {val = "True";} else {val = "False";}
+                        repMsg = "bool %s".format(val);
+                    }
+                    when "is_locally_sorted" {
+                      var locSorted: [LocaleSpace] bool;
+                      coforall loc in Locales {
+                        on loc {
+                          ref myA = e.a[e.a.localSubdomain()];
+                          locSorted[here.id] = isSorted(myA);
+                        }
+                      }
+
+                      var val: string;
+                      if (& reduce locSorted) {val = "True";} else {val = "False";}
+
+                      repMsg = "bool %s".format(val);
+                      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                      return new MsgTuple(repMsg, MsgType.NORMAL); 
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                      
                     }
                 }
             }
@@ -394,6 +467,50 @@ module ReductionMsg
                    }
                }
            }
+           when DType.Datetime64, DType.Timedelta64 {
+                var values = toSymEntry(gVal, int);
+                var retType = dtype2str(gVal.dtype);
+                select op {
+                    when "sum" {
+                        if gVal.dtype == DType.Datetime64 {
+                            var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                            rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
+                        }
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared TimeEntry(res, gVal.dtype));
+                    } 
+                    when "mean" {
+                      var res = segMean(values.a, segments.a):int;
+                        st.addEntry(rname, new shared TimeEntry(res, gVal.dtype));
+                    }
+                    when "min" {
+                        var res = segMin(values.a, segments.a);
+                        st.addEntry(rname, new shared TimeEntry(res, gVal.dtype));
+                    }
+                    when "max" {
+                        var res = segMax(values.a, segments.a);
+                        st.addEntry(rname, new shared TimeEntry(res, gVal.dtype));
+                    }
+                    when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "nunique" {
+                        var res = segNumUnique(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);  
+                    }                       
+                }    
+            }
            otherwise {
                var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
                rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

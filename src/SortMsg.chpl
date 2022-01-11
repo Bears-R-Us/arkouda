@@ -15,6 +15,7 @@ module SortMsg
     use Logging;
     use Message;
     private use ArgSortMsg;
+    use TimeEntryModule;
 
     private config const logLevel = ServerConfig.logLevel;
     const sortLogger = new Logger(logLevel);
@@ -82,10 +83,14 @@ module SortMsg
       // Sort the input pda and create a new symbol entry for
       // the sorted pda.
       select (gEnt.dtype) {
-          when (DType.Int64) {
+          when DType.Int64, DType.Datetime64, DType.Timedelta64 {
               var e = toSymEntry(gEnt, int);
               var sorted = doSort(e.a);
-              st.addEntry(sortedName, new shared SymEntry(sorted));
+              if gEnt.dtype == DType.Int64 {
+                  st.addEntry(sortedName, new shared SymEntry(sorted));
+              } else {
+                  st.addEntry(sortedName, new shared TimeEntry(sorted, gEnt.dtype));
+              }
           }// end when(DType.Int64)
           when (DType.Float64) {
               var e = toSymEntry(gEnt, real);

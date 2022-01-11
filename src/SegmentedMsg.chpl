@@ -74,7 +74,7 @@ module SegmentedMsg {
             return createBytesWithOwnedBuffer(ptr:c_ptr(uint(8)), size, size);
         }
 
-        if entry.dtype == DType.Int64 {
+        if (entry.dtype == DType.Int64) || (entry.dtype == DType.Datetime64) || (entry.dtype == DType.Timedelta64) {
             arrayBytes = distArrToBytes(toSymEntry(entry, int).a);
         } else if entry.dtype == DType.Float64 {
             arrayBytes = distArrToBytes(toSymEntry(entry, real).a);

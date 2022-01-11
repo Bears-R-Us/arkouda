@@ -13,6 +13,7 @@ module RandMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use TimeEntryModule;
 
     private config const logLevel = ServerConfig.logLevel;
     const randLogger = new Logger(logLevel);
@@ -39,12 +40,17 @@ module RandMsg
                "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
                                            cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr)); 
         select (dtype) {
-            when (DType.Int64) {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                 overMemLimit(8*len);
                 var aMin = aMinStr:int;
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
-                var e = st.addEntry(rname, len, int);
+                var e: borrowed SymEntry(int);
+                if dtype == DType.Int64 {
+                    e = st.addEntry(rname, len, int);
+                } else {
+                    e = st.addTimeEntry(rname, len, dtype): borrowed SymEntry(int);
+                }
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 

@@ -22,6 +22,7 @@ module KExtremeMsg
     use Indexing;
     use RadixSortLSD;
     use ArraySetopsMsg;
+    use TimeEntryModule;
 
     private config const logLevel = ServerConfig.logLevel;
     const keLogger = new Logger(logLevel);
@@ -45,7 +46,7 @@ module KExtremeMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select(gEnt.dtype) {
-            when (DType.Int64) {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                 var e = toSymEntry(gEnt,int);
                 var aV;
 
@@ -54,8 +55,11 @@ module KExtremeMsg
                 } else {
                     aV = computeExtremaIndices(e.a, k:int);
                 }
-
-                st.addEntry(vname, new shared SymEntry(aV));
+                if e.dtype == DType.Int64 {
+                    st.addEntry(vname, new shared SymEntry(aV));
+                } else {
+                    st.addEntry(vname, new shared TimeEntry(aV, e.dtype));
+                }
 
                 repMsg = "created " + st.attrib(vname);
                 keLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -106,7 +110,7 @@ module KExtremeMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select(gEnt.dtype) {
-            when (DType.Int64) {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                 var e = toSymEntry(gEnt,int);
                 var aV;
                 if !stringtobool(returnIndices) {
@@ -115,8 +119,12 @@ module KExtremeMsg
                     aV = computeExtremaIndices(e.a, k:int, false);
                 }
 
-                st.addEntry(vname, new shared SymEntry(aV));
-
+                if e.dtype == DType.Int64 {
+                    st.addEntry(vname, new shared SymEntry(aV));
+                } else {
+                    st.addEntry(vname, new shared TimeEntry(aV, e.dtype));
+                }
+                
                 repMsg = "created " + st.attrib(vname);
                 keLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);

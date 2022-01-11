@@ -25,6 +25,7 @@ module UniqueMsg
     use ServerErrorStrings;
 
     use Unique;
+    use TimeEntryModule;
     
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
@@ -73,7 +74,7 @@ module UniqueMsg
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
                 select (gEnt.dtype) {
-                    when (DType.Int64) {
+                when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                     var e = toSymEntry(gEnt,int);
                 
                     /* var eMin:int = min reduce e.a; */
@@ -100,7 +101,11 @@ module UniqueMsg
                     /* } */
 
                     var (aV,aC) = uniqueSort(e.a);
-                    st.addEntry(vname, new shared SymEntry(aV));
+                    if gEnt.dtype == DType.Int64 {
+                        st.addEntry(vname, new shared SymEntry(aV));
+                    } else {
+                        st.addEntry(vname, new shared TimeEntry(aV, gEnt.dtype));
+                    }
                     if returnCounts {
                         st.addEntry(cname, new shared SymEntry(aC));
                     }                  
@@ -179,7 +184,7 @@ module UniqueMsg
         }
 
         select (gEnt.dtype) {
-            when (DType.Int64) {
+            when DType.Int64, DType.Datetime64, DType.Timedelta64 {
                 var e = toSymEntry(gEnt,int);
                 /* var eMin:int = min reduce e.a; */
                 /* var eMax:int = max reduce e.a; */
@@ -212,7 +217,11 @@ module UniqueMsg
                 /* } */
 
                 var (aV,aC) = uniqueSort(e.a);
-                st.addEntry(vname, new shared SymEntry(aV));
+                if gEnt.dtype == DType.Int64 {
+                    st.addEntry(vname, new shared SymEntry(aV));
+                } else {
+                    st.addEntry(vname, new shared TimeEntry(aV, gEnt.dtype));
+                }
                 st.addEntry(cname, new shared SymEntry(aC));
             }
             otherwise {

@@ -360,7 +360,9 @@ module MsgProcessing
                             "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
 
         select (gEnt.dtype, dtype) {
-            when (DType.Int64, DType.Int64) {
+        when (DType.Int64, DType.Int64),
+             (DType.Datetime64, DType.Datetime64),
+             (DType.Timedelta64, DType.Timedelta64) {
                 var e = toSymEntry(gEnt,int);
                 var val: int = try! value:int;
                 e.a = val;
