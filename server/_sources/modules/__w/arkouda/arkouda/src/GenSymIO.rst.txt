@@ -287,7 +287,7 @@ or
    * generate locale-specific filenames to be written to.
    
 
-.. function:: proc generateFilenames(prefix: string, extension: string, A): [] string throws
+.. function:: proc generateFilenames(prefix: string, extension: string, targetLocalesSize: int): [] string throws
 
    
    * Generates a list of filenames to be written to based upon a file prefix,
