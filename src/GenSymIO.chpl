@@ -603,7 +603,7 @@ module GenSymIO {
                         return offsetsEntry;
                     }
 
-                    var entrySeg = if (calcStringOffsets || nSeg < 1) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+                    var entrySeg = if (calcStringOffsets || nSeg < 1 || !skips.isEmpty()) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
 
                     var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
                     // TODO fix the transformation to json after rebasing.
@@ -910,6 +910,9 @@ module GenSymIO {
     }
 
     proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws {
+        if(1 == a.size) { // short circuit case where we only have one string/segment
+            return;
+        }
         var boundaries: [fD] int; // First index of each region that needs to be raised
         var diffs: [fD] int; // Amount each region must be raised over previous region
         forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
@@ -1384,19 +1387,11 @@ module GenSymIO {
                     var e = toSymEntry(toGenSymEntry(entry), bool);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
-                when DType.UInt8 {
-                    /*
-                     * Look up the values and segments arrays, both of which are needed to write
-                     * uint8 arrays such as Strings out to external systems.
-                     * UPDATE: with SegStringSymEntry, it's now encapsulated, also UInt8 is a #legacy_placeholder
-                     *         The type is now DType.Strings so this should be unreachable
-                     */
-                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
-                }
                 when DType.Strings {
                     var segString:SegStringSymEntry = toSegStringSymEntry(entry);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                    warnFlag = write1DDistStringsAggregators(filename, mode, dsetName, segString, writeOffsets);
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Done with write1DDistStringsAggregators for Strings");
+
                 }
                 otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entryDtype));
@@ -1498,9 +1493,11 @@ module GenSymIO {
     
     /*
      * Writes out the two pdarrays composing a Strings object to hdf5.
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
                                                                 array_type: DType, SA, writeOffsets:bool) throws {
+        // DEPRECATED see write1DDistStringsAggregators
         var prefix: string;
         var extension: string;
         var warnFlag: bool;
@@ -1512,7 +1509,7 @@ module GenSymIO {
         (prefix,extension) = getFileMetadata(filename);
  
         // Generate the filenames based upon the number of targetLocales.
-        var filenames = generateFilenames(prefix, extension, A);
+        var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
         
         // Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -1896,6 +1893,150 @@ module GenSymIO {
         return warnFlag;
     }
 
+    /**
+     * Writes SegString arrays (offsets & bytes components) to HDF5 in a parallel fashion using Aggregators
+     *
+     * :arg filename: base filename
+     * :type filename: string
+     *
+     * :arg mode: switch for writing in APPEND or TRUNCATE mode see config constants
+     * :type mode: int
+     *
+     * :arg dsetName: base name of the strings data set, this will be parent group for segments and values
+     * :type dsetName: string
+     *
+     * :arg entry: The SymTab entry which holds the components of the SegString
+     * :type entry: SegStringSymEntry
+     *
+     * :arg writeOffsets: boolean switch for whether or not offsets/segments should be written to the file
+     * :type writeOffsets: bool
+     *
+     * .. note::
+     * Adapted from the original write1DDistStrings to use Aggregators
+     * By definition the offests/segments.domain.size <= values/bytes.domain.size
+     * Each offset indicates the start of a string; therefore, each locale will be responsible for
+     * gathering & writing the bytes for each string corresponding to the offset it is hosting.
+     * Keep in mind the last offset for a locale (localDomain.high) is the __start__ of the last string,
+     * we need to determine its end position by substracting one from the following offset.
+     * Also of note, offsets will be zero-based indexed to the local file when being written out.
+     */
+    private proc write1DDistStringsAggregators(filename: string, mode: int, dsetName: string, entry:SegStringSymEntry, writeOffsets:bool) throws {
+        var prefix: string;
+        var extension: string;
+        var warnFlag: bool;
+
+        var total = new Time.Timer();
+        total.clear();
+        total.start();
+        
+        (prefix, extension) = getFileMetadata(filename);
+ 
+        // Generate the filenames based upon the number of targetLocales.
+        // The segments array allocation determines where the bytes/values get written
+        var filenames = generateFilenames(prefix, extension, entry.offsetsEntry.a.targetLocales().size);
+        
+        // Generate a list of matching filenames to test against. 
+        var matchingFilenames = getMatchingFilenames(prefix, extension);
+        
+        // Create files with groups needed to persist values and segments pdarrays
+        var group = getGroup(dsetName);
+        warnFlag = processFilenames(filenames, matchingFilenames, mode, entry.offsetsEntry.a, group);
+
+        var segString = new SegString("", entry);
+        ref ss = segString;
+        var A = ss.offsets.a;
+        const lastOffset = A[A.domain.high];
+        const lastValIdx = ss.values.aD.high;
+        // For each locale gather the string bytes corresponding to the offsets in its local domain
+        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
+            /*
+             * Generate metadata such as file name, file id, and dataset name
+             * for each file to be written
+             */
+            const myFilename = filenames[idx];
+
+            var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on exit
+                C_HDF5.H5Fclose(myFileID);
+            }
+            const locDom = A.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+            var myDsetName = "/" + dsetName;
+
+            use C_HDF5.HDF5_WAR;
+
+            /*
+             * Confirm if the Strings write is in append mode. If so, the Strings dataset 
+             * is going to be appended to an hdf5 file as a set of values and segments 
+             * arrays within a new group named after the dsetName. Consequently, need
+             * to create the group within the existing hdf5 file.
+             */
+            if mode == APPEND {
+                prepareGroup(fileId=myFileID, group);
+            }
+
+            var t1: Time.Timer;
+            if logLevel == LogLevel.DEBUG {
+                t1 = new Time.Timer();
+                t1.clear();
+                t1.start();
+            }
+
+            /*
+             * A.targetLocales() returns all locales even if the domain doesn't span all locales.
+             * I don't know why that is, but we need to handle empty local domains.
+             */
+            if (locDom.isEmpty() || locDom.size <= 0) { // shouldn't need the second clause, but in case negative number is returned
+
+                // Case where num_elements < num_locales, we need to write a nil into this locale's file
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "write1DDistStringsAggregators: locale.id %i has empty locDom.size %i, will get empty dataset."
+                    .format(loc.id, locDom.size));
+                writeNilStringsGroupToHdf(myFileID, group, writeOffsets);
+
+            } else {
+                var localOffsets = A[locDom];
+                var startValIdx = localOffsets[locDom.low];
+
+                /*
+                 * The locale's last offset is the START idx of its last string, but we need to know where the END of it is located.
+                 * thus...
+                 * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
+                 * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
+                 */
+                var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "locale %i, writing strings offsets[%i..%i] corresponding to values[%i..%i], lastValIdx %i"
+                    .format(loc.id, locDom.low, locDom.high, startValIdx, endValIdx, lastValIdx));
+                
+                var valIdxRange = startValIdx..endValIdx;
+                var localVals: [valIdxRange] uint(8);
+                ref olda = ss.values.a;
+                forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(uint(8))) {
+                    // Copy the remote value at index position valIdx to our local array
+                    agg.copy(localVal, olda[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+                }
+
+                // localVals is now a local copy of the gathered string bytes, write that component to HDF5
+                writeStringsComponentToHdf(myFileID, group, "values", localVals);
+                if (writeOffsets) { // if specified write the offsets component to HDF5
+                    // Re-zero offsets so local file is zero based see also fixupSegBoundaries performed during read
+                    localOffsets = localOffsets - startValIdx;
+                    writeStringsComponentToHdf(myFileID, group, "segments", localOffsets);
+                }
+            }
+
+            if logLevel == LogLevel.DEBUG {
+                t1.stop();  
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "Time for writing Strings to hdf5 file on locale %i: %.17r".format(idx, t1.elapsed()));        
+            }
+
+        }
+        return warnFlag;
+    }
+
     /*
      * Writes the float, int, or bool pdarray out to hdf5
      */
@@ -1913,7 +2054,7 @@ module GenSymIO {
         (prefix,extension) = getFileMetadata(filename);
 
         // Generate the filenames based upon the number of targetLocales.
-        var filenames = generateFilenames(prefix, extension, A);
+        var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
 
         //Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -2041,12 +2182,14 @@ module GenSymIO {
      * Generates a list of filenames to be written to based upon a file prefix,
      * extension, and number of locales.
      */
-    proc generateFilenames(prefix : string, extension : string, A) : [] string throws { 
+    proc generateFilenames(prefix : string, extension : string, targetLocalesSize:int) : [] string throws { 
         // Generate the filenames based upon the number of targetLocales.
-        var filenames: [0..#A.targetLocales().size] string;
-        for i in 0..#A.targetLocales().size {
+        var filenames: [0..#targetLocalesSize] string; // Locales are zero indexed
+        for i in 0..#targetLocalesSize {
             filenames[i] = generateFilename(prefix, extension, i);
-        }   
+        }
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "generateFilenames targetLocales.size %i, filenames.size %i".format(targetLocalesSize, filenames.size));
         return filenames;
     }
 
@@ -2133,7 +2276,7 @@ module GenSymIO {
               var file_id: C_HDF5.hid_t;
 
               gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                             "Creating or truncating file");
+                                    "Creating or truncating file for locale %i".format(loc.id));
 
               file_id = C_HDF5.H5Fcreate(filenames[loc.id].localize().c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
@@ -2193,6 +2336,8 @@ module GenSymIO {
      * right shuffle slice indices (2) flags indicating whether the locale char arrays
      * contain one string (3) if the char arrays end with a complete string and (4)
      * the length of each locale slice of the chars array (used for some array slice ops).
+     *
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc generateStringsMetadata(idx : int, shuffleLeftIndices, 
                        shuffleRightIndices, isSingleString, endsWithCompleteString, 
@@ -2358,6 +2503,8 @@ module GenSymIO {
      * Adjusts for the shuffling of a leading char sequence to the previous locale by 
      * slicing leading chars that compose a string started in the previous locale and 
      * returning a new char array.
+     *
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last) throws { 
         return charArray[sliceIndex..last]; 
@@ -2367,6 +2514,8 @@ module GenSymIO {
      * Adjusts for the left shuffle of the leading char sequence from the current locale
      * to the previous locale by returning a slice containing chars from the shuffleLeftIndex
      * to the end of the charList.
+     *
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc adjustForLeftShuffle(shuffleLeftIndex: int, charList) throws {
         return charList[shuffleLeftIndex..charList.size-1];
@@ -2375,13 +2524,16 @@ module GenSymIO {
     /* 
      * Adjusts for the right shuffle of the trailing char sequence from the current locale
      * to the next locale by returning a slice containing chars up to and including 
-     * the rightShuffleIndex. 
+     * the rightShuffleIndex.
+     *
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc adjustForRightShuffle(shuffleRightIndex: int, 
                                                charsList: list(uint(8))) throws {        
         return charsList[0..shuffleRightIndex];
     }
 
+    // DEPRECATED see write1DDistStringsAggregators
     private proc generateFinalSegmentsList(charList : list(uint(8)), idx: int) throws {
         var segments: list(int);
         segments.append(0);
@@ -2509,9 +2661,11 @@ module GenSymIO {
     
     /*
      * Writes the values and segments lists to hdf5 within a group.
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc writeStringsToHdf(fileId: int, idx: int, group: string, 
                               valuesList: list(uint(8)), segmentsList: list(int), writeNil:bool = false) throws {
+        // DEPRECATED see write1DDistStringsAggregators
         // initialize timer
         var t1: Time.Timer;
         if logLevel == LogLevel.DEBUG {
@@ -2544,9 +2698,50 @@ module GenSymIO {
                        idx,t1.elapsed()));        
         }
     }
-    
+
+    /**
+     * Writes empty "Strings" components to the designated parent group in the HDF5 file
+     * :arg fileId: HDF5 file id
+     * :type fileId: int
+     *
+     * :arg group: parent dataset / group name for values and segments
+     * :type group: string
+     *
+     * :arg writeOffsets: boolean switch for whether or not to write offsets/segements to file
+     * :type writeOffsets: bool
+     */
+    private proc writeNilStringsGroupToHdf(fileId: int, group: string, writeOffsets: bool) throws {
+        C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
+                c_ptrTo([0:uint(64)]), getHDF5Type(uint(8)), nil);
+        if (writeOffsets) {
+            C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
+                c_ptrTo([0:uint(64)]), getHDF5Type(int), nil);
+        }
+    }
+
+    /**
+     * Writes the given Stings component array to HDF5 within a group.
+     * :arg fileId: HDF5 file id
+     * :type fileId: int
+     *
+     * :arg group: parent dataset / group name to write designated component
+     * :type group: string
+     *
+     * :arg component: name of the component to write, should be either values or segments
+     * :type component: string
+     *
+     * :arg items: the array containing the data to be written for te specified Strings array component
+     * :type items: [] ?etype
+     */
+    private proc writeStringsComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
+        C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/%s'.format(group, component).c_str(), 1,
+                c_ptrTo([items.size:uint(64)]), getHDF5Type(etype), c_ptrTo(items));
+    }
+
     /*
      * Returns a boolean indicating whether this is the last locale
+     *
+     * DEPRECATED see write1DDistStringsAggregators
      */
     private proc isLastLocale(idx: int) : bool {
         return idx == numLocales-1;
