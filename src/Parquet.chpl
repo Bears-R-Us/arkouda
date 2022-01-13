@@ -194,7 +194,6 @@ module Parquet {
                   moduleName=getModuleName(),
                   errorClass="ParquetBuildError");
       } else {
-          use Parquet;
           var repMsg: string;
           // May need a more robust delimiter then " | "
           var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
@@ -356,7 +355,6 @@ module Parquet {
                 moduleName=getModuleName(),
                 errorClass="ParquetBuildError");
     } else {
-        use Parquet;
         var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
         var filename: string;
         var entry = getGenericTypedArrayEntry(arrayName, st);
