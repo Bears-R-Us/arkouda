@@ -1,0 +1,27 @@
+.. default-domain:: chpl
+
+.. module:: CommandMap
+
+CommandMap
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use CommandMap;
+
+
+or
+
+.. code-block:: chapel
+
+   import CommandMap;
+
+.. function:: proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws
+
+.. data:: var f = akMsgSign
+
+.. data:: var commandMap: map(string, f.type)
+
+.. function:: proc registerFunction(cmd: string, fcf: f.type)
+

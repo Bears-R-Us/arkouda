@@ -78,8 +78,7 @@
 <h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Permalink to this headline">¶</a></h2>
 <p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the coputation. When the client issues a command <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">arg1</span> <span class="pre">arg2</span> <span class="pre">...</span></code> to the arkouda server, this is what typically happens:</p>
 <ol class="arabic simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> block in <code class="docutils literal notranslate"><span class="pre">arkouda_server.chpl</span></code> sees “foo” and calls <code class="docutils literal notranslate"><span class="pre">fooMsg(reqMsg,</span> <span class="pre">st)</span></code>, passing the command string and the symbol table.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">fooMsg</span></code> function is found via the <code class="docutils literal notranslate"><span class="pre">MsgProcessing</span></code> module, which contains <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">FooMsg</span></code> and thus gets all symbols from the <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> module where <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code> is defined.</p></li>
+<li><p>The “foo” command is looked up in the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>, located in <code class="docutils literal notranslate"><span class="pre">CommandMap.chpl</span></code>, which contains a mapping of the command string “foo” to a first class function <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code>, and the <code class="docutils literal notranslate"><span class="pre">fooMsg</span></code> function is found and thus gets all symbols from the <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> module where <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code> is defined.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code> function (in the <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> module) parses and executes the command by</p>
 <ol class="arabic simple">
 <li><p>Splitting the command string</p></li>
@@ -102,34 +101,15 @@
 </ol>
 <section id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>First, in <code class="docutils literal notranslate"><span class="pre">src/arkouda_server.chpl</span></code>, add a <code class="docutils literal notranslate"><span class="pre">when</span></code> statement to register the “foo” command:</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="c1">// parse requests, execute requests, format responses</span>
-<span class="k">select</span> <span class="nx">cmd</span>
-<span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="k">when</span> <span class="s">&quot;foo&quot;</span>             <span class="p">{</span><span class="nx">repMsg</span> <span class="o">=</span> <span class="nx">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">,</span> <span class="nx">st</span><span class="p">);}</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span>
+<p>First, in the <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code> configuration file, add <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> to the list of included modules:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">ArraySetopsMsg</span>
+<span class="nx">KExtremeMsg</span>
+<span class="nx">ArgSortMsg</span>
+<span class="o">..</span><span class="p">.</span>
+<span class="nx">FooMsg</span>
 </pre></div>
 </div>
-<p>Next, in the <code class="docutils literal notranslate"><span class="pre">MsgProcessing</span></code> module, add <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">use</span> <span class="pre">FooMsg;</span></code> in the appropriate location:</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">MsgProcessing</span>
-<span class="p">{</span>
-    <span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">Time</span> <span class="k">only</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">Math</span> <span class="k">only</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">MultiTypeSymbolTable</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">AryUtil</span><span class="p">;</span>
-
-    <span class="k">public</span> <span class="k">use</span> <span class="nx">OperatorMsg</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-    <span class="k">public</span> <span class="k">use</span> <span class="nx">FooMsg</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-</pre></div>
-</div>
-<p>Then, define your argument parsing and function logic in <code class="docutils literal notranslate"><span class="pre">src/FooMsg.chpl</span></code> in the following manner:</p>
+<p>Next, define your argument parsing and function logic in <code class="docutils literal notranslate"><span class="pre">src/FooMsg.chpl</span></code> in the following manner:</p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">FooMsg</span>
 <span class="p">{</span>
     <span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
@@ -177,6 +157,16 @@
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>Then, in <code class="docutils literal notranslate"><span class="pre">FooMsg.chpl</span></code>, add a <code class="docutils literal notranslate"><span class="pre">registerMe()</span></code> function to add the function to the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="o">..</span><span class="p">.</span>
+<span class="c1">// add a mapping from command string to FCF</span>
+<span class="k">proc</span> <span class="nf">registerMe</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">use</span> <span class="nx">CommandMap</span><span class="p">;</span>
+  <span class="nx">registerFunction</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="nx">fooMsg</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, the module <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> can be optionally included in each build. If the module name is found uncommented in <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code>, it will build into the server. If the module name is absent from <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg`</span> <span class="pre">or</span> <span class="pre">commented</span> <span class="pre">out,</span> <span class="pre">which</span> <span class="pre">is</span> <span class="pre">done</span> <span class="pre">by</span> <span class="pre">putting</span> <span class="pre">a</span> <span class="pre">``#</span></code> as the first character of the line, it will be excluded from the build.</p>
 </section>
 </section>
 </section>

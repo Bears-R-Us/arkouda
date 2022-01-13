@@ -99,3 +99,5 @@ or
    :throws: `UndefinedSymbolError(name)`
    
 
+.. function:: proc registerMe()
+

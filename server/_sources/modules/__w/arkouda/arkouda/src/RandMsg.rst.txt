@@ -30,3 +30,5 @@ or
 
 .. function:: proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc registerMe()
+

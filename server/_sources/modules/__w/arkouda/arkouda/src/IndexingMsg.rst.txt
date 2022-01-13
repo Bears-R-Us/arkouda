@@ -51,3 +51,5 @@ or
 
    setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) 
 
+.. function:: proc registerMe()
+

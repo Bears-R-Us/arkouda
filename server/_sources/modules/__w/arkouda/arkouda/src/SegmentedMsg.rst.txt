@@ -95,3 +95,5 @@ or
 
 .. function:: proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
+.. function:: proc registerMe()
+
