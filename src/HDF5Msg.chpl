@@ -1,4 +1,4 @@
-module GenHDF5IO {
+module HDF5Msg {
     use CPtr;
     use FileSystem;
     use HDF5;
