@@ -100,6 +100,7 @@ This yielded a >20TB dataframe in Arkouda.
 2. [Building Arkouda](#build-ak)
    - [Building the source](#build-ak-source)
    - [Building the docs](#build-ak-docs)
+   - [Modular building](#build-ak-mod)
 3. [Testing Arkouda](#test-ak)
 4. [Installing Arkouda Python libs and deps](#install-ak)
 5. [Running arkouda_server](#run-ak)
@@ -373,6 +374,10 @@ option. The Github Pages docs url will be displayed once the source option is se
 Arkouda documentation homepage will be displayed.
 
 </details>
+
+<a id="build-ak-mod"></a>
+### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+For information on Arkouda's modular building feature, see [MODULAR.md](MODULAR.md).
 
 <a id="test-ak"></a>
 ## Testing Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

@@ -47,9 +47,7 @@ Adding Functionality to the Arkouda Server
 
 Your contribution must include all the machinery to process a command from the client, in addition to the logic of the coputation. When the client issues a command ``foo arg1 arg2 ...`` to the arkouda server, this is what typically happens:
 
-#. The ``select`` block in ``arkouda_server.chpl`` sees "foo" and calls ``fooMsg(reqMsg, st)``, passing the command string and the symbol table.
-
-#. The ``fooMsg`` function is found via the ``MsgProcessing`` module, which contains ``use FooMsg`` and thus gets all symbols from the ``FooMsg`` module where ``fooMsg()`` is defined.
+#. The "foo" command is looked up in the ``commandMap``, located in ``CommandMap.chpl``, which contains a mapping of the command string "foo" to a first class function ``fooMsg()``, and the ``fooMsg`` function is found and thus gets all symbols from the ``FooMsg`` module where ``fooMsg()`` is defined.
 
 #. The ``fooMsg()`` function (in the ``FooMsg`` module) parses and executes the command by
 
@@ -80,38 +78,18 @@ Your contribution must include all the machinery to process a command from the c
 Example
 -------
 
-First, in ``src/arkouda_server.chpl``, add a ``when`` statement to register the "foo" command:
+First, in the ``ServerModules.cfg`` configuration file, add ``FooMsg`` to the list of included modules:
 
 .. code-block:: chapel
 
-   // parse requests, execute requests, format responses
-   select cmd
-   {
-       // ...
-       when "foo"             {repMsg = fooMsg(reqMsg, st);}
-       // ...
-   }
+   ArraySetopsMsg
+   KExtremeMsg
+   ArgSortMsg
+   ...
+   FooMsg
 
-Next, in the ``MsgProcessing`` module, add ``public use FooMsg;`` in the appropriate location:
 
-.. code-block:: chapel
-
-   module MsgProcessing
-   {
-       use ServerConfig;
-       use Time only;
-       use Math only;
-       use MultiTypeSymbolTable;
-       use MultiTypeSymEntry;
-       use ServerErrorStrings;
-       use AryUtil;
-    
-       public use OperatorMsg;
-       // ...    
-       public use FooMsg;
-       // ...
-
-Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in the following manner:
+Next, define your argument parsing and function logic in ``src/FooMsg.chpl`` in the following manner:
 
 .. code-block:: chapel
 
@@ -160,3 +138,19 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
            return try! "created " + st.attrib(rname);
        }
    }
+
+
+Then, in ``FooMsg.chpl``, add a ``registerMe()`` function to add the function to the ``commandMap``:
+
+.. code-block:: chapel
+
+   ...
+   // add a mapping from command string to FCF
+   proc registerMe() {
+     use CommandMap;
+     registerFunction("foo", fooMsg);
+   }
+
+Now, the module ``FooMsg`` can be optionally included in each build. If the module name is found uncommented in ``ServerModules.cfg``, it will build into the server. If the module name is absent from ``ServerModules.cfg` or commented out, which is done by putting a ``#`` as the first character of the line, it will be excluded from the build.
+
+   

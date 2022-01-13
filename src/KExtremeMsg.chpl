@@ -151,4 +151,10 @@ module KExtremeMsg
            }
         }
     }
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("mink", minkMsg);
+      registerFunction("maxk", maxkMsg);
+    }
 }

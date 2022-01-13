@@ -942,4 +942,22 @@ module SegmentedMsg {
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+  
+  proc registerMe() {
+    use CommandMap;
+    registerFunction("segmentLengths", segmentLengthsMsg);
+    registerFunction("segmentedHash", segmentedHashMsg);
+    registerFunction("segmentedEfunc", segmentedEfuncMsg);
+    registerFunction("segmentedFindLoc", segmentedFindLocMsg);
+    registerFunction("segmentedFindAll", segmentedFindAllMsg);
+    registerFunction("segmentedPeel", segmentedPeelMsg);
+    registerFunction("segmentedSub", segmentedSubMsg);
+    registerFunction("segmentedIndex", segmentedIndexMsg);
+    registerFunction("segmentedBinopvv", segBinopvvMsg);
+    registerFunction("segmentedBinopvs", segBinopvsMsg);
+    registerFunction("segmentedGroup", segGroupMsg);
+    registerFunction("segmentedIn1d", segIn1dMsg);
+    registerFunction("randomStrings", randomStringsMsg);
+    registerFunction("segStr-assemble", assembleStringsMsg);
+  }
 }
