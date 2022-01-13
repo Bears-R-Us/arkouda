@@ -1,12 +1,5 @@
 #include "ArrowFunctions.h"
 
-#include <iostream>
-#include <arrow/api.h>
-#include <arrow/io/api.h>
-#include <parquet/arrow/reader.h>
-#include <parquet/arrow/writer.h>
-#include <parquet/column_reader.h>
-
 /*
   Arrow Error Helpers
   -------------------
@@ -56,7 +49,7 @@ bool check_status_ok(arrow::Status status, char** errMsg) {
  C++ functions must return types that are C compatible.
 */
 
-int cpp_getNumRows(const char* filename, char** errMsg) {
+int64_t cpp_getNumRows(const char* filename, char** errMsg) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
   ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
                  infile);
@@ -99,9 +92,9 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWUNDEFINED;
 }
 
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
-  int ty = cpp_getType(filename, colname, errMsg);
+  int64_t ty = cpp_getType(filename, colname, errMsg);
   
   // Currently only supports int64 and int32 Arrow types
   if(ty == ARROWINT64 || ty == ARROWINT32) {
@@ -111,7 +104,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
     std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
     int num_row_groups = file_metadata->num_row_groups();
 
-    int i = 0;
+    int64_t i = 0;
     for (int r = 0; r < num_row_groups; r++) {
       std::shared_ptr<parquet::RowGroupReader> row_group_reader =
         parquet_reader->RowGroup(r);
@@ -120,7 +113,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
-      int idx = file_metadata -> schema() -> ColumnIndex(colname);
+      auto idx = file_metadata -> schema() -> ColumnIndex(colname);
 
       if(idx < 0) {
         std::string dname(colname);
@@ -161,12 +154,12 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 }
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
-                             int colnum, const char* dsetname, int numelems,
-                             int rowGroupSize, char** errMsg) {
+                             int64_t colnum, const char* dsetname, int64_t numelems,
+                             int64_t rowGroupSize, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
   arrow::Int64Builder i64builder;
   arrow::Status status;
-  for(int i = 0; i < numelems; i++) {
+  for(int64_t i = 0; i < numelems; i++) {
     ARROWSTATUS_OK(i64builder.AppendValues({chpl_ptr[i]}));
   }
   std::shared_ptr<arrow::Array> i64array;
@@ -204,11 +197,11 @@ void cpp_free_string(void* ptr) {
 */
 
 extern "C" {
-  int c_getNumRows(const char* chpl_str, char** errMsg) {
+  int64_t c_getNumRows(const char* chpl_str, char** errMsg) {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
     return cpp_readColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
 
@@ -217,8 +210,8 @@ extern "C" {
   }
 
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
-                             int colnum, const char* dsetname, int numelems,
-                             int rowGroupSize, char** errMsg) {
+                             int64_t colnum, const char* dsetname, int64_t numelems,
+                             int64_t rowGroupSize, char** errMsg) {
     return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
                                     numelems, rowGroupSize, errMsg);
   }
