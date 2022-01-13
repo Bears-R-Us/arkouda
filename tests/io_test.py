@@ -579,16 +579,22 @@ class IOTest(ArkoudaTest):
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
 
-    # This currently breaks on 4 or greater locales.  Since it is such a rare corner case
-    # we are going to remove it for now.
-    @pytest.mark.skip(reason="Breaks nightly testing and this is an extremely rare corner case.")
+    # This tests small array corner cases on multi-locale environments
     def testSmallStringArrayToHDF5(self):
         a1 = ak.array(["ab", "cd"])
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
+            a1.save(f"{tmp_dirname}/small_string_array", dataset="a1")
             # Now load it back in
-            a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
+            a2 = ak.load(f"{tmp_dirname}/small_string_array", dataset="a1")
             self.assertEqual(str(a1), str(a2))
+
+        # Test a single string
+        b1 = ak.array(["123456789"])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            b1.save(f"{tmp_dirname}/single_string", dataset="b1")
+            # Now load it back in
+            b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
+            self.assertEqual(str(b1), str(b2))
 
     def testHdfUnsanitizedNames(self):
         # Test when quotes are part of the dataset name

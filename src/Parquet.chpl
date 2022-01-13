@@ -9,6 +9,8 @@ module Parquet {
   }
 
   private config const ROWGROUPS = 512*1024*1024 / numBytes(int); // 512 mb of int64
+  // Undocumented for now, just for internal experiments
+  private config const batchSize = getEnvInt("ARKOUDA_SERVER_PARQUET_BATCH_SIZE", 8192);
 
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;
@@ -85,7 +87,7 @@ module Parquet {
   }
   
   proc readFilesByName(A, filenames: [] string, sizes: [] int, dsetname: string) throws {
-    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, errMsg): int;
+    extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
 
     coforall loc in A.targetLocales() do on loc {
@@ -98,7 +100,7 @@ module Parquet {
           if intersection.size > 0 {
             var col: [filedom] int;
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                  dsetname.localize().c_str(), filedom.size,
+                                  dsetname.localize().c_str(), filedom.size, batchSize,
                                   c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
             }

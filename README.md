@@ -14,6 +14,12 @@
 
 [Chapel Gitter channel](https://gitter.im/chapel-lang/chapel)
 
+## Arkouda Weekly Call
+We have a weekly zoom call to talk about what is going on with Arkouda development and people's general desires.
+Anyone with an interest in Arkouda is invited, come join in the discussion!
+Here is a link to the [Arkouda Weekly Call Repo](https://github.com/Bears-R-Us/ArkoudaWeeklyCall)
+the [README.md](https://github.com/Bears-R-Us/ArkoudaWeeklyCall/blob/main/README.md) there contains the meeting details.
+
 ## Talks on Arkouda
 
 [Arkouda Hack-a-thon videos](https://www.youtube.com/playlist?list=PLpuVAiniqZRXnOAhfHmxbAcVPtMKb-RHN)
