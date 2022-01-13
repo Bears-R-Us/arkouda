@@ -5,6 +5,7 @@ module Security {
     use FileIO;
     use FileSystem;
     use Path;
+    use ServerConfig;
     private use IO;
 
     proc generateToken(len: int=32) : string {
@@ -45,7 +46,13 @@ module Security {
    }
 
    proc setArkoudaToken(tokensPath : string, len : int=32) : string throws {
-       var token = generateToken(len);
+       // First see if there is token via env variable
+       var token : string = getEnv(name='ARKOUDA_SERVER_TOKEN');
+       
+       if token.isEmpty() {
+           // No token env variable, so generate it 
+           token = generateToken(len);
+       }
        appendFile(filePath=tokensPath, line=token);
        return token;
    }       

@@ -514,6 +514,9 @@ working directory the arkouda\_server is launched from. The arkouda\_server will
 .arkouda/tokens.txt file is removed, which forces arkouda\_server to generate a new token and corresponding
 tokens.txt file.
 
+In situations where a user-specified token string is preferred, this can be specified in the ARKOUDA_SERVER_TOKEN environment variable. As is the case with an Arkouda-generated token, the user-supplied token
+is saved to the .arkouda/tokens.txt file for re-use.
+
 <a id="run-ak-connect"></a>
 ### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
