@@ -10,9 +10,10 @@
 #include <parquet/column_reader.h>
 extern "C" {
 #endif
-  
+
 #define ARROWINT64 0
 #define ARROWINT32 1
+#define ARROWTIMESTAMP ARROWINT64
 #define ARROWUNDEFINED -1
 #define ARROWERROR -1
 

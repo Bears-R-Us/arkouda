@@ -84,10 +84,12 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   }
   auto myType = sc -> field(idx) -> type();
 
-  if(myType == arrow::int64())
+  if(myType->id() == arrow::Type::INT64)
     return ARROWINT64;
-  else if(myType == arrow::int32())
+  else if(myType->id() == arrow::Type::INT32)
     return ARROWINT32;
+  else if(myType->id() == arrow::Type::TIMESTAMP)
+    return ARROWTIMESTAMP;
   else // TODO: error type not supported
     return ARROWUNDEFINED;
 }
