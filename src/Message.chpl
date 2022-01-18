@@ -83,11 +83,4 @@ module Message {
         return array;
     }
 
-    /*
-     * String constants for use in constructing JSON formatted messages
-     */
-    const Q = '"'; // Double Quote, escaping quotes often throws off syntax highlighting.
-    const QCQ = Q + ":" + Q; // `":"` -> useful for closing and opening quotes for named json k,v pairs
-    const BSLASH = '\\';
-    const ESCAPED_QUOTES = BSLASH + Q;
 }

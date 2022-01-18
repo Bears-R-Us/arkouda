@@ -394,6 +394,7 @@ module ParquetMsg {
     use CommandMap;
     registerFunction("readAllParquet", readAllParquetMsg);
     registerFunction("writeParquet", toparquetMsg);
+    ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
   }
 
 }
