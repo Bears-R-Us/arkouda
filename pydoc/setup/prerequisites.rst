@@ -7,7 +7,7 @@ Prerequisites
 *******************
 Chapel
 *******************
-(version 1.25.0 or greater)
+(version 1.25.1 or greater)
 
 The arkouda server application is written in Chapel_, a productive and performant parallel programming language. In order to use arkouda, you must first `download the current version of Chapel`_ and build it according to the instructions_ for your platform(s). Below are tips for building Chapel to support arkouda.
 
