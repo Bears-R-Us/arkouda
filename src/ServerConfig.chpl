@@ -62,9 +62,6 @@ module ServerConfig
     */
     config param regexMaxCaptures = 20;
 
-    /* Whether the server was built with parquet support */
-    config param hasParquetSupport = false;
-
     private config const lLevel = ServerConfig.logLevel;
     const scLogger = new Logger(lLevel);
    

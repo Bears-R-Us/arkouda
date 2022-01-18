@@ -71,7 +71,6 @@ CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 ifdef ARKOUDA_SERVER_PARQUET_SUPPORT
   CHPL_FLAGS += -lparquet -larrow
   OPTIONAL_CHECKS += check-arrow
-  OPTIONAL_SERVER_FLAGS += -shasParquetSupport
   ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
   ARROW_CPP += $(ARROW_FILE_NAME).cpp
   ARROW_H += $(ARROW_FILE_NAME).h
