@@ -61,10 +61,12 @@ module GraphMsg {
              //var size=Ne: int;
              var iv:[D1] int;
 
+             //calculate how many digits is needed.
              for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
                        (bitWidth, neg) = getBitWidth(ary); 
                        totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
              }
+             //sort the merged array
              proc mergedArgsort(param numDigits) throws {
                     var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
                     var curDigit = numDigits - totalDigits;
@@ -125,7 +127,8 @@ module GraphMsg {
   }//end combine_sort
 
       /*
-       * here we preprocess the graph using reverse Cuthill.McKee algorithm to improve the locality
+       * here we preprocess the graph using reverse Cuthill.McKee algorithm to improve the locality.
+       * the basic idea of RCM is relabeling the vertex based on their BFS visiting order
        */
   private proc RCM( src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int, depth:[?D5] int,e_weight:[?D6] int,weighted :bool )  {
           var Ne=D1.size;
@@ -162,6 +165,7 @@ module GraphMsg {
           
           while (numCurF>0) {
                 coforall loc in Locales  with (ref SetNextF,+ reduce topdown, + reduce bottomup) {
+                //topdown, bottomup are reduce variables
                    on loc {
                        ref srcf=src;
                        ref df=dst;
@@ -272,6 +276,7 @@ module GraphMsg {
           set_neighbour(src,start_i,neighbour);
   }//end RCM
 
+  // RCM for undirected graph.
   private proc RCM_u( src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int, 
                       srcR:[?D5] int, dstR:[?D6] int, start_iR:[?D7] int, neighbourR:[?D8] int, 
                       depth:[?D9] int, e_weight:[?D10] int, weighted:bool )  {
@@ -475,6 +480,7 @@ module GraphMsg {
   }
 
 
+  //sorting the vertices based on their degrees.
   private proc degree_sort(src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int,e_weight:[?D5] int,neighbourR:[?D6] int,weighted:bool) {
              var DegreeArray, VertexArray: [D3] int;
              var tmpedge:[D1] int;
@@ -529,6 +535,7 @@ module GraphMsg {
 
   }
 
+  //degree sort for an undirected graph.
   private  proc degree_sort_u(src:[?D1] int, dst:[?D2] int, start_i:[?D3] int, neighbour:[?D4] int,
                       srcR:[?D5] int, dstR:[?D6] int, start_iR:[?D7] int, neighbourR:[?D8] int,e_weight:[?D9] int,weighted:bool) {
 
@@ -728,7 +735,7 @@ module GraphMsg {
   }
 
 
-
+  //generate a graph using RMAT method.
   proc segrmatgenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sdire,swei,RCMs )
@@ -940,6 +947,7 @@ module GraphMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  // visit a graph using BFS method
   proc segBFSMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
        var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
