@@ -398,7 +398,6 @@ Attributes
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :returns:
       :rtype: np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
@@ -652,7 +651,6 @@ Attributes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -902,7 +900,6 @@ Attributes
                    If 'append', attempt to create new dataset in existing files.
       :type mode: str {'truncate' | 'append'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -954,7 +951,6 @@ Attributes
                    Append is currently not supported.
       :type mode: str {'truncate'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -1035,7 +1031,6 @@ Attributes
       registered using register() and/or attahced to using attach()
 
 
-      :returns:
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
@@ -1093,7 +1088,6 @@ Attributes
 
    Send a clear message to clear all unregistered data from the server symbol table
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
@@ -1616,7 +1610,6 @@ Attributes
    :param user_defined_name: user defined name which array was registered under
    :type user_defined_name: str
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
@@ -2444,7 +2437,6 @@ Attributes
    :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
    :type dtype: Optional[type]
 
-   :returns:
    :rtype: Union[pdarray,Strings]
 
    :raises TypeError: Raised if series is not a Pandas Series object
@@ -2845,7 +2837,6 @@ Attributes
    :param pda:
    :type pda: pdarray to test
 
-   :returns:
    :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
 
    :raises TypeError: Raised if the parameter is not a pdarray
@@ -3041,7 +3032,6 @@ Attributes
                 If 'append', attempt to create new dataset in existing files.
    :type mode: {'truncate' | 'append'}
 
-   :returns:
    :rtype: None
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
@@ -3892,7 +3882,6 @@ Attributes
                            upon load/read.
       :type save_offsets: bool
 
-      :returns:
       :rtype: String message indicating result of save operation
 
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
@@ -3947,7 +3936,6 @@ Attributes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -3986,7 +3974,6 @@ Attributes
       registered using register() and/or attached to using attach()
 
 
-      :returns:
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
@@ -4454,7 +4441,6 @@ Attributes
                    If 'append', create a new Categorical dataset within existing files.
       :type mode: str {'truncate' | 'append'}
 
-      :returns:
       :rtype: String message indicating result of save operation
 
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
@@ -4569,7 +4555,6 @@ Attributes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -4737,7 +4722,6 @@ Attributes
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :returns:
       :rtype: np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
@@ -4991,7 +4975,6 @@ Attributes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -5241,7 +5224,6 @@ Attributes
                    If 'append', attempt to create new dataset in existing files.
       :type mode: str {'truncate' | 'append'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -5293,7 +5275,6 @@ Attributes
                    Append is currently not supported.
       :type mode: str {'truncate'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -5374,7 +5355,6 @@ Attributes
       registered using register() and/or attahced to using attach()
 
 
-      :returns:
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
@@ -5449,7 +5429,6 @@ Attributes
    :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
    :type dtype: Optional[type]
 
-   :returns:
    :rtype: Union[pdarray,Strings]
 
    :raises TypeError: Raised if series is not a Pandas Series object
@@ -6140,7 +6119,6 @@ Attributes
                  if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
    :type names: Union[List[str], str]
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if a server-side error is thrown in the process of

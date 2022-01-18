@@ -46,7 +46,6 @@ Functions
    :param line: Line to be written to the file
    :type line: str
 
-   :returns:
    :rtype: None
 
    :raises UnsupportedOption: Raised if there's an error in creating or
@@ -82,7 +81,6 @@ Functions
    :type path: str
    :param delimiter: Delimiter separating key and value
 
-   :returns:
    :rtype: None
 
    :raises OError: Raised if there's an error opening or writing to the

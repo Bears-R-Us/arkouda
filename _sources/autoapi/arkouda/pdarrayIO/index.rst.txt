@@ -254,7 +254,6 @@ Functions
                 If 'append', attempt to create new dataset in existing files.
    :type mode: {'truncate' | 'append'}
 
-   :returns:
    :rtype: None
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode

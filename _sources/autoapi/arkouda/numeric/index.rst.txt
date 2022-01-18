@@ -383,7 +383,6 @@ Functions
    :param pda:
    :type pda: pdarray to test
 
-   :returns:
    :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
 
    :raises TypeError: Raised if the parameter is not a pdarray

@@ -142,7 +142,6 @@ Functions
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :returns:
       :rtype: np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
@@ -396,7 +395,6 @@ Functions
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -646,7 +644,6 @@ Functions
                    If 'append', attempt to create new dataset in existing files.
       :type mode: str {'truncate' | 'append'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -698,7 +695,6 @@ Functions
                    Append is currently not supported.
       :type mode: str {'truncate'}
 
-      :returns:
       :rtype: string message indicating result of save operation
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
@@ -779,7 +775,6 @@ Functions
       registered using register() and/or attahced to using attach()
 
 
-      :returns:
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
@@ -837,7 +832,6 @@ Functions
 
    Send a clear message to clear all unregistered data from the server symbol table
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if there is a server-side error in executing clear request
@@ -1360,7 +1354,6 @@ Functions
    :param user_defined_name: user defined name which array was registered under
    :type user_defined_name: str
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove

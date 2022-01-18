@@ -41,7 +41,6 @@ Functions
                        where the token is optional
    :type connect_url: str, optional
 
-   :returns:
    :rtype: None
 
    :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
@@ -58,7 +57,6 @@ Functions
 
    Disconnects the client from the Arkouda server
 
-   :returns:
    :rtype: None
 
    :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
@@ -73,7 +71,6 @@ Functions
    2. Shuts down the Arkouda server
    3. Disconnects the client from the stopped Arkouda Server
 
-   :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if the client is not connected to the Arkouda server or

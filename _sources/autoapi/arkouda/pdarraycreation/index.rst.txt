@@ -42,7 +42,6 @@ Functions
    :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
    :type dtype: Optional[type]
 
-   :returns:
    :rtype: Union[pdarray,Strings]
 
    :raises TypeError: Raised if series is not a Pandas Series object

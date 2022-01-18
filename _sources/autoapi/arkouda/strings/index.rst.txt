@@ -808,7 +808,6 @@ Classes
                            upon load/read.
       :type save_offsets: bool
 
-      :returns:
       :rtype: String message indicating result of save operation
 
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
@@ -863,7 +862,6 @@ Classes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
@@ -902,7 +900,6 @@ Classes
       registered using register() and/or attached to using attach()
 
 
-      :returns:
       :rtype: None
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove

@@ -409,7 +409,6 @@ Classes
                    If 'append', create a new Categorical dataset within existing files.
       :type mode: str {'truncate' | 'append'}
 
-      :returns:
       :rtype: String message indicating result of save operation
 
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
@@ -524,7 +523,6 @@ Classes
 
       :param None:
 
-      :returns:
       :rtype: None
 
 
