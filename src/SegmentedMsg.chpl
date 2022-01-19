@@ -196,11 +196,6 @@ module SegmentedMsg {
                       truth.a = strings.substringSearch(val, SearchMode.endsWith, regex);
                       repMsg = "created "+st.attrib(rname);
                   }
-                  when "match" {
-                      var truth = st.addEntry(rname, strings.size, bool);
-                      truth.a = strings.substringSearch(val, SearchMode.match, regex);
-                      repMsg = "created "+st.attrib(rname);
-                  }
                   otherwise {
                       var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
                                   subcmd, objtype, valtype));

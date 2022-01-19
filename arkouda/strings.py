@@ -748,6 +748,8 @@ class Strings:
             matcher = self._get_matcher(substr, create=False)
             if matcher is not None:
                 return matcher.get_match(MatchType.MATCH, self).matched()
+            else:
+                return self.contains('^' + substr, regex=True)
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("startswith",
                                              self.objtype,
