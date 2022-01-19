@@ -20,15 +20,15 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   forall (p, rn, o, l) in zip(present, r, segs, lengths) {
     if p {
       var i: int;
-      if mode == SearchMode.contains {
+      if mode == 'contains' {
         if l == nb {
           i = 0;
         } else {
           i = rn % (l - nb);
         }
-      } else if mode == SearchMode.startsWith {
+      } else if mode == 'startsWith' {
         i = 0;
-      } else if mode == SearchMode.endsWith {
+      } else if mode == 'endsWith' {
         i = l - nb;
       }
       vals[{(o+i)..#nb}] = sbytes;
@@ -39,7 +39,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   return (present, strings2);
 }
 
-proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase, mode: SearchMode = SearchMode.contains) throws {
+proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase, mode = 'contains') throws {
   var st = new owned SymTab();
   var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
@@ -48,11 +48,17 @@ proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSe
   d.stop("make_strings");
   writeln("Searching for substring..."); stdout.flush();
   d.start();
-  var truth = strings.substringSearch(substr, mode);
+  var regexSubstr = substr;
+  if mode == 'startsWith' {
+    regexSubstr = '^'+substr;
+  } else if mode == 'endsWith' {
+    regexSubstr = substr+'$';
+  } 
+  var truth = strings.substringSearch(regexSubstr);
   d.stop("substringSearch");
   var nFound = + reduce truth;
   if DEBUG && (nFound > 0) {
-    writeln("Found %t strings containing %s".format(nFound, substr)); stdout.flush();
+    writeln("Found %t strings containing %s".format(nFound, regexSubstr)); stdout.flush();
     var (mSegs, mVals) = strings[truth];
     var matches = getSegString(mSegs, mVals, st);
     matches.show(5);
@@ -104,7 +110,7 @@ proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSe
 }
 
 proc main() {
-  for mode in (SearchMode.contains, SearchMode.startsWith, SearchMode.endsWith) {
+  for mode in ('contains', 'startsWith', 'endsWith') {
     writeln("\n", mode);
     try! test_search(SUBSTRING, N, MINLEN, MAXLEN, mode=mode);
   }
