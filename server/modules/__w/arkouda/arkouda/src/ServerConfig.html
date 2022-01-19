@@ -109,7 +109,6 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -262,12 +261,6 @@
 </dd></dl>
 
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="ServerConfig.hasParquetSupport">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">hasParquetSupport</span></span> <span class="pre">=</span> <span class="pre">false</span><a class="headerlink" href="#ServerConfig.hasParquetSupport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether the server was built with parquet support</p>
-</dd></dl>
-
-<dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.scLogger">
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">scLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(lLevel)</span><a class="headerlink" href="#ServerConfig.scLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -347,6 +340,34 @@ throw error if we would go over the limit</p>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getEnvInt">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnvInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#ServerConfig.getEnvInt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.Q">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">Q</span></span> <span class="pre">=</span> <span class="pre">&quot;\&quot;&quot;</span><a class="headerlink" href="#ServerConfig.Q" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>String constants for use in constructing JSON formatted messages</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.QCQ">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">QCQ</span></span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">+</span> <span class="pre">:</span> <span class="pre">+</span> <span class="pre">Q</span><a class="headerlink" href="#ServerConfig.QCQ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.BSLASH">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">BSLASH</span></span> <span class="pre">=</span> <span class="pre">&quot;\\&quot;</span><a class="headerlink" href="#ServerConfig.BSLASH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.ESCAPED_QUOTES">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ESCAPED_QUOTES</span></span> <span class="pre">=</span> <span class="pre">BSLASH</span> <span class="pre">+</span> <span class="pre">Q</span><a class="headerlink" href="#ServerConfig.ESCAPED_QUOTES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerConfig.appendToConfigStr">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendToConfigStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.appendToConfigStr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

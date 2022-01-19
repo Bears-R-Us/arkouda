@@ -81,15 +81,9 @@ or
    * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
    
 
-.. data:: const Q = "\""
+.. function:: proc jsonToPdArray(json: string, size: int) throws
 
    
-   * String constants for use in constructing JSON formatted messages
+   * Converts the JSON array to a pdarray
    
-
-.. data:: const QCQ = Q + : + Q
-
-.. data:: const BSLASH = "\\"
-
-.. data:: const ESCAPED_QUOTES = BSLASH + Q
 

@@ -76,10 +76,6 @@ arkouda server config param and config const
    Determines the maximum number of capture groups returned by Regex.matches
    
 
-.. data:: config param hasParquetSupport = false
-
-   Whether the server was built with parquet support 
-
 .. data:: const scLogger = new Logger(lLevel)
 
 .. function:: proc createConfig()
@@ -131,4 +127,18 @@ arkouda server config param and config const
 .. method:: proc bytes.splitMsgToTuple(sep: bytes, param numChunks: int)
 
 .. function:: proc getEnvInt(name: string, default: int): int
+
+.. data:: const Q = "\""
+
+   
+   * String constants for use in constructing JSON formatted messages
+   
+
+.. data:: const QCQ = Q + : + Q
+
+.. data:: const BSLASH = "\\"
+
+.. data:: const ESCAPED_QUOTES = BSLASH + Q
+
+.. function:: proc appendToConfigStr(key: string, val: string)
 

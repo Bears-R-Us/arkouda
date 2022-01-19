@@ -109,7 +109,6 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -207,63 +206,8 @@
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.GenSymIO_DEBUG">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">GenSymIO_DEBUG</span></span> <span class="pre">=</span> <span class="pre">false</span><a class="headerlink" href="#GenSymIO.GenSymIO_DEBUG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.SEGARRAY_OFFSET_NAME">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">SEGARRAY_OFFSET_NAME</span></span> <span class="pre">=</span> <span class="pre">&quot;segments&quot;</span><a class="headerlink" href="#GenSymIO.SEGARRAY_OFFSET_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.SEGARRAY_VALUE_NAME">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">SEGARRAY_VALUE_NAME</span></span> <span class="pre">=</span> <span class="pre">&quot;values&quot;</span><a class="headerlink" href="#GenSymIO.SEGARRAY_VALUE_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
 <dt class="sig sig-object chpl" id="GenSymIO.NULL_STRINGS_VALUE">
 <em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">NULL_STRINGS_VALUE</span></span> <span class="pre">=</span> <span class="pre">0:</span> <span class="pre">uint(8)</span><a class="headerlink" href="#GenSymIO.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.TRUNCATE">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">TRUNCATE</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#GenSymIO.TRUNCATE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.APPEND">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">APPEND</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#GenSymIO.APPEND" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_METADATA_GROUP">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_METADATA_GROUP</span></span> <span class="pre">=</span> <span class="pre">&quot;/_arkouda_metadata&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_METADATA_GROUP" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_KEY">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_ARKOUDA_VERSION_KEY</span></span> <span class="pre">=</span> <span class="pre">&quot;arkouda_version&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_KEY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl type">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE</span></span> <span class="pre">=</span> <span class="pre">c_string</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_KEY">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_KEY</span></span> <span class="pre">=</span> <span class="pre">&quot;file_version&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_KEY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_VAL">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_VAL</span></span> <span class="pre">=</span> <span class="pre">1.0:</span> <span class="pre">real(32)</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_VAL" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl type">
-<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_TYPE">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_TYPE</span></span> <span class="pre">=</span> <span class="pre">real(32)</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_TYPE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -292,50 +236,6 @@
 <dd><ul class="simple">
 <li><p>Outputs the pdarray as a Numpy ndarray in the form of a</p></li>
 <li><p>Chapel Bytes object</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.jsonToPdArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Converts the JSON array to a pdarray</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.isGlobPattern">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGlobPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.isGlobPattern" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Indicates whether the filename represents a glob expression as opposed to</p></li>
-<li><p>an specific filename</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.lshdfMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lshdfMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Simulates the output of h5ls for top level datasets or groups</p></li>
-<li><dl class="field-list simple">
-<dt class="field-odd">returns</dt>
-<dd class="field-odd"><p>string formatted as json list</p>
-</dd>
-</dl>
-</li>
-<li><p>i.e. [“_arkouda_metadata”, “pda1”, “s1”]</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.simulate_h5ls">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">simulate_h5ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fid:</span> <span class="pre">C_HDF5.hid_t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.simulate_h5ls" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li></li>
-<li><p>Simulate h5ls call by using HDF5 API (top level datasets and groups only, not recursive)</p></li>
-<li><p>This uses both internal call back functions as well as exter c functions defined above to</p></li>
-<li><p>work with the HDF5 API and handle the the data objects it passes between calls as opaque void*</p></li>
-<li><p>which can’t be used directly in chapel code.</p></li>
 </ul>
 </dd></dl>
 
@@ -380,27 +280,14 @@
 </dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.readAllHdfMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readAllHdfMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.readAllHdfMsg" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Reads all datasets from 1..n HDF5 files into an Arkouda symbol table.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.readAllParquetMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">readAllParquetMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.readAllParquetMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO._buildReadAllHdfMsgJson">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_buildReadAllHdfMsgJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rnames:</span> <span class="pre">list(3*(string))</span></em>, <em class="sig-param"><span class="pre">allowErrors:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">fileErrorCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fileErrors:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO._buildReadAllHdfMsgJson" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="GenSymIO._buildReadAllMsgJson">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_buildReadAllMsgJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rnames:</span> <span class="pre">list(3*(string))</span></em>, <em class="sig-param"><span class="pre">allowErrors:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">fileErrorCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fileErrors:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO._buildReadAllMsgJson" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
-<li><p>Construct json object to be returned from readAllHdfMsg</p></li>
+<li><p>Construct json object to be returned from readAllMsg</p></li>
 <li><dl class="field-list simple">
 <dt class="field-odd">arg rnames</dt>
-<dd class="field-odd"><p>List of (DataSetName, arkouda_type, id of SymEntry) for items read from HDF5 files</p>
+<dd class="field-odd"><p>List of (DataSetName, arkouda_type, id of SymEntry) for items read from files</p>
 </dd>
 </dl>
 </li>
@@ -485,288 +372,6 @@
 <li><p>]</p></li>
 <li><p>}</p></li>
 <li><p>Uses keys:  dataset_name, arkouda_type-&gt;[pdarray|seg_string], created-&gt;(legacy creation statement)</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO._isValidRange">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_isValidRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">r:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#GenSymIO._isValidRange" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li></li>
-<li><p>inline proc to validate the range for our domain.</p></li>
-<li><p>Valid domains must be increasing with the lower bound &lt;= upper bound</p></li>
-<li><dl class="field-list simple">
-<dt class="field-odd">arg r</dt>
-<dd class="field-odd"><p>1D domain</p>
-</dd>
-</dl>
-</li>
-<li><dl class="field-list simple">
-<dt class="field-odd">type domain(1)</dt>
-<dd class="field-odd"><p>one dimensional domain</p>
-</dd>
-</dl>
-</li>
-<li></li>
-<li><dl class="field-list simple">
-<dt class="field-odd">returns</dt>
-<dd class="field-odd"><p>bool True iff the lower bound is less than or equal to upper bound</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.fixupSegBoundaries">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fixupSegBoundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">segSubdoms:</span> <span class="pre">[?fD]</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">valSubdoms:</span> <span class="pre">[fD]</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.fixupSegBoundaries" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.get_dtype">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">skipSegStringOffsets:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Retrieves the datatype of the dataset read from HDF5</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.isHdf5File">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isHdf5File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.isHdf5File" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns boolean indicating whether the file is a valid HDF5 file.</p></li>
-<li><p>Note: if the file cannot be opened due to permissions, throws</p></li>
-<li><p>a PermissionError</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.get_dataset_info">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_dataset_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id</span></em>, <em class="sig-param"><span class="pre">dsetName</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.get_dataset_info" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns a tuple containing the data type, data class, and a</p></li>
-<li><p>boolean indicating whether the datatype is signed for the</p></li>
-<li><p>supplied file id and dataset name.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="GenSymIO.HDF5RankError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HDF5RankError</span></span><span class="pre">:</span> <span class="pre">Error</span><a class="headerlink" href="#GenSymIO.HDF5RankError" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="GenSymIO.HDF5RankError.rank">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rank</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#GenSymIO.HDF5RankError.rank" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="GenSymIO.HDF5RankError.filename">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">filename</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#GenSymIO.HDF5RankError.filename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="GenSymIO.HDF5RankError.dsetName">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dsetName</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#GenSymIO.HDF5RankError.dsetName" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.isStringsDataset">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isStringsDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.isStringsDataset" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns a boolean indicating whether the dataset is a Strings</p></li>
-<li><p>dataset, checking if the values dataset is embedded within a</p></li>
-<li><p>group named after the dsetName.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.isBooleanDataset">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isBooleanDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.isBooleanDataset" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns a boolean indicating whether the dataset is a boolean</p></li>
-<li><p>dataset, checking if the booleans dataset is embedded within a</p></li>
-<li><p>group named after the dsetName.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isBooleanDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fileName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span></dt>
-<dd><ul class="simple">
-<li><p>Overloaded method returns a boolean indicating whether the dataset is a</p></li>
-<li><p>boolean dataset, checking if the booleans dataset is embedded within a</p></li>
-<li><p>group named after the dsetName. This implementation retrieves the file id</p></li>
-<li><p>for a file name and invokes isBooleanDataset with file id.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.get_subdoms">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_subdoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[?FD]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.get_subdoms" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Get the subdomains of the distributed array represented by each file,</p></li>
-<li><p>as well as the total length of the array.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.read_files_into_distributed_array">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">read_files_into_distributed_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filedomains:</span> <span class="pre">[?FD]</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[FD]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">skips:</span> <span class="pre">set(string)</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function gets called when A is a BlockDist or DefaultRectangular array.</p>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">read_files_into_distributed_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">filedomains:</span> <span class="pre">[?FD]</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[FD]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
-<dd><p>This function is called when A is a CyclicDist array.</p>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.domain_intersection">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.tohdfMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tohdfMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.tohdfMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.toparquetMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toparquetMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.toparquetMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.write1DDistArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write1DDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">array_type:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.write1DDistArray" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Writes the float, int, or bool pdarray out to hdf5</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.isGroupedDataType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGroupedDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dType:</span> <span class="pre">C_HDF5.hid_t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#GenSymIO.isGroupedDataType" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns a boolean indicating if the data type is written to an HDF5</p></li>
-<li><p>group, which currently is C_HDF5.H5T_NATIVE_HBOOL.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.getDataType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">C_HDF5.hid_t</span><a class="headerlink" href="#GenSymIO.getDataType" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns the HDF5 data type corresponding to the dataset, which delegates</p></li>
-<li><p>to getHDF5Type for all datatypes supported by Chapel. For datatypes that</p></li>
-<li><p>are not supported by Chapel, getDataType encapsulates logic to retrieve</p></li>
-<li><p>the HDF5 data type.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.getWriteDsetName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getWriteDsetName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dType:</span> <span class="pre">C_HDF5.hid_t</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.getWriteDsetName" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Retrieves the full dataset name including the group name, if applicable,</p></li>
-<li><p>for the dataset to be written to HDF5.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.getReadDsetName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getReadDsetName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">dsetName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.getReadDsetName" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Retrieves the full dataset name including the group name, if applicable,</p></li>
-<li><p>for the dataset to be read from HDF5.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.getFileMetadata">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Returns a tuple composed of a file prefix and extension to be used to</p></li>
-<li><p>generate locale-specific filenames to be written to.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.generateFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">targetLocalesSize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Generates a list of filenames to be written to based upon a file prefix,</p></li>
-<li><p>extension, and number of locales.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.generateFilename">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.generateFilename" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Generates a file name composed of a prefix, which is a filename provided by</p></li>
-<li><p>the user along with a file index and extension.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.processFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">processFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">matchingFilenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">group:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.processFilenames" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>If APPEND mode, checks to see if the matchingFilenames matches the filenames</p></li>
-<li><p>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</p></li>
-<li><p>the files matching the filenames. If 1..n of the filenames exist, returns</p></li>
-<li><p>warning to the user that 1..n files were overwritten. Since a group name is</p></li>
-<li><p>passed in, and hdf5 group is created in the file(s).</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">processFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">matchingFilenames:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
-<dd><ul class="simple">
-<li><p>If APPEND mode, checks to see if the matchingFilenames matches the filenames</p></li>
-<li><p>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</p></li>
-<li><p>the files matching the filenames. If 1..n of the filenames exist, returns</p></li>
-<li><p>warning to the user that 1..n files were overwritten.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.getMatchingFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
-<li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
-<li><p>being overwritten.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="GenSymIO.addArkoudaHdf5VersioningMetadata">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addArkoudaHdf5VersioningMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fileId:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.addArkoudaHdf5VersioningMetadata" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li></li>
-<li><p>Add internal metadata to HDF5 file</p></li>
-<li><p>Group - /_arkouda_metadata (see ARKOUDA_HDF5_FILE_METADATA_GROUP)</p></li>
-<li><p>Attrs - See constants for attribute names and associated values</p></li>
-<li><dl class="field-list simple">
-<dt class="field-odd">arg fileId</dt>
-<dd class="field-odd"><p>HDF5 H5Fopen identifer (hid_t)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="field-list simple">
-<dt class="field-odd">type int</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</li>
-<li></li>
-<li><p>This adds both the arkoudaVersion from ServerConfig as well as an internal file_version</p></li>
-<li><p>In the future we may remove the file_version if the server version string proves sufficient.</p></li>
-<li><p>Internal metadata related to the HDF5 API / capabilities / etc. can be added to this group.</p></li>
-<li><p>Data specific metadata should be attached directly to the dataset / group itself.</p></li>
 </ul>
 </dd></dl>
 

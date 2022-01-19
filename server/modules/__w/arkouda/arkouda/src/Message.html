@@ -109,7 +109,6 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -311,28 +310,13 @@
 </ul>
 </dd></dl>
 
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="Message.Q">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">Q</span></span> <span class="pre">=</span> <span class="pre">&quot;\&quot;&quot;</span><a class="headerlink" href="#Message.Q" title="Permalink to this definition">¶</a></dt>
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.jsonToPdArray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li><p>String constants for use in constructing JSON formatted messages</p></li>
+<li><p>Converts the JSON array to a pdarray</p></li>
 </ul>
 </dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="Message.QCQ">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">QCQ</span></span> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">+</span> <span class="pre">:</span> <span class="pre">+</span> <span class="pre">Q</span><a class="headerlink" href="#Message.QCQ" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="Message.BSLASH">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">BSLASH</span></span> <span class="pre">=</span> <span class="pre">&quot;\\&quot;</span><a class="headerlink" href="#Message.BSLASH" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="Message.ESCAPED_QUOTES">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ESCAPED_QUOTES</span></span> <span class="pre">=</span> <span class="pre">BSLASH</span> <span class="pre">+</span> <span class="pre">Q</span><a class="headerlink" href="#Message.ESCAPED_QUOTES" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 

@@ -109,7 +109,6 @@
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Parquet.html">Parquet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
@@ -201,6 +200,11 @@
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">FileIO</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="FileIO.fioLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">fioLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#FileIO.fioLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="FileIO.FileType">
 <em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span> <span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span><a class="headerlink" href="#FileIO.FileType" title="Permalink to this definition">¶</a></dt>
@@ -225,6 +229,60 @@
 <dt class="sig sig-object chpl" id="FileIO.initDirectory">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.initDirectory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.ensureClose">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ensureClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpf:</span> <span class="pre">file</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#FileIO.ensureClose" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Ensure the file is closed, disregard errors</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.isGlobPattern">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGlobPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.isGlobPattern" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Indicates whether the filename represents a glob expression as opposed to</p></li>
+<li><p>an specific filename</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.generateFilenames">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">targetLocalesSize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates a list of filenames to be written to based upon a file prefix,</p></li>
+<li><p>extension, and number of locales.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.generateFilename">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.generateFilename" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates a file name composed of a prefix, which is a filename provided by</p></li>
+<li><p>the user along with a file index and extension.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getMatchingFilenames">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
+<li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
+<li><p>being overwritten.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.getFileMetadata">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Returns a tuple composed of a file prefix and extension to be used to</p></li>
+<li><p>generate locale-specific filenames to be written to.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_PARQUET">
@@ -253,6 +311,11 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.domain_intersection">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 
