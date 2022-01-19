@@ -182,7 +182,21 @@ or
       :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
       
 
-   .. method:: proc substringSearchRegex(const pattern: string, mode: SearchMode) throws
+   .. method:: proc substringSearchRegex(const pattern: string) throws
+
+      
+      Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+      
+      :arg pattern: regex pattern to be applied to strings in SegString
+      :type pattern: string
+      
+      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
+      :type mode: SearchMode enum
+      
+      :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      
 
    .. method:: proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws
 

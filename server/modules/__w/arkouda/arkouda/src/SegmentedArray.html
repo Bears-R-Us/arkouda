@@ -430,8 +430,21 @@ If returnNumSubs is set to True, the number of substitutions per string will be 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.substringSearchRegex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearchRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">mode:</span> <span class="pre">SearchMode</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.substringSearchRegex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearchRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.substringSearchRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
+<p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> : <em>string</em> – regex pattern to be applied to strings in SegString</p></li>
+<li><p><strong>mode</strong> : <em>SearchMode enum</em> – mode of search being performed (contains, startsWith, endsWith, match)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.substringSearch">
