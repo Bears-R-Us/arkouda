@@ -1,5 +1,7 @@
 use TestBase;
+use FileIO;
 use GenSymIO;
+use HDF5Msg;
 use Set;
 
 config const size = 10**4;

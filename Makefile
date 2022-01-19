@@ -71,7 +71,6 @@ CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 ifdef ARKOUDA_SERVER_PARQUET_SUPPORT
   CHPL_FLAGS += -lparquet -larrow
   OPTIONAL_CHECKS += check-arrow
-  OPTIONAL_SERVER_FLAGS += -shasParquetSupport
   ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
   ARROW_CPP += $(ARROW_FILE_NAME).cpp
   ARROW_H += $(ARROW_FILE_NAME).h
@@ -186,7 +185,7 @@ check-hdf5: $(HDF5_CHECK)
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
 check-arrow: $(ARROW_CHECK) $(ARROW_O)
 	@echo "Checking for Arrow"
-	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@ -shasParquetSupport
+	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
@@ -259,13 +258,14 @@ endif
 MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE)
+	$(eval MOD_GEN_OUT=$(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE)))
+	@echo $(MOD_GEN_OUT);
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
 arkouda-clean:
-	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real
+	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARKOUDA_SOURCE_DIR)/ServerRegistration.chpl
 
 .PHONY: tags
 tags:
@@ -418,6 +418,7 @@ $(TEST_BINARY_DIR):
 
 .PHONY: $(TEST_TARGETS) # Force tests to always rebuild.
 $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.chpl | $(TEST_BINARY_DIR)
+	python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE)
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:

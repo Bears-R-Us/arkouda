@@ -1,5 +1,6 @@
 module Message {
     use IO;
+    use FileIO;
     use Reflection;
     use ServerErrors;
 
@@ -68,10 +69,18 @@ module Message {
    }
 
     /*
-     * String constants for use in constructing JSON formatted messages
+     * Converts the JSON array to a pdarray
      */
-    const Q = '"'; // Double Quote, escaping quotes often throws off syntax highlighting.
-    const QCQ = Q + ":" + Q; // `":"` -> useful for closing and opening quotes for named json k,v pairs
-    const BSLASH = '\\';
-    const ESCAPED_QUOTES = BSLASH + Q;
+    proc jsonToPdArray(json: string, size: int) throws {
+        var f = opentmp(); defer { ensureClose(f); }
+        var w = f.writer();
+        w.write(json);
+        w.close();
+        var r = f.reader(start=0);
+        var array: [0..#size] string;
+        r.readf("%jt", array);
+        r.close();
+        return array;
+    }
+
 }

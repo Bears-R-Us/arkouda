@@ -6,7 +6,6 @@ module FlattenMsg {
   use Flatten;
   use ServerConfig;
   use SegmentedArray;
-  use GenSymIO;
   use Logging;
   use Message;
   
