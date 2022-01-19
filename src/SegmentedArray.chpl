@@ -716,46 +716,24 @@ module SegmentedArray {
 
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
-    // DEPRECATED - All substringSearchRegex calls now handled by Match objects on Client
-    // TODO: Remove substringSearchRegex
-    proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
+    proc substringSearchRegex(const pattern: string) throws {
       var hits: [offsets.aD] bool = false;  // the answer
       checkCompile(pattern);
 
-      // should we do len check here? re2.compile('') is valid regex and matches everything
       ref oa = offsets.a;
       ref va = values.a;
       var lengths = getLengths();
 
-      select mode {
-        when SearchMode.contains {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            // regexp.search searches the receiving string for matches at any offset
-            h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
-          }
-        }
-        when SearchMode.startsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            // regexp.match only returns a match if the start of the string matches the pattern
-            h = myRegex.match(interpretAsString(va, o..#l, borrow=true)).matched;
-          }
-        }
-        when SearchMode.endsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            var matches = myRegex.matches(interpretAsString(va, o..#l, borrow=true));
-            var lastMatch = matches[matches.size-1][0];  // v1.24.x reMatch, 1.25.x regexMatch
-            // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
-            h = lastMatch.offset + lastMatch.size == l-1;
-          }
-        }
+      forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+        // regexp.search searches the receiving string for matches at any offset
+        h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
       }
       return hits;
     }
     
     proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws {
-      if regex || mode == SearchMode.match {
-        // match always uses substringSearchRegex
-        return substringSearchRegex(substr, mode);
+      if regex {
+        return substringSearchRegex(substr);
       }
       var hits: [offsets.aD] bool;  // the answer
       if (size == 0) || (substr.size == 0) {
