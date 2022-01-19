@@ -15,12 +15,6 @@ module ArraySetops
     use Indexing;
     use In1d;
 
-
-    /*
-    Small bound const. Brute force in1d implementation recommended.
-    */
-    private config const sBound = 2**4; 
-
     /*
     Medium bound const. Per locale associative domain in1d implementation recommended.
     */
@@ -108,8 +102,7 @@ module ArraySetops
         var truth = makeDistArray(a.size, bool);
 
         // based on size of array, determine which method to use 
-        if (b.size <= sBound) then truth = in1dGlobalAr2Bcast(a, b);
-        else if (b.size <= mBound) then truth = in1dAr2PerLocAssoc(a, b);
+        if (b.size <= mBound) then truth = in1dAr2PerLocAssoc(a, b);
         else truth = in1dSort(a,b);
         
         truth = !truth;

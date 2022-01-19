@@ -88,6 +88,16 @@ module AryUtil
     }
 
     /*
+      Iterate over indices (range/domain) ``ind`` but in an offset manner based
+      on the locale id. Can be used to avoid doing communication in lockstep.
+    */
+    iter offset(ind) where isRange(ind) || isDomain(ind) {
+        for i in ind + (ind.size/numLocales * here.id) do {
+            yield i % ind.size + ind.first;
+        }
+    }
+
+    /*
       Determines if the passed array array maps contiguous indices to
       contiguous memory.
 
