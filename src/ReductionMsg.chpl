@@ -411,35 +411,128 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) throws {
+    /* proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) throws { */
+    /*   type t = if intype == bool then int else intype; */
+    /*   var res: [D] t; */
+    /*   if (D.size == 0) { return res; } */
+    /*   var cumsum; */
+    /*   if (isFloatType(t) && skipNan) { */
+    /*     var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem; */
+    /*     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit */
+    /*     overMemLimit(numBytes(t) * arrCopy.size); */
+    /*     cumsum = + scan arrCopy; */
+    /*   } */
+    /*   else { */
+    /*     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit */
+    /*     overMemLimit(numBytes(t) * values.size); */
+    /*     cumsum = + scan values; */
+    /*   } */
+    /*   // Iterate over segments */
+    /*   var rightvals: [D] t; */
+    /*   forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) { */
+    /*     // Find the segment boundaries */
+    /*     if (i == D.high) { */
+    /*       agg.copy(r, cumsum[values.domain.high]); */
+    /*     } else { */
+    /*       agg.copy(r, cumsum[segments[i+1] - 1]); */
+    /*     } */
+    /*   } */
+    /*   res[D.low] = rightvals[D.low]; */
+    /*   res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1]; */
+    /*   return res; */
+    /* } */
+
+    proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var cumsum;
-      if (isFloatType(t) && skipNan) {
-        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(t) * arrCopy.size);
-        cumsum = + scan arrCopy;
-      }
-      else {
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(t) * values.size);
-        cumsum = + scan values;
-      }
-      // Iterate over segments
-      var rightvals: [D] t;
-      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
-        // Find the segment boundaries
-        if (i == D.high) {
-          agg.copy(r, cumsum[values.domain.high]);
-        } else {
-          agg.copy(r, cumsum[segments[i+1] - 1]);
+      // Set reset flag at segment boundaries
+      var flagvalues: [vD] (bool, t); // = [v in values] (false, v);
+      if isFloatType(t) && skipNan {
+        forall (fv, val) in zip(flagvalues, values) {
+          fv = if isnan(val) then (false, 0.0) else (false, val);
+        }
+      } else {
+        forall (fv, val) in zip(flagvalues, values) {
+          fv = (false, val:t);
         }
       }
-      res[D.low] = rightvals[D.low];
-      res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1];
+      forall s in segments with (var agg = newDstAggregator(bool)) {
+        agg.copy(flagvalues[s][0], true);
+      }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit((numBytes(t)+1) * flagvalues.size);
+      // Scan with custom operator, which resets the bitwise AND
+      // at segment boundaries.
+      const scanresult = ResettingPlusScanOp scan flagvalues;
+      // Read the results from the last element of each segment
+      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(t)) {
+        agg.copy(r, scanresult[s-1](1));
+      }
+      res[D.high] = scanresult[vD.high](1);
       return res;
+    }
+
+    /* Performs a bitwise sum scan, controlled by a reset flag. While
+     * the reset flag is false, the accumulation of values proceeds as 
+     * normal. When a true is encountered, the state resets to the
+     * identity. */
+    class ResettingPlusScanOp: ReduceScanOp {
+      type eltType;
+      /* value is a tuple comprising a flag and the actual result of 
+         segmented sum. 
+
+         The meaning of the flag depends on whether it belongs to an 
+         array element yet to be scanned or to an element that has 
+         already been scanned (including the internal state of a class
+         instance doing the scanning). For elements yet to be scanned,
+         the flag means "reset to the identity here". For elements that
+         have already been scanned, or for internal state, the flag means 
+         "there has already been a reset in the computation of this value".
+      */
+      var value = if eltType == (bool, real) then (false, 0.0) else (false, 0);
+
+      proc identity return if eltType == (bool, real) then (false, 0.0) else (false, 0);
+
+      proc accumulate(x) {
+        // Assume x is an element that has not yet been scanned, and
+        // that it comes after the current state.
+        const (reset, other) = x;
+        const (hasReset, v) = value;
+        // x's reset flag controls whether value gets replaced or combined
+        // also update this instance's "hasReset" flag with x's reset flag
+        value = (hasReset | reset, if reset then other else (v + other));
+      }
+
+      proc accumulateOntoState(ref state, x) {
+        // Assume state is an element that has already been scanned,
+        // and x is an update from a previous boundary.
+        const (_, other) = x;
+        const (hasReset, v) = state;
+        // x's hasReset flag does not matter
+        // If state has already encountered a reset, then it should
+        // ignore x's value
+        state = (hasReset, if hasReset then v else (v + other));
+      }
+
+      proc combine(x) {
+        // Assume x is an instance that scanned a prior chunk.
+        const (xHasReset, other) = x.value;
+        const (hasReset, v) = value;
+        // Since current instance is absorbing x's history,
+        // xHasReset flag should be ORed in.
+        // But if current instance has already encountered a reset,
+        // then it should ignore x's value.
+        value = (hasReset | xHasReset, if hasReset then v else (v + other));
+      }
+
+      proc generate() {
+        return value;
+      }
+
+      proc clone() {
+        return new unmanaged ResettingPlusScanOp(eltType=eltType);
+      }
     }
 
     proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
