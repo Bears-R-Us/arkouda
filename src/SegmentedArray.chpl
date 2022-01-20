@@ -16,6 +16,7 @@ module SegmentedArray {
   use Logging;
   use ServerErrors;
   use ArkoudaRegexCompat;
+  use SegmentedComputation;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);
@@ -319,70 +320,39 @@ module SegmentedArray {
         }
       }
       return this[segInds];
-      
-      /* // Lengths of dest segments including null bytes */
-      /* var gatheredLengths = makeDistArray(newSize, int); */
-      /* forall (idx, present, i) in zip(D, iv, steps) { */
-      /*   if present { */
-      /*     segInds[i-1] = idx; */
-      /*     if (idx == high) { */
-      /*       gatheredLengths[i-1] = values.size - oa[high]; */
-      /*     } else { */
-      /*       gatheredLengths[i-1] = oa[idx+1] - oa[idx]; */
-      /*     } */
-      /*   } */
-      /* } */
-      /* // Make dest offsets from lengths */
-      /* var gatheredOffsets = (+ scan gatheredLengths); */
-      /* var retBytes = gatheredOffsets[newSize-1]; */
-      /* gatheredOffsets -= gatheredLengths; */
-      /* if logLevel == LogLevel.DEBUG { */
-      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                  "%i seconds".format(getCurrentTime() - t1)); */
-      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Copying values"));*/
-      /*     t1 = getCurrentTime(); */
-      /* } */
-      /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
-      /* ref va = values.a; */
-      /* if logLevel == LogLevel.DEBUG { */
-      /*   printAry("gatheredOffsets: ", gatheredOffsets); */
-      /*   printAry("gatheredLengths: ", gatheredLengths); */
-      /*   printAry("segInds: ", segInds); */
-      /* } */
-      /* // Copy string bytes from src to dest */
-      /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) { */
-      /*   gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}]; */
-      /* } */
-      /* saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "%i seconds".format(getCurrentTime() - t1));*/
-      /* return (gatheredOffsets, gatheredVals); */
     }
 
     /* Apply a hash function to all strings. This is useful for grouping
        and set membership. The hash used is SipHash128.*/
     proc hash() throws {
-      // 128-bit hash values represented as 2-tuples of uint(64)
-      var hashes: [offsets.aD] 2*uint(64);
-      // Early exit for zero-length result
-      if (size == 0) {
-        return hashes;
+      proc hashSegment(msg: [] uint(8), start: int, len: int): 2*uint(64) {
+        return sipHash128(msg, start..#len);
       }
-      ref oa = offsets.a;
-      ref va = values.a;
-      // Compute lengths of strings
-      var lengths = getLengths();
-      // Hash each string
-      // TO DO: test on clause with aggregator
-      forall (o, l, h) in zip(oa, lengths, hashes) {
-        const myRange = o..#l;
-        h = sipHash128(va, myRange);
-        /* // localize the string bytes */
-        /* const myBytes = va[{o..#l}]; */
-        /* h = sipHash128(myBytes, hashKey); */
-        /* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: */
-        /* // h = sipHash128(va[{o..#l}]); */
-      }
-      return hashes;
+      var func = hashSegment;
+      return computeOnSegments(offsets.a, values.a, func, 2*uint(64));
+      
+      /* // 128-bit hash values represented as 2-tuples of uint(64) */
+      /* var hashes: [offsets.aD] 2*uint(64); */
+      /* // Early exit for zero-length result */
+      /* if (size == 0) { */
+      /*   return hashes; */
+      /* } */
+      /* ref oa = offsets.a; */
+      /* ref va = values.a; */
+      /* // Compute lengths of strings */
+      /* var lengths = getLengths(); */
+      /* // Hash each string */
+      /* // TO DO: test on clause with aggregator */
+      /* forall (o, l, h) in zip(oa, lengths, hashes) { */
+      /*   const myRange = o..#l; */
+      /*   h = sipHash128(va, myRange); */
+      /*   /\* // localize the string bytes *\/ */
+      /*   /\* const myBytes = va[{o..#l}]; *\/ */
+      /*   /\* h = sipHash128(myBytes, hashKey); *\/ */
+      /*   /\* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: *\/ */
+      /*   /\* // h = sipHash128(va[{o..#l}]); *\/ */
+      /* } */
+      /* return hashes; */
     }
 
     /* Return a permutation that groups the strings. Because hashing is used,
