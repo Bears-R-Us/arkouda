@@ -445,6 +445,7 @@ module ReductionMsg
     proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res: [D] t;
+      if (D.size == 0) { return res; }
       // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, t); // = [v in values] (false, v);
       if isFloatType(t) && skipNan {
