@@ -442,10 +442,10 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
             dt = dtA
         # If the dtypes are different, try casting one direction then the other
         elif dtB in DTypes and np.can_cast(A, dtB):
-            A = np.dtype(dtB).type(A)
+            A = np.dtype(dtB).type(A)  # type: ignore
             dt = dtB
         elif dtA in DTypes and np.can_cast(B, dtA):
-            B = np.dtype(dtA).type(B)
+            B = np.dtype(dtA).type(B)  # type: ignore
             dt = dtA
         # Cannot safely cast
         else:

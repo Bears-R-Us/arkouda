@@ -71,7 +71,7 @@ class JoinTest(ArkoudaTest):
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
         
-        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt", np.int(0))
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt", int(0))
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
         
