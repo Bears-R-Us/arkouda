@@ -159,14 +159,13 @@ def kill_server(server_process):
             logging.warn('Attempting dirty server shutdown')
             server_process.kill()
 
-def start_arkouda_server(numlocales, verbose=False, log=False, port=5555, host=None):
+def start_arkouda_server(numlocales, trace=False, port=5555, host=None):
     """
     Start the Arkouda server and wait for it to start running. Connection info
     is written to `get_arkouda_server_info_file()`.
     
     :param int numlocals: the number of arkouda_server locales
-    :param bool verbose: indicates whether to start the arkouda_server in verbose mode
-    :param bool log: indicates whether to start arkouda_server with logging enabled
+    :param bool trace: indicates whether to start the arkouda_server with tracing
     :param int port: the desired arkouda_server port, defaults to 5555
     :param str host: the desired arkouda_server host, defaults to None
     :return: tuple containing server host, port, and process
@@ -177,7 +176,7 @@ def start_arkouda_server(numlocales, verbose=False, log=False, port=5555, host=N
         os.remove(connection_file)
     
     cmd = [get_arkouda_server(),
-           '--trace={}'.format('true' if log else 'false'),
+           '--trace={}'.format('true' if trace else 'false'),
            '--serverConnectionInfo={}'.format(connection_file),
            '-nl {}'.format(numlocales), '--ServerPort={}'.format(port)]
 
