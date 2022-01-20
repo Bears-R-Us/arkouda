@@ -389,7 +389,7 @@ Attributes
       Return repr(self).
 
 
-   .. py:method:: format_other(self, other: object) -> numpy.dtype
+   .. py:method:: format_other(self, other: object) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
       and print the resulting value to a string (e.g. for sending to a
@@ -398,7 +398,7 @@ Attributes
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :rtype: np.dtype corresponding to the other parameter
+      :rtype: string representation of np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
           Numpy dtype
@@ -667,7 +667,7 @@ Attributes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-   .. py:method:: sum(self) -> arkouda.dtypes.numpy_scalars
+   .. py:method:: sum(self) -> arkouda.dtypes.numeric_and_bool_scalars
 
       Return the sum of all elements in the array.
 
@@ -2033,7 +2033,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: zeros(size: arkouda.dtypes.int_scalars, dtype: type = np.float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -2062,7 +2062,7 @@ Attributes
    array([False, False, False, False, False])
 
 
-.. py:function:: ones(size: arkouda.dtypes.int_scalars, dtype: type = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -4713,7 +4713,7 @@ Attributes
       Return repr(self).
 
 
-   .. py:method:: format_other(self, other: object) -> numpy.dtype
+   .. py:method:: format_other(self, other: object) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
       and print the resulting value to a string (e.g. for sending to a
@@ -4722,7 +4722,7 @@ Attributes
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :rtype: np.dtype corresponding to the other parameter
+      :rtype: string representation of np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
           Numpy dtype
@@ -4991,7 +4991,7 @@ Attributes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-   .. py:method:: sum(self) -> arkouda.dtypes.numpy_scalars
+   .. py:method:: sum(self) -> arkouda.dtypes.numeric_and_bool_scalars
 
       Return the sum of all elements in the array.
 

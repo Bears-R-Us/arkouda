@@ -133,7 +133,7 @@ Functions
       Return repr(self).
 
 
-   .. py:method:: format_other(self, other: object) -> numpy.dtype
+   .. py:method:: format_other(self, other: object) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
       and print the resulting value to a string (e.g. for sending to a
@@ -142,7 +142,7 @@ Functions
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object
 
-      :rtype: np.dtype corresponding to the other parameter
+      :rtype: string representation of np.dtype corresponding to the other parameter
 
       :raises TypeError: Raised if the other parameter cannot be converted to
           Numpy dtype
@@ -411,7 +411,7 @@ Functions
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-   .. py:method:: sum(self) -> arkouda.dtypes.numpy_scalars
+   .. py:method:: sum(self) -> arkouda.dtypes.numeric_and_bool_scalars
 
       Return the sum of all elements in the array.
 
