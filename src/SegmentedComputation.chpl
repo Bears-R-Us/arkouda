@@ -44,8 +44,12 @@ module SegmentedComputation {
 
     return (startSegInds, numSegs, lengths);
   }
+
+  enum SegFunction {
+    SipHash128,
+  }
   
-  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, function, type retType) throws {
+  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType) throws {
     var res: [D] retType;
     if (D.size == 0) {
       return res;
@@ -67,7 +71,14 @@ module SegmentedComputation {
         const myLens = lengths[mySegInds];
         // Apply function to bytes of each owned segment, aggregating return value to res
         forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
-          agg.copy(res[i], function(values, start, len));
+          select function {
+            when SegFunction.SipHash128 {
+              agg.copy(res[i], sipHash128(values, start..#len));
+            }
+            otherwise {
+              compilerError("Unrecognized segmented function");
+            }
+          }
         }
       }
     }
