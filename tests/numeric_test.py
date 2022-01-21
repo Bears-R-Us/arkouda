@@ -206,19 +206,3 @@ class NumericTest(ArkoudaTest):
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
         with self.assertRaises(RuntimeError, msg="Currently isnan on int64 is not supported"):
             ak.isnan(ark_s_int64)
-
-    def testPrecision(self):
-        # See https://github.com/Bears-R-Us/arkouda/issues/964
-        # Grouped sum was exacerbating floating point errors
-        # This test verifies the fix
-        N = 10**6
-        G = N // 10
-        ub = 2**63 // N
-        groupnum = ak.randint(0, G, N, seed=1)
-        intval = ak.randint(0, ub, N, seed=2)
-        floatval = ak.cast(intval, ak.float64)
-        g = ak.GroupBy(groupnum)
-        _, intmean = g.mean(intval)
-        _, floatmean = g.mean(floatval)
-        ak_mse = ak.mean((intmean - floatmean)**2)
-        self.assertTrue(np.isclose(ak_mse, 0.0))
