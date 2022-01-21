@@ -7,7 +7,10 @@ def getModules(filename):
         for module in modules:
             module = (module.rstrip()).lstrip()
             if len(module) > 0 and module[0] != '#':
-                ret.append(module)
+                if module[0] == '/':
+                    ret.append(module[module.rfind('/')+1:])
+                else:
+                    ret.append(module)
         return ret
 
 def generateServerIncludes(config_filename, reg_filename):
@@ -22,6 +25,21 @@ def generateServerIncludes(config_filename, reg_filename):
 
     serverfile.write("}\n")
 
+def generateSearchPaths(filename):
+    with open(filename) as configfile:
+        modules = configfile.readlines()
+        ret = ""
+        for module in modules:
+            module = (module.rstrip()).lstrip()
+            # Represents a path to a file
+            if len(module) > 0 and module[0] == '/':
+                ret += f" {module}.chpl"
+                
+        return ret
+    
 if __name__ == "__main__":
     import sys
-    generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
+    if len(sys.argv) == 2:
+        generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
+    else:
+        print(generateSearchPaths(sys.argv[1]))
