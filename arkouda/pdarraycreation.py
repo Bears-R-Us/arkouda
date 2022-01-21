@@ -15,7 +15,7 @@ from arkouda.strings import Strings
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
-           "from_series"
+           "from_series", "array2D", "randint2D"
           ]
 
 @typechecked
@@ -828,3 +828,38 @@ def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars
                  NUMBER_FORMAT_STRINGS['float64'].format(logstd),
                  seed))
     return Strings.from_return_msg(cast(str, repMsg))
+
+# We cannot pass the binary data back for this function since it is optional
+# on the server side, which means that it's signature must be identical to
+# the regular Arkouda message. Could possibly add a second map that was like
+# "arrayCreationMap" or something that handled signatures of that type.
+def array2D(val, m, n) -> Union[pdarray, Strings]:
+    """
+    """
+    args = ""
+    from arkouda.client import maxTransferBytes
+    # Only rank 2 arrays currently supported
+    if isinstance(val, bool):
+        args = f"bool {val} {m} {n}"
+    elif isinstance(val, int):
+        args = f"int64 {val} {m} {n}"
+    elif isinstance(val, float):
+        args = f"float64 {val} {m} {n}"
+
+    rep_msg = generic_msg(cmd='array2d', args=args)
+    return create_pdarray(rep_msg)
+
+def randint2D(low : numeric_scalars, high : numeric_scalars, 
+              m : int_scalars, n : int_scalars, dtype=int64, seed : int_scalars=None) -> pdarray:
+    if high < low:
+        raise ValueError("size must be > 0 and high > low")
+    dtype = akdtype(dtype) # normalize dtype
+    # check dtype for error
+    if dtype.name not in DTypes:
+        raise TypeError("unsupported dtype {}".format(dtype))
+    lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
+    highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
+
+    repMsg = generic_msg(cmd='randint2d', args='{} {} {} {} {}'.\
+                         format(lowstr, highstr, m, n, seed))
+    return create_pdarray(repMsg)
