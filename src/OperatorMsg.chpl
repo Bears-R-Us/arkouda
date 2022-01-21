@@ -48,10 +48,7 @@ module OperatorMsg
                                           cmd,op,st.attrib(aname),st.attrib(bname)));
 
         use Set;
-        // could have supported ops for the different types and
-        // then we would just need to check if they are supported
-        // before calling doBinOp? This would allow us to get around
-        // the selection on dtypes maybe?
+
         var boolOps: set(string);
         boolOps.add("<");
         boolOps.add("<=");
@@ -60,10 +57,6 @@ module OperatorMsg
         boolOps.add("==");
         boolOps.add("!=");
 
-        // switching this to an if/else could enable us to
-        // share more code and not have as much duplication
-        // since all that is different is the casting to a
-        // symEntry type
         select (left.dtype, right.dtype) {
           when (DType.Int64, DType.Int64) {
             var l = toSymEntry(left,int);
@@ -169,8 +162,6 @@ module OperatorMsg
             }
           }
         } else {
-          // could combine this and above case by just checking on types
-          // to see if we can do it? Like for `<`, don't do it for bools
           select op {
               when "<" {
                 e.a = l.a < r.a;
