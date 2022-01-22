@@ -909,7 +909,6 @@ def randint2D(low : numeric_scalars, high : numeric_scalars,
     seed : int_scalars
         Index for where to pull the first returned value
         
-
     Returns
     -------
     pdarray
@@ -933,6 +932,14 @@ def randint2D(low : numeric_scalars, high : numeric_scalars,
     >>> ak.randint2D(0, 10, 2, 2)
     array([[3, 6],
            [8, 4]])
+
+    >>> ak.randint2D(0, 1, 2, 2, dtype=ak.bool)
+    array([[True, True],
+           [False, True]])
+
+    >>> ak.randint2D(0, 1, 2, 2, dtype=ak.float64)
+    array([[0.3793842821625909, 0.97508925511529132],
+           [0.12608488822540775, 0.23591727525338338]])    
     """
     if high < low:
         raise ValueError("size must be > 0 and high > low")
@@ -943,6 +950,6 @@ def randint2D(low : numeric_scalars, high : numeric_scalars,
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
 
-    repMsg = generic_msg(cmd='randint2d', args='{} {} {} {} {}'.\
-                         format(lowstr, highstr, m, n, seed))
+    repMsg = generic_msg(cmd='randint2d', args='{} {} {} {} {} {}'.\
+                         format(dtype.name, lowstr, highstr, m, n, seed))
     return create_pdarray(repMsg)

@@ -9,8 +9,13 @@ module Arr2DMsg {
   use ServerErrors;
   use Reflection;
   use RandArray;
+  use Logging;
+  use ServerErrorStrings;
 
   use OperatorMsg;
+
+  private config const logLevel = ServerConfig.logLevel;
+  const randLogger = new Logger(logLevel);
 
   proc array2DMsg(cmd: string, args: string, st: borrowed SymTab): MsgTuple throws {
     var (dtypeBytes, val, mStr, nStr) = args.splitMsgToTuple(" ", 4);
@@ -67,20 +72,50 @@ module Arr2DMsg {
     param pn = Reflection.getRoutineName();
     var repMsg: string; // response message
     // split request into fields
-    var (aMinStr,aMaxStr,mStr,nStr,seed) = payload.splitMsgToTuple(5);
+    var (dtypeStr,aMinStr,aMaxStr,mStr,nStr,seed) = payload.splitMsgToTuple(6);
+    var dtype = str2dtype(dtypeStr);
     var m = mStr:int;
     var n = nStr:int;
-
-    overMemLimit(8*m*n);
-    var aMin = aMinStr:int;
-    var aMax = aMaxStr:int;
-    var entry = new shared SymEntry2D(m, n, int);
-
-    var localA: [{0..#m, 0..#n}] int;
-    entry.a = localA;
     var rname = st.nextName();
-    st.addEntry(rname, entry);
-    fillInt(entry.a, aMin, aMax, seed);
+    
+    select (dtype) {
+      when (DType.Int64) {
+        overMemLimit(8*m*n);
+        var aMin = aMinStr:int;
+        var aMax = aMaxStr:int;
+
+        var entry = new shared SymEntry2D(m, n, int);
+        var localA: [{0..#m, 0..#n}] int;
+        entry.a = localA;
+        st.addEntry(rname, entry);
+        fillInt(entry.a, aMin, aMax, seed);
+      }
+      when (DType.Float64) {
+        overMemLimit(8*m*n);
+        var aMin = aMinStr:real;
+        var aMax = aMaxStr:real;
+
+        var entry = new shared SymEntry2D(m, n, real);
+        var localA: [{0..#m, 0..#n}] real;
+        entry.a = localA;
+        st.addEntry(rname, entry);
+        fillReal(entry.a, aMin, aMax, seed);
+      }
+      when (DType.Bool) {
+        overMemLimit(8*m*n);
+        
+        var entry = new shared SymEntry2D(m, n, bool);
+        var localA: [{0..#m, 0..#n}] bool;
+        entry.a = localA;
+        st.addEntry(rname, entry);
+        fillBool(entry.a, seed);
+      }
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype);
+        randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
 
     repMsg = "created " + st.attrib(rname);
     return new MsgTuple(repMsg, MsgType.NORMAL);
