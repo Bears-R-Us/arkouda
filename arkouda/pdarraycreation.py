@@ -829,12 +829,51 @@ def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars
                  seed))
     return Strings.from_return_msg(cast(str, repMsg))
 
-# We cannot pass the binary data back for this function since it is optional
-# on the server side, which means that it's signature must be identical to
-# the regular Arkouda message. Could possibly add a second map that was like
-# "arrayCreationMap" or something that handled signatures of that type.
 def array2D(val, m, n) -> Union[pdarray, Strings]:
     """
+    Generate a 2D pdarray that is of size `m x n` and initialized to the
+    value `val`.
+
+    Parameters
+    ----------
+    val : numeric_and_bool_scalars
+        The value to initialize all elements of the 2D array to
+    m :  int_scalars
+        The `m` dimension of the array to create
+    n : int_scalars
+        The `n` dimension of the array to create
+    Returns
+    -------
+    pdarray
+        A pdarray instance stored on arkouda server
+        
+    Raises
+    ------
+    TypeError
+        Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+        list, array, tuple, or deque
+
+    See Also
+    --------
+    ak.array
+
+    Notes
+    -----
+    We cannot pass the binary data back for this function since it is optional
+    on the server side, which means that its signature must be identical to 
+    the regular Arkouda message. Could possibly add a second map that was like
+    "arrayCreationMap" or something that handled signatures of that type.    
+
+    Examples
+    --------
+    >>> ak.array2D(5, 2, 2)
+    array([[5, 5],
+           [5, 5]])
+    
+    >>> ak.array2D(True, 3, 3)
+    array([[True, True, True],
+           [True, True, True],
+           [True, True, True]])
     """
     args = ""
     from arkouda.client import maxTransferBytes
@@ -851,6 +890,50 @@ def array2D(val, m, n) -> Union[pdarray, Strings]:
 
 def randint2D(low : numeric_scalars, high : numeric_scalars, 
               m : int_scalars, n : int_scalars, dtype=int64, seed : int_scalars=None) -> pdarray:
+    """
+    Generate a 2 dimensional pdarray of randomized int, float, or bool values in a 
+    specified range bounded by the low and high parameters.
+
+    Parameters
+    ----------
+    low : numeric_scalars
+        The low value (inclusive) of the range
+    high : numeric_scalars
+        The high value (exclusive for int, inclusive for float) of the range
+    m :  int_scalars
+        The `m` dimension of the array to create
+    n : int_scalars
+        The `n` dimension of the array to create
+    dtype : Union[int64, float64, bool]
+        The dtype of the array
+    seed : int_scalars
+        Index for where to pull the first returned value
+        
+
+    Returns
+    -------
+    pdarray
+        Values drawn uniformly from the specified range having the desired dtype
+        
+    Raises
+    ------
+    TypeError
+        Raised if dtype.name not in DTypes, size is not an int, low or high is
+        not an int or float, or seed is not an int
+    ValueError
+        Raised if size < 0 or if high < low
+
+    Notes
+    -----
+    Calling randint with dtype=float64 will result in uniform non-integral
+    floating point values.
+
+    Examples
+    --------
+    >>> ak.randint2D(0, 10, 2, 2)
+    array([[3, 6],
+           [8, 4]])
+    """
     if high < low:
         raise ValueError("size must be > 0 and high > low")
     dtype = akdtype(dtype) # normalize dtype
