@@ -145,7 +145,7 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-chpl check-zmq check-hdf5 $(OPTIONAL_CHECKS)
+CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 $(OPTIONAL_CHECKS)
 endif
 check-deps: $(CHECK_DEPS)
 
@@ -178,6 +178,13 @@ check-zmq: $(ZMQ_CHECK)
 HDF5_CHECK = $(DEP_INSTALL_DIR)/checkHDF5.chpl
 check-hdf5: $(HDF5_CHECK)
 	@echo "Checking for HDF5"
+	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
+
+RE2_CHECK = $(DEP_INSTALL_DIR)/checkRE2.chpl
+check-re2: $(RE2_CHECK)
+	@echo "Checking for RE2"
 	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
