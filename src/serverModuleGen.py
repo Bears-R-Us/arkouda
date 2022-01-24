@@ -5,7 +5,7 @@ def getModules(filename):
         modules = configfile.readlines()
         ret = []
         for module in modules:
-            module = (module.rstrip()).lstrip()
+            module = module.strip()
             if len(module) > 0 and module[0] != '#':
                 if module[0] == '/':
                     ret.append(module[module.rfind('/')+1:])
@@ -30,9 +30,9 @@ def generateSearchPaths(filename):
         modules = configfile.readlines()
         ret = ""
         for module in modules:
-            module = (module.rstrip()).lstrip()
+            module = module.strip()
             # Represents a path to a file
-            if len(module) > 0 and module[0] == '/':
+            if module.startswith("/"):
                 ret += f" {module}.chpl"
                 
         return ret
