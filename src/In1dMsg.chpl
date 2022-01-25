@@ -18,11 +18,6 @@ module In1dMsg
     const iLogger = new Logger(logLevel);
     
     /*
-    Small bound const. Brute force in1d implementation recommended.
-    */
-    private config const sBound = 2**4; 
-
-    /*
     Medium bound const. Per locale associative domain in1d implementation recommended.
     */
     private config const mBound = 2**25; 
@@ -67,17 +62,8 @@ module In1dMsg
                 // things to do...
                 // if ar2 is big for some value of big... call unique on ar2 first
 
-                // brute force if below small bound
-                if (ar2.size <= sBound) {
-                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "%t <= %t, using GlobalAr2Bcast".format(ar2.size,sBound));                    
-                    var truth = in1dGlobalAr2Bcast(ar1.a, ar2.a);
-                    if (invert) {truth = !truth;}
-                    
-                    st.addEntry(rname, new shared SymEntry(truth));
-                }
                 // per locale assoc domain if below medium bound
-                else if (ar2.size <= mBound) {
+                if (ar2.size <= mBound) {
                     iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                "%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound));                  
                     var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
