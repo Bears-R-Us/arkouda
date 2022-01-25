@@ -182,7 +182,7 @@ or
       :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
       
 
-   .. method:: proc substringSearchRegex(const pattern: string) throws
+   .. method:: proc substringSearch(const pattern: string) throws
 
       
       Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
@@ -192,13 +192,8 @@ or
       :arg pattern: regex pattern to be applied to strings in SegString
       :type pattern: string
       
-      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
-      :type mode: SearchMode enum
-      
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
       
-
-   .. method:: proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws
 
    .. method:: proc peelRegex(const delimiter: string, const times: int, const includeDelimiter: bool, const keepPartial: bool, const left: bool) throws
 
@@ -241,10 +236,6 @@ or
    .. method:: proc argsort(checkSorted: bool = false): [offsets.aD] int throws
 
 .. function:: proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int
-
-.. enum:: enum SearchMode { contains, startsWith, endsWith, match }
-
-.. class:: UnknownSearchMode : Error
 
 .. function:: proc ==(lss: SegString, rss: SegString) throws
 

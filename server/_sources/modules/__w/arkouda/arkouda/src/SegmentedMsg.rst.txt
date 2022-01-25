@@ -42,7 +42,7 @@ or
 
 .. function:: proc segmentLengthsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
-.. function:: proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc segmentedSearchMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
 .. function:: proc checkMatchStrings(name: string, st: borrowed SymTab) throws
 
