@@ -272,6 +272,13 @@ Arrays larger than printThresh will print less data.</p>
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillUniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_min:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_max:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">seed:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">241</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.fillUniform" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl iterfunction">
+<dt class="sig sig-object chpl" id="AryUtil.offset">
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ind</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over indices (range/domain) <code class="docutils literal notranslate"><span class="pre">ind</span></code> but in an offset manner based
+on the locale id. Can be used to avoid doing communication in lockstep.</p>
+</dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.contiguousIndices">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contiguousIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[]</span></em><span class="sig-paren">)</span> <span class="pre">param</span><a class="headerlink" href="#AryUtil.contiguousIndices" title="Permalink to this definition">¶</a></dt>

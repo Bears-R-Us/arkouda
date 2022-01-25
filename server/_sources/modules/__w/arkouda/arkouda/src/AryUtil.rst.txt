@@ -67,6 +67,13 @@ or
 
 .. function:: proc fillUniform(A: [?D] int, a_min: int, a_max: int, seed: int = 241)
 
+.. iterfunction:: iter offset(ind)
+
+   
+   Iterate over indices (range/domain) ``ind`` but in an offset manner based
+   on the locale id. Can be used to avoid doing communication in lockstep.
+   
+
 .. function:: proc contiguousIndices(A: []) param
 
    
