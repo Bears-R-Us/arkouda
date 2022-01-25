@@ -142,79 +142,79 @@ module Arr2DMsg {
     boolOps.add("!=");
 
     select (left.dtype, right.dtype) {
-    when (DType.Int64, DType.Int64) {
-      var l = left: SymEntry2D(int);
-      var r = right: SymEntry2D(int);
-      if boolOps.contains(op) {
-        var e = st.addEntry2D(rname, l.m, l.n, bool);
+      when (DType.Int64, DType.Int64) {
+        var l = left: SymEntry2D(int);
+        var r = right: SymEntry2D(int);
+        if boolOps.contains(op) {
+          var e = st.addEntry2D(rname, l.m, l.n, bool);
+          return doBinOp(l, r, e, op, rname, pn, st);
+        } else if op == "/" {
+          var e = st.addEntry2D(rname, l.m, l.n, real);
+          return doBinOp(l, r, e, op, rname, pn, st);
+        }
+        var e = st.addEntry2D(rname, l.m, l.n, int);
         return doBinOp(l, r, e, op, rname, pn, st);
-      } else if op == "/" {
+      }
+      when (DType.Int64, DType.Float64) {
+        var l = left: SymEntry2D(int);
+        var r = right: SymEntry2D(real);
+        if boolOps.contains(op) {
+          var e = st.addEntry2D(rname, l.m, l.n, bool);
+          return doBinOp(l, r, e, op, rname, pn, st);
+        }
         var e = st.addEntry2D(rname, l.m, l.n, real);
         return doBinOp(l, r, e, op, rname, pn, st);
       }
-      var e = st.addEntry2D(rname, l.m, l.n, int);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Int64, DType.Float64) {
-      var l = left: SymEntry2D(int);
-      var r = right: SymEntry2D(real);
-      if boolOps.contains(op) {
+      when (DType.Float64, DType.Int64) {
+        var l = left: SymEntry2D(real);
+        var r = right: SymEntry2D(int);
+        if boolOps.contains(op) {
+          var e = st.addEntry2D(rname, l.m, l.n, bool);
+          return doBinOp(l, r, e, op, rname, pn, st);
+        }
+        var e = st.addEntry2D(rname, l.m, l.n, real);
+        return doBinOp(l, r, e, op, rname, pn, st);
+      }
+      when (DType.Float64, DType.Float64) {
+        var l = left: SymEntry2D(real);
+        var r = right: SymEntry2D(real);
+        if boolOps.contains(op) {
+          var e = st.addEntry2D(rname, l.m, l.n, bool);
+          return doBinOp(l, r, e, op, rname, pn, st);
+        }
+        var e = st.addEntry2D(rname, l.m, l.n, real);
+        return doBinOp(l, r, e, op, rname, pn, st);
+      }
+      when (DType.Bool, DType.Bool) {
+        var l = left: SymEntry2D(bool);
+        var r = right: SymEntry2D(bool);
         var e = st.addEntry2D(rname, l.m, l.n, bool);
         return doBinOp(l, r, e, op, rname, pn, st);
       }
-      var e = st.addEntry2D(rname, l.m, l.n, real);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Float64, DType.Int64) {
-      var l = left: SymEntry2D(real);
-      var r = right: SymEntry2D(int);
-      if boolOps.contains(op) {
-        var e = st.addEntry2D(rname, l.m, l.n, bool);
+      when (DType.Bool, DType.Int64) {
+        var l = left: SymEntry2D(bool);
+        var r = right: SymEntry2D(int);
+        var e = st.addEntry2D(rname, l.m, l.n, int);
         return doBinOp(l, r, e, op, rname, pn, st);
       }
-      var e = st.addEntry2D(rname, l.m, l.n, real);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Float64, DType.Float64) {
-      var l = left: SymEntry2D(real);
-      var r = right: SymEntry2D(real);
-      if boolOps.contains(op) {
-        var e = st.addEntry2D(rname, l.m, l.n, bool);
+      when (DType.Int64, DType.Bool) {
+        var l = left: SymEntry2D(int);
+        var r = right: SymEntry2D(bool);
+        var e = st.addEntry2D(rname, l.m, l.n, int);
         return doBinOp(l, r, e, op, rname, pn, st);
       }
-      var e = st.addEntry2D(rname, l.m, l.n, real);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Bool, DType.Bool) {
-      var l = left: SymEntry2D(bool);
-      var r = right: SymEntry2D(bool);
-      var e = st.addEntry2D(rname, l.m, l.n, bool);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Bool, DType.Int64) {
-      var l = left: SymEntry2D(bool);
-      var r = right: SymEntry2D(int);
-      var e = st.addEntry2D(rname, l.m, l.n, int);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Int64, DType.Bool) {
-      var l = left: SymEntry2D(int);
-      var r = right: SymEntry2D(bool);
-      var e = st.addEntry2D(rname, l.m, l.n, int);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Bool, DType.Float64) {
-      var l = left: SymEntry2D(bool);
-      var r = right: SymEntry2D(real);
-      var e = st.addEntry2D(rname, l.m, l.n, real);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
-    when (DType.Float64, DType.Bool) {
-      var l = left: SymEntry2D(real);
-      var r = right: SymEntry2D(bool);
-      var e = st.addEntry2D(rname, l.m, l.n, real);
-      return doBinOp(l, r, e, op, rname, pn, st);
-    }
+      when (DType.Bool, DType.Float64) {
+        var l = left: SymEntry2D(bool);
+        var r = right: SymEntry2D(real);
+        var e = st.addEntry2D(rname, l.m, l.n, real);
+        return doBinOp(l, r, e, op, rname, pn, st);
+      }
+      when (DType.Float64, DType.Bool) {
+        var l = left: SymEntry2D(real);
+        var r = right: SymEntry2D(bool);
+        var e = st.addEntry2D(rname, l.m, l.n, real);
+        return doBinOp(l, r, e, op, rname, pn, st);
+      }
     }
     return new MsgTuple("Bin op not supported", MsgType.NORMAL);
   }
@@ -238,8 +238,7 @@ module Arr2DMsg {
   proc rowIndex2DMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();
     var repMsg: string; // response message
-    var (name, rowNumStr)
-      = payload.splitMsgToTuple(2); // split request into fields
+    var (name, rowNumStr) = payload.splitMsgToTuple(2); // split request into fields
     var row = try! rowNumStr:int;
 
     // get next symbol name
