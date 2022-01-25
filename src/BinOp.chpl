@@ -1,5 +1,5 @@
 
-module Operators
+module BinOp
 {
   use ServerConfig;
   
