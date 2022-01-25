@@ -14,13 +14,12 @@ module GraphMsg {
   use IO;
 
 
-  use GenSymIO only jsonToPdArray;
   use SymArrayDmap;
   use Random;
   use RadixSortLSD;
   use Set;
   use DistributedBag;
-  public use ArgSortMsg;
+  use ArgSortMsg;
   use Time;
   use CommAggregation;
   use Sort;
@@ -950,7 +949,7 @@ module GraphMsg {
   // visit a graph using BFS method
   proc segBFSMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;
-       var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
+      var (RCMs, n_verticesN, n_edgesN, directedN, weightedN, graphEntryName, restpart )
           = payload.splitMsgToTuple(7);
       var Nv=n_verticesN:int;
       var Ne=n_edgesN:int;
@@ -1667,7 +1666,7 @@ module GraphMsg {
           return "success";
       }//end of fo_set_bfs_kernel_u
 
-       proc fo_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
+      proc fo_domain_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -2214,7 +2213,7 @@ module GraphMsg {
       }//end of co_bag_bfs_kernel_u
 
 
-proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
+      proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int,
                         neiR:[?D11] int, start_iR:[?D12] int,srcR:[?D13] int, dstR:[?D14] int, 
                         LF:int,GivenRatio:real):string throws{
           var cur_level=0;
@@ -2772,7 +2771,6 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
 
       }
 
-
       if (Directed!=0) {
           if (Weighted!=0) {
               var ratios:string;
@@ -3250,9 +3248,14 @@ proc co_set_bfs_kernel_u(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),outMsg);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
 
-  }
-
+    proc registerMe() {
+        use CommandMap;
+        registerFunction("segmentedGraphFile", segGraphFileMsg);
+        registerFunction("segmentedRMAT", segrmatgenMsg);
+        registerFunction("segmentedGraphBFS", segBFSMsg);
+    }
  }
 
 
