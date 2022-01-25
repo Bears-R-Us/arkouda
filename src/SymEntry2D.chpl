@@ -55,6 +55,10 @@ module SymEntry2D {
     }
   }
 
+  proc toSymEntry2D(e, type etype) {
+    return try! e :borrowed SymEntry2D(etype);
+  }
+
   proc makeDistDom2D(m: int, n: int) {
     select MyDmap {
         when Dmap.defaultRectangular {

@@ -235,10 +235,47 @@ module Arr2DMsg {
     return (tab.getBorrowed(name):borrowed GenSymEntry): SymEntry2D(t);
   }
 
+  proc rowIndex2DMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    param pn = Reflection.getRoutineName();
+    var repMsg: string; // response message
+    var (name, rowNumStr)
+      = payload.splitMsgToTuple(2); // split request into fields
+    var row = try! rowNumStr:int;
+
+    // get next symbol name
+    var rname = st.nextName();
+    var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+
+    proc getRowHelper(type t) throws {
+      var e = toSymEntry2D(gEnt, t);
+      var a = st.addEntry(rname, e.m, t);
+      a.a = e.a[row,..];
+      var repMsg = "created " + st.attrib(rname);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+        
+    select(gEnt.dtype) {
+      when (DType.Int64) {
+        return getRowHelper(int);
+      }
+      when (DType.Float64) {
+        return getRowHelper(real);
+      }
+      when (DType.Bool) {
+        return getRowHelper(bool);
+      }
+      otherwise {
+        var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
+        return new MsgTuple(errorMsg,MsgType.ERROR);              
+      }
+    }
+  }
+
   proc registerMe() {
     use CommandMap;
     registerFunction("array2d", array2DMsg);
     registerFunction("randint2d", randint2DMsg);
     registerFunction("binopvv2d", binopvv2DMsg);
+    registerFunction("[int2d]", rowIndex2DMsg);
   }
 }
