@@ -1,5 +1,7 @@
 use TestBase;
+use FileIO;
 use GenSymIO;
+use HDF5Msg;
 use Set;
 
 config const size = 10**4;
@@ -17,7 +19,7 @@ proc main() {
   d.stop(printTime=false);
   if printTimes then writeln("write: %.2dr GiB/s (%.2drs)".format(GiB/d.elapsed(), d.elapsed()));
 
-  var filenames = generateFilenames("file", "", B);
+  var filenames = generateFilenames("file", "", B.targetLocales().size);
   var (subdoms, _, skips)  = get_subdoms(filenames, "dst");
   d.start();
   var skipSet = new set(string);

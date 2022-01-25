@@ -18,7 +18,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.25.0
+      image: chapel/chapel:1.25.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -33,7 +33,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.25.0
+      image: chapel/chapel:1.25.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -51,7 +51,7 @@ jobs:
   #    matrix:
   #      python-version: ['3.7', '3.8', '3.9', '3.x']
   #  container:
-  #    image: chapel/chapel:1.25.0
+  #    image: chapel/chapel:1.25.1
   #  steps:
   #  - uses: actions/checkout@v2
   #  - name: Set up Python ${{ matrix.python-version }}
@@ -85,7 +85,7 @@ jobs:
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.25.0
+      image: chapel/${{matrix.image}}:1.25.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -118,9 +118,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [chapel, chapel-gasnet-smp]
+        include:
+          - image: chapel
+            threads: 2
+          - image: chapel-gasnet-smp
+            threads: 1
+    env:
+      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.25.0
+      image: chapel/${{matrix.image}}:1.25.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -132,4 +138,5 @@ jobs:
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
     - name: Run unit tests
       run: |
+        python3 src/serverModuleGen.py ServerModules.cfg
         start_test test

@@ -14,6 +14,12 @@
 
 [Chapel Gitter channel](https://gitter.im/chapel-lang/chapel)
 
+## Arkouda Weekly Call
+We have a weekly zoom call to talk about what is going on with Arkouda development and people's general desires.
+Anyone with an interest in Arkouda is invited, come join in the discussion!
+Here is a link to the [Arkouda Weekly Call Repo](https://github.com/Bears-R-Us/ArkoudaWeeklyCall)
+the [README.md](https://github.com/Bears-R-Us/ArkoudaWeeklyCall/blob/main/README.md) there contains the meeting details.
+
 ## Talks on Arkouda
 
 [Arkouda Hack-a-thon videos](https://www.youtube.com/playlist?list=PLpuVAiniqZRXnOAhfHmxbAcVPtMKb-RHN)
@@ -94,6 +100,7 @@ This yielded a >20TB dataframe in Arkouda.
 2. [Building Arkouda](#build-ak)
    - [Building the source](#build-ak-source)
    - [Building the docs](#build-ak-docs)
+   - [Modular building](#build-ak-mod)
 3. [Testing Arkouda](#test-ak)
 4. [Installing Arkouda Python libs and deps](#install-ak)
 5. [Running arkouda_server](#run-ak)
@@ -112,7 +119,7 @@ This yielded a >20TB dataframe in Arkouda.
 
 <a id="prereq-reqs"></a>
 ### Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
- * requires chapel 1.25.0
+ * requires chapel 1.25.1
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
  * requires python 3.7 or greater
@@ -152,7 +159,7 @@ Option 2: Build Chapel from source
 
 ```bash
 # build chapel in the user home directory with these settings...
-export CHPL_HOME=~/chapel/chapel-1.25.0
+export CHPL_HOME=~/chapel/chapel-1.25.1
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
@@ -213,9 +220,9 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.25.0/chapel-1.25.0.tar.gz
-tar xvf chapel-1.25.0.tar.gz
-cd chapel-1.25.0/
+wget https://github.com/chapel-lang/chapel/releases/download/1.25.1/chapel-1.25.1.tar.gz
+tar xvf chapel-1.25.1.tar.gz
+cd chapel-1.25.1/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
@@ -368,6 +375,10 @@ Arkouda documentation homepage will be displayed.
 
 </details>
 
+<a id="build-ak-mod"></a>
+### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+For information on Arkouda's modular building feature, see [MODULAR.md](MODULAR.md).
+
 <a id="test-ak"></a>
 ## Testing Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
@@ -507,6 +518,9 @@ The generated token is saved to the tokens.txt file which is contained in the .a
 working directory the arkouda\_server is launched from. The arkouda\_server will re-use the same token until the 
 .arkouda/tokens.txt file is removed, which forces arkouda\_server to generate a new token and corresponding
 tokens.txt file.
+
+In situations where a user-specified token string is preferred, this can be specified in the ARKOUDA_SERVER_TOKEN environment variable. As is the case with an Arkouda-generated token, the user-supplied token
+is saved to the .arkouda/tokens.txt file for re-use.
 
 <a id="run-ak-connect"></a>
 ### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

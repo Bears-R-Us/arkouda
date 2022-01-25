@@ -748,6 +748,8 @@ class Strings:
             matcher = self._get_matcher(substr, create=False)
             if matcher is not None:
                 return matcher.get_match(MatchType.MATCH, self).matched()
+            else:
+                return self.contains('^' + substr, regex=True)
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {} {}".format("startswith",
                                              self.objtype,
@@ -1281,8 +1283,9 @@ class Strings:
         """
         from arkouda.client import maxTransferBytes
         # Total number of bytes in the array data
-        my_sz, my_dt = (self.size, arkouda.dtypes.int64) if comp == "offsets" else (self.nbytes, arkouda.dtypes.uint8)
-        array_bytes = my_sz * my_dt.itemsize
+        # my_sz, my_dt = (self.size, arkouda.dtypes.int64) if comp == "offsets" else (self.nbytes, arkouda.dtypes.uint8)
+        # array_bytes = my_sz * my_dt.itemsize
+        array_bytes = self.size * arkouda.dtypes.int64.itemsize if comp == "offsets" else self.nbytes * arkouda.dtypes.uint8.itemsize
 
         # Guard against overflowing client memory
         if array_bytes > maxTransferBytes:
@@ -1297,7 +1300,7 @@ class Strings:
 
         # The server sends us native-endian bytes so we need to account for that.
         # Since bytes are immutable, we need to copy the np array to be mutable
-        dt = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
+        dt:np.dtype = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
         if arkouda.dtypes.get_server_byteorder() == 'big':
             dt = dt.newbyteorder('>')
         else:

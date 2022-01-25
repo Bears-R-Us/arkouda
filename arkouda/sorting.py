@@ -5,7 +5,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import int64, float64
+from arkouda.dtypes import int64, float64, int_scalars
 from enum import Enum
 
 numeric_dtypes = {float64,int64}
@@ -114,7 +114,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     """
     from arkouda.categorical import Categorical
     check_type(argname='coargsort', value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
-    size = -1
+    size:int_scalars = -1
     anames = []
     atypes = []
     for a in arrays:

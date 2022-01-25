@@ -1,6 +1,7 @@
 module CommAggregation {
   use SysCTypes;
   use CPtr;
+  use ServerConfig;
   use UnorderedCopy;
   use CommPrimitives;
 
@@ -381,12 +382,5 @@ module CommAggregation {
   inline proc bufferIdxAlloc() {
     const cachePaddedLocales = (numLocales + 7) & ~7;
     return c_aligned_alloc(int, 64, cachePaddedLocales);
-  }
-
-  private proc getEnvInt(name: string, default: int): int {
-    extern proc getenv(name : c_string) : c_string;
-    var strval = getenv(name.localize().c_str()): string;
-    if strval.isEmpty() { return default; }
-    return try! strval: int;
   }
 }

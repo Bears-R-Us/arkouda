@@ -3,6 +3,7 @@ use TestBase;
 use IO;
 use FileIO;
 use GenSymIO;
+use HDF5Msg;
 use Message;
 use SegmentedArray;
 import FileSystem;

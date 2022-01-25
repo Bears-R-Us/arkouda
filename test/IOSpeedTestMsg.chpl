@@ -1,5 +1,6 @@
 use TestBase;
 use GenSymIO;
+use HDF5Msg;
 
 config const size = 10**4;
 config const write = true;

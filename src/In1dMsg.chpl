@@ -104,5 +104,10 @@ module In1dMsg
         repMsg = "created " + st.attrib(rname);
         iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
-    }   
+    }
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("in1d", in1dMsg);
+    }
 }

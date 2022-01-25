@@ -237,4 +237,12 @@ module ArraySetopsMsg
             moduleName=getModuleName(),
             errorClass="ErrorWithContext");
     }
+    
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("intersect1d", intersect1dMsg);
+      registerFunction("setdiff1d", setdiff1dMsg);
+      registerFunction("setxor1d", setxor1dMsg);
+      registerFunction("union1d", union1dMsg);
+    }
 }
