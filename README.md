@@ -166,6 +166,7 @@ export CHPL_COMM_SUBSTRATE=smp
 export CHPL_TARGET_CPU=native
 export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
+export CHPL_RE2=bundled
 cd $CHPL_HOME
 make
 
@@ -236,6 +237,7 @@ export CHPL_COMM_SUBSTRATE=smp
 export CHPL_TARGET_CPU=native
 export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
+export CHPL_RE2=bundled
 cd $CHPL_HOME
 make
 

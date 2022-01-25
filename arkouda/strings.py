@@ -678,21 +678,20 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            if re.search(substr, ''):
-                # TODO remove once changes from chapel issue #18639 are in arkouda
-                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
-            matcher = self._get_matcher(substr, create=False)
-            if matcher is not None:
-                return matcher.get_match(MatchType.SEARCH, self).matched()
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("contains",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
+        if not regex:
+            substr = re.escape(substr)
+        if re.search(substr, ''):
+            # TODO remove once changes from chapel issue #18639 are in arkouda
+            raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+        matcher = self._get_matcher(substr, create=False)
+        if matcher is not None:
+            return matcher.get_match(MatchType.SEARCH, self).matched()
+        cmd = "segmentedSearch"
+        args = "{} {} {} {} {}".format(self.objtype,
+                                       self.entry.name,
+                                       "legacy_placeholder",
+                                       "str",
+                                       json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
@@ -741,24 +740,16 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            if re.search(substr, ''):
-                # TODO remove once changes from chapel issue #18639 are in arkouda
-                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
-            matcher = self._get_matcher(substr, create=False)
-            if matcher is not None:
-                return matcher.get_match(MatchType.MATCH, self).matched()
-            else:
-                return self.contains('^' + substr, regex=True)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("startswith",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        if not regex:
+            substr = re.escape(substr)
+        if re.search(substr, ''):
+            # TODO remove once changes from chapel issue #18639 are in arkouda
+            raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+        matcher = self._get_matcher(substr, create=False)
+        if matcher is not None:
+            return matcher.get_match(MatchType.MATCH, self).matched()
+        else:
+            return self.contains('^'+substr, regex=True)
 
     @typechecked
     def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -806,17 +797,9 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            return self.contains(substr + '$', regex=True)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("endswith",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        if not regex:
+            substr = re.escape(substr)
+        return self.contains(substr+'$', regex=True)
 
     def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
