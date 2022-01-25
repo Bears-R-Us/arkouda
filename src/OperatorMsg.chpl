@@ -48,7 +48,9 @@ module OperatorMsg
                                           cmd,op,st.attrib(aname),st.attrib(bname)));
 
         use Set;
-
+        // This boolOps set is a filter to determine the output type for the operation.
+        // All operations that involve one of these operations result in a `bool` symbol
+        // table entry.
         var boolOps: set(string);
         boolOps.add("<");
         boolOps.add("<=");
@@ -61,10 +63,13 @@ module OperatorMsg
           when (DType.Int64, DType.Int64) {
             var l = toSymEntry(left,int);
             var r = toSymEntry(right,int);
+            
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOp(l, r, e, op, rname, pn, st);
             } else if op == "/" {
+              // True division is the only case in this int, int case
+              // that results in a `real` symbol table entry.
               var e = st.addEntry(rname, l.size, real);
               return doBinOp(l, r, e, op, rname, pn, st);
             }
@@ -74,6 +79,8 @@ module OperatorMsg
           when (DType.Int64, DType.Float64) {
             var l = toSymEntry(left,int);
             var r = toSymEntry(right,real);
+            // Only two possible resultant types are `bool` and `real`
+            // for this case
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOp(l, r, e, op, rname, pn, st);
@@ -101,6 +108,8 @@ module OperatorMsg
             var e = st.addEntry(rname, l.size, real);
             return doBinOp(l, r, e, op, rname, pn, st);
           }
+          // For cases where a boolean operand is involved, the only
+          // possible resultant type is `bool`
           when (DType.Bool, DType.Bool) {
             var l = toSymEntry(left,bool);
             var r = toSymEntry(right,bool);
@@ -136,7 +145,9 @@ module OperatorMsg
     }
 
     proc doBinOp(l, r, e, op, rname, pn, st) throws {
-      // first check if bool and bool (only unique <, >, etc. for entry)
+      // Since we know that the result type is a boolean, we know
+      // that it either (1) is an operation between bools or (2) uses
+      // one of the boolean operators from the `boolOps` set above
       if e.etype == bool {
         if l.etype == bool && r.etype == bool {
           select op {
@@ -161,7 +172,11 @@ module OperatorMsg
               return new MsgTuple(errorMsg, MsgType.ERROR);
             }
           }
-        } else {
+        }
+        // All types support the same binary operations when the resultant
+        // type is bool and `l` and `r` are not both boolean, so this does
+        // not need to be specialized for each case.
+        else {
           select op {
               when "<" {
                 e.a = l.a < r.a;
@@ -190,7 +205,11 @@ module OperatorMsg
         }
         var repMsg = "created %s".format(st.attrib(rname));
         return new MsgTuple(repMsg, MsgType.NORMAL);
-      } else if l.etype == int && r.etype == int {
+      }
+      // Since we know that both `l` and `r` are of type `int` and that
+      // the resultant type is not bool (checked in first `if`), we know
+      // what operations are supported based on the resultant type
+      else if l.etype == int && r.etype == int {
         if e.etype == int {
           select op {
             when "+" {
@@ -252,6 +271,8 @@ module OperatorMsg
           }
         } else if e.etype == real {
           select op {
+            // True division is the only integer type that would result in a
+            // resultant type of `real`
             when "/" {
               e.a = l.a:real / r.a:real;
             }
@@ -265,7 +286,10 @@ module OperatorMsg
         }
         var repMsg = "created %s".format(st.attrib(rname));
         return new MsgTuple(repMsg, MsgType.NORMAL);
-      } else if ((l.etype == real && r.etype == real) || (l.etype == int && r.etype == real)
+      }
+      // If either RHS or LHS type is real, the same operations are supported and the
+      // result will always be a `real`, so all 3 of these cases can be shared.
+      else if ((l.etype == real && r.etype == real) || (l.etype == int && r.etype == real)
                  || (l.etype == real && r.etype == int)) {
         select op {
           when "+" {
@@ -295,6 +319,9 @@ module OperatorMsg
       } else if ((l.etype == int && r.etype == bool) || (l.etype == bool && r.etype == int)) {
         select op {
           when "+" {
+            // Since we don't know which of `l` or `r` is the int and which is the `bool`,
+            // we can just cast both to int, which will be a noop for the vector that is
+            // already `int`
             e.a = l.a:int + r.a:int;
           }
           when "-" {
