@@ -15,14 +15,6 @@ module MsgProcessing
     use ServerErrorStrings;
 
     use AryUtil;
-
-    // "Backbone modules" included in every build
-    import RandMsg;
-    RandMsg.registerMe();
-    import IndexingMsg;
-    IndexingMsg.registerMe();
-    import OperatorMsg;
-    OperatorMsg.registerMe();
     
     private config const logLevel = ServerConfig.logLevel;
     const mpLogger = new Logger(logLevel);
@@ -181,6 +173,23 @@ module MsgProcessing
         }
     }
     
+    /**
+     *
+     *
+     */
+    proc getCommandMapMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+        // We can ignore the args, we just need it to match the CommandMap call signature
+        import CommandMap;
+        try {
+            const json:string = CommandMap.dumpCommandMap();
+            return new MsgTuple(CommandMap.dumpCommandMap():string, MsgType.NORMAL);
+        } catch {
+            var errorMsg = "Error converting CommandMap to JSON";
+            mpLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+    }
+
     /* 
     Response to __str__ method in python str convert array data to string 
 

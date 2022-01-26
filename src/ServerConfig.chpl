@@ -302,7 +302,6 @@ module ServerConfig
     proc appendToConfigStr(key:string, val:string) {
       var idx_close = cfgStr.rfind("}"):int;
       var tmp_json = cfgStr(0..idx_close-1);
-      writeln("tmp_json: ", tmp_json);
       cfgStr = tmp_json + "," + Q + key + QCQ + val + Q + "}";
     }
 }

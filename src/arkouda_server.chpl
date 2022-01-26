@@ -71,7 +71,6 @@ proc main() {
                                                                  ServerPort, token);
         }
         
-        doRegister();
         serverMessage = adjustMsg(serverMessage);      
         serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         
@@ -124,6 +123,48 @@ proc main() {
         stdout.flush();
     }
 
+    /**
+     * Register our server commands in the CommandMap
+     * There are 4 general types
+     * 1. Standard, required commands which adhere to the standard Message signature
+     * 2. Specialized, required commands which do not adhere to the standard Message signature
+     * 3. "Backbone"/default modules we have deemed should be included in every build
+     * 4. "Optional" modules which are included at compilation time via ServerModules.cfg
+     */
+    proc registerServerCommands() {
+        registerBinaryFunction("tondarray", tondarrayMsg);
+        registerFunction("create", createMsg);
+        registerFunction("delete", deleteMsg);
+        registerFunction("arange", arangeMsg);
+        registerFunction("linspace", linspaceMsg);
+        registerFunction("set", setMsg);
+        registerFunction("info", infoMsg);
+        registerFunction("str", strMsg);
+        registerFunction("repr", reprMsg);
+        registerFunction("getconfig", getconfigMsg);
+        registerFunction("getmemused", getmemusedMsg);
+        registerFunction("getCmdMap", getCommandMapMsg);
+        registerFunction("clear", clearMsg);
+
+        // For a few specialized cmds we're going to add dummy functions,
+        // they will be intercepted in the cmd processing select statement
+        registerFunction("array", akMsgSign);
+        registerFunction("connect", akMsgSign);
+        registerFunction("disconnect", akMsgSign);
+        registerFunction("noop", akMsgSign);
+        registerFunction("ruok", akMsgSign);
+        registerFunction("shutdown", akMsgSign);
+
+        // Now Register our "default" collections included in every build
+        import RandMsg, IndexingMsg, OperatorMsg;
+        RandMsg.registerMe();
+        IndexingMsg.registerMe();
+        OperatorMsg.registerMe();
+
+        // Now add the dynamic versions implemented via ServerRegistration.chpl & ServerModules.cfg
+        doRegister();
+    }
+
     const arkDirectory = initArkoudaDirectory();
 
     var st = new owned SymTab();
@@ -139,6 +180,9 @@ proc main() {
     if authenticate {
         serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
     }
+
+    // Register default & optional modules with the CommandMap
+    registerServerCommands();
 
     printServerSplashMessage(serverToken,arkDirectory);
 
@@ -294,60 +338,42 @@ proc main() {
              */
             var repTuple: MsgTuple;
             
-            if commandMap.contains(cmd) then
-              repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
-            else {
-              select cmd
-              {
-                  when "array"             {repTuple = arrayMsg(cmd, args, payload, st);}
-                  when "tondarray"         {
-                    var binaryRepMsg = tondarrayMsg(cmd, args, st);
-                    sendRepMsg(binaryRepMsg);
-                  }
-                  // TODO: this requires SegmentedMsg to be in included
-                  // in the build always; not sure best way to handle
-                  when "segStr-tondarray"  {
-                    use SegmentedMsg;
-                    var binaryRepMsg = segStrTondarrayMsg(cmd, args, st);
-                    sendRepMsg(binaryRepMsg);
-                  }
-
-                  when "create"            {repTuple = createMsg(cmd, args, st);}
-                  when "delete"            {repTuple = deleteMsg(cmd, args, st);}
-                  when "arange"            {repTuple = arangeMsg(cmd, args, st);}
-                  when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
-                  when "set"               {repTuple = setMsg(cmd, args, st);}
-                  when "info"              {repTuple = infoMsg(cmd, args, st);}
-                  when "str"               {repTuple = strMsg(cmd, args, st);}
-                  when "repr"              {repTuple = reprMsg(cmd, args, st);}
-                  when "getconfig"         {repTuple = getconfigMsg(cmd, args, st);}
-                  when "getmemused"        {repTuple = getmemusedMsg(cmd, args, st);}
-                  when "clear"             {repTuple = clearMsg(cmd, args, st);}               
-                  when "connect" {
-                      if authenticate {
-                          repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
+            /**
+             * Command processing: Look for our specialized, default commands first, then check the command maps
+             * Note: Our specialized commands have been added to the commandMap with dummy signatures so they show
+             *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
+             */
+            select cmd {
+                when "array"   { repTuple = arrayMsg(cmd, args, payload, st); }
+                when "connect" {
+                    if authenticate {
+                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
                                                             ServerPort,user,token), MsgType.NORMAL);
-                      } else {
-                          repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), 
-                                                                                          MsgType.NORMAL);
-                      }
-                  }
-                  when "disconnect" {
-                      repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), 
-                                                                     MsgType.NORMAL);
-                  }
-                  when "noop" {
-                      repTuple = new MsgTuple("noop", MsgType.NORMAL);
-                  }
-                  when "ruok" {
-                      repTuple = new MsgTuple("imok", MsgType.NORMAL);
-                  }
-                  otherwise {
+                    } else {
+                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
+                    }
+                }
+                when "disconnect" {
+                    repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
+                }
+                when "noop" {
+                    repTuple = new MsgTuple("noop", MsgType.NORMAL);
+                }
+                when "ruok" {
+                    repTuple = new MsgTuple("imok", MsgType.NORMAL);
+                }
+                otherwise { // Look up in CommandMap or Binary CommandMap
+                    if commandMap.contains(cmd) {
+                        repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
+                    } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
+                        var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, args, st);
+                        sendRepMsg(binaryRepMsg);
+                    } else {
                       repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
                       asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
-                  }
-              }
-           }
+                    }
+                }
+            }
 
             /*
              * If the reply message is a string send it now
