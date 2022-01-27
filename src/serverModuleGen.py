@@ -25,21 +25,6 @@ def generateServerIncludes(config_filename, reg_filename):
 
     serverfile.write("}\n")
 
-def generateSearchPaths(filename):
-    with open(filename) as configfile:
-        modules = configfile.readlines()
-        ret = ""
-        for module in modules:
-            module = module.strip()
-            # Represents a path to a file
-            if module.startswith("/"):
-                ret += f" {module}.chpl"
-                
-        return ret
-    
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) == 2:
-        generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
-    else:
-        print(generateSearchPaths(sys.argv[1]))
+    generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
