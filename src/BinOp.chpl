@@ -37,10 +37,10 @@ module BinOp
   :throws: `UndefinedSymbolError(name)`
   */
   proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws {
-    // Since we know that the result type is a boolean, we know
-    // that it either (1) is an operation between bools or (2) uses
-    // one of the boolean operators from the `boolOps` set above
     if e.etype == bool {
+      // Since we know that the result type is a boolean, we know
+      // that it either (1) is an operation between bools or (2) uses
+      // a boolean operator (<, <=, etc.)
       if l.etype == bool && r.etype == bool {
         select op {
           when "|" {
