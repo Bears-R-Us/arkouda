@@ -125,11 +125,10 @@ proc main() {
 
     /**
      * Register our server commands in the CommandMap
-     * There are 4 general types
+     * There are 3 general types
      * 1. Standard, required commands which adhere to the standard Message signature
      * 2. Specialized, required commands which do not adhere to the standard Message signature
-     * 3. "Backbone"/default modules we have deemed should be included in every build
-     * 4. "Optional" modules which are included at compilation time via ServerModules.cfg
+     * 3. "Optional" modules which are included at compilation time via ServerModules.cfg
      */
     proc registerServerCommands() {
         registerBinaryFunction("tondarray", tondarrayMsg);
@@ -146,8 +145,9 @@ proc main() {
         registerFunction("getCmdMap", getCommandMapMsg);
         registerFunction("clear", clearMsg);
 
-        // For a few specialized cmds we're going to add dummy functions,
-        // they will be intercepted in the cmd processing select statement
+        // For a few specialized cmds we're going to add dummy functions, so they
+        // get added to the client listing of available commands. They will be
+        // intercepted in the cmd processing select statement and processed specially
         registerFunction("array", akMsgSign);
         registerFunction("connect", akMsgSign);
         registerFunction("disconnect", akMsgSign);
@@ -155,13 +155,7 @@ proc main() {
         registerFunction("ruok", akMsgSign);
         registerFunction("shutdown", akMsgSign);
 
-        // Now Register our "default" collections included in every build
-        import RandMsg, IndexingMsg, OperatorMsg;
-        RandMsg.registerMe();
-        IndexingMsg.registerMe();
-        OperatorMsg.registerMe();
-
-        // Now add the dynamic versions implemented via ServerRegistration.chpl & ServerModules.cfg
+        // Add the dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
         doRegister();
     }
 

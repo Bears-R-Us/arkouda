@@ -24,8 +24,8 @@ module CommandMap {
     return nb;
   }
 
-  var f = akMsgSign;
-  var b = akBinMsgSign;
+  private var f = akMsgSign;
+  private var b = akBinMsgSign;
 
   var commandMap: map(string, f.type);
   var commandMapBinary: map(string, b.type);
