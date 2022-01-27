@@ -174,8 +174,22 @@ module MsgProcessing
     }
     
     /**
+     * Generate the mapping of server command to function as JSON
+     * encoded string.
      *
+     * The args are IGNORED. They are only here to match the CommandMap
+     * standard function signature, similar to other procs.
      *
+     * :arg cmd: Ignored
+     * :type cmd: string 
+     *
+     * :arg payload: Ignored
+     * :type payload: string
+     *
+     * :arg st: Ignored
+     * :type st: borrowed SymTab 
+     *
+     * :returns: MsgTuple containing JSON formatted string of cmd -> function mapping
      */
     proc getCommandMapMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
         // We can ignore the args, we just need it to match the CommandMap call signature
