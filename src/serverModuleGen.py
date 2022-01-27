@@ -5,12 +5,9 @@ def getModules(filename):
         modules = configfile.readlines()
         ret = []
         for module in modules:
-            module = module.strip()
-            if len(module) > 0 and module[0] != '#':
-                if module[0] == '/':
-                    ret.append(module[module.rfind('/')+1:])
-                else:
-                    ret.append(module)
+            module = module.split("#")[0].split("/")[-1].strip()
+            if module:
+                ret.append(module)
         return ret
 
 def generateServerIncludes(config_filename, reg_filename):
