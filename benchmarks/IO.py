@@ -1,4 +1,4 @@
-#!/usr/bin/env python3                                                         
+#!/usr/bin/env python3
 
 import time, argparse
 import arkouda as ak
@@ -7,51 +7,78 @@ from glob import glob
 
 TYPES = ('int64', 'float64')
 
-def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
-    print(">>> arkouda {} write/read".format(dtype))
+def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
+    print(">>> arkouda {} write".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
-     
+    
     writetimes = []
+    for i in range(trials):
+        for j in range(numfiles):
+            start = time.time()
+            a.save(f"{path}{j:04}") if not parquet else a.save_parquet(f"{path}{j:04}")
+            end = time.time()
+            writetimes.append(end - start)
+    avgwrite = sum(writetimes) / trials
+
+    print("write Average time = {:.4f} sec".format(avgwrite))
+
+    nb = a.size * a.itemsize * numfiles
+    print("write Average rate = {:.2f} GiB/sec".format(nb/2**30/avgwrite))
+
+def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
+    print(">>> arkouda {} read".format(dtype))
+    cfg = ak.get_config()
+    N = N_per_locale * cfg["numLocales"]
+    print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
+    a = ak.array([])
+    
     readtimes = []
     for i in range(trials):
         start = time.time()
-        a.save(path)
-        end = time.time()
-        writetimes.append(end - start)
-        start = time.time()
-        b = ak.load(path)
+        a = ak.read_all(path+'*') if not parquet else ak.read_parquet(path+'*')
         end = time.time()
         readtimes.append(end - start)
-        for f in glob(path+'_LOCALE*'):
-            os.remove(f)
-    avgwrite = sum(writetimes) / trials
     avgread = sum(readtimes) / trials
 
-    print("write Average time = {:.4f} sec".format(avgwrite))
     print("read Average time = {:.4f} sec".format(avgread))
 
     nb = a.size * a.itemsize
-    print("write Average rate = {:.2f} GiB/sec".format(nb/2**30/avgwrite))
     print("read Average rate = {:.2f} GiB/sec".format(nb/2**30/avgread))
 
-def check_correctness(dtype, path, seed):
+def remove_files(path):
+    for f in glob(path+'*'):
+        os.remove(f)
+
+def check_correctness(dtype, path, seed, parquet, multifile=False):
     N = 10**4
+    a = []
+    b = []
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
+        if multifile:
+            b = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+        if multifile:
+            b = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
 
-    a.save(path)
-    b = ak.load(path)
-    for f in glob(path+"_LOCALE*"):
+    a.save(f"{path}{1}") if not parquet else a.save_parquet(f"{path}{1}")
+    if multifile:
+        b.save(f"{path}{2}") if not parquet else b.save_parquet(f"{path}{2}")
+    c = ak.read_all(path+'*') if not parquet else ak.read_parquet(path+'*')
+    for f in glob(path+"*"):
         os.remove(f)
-    assert (a == b).all()
+    if not multifile:
+        assert (a == c).all()
+    else:
+        assert (a == c[0:a.size]).all()
+        assert (b == c[a.size:]).all()
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of writing and reading a random array from disk.")
@@ -63,6 +90,11 @@ def create_parser():
     parser.add_argument('-p', '--path', default=os.getcwd()+'ak-io-test', help='Target path for measuring read/write rates')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
+    parser.add_argument('-q', '--parquet', default=False, action='store_true', help='Perform Parquet operations')
+    parser.add_argument('-w', '--only-write', default=False, action='store_true', help="Only write the files; files will not be removed")
+    parser.add_argument('-r', '--only-read', default=False, action='store_true', help="Only read the files; files will not be removed")
+    parser.add_argument('-f', '--only-delete', default=False, action='store_true', help="Only delete files created from writing with this benchmark")
+    parser.add_argument('-l', '--files-per-loc', type=int, default=1, help='Number of files to create per locale')
     return parser
 
 if __name__ == "__main__":
@@ -76,10 +108,19 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path, args.seed)
+            check_correctness(dtype, args.path, args.seed, args.parquet)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_write_read(args.size, args.trials, args.dtype, args.path, args.seed)
+
+    if args.only_write:
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+    elif args.only_read:
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+    else:
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+        remove_files(args.path)
+    
     sys.exit(0)
