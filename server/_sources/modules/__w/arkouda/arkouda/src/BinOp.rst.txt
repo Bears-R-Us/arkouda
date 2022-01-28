@@ -1,0 +1,49 @@
+.. default-domain:: chpl
+
+.. module:: BinOp
+
+BinOp
+=====
+**Usage**
+
+.. code-block:: chapel
+
+   use BinOp;
+
+
+or
+
+.. code-block:: chapel
+
+   import BinOp;
+
+.. data:: const omLogger = new Logger(logLevel)
+
+.. function:: proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws
+
+   
+   Generic function to execute a binary operation on pdarray entries 
+   in the symbol table
+   
+   :arg l: symbol table entry of the LHS operand
+   
+   :arg r: symbol table entry of the RHS operand
+   
+   :arg e: symbol table entry to store result of operation
+   
+   :arg op: string representation of binary operation to execute
+   :type op: string
+   
+   :arg rname: name of the `e` in the symbol table
+   :type rname: string
+   
+   :arg pn: routine name of callsite function
+   :type pn: string
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+

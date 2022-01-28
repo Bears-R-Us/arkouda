@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>NumPyDType &mdash; chpldoc 0.0.1 documentation</title>
+  <title>BinOp &mdash; chpldoc 0.0.1 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="OperatorMsg" href="OperatorMsg.html" />
-    <link rel="prev" title="MultiTypeSymbolTable" href="MultiTypeSymbolTable.html" /> 
+    <link rel="next" title="CommAggregation" href="CommAggregation.html" />
+    <link rel="prev" title="AryUtil" href="AryUtil.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,7 +96,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BinOp.html">BinOp</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BinOp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
@@ -108,7 +108,7 @@
 <li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
 <li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
@@ -172,13 +172,13 @@
     
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>NumPyDType</li>
+      <li>BinOp</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/NumPyDType.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/BinOp.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,75 +191,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-NumPyDType"></span><div class="section" id="numpydtype">
-<h1>NumPyDType<a class="headerlink" href="#numpydtype" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-BinOp"></span><div class="section" id="binop">
+<h1>BinOp<a class="headerlink" href="#binop" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">NumPyDType</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">BinOp</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">NumPyDType</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">BinOp</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl enum">
-<dt class="sig sig-object chpl" id="NumPyDType.DType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DType</span></span> <span class="pre">{</span> <span class="pre">Int64,</span> <span class="pre">Float64,</span> <span class="pre">Bool,</span> <span class="pre">UInt8,</span> <span class="pre">UNDEF,</span> <span class="pre">Strings</span> <span class="pre">}</span><a class="headerlink" href="#NumPyDType.DType" title="Permalink to this definition">¶</a></dt>
-<dd><p>In chapel the types int and real defalut to int(64) and real(64).
-We also need other types like float32, int32, etc</p>
-</dd></dl>
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="BinOp.omLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">omLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#BinOp.omLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="NumPyDType.whichDtype">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">whichDtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span> <span class="pre">param:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.whichDtype" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take a chapel type and returns the matching DType</p>
+<dt class="sig sig-object chpl" id="BinOp.doBinOpvv">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">doBinOpvv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">l</span></em>, <em class="sig-param"><span class="pre">r</span></em>, <em class="sig-param"><span class="pre">e</span></em>, <em class="sig-param"><span class="pre">op:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">rname</span></em>, <em class="sig-param"><span class="pre">pn</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#BinOp.doBinOpvv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic function to execute a binary operation on pdarray entries
+in the symbol table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>etype</strong> – chapel type</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> – symbol table entry of the LHS operand</p></li>
+<li><p><strong>r</strong> – symbol table entry of the RHS operand</p></li>
+<li><p><strong>e</strong> – symbol table entry to store result of operation</p></li>
+<li><p><strong>op</strong> : <em>string</em> – string representation of binary operation to execute</p></li>
+<li><p><strong>rname</strong> : <em>string</em> – name of the <cite>e</cite> in the symbol table</p></li>
+<li><p><strong>pn</strong> : <em>string</em> – routine name of callsite function</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>DType</p>
+<dd class="field-even"><p>(MsgTuple)</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="NumPyDType.dtypeSize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtypeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#NumPyDType.dtypeSize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the size in bytes of a DType</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>dt</strong> : <em>DType</em> – (pythonic) DType</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(int)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="NumPyDType.str2dtype">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">str2dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dstr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#NumPyDType.str2dtype" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turns a dtype string in pythonland into a DType</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>dstr</strong> : <em>string</em> – pythonic dtype to be converted</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>DType</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="NumPyDType.dtype2str">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtype2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#NumPyDType.dtype2str" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turns a DType into a dtype string in pythonland</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><p><strong>dtype</strong> : <em>DType</em> – DType to convert to string</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(string)</p>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
 </dd>
 </dl>
 </dd></dl>
@@ -272,8 +240,8 @@ We also need other types like float32, int32, etc</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="OperatorMsg.html" class="btn btn-neutral float-right" title="OperatorMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="MultiTypeSymbolTable.html" class="btn btn-neutral float-left" title="MultiTypeSymbolTable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CommAggregation.html" class="btn btn-neutral float-right" title="CommAggregation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="AryUtil.html" class="btn btn-neutral float-left" title="AryUtil" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
