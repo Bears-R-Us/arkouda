@@ -1,3 +1,9 @@
+/*
+ * The purpose of this test was to reproduce a bug that only occurs
+ * with multiple locales and a large number of cores per locale, so
+ * it was not caught by the CI.
+ */
+
 use TestBase;
 use CommAggregation;
 use ReductionMsg;
@@ -5,6 +11,7 @@ use ReductionMsg;
 config const SIZE = numLocales * here.maxTaskPar;
 config const GROUPS = 8;
 config const offset = 0;
+config const DEBUG = false;
 
 proc makeArrays() {
   const sD = makeDistDom(GROUPS);
