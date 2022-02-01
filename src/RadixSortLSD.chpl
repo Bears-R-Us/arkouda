@@ -139,14 +139,13 @@ module RadixSortLSD
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
-       returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
-
+       returning keys and permutation vector as a block distributed array */
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) throws {
         // check to see if array is already sorted
         if (checkSorted) {
             if (isSorted(a)) {
-                var ranks: [aD] int = [i in aD] i;
-                return ranks;
+                var keyranks: [aD] (t,int) = [i in aD] (a[i], i);
+                return keyranks;
             }
         }
         
@@ -251,8 +250,23 @@ module RadixSortLSD
                 kr0 = kr1;
             }
         } // for rshift
+        return kr1;
+    }//proc radixSortLSD
 
-        var ranks: [aD] int = [(key, rank) in kr1] rank;
+
+    /* Radix Sort Least Significant Digit
+       radix sort a block distributed array
+       returning a permutation vector as a block distributed array */
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
+        // check to see if array is already sorted
+        if (checkSorted) {
+            if (isSorted(a)) {
+                var ranks: [aD] int = [i in aD] i;
+                return ranks;
+            }
+        }
+
+        var ranks: [aD] int = [(key, rank) in radixSortLSD(a, checkSorted=false)] rank;
         return ranks;
         
     }//proc radixSortLSD_ranks
