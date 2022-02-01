@@ -93,13 +93,13 @@ module ParquetMsg {
     var (subdoms, length) = getSubdomains(sizes);
 
     coforall loc in A.targetLocales() do on loc {
-      var pqErr = new parquetErrorMsg();
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      for (filedom, filename) in zip(locFiledoms, locFiles) {
+      forall (filedom, filename) in zip(locFiledoms, locFiles) {
         for locdom in A.localSubdomains() {
           const intersection = domain_intersection(locdom, filedom);
           if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
             var col: [filedom] int;
             if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
                                   dsetname.localize().c_str(), filedom.size, batchSize,
