@@ -24,6 +24,7 @@ module UniqueMsg
     use SegmentedArray;
     use ServerErrorStrings;
 
+    use RadixSortLSD;
     use Unique;
     
     private config const logLevel = ServerConfig.logLevel;
@@ -69,8 +70,7 @@ module UniqueMsg
 
                 // the upper limit here is the same as argsort/radixSortLSD_keys
                 // check and throw if over memory limit
-                overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
-                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+                overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
         
                 select (gEnt.dtype) {
                     when (DType.Int64) {

@@ -51,8 +51,7 @@ module SortMsg
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
       // check and throw if over memory limit
-      overMemLimit(((2 + 1) * gEnt.size * gEnt.itemsize)
-                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
  
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "cmd: %s name: %s sortedName: %s dtype: %t".format(

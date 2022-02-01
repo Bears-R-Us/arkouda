@@ -140,7 +140,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning keys and permutation vector as a block distributed array */
-    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) throws {
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) {
         // check to see if array is already sorted
         if (checkSorted) {
             if (isSorted(a)) {
@@ -199,8 +199,6 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             
@@ -257,7 +255,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
         // check to see if array is already sorted
         if (checkSorted) {
             if (isSorted(a)) {
@@ -275,7 +273,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t throws {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
 
         // check to see if array is already sorted
         if (checkSorted) {
@@ -335,8 +333,6 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             
@@ -390,8 +386,16 @@ module RadixSortLSD
     }//proc radixSortLSD_keys
 
     proc radixSortLSD_memEst(size: int, itemsize: int) {
-        return ((4 + 1) * size * itemsize)
-                     + (2 * here.maxTaskPar * numLocales * 2**16 * 8);
+        // 2 temp key+ranks arrays + globalStarts/globalClounts
+        return (2 * size * (itemsize + numBytes(int))) +
+               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+    }
+
+    proc radixSortLSD_keys_memEst(size: int, itemsize: int) {
+        // 2 temp key arrays + globalStarts/globalClounts
+        return (2 * size * itemsize) +
+               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+
     }
 }
 
