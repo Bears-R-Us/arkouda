@@ -411,36 +411,6 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    /* proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) throws { */
-    /*   type t = if intype == bool then int else intype; */
-    /*   var res: [D] t; */
-    /*   if (D.size == 0) { return res; } */
-    /*   var cumsum; */
-    /*   if (isFloatType(t) && skipNan) { */
-    /*     var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem; */
-    /*     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit */
-    /*     overMemLimit(numBytes(t) * arrCopy.size); */
-    /*     cumsum = + scan arrCopy; */
-    /*   } */
-    /*   else { */
-    /*     // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit */
-    /*     overMemLimit(numBytes(t) * values.size); */
-    /*     cumsum = + scan values; */
-    /*   } */
-    /*   // Iterate over segments */
-    /*   var rightvals: [D] t; */
-    /*   forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) { */
-    /*     // Find the segment boundaries */
-    /*     if (i == D.high) { */
-    /*       agg.copy(r, cumsum[values.domain.high]); */
-    /*     } else { */
-    /*       agg.copy(r, cumsum[segments[i+1] - 1]); */
-    /*     } */
-    /*   } */
-    /*   res[D.low] = rightvals[D.low]; */
-    /*   res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1]; */
-    /*   return res; */
-    /* } */
 
     proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
