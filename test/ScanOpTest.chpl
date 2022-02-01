@@ -15,7 +15,7 @@ use CommAggregation;
 use ReductionMsg;
 
 config const SIZE = numLocales * here.maxTaskPar;
-config const GROUPS = 8;
+config const GROUPS = min(SIZE, 8);
 config const offset = 0;
 config const DEBUG = false;
 
@@ -57,8 +57,10 @@ proc writeCols(names: string, a:[?D] int, b: [D] int, c: [D] int, d: [D] int) {
 proc main() {
   const (keys, segments, values, answers) = makeArrays();
   var res = segSum(values, segments);
-  var diff = res - answers;
-  writeCols("grp st size res diff", segments, answers, res, diff);
+  if DEBUG {
+    var diff = res - answers;
+    writeCols("grp st size res diff", segments, answers, res, diff);
+  }
 
   if !(&& reduce (res == answers)) {
     writeln(">>> Incorrect result <<<");
