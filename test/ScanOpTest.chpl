@@ -2,6 +2,12 @@
  * The purpose of this test was to reproduce a bug that only occurs
  * with multiple locales and a large number of cores per locale, so
  * it was not caught by the CI.
+
+ * To trigger those conditions on a single locale, chapel must be
+ * built in multi-locale mode (e.g. CHPL_COMM=gasnet) and this
+ * program must be run in an oversubscribed configuration, e.g.:
+ *
+ * CHPL_RT_OVERSUBSCRIBED=yes CHPL_RT_NUM_THREADS_PER_LOCALE=8 test-bin/ScanOpTest -nl 4 --SIZE=32
  */
 
 use TestBase;
