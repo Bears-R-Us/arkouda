@@ -15,14 +15,6 @@ module MsgProcessing
     use ServerErrorStrings;
 
     use AryUtil;
-
-    // "Backbone modules" included in every build
-    import RandMsg;
-    RandMsg.registerMe();
-    import IndexingMsg;
-    IndexingMsg.registerMe();
-    import OperatorMsg;
-    OperatorMsg.registerMe();
     
     private config const logLevel = ServerConfig.logLevel;
     const mpLogger = new Logger(logLevel);
@@ -181,6 +173,37 @@ module MsgProcessing
         }
     }
     
+    /**
+     * Generate the mapping of server command to function as JSON
+     * encoded string.
+     *
+     * The args are IGNORED. They are only here to match the CommandMap
+     * standard function signature, similar to other procs.
+     *
+     * :arg cmd: Ignored
+     * :type cmd: string 
+     *
+     * :arg payload: Ignored
+     * :type payload: string
+     *
+     * :arg st: Ignored
+     * :type st: borrowed SymTab 
+     *
+     * :returns: MsgTuple containing JSON formatted string of cmd -> function mapping
+     */
+    proc getCommandMapMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+        // We can ignore the args, we just need it to match the CommandMap call signature
+        import CommandMap;
+        try {
+            const json:string = CommandMap.dumpCommandMap();
+            return new MsgTuple(CommandMap.dumpCommandMap():string, MsgType.NORMAL);
+        } catch {
+            var errorMsg = "Error converting CommandMap to JSON";
+            mpLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+    }
+
     /* 
     Response to __str__ method in python str convert array data to string 
 

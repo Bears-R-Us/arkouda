@@ -931,5 +931,6 @@ module SegmentedMsg {
     registerFunction("segmentedIn1d", segIn1dMsg);
     registerFunction("randomStrings", randomStringsMsg);
     registerFunction("segStr-assemble", assembleStringsMsg);
+    registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg);
   }
 }

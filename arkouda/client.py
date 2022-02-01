@@ -8,7 +8,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
      MessageType
 
-__all__ = ["connect", "disconnect", "shutdown", "get_config", "get_mem_used", "ruok"]
+__all__ = ["connect", "disconnect", "shutdown", "get_config", "get_mem_used", "get_server_commands", "print_server_commands", "ruok"]
 
 # stuff for zmq connection
 pspStr = ''
@@ -616,6 +616,40 @@ def get_mem_used() -> int:
     """
     mem_used_message = cast(str,generic_msg(cmd="getmemused"))
     return int(mem_used_message)
+
+def get_server_commands() -> Mapping[str, str]:
+    """
+    Return a dictionary of available server commands and the functions they map to
+
+    Returns
+    -------
+    dict
+        String to String mapping of available server commands to functions
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in retrieving and formatting the CommandMap
+    ValueError
+        Raised if there's an error in parsing the JSON-formatted server string
+    """
+    try:
+        raw_message = cast(str,generic_msg(cmd="getCmdMap"))
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
+    except Exception as e:
+        raise RuntimeError('{} in retrieving Arkouda server config'.format(e))
+
+def print_server_commands():
+    """
+    Print the list of the available Server commands
+    """
+    cmdMap = get_server_commands();
+    cmds = [k for k in sorted(cmdMap.keys())]
+    print(f"Total available server commands: {len(cmds)}")
+    for cmd in cmds:
+        print(f"\t{cmd}")
 
 def _no_op() -> str:
     """
