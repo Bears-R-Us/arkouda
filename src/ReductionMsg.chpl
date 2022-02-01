@@ -507,12 +507,12 @@ module ReductionMsg
       proc accumulateOntoState(ref state, x) {
         // Assume state is an element that has already been scanned,
         // and x is an update from a previous boundary.
-        const (_, other) = x;
+        const (prevReset, other) = x;
         const (hasReset, v) = state;
-        // x's hasReset flag does not matter
+        // absorb reset history
         // If state has already encountered a reset, then it should
         // ignore x's value
-        state = (hasReset, if hasReset then v else (v + other));
+        state = (hasReset | prevReset, if hasReset then v else (v + other));
       }
 
       proc combine(x) {
