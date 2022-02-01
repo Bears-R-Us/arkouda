@@ -1,3 +1,4 @@
+import builtins
 import itertools
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
@@ -217,7 +218,7 @@ def _array_memview(a) -> memoryview:
         return memoryview(a)
 
 
-def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:
+def zeros(size : int_scalars, dtype=float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -266,7 +267,7 @@ def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:
     
     return create_pdarray(repMsg)
 
-def ones(size : int_scalars, dtype : type=float64) -> pdarray:
+def ones(size : int_scalars, dtype=float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 

@@ -394,7 +394,8 @@ class StringTest(ArkoudaTest):
         g = self._get_ak_gremlins()
         run_test_ends_with(g.gremlins_strings, g.gremlins_test_strings, ' ')
         run_test_ends_with(g.gremlins_strings, g.gremlins_test_strings, '"')
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
+            # updated to raise ValueError since regex doesn't currently support patterns matching empty string
             self.assertFalse(run_test_ends_with(g.gremlins_strings,
                                             g.gremlins_test_strings, ''))
     
