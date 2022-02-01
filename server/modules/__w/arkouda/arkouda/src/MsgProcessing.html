@@ -96,27 +96,21 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BinOp.html">BinOp</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
-<li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MsgProcessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
-<li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SegmentedMsg.html">SegmentedMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
@@ -306,6 +300,65 @@ Returns a string of info for the sym entry that is mapped to the provided name.<
 <dd class="field-even"><p>MsgTuple</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MsgProcessing.getCommandMapMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getCommandMapMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.getCommandMapMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Generate the mapping of server command to function as JSON</p></li>
+<li><p>encoded string.</p></li>
+<li></li>
+<li><p>The args are IGNORED. They are only here to match the CommandMap</p></li>
+<li><p>standard function signature, similar to other procs.</p></li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg cmd</dt>
+<dd class="field-odd"><p>Ignored</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type cmd</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg payload</dt>
+<dd class="field-odd"><p>Ignored</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type payload</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg st</dt>
+<dd class="field-odd"><p>Ignored</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type st</dt>
+<dd class="field-odd"><p>borrowed SymTab</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>MsgTuple containing JSON formatted string of cmd -&gt; function mapping</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd></dl>
 
 <dl class="chpl function">

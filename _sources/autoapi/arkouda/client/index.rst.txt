@@ -18,6 +18,8 @@ Functions
    arkouda.client.shutdown
    arkouda.client.get_config
    arkouda.client.get_mem_used
+   arkouda.client.get_server_commands
+   arkouda.client.print_server_commands
    arkouda.client.ruok
 
 
@@ -101,6 +103,22 @@ Functions
 
    :raises RuntimeError: Raised if there is a server-side error in getting memory used
    :raises ValueError: Raised if the returned value is not an int-formatted string
+
+
+.. py:function:: get_server_commands() -> Mapping[str, str]
+
+   Return a dictionary of available server commands and the functions they map to
+
+   :returns: String to String mapping of available server commands to functions
+   :rtype: dict
+
+   :raises RuntimeError: Raised if there is a server-side error in retrieving and formatting the CommandMap
+   :raises ValueError: Raised if there's an error in parsing the JSON-formatted server string
+
+
+.. py:function:: print_server_commands()
+
+   Print the list of the available Server commands
 
 
 .. py:function:: ruok() -> str
