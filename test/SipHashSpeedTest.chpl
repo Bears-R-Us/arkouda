@@ -6,6 +6,8 @@ config const NINPUTS = 100_000;
 config const INPUTSIZE = 64;
 config const SEED = "none";
 
+config const computeOnSegments = false;
+
 enum testMode {fixed, variable};
 config const mode = testMode.variable;
 config const compareTypes = false;
@@ -39,8 +41,13 @@ proc testVariableLength(n:int, meanSize:int, type t) {
   }
   var hashes: [segs.domain] 2*uint;
   d.start();
-  forall (h, i, l) in zip(hashes, segs, lengths) {
-    h = sipHash128(tohash, i..#l);
+  if computeOnSegments {
+    use SegmentedComputation;
+    hashes = computeOnSegments(segs, vals, SegFunction.SipHash128, 2*uint(64));
+  } else {
+    forall (h, i, l) in zip(hashes, segs, lengths) {
+      h = sipHash128(tohash, i..#l);
+    }
   }
   d.stop(printTime=false);
   return (d.elapsed(), vals.size * numBytes(t));

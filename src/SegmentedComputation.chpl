@@ -1,4 +1,6 @@
 module SegmentedComputation {
+  use CommAggregation;
+  use SipHash;
 
   proc computeSegmentOwnership(segments: [?D] int, vD) {
     // Locale that owns each segment's bytes
