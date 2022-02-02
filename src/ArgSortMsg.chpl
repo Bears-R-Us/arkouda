@@ -307,8 +307,9 @@ module ArgSortMsg
         // TODO support arbitrary size with array-of-arrays or segmented array
         proc mergedArgsort(param numDigits) throws {
 
-          overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-                       + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+          // check mem limit for merged array and sort on merged array
+          const itemsize = numDigits * bitsPerDigit / 8;
+          overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
 
           var ivname = st.nextName();
           var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
@@ -359,9 +360,9 @@ module ArgSortMsg
         if totalDigits <= 16 { return new MsgTuple(mergedArgsort(16), MsgType.NORMAL); }
       }
 
-      // check and throw if over memory limit
-      overMemLimit(((4 + 3) * size * numBytes(int))
-                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      // check mem limit for permutation vectors and sort
+      const itemsize = numBytes(int);
+      overMemLimit(2*size*itemsize + radixSortLSD_memEst(size, itemsize));
       
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
@@ -443,8 +444,7 @@ module ArgSortMsg
           when "pdarray" {
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
-            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
-                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+            overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
         
             select (gEnt.dtype) {
                 when (DType.Int64) {
