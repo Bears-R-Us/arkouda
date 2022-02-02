@@ -329,6 +329,6 @@ module ConcatenateMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("concatenate", concatenateMsg);
+      registerFunction("concatenate", concatenateMsg, getModuleName());
     }
 }

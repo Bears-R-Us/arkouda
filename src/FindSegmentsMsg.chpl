@@ -207,6 +207,6 @@ module FindSegmentsMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("findSegments", findSegmentsMsg);
+      registerFunction("findSegments", findSegmentsMsg, getModuleName());
     }
 }

@@ -392,8 +392,8 @@ module ParquetMsg {
 
   proc registerMe() {
     use CommandMap;
-    registerFunction("readAllParquet", readAllParquetMsg);
-    registerFunction("writeParquet", toparquetMsg);
+    registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
+    registerFunction("writeParquet", toparquetMsg, getModuleName());
     ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
   }
 

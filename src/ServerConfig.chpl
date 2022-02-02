@@ -62,6 +62,8 @@ module ServerConfig
     */
     config param regexMaxCaptures = 20;
 
+    config const saveUsedModules : bool = false;
+
     private config const lLevel = ServerConfig.logLevel;
     const scLogger = new Logger(lLevel);
    

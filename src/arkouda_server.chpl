@@ -242,6 +242,8 @@ proc main() {
     which stops the arkouda_server listener thread and closes socket.
     */
     proc shutdown(user: string) {
+        if saveUsedModules then
+          writeUsedModules();
         shutdownServer = true;
         repCount += 1;
         socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
@@ -358,8 +360,12 @@ proc main() {
                 }
                 otherwise { // Look up in CommandMap or Binary CommandMap
                     if commandMap.contains(cmd) {
+                        if moduleMap.contains(cmd) then
+                          usedModules.add(moduleMap[cmd]);
                         repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
                     } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
+                        if moduleMap.contains(cmd) then
+                          usedModules.add(moduleMap[cmd]);
                         var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, args, st);
                         sendRepMsg(binaryRepMsg);
                     } else {

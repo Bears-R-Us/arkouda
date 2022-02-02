@@ -94,6 +94,6 @@ module In1dMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("in1d", in1dMsg);
+      registerFunction("in1d", in1dMsg, getModuleName());
     }
 }

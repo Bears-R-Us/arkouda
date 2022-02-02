@@ -123,7 +123,7 @@ module RandMsg
     
     proc registerMe() {
       use CommandMap;
-      registerFunction("randint", randintMsg);
-      registerFunction("randomNormal", randomNormalMsg);
+      registerFunction("randint", randintMsg, getModuleName());
+      registerFunction("randomNormal", randomNormalMsg, getModuleName());
     }
 }

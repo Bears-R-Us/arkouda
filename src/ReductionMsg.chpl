@@ -1027,9 +1027,9 @@ module ReductionMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("segmentedReduction", segmentedReductionMsg);
-      registerFunction("reduction", reductionMsg);
-      registerFunction("countReduction", countReductionMsg);
+      registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
+      registerFunction("reduction", reductionMsg, getModuleName());
+      registerFunction("countReduction", countReductionMsg, getModuleName());
     }
 
 }
