@@ -64,7 +64,7 @@ module SegmentedComputation {
       on loc {
         const myFirstSegIdx = startSegInds[loc.id];
         const myNumSegs = numSegs[loc.id];
-        const mySegInds = myFirstSegIdx..#myNumSegs;
+        const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
         // Block transfer -- should use aggregation?
         const mySegs = segments[mySegInds];
