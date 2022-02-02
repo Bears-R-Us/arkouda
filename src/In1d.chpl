@@ -74,10 +74,10 @@ module In1d
         /* ar[{u1.size..#u2.size}] = u2; */
         ar[D.interior(u2.size)] = u2;
         // Sort unique arrays together to find duplicates
-        var order = radixSortLSD_ranks(ar);
         var sar: [D] int;
-        forall (s, o) in zip(sar, order) with (var agg = newSrcAggregator(int)) {
-            agg.copy(s, ar[o]);
+        var order: [D] int;
+        forall (s, o, so) in zip(sar, order, radixSortLSD(ar)) {
+          (s, o) = so;
         }
         // Duplicates correspond to values in both arrays
         var flag: [D] bool;

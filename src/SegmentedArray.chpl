@@ -7,7 +7,7 @@ module SegmentedArray {
   use UnorderedCopy;
   use SipHash;
   use SegStringSort;
-  use RadixSortLSD only radixSortLSD_ranks;
+  use RadixSortLSD;
   use PrivateDist;
   use ServerConfig;
   use Unique;
@@ -1271,10 +1271,10 @@ module SegmentedArray {
       combined[combinedDom.interior(-umain.size)] = umain;
       combined[combinedDom.interior(utest.size)] = utest;
       // Sort
-      var iv = radixSortLSD_ranks(combined);
       var sorted: [combinedDom] 2*uint(64);
-      forall (i, s) in zip(iv, sorted) with (var agg = newSrcAggregator(2*uint(64))) {
-        agg.copy(s, combined[i]);
+      var iv: [combinedDom] int;
+      forall (s, i, si) in zip(sorted, iv, radixSortLSD(combined)) {
+        (s, i) = si;
       }
       // Find duplicates
       // Dupe parallels unique hashes of mainStr and is true when value is in testStr
