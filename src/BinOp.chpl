@@ -7,6 +7,7 @@ module BinOp
   use MultiTypeSymEntry;
   use Logging;
   use Message;
+  use BitOps;
 
   private config const logLevel = ServerConfig.logLevel;
   const omLogger = new Logger(logLevel);
