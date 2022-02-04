@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-TYPES = ('int64', 'float64')
+TYPES = ('int64', 'uint64', 'float64')
 
 def time_ak_argsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda {} argsort".format(dtype))
@@ -13,6 +13,9 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
+        nbytes = a.size * a.itemsize
+    elif dtype == 'uint64':
+        a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
         nbytes = a.size * a.itemsize
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
@@ -29,7 +32,7 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
         timings.append(end - start)
     tavg = sum(timings) / trials
 
-    if dtype in ('int64', 'float64'):
+    if dtype in ('int64', 'uint64', 'float64'):
         assert ak.is_sorted(a[perm])
     print("Average time = {:.4f} sec".format(tavg))
     bytes_per_sec = nbytes / tavg
@@ -42,6 +45,8 @@ def time_np_argsort(N, trials, dtype, seed):
         np.random.seed(seed)
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
+    elif dtype == 'uint64':
+        a = np.random.randint(0, 2**32, N, dtype=np.uint64)
     elif dtype == 'float64':
         a = np.random.random(N)
     elif dtype == 'str':
@@ -63,13 +68,15 @@ def check_correctness(dtype, seed):
     N = 10**4
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
+    elif dtype == 'uint64':
+        a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
     elif dtype == 'str':
         a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     perm = ak.argsort(a)
-    if dtype in ('int64', 'float64'):
+    if dtype in ('int64', 'uint64', 'float64'):
         assert ak.is_sorted(a[perm])
 
 def create_parser():

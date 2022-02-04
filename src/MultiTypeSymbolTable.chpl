@@ -161,6 +161,7 @@ module MultiTypeSymbolTable
         proc addEntry(name: string, len: int, dtype: DType): borrowed AbstractSymEntry throws {
             select dtype {
                 when DType.Int64 { return addEntry(name, len, int); }
+                when DType.UInt64 { return addEntry(name, len, uint); }
                 when DType.Float64 { return addEntry(name, len, real); }
                 when DType.Bool { return addEntry(name, len, bool); }
                 otherwise { 

@@ -38,6 +38,16 @@ module BinOp
   :throws: `UndefinedSymbolError(name)`
   */
   proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws {
+    if e.etype == uint {
+      select op {
+        when "+" {
+          e.a = l.a + r.a;
+        }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    
     if e.etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses

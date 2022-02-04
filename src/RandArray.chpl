@@ -37,7 +37,7 @@ module RandArray {
       }
       if (aMax > aMin) {
         const modulus = aMax - aMin;
-        [x in a] x = ((x % modulus) + aMin):t;
+        [x in a] x = ((x:t % (modulus:t)) + aMin:t):t;
       }
   }
 

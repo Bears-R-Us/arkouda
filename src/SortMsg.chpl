@@ -86,6 +86,11 @@ module SortMsg
               var sorted = doSort(e.a);
               st.addEntry(sortedName, new shared SymEntry(sorted));
           }// end when(DType.Int64)
+          when (DType.UInt64) {
+              var e = toSymEntry(gEnt, uint);
+              var sorted = doSort(e.a);
+              st.addEntry(sortedName, new shared SymEntry(sorted));
+          }// end when(DType.UInt64)
           when (DType.Float64) {
               var e = toSymEntry(gEnt, real);
               var sorted = doSort(e.a);

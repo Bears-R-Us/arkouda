@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-TYPES = ('int64', 'float64')
+TYPES = ('int64', 'uint64', 'float64')
 
 def time_ak_coargsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda {} coargsort".format(dtype))
@@ -18,6 +18,9 @@ def time_ak_coargsort(N_per_locale, trials, dtype, seed):
             seeds = [seed+i for i in range(numArrays)]
         if dtype == 'int64':
             arrs = [ak.randint(0, 2**32, N//numArrays, seed=s) for s in seeds]
+            nbytes = sum(a.size * a.itemsize for a in arrs)
+        elif dtype == 'uint64':
+            arrs = [ak.randint(0, 2**32, N//numArrays, dtype=ak.uint64, seed=s) for s in seeds]
             nbytes = sum(a.size * a.itemsize for a in arrs)
         elif dtype == 'float64':
             arrs = [ak.randint(0, 1, N//numArrays, dtype=ak.float64, seed=s) for s in seeds]
@@ -35,7 +38,7 @@ def time_ak_coargsort(N_per_locale, trials, dtype, seed):
         tavg = sum(timings) / trials
 
         a = arrs[0][perm]
-        if dtype in ('int64', 'float64'):
+        if dtype in ('int64', 'uint64', 'float64'):
             assert ak.is_sorted(a)
         print("{}-array Average time = {:.4f} sec".format(numArrays, tavg))
         bytes_per_sec = nbytes / tavg
@@ -49,6 +52,8 @@ def time_np_coargsort(N, trials, dtype, seed):
     for numArrays in (1, 2, 8, 16):
         if dtype == 'int64':
             arrs = [np.random.randint(0, 2**32, N//numArrays) for _ in range(numArrays)]
+        elif dtype == 'uint64':
+            arrs = [np.random.randint(0, 2**32, N//numArrays, dtype=np.uint64) for _ in range(numArrays)]
         elif dtype == 'float64':
             arrs = [np.random.random(N//numArrays) for _ in range(numArrays)]
         elif dtype == 'str':
@@ -74,6 +79,9 @@ def check_correctness(dtype, seed):
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
         z = ak.zeros(N, dtype=dtype)
+    elif dtype == 'uint64':
+        a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
+        z = ak.zeros(N, dtype=dtype)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
         z = ak.zeros(N, dtype=dtype)
@@ -82,10 +90,10 @@ def check_correctness(dtype, seed):
         z = ak.cast(ak.zeros(N), 'str')
 
     perm = ak.coargsort([a, z])
-    if dtype in ('int64', 'float64'):
+    if dtype in ('int64', 'uint64', 'float64'):
         assert ak.is_sorted(a[perm])
     perm = ak.coargsort([z, a])
-    if dtype in ('int64', 'float64'):
+    if dtype in ('int64', 'uint64', 'float64'):
         assert ak.is_sorted(a[perm])
 
 

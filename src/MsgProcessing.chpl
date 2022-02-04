@@ -446,6 +446,12 @@ module MsgProcessing
                 e.a = val;
                 repMsg = "set %s to %t".format(name, val);
             }
+            when (DType.UInt64, DType.UInt64) {
+                var e = toSymEntry(gEnt,uint);
+                var val: uint = try! value:uint;
+                e.a = val;
+                repMsg = "set %s to %t".format(name, val);
+            }
             otherwise {
                 mpLogger.error(getModuleName(),getRoutineName(),
                                                getLineNumber(),"dtype: %s".format(dtypestr));

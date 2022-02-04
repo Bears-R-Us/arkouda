@@ -205,11 +205,14 @@ prototype module UnitTestSort
     if !perfOnlyCompile && correctness {
       const nElems = if numElems > 0 then numElems else numLocales*10000;
       testSortIndexPerm(int, nElems);
+      testSortIndexPerm(uint, nElems);
       testSortIndexPerm(real, nElems);
       testSortMultRandVals(int, nElems);
+      testSortMultRandVals(uint, nElems);
       testSortMultRandVals(real, nElems);
       if mode == testMode.correctness {
         testSortActiveBitRanges(int, nElems);
+        testSortActiveBitRanges(uint, nElems);
       }
     } else {
       testPerformance();

@@ -40,6 +40,9 @@ module CastMsg {
             when (DType.Int64, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, int), MsgType.NORMAL);
             }
+            when (DType.Int64, "uint64") {
+              return new MsgTuple(castGenSymEntry(gse, st, int, uint), MsgType.NORMAL);
+            }
             when (DType.UInt8, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint(8), int), MsgType.NORMAL);        
             }
@@ -52,8 +55,29 @@ module CastMsg {
             when (DType.UInt8, "bool") {
                 return new MsgTuple(castGenSymEntry(gse, st, uint(8), bool), MsgType.NORMAL);                 
             }
+            when (DType.UInt8, "uint64") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint(8), uint), MsgType.NORMAL);                 
+            }
             when (DType.UInt8, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "int64") {
+              return new MsgTuple(castGenSymEntry(gse, st, uint, int), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "uint8") {
+              return new MsgTuple(castGenSymEntry(gse, st, uint, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "uint64") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint, uint), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "float") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint, real), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "bool") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint, bool), MsgType.NORMAL);
+            }
+            when (DType.UInt64, "string") {
+                return new MsgTuple(castGenSymEntryToString(gse, st, uint), MsgType.NORMAL);
             }
             when (DType.Float64, "int64") {
                 return new MsgTuple(castGenSymEntry(gse, st, real, int), MsgType.NORMAL);                  
@@ -67,6 +91,9 @@ module CastMsg {
             when (DType.Float64, "bool") {
                 return new MsgTuple(castGenSymEntry(gse, st, real, bool), MsgType.NORMAL);
             }
+            when (DType.Float64, "uint64") {
+              return new MsgTuple(castGenSymEntry(gse, st, real, uint), MsgType.NORMAL);
+            }
             when (DType.Float64, "str") {
                 return new MsgTuple(castGenSymEntryToString(gse, st, real), MsgType.NORMAL);
             }
@@ -75,6 +102,9 @@ module CastMsg {
             }
             when (DType.Bool, "uint8") {
                 return new MsgTuple(castGenSymEntry(gse, st, bool, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.Bool, "uint64") {
+                return new MsgTuple(castGenSymEntry(gse, st, bool, uint), MsgType.NORMAL);
             }
             when (DType.Bool, "float64") {
                 return new MsgTuple(castGenSymEntry(gse, st, bool, real), MsgType.NORMAL);
@@ -100,6 +130,9 @@ module CastMsg {
               }
               when "uint8" {
                   return new MsgTuple(castStringToSymEntry(strings, st, uint(8)), MsgType.NORMAL);
+              }
+              when "uint64" {
+                  return new MsgTuple(castStringToSymEntry(strings, st, uint), MsgType.NORMAL);
               }
               when "float64" {
                   return new MsgTuple(castStringToSymEntry(strings, st, real), MsgType.NORMAL);
