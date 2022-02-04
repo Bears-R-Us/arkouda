@@ -49,7 +49,7 @@ for example if (a.max-a.min > a.size) means that a's are sparse
 
 .. function:: proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws
 
-.. function:: proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted = false) throws
+.. function:: proc uniqueGroup(str: SegString, returnInverse = false) throws
 
 .. function:: proc uniqueFromTruth(str: SegString, perm: [?aD] int, truth: [aD] bool) throws
 
