@@ -64,8 +64,8 @@ module In1d
            then map back to the original domain of ar1.
          */
         // Need the inverse index to map back from unique domain to original domain later
-        var (u1, c1, inv) = uniqueSortWithInverse(ar1);
-        var (u2, c2) = uniqueSort(ar2);
+        var (u1, _, inv) = uniqueSortWithInverse(ar1);
+        var u2 = uniqueSort(ar2, needCounts=false);
         // Concatenate the two unique arrays
         const ar = concatArrays(u1, u2);
         const D = ar.domain;
