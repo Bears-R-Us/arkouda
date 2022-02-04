@@ -13,6 +13,7 @@ module ArraySetops
     use RadixSortLSD;
     use Unique;
     use Indexing;
+    use AryUtil;
     use In1d;
 
     /*
@@ -32,7 +33,7 @@ module ArraySetops
     }
 
     proc intersect1dHelper(a: [] ?t, b: [] t) throws {
-      var aux = radixSortLSD_keys(concatset(a,b));
+      var aux = radixSortLSD_keys(concatArrays(a,b));
 
       // All elements except the last
       const ref head = aux[..aux.domain.high-1];
@@ -60,7 +61,7 @@ module ArraySetops
     // sorts and removes all values that occur
     // more than once
     proc setxor1dHelper(a: [] ?t, b: [] t) throws {
-      const aux = radixSortLSD_keys(concatset(a,b));
+      const aux = radixSortLSD_keys(concatArrays(a,b));
       const ref D = aux.domain;
 
       // Concatenate a `true` onto each end of the array
@@ -120,7 +121,7 @@ module ArraySetops
       var aux;
       // Artificial scope to clean up temporary arrays
       {
-        aux = concatset(uniqueSort(a,false), uniqueSort(b,false));
+        aux = concatArrays(uniqueSort(a,false), uniqueSort(b,false));
       }
       return uniqueSort(aux, false);
     }

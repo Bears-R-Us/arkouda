@@ -59,7 +59,7 @@ module In1d
        :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
        :type truth: [] bool
      */
-    proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws  {
+    proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws {
         /* General strategy: unique both arrays, find the intersecting values, 
            then map back to the original domain of ar1.
          */
@@ -67,12 +67,8 @@ module In1d
         var (u1, c1, inv) = uniqueSortWithInverse(ar1);
         var (u2, c2) = uniqueSort(ar2);
         // Concatenate the two unique arrays
-        const D = makeDistDom(u1.size + u2.size);
-        var ar: [D] t;
-        /* ar[{0..#u1.size}] = u1; */
-        ar[D.interior(-u1.size)] = u1;
-        /* ar[{u1.size..#u2.size}] = u2; */
-        ar[D.interior(u2.size)] = u2;
+        const ar = concatArrays(u1, u2);
+        const D = ar.domain;
         // Sort unique arrays together to find duplicates
         var sar: [D] t;
         var order: [D] int;
