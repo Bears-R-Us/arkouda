@@ -372,6 +372,6 @@ module JoinEqWithDTMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("joinEqWithDT", joinEqWithDTMsg);
+      registerFunction("joinEqWithDT", joinEqWithDTMsg, getModuleName());
     }
 }// end module JoinEqWithDTMsg

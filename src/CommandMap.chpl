@@ -29,6 +29,9 @@ module CommandMap {
 
   var commandMap: map(string, f.type);
   var commandMapBinary: map(string, b.type);
+  var moduleMap: map(string, string);
+  use Set;
+  var usedModules: set(string);
 
   /**
    * Register command->function in the CommandMap
@@ -39,6 +42,19 @@ module CommandMap {
     commandMap.add(cmd, fcf);
   }
 
+  proc registerFunction(cmd: string, fcf: f.type, modName: string) {
+    commandMap.add(cmd, fcf);
+    moduleMap.add(cmd, modName);
+  }
+
+  proc writeUsedModules() {
+    use IO;
+    var newCfgFile = try! open("UsedModules.cfg", iomode.cw);
+    var chnl = try! newCfgFile.writer();
+    for mod in usedModules do
+      try! chnl.write(mod + '\n');
+  }
+
   /**
    * Register command->function in the CommandMap for Binary returning functions
    * This binds a server command to its corresponding function matching the standard
@@ -46,6 +62,11 @@ module CommandMap {
    */
   proc registerBinaryFunction(cmd: string, fcf: b.type) {
     commandMapBinary.add(cmd, fcf);
+  }
+
+  proc registerBinaryFunction(cmd: string, fcf: b.type, modName: string) {
+    commandMapBinary.add(cmd, fcf);
+    moduleMap.add(cmd, modName);
   }
 
   /**

@@ -80,6 +80,6 @@ module HistogramMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("histogram", histogramMsg);
+      registerFunction("histogram", histogramMsg, getModuleName());
     }
 }

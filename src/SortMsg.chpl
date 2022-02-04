@@ -106,6 +106,6 @@ module SortMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("sort", sortMsg);
+      registerFunction("sort", sortMsg, getModuleName());
     }
 }// end module SortMsg

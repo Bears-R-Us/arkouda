@@ -917,20 +917,20 @@ module SegmentedMsg {
   
   proc registerMe() {
     use CommandMap;
-    registerFunction("segmentLengths", segmentLengthsMsg);
-    registerFunction("segmentedHash", segmentedHashMsg);
-    registerFunction("segmentedSearch", segmentedSearchMsg);
-    registerFunction("segmentedFindLoc", segmentedFindLocMsg);
-    registerFunction("segmentedFindAll", segmentedFindAllMsg);
-    registerFunction("segmentedPeel", segmentedPeelMsg);
-    registerFunction("segmentedSub", segmentedSubMsg);
-    registerFunction("segmentedIndex", segmentedIndexMsg);
-    registerFunction("segmentedBinopvv", segBinopvvMsg);
-    registerFunction("segmentedBinopvs", segBinopvsMsg);
-    registerFunction("segmentedGroup", segGroupMsg);
-    registerFunction("segmentedIn1d", segIn1dMsg);
-    registerFunction("randomStrings", randomStringsMsg);
-    registerFunction("segStr-assemble", assembleStringsMsg);
-    registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg);
+    registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
+    registerFunction("segmentedHash", segmentedHashMsg, getModuleName());
+    registerFunction("segmentedSearch", segmentedSearchMsg, getModuleName());
+    registerFunction("segmentedFindLoc", segmentedFindLocMsg, getModuleName());
+    registerFunction("segmentedFindAll", segmentedFindAllMsg, getModuleName());
+    registerFunction("segmentedPeel", segmentedPeelMsg, getModuleName());
+    registerFunction("segmentedSub", segmentedSubMsg, getModuleName());
+    registerFunction("segmentedIndex", segmentedIndexMsg, getModuleName());
+    registerFunction("segmentedBinopvv", segBinopvvMsg, getModuleName());
+    registerFunction("segmentedBinopvs", segBinopvsMsg, getModuleName());
+    registerFunction("segmentedGroup", segGroupMsg, getModuleName());
+    registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
+    registerFunction("randomStrings", randomStringsMsg, getModuleName());
+    registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
+    registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   }
 }

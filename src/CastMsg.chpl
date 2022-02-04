@@ -217,6 +217,6 @@ module CastMsg {
 
   proc registerMe() {
     use CommandMap;
-    registerFunction("cast", castMsg);
+    registerFunction("cast", castMsg, getModuleName());
   }
 }

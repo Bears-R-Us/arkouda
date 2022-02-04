@@ -488,7 +488,7 @@ module ArgSortMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("argsort", argsortMsg);
-      registerFunction("coargsort", coargsortMsg);
+      registerFunction("argsort", argsortMsg, getModuleName());
+      registerFunction("coargsort", coargsortMsg, getModuleName());
     }
 }

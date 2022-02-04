@@ -723,13 +723,13 @@ module IndexingMsg
     
     proc registerMe() {
       use CommandMap;
-      registerFunction("[int]", intIndexMsg);
-      registerFunction("[slice]", sliceIndexMsg);
-      registerFunction("[pdarray]", pdarrayIndexMsg);
-      registerFunction("[int]=val", setIntIndexToValueMsg);
-      registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg);
-      registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg);
-      registerFunction("[slice]=val", setSliceIndexToValueMsg);
-      registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg);
+      registerFunction("[int]", intIndexMsg, getModuleName());
+      registerFunction("[slice]", sliceIndexMsg, getModuleName());
+      registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
+      registerFunction("[int]=val", setIntIndexToValueMsg, getModuleName());
+      registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
+      registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
+      registerFunction("[slice]=val", setSliceIndexToValueMsg, getModuleName());
+      registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
     }
 }

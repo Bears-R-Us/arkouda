@@ -138,8 +138,8 @@ module RegistrationMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("register", registerMsg);
-      registerFunction("attach", attachMsg);
-      registerFunction("unregister", unregisterMsg);
+      registerFunction("register", registerMsg, getModuleName());
+      registerFunction("attach", attachMsg, getModuleName());
+      registerFunction("unregister", unregisterMsg, getModuleName());
     }
 }

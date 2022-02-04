@@ -113,6 +113,6 @@ module BroadcastMsg {
 
   proc registerMe() {
     use CommandMap;
-    registerFunction("broadcast", broadcastMsg);
+    registerFunction("broadcast", broadcastMsg, getModuleName());
   }
 }

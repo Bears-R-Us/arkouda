@@ -1358,10 +1358,10 @@ module OperatorMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("binopvv", binopvvMsg);
-      registerFunction("binopvs", binopvsMsg);
-      registerFunction("binopsv", binopsvMsg);
-      registerFunction("opeqvv", opeqvvMsg);
-      registerFunction("opeqvs", opeqvsMsg);
+      registerFunction("binopvv", binopvvMsg, getModuleName());
+      registerFunction("binopvs", binopvsMsg, getModuleName());
+      registerFunction("binopsv", binopsvMsg, getModuleName());
+      registerFunction("opeqvv", opeqvvMsg, getModuleName());
+      registerFunction("opeqvs", opeqvsMsg, getModuleName());
     }
 }

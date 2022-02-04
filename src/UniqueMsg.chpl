@@ -228,7 +228,7 @@ module UniqueMsg
 
     proc registerMe() {
       use CommandMap;
-      registerFunction("unique", uniqueMsg);
-      registerFunction("value_counts", value_countsMsg);
+      registerFunction("unique", uniqueMsg, getModuleName());
+      registerFunction("value_counts", value_countsMsg, getModuleName());
     }
 }
