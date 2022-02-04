@@ -73,21 +73,17 @@ module In1d
         var sar: [D] t;
         var order: [D] int;
         forall (s, o, so) in zip(sar, order, radixSortLSD(ar)) {
-          (s, o) = so;
+            (s, o) = so;
         }
         // Duplicates correspond to values in both arrays
         var flag: [D] bool;
-        flag[D.interior(-(D.size-1))] = (sar[D.interior(D.size-1)] == sar[D.interior(-(D.size-1))]);
-        // Get the indices of values from u1 that are also in u2
-        // Because sort is stable, original index of left duplicate will always be in u1
-        var ret: [D] bool;
-        forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
-            agg.copy(ret[o], f);
+        forall i in D[D.low..<D.high] with (var agg = newDstAggregator(bool)) {
+            agg.copy(flag[order[i]], sar[i+1] == sar[i]);
         }
         // Use the inverse index to map from u1 domain to ar1 domain
         var truth: [aD1] bool;
         forall (t, idx) in zip(truth, inv) with (var agg = newSrcAggregator(bool)) {
-            agg.copy(t, ret[idx]);
+            agg.copy(t, flag[idx]);
         }
         return truth;
     }
