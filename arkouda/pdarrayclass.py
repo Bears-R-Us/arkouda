@@ -7,6 +7,7 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numeric_and_bool_scalars, numpy_scalars, get_server_byteorder
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import bool as npbool

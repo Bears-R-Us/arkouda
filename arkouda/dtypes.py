@@ -5,7 +5,7 @@ from typeguard import typechecked
 import builtins
 import sys
 
-__all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64", 
+__all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "uint64", "int64", "float64", 
            "uint8", "str_", "check_np_dtype", "translate_np_dtype", 
            "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES", "bool_scalars",
            "float_scalars", "int_scalars", "numeric_scalars", "numpy_scalars",
@@ -14,12 +14,14 @@ __all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64",
 
 NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'int64': '{:n}',
+                         'uint64': '{:n}',
                          'float64': '{:.17f}',
                          'uint8': '{:n}',
                          'np.float64': 'f'}
 
 dtype = np.dtype
 bool = np.dtype(bool)
+uint64 = np.dtype(np.uint64)
 int64 = np.dtype(np.int64)
 float64 = np.dtype(np.float64)
 uint8 = np.dtype(np.uint8)
@@ -29,12 +31,12 @@ npstr = np.dtype(str)
 # Union aliases used for static and runtime type checking
 bool_scalars = Union[builtins.bool, np.bool_]
 float_scalars = Union[float,np.float64]
-int_scalars = Union[int,np.int64]
-numeric_scalars = Union[float,np.float64,int,np.int64,np.uint8]
+int_scalars = Union[int,np.uint64,np.int64]
+numeric_scalars = Union[float,np.float64,int,np.uint64,np.int64,np.uint8]
 numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]
-numpy_scalars = Union[np.float64,np.int64,np.bool_,np.uint8,np.str_]
+numpy_scalars = Union[np.float64,np.uint64,np.int64,np.bool_,np.uint8,np.str_]
 str_scalars = Union[str, np.str_]
-all_scalars = Union[float,np.float64,int,np.int64,
+all_scalars = Union[float,np.float64,int,np.uint64,np.int64,
                                   builtins.bool,np.bool_,str,np.str_]
 
 '''
@@ -46,6 +48,7 @@ class DType(Enum):
     FLOAT = 'float'
     FLOAT64 = 'float64'
     INT = 'int'
+    UINT64 = 'uint64'
     INT64 = 'int64'
     STR = 'str'
     UINT8 = 'uint8'
@@ -64,17 +67,19 @@ class DType(Enum):
         """
         return self.value
 
-ARKOUDA_SUPPORTED_INTS = (int,np.int64)
+ARKOUDA_SUPPORTED_INTS = (int,np.uint64,np.int64)
 ARKOUDA_SUPPORTED_FLOATS = (float,np.float64)
-ARKOUDA_SUPPORTED_NUMBERS = (int,np.int64,float,np.float64)
+ARKOUDA_SUPPORTED_NUMBERS = (int,np.uint64,np.int64,float,np.float64)
 ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, 
                                       member in DType.__members__.items()])
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8])
-NumericDTypes = frozenset(['bool', 'float', 'float64', 'int', 'int64'])
+NumericDTypes = frozenset(['bool', 'float', 'float64', 'int', 'uint64', 'int64'])
 SeriesDTypes = {'string' : np.str_,
                  "<class 'str'>" : np.str_,
+                 'uint64' : np.uint64,
+                 "<class 'numpy.uint64'>" : np.uint64,                
                  'int64' : np.int64,
                  "<class 'numpy.int64'>" : np.int64,                
                  'float64' : np.float64,

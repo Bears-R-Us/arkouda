@@ -3,7 +3,7 @@ module NumPyDType
 {
     /* In chapel the types int and real defalut to int(64) and real(64).
        We also need other types like float32, int32, etc */
-    enum DType {Int64, Float64, Bool, UInt8, UNDEF, Strings}; 
+    enum DType {UInt64, Int64, Float64, Bool, UInt8, UNDEF, Strings}; 
 
     /* 
     Take a chapel type and returns the matching DType 
@@ -13,7 +13,8 @@ module NumPyDType
     :returns: DType
     */
     proc whichDtype(type etype) param : DType {
-      if (etype == int) {return DType.Int64;}
+      if (etype == int) {return DType.UInt64;}
+      if (etype == uint) {return DType.Int64;}
       if (etype == real) {return DType.Float64;}
       if (etype == bool) {return DType.Bool;}
       if (etype == uint(8)) {return DType.UInt8;}
@@ -29,6 +30,7 @@ module NumPyDType
     :returns: (int)
     */
     proc dtypeSize(dt: DType): int {
+      if (dt == DType.UInt64) { return 8; }
       if (dt == DType.Int64) { return 8; }
       if (dt == DType.Float64) { return 8; }
       if (dt == DType.Bool) { return 1; }
@@ -44,6 +46,7 @@ module NumPyDType
     :returns: DType
     */
     proc str2dtype(dstr:string): DType {
+        if dstr == "uint64" {return DType.UInt64;}
         if dstr == "int64" {return DType.Int64;}
         if dstr == "float64" {return DType.Float64;}        
         if dstr == "bool" {return DType.Bool;}
@@ -60,6 +63,7 @@ module NumPyDType
     :returns: (string)
     */
     proc dtype2str(dtype:DType): string {
+        if dtype == DType.UInt64 {return "uint64";}
         if dtype == DType.Int64 {return "int64";}
         if dtype == DType.Float64 {return "float64";}        
         if dtype == DType.Bool {return "bool";}

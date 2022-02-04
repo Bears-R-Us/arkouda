@@ -5,7 +5,7 @@ import pandas as pd # type: ignore
 from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, float64, int64, \
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS, float64, uint64, int64, \
      DTypes, isSupportedInt, isSupportedNumber, NumericDTypes, SeriesDTypes,\
     int_scalars, numeric_scalars, get_byteorder, get_server_byteorder
 from arkouda.dtypes import dtype as akdtype
