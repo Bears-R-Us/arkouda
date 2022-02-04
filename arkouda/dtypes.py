@@ -149,8 +149,11 @@ def resolve_scalar_dtype(val : object) -> str: # type: ignore
                                 and cast(np.bool_,val).dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
+    elif (hasattr(val, 'dtype') and cast(np.uint,val).dtype.kind in 'ui'):
+        return 'uint64'
+    # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and \
-                                  cast(np.uint,val).dtype.kind in 'ui'):
+                                  cast(np.int,val).dtype.kind in 'i'):
         return 'int64'
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and \

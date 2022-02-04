@@ -370,12 +370,12 @@ module MsgProcessing
                             "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
 
         select (gEnt.dtype, dtype) {
-            // first case for setting a uint64 array to a uint64 constant
+            // first case for setting a uint64 array to a int64 constant
             // maybe use a helper function here to refactor this
-            when (DType.UInt64, DType.UInt64) {
+            when (DType.UInt64, DType.Int64) {
                 var e = toSymEntry(gEnt,uint);
-                var val: uint = try! value:uint;
-                e.a = val;
+                var val: int = try! value:int;
+                e.a = val:uint;
                 repMsg = "set %s to %t".format(name, val);
             }
             when (DType.Int64, DType.Int64) {
