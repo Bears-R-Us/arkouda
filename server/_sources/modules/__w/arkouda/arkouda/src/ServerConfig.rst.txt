@@ -76,6 +76,8 @@ arkouda server config param and config const
    Determines the maximum number of capture groups returned by Regex.matches
    
 
+.. data:: config const saveUsedModules: bool = false
+
 .. data:: const scLogger = new Logger(lLevel)
 
 .. function:: proc createConfig()

@@ -37,6 +37,10 @@ or
 
 .. data:: var commandMapBinary: map(string, b.type)
 
+.. data:: var moduleMap: map(string, string)
+
+.. data:: var usedModules: set(string)
+
 .. function:: proc registerFunction(cmd: string, fcf: f.type)
 
    *
@@ -45,6 +49,10 @@ or
    * function signature & MsgTuple return type
    
 
+.. function:: proc registerFunction(cmd: string, fcf: f.type, modName: string)
+
+.. function:: proc writeUsedModules()
+
 .. function:: proc registerBinaryFunction(cmd: string, fcf: b.type)
 
    *
@@ -52,6 +60,8 @@ or
    * This binds a server command to its corresponding function matching the standard
    * function signature but returning "bytes"
    
+
+.. function:: proc registerBinaryFunction(cmd: string, fcf: b.type, modName: string)
 
 .. function:: proc dumpCommandMap(): string throws
 

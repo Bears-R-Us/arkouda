@@ -227,6 +227,16 @@
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">commandMapBinary</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">b.type)</span><a class="headerlink" href="#CommandMap.commandMapBinary" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="CommandMap.moduleMap">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">moduleMap</span></span><span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span><a class="headerlink" href="#CommandMap.moduleMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="CommandMap.usedModules">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">usedModules</span></span><span class="pre">:</span> <span class="pre">set(string)</span><a class="headerlink" href="#CommandMap.usedModules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.registerFunction">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">f.type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.registerFunction" title="Permalink to this definition">¶</a></dt>
@@ -239,6 +249,16 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">f.type</span></em>, <em class="sig-param"><span class="pre">modName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="CommandMap.writeUsedModules">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeUsedModules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.writeUsedModules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.registerBinaryFunction">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerBinaryFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">b.type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommandMap.registerBinaryFunction" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
@@ -248,6 +268,11 @@
 <li><p>function signature but returning “bytes”</p></li>
 </ul>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerBinaryFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">fcf:</span> <span class="pre">b.type</span></em>, <em class="sig-param"><span class="pre">modName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommandMap.dumpCommandMap">
