@@ -4,6 +4,7 @@ module CommAggregation {
   use ServerConfig;
   use UnorderedCopy;
   use CommPrimitives;
+  use ChplConfig;
 
   // TODO should tune these values at startup
   param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8096;

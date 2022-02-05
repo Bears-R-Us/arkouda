@@ -197,6 +197,8 @@ module SegmentedArray {
     /* Gather strings by index. Returns arrays for the segment offsets
        and bytes of the gathered strings.*/
     proc this(iv: [?D] int) throws {
+      use ChplConfig;
+      
       // Early return for zero-length result
       if (D.size == 0) {
         return (makeDistArray(0, int), makeDistArray(0, uint(8)));
