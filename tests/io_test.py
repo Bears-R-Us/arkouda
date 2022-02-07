@@ -596,7 +596,7 @@ class IOTest(ArkoudaTest):
             b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
             self.assertEqual(str(b1), str(b2))
 
-    def testUint64ToHDF5(self):
+    def testUint64ToFromArray(self):
         """
         Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
         """
