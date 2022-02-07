@@ -64,6 +64,8 @@ module GenSymIO {
 
         if dtype == DType.Int64 {
             rname = bytesToSymEntry(size, int, st, data);
+        } else if dtype == DType.UInt64 {
+            rname = bytesToSymEntry(size, uint, st, data);
         } else if dtype == DType.Float64 {
             rname = bytesToSymEntry(size, real, st, data);
         } else if dtype == DType.Bool {
@@ -151,6 +153,8 @@ module GenSymIO {
 
         if entry.dtype == DType.Int64 {
             arrayBytes = distArrToBytes(toSymEntry(entry, int).a);
+        } else if entry.dtype == DType.UInt64 {
+            arrayBytes = distArrToBytes(toSymEntry(entry, uint).a);
         } else if entry.dtype == DType.Float64 {
             arrayBytes = distArrToBytes(toSymEntry(entry, real).a);
         } else if entry.dtype == DType.Bool {
