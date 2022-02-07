@@ -265,4 +265,212 @@ module BinOp
     omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
     return new MsgTuple(errorMsg, MsgType.ERROR);
   }
+
+  proc doBinOpvs(l, val, e, op: string, dtype, rname, pn, st) throws {
+    if e.etype == bool {
+      // Since we know that the result type is a boolean, we know
+      // that it either (1) is an operation between bools or (2) uses
+      // a boolean operator (<, <=, etc.)
+      if l.etype == bool && val.type == bool {
+        select op {
+          when "|" {
+            e.a = l.a | val;
+          }
+          when "&" {
+            e.a = l.a & val;
+          }
+          when "^" {
+            e.a = l.a ^ val;
+          }
+          when "==" {
+            e.a = l.a == val;
+          }
+          when "!=" {
+            e.a = l.a != val;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      }
+      // All types support the same binary operations when the resultant
+      // type is bool and `l` and `r` are not both boolean, so this does
+      // not need to be specialized for each case.
+      else {
+        select op {
+            when "<" {
+              e.a = l.a < val;
+            }
+            when ">" {
+              e.a = l.a > val;
+            }
+            when "<=" {
+              e.a = l.a <= val;
+            }
+            when ">=" {
+              e.a = l.a >= val;
+            }
+            when "==" {
+              e.a = l.a == val;
+            }
+            when "!=" {
+              e.a = l.a != val;
+            }
+            otherwise {
+              var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+              return new MsgTuple(errorMsg, MsgType.ERROR); 
+            }
+          }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    // Since we know that both `l` and `r` are of type `int` and that
+    // the resultant type is not bool (checked in first `if`), we know
+    // what operations are supported based on the resultant type
+    else if l.etype == int && val.type == int {
+      if e.etype == int {
+        select op {
+          when "+" {
+            e.a = l.a + val;
+          }
+          when "-" {
+            e.a = l.a - val;
+          }
+          when "*" {
+            e.a = l.a * val;
+          }
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = if val != 0 then li/val else 0;
+          }
+          when "%" { // modulo
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
+          }
+          when "<<" {
+            e.a = l.a << val;
+          }                    
+          when ">>" {
+            e.a = l.a >> val;
+          }
+          when "<<<" {
+            e.a = rotl(l.a, val);
+          }
+          when ">>>" {
+            e.a = rotr(l.a, val);
+          }
+          when "&" {
+            e.a = l.a & val;
+          }                    
+          when "|" {
+            e.a = l.a | val;
+          }                    
+          when "^" {
+            e.a = l.a ^ val;
+          }
+          when "**" { 
+            e.a= l.a**val;
+          }     
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+          }
+        }
+      } else if e.etype == real {
+        select op {
+          // True division is the only integer type that would result in a
+          // resultant type of `real`
+          when "/" {
+            e.a = l.a:real / val:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+          }
+            
+        }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    // If either RHS or LHS type is real, the same operations are supported and the
+    // result will always be a `real`, so all 3 of these cases can be shared.
+    else if ((l.etype == real && val.type == real) || (l.etype == int && val.type == real)
+             || (l.etype == real && val.type == int)) {
+      select op {
+          when "+" {
+            e.a = l.a + val;
+          }
+          when "-" {
+            e.a = l.a - val;
+          }
+          when "*" {
+            e.a = l.a * val;
+          }
+          when "/" { // truediv
+            e.a = l.a / val;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li/val) else NAN;
+          }
+          when "**" { 
+            e.a= l.a**val;
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == int && val.type == bool) || (l.etype == bool && val.type == int)) {
+      select op {
+          when "+" {
+            // Since we don't know which of `l` or `r` is the int and which is the `bool`,
+            // we can just cast both to int, which will be a noop for the vector that is
+            // already `int`
+            e.a = l.a:int + val:int;
+          }
+          when "-" {
+            e.a = l.a:int - val:int;
+          }
+          when "*" {
+            e.a = l.a:int * val:int;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == real && val.type == bool) || (l.etype == bool && val.type == real)) {
+      select op {
+          when "+" {
+            e.a = l.a:real + val:real;
+          }
+          when "-" {
+            e.a = l.a:real - val:real;
+          }
+          when "*" {
+            e.a = l.a:real * val:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    return new MsgTuple("Bin op not supported", MsgType.NORMAL);
+  }
 }
