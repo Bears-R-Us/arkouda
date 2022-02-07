@@ -595,7 +595,7 @@ Attributes
 
 
 
-.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
    Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
 

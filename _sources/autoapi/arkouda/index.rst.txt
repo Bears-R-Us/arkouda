@@ -126,6 +126,7 @@ Attributes
    arkouda.int64
    arkouda.float64
    arkouda.uint8
+   arkouda.uint64
    arkouda.str_
    arkouda.ARKOUDA_SUPPORTED_DTYPES
    arkouda.bool_scalars
@@ -182,6 +183,11 @@ Attributes
    
 
 .. py:data:: uint8
+   
+
+   
+
+.. py:data:: uint64
    
 
    
@@ -268,7 +274,7 @@ Attributes
 
    Return the permutation that sorts the array.
 
-   :param pda: The array to sort (int64 or float64)
+   :param pda: The array to sort (int64, uint64, or float64)
    :type pda: pdarray or Strings or Categorical
 
    :returns: The indices such that ``pda[indices]`` is sorted
@@ -297,7 +303,7 @@ Attributes
    input arrays are treated as columns. The permutation sorts numeric
    columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
 
-   :param arrays: The columns (int64, float64, Strings, or Categorical) to sort by row
+   :param arrays: The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
    :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
 
    :returns: The indices that permute the rows to grouped order
@@ -336,11 +342,11 @@ Attributes
    Return a sorted copy of the array. Only sorts numeric arrays;
    for Strings, use argsort.
 
-   :param pda: The array to sort (int64 or float64)
+   :param pda: The array to sort (int64, uint64, or float64)
    :type pda: pdarray or Categorical
 
    :returns: The sorted copy of pda
-   :rtype: pdarray, int64 or float64
+   :rtype: pdarray, int64, uint64, or float64
 
    :raises TypeError: Raised if the parameter is not a pdarray
    :raises ValueError: Raised if sort attempted on a pdarray with an unsupported dtype
@@ -2274,7 +2280,7 @@ Attributes
 
 
 
-.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+.. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
    Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
 

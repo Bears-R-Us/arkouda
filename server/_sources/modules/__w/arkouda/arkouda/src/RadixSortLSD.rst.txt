@@ -36,6 +36,8 @@ Radix Sort Least Significant Digit
 
 .. function:: proc getBitWidth(a: [?aD] int): (int, bool)
 
+.. function:: proc getBitWidth(a: [?aD] uint): (int, bool)
+
 .. function:: proc getBitWidth(a: [?aD] real): (int, bool)
 
 .. function:: proc getBitWidth(a: [?aD] (uint, uint)): (int, bool)
