@@ -600,7 +600,7 @@ class IOTest(ArkoudaTest):
         """
         Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
         """
-        npa1 = np.array([18446744073709551500, 18446744073709551501, 18446744073709551502])
+        npa1 = np.array([18446744073709551500, 18446744073709551501, 18446744073709551502], dtype=np.uint64)
         pda1 = ak.array(npa1)
         self.assertEqual(18446744073709551500, pda1[0])
         self.assertTrue((pda1.to_ndarray() == npa1).all())
