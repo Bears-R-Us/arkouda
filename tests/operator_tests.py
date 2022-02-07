@@ -11,15 +11,18 @@ def run_tests(verbose):
     np.seterr(all='ignore')
     global pdarrays
     pdarrays = {'int64': ak.arange(0, SIZE, 1),
+                'uint64': ak.array(np.arange(0, SIZE, 1, dtype=np.uint64)),
                 'float64': ak.linspace(0, 2, SIZE),
                 'bool': (ak.arange(0, SIZE, 1) % 2) == 0}
     global ndarrays
     ndarrays = {'int64': np.arange(0, SIZE, 1),
+                'uint64': np.arange(0, SIZE, 1, dtype=np.uint64),
                 'float64': np.linspace(0, 2, SIZE),
                 'bool': (np.arange(0, SIZE, 1) % 2) == 0}
     global scalars
     #scalars = {k: v[SIZE//2] for k, v in ndarrays.items()}
     scalars = {'int64': 5,
+               'uint64': np.uint64(5),
                'float64': 3.14159,
                'bool': True}
     dtypes = pdarrays.keys()
