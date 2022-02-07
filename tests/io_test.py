@@ -596,6 +596,15 @@ class IOTest(ArkoudaTest):
             b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
             self.assertEqual(str(b1), str(b2))
 
+    def testUint64ToHDF5(self):
+        """
+        Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
+        """
+        npa1 = np.array([18446744073709551500, 18446744073709551501, 18446744073709551502])
+        pda1 = ak.array(npa1)
+        self.assertEqual(18446744073709551500, pda1[0])
+        self.assertTrue((pda1.to_ndarray() == npa1).all())
+
     def testHdfUnsanitizedNames(self):
         # Test when quotes are part of the dataset name
         my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
