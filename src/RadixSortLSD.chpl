@@ -37,6 +37,13 @@ module RadixSortLSD
       return (bitWidth, negs);
     }
 
+    inline proc getBitWidth(a: [?aD] uint): (int, bool) {
+      const negs = false;
+      var aMax = max reduce a;
+      var bitWidth = numBits(uint) - clz(aMax):int;
+      return (bitWidth, negs);
+    }
+
     inline proc getBitWidth(a: [?aD] real): (int, bool) {
       const bitWidth = numBits(real);
       const negs = signbit(min reduce a);

@@ -116,7 +116,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:              
             ak.randint(0,1,'1000')
-        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])    
 
         with self.assertRaises(TypeError):              
@@ -297,7 +297,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:          
             ak.linspace(0,100,'1000')           
-        self.assertEqual('type of argument "length" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "length" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])            
 
     def test_standard_normal(self):
@@ -324,12 +324,12 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal('100')          
-        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0]) 
    
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal(100.0)          
-        self.assertEqual('type of argument "size" must be one of (int, int64); got float instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64, uint64); got float instead', 
                          cm.exception.args[0])   
     
         with self.assertRaises(ValueError) as cm:          
@@ -375,17 +375,17 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
-        self.assertEqual('type of argument "minlen" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "minlen" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform( minlen=1, maxlen='5', size=10)          
-        self.assertEqual('type of argument "maxlen" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "maxlen" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])     
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen=1, maxlen=5, size='10')          
-        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])              
 
     def test_random_strings_uniform_with_seed(self):
@@ -446,7 +446,7 @@ class PdarrayCreationTest(ArkoudaTest):
                 
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 0.25, '100')          
-        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64, uint64); got str instead', 
                          cm.exception.args[0])       
         
         with self.assertRaises(TypeError) as cm:          

@@ -110,6 +110,24 @@ module ReductionMsg
                     }
                 }
             }
+            when (DType.UInt64) {
+                var e = toSymEntry(gEnt,uint);
+                select reductionop
+                {
+                    when "is_sorted" {
+                        ref ea = e.a;
+                        var sorted = isSorted(ea);
+                        var val: string;
+                        if sorted {val = "True";} else {val = "False";}
+                        repMsg = "bool %s".format(val);
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
             when (DType.Float64) {
                 var e = toSymEntry(gEnt,real);
                 select reductionop

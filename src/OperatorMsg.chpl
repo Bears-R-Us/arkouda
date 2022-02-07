@@ -141,6 +141,12 @@ module OperatorMsg
             var e = st.addEntry(rname, l.size, real);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
+          when (DType.UInt64, DType.UInt64) {
+            var l = toSymEntry(left,uint);
+            var r = toSymEntry(right,uint);
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
         }
         return new MsgTuple("Bin op not supported", MsgType.NORMAL);
     }

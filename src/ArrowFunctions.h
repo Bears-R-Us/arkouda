@@ -14,6 +14,7 @@ extern "C" {
 
 #define ARROWINT64 0
 #define ARROWINT32 1
+#define ARROWUINT64 2
 #define ARROWTIMESTAMP ARROWINT64
 #define ARROWUNDEFINED -1
 #define ARROWERROR -1
@@ -37,10 +38,10 @@ extern "C" {
 
   int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                                int64_t colnum, const char* dsetname, int64_t numelems,
-                               int64_t rowGroupSize, char** errMsg);
+                               int64_t rowGroupSize, int64_t dtype, char** errMsg);
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, char** errMsg);
+                             int64_t rowGroupSize, int64_t dtype, char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);

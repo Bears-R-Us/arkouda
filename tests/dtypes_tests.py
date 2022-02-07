@@ -21,6 +21,7 @@ class DtypesTest(ArkoudaTest):
         dtypes.check_np_dtype(np.dtype(np.int64))
         dtypes.check_np_dtype(np.dtype(np.float64))
         dtypes.check_np_dtype(np.dtype(np.uint8))
+        dtypes.check_np_dtype(np.dtype(np.uint64))
         dtypes.check_np_dtype(np.dtype(np.str_))
         dtypes.check_np_dtype(np.dtype(str))
 
@@ -118,12 +119,12 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual('str', str(dtypes.DType.STR))
         self.assertEqual('uint8', str(dtypes.DType.UINT8))
         self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
-                                    'int','int64', 'str'}), ak.DTypes)
+                                    'int','int64', 'str', 'uint64'}), ak.DTypes)
         self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
-                          'int','int64', 'str'}), ak.ARKOUDA_SUPPORTED_DTYPES)
+                                    'int','int64', 'str', 'uint64'}), ak.ARKOUDA_SUPPORTED_DTYPES)
         
     def test_NumericDTypes(self):
-        self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64']), 
+        self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64', 'uint64']), 
                          dtypes.NumericDTypes)
         
     def test_SeriesDTypes(self):
@@ -143,13 +144,13 @@ class DtypesTest(ArkoudaTest):
     def test_scalars(self):
         self.assertEqual("typing.Union[bool, numpy.bool_]", str(ak.bool_scalars))
         self.assertEqual('typing.Union[float, numpy.float64]', str(ak.float_scalars))
-        self.assertEqual('typing.Union[int, numpy.int64]', str(ak.int_scalars))
-        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint8]', 
+        self.assertEqual('typing.Union[int, numpy.int64, numpy.uint64]', str(ak.int_scalars))
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint8, numpy.uint64]', 
                          str(ak.numeric_scalars))
         self.assertEqual('typing.Union[str, numpy.str_]', str(ak.str_scalars))
-        self.assertEqual('typing.Union[numpy.float64, numpy.int64, numpy.bool_, numpy.uint8, numpy.str_]', 
+        self.assertEqual('typing.Union[numpy.float64, numpy.int64, numpy.bool_, numpy.uint8, numpy.str_, numpy.uint64]', 
                          str(ak.numpy_scalars))
-        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, bool, numpy.bool_, str, numpy.str_]', 
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint64, bool, numpy.bool_, str, numpy.str_]', 
                          str(ak.all_scalars))
         
     def test_number_format_strings(self):

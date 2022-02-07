@@ -135,6 +135,18 @@ module ArgSortMsg
               // Generate the next incremental permutation
               deltaIV = argsortDefault(newa);
           }
+          when DType.UInt64 {
+              var e = toSymEntry(g, uint);
+              // Permute the keys array with the initial iv
+              var newa: [e.aD] uint;
+              ref olda = e.a;
+              // Effectively: newa = olda[iv]
+              forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(uint)) {
+                  agg.copy(newai, olda[idx]);
+              }
+              // Generate the next incremental permutation
+              deltaIV = argsortDefault(newa);
+          }
           when DType.Float64 {
               var e = toSymEntry(g, real);
               var newa: [e.aD] real;
@@ -290,6 +302,7 @@ module ArgSortMsg
           var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
           select g.dtype {
               when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+              when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
               when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
               otherwise { 
                   throw getErrorWithContext(
@@ -332,6 +345,7 @@ module ArgSortMsg
               }
               select g.dtype {
                 when DType.Int64   { mergeArray(int); }
+                when DType.UInt64  { mergeArray(uint); }
                 when DType.Float64 { mergeArray(real); }
                 otherwise { 
                     throw getErrorWithContext(
@@ -449,6 +463,11 @@ module ArgSortMsg
             select (gEnt.dtype) {
                 when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
+                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    st.addEntry(ivname, new shared SymEntry(iv));
+                }
+                when (DType.UInt64) {
+                    var e = toSymEntry(gEnt,uint);
                     var iv = argsortDefault(e.a, algorithm=algorithm);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
