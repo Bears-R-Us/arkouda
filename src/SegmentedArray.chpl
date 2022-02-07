@@ -7,7 +7,7 @@ module SegmentedArray {
   use UnorderedCopy;
   use SipHash;
   use SegStringSort;
-  use RadixSortLSD only radixSortLSD_ranks;
+  use RadixSortLSD;
   use PrivateDist;
   use ServerConfig;
   use Unique;
@@ -711,106 +711,19 @@ module SegmentedArray {
       :arg pattern: regex pattern to be applied to strings in SegString
       :type pattern: string
 
-      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
-      :type mode: SearchMode enum
-
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
-    // DEPRECATED - All substringSearchRegex calls now handled by Match objects on Client
-    // TODO: Remove substringSearchRegex
-    proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
+    proc substringSearch(const pattern: string) throws {
       var hits: [offsets.aD] bool = false;  // the answer
       checkCompile(pattern);
 
-      // should we do len check here? re2.compile('') is valid regex and matches everything
       ref oa = offsets.a;
       ref va = values.a;
       var lengths = getLengths();
 
-      select mode {
-        when SearchMode.contains {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            // regexp.search searches the receiving string for matches at any offset
-            h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
-          }
-        }
-        when SearchMode.startsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            // regexp.match only returns a match if the start of the string matches the pattern
-            h = myRegex.match(interpretAsString(va, o..#l, borrow=true)).matched;
-          }
-        }
-        when SearchMode.endsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            var matches = myRegex.matches(interpretAsString(va, o..#l, borrow=true));
-            var lastMatch = matches[matches.size-1][0];  // v1.24.x reMatch, 1.25.x regexMatch
-            // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
-            h = lastMatch.offset + lastMatch.size == l-1;
-          }
-        }
-      }
-      return hits;
-    }
-    
-    proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws {
-      if regex || mode == SearchMode.match {
-        // match always uses substringSearchRegex
-        return substringSearchRegex(substr, mode);
-      }
-      var hits: [offsets.aD] bool;  // the answer
-      if (size == 0) || (substr.size == 0) {
-        return hits;
-      }
-      var t = new Timer();
-
-      if logLevel == LogLevel.DEBUG {
-           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "Checking bytes of substr"); 
-           t.start();
-      }
-      const truth = findSubstringInBytes(substr);
-      const D = truth.domain;
-      if logLevel == LogLevel.DEBUG {
-            t.stop(); 
-            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                  "took %t seconds\nTranslating to segments...".format(t.elapsed())); 
-            t.clear(); 
-            t.start();
-      }
-      // Need to ignore segment(s) at the end of the array that are too short to contain substr
-      const tail = + reduce (offsets.a > D.high);
-      // oD is the right-truncated domain representing segments that are candidates for containing substr
-      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      if logLevel == LogLevel.DEBUG {
-             t.stop(); 
-             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "took %t seconds\ndetermining answer...".format(t.elapsed())); 
-             t.clear(); 
-             t.start();
-      }
-      ref oa = offsets.a;
-      if mode == SearchMode.contains {
-        // Determine whether each segment contains a hit
-        // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment  
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(int) * truth.size);
-        // Cumulative number of hits up to (and excluding) this point
-        var numHits = (+ scan truth) - truth;
-        hits[oD.interior(-(oD.size-1))] = (numHits[oa[oD.interior(oD.size-1)]] - numHits[oa[oD.interior(-(oD.size-1))]]) > 0;
-        hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
-      } else if mode == SearchMode.startsWith {
-        // First position of segment must be a hit
-        hits[oD] = truth[oa[oD]];
-      } else if mode == SearchMode.endsWith {
-        // Position where substr aligns with end of segment must be a hit
-        // -1 for null byte
-        hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
-        hits[oD.high] = truth[D.high-1];
-      }
-      if logLevel == LogLevel.DEBUG {
-          t.stop(); 
-          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "took %t seconds".format(t.elapsed()));
+      forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+        // regexp.search searches the receiving string for matches at any offset
+        h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
       }
       return hits;
     }
@@ -1160,9 +1073,6 @@ module SegmentedArray {
   }
 
 
-  enum SearchMode { contains, startsWith, endsWith, match }
-  class UnknownSearchMode: Error {}
-  
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   operator ==(lss:SegString, rss:SegString) throws {
@@ -1361,10 +1271,10 @@ module SegmentedArray {
       combined[combinedDom.interior(-umain.size)] = umain;
       combined[combinedDom.interior(utest.size)] = utest;
       // Sort
-      var iv = radixSortLSD_ranks(combined);
       var sorted: [combinedDom] 2*uint(64);
-      forall (i, s) in zip(iv, sorted) with (var agg = newSrcAggregator(2*uint(64))) {
-        agg.copy(s, combined[i]);
+      var iv: [combinedDom] int;
+      forall (s, i, si) in zip(sorted, iv, radixSortLSD(combined)) {
+        (s, i) = si;
       }
       // Find duplicates
       // Dupe parallels unique hashes of mainStr and is true when value is in testStr

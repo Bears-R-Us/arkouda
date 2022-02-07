@@ -33,11 +33,11 @@ module RandMsg
 
         // get next symbol name
         var rname = st.nextName();
-        
+
         // if verbose print action
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
-                                           cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr)); 
+                                           cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr));
         select (dtype) {
             when (DType.Int64) {
                 overMemLimit(8*len);
@@ -59,6 +59,20 @@ module RandMsg
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "alloc time = %i sec".format(Time.getCurrentTime() - t1));
+                
+                t1 = Time.getCurrentTime();
+                fillUInt(e.a, aMin, aMax, seed);
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "compute time = %i".format(Time.getCurrentTime() - t1));
+            }
+            when (DType.UInt64) {
+                overMemLimit(len);
+                var aMin = aMinStr:int;
+                var aMax = aMaxStr:int;
+                var t1 = Time.getCurrentTime();
+                var e = st.addEntry(rname, len, uint);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 
@@ -119,5 +133,11 @@ module RandMsg
         var repMsg = "created " + st.attrib(rname);
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("randint", randintMsg, getModuleName());
+      registerFunction("randomNormal", randomNormalMsg, getModuleName());
     }
 }

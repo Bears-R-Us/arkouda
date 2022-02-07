@@ -16,11 +16,14 @@ class DtypesTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if 1.. test cases fail
         '''
-        dtypes.check_np_dtype(np.dtype(np.bool))
+        dtypes.check_np_dtype(np.dtype(np.bool_))
+        dtypes.check_np_dtype(np.dtype(bool))
         dtypes.check_np_dtype(np.dtype(np.int64))
         dtypes.check_np_dtype(np.dtype(np.float64))
         dtypes.check_np_dtype(np.dtype(np.uint8))
-        dtypes.check_np_dtype(np.dtype(np.str))
+        dtypes.check_np_dtype(np.dtype(np.uint64))
+        dtypes.check_np_dtype(np.dtype(np.str_))
+        dtypes.check_np_dtype(np.dtype(str))
 
         with self.assertRaises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
@@ -34,21 +37,27 @@ class DtypesTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if 1.. test cases fail
         '''
-        d_tuple = dtypes.translate_np_dtype(np.dtype(np.bool))
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.bool_))
+        self.assertEqual(1, d_tuple[1])
+        self.assertEqual('bool', d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(bool))
         self.assertEqual(1, d_tuple[1])
         self.assertEqual('bool', d_tuple[0])
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.int64))
         self.assertEqual(8, d_tuple[1])
-        self.assertEqual('int', d_tuple[0])  
+        self.assertEqual('int', d_tuple[0])
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.float64))
         self.assertEqual(8, d_tuple[1])
-        self.assertEqual('float', d_tuple[0])        
+        self.assertEqual('float', d_tuple[0])
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.uint8))
         self.assertEqual(1, d_tuple[1])
-        self.assertEqual('uint',d_tuple[0])    
-        d_tuple = dtypes.translate_np_dtype(np.dtype(np.str))
+        self.assertEqual('uint',d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(np.str_))
         self.assertEqual(0, d_tuple[1])
-        self.assertEqual('str', d_tuple[0])   
+        self.assertEqual('str', d_tuple[0])
+        d_tuple = dtypes.translate_np_dtype(np.dtype(str))
+        self.assertEqual(0, d_tuple[1])
+        self.assertEqual('str', d_tuple[0])
 
         with self.assertRaises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
@@ -110,36 +119,38 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual('str', str(dtypes.DType.STR))
         self.assertEqual('uint8', str(dtypes.DType.UINT8))
         self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
-                                    'int','int64', 'str'}), ak.DTypes)
+                                    'int','int64', 'str', 'uint64'}), ak.DTypes)
         self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
-                          'int','int64', 'str'}), ak.ARKOUDA_SUPPORTED_DTYPES)
+                                    'int','int64', 'str', 'uint64'}), ak.ARKOUDA_SUPPORTED_DTYPES)
         
     def test_NumericDTypes(self):
-        self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64']), 
+        self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64', 'uint64']), 
                          dtypes.NumericDTypes)
         
     def test_SeriesDTypes(self):
         self.assertEqual(np.str_, dtypes.SeriesDTypes['string'])
-        self.assertEqual(np.str_, dtypes. SeriesDTypes["<class 'str'>"])
-        self.assertEqual(np.int64, dtypes. SeriesDTypes['int64'])
-        self.assertEqual(np.int64, dtypes. SeriesDTypes["<class 'numpy.int64'>"])
-        self.assertEqual(np.float64, dtypes. SeriesDTypes['float64'])
-        self.assertEqual(np.float64, dtypes. SeriesDTypes["<class 'numpy.float64'>"])
-        self.assertEqual(np.bool, dtypes. SeriesDTypes['bool'])
-        self.assertEqual(np.bool, dtypes. SeriesDTypes["<class 'bool'>"])
-        self.assertEqual(np.int64, dtypes. SeriesDTypes['datetime64[ns]'])
-        self.assertEqual(np.int64, dtypes. SeriesDTypes['timedelta64[ns]'])
+        self.assertEqual(np.str_, dtypes.SeriesDTypes["<class 'str'>"])
+        self.assertEqual(np.int64, dtypes.SeriesDTypes['int64'])
+        self.assertEqual(np.int64, dtypes.SeriesDTypes["<class 'numpy.int64'>"])
+        self.assertEqual(np.float64, dtypes.SeriesDTypes['float64'])
+        self.assertEqual(np.float64, dtypes.SeriesDTypes["<class 'numpy.float64'>"])
+        self.assertEqual(np.bool_, dtypes.SeriesDTypes['bool'])
+        self.assertEqual(np.dtype(bool), dtypes.SeriesDTypes['bool'])
+        self.assertEqual(np.bool_, dtypes.SeriesDTypes["<class 'bool'>"])
+        self.assertEqual(np.dtype(bool), dtypes.SeriesDTypes["<class 'bool'>"])
+        self.assertEqual(np.int64, dtypes.SeriesDTypes['datetime64[ns]'])
+        self.assertEqual(np.int64, dtypes.SeriesDTypes['timedelta64[ns]'])
 
     def test_scalars(self):
-        self.assertEqual("<class 'bool'>", str(ak.bool_scalars))
+        self.assertEqual("typing.Union[bool, numpy.bool_]", str(ak.bool_scalars))
         self.assertEqual('typing.Union[float, numpy.float64]', str(ak.float_scalars))
-        self.assertEqual('typing.Union[int, numpy.int64]', str(ak.int_scalars))
-        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64]', 
+        self.assertEqual('typing.Union[int, numpy.int64, numpy.uint64]', str(ak.int_scalars))
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint8, numpy.uint64]', 
                          str(ak.numeric_scalars))
         self.assertEqual('typing.Union[str, numpy.str_]', str(ak.str_scalars))
-        self.assertEqual('typing.Union[numpy.float64, numpy.int64, bool, numpy.uint8, str, numpy.str_]', 
+        self.assertEqual('typing.Union[numpy.float64, numpy.int64, numpy.bool_, numpy.uint8, numpy.str_, numpy.uint64]', 
                          str(ak.numpy_scalars))
-        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, bool, str, numpy.str_]', 
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint64, bool, numpy.bool_, str, numpy.str_]', 
                          str(ak.all_scalars))
         
     def test_number_format_strings(self):

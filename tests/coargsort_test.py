@@ -5,8 +5,8 @@ import numpy as np
 from context import arkouda as ak 
 from base_test import ArkoudaTest
 
-def check_int(N, algo):
-    z = ak.zeros(N, dtype=ak.int64)
+def check_integral(N, algo, dtype):
+    z = ak.zeros(N, dtype=dtype)
 
     a2 = ak.randint(0, 2**16, N)
     b2 = ak.randint(0, 2**16, N)
@@ -91,14 +91,18 @@ def check_float(N, algo):
     perm = ak.coargsort([z, n], algo)
     assert ak.is_sorted(n[perm])
 
-def check_int_float(N, algo):
+def check_int_uint_float(N, algo):
     f = ak.randint(0, 2**63, N, dtype=ak.float64)
+    u = ak.randint(0, 2**63, N, dtype=ak.uint64)
     i = ak.randint(0, 2**63, N, dtype=ak.int64)
 
-    perm = ak.coargsort([f, i], algo)
+    perm = ak.coargsort([f, u, i], algo)
     assert ak.is_sorted(f[perm])
 
-    perm = ak.coargsort([i, f], algo)
+    perm = ak.coargsort([u, i, f], algo)
+    assert ak.is_sorted(u[perm])
+
+    perm = ak.coargsort([i, f, u], algo)
     assert ak.is_sorted(i[perm])
 
 def check_large(N, algo):
@@ -113,24 +117,29 @@ def check_coargsort(N_per_locale):
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 
     for algo in ak.SortingAlgorithm:
-        check_int(N, algo)
+        check_integral(N, algo, ak.int64)
+        check_integral(N, algo, ak.uint64)
         check_float(N, algo)
-        check_int_float(N, algo)
+        check_int_uint_float(N, algo)
         check_large(N, algo)
 
 class CoargsortTest(ArkoudaTest):
 
     def test_int(self):
         for algo in ak.SortingAlgorithm:
-            check_int(10**3, algo)
+            check_integral(10**3, algo, ak.int64)
+
+    def test_uint(self):
+        for algo in ak.SortingAlgorithm:
+            check_integral(10**3, algo, ak.uint64)
 
     def test_float(self):
         for algo in ak.SortingAlgorithm:
             check_float(10**3, algo)
 
-    def test_int_float(self):
+    def test_int_uint_float(self):
         for algo in ak.SortingAlgorithm:
-            check_int_float(10**3, algo)
+            check_int_uint_float(10**3, algo)
 
     def test_large(self):
         for algo in ak.SortingAlgorithm:

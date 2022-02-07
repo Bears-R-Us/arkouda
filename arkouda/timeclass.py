@@ -109,7 +109,7 @@ class _AbstractBaseTime(pdarray):
         else:
             raise TypeError("Unsupported type: {}".format(type(array)))
         # Now that self._data is correct, init self with same metadata
-        super().__init__(self._data.name, self._data.dtype.name, self._data.size, self._data.ndim, self._data.shape, self._data.itemsize)
+        super().__init__(self._data.name, self._data.dtype, self._data.size, self._data.ndim, self._data.shape, self._data.itemsize)
 
     @classmethod
     def _get_callback(cls, other, op):
@@ -466,7 +466,7 @@ class Timedelta(_AbstractBaseTime):
         '''
         return to_timedelta(self.to_ndarray())
 
-    def std(self, ddof: Union[int, np.int64] = 0):
+    def std(self, ddof: Union[int, np.int64, np.uint64] = 0):
         '''
         Returns the standard deviation as a pd.Timedelta object
         '''

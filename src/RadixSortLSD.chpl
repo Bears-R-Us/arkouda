@@ -37,6 +37,13 @@ module RadixSortLSD
       return (bitWidth, negs);
     }
 
+    inline proc getBitWidth(a: [?aD] uint): (int, bool) {
+      const negs = false;
+      var aMax = max reduce a;
+      var bitWidth = numBits(uint) - clz(aMax):int;
+      return (bitWidth, negs);
+    }
+
     inline proc getBitWidth(a: [?aD] real): (int, bool) {
       const bitWidth = numBits(real);
       const negs = signbit(min reduce a);
@@ -139,14 +146,13 @@ module RadixSortLSD
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
-       returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
-
+       returning keys and permutation vector as a block distributed array */
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) {
         // check to see if array is already sorted
         if (checkSorted) {
             if (isSorted(a)) {
-                var ranks: [aD] int = [i in aD] i;
-                return ranks;
+                var keyranks: [aD] (t,int) = [i in aD] (a[i], i);
+                return keyranks;
             }
         }
         
@@ -200,8 +206,6 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             
@@ -251,8 +255,23 @@ module RadixSortLSD
                 kr0 = kr1;
             }
         } // for rshift
+        return kr1;
+    }//proc radixSortLSD
 
-        var ranks: [aD] int = [(key, rank) in kr1] rank;
+
+    /* Radix Sort Least Significant Digit
+       radix sort a block distributed array
+       returning a permutation vector as a block distributed array */
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
+        // check to see if array is already sorted
+        if (checkSorted) {
+            if (isSorted(a)) {
+                var ranks: [aD] int = [i in aD] i;
+                return ranks;
+            }
+        }
+
+        var ranks: [aD] int = [(key, rank) in radixSortLSD(a, checkSorted=false)] rank;
         return ranks;
         
     }//proc radixSortLSD_ranks
@@ -261,7 +280,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t throws {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
 
         // check to see if array is already sorted
         if (checkSorted) {
@@ -321,8 +340,6 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             
@@ -376,8 +393,16 @@ module RadixSortLSD
     }//proc radixSortLSD_keys
 
     proc radixSortLSD_memEst(size: int, itemsize: int) {
-        return ((4 + 1) * size * itemsize)
-                     + (2 * here.maxTaskPar * numLocales * 2**16 * 8);
+        // 2 temp key+ranks arrays + globalStarts/globalClounts
+        return (2 * size * (itemsize + numBytes(int))) +
+               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+    }
+
+    proc radixSortLSD_keys_memEst(size: int, itemsize: int) {
+        // 2 temp key arrays + globalStarts/globalClounts
+        return (2 * size * itemsize) +
+               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+
     }
 }
 

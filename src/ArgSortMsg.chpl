@@ -135,6 +135,18 @@ module ArgSortMsg
               // Generate the next incremental permutation
               deltaIV = argsortDefault(newa);
           }
+          when DType.UInt64 {
+              var e = toSymEntry(g, uint);
+              // Permute the keys array with the initial iv
+              var newa: [e.aD] uint;
+              ref olda = e.a;
+              // Effectively: newa = olda[iv]
+              forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(uint)) {
+                  agg.copy(newai, olda[idx]);
+              }
+              // Generate the next incremental permutation
+              deltaIV = argsortDefault(newa);
+          }
           when DType.Float64 {
               var e = toSymEntry(g, real);
               var newa: [e.aD] real;
@@ -290,6 +302,7 @@ module ArgSortMsg
           var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
           select g.dtype {
               when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+              when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
               when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
               otherwise { 
                   throw getErrorWithContext(
@@ -307,8 +320,9 @@ module ArgSortMsg
         // TODO support arbitrary size with array-of-arrays or segmented array
         proc mergedArgsort(param numDigits) throws {
 
-          overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
-                       + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+          // check mem limit for merged array and sort on merged array
+          const itemsize = numDigits * bitsPerDigit / 8;
+          overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
 
           var ivname = st.nextName();
           var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
@@ -331,6 +345,7 @@ module ArgSortMsg
               }
               select g.dtype {
                 when DType.Int64   { mergeArray(int); }
+                when DType.UInt64  { mergeArray(uint); }
                 when DType.Float64 { mergeArray(real); }
                 otherwise { 
                     throw getErrorWithContext(
@@ -359,9 +374,9 @@ module ArgSortMsg
         if totalDigits <= 16 { return new MsgTuple(mergedArgsort(16), MsgType.NORMAL); }
       }
 
-      // check and throw if over memory limit
-      overMemLimit(((4 + 3) * size * numBytes(int))
-                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      // check mem limit for permutation vectors and sort
+      const itemsize = numBytes(int);
+      overMemLimit(2*size*itemsize + radixSortLSD_memEst(size, itemsize));
       
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
@@ -443,12 +458,16 @@ module ArgSortMsg
           when "pdarray" {
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
-            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
-                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+            overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
         
             select (gEnt.dtype) {
                 when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
+                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    st.addEntry(ivname, new shared SymEntry(iv));
+                }
+                when (DType.UInt64) {
+                    var e = toSymEntry(gEnt,uint);
                     var iv = argsortDefault(e.a, algorithm=algorithm);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
@@ -484,5 +503,11 @@ module ArgSortMsg
         repMsg = "created " + st.attrib(ivname);
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("argsort", argsortMsg, getModuleName());
+      registerFunction("coargsort", coargsortMsg, getModuleName());
     }
 }

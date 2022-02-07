@@ -51,8 +51,7 @@ module SortMsg
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
       // check and throw if over memory limit
-      overMemLimit(((2 + 1) * gEnt.size * gEnt.itemsize)
-                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
  
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "cmd: %s name: %s sortedName: %s dtype: %t".format(
@@ -87,6 +86,11 @@ module SortMsg
               var sorted = doSort(e.a);
               st.addEntry(sortedName, new shared SymEntry(sorted));
           }// end when(DType.Int64)
+          when (DType.UInt64) {
+              var e = toSymEntry(gEnt, uint);
+              var sorted = doSort(e.a);
+              st.addEntry(sortedName, new shared SymEntry(sorted));
+          }// end when(DType.UInt64)
           when (DType.Float64) {
               var e = toSymEntry(gEnt, real);
               var sorted = doSort(e.a);
@@ -104,4 +108,9 @@ module SortMsg
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end sortMsg()
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("sort", sortMsg, getModuleName());
+    }
 }// end module SortMsg

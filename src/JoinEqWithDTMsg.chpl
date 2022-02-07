@@ -369,5 +369,9 @@ module JoinEqWithDTMsg
         jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end joinEqWithDTMsg()
-    
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("joinEqWithDT", joinEqWithDTMsg, getModuleName());
+    }
 }// end module JoinEqWithDTMsg

@@ -40,6 +40,9 @@ setup you can set them explicitly via:
   - ARKOUDA_SKIP_CHECK_DEPS : Setting this will skip the automated checks for dependencies (i.e. ZMQ, HDF5). This is
     useful for developers doing repeated Arkouda builds since they should have already verified the deps have been set up.
 
+#### Adding a Module from Outside the Arkouda src Directory
+  - ARKOUDA_SERVER_USER_MODULES : Absolute path or string of absolute paths separated by a space to modules outside of the Arkouda source directory to be included in the Arkouda build. The module name must also be included in `ServerModules.cfg` for the function to be registered with the server.
+
 ## Testing
 Also see the python tests [README](tests/README.md) for more information on Python based unit & functional testing.
   - VERBOSE : Setting this to `1` will add the `--print-passes` Chapel compiler flag when running _Chapel_-based unit tests.

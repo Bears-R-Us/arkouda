@@ -6,7 +6,7 @@ import builtins
 import sys
 
 __all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64", 
-           "uint8", "str_", "check_np_dtype", "translate_np_dtype", 
+           "uint8", "uint64", "str_", "check_np_dtype", "translate_np_dtype", 
            "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES", "bool_scalars",
            "float_scalars", "int_scalars", "numeric_scalars", "numpy_scalars",
            "str_scalars", "all_scalars", "get_byteorder",
@@ -16,25 +16,28 @@ NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'int64': '{:n}',
                          'float64': '{:.17f}',
                          'uint8': '{:n}',
-                         'np.float64': 'f'}
+                         'np.float64': 'f',
+                         'uint64': '{:n}',}
 
 dtype = np.dtype
-bool = np.dtype(np.bool)
+bool = np.dtype(bool)
 int64 = np.dtype(np.int64)
 float64 = np.dtype(np.float64)
 uint8 = np.dtype(np.uint8)
+uint64 = np.dtype(np.uint64)
 str_ = np.dtype(np.str_)
-npstr = np.dtype(np.str)
+npstr = np.dtype(str)
 
 # Union aliases used for static and runtime type checking
-bool_scalars = Union[builtins.bool,np.bool]
+bool_scalars = Union[builtins.bool, np.bool_]
 float_scalars = Union[float,np.float64]
-int_scalars = Union[int,np.int64]
-numeric_scalars = Union[float,np.float64,int,np.int64]
-numpy_scalars = Union[np.float64,np.int64,np.bool,np.uint8,np.str,np.str_]
-str_scalars = Union[str, np.str, np.str_]
-all_scalars = Union[float,np.float64,int,np.int64,
-                                  builtins.bool,np.bool,str,np.str,np.str_]
+int_scalars = Union[int,np.int64,np.uint64]
+numeric_scalars = Union[float,np.float64,int,np.int64,np.uint8,np.uint64]
+numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]
+numpy_scalars = Union[np.float64,np.int64,np.bool_,np.uint8,np.str_,np.uint64]
+str_scalars = Union[str, np.str_]
+all_scalars = Union[float,np.float64,int,np.int64,np.uint64,
+                                  builtins.bool,np.bool_,str,np.str_]
 
 '''
 The DType enum defines the supported Arkouda data types in string form.
@@ -48,6 +51,7 @@ class DType(Enum):
     INT64 = 'int64'
     STR = 'str'
     UINT8 = 'uint8'
+    UINT64 = 'uint64'
     
     def __str__(self) -> str: # type: ignore
         """
@@ -63,23 +67,24 @@ class DType(Enum):
         """
         return self.value
 
-ARKOUDA_SUPPORTED_INTS = (int,np.int64)
+ARKOUDA_SUPPORTED_INTS = (int,np.int64,np.uint64)
 ARKOUDA_SUPPORTED_FLOATS = (float,np.float64)
-ARKOUDA_SUPPORTED_NUMBERS = (int,np.int64,float,np.float64)
+ARKOUDA_SUPPORTED_NUMBERS = (int,np.int64,float,np.float64,np.uint64)
 ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, 
                                       member in DType.__members__.items()])
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
-DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8])
-NumericDTypes = frozenset(['bool', 'float', 'float64', 'int', 'int64'])
+DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
+NumericDTypes = frozenset(['bool', 'float', 'float64', 'int', 'int64', 'uint64'])
 SeriesDTypes = {'string' : np.str_,
                  "<class 'str'>" : np.str_,
                  'int64' : np.int64,
+                 'uint64' : np.uint64,
                  "<class 'numpy.int64'>" : np.int64,                
                  'float64' : np.float64,
                  "<class 'numpy.float64'>" : np.float64,                   
-                 'bool' : np.bool,
-                 "<class 'bool'>" : np.bool,
+                 'bool' : bool,
+                 "<class 'bool'>" : bool,
                  'datetime64[ns]' : np.int64,
                  'timedelta64[ns]' : np.int64
                 }
@@ -140,21 +145,24 @@ def resolve_scalar_dtype(val : object) -> str: # type: ignore
     """
     # Python bool or np.bool
     if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') \
-                                and cast(np.bool,val).dtype.kind == 'b'):
+                                and cast(np.bool_,val).dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and \
                                   cast(np.uint,val).dtype.kind in 'ui'):
-        return 'int64'
+        if isinstance(val, np.uint64):
+            return 'uint64'
+        else:
+            return 'int64'
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and \
-                                    cast(np.float, val).dtype.kind == 'f'):
+                                    cast(np.float_, val).dtype.kind == 'f'):
         return 'float64'
-    elif isinstance(val, builtins.str) or isinstance(val, np.str):
+    elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return 'str'
     # Other numpy dtype
     elif hasattr(val, 'dtype'):
-        return cast(np.dtype, val).dtype.name
+        return cast(np.dtype, val).name
     # Other python type
     else:
         return builtins.str(type(val))

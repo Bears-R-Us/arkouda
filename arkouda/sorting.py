@@ -5,10 +5,10 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import int64, float64
+from arkouda.dtypes import int64, uint64, float64, int_scalars
 from enum import Enum
 
-numeric_dtypes = {float64,int64}
+numeric_dtypes = {int64,uint64,float64}
 
 __all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
 
@@ -21,7 +21,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
     Parameters
     ----------
     pda : pdarray or Strings or Categorical
-        The array to sort (int64 or float64)
+        The array to sort (int64, uint64, or float64)
 
     Returns
     -------
@@ -73,7 +73,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     Parameters
     ----------
     arrays : Sequence[Union[Strings, pdarray, Categorical]]
-        The columns (int64, float64, Strings, or Categorical) to sort by row
+        The columns (int64, uint64, float64, Strings, or Categorical) to sort by row
 
     Returns
     -------
@@ -114,7 +114,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     """
     from arkouda.categorical import Categorical
     check_type(argname='coargsort', value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
-    size = -1
+    size:int_scalars = -1
     anames = []
     atypes = []
     for a in arrays:
@@ -150,11 +150,11 @@ def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSor
     Parameters
     ----------
     pda : pdarray or Categorical
-        The array to sort (int64 or float64)
+        The array to sort (int64, uint64, or float64)
 
     Returns
     -------
-    pdarray, int64 or float64
+    pdarray, int64, uint64, or float64
         The sorted copy of pda
 
     Raises
@@ -184,6 +184,6 @@ def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSor
     if pda.size == 0:
         return zeros(0, dtype=int64)
     if pda.dtype not in numeric_dtypes:
-        raise ValueError("ak.sort supports float64 or int64, not {}".format(pda.dtype))
+        raise ValueError("ak.sort supports int64, uint64, or float64, not {}".format(pda.dtype))
     repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
     return create_pdarray(cast(str,repMsg))

@@ -6,7 +6,7 @@ import numpy as np # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      translate_np_dtype, NUMBER_FORMAT_STRINGS, \
-     int_scalars, numeric_scalars, numpy_scalars, get_server_byteorder
+     int_scalars, numeric_scalars, numeric_and_bool_scalars, numpy_scalars, get_server_byteorder
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import bool as npbool
@@ -136,7 +136,7 @@ class pdarray:
         from arkouda.client import pdarrayIterThresh
         return generic_msg(cmd='repr',args='{} {}'.format(self.name,pdarrayIterThresh))
 
-    def format_other(self, other : object) -> np.dtype:
+    def format_other(self, other : object) -> str:
         """
         Attempt to cast scalar other to the element dtype of this pdarray,
         and print the resulting value to a string (e.g. for sending to a
@@ -149,7 +149,7 @@ class pdarray:
             
         Returns
         -------
-        np.dtype corresponding to the other parameter
+        string representation of np.dtype corresponding to the other parameter
         
         Raises
         ------
@@ -627,7 +627,7 @@ class pdarray:
         """
         return is_sorted(self)
 
-    def sum(self) -> numpy_scalars:
+    def sum(self) -> numeric_and_bool_scalars:
         """
         Return the sum of all elements in the array.
         """
@@ -1302,7 +1302,7 @@ def create_pdarray(repMsg : str) -> pdarray:
         raise ValueError(e)
     logger.debug(("created Chapel array with name: {} dtype: {} size: {} ndim: {} shape: {} " +
                   "itemsize: {}").format(name, mydtype, size, ndim, shape, itemsize))
-    return pdarray(name, mydtype, size, ndim, shape, itemsize)
+    return pdarray(name, dtype(mydtype), size, ndim, shape, itemsize)
 
 def clear() -> None:
     """
@@ -1567,7 +1567,7 @@ def mean(pda : pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return pda.sum() / pda.size
+    return np.float64(pda.sum()) / pda.size
 
 @typechecked
 def var(pda : pdarray, ddof : int_scalars=0) -> np.float64:

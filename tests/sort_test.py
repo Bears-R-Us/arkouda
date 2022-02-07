@@ -52,12 +52,12 @@ class SortTest(ArkoudaTest):
         for algo in ak.SortingAlgorithm:
             with self.assertRaises(ValueError) as cm:
                 ak.sort(akbools, algo)
-            self.assertEqual('ak.sort supports float64 or int64, not bool',
+            self.assertEqual('ak.sort supports int64, uint64, or float64, not bool',
                              cm.exception.args[0])
         
             with self.assertRaises(ValueError) as cm:
                 ak.sort(bools, algo)
-            self.assertEqual('ak.sort supports float64 or int64, not bool', 
+            self.assertEqual('ak.sort supports int64, uint64, or float64, not bool',
                              cm.exception.args[0])        
         
             # Test TypeError from sort attempt on non-pdarray

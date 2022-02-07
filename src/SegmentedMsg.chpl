@@ -11,7 +11,6 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use GenSymIO only jsonToPdArray;
   use Map;
 
   private config const logLevel = ServerConfig.logLevel;
@@ -160,11 +159,10 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedSearchMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (subcmd, objtype, name, legacy_placeholder, valtype, regexStr, valStr) = payload.splitMsgToTuple(7);
-      var regex: bool = regexStr.toLower() == "true";
+      var (objtype, name, legacy_placeholder, valtype, valStr) = payload.splitMsgToTuple(5);
 
       // check to make sure symbols defined
       st.checkTable(name);
@@ -174,40 +172,15 @@ module SegmentedMsg {
       var rname = st.nextName();
     
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
-                          cmd,subcmd,objtype,valtype));
+                         "cmd: %s objtype: %t valtype: %t".format(
+                          cmd,objtype,valtype));
     
       select (objtype, valtype) {
           when ("str", "str") {
               var strings = getSegString(name, st);
-              select subcmd {
-                  when "contains" {
-                      var truth = st.addEntry(rname, strings.size, bool);
-                      truth.a = strings.substringSearch(val, SearchMode.contains, regex);
-                      repMsg = "created "+st.attrib(rname);
-                  }
-                  when "startswith" {
-                      var truth = st.addEntry(rname, strings.size, bool);
-                      truth.a = strings.substringSearch(val, SearchMode.startsWith, regex);
-                      repMsg = "created "+st.attrib(rname);
-                  }
-                  when "endswith" {
-                      var truth = st.addEntry(rname, strings.size, bool);
-                      truth.a = strings.substringSearch(val, SearchMode.endsWith, regex);
-                      repMsg = "created "+st.attrib(rname);
-                  }
-                  when "match" {
-                      var truth = st.addEntry(rname, strings.size, bool);
-                      truth.a = strings.substringSearch(val, SearchMode.match, regex);
-                      repMsg = "created "+st.attrib(rname);
-                  }
-                  otherwise {
-                      var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
-                                  subcmd, objtype, valtype));
-                      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                      return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-              }
+              var truth = st.addEntry(rname, strings.size, bool);
+              truth.a = strings.substringSearch(val);
+              repMsg = "created "+st.attrib(rname);
           }
           otherwise {
             var errorMsg = "(%s, %s)".format(objtype, valtype);
@@ -215,7 +188,6 @@ module SegmentedMsg {
             return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
           }
       }
-
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -941,5 +913,24 @@ module SegmentedMsg {
       var repMsg =  "created " + st.attrib(rname);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+  
+  proc registerMe() {
+    use CommandMap;
+    registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
+    registerFunction("segmentedHash", segmentedHashMsg, getModuleName());
+    registerFunction("segmentedSearch", segmentedSearchMsg, getModuleName());
+    registerFunction("segmentedFindLoc", segmentedFindLocMsg, getModuleName());
+    registerFunction("segmentedFindAll", segmentedFindAllMsg, getModuleName());
+    registerFunction("segmentedPeel", segmentedPeelMsg, getModuleName());
+    registerFunction("segmentedSub", segmentedSubMsg, getModuleName());
+    registerFunction("segmentedIndex", segmentedIndexMsg, getModuleName());
+    registerFunction("segmentedBinopvv", segBinopvvMsg, getModuleName());
+    registerFunction("segmentedBinopvs", segBinopvsMsg, getModuleName());
+    registerFunction("segmentedGroup", segGroupMsg, getModuleName());
+    registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
+    registerFunction("randomStrings", randomStringsMsg, getModuleName());
+    registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
+    registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
   }
 }

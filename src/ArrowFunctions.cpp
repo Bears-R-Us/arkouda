@@ -1,12 +1,5 @@
 #include "ArrowFunctions.h"
 
-#include <iostream>
-#include <arrow/api.h>
-#include <arrow/io/api.h>
-#include <parquet/arrow/reader.h>
-#include <parquet/arrow/writer.h>
-#include <parquet/column_reader.h>
-
 /*
   Arrow Error Helpers
   -------------------
@@ -56,7 +49,7 @@ bool check_status_ok(arrow::Status status, char** errMsg) {
  C++ functions must return types that are C compatible.
 */
 
-int cpp_getNumRows(const char* filename, char** errMsg) {
+int64_t cpp_getNumRows(const char* filename, char** errMsg) {
   std::shared_ptr<arrow::io::ReadableFile> infile;
   ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
                  infile);
@@ -91,27 +84,30 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   }
   auto myType = sc -> field(idx) -> type();
 
-  if(myType == arrow::int64())
+  if(myType->id() == arrow::Type::INT64)
     return ARROWINT64;
-  else if(myType == arrow::int32())
+  else if(myType->id() == arrow::Type::INT32)
     return ARROWINT32;
+    else if(myType->id() == arrow::Type::UINT64)
+    return ARROWUINT64;
+  else if(myType->id() == arrow::Type::TIMESTAMP)
+    return ARROWTIMESTAMP;
   else // TODO: error type not supported
     return ARROWUNDEFINED;
 }
 
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
-  auto chpl_ptr = (int64_t*)chpl_arr;
-  int ty = cpp_getType(filename, colname, errMsg);
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
+  int64_t ty = cpp_getType(filename, colname, errMsg);
   
   // Currently only supports int64 and int32 Arrow types
-  if(ty == ARROWINT64 || ty == ARROWINT32) {
+  if(ty == ARROWINT64 || ty == ARROWINT32 || ty == ARROWUINT64) {
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
 
     std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
     int num_row_groups = file_metadata->num_row_groups();
 
-    int i = 0;
+    int64_t i = 0;
     for (int r = 0; r < num_row_groups; r++) {
       std::shared_ptr<parquet::RowGroupReader> row_group_reader =
         parquet_reader->RowGroup(r);
@@ -120,7 +116,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
-      int idx = file_metadata -> schema() -> ColumnIndex(colname);
+      auto idx = file_metadata -> schema() -> ColumnIndex(colname);
 
       if(idx < 0) {
         std::string dname(colname);
@@ -133,6 +129,16 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       column_reader = row_group_reader->Column(idx);
 
       if(ty == ARROWINT64) {
+        auto chpl_ptr = (int64_t*)chpl_arr;
+        parquet::Int64Reader* reader =
+          static_cast<parquet::Int64Reader*>(column_reader.get());
+
+        while (reader->HasNext()) {
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          i+=values_read;
+        }
+      } else if(ty == ARROWUINT64) {
+        auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
 
@@ -141,6 +147,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i+=values_read;
         }
       } else {
+        auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int32Reader* reader =
           static_cast<parquet::Int32Reader*>(column_reader.get());
 
@@ -161,27 +168,48 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 }
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
-                             int colnum, const char* dsetname, int numelems,
-                             int rowGroupSize, char** errMsg) {
+                             int64_t colnum, const char* dsetname, int64_t numelems,
+                             int64_t rowGroupSize, int64_t dtype, char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
-  arrow::Int64Builder i64builder;
-  arrow::Status status;
-  for(int i = 0; i < numelems; i++) {
-    ARROWSTATUS_OK(i64builder.AppendValues({chpl_ptr[i]}));
+  using FileClass = ::arrow::io::FileOutputStream;
+  std::shared_ptr<FileClass> out_file;
+  PARQUET_ASSIGN_OR_THROW(out_file, FileClass::Open(filename));
+
+  // Setup schema of a single int64 column
+  parquet::schema::NodeVector fields;
+  if(dtype == 1)
+    fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::NONE));
+  else
+    fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::UINT_64));
+  std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
+    (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
+
+  // TODO: add conditionals and arguments for writing with Snappy/RLE
+  parquet::WriterProperties::Builder builder;
+  std::shared_ptr<parquet::WriterProperties> props = builder.build();
+
+  std::shared_ptr<parquet::ParquetFileWriter> file_writer =
+    parquet::ParquetFileWriter::Open(out_file, schema, props);
+
+  int64_t i = 0;
+  int64_t numLeft = numelems;
+
+  while(numLeft > 0) {
+    parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+    parquet::Int64Writer* int64_writer =
+      static_cast<parquet::Int64Writer*>(rg_writer->NextColumn());
+
+    int64_t batchSize = rowGroupSize;
+    if(numLeft < rowGroupSize)
+      batchSize = numLeft;
+    int64_writer->WriteBatch(batchSize, nullptr, nullptr, &chpl_ptr[i]);
+    numLeft -= batchSize;
+    i += batchSize;
   }
-  std::shared_ptr<arrow::Array> i64array;
-  ARROWSTATUS_OK(i64builder.Finish(&i64array));
 
-  std::shared_ptr<arrow::Schema> schema = arrow::schema(
-                 {arrow::field(dsetname, arrow::int64())});
+  file_writer->Close();
+  ARROWSTATUS_OK(out_file->Close());
 
-  auto table = arrow::Table::Make(schema, {i64array});
-
-  std::shared_ptr<arrow::io::FileOutputStream> outfile;
-  ARROWRESULT_OK(arrow::io::FileOutputStream::Open(filename),
-                 outfile);
-
-  ARROWSTATUS_OK(parquet::arrow::WriteTable(*table, arrow::default_memory_pool(), outfile, rowGroupSize));
   return 0;
 }
 
@@ -204,11 +232,11 @@ void cpp_free_string(void* ptr) {
 */
 
 extern "C" {
-  int c_getNumRows(const char* chpl_str, char** errMsg) {
+  int64_t c_getNumRows(const char* chpl_str, char** errMsg) {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int numElems, int batchSize, char** errMsg) {
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
     return cpp_readColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
   }
 
@@ -217,10 +245,10 @@ extern "C" {
   }
 
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
-                             int colnum, const char* dsetname, int numelems,
-                             int rowGroupSize, char** errMsg) {
+                             int64_t colnum, const char* dsetname, int64_t numelems,
+                             int64_t rowGroupSize, int64_t dtype, char** errMsg) {
     return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
-                                    numelems, rowGroupSize, errMsg);
+                                    numelems, rowGroupSize, dtype, errMsg);
   }
 
   const char* c_getVersionInfo(void) {

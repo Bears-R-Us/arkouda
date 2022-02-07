@@ -77,4 +77,9 @@ module HistogramMsg
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+
+    proc registerMe() {
+      use CommandMap;
+      registerFunction("histogram", histogramMsg, getModuleName());
+    }
 }

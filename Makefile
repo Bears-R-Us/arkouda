@@ -62,12 +62,15 @@ ifdef ARKOUDA_ARROW_PATH
 $(eval $(call add-path,$(ARKOUDA_ARROW_PATH)))
 endif
 
+ifndef ARKOUDA_CONFIG_FILE
+ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/ServerModules.cfg
+endif
+
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 ifdef ARKOUDA_SERVER_PARQUET_SUPPORT
   CHPL_FLAGS += -lparquet -larrow
   OPTIONAL_CHECKS += check-arrow
-  OPTIONAL_SERVER_FLAGS += -shasParquetSupport
   ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
   ARROW_CPP += $(ARROW_FILE_NAME).cpp
   ARROW_H += $(ARROW_FILE_NAME).h
@@ -142,7 +145,7 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-chpl check-zmq check-hdf5 $(OPTIONAL_CHECKS)
+CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 $(OPTIONAL_CHECKS)
 endif
 check-deps: $(CHECK_DEPS)
 
@@ -162,7 +165,7 @@ ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.24.0 or newer is required)
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.25.0 or newer is recommended)
+	$(warning Chapel 1.25.1 or newer is recommended)
 endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
@@ -179,10 +182,17 @@ check-hdf5: $(HDF5_CHECK)
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
+RE2_CHECK = $(DEP_INSTALL_DIR)/checkRE2.chpl
+check-re2: $(RE2_CHECK)
+	@echo "Checking for RE2"
+	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
+
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
 check-arrow: $(ARROW_CHECK) $(ARROW_O)
 	@echo "Checking for Arrow"
-	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@ -shasParquetSupport
+	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
@@ -252,14 +262,18 @@ else
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
 endif
 
+MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
+	$(eval MOD_GEN_OUT=$(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE)))
+	@echo $(MOD_GEN_OUT);
+
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
 arkouda-clean:
-	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real
+	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARKOUDA_SOURCE_DIR)/ServerRegistration.chpl
 
 .PHONY: tags
 tags:
@@ -412,6 +426,7 @@ $(TEST_BINARY_DIR):
 
 .PHONY: $(TEST_TARGETS) # Force tests to always rebuild.
 $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.chpl | $(TEST_BINARY_DIR)
+	python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE)
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:

@@ -678,21 +678,20 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            if re.search(substr, ''):
-                # TODO remove once changes from chapel issue #18639 are in arkouda
-                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
-            matcher = self._get_matcher(substr, create=False)
-            if matcher is not None:
-                return matcher.get_match(MatchType.SEARCH, self).matched()
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("contains",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
+        if not regex:
+            substr = re.escape(substr)
+        if re.search(substr, ''):
+            # TODO remove once changes from chapel issue #18639 are in arkouda
+            raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+        matcher = self._get_matcher(substr, create=False)
+        if matcher is not None:
+            return matcher.get_match(MatchType.SEARCH, self).matched()
+        cmd = "segmentedSearch"
+        args = "{} {} {} {} {}".format(self.objtype,
+                                       self.entry.name,
+                                       "legacy_placeholder",
+                                       "str",
+                                       json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
@@ -741,22 +740,16 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            if re.search(substr, ''):
-                # TODO remove once changes from chapel issue #18639 are in arkouda
-                raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
-            matcher = self._get_matcher(substr, create=False)
-            if matcher is not None:
-                return matcher.get_match(MatchType.MATCH, self).matched()
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("startswith",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        if not regex:
+            substr = re.escape(substr)
+        if re.search(substr, ''):
+            # TODO remove once changes from chapel issue #18639 are in arkouda
+            raise ValueError("regex operations with a pattern that matches the empty string are not currently supported")
+        matcher = self._get_matcher(substr, create=False)
+        if matcher is not None:
+            return matcher.get_match(MatchType.MATCH, self).matched()
+        else:
+            return self.contains('^'+substr, regex=True)
 
     @typechecked
     def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -804,17 +797,9 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if regex:
-            return self.contains(substr + '$', regex=True)
-        cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {} {}".format("endswith",
-                                             self.objtype,
-                                             self.entry.name,
-                                             "legacy_placeholder",
-                                             "str",
-                                             regex,
-                                             json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        if not regex:
+            substr = re.escape(substr)
+        return self.contains(substr+'$', regex=True)
 
     def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
@@ -1281,8 +1266,9 @@ class Strings:
         """
         from arkouda.client import maxTransferBytes
         # Total number of bytes in the array data
-        my_sz, my_dt = (self.size, arkouda.dtypes.int64) if comp == "offsets" else (self.nbytes, arkouda.dtypes.uint8)
-        array_bytes = my_sz * my_dt.itemsize
+        # my_sz, my_dt = (self.size, arkouda.dtypes.int64) if comp == "offsets" else (self.nbytes, arkouda.dtypes.uint8)
+        # array_bytes = my_sz * my_dt.itemsize
+        array_bytes = self.size * arkouda.dtypes.int64.itemsize if comp == "offsets" else self.nbytes * arkouda.dtypes.uint8.itemsize
 
         # Guard against overflowing client memory
         if array_bytes > maxTransferBytes:
@@ -1297,7 +1283,7 @@ class Strings:
 
         # The server sends us native-endian bytes so we need to account for that.
         # Since bytes are immutable, we need to copy the np array to be mutable
-        dt = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
+        dt:np.dtype = np.dtype(np.int64) if comp == "offsets" else np.dtype(np.uint8)
         if arkouda.dtypes.get_server_byteorder() == 'big':
             dt = dt.newbyteorder('>')
         else:

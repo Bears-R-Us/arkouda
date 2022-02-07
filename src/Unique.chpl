@@ -439,21 +439,8 @@ module Unique
             }
         } 
 
-        var sorted: [aD] eltType;
-        if (AryUtil.isSorted(a)) {
-            sorted = a; 
-        }
-        else {
-            sorted = radixSortLSD_keys(a);
-        }
-
-        if (needCounts) {
-            var (u, c) = uniqueFromSorted(sorted);
-            return (u,c);
-        } else {
-            var u = uniqueFromSorted(sorted, false);
-            return u;
-        }
+        var sorted = radixSortLSD_keys(a);
+        return uniqueFromSorted(sorted, needCounts);
     }
 
     proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
@@ -464,17 +451,10 @@ module Unique
             var inv = makeDistArray(0, int);
             return (u, c, inv);
         }
-        var perm: [aD] int;
         var sorted: [aD] eltType;
-        if (AryUtil.isSorted(a)) {
-            [(i, p) in zip(aD, perm)] p = i;
-            sorted = a; 
-        }
-        else {
-            perm = radixSortLSD_ranks(a);
-            forall (p, s) in zip(perm, sorted) with (var agg = newSrcAggregator(eltType)) {
-                agg.copy(s, a[p]);
-            }
+        var perm: [aD] int;
+        forall (s, p, sp) in zip(sorted, perm, radixSortLSD(a)) {
+          (s, p) = sp;
         }
         var (u, c) = uniqueFromSorted(sorted);
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -557,7 +537,7 @@ module Unique
         }
     }
 
-    proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted=false) throws {
+    proc uniqueGroup(str: SegString, returnInverse = false) throws {
         if (str.size == 0) {
             uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var uo = makeDistArray(0, int);
@@ -579,41 +559,16 @@ module Unique
         if SegmentedArrayUseHash {
           var hashes = str.hash();
           var sorted: [aD] 2*uint;
-          if (assumeSorted || AryUtil.isSorted(hashes)) {
-            perm = aD;
-            sorted = hashes; 
-          }
-          else {
-            perm = radixSortLSD_ranks(hashes);
-            // sorted = [i in perm] hashes[i];
-            forall (s, p) in zip(sorted, perm) with (var agg = newSrcAggregator(2*uint)) {
-              agg.copy(s, hashes[p]);
-            }
+          forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes)) {
+            (s, p) = sp;
           }
           truth[0] = true;
           [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         } else {
           var soff: [aD] int;
           var sval: [str.values.aD] uint(8);
-          if assumeSorted {
-            perm = aD;
-            soff = str.offsets.a;
-            sval = str.values.a;
-          } else {
-            perm = str.argsort();
-            // I do not understand nilability or how to make it work
-            /* var sortedSegs = new owned SymEntry(str.size, int)?; */
-            /* var sortedVals = new owned SymEntry(str.nBytes, uint(8))?; */
-            /* var (sortedSegsA, sortedValsA) = str[perm]; */
-            /* var sortedSegs = new owned SymEntry(sortedSegsA); */
-            /* var name1 = st.nextName(); */
-            /* st.addEntry(name1, sortedSegs); */
-            /* var sortedVals = new owned SymEntry(sortedValsA); */
-            /* var name2 = st.nextName(); */
-            /* st.addEntry(name2, sortedVals); */
-            /* var sorted = new owned SegString(name1, name2, st); */
-            (soff, sval) = str[perm];
-          }
+          perm = str.argsort();
+          (soff, sval) = str[perm];
           truth[0] = true;
           // truth[{1..aD.high}] = sorted[0..aD.high-1] != sorted[1..aD.high];
           forall (t, o, idx) in zip(truth, soff, aD) {

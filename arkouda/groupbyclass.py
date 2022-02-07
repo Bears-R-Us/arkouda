@@ -969,7 +969,7 @@ class GroupBy:
         repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(repMsg)
 
-def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64]=-1,
+def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64,np.uint64]=-1,
               permutation : Union[pdarray, None]=None):
     '''
     Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
