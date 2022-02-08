@@ -144,12 +144,20 @@ module OperatorMsg
           when (DType.UInt64, DType.UInt64) {
             var l = toSymEntry(left,uint);
             var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, uint);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.UInt64, DType.Int64) {
             var l = toSymEntry(left,uint);
             var r = toSymEntry(right,int);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             // + and - both result in real outputs to match NumPy
             if op == "+" || op == "-" {
               var e = st.addEntry(rname, l.size, real);
@@ -163,6 +171,10 @@ module OperatorMsg
           when (DType.Int64, DType.UInt64) {
             var l = toSymEntry(left,int);
             var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             if op == "+" || op == "-" {
               var e = st.addEntry(rname, l.size, real);
               return doBinOpvv(l, r, e, op, rname, pn, st);
