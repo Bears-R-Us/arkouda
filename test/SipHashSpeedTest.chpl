@@ -19,11 +19,22 @@ proc testFixedLength(n:int, size:int, type t) {
     b = i: t;
   }
   var hashes = makeDistArray(n, 2*uint(64));
-  d.start();
-  forall (h, i) in zip(hashes, hashes.domain) {
-    h = sipHash128(buf, i*size..#size);
+  if computeOnSegments {
+    use SegmentedComputation;
+    var segs = makeDistArray(n, int);
+    forall (i, s) in zip(segs.domain, segs) {
+      s = i*size;
+    }
+    d.start();
+    hashes = computeOnSegments(segs, buf, SegFunction.SipHash128, 2*uint(64));
+    d.stop(printTime=false);
+  } else {
+    d.start();
+    forall (h, i) in zip(hashes, hashes.domain) {
+      h = sipHash128(buf, i*size..#size);
+    }
+    d.stop(printTime=false);
   }
-  d.stop(printTime=false);
   return (d.elapsed(), n*size*numBytes(t));
 }
 
