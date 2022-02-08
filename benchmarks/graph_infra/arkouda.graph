@@ -96,8 +96,20 @@ ylabel: Performance (GiB/s)
 
 perfkeys: write Average rate =, read Average rate =
 graphkeys: Write GiB/s, Read GiB/s
+files: multiIO.dat, multiIO.dat
+graphtitle: HDF5 10 Files/Loc IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate =, read Average rate =
+graphkeys: Write GiB/s, Read GiB/s
 files: parquetIO.dat, parquetIO.dat
 graphtitle: Parquet IO Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate =, read Average rate =
+graphkeys: Write GiB/s, Read GiB/s
+files: parquetMultiIO.dat, parquetMultiIO.dat
+graphtitle: Parquet 10 Files/Loc IO Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =

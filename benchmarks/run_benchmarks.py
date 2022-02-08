@@ -24,10 +24,12 @@ BENCHMARKS = [
     'scatter', 'reduce', 'in1d', 'scan', 'noop', 'setops', 'array_create',
     'array_transfer', 'IO', 'str-argsort', 'str-coargsort', 'str-groupby',
     'str-gather', 'str-in1d', 'substring_search', 'flatten', 'sort-cases',
+    'multiIO'
 ]
 
 if os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'):
     BENCHMARKS.append('parquetIO')
+    BENCHMARKS.append('parquetMultiIO')
 
 def get_chpl_util_dir():
     """ Get the Chapel directory that contains graph generation utilities. """
