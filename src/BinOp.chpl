@@ -442,39 +442,28 @@ module BinOp
             (e.etype == uint && val.type == int) {
       select op {
         when ">>" {
-          e.a = l.a >> val;
+          e.a = l.a >> val:l.etype;
         }
         when "<<" {
-          e.a = l.a << val;
+          e.a = l.a << val:l.etype;
         }
         when ">>>" {
-          e.a = rotr(l.a, val);
+          e.a = rotr(l.a, val:l.etype);
         }
         when "<<<" {
-          e.a = rotl(l.a, val);
+          e.a = rotl(l.a, val:l.etype);
+        }
+        when "+" {
+          e.a = l.a + val:l.etype;
+        }
+        when "-" {
+          e.a = l.a - val:l.etype;
         }
         otherwise {
           var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
-      }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if (l.etype == uint && val.type == int) ||
-              (l.etype == int && val.type == uint) {
-      select op {
-        when "+" {
-          e.a = l.a:real + val:real;
-        }
-        when "-" {
-          e.a = l.a:real - val:real;
-        }
-        otherwise {
-          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-          return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }   
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -554,7 +543,7 @@ module BinOp
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+    var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(l.dtype)+","+dtype2str(dtype)+")");
     omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
     return new MsgTuple(errorMsg, MsgType.ERROR);
   }
@@ -699,43 +688,31 @@ module BinOp
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if (e.etype == int && r.etype == uint) ||
-              (e.etype == uint && r.etype == int) {
+    } else if (val.type == int && r.etype == uint) {
       select op {
         when ">>" {
-          e.a = val >> r.a;
+          e.a = val:uint >> r.a:uint;
         }
         when "<<" {
-          e.a = val << r.a;
+          e.a = val:uint << r.a:uint;
         }
         when ">>>" {
-          e.a = rotr(val, r.a);
+          e.a = rotr(val:uint, r.a:uint);
         }
         when "<<<" {
-          e.a = rotl(val, r.a);
+          e.a = rotl(val:uint, r.a:uint);
+        }
+        when "+" {
+          e.a = val:uint + r.a:uint;
+        }
+        when "-" {
+          e.a = val:uint - r.a:uint;
         }
         otherwise {
           var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
-      }
-      var repMsg = "created %s".format(st.attrib(rname));
-      return new MsgTuple(repMsg, MsgType.NORMAL);
-    } else if (val.type == uint && r.etype == int) ||
-              (val.type == int && r.etype == uint) {
-      select op {
-        when "+" {
-          e.a = val:real + r.a:real;
-        }
-        when "-" {
-          e.a = val:real - r.a:real;
-        }
-        otherwise {
-          var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-          return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }   
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -815,7 +792,7 @@ module BinOp
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+    var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(dtype)+","+dtype2str(r.dtype)+")");
     omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
     return new MsgTuple(errorMsg, MsgType.ERROR);
   }

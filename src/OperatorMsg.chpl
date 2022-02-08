@@ -328,15 +328,9 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            // + and - both result in real outputs to match NumPy
-            if op == "+" || op == "-" {
-              var e = st.addEntry(rname, l.size, real);
-              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-            } else {
-              // isn't + or -, so we can use LHS to determine type
-              var e = st.addEntry(rname, l.size, uint);
-              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-            }
+            // isn't + or -, so we can use LHS to determine type
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.Int64, DType.UInt64) {
             var l = toSymEntry(left,int);
@@ -345,17 +339,11 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
             }
-            if op == "+" || op == "-" {
-              var e = st.addEntry(rname, l.size, real);
-              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-            } else {
-              // isn't + or -, so we can use LHS to determine type
-              var e = st.addEntry(rname, l.size, int);
-              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
-            }
+            var e = st.addEntry(rname, l.size, int);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st); 
           }
         }
-        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+        var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -515,17 +503,11 @@ module OperatorMsg
               var e = st.addEntry(rname, r.size, bool);
               return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
             }
-            if op == "+" || op == "-" {
-              var e = st.addEntry(rname, r.size, real);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            } else {
-              // isn't + or -, so we can use LHS to determine type
-              var e = st.addEntry(rname, r.size, int);
-              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
-            }
+            var e = st.addEntry(rname, r.size, uint);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
         }
-        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+        var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");
         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
