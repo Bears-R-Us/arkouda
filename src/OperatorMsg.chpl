@@ -314,8 +314,45 @@ module OperatorMsg
           when (DType.UInt64, DType.UInt64) {
             var l = toSymEntry(left,uint);
             var val = try! value:uint;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, uint);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+          }
+          when (DType.UInt64, DType.Int64) {
+            var l = toSymEntry(left,uint);
+            var val = try! value:int;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, uint);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+          }
+          when (DType.Int64, DType.UInt64) {
+            var l = toSymEntry(left,int);
+            var val = try! value:uint;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, int);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
           }
         }
         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
@@ -447,8 +484,45 @@ module OperatorMsg
           when (DType.UInt64, DType.UInt64) {
             var val = try! value:uint;
             var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, r.size, uint);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.UInt64, DType.Int64) {
+            var val = try! value:uint;
+            var r = toSymEntry(right,int);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, r.size, real);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, r.size, uint);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+          }
+          when (DType.Int64, DType.UInt64) {
+            var val = try! value:int;
+            var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, r.size, real);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, r.size, int);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
           }
         }
         var errorMsg = notImplementedError(pn,dtype,op,right.dtype);

@@ -104,7 +104,7 @@ module BinOp
     // what operations are supported based on the resultant type
     else if (l.etype == int && r.etype == int) ||
             (l.etype == uint && r.etype == uint)  {
-      if e.etype == int {
+      if e.etype == int || e.etype == uint {
         select op {
           when "+" {
             e.a = l.a + r.a;
@@ -357,8 +357,9 @@ module BinOp
     // Since we know that both `l` and `r` are of type `int` and that
     // the resultant type is not bool (checked in first `if`), we know
     // what operations are supported based on the resultant type
-    else if l.etype == int && val.type == int {
-      if e.etype == int {
+    else if (l.etype == int && val.type == int) ||
+            (l.etype == uint && val.type == uint) {
+      if e.etype == int || e.etype == uint {
         select op {
           when "+" {
             e.a = l.a + val;
@@ -423,6 +424,42 @@ module BinOp
           }
             
         }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if (e.etype == int && val.type == uint) ||
+            (e.etype == uint && val.type == int) {
+      select op {
+        when ">>" {
+          e.a = l.a >> val;
+        }
+        when "<<" {
+          e.a = l.a << val;
+        }
+        when ">>>" {
+          e.a = rotr(l.a, val);
+        }
+        when "<<<" {
+          e.a = rotl(l.a, val);
+        }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (l.etype == uint && val.type == int) ||
+              (l.etype == int && val.type == uint) {
+      select op {
+        when "+" {
+          e.a = l.a:real + val:real;
+        }
+        when "-" {
+          e.a = l.a:real - val:real;
+        }
+        otherwise {
+          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+          return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }   
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -567,8 +604,9 @@ module BinOp
     // Since we know that both `l` and `r` are of type `int` and that
     // the resultant type is not bool (checked in first `if`), we know
     // what operations are supported based on the resultant type
-    else if r.etype == int && val.type == int {
-      if e.etype == int {
+    else if (r.etype == int && val.type == int) ||
+            (r.etype == uint && val.type == uint) {
+      if e.etype == int || e.etype == uint {
         select op {
           when "+" {
             e.a = val + r.a;
@@ -638,6 +676,41 @@ module BinOp
           }
             
         }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (e.etype == int && r.etype == uint) ||
+              (e.etype == uint && r.etype == int) {
+      select op {
+        when ">>" {
+          e.a = val >> r.a;
+        }
+        when "<<" {
+          e.a = val << r.a;
+        }
+        when ">>>" {
+          e.a = rotr(val, r.a);
+        }
+        when "<<<" {
+          e.a = rotl(val, r.a);
+        }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (val.type == uint && r.etype == int) ||
+              (val.type == int && r.etype == uint) {
+      select op {
+        when "+" {
+          e.a = val:real + r.a:real;
+        }
+        when "-" {
+          e.a = val:real - r.a:real;
+        }
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+          return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }   
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
