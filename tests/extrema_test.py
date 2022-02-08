@@ -79,6 +79,9 @@ class MinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.mink(testArray, '1')
+        self.assertEqual(('type of argument "k" must be one of (int, int8, int16, int32, ' +
+                         'int64, uint8, uint16, uint32, uint64); got str instead'), 
+                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.mink(testArray, -1)
@@ -101,9 +104,14 @@ class MaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(list(range(0,10)), 1)
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(testArray, '1')
+        self.assertEqual(('type of argument "k" must be one of (int, int8, int16, int32, ' +
+                         'int64, uint8, uint16, uint32, uint64); got str instead'), 
+                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.maxk(testArray, -1)
@@ -126,9 +134,14 @@ class ArgMinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(list(range(0,10)), 1)
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(testArray, '1')
+        self.assertEqual(('type of argument "k" must be one of (int, int8, int16, int32, ' +
+                         'int64, uint8, uint16, uint32, uint64); got str instead'), 
+                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.argmink(testArray, -1)
@@ -151,9 +164,14 @@ class ArgMaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(list(range(0,10)), 1)
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(testArray, '1')
+        self.assertEqual(('type of argument "k" must be one of (int, int8, int16, int32, int64, ' +
+                         'uint8, uint16, uint32, uint64); got str instead'), 
+                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.argmaxk(testArray, -1)

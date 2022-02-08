@@ -97,9 +97,14 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                        cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram(pda, bins='1')
+        self.assertEqual(('type of argument "bins" must be one of (int, int8, int16, int32, ' +
+                        'int64, uint8, uint16, uint32, uint64); got str instead'), 
+                        cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins='1')
@@ -111,6 +116,8 @@ class NumericTest(ArkoudaTest):
         self.assertTrue((np.log(na) == ak.log(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.log([range(0,10)])
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                        cm.exception.args[0])  
         
     def testExp(self):
         na = np.linspace(1,10,10)
@@ -119,6 +126,8 @@ class NumericTest(ArkoudaTest):
         self.assertTrue((np.exp(na) == ak.exp(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.exp([range(0,10)])
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                        cm.exception.args[0])  
         
     def testAbs(self):
         na = np.linspace(1,10,10)
@@ -194,9 +203,13 @@ class NumericTest(ArkoudaTest):
         pda = ak.linspace(1,10,10)
         with self.assertRaises(TypeError) as cm:
             ak.value_counts(pda)
+        self.assertEqual(('Grouping is only supported on numeric data (integral types) and bools.'), 
+                        cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:  
             ak.value_counts([0])
+        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
+                        cm.exception.args[0])  
 
     def test_isnan(self):
         """
