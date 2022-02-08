@@ -281,7 +281,9 @@ module OperatorMsg
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
         }
-        return new MsgTuple("Bin op not supported", MsgType.NORMAL);
+        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
     /*
