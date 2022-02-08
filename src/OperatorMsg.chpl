@@ -314,420 +314,109 @@ module OperatorMsg
                  "command = %t op = %t scalar dtype = %t scalar = %t pdarray = %t".format(
                                    cmd,op,dtype2str(dtype),value,st.attrib(aname)));
 
-        select (dtype, right.dtype) {
-            when (DType.Int64, DType.Int64) {
-                var val = try! value:int;
-                var r = toSymEntry(right,int);
-                select op
-                {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val * r.a;
-                    }
-                    when "/" { // truediv
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a =  val:real / r.a:real;
-                    } 
-                    when "//" { // floordiv
-                        var e = st.addEntry(rname, r.size, int);
-                        ref ea = e.a;
-                        ref ra = r.a;
-                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val/ri else 0;
-                    }
-                    when "%" { // modulo
-                        var e = st.addEntry(rname, r.size, int);
-                        ref ea = e.a;
-                        ref ra = r.a;
-                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
-                    }
-                    when "<" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val < r.a;
-                    }
-                    when ">" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val > r.a;
-                    }
-                    when "<=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val <= r.a;
-                    }
-                    when ">=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val >= r.a;
-                    }
-                    when "==" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val == r.a;
-                    }
-                    when "!=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val != r.a;
-                    }
-                    when "<<" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val << r.a;
-                    }
-                    when ">>" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val >> r.a;
-                    }
-                    when "<<<" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = rotl(val, r.a);
-                    }
-                    when ">>>" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = rotr(val, r.a);
-                    }
-                    when "&" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val & r.a;
-                    }
-                    when "|" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val | r.a;
-                    }
-                    when "^" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val ^ r.a;
-                    }
-                    when "**" { 
-                        if || reduce (r.a<0){
-                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
-                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR); 
-                        }
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a= val**r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Int64, DType.Float64) {
-                var val = try! value:int;
-                var r = toSymEntry(right,real);
-                select op
-                {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val * r.a;
-                    }
-                    when "/" { // truediv
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val:real / r.a;
-                    }
-                    when "//" { // floordiv
-                        var e = st.addEntry(rname, r.size, real);
-                        ref ea = e.a;
-                        ref ra = r.a;
-                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real / ri) else NAN;
-                    }
-                    when "<" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val < r.a;
-                    }
-                    when ">" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val > r.a;
-                    }
-                    when "<=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val <= r.a;
-                    }
-                    when ">=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val >= r.a;
-                    }
-                    when "==" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val == r.a;
-                    }
-                    when "!=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val != r.a;
-                    }
-                    when "**" { 
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a= val**r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
-                    }
-                }
-            }
-            when (DType.Float64, DType.Int64) {
-                var val = try! value:real;
-                var r = toSymEntry(right,int);
-                select op
-                {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val * r.a;
-                    }
-                    when "/" { // truediv
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val / r.a:real;
-                    } 
-                    when "//" { // floordiv
-                        var e = st.addEntry(rname, r.size, real);
-                        ref ea = e.a;
-                        ref ra = r.a;
-                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val / ri:real) else NAN;
-                    }
-                    when "<" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val < r.a;
-                    }
-                    when ">" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val > r.a;
-                    }
-                    when "<=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val <= r.a;
-                    }
-                    when ">=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val >= r.a;
-                    }
-                    when "==" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val == r.a;
-                    }
-                    when "!=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val != r.a;
-                    }
-                    when "**" { 
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a= val**r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Float64, DType.Float64) {
-                var val = try! value:real;
-                var r = toSymEntry(right,real);
-                select op
-                {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val * r.a;
-                    }
-                    when "/" { // truediv
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val / r.a;
-                    } 
-                    when "//" { // floordiv
-                        var e = st.addEntry(rname, r.size, real);
-                        ref ea = e.a;
-                        ref ra = r.a;
-                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val / ri) else NAN;
-                    }
-                    when "<" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val < r.a;
-                    }
-                    when ">" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val > r.a;
-                    }
-                    when "<=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val <= r.a;
-                    }
-                    when ">=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val >= r.a;
-                    }
-                    when "==" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val == r.a;
-                    }
-                    when "!=" {
-                        var e = st.addEntry(rname, r.size, bool);
-                        e.a = val != r.a;
-                    }
-                    when "**" { 
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a= val**r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }                        
-                }
-            }
-            when (DType.Bool, DType.Bool) {
-                var val = try! value.toLower():bool;
-                var r = toSymEntry(right, bool);
-                select op {
-                    when "|" {
-                        var e = st.addEntry(rname, r.size, bool);
-                         e.a = val | r.a;
-                    }
-                    when "&" {
-                        var e = st.addEntry(rname, r.size, bool);
-                         e.a = val & r.a;
-                    }
-                    when "^" {
-                        var e = st.addEntry(rname, r.size, bool);
-                         e.a = val ^ r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Bool, DType.Int64) {
-                var val = try! value.toLower():bool;
-                var r = toSymEntry(right, int);
-                select op {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val:int + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val:int - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val:int * r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Int64, DType.Bool) {
-                var val = try! value:int;
-                var r = toSymEntry(right, bool);
-                select op {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val + r.a:int;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val - r.a:int;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, int);
-                        e.a = val * r.a:int;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Bool, DType.Float64) {
-                var val = try! value.toLower():bool;
-                var r = toSymEntry(right, real);
-                select op {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val:real + r.a;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val:real - r.a;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val:real * r.a;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            when (DType.Float64, DType.Bool) {
-                var val = try! value:real;
-                var r = toSymEntry(right, bool);
-                select op {
-                    when "+" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val + r.a:real;
-                    }
-                    when "-" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val - r.a:real;
-                    }
-                    when "*" {
-                        var e = st.addEntry(rname, r.size, real);
-                        e.a = val * r.a:real;
-                    }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR); 
-                    }
-                }
-            }
-            otherwise {
-                var errorMsg = unrecognizedTypeError(pn,
-                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
-            }
-        }
+        use Set;
+        // This boolOps set is a filter to determine the output type for the operation.
+        // All operations that involve one of these operations result in a `bool` symbol
+        // table entry.
+        var boolOps: set(string);
+        boolOps.add("<");
+        boolOps.add("<=");
+        boolOps.add(">");
+        boolOps.add(">=");
+        boolOps.add("==");
+        boolOps.add("!=");
         
-        repMsg = "created %s".format(st.attrib(rname));
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        select (dtype, right.dtype) {
+          when (DType.Int64, DType.Int64) {
+            var val = try! value:int;
+            var r = toSymEntry(right,int);
+            
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            } else if op == "/" {
+              // True division is the only case in this int, int case
+              // that results in a `real` symbol table entry.
+              var e = st.addEntry(rname, r.size, real);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, int);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Int64, DType.Float64) {
+            var val = try! value:int;
+            var r = toSymEntry(right,real);
+            // Only two possible resultant types are `bool` and `real`
+            // for this case
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Float64, DType.Int64) {
+            var val = try! value:real;
+            var r = toSymEntry(right,int);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Float64, DType.Float64) {
+            var val = try! value:real;
+            var r = toSymEntry(right,real);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          // For cases where a boolean operand is involved, the only
+          // possible resultant type is `bool`
+          when (DType.Bool, DType.Bool) {
+            var val = try! value.toLower():bool;
+            var r = toSymEntry(right,bool);
+            var e = st.addEntry(rname, r.size, bool);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Bool, DType.Int64) {
+            var val = try! value.toLower():bool;
+            var r = toSymEntry(right,int);
+            var e = st.addEntry(rname, r.size, int);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Int64, DType.Bool) {
+            var val = try! value:int;
+            var r = toSymEntry(right,bool);
+            var e = st.addEntry(rname, r.size, int);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Bool, DType.Float64) {
+            var val = try! value.toLower():bool;
+            var r = toSymEntry(right,real);
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Float64, DType.Bool) {
+            var val = try! value:real;
+            var r = toSymEntry(right,bool);
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.UInt64, DType.UInt64) {
+            var val = try! value:uint;
+            var r = toSymEntry(right,uint);
+            var e = st.addEntry(rname, r.size, uint);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+        }
+        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
     /*
