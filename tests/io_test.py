@@ -596,6 +596,20 @@ class IOTest(ArkoudaTest):
             b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
             self.assertEqual(str(b1), str(b2))
 
+    def testUint64ToFromHDF5(self):
+        """
+        Test our ability to read/write uint64 to HDF5
+        """
+        npa1 = np.array([18446744073709551500, 18446744073709551501, 18446744073709551502], dtype=np.uint64)
+        pda1 = ak.array(npa1)
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            pda1.save(f"{tmp_dirname}/small_numeric", dataset="pda1")
+            # Now load it back in
+            pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")
+            self.assertEqual(str(pda1), str(pda2))
+            self.assertEqual(18446744073709551500, pda2[0])
+            self.assertTrue((pda2.to_ndarray() == npa1).all())
+
     def testUint64ToFromArray(self):
         """
         Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)

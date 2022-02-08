@@ -1834,7 +1834,7 @@ module HDF5Msg {
         return idx == numLocales-1;
     }
 
-        /* 
+    /**
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
     proc readAllHdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -2051,29 +2051,53 @@ module HDF5Msg {
                     rnames.append((dsetName, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
-                    var entryInt = new shared SymEntry(len, int);
-                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                  "Initialized int entry for dataset %s".format(dsetName));
-
-                    read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName, skips);
-                    var rname = st.nextName();
-                    
-                    /*
-                     * Since boolean pdarrays are saved to and read from HDF5 as ints, confirm whether this
-                     * is actually a boolean dataset. If so, (1) convert the SymEntry pdarray to a boolean 
-                     * pdarray, (2) create a new SymEntry of type bool, (3) set the SymEntry pdarray 
-                     * reference to the bool pdarray, and (4) add the entry to the SymTable
+                    /**
+                     * Unfortunately we need to duplicate logic here because of the type param for SymEntry
+                     * In the future we need to figure out a better way to do this.
+                     * Also, in non-strict mode, we allow mixed precision and signed/unsigned, which worked because
+                     * we had not supported uint64 before. With the addition of uint64 we need to identify it
+                     * and try to handle it separately so we don't up-convert 32 & 16 bit accidentally.
                      */
-                    if isBooleanDataset(filenames[0],dsetName) {
-                        //var a_bool = entryInt.a:bool;
-                        var entryBool = new shared SymEntry(len, bool);
-                        entryBool.a = entryInt.a:bool;
-                        st.addEntry(rname, entryBool);
+                    if (!isSigned && 8 == bytesize) { // uint64
+                        var entryUInt = new shared SymEntry(len, uint);
+                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized uint entry for dataset %s".format(dsetName));
+                        read_files_into_distributed_array(entryUInt.a, subdoms, filenames, dsetName, skips);
+                        var rname = st.nextName();
+                        
+                        /*
+                         * See comment about boolean pdarrays in `else` block
+                         */
+                        if isBooleanDataset(filenames[0],dsetName) {
+                            var entryBool = new shared SymEntry(len, bool);
+                            entryBool.a = entryUInt.a:bool;
+                            st.addEntry(rname, entryBool);
+                        } else {
+                            // Not a boolean dataset, so add original SymEntry to SymTable
+                            st.addEntry(rname, entryUInt);
+                        }
+                        rnames.append((dsetName, "pdarray", rname));
                     } else {
-                        // Not a boolean dataset, so add original SymEntry to SymTable
-                        st.addEntry(rname, entryInt);
+                        var entryInt = new shared SymEntry(len, int);
+                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Initialized int entry for dataset %s".format(dsetName));
+                        read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName, skips);
+                        var rname = st.nextName();
+                        
+                        /*
+                         * Since boolean pdarrays are saved to and read from HDF5 as ints, confirm whether this
+                         * is actually a boolean dataset. If so, (1) convert the SymEntry pdarray to a boolean 
+                         * pdarray, (2) create a new SymEntry of type bool, (3) set the SymEntry pdarray 
+                         * reference to the bool pdarray, and (4) add the entry to the SymTable
+                         */
+                        if isBooleanDataset(filenames[0],dsetName) {
+                            var entryBool = new shared SymEntry(len, bool);
+                            entryBool.a = entryInt.a:bool;
+                            st.addEntry(rname, entryBool);
+                        } else {
+                            // Not a boolean dataset, so add original SymEntry to SymTable
+                            st.addEntry(rname, entryInt);
+                        }
+                        rnames.append((dsetName, "pdarray", rname));
                     }
-                    rnames.append((dsetName, "pdarray", rname));
                 }
                 when (false, C_HDF5.H5T_FLOAT) {
                     var entryReal = new shared SymEntry(len, real);
@@ -2135,6 +2159,10 @@ module HDF5Msg {
                 when DType.Int64 {
                     var e = toSymEntry(toGenSymEntry(entry), int);
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
+                }
+                when DType.UInt64 {
+                    var e = toSymEntry(toGenSymEntry(entry), uint);
+                    warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt64);
                 }
                 when DType.Float64 {
                     var e = toSymEntry(toGenSymEntry(entry), real);
