@@ -174,9 +174,44 @@ module BinOp
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
             return new MsgTuple(errorMsg, MsgType.ERROR); 
-          }
-            
+          }   
         }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    else if (e.etype == int && r.etype == uint) ||
+            (e.etype == uint && r.etype == int) {
+      select op {
+        when ">>" {
+          e.a = l.a >> r.a;
+        }
+        when "<<" {
+          e.a = l.a << r.a;
+        }
+        when ">>>" {
+          e.a = rotr(l.a, r.a);
+        }
+        when "<<<" {
+          e.a = rotl(l.a, r.a);
+        }
+      }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if (l.etype == uint && r.etype == int) ||
+              (l.etype == int && r.etype == uint) {
+      select op {
+        when "+" {
+          e.a = l.a:real + r.a:real;
+        }
+        when "-" {
+          e.a = l.a:real - r.a:real;
+        }
+        otherwise {
+          var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
+          return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }   
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);

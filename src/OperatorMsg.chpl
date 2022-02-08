@@ -150,14 +150,27 @@ module OperatorMsg
           when (DType.UInt64, DType.Int64) {
             var l = toSymEntry(left,uint);
             var r = toSymEntry(right,int);
-            var e = st.addEntry(rname, l.size, uint);
-            return doBinOpvv(l, r, e, op, rname, pn, st);
+            // + and - both result in real outputs to match NumPy
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, uint);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
           }
           when (DType.Int64, DType.UInt64) {
             var l = toSymEntry(left,int);
             var r = toSymEntry(right,uint);
-            var e = st.addEntry(rname, l.size, uint);
-            return doBinOpvv(l, r, e, op, rname, pn, st);
+            if op == "+" || op == "-" {
+              var e = st.addEntry(rname, l.size, real);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            } else {
+              // isn't + or -, so we can use LHS to determine type
+              var e = st.addEntry(rname, l.size, int);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
           }
         }
         var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
