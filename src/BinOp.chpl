@@ -195,6 +195,11 @@ module BinOp
         when "<<<" {
           e.a = rotl(l.a, r.a);
         }
+        otherwise {
+          var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -241,6 +246,11 @@ module BinOp
           }
           when "**" { 
             e.a= l.a**r.a;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
       var repMsg = "created %s".format(st.attrib(rname));
@@ -443,6 +453,11 @@ module BinOp
         when "<<<" {
           e.a = rotl(l.a, val);
         }
+        otherwise {
+          var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -488,6 +503,11 @@ module BinOp
           }
           when "**" { 
             e.a= l.a**val;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
       var repMsg = "created %s".format(st.attrib(rname));
@@ -694,6 +714,11 @@ module BinOp
         when "<<<" {
           e.a = rotl(val, r.a);
         }
+        otherwise {
+          var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -721,7 +746,7 @@ module BinOp
              || (r.etype == real && val.type == int)) {
       select op {
           when "+" {
-            e.a = val + val;
+            e.a = val + r.a;
           }
           when "-" {
             e.a = val - r.a;
@@ -739,6 +764,11 @@ module BinOp
           }
           when "**" { 
             e.a= val**r.a;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
       var repMsg = "created %s".format(st.attrib(rname));
