@@ -147,6 +147,18 @@ module OperatorMsg
             var e = st.addEntry(rname, l.size, uint);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
+          when (DType.UInt64, DType.Int64) {
+            var l = toSymEntry(left,uint);
+            var r = toSymEntry(right,int);
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
+          when (DType.Int64, DType.UInt64) {
+            var l = toSymEntry(left,int);
+            var r = toSymEntry(right,uint);
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
         }
         var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
