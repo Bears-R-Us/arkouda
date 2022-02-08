@@ -148,7 +148,7 @@ module OperatorMsg
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
         }
-        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+        var errorMsg = unrecognizedTypeError(pn, "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
