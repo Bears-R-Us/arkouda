@@ -471,6 +471,8 @@ module BinOp
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    return new MsgTuple("Bin op not supported", MsgType.NORMAL);
+    var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+    omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+    return new MsgTuple(errorMsg, MsgType.ERROR);
   }
 }
