@@ -66,11 +66,12 @@ module SegmentedComputation {
         const myNumSegs = numSegs[loc.id];
         const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
-        // Block transfer -- should use aggregation?
-        const mySegs = segments[mySegInds];
         // Lengths of segments whose bytes are owned by loc
-        // Block transfer -- should use aggregation?
-        const myLens = lengths[mySegInds];
+        var mySegs, myLens: [mySegInds] int;
+        forall i in mySegInds with (var agg = new SrcAggregator(int)) {
+          agg.copy(mySegs[i], segments[i]);
+          agg.copy(myLens[i], lengths[i]);
+        }
         // Apply function to bytes of each owned segment, aggregating return value to res
         forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
           select function {
