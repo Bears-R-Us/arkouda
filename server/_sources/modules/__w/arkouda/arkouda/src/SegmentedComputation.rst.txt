@@ -1,0 +1,25 @@
+.. default-domain:: chpl
+
+.. module:: SegmentedComputation
+
+SegmentedComputation
+====================
+**Usage**
+
+.. code-block:: chapel
+
+   use SegmentedComputation;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegmentedComputation;
+
+.. function:: proc computeSegmentOwnership(segments: [?D] int, vD)
+
+.. enum:: enum SegFunction { SipHash128 }
+
+.. function:: proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType) throws
+
