@@ -1,6 +1,8 @@
 
 module SymArrayDmap
 {
+    use ChplConfig;
+
     /*
      Available domain maps. Cyclic isn't regularly tested and may not work.
      */
