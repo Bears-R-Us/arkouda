@@ -73,12 +73,12 @@ module UniqueMsg
                 overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
         
                 select (gEnt.dtype) {
-                    when (DType.Int64) {
+                  when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
-                
+
                     /* var eMin:int = min reduce e.a; */
                     /* var eMax:int = max reduce e.a; */
-                
+
                     /* // how many bins in histogram */
                     /* var bins = eMax-eMin+1; */
                     /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -103,14 +103,22 @@ module UniqueMsg
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {
                         st.addEntry(cname, new shared SymEntry(aC));
-                    }                  
+                    }
+                  } when (DType.UInt64) {
+                    var e = toSymEntry(gEnt,uint);
+
+                    var (aV,aC) = uniqueSort(e.a);
+                    st.addEntry(vname, new shared SymEntry(aV));
+                    if returnCounts {
+                        st.addEntry(cname, new shared SymEntry(aC));
+                    }
+                  }
+                  otherwise {
+                      var errorMsg = notImplementedError("unique",gEnt.dtype);
+                      umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
                 }
-                otherwise {
-                    var errorMsg = notImplementedError("unique",gEnt.dtype);
-                    umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
-                }
-            }
         
             repMsg = "created " + st.attrib(vname);
 

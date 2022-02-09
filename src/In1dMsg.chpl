@@ -81,6 +81,32 @@ module In1dMsg
                     st.addEntry(rname, new shared SymEntry(truth));
                 }
             }
+            when (DType.UInt64, DType.UInt64) {
+                var ar1 = toSymEntry(gAr1,uint);
+                var ar2 = toSymEntry(gAr2,uint);
+
+                // things to do...
+                // if ar2 is big for some value of big... call unique on ar2 first
+
+                // per locale assoc domain if below medium bound
+                if (ar2.size <= mBound) {
+                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound));                  
+                    var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
+                    if (invert) {truth = !truth;}
+                    
+                    st.addEntry(rname, new shared SymEntry(truth));
+                }
+                // sort-based strategy if above medium bound
+                else {
+                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "%t > %t, using sort-based strategy".format(ar2.size, mBound));
+                    var truth = in1dSort(ar1.a, ar2.a);
+                    if (invert) {truth = !truth;}
+
+                    st.addEntry(rname, new shared SymEntry(truth));
+                }
+            }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
                 iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
