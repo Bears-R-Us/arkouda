@@ -1890,7 +1890,7 @@ def popcount(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64
+    pda : pdarray, int64, uint64
         Input array (must be integral).
 
     Returns
@@ -1901,7 +1901,7 @@ def popcount(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -1920,7 +1920,7 @@ def parity(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64
+    pda : pdarray, int64, uint64
         Input array (must be integral).
 
     Returns
@@ -1931,7 +1931,7 @@ def parity(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -1950,7 +1950,7 @@ def clz(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64
+    pda : pdarray, int64, uint64
         Input array (must be integral).
 
     Returns
@@ -1961,7 +1961,7 @@ def clz(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -1980,7 +1980,7 @@ def ctz(pda: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda : pdarray, int64
+    pda : pdarray, int64, uint64
         Input array (must be integral).
 
     Returns
@@ -1995,7 +1995,7 @@ def ctz(pda: pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------

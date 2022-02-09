@@ -5,7 +5,7 @@ import numpy as np
 import arkouda as ak
 
 OPS = ('zeros', 'ones', 'randint')
-TYPES = ('int64', 'float64')
+TYPES = ('int64', 'float64', 'uint64')
 
 def create_ak_array(N, op, dtype, seed):
     if op == 'zeros': 
@@ -28,6 +28,8 @@ def create_np_array(N, op, dtype, seed):
             a = np.random.randint(1, N, N)
         elif dtype == 'float64':
             a = np.random.random(N) + 0.5
+        elif dtype == 'uint64':
+            a = np.random.randint(1, N, N, 'uint64')
     return a
 
 def time_ak_array_create(N_per_locale, trials, dtype, random, seed):

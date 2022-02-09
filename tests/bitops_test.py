@@ -5,7 +5,10 @@ class BitOpsTest(ArkoudaTest):
     def setUp(self):
         ArkoudaTest.setUp(self)
         self.a = ak.arange(10)
+        self.b = ak.cast(self.a, ak.uint64)
         self.edgeCases = ak.array([-(2**63), -1, 2**63 - 1])
+        self.edgeCasesUint = ak.cast(ak.array([-(2**63), -1, 2**63 - 1]), \
+                                     ak.uint64)
     
     def test_popcount(self):
         # Method invocation
@@ -13,10 +16,21 @@ class BitOpsTest(ArkoudaTest):
         p = self.a.popcount()
         ans = ak.array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
         self.assertTrue((p == ans).all())
+
+        # Test uint case
+        p = self.b.popcount()
+        ans = ak.cast(ans, ak.uint64)
+        self.assertTrue((p == ans).all())
+        
         # Function invocation
         # Edge case input
         p = ak.popcount(self.edgeCases)
         ans = ak.array([1, 64, 63])
+        self.assertTrue((p == ans).all())
+
+        # Test uint case
+        p = ak.popcount(self.edgeCasesUint)
+        ans = ak.cast(ans, ak.uint64)
         self.assertTrue((p == ans).all())
 
     def test_parity(self):
@@ -24,8 +38,18 @@ class BitOpsTest(ArkoudaTest):
         ans = ak.array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
         self.assertTrue((p == ans).all())
 
+        # Test uint case
+        p = self.b.parity()
+        ans = ak.cast(ans, ak.uint64)
+        self.assertTrue((p == ans).all())
+
         p = ak.parity(self.edgeCases)
         ans = ak.array([1, 0, 1])
+        self.assertTrue((p == ans).all())
+
+        # Test uint case
+        p = ak.parity(self.edgeCasesUint)
+        ans = ak.cast(ans, ak.uint64)
         self.assertTrue((p == ans).all())
 
     def test_clz(self):
@@ -33,8 +57,18 @@ class BitOpsTest(ArkoudaTest):
         ans = ak.array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
         self.assertTrue((p == ans).all())
 
+        # Test uint case
+        p = self.b.clz()
+        ans = ak.cast(ans, ak.uint64)
+        self.assertTrue((p == ans).all())
+
         p = ak.clz(self.edgeCases)
         ans = ak.array([0, 0, 1])
+        self.assertTrue((p == ans).all())
+
+        # Test uint case
+        p = ak.clz(self.edgeCasesUint)
+        ans = ak.cast(ans, ak.uint64)
         self.assertTrue((p == ans).all())
 
     def test_ctz(self):
@@ -42,8 +76,18 @@ class BitOpsTest(ArkoudaTest):
         ans = ak.array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
         self.assertTrue((p == ans).all())
 
+        # Test uint case
+        p = self.b.ctz()
+        ans = ak.cast(ans, ak.uint64)
+        self.assertTrue((p == ans).all())
+
         p = ak.ctz(self.edgeCases)
         ans = ak.array([63, 0, 0])
+        self.assertTrue((p == ans).all())
+
+        # Test uint case
+        p = ak.ctz(self.edgeCasesUint)
+        ans = ak.cast(ans, ak.uint64)
         self.assertTrue((p == ans).all())
 
     def test_dtypes(self):

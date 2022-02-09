@@ -5,7 +5,7 @@ import numpy as np
 import arkouda as ak
 
 OPS = ('intersect1d', 'union1d', 'setxor1d', 'setdiff1d')
-TYPES = ('int64',)
+TYPES = ('int64','uint64',)
 
 def time_ak_setops(N_per_locale, trials, dtype, seed):
     print(">>> arkouda {} setops".format(dtype))
@@ -15,6 +15,9 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
         b = ak.randint(0, 2**32, N, seed=seed)
+    elif dtype == 'uint64':
+        a = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
+        b = ak.randint(0, 2**32, N, seed=seed, dtype=ak.uint64)
     
     timings = {op: [] for op in OPS}
     results = {}
@@ -41,6 +44,9 @@ def time_np_setops(N, trials, dtype, seed):
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
         b = np.random.randint(0, 2**32, N)
+    elif dtype == 'uint64':
+        a = np.random.randint(0, 2**32, N, 'uint64')
+        b = np.random.randint(0, 2**32, N, 'uint64')
         
     timings = {op: [] for op in OPS}
     results = {}
@@ -66,6 +72,9 @@ def check_correctness(dtype, seed):
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
         b = np.random.randint(0, 2**32, N)
+    if dtype == 'uint64':
+        a = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        b = np.random.randint(0, 2**32, N, dtype=ak.uint64)
 
     for op in OPS:
         npa = a

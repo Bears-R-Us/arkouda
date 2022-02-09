@@ -5,7 +5,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import int64, uint64, float64, int_scalars
+from arkouda.dtypes import int64, uint64, float64, int_scalars, all_scalars
 from enum import Enum
 
 numeric_dtypes = {int64,uint64,float64}
@@ -54,8 +54,8 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
                       expected_type=Union[pdarray,Strings,Categorical])
     if hasattr(pda, "argsort"):
         return cast(Categorical,pda).argsort()
-    if pda.size == 0:
-        return zeros(0, dtype=int64)
+    if pda.size == 0 and hasattr(pda, "dtype"):
+        return zeros(0, dtype=pda.dtype)
     if isinstance(pda, Strings):
         name = '{}+{}'.format(pda.entry.name, "legacy_placeholder")
     else:
@@ -134,7 +134,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
         elif size != a.size:
             raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
     if size == 0:
-        return zeros(0, dtype=int64)
+        return zeros(0, dtype=arrays[0].dtype)
     repMsg = generic_msg(cmd="coargsort", args="{} {:n} {} {}".format(algorithm.name,
                                                                       len(arrays), 
                                                                       ' '.join(anames),
@@ -181,9 +181,9 @@ def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSor
     >>> a
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
-    if pda.size == 0:
-        return zeros(0, dtype=int64)
     if pda.dtype not in numeric_dtypes:
         raise ValueError("ak.sort supports int64, uint64, or float64, not {}".format(pda.dtype))
+    if pda.size == 0:
+        return zeros(0, dtype=pda.dtype)
     repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
     return create_pdarray(cast(str,repMsg))

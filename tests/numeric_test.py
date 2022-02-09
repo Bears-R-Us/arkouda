@@ -12,7 +12,7 @@ class NumericTest(ArkoudaTest):
     def testSeededRNG(self):
         N = 100
         seed = 8675309
-        numericdtypes = [ak.int64, ak.float64, ak.bool]
+        numericdtypes = [ak.int64, ak.float64, ak.bool, ak.uint64]
         for dt in numericdtypes:
             # Make sure unseeded runs differ
             a = ak.randint(0, 2**32, N, dtype=dt)
@@ -123,6 +123,13 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
 
         self.assertTrue((np.cumsum(na) == ak.cumsum(pda).to_ndarray()).all())
+
+        # Test uint case
+        na = np.linspace(1,10,10, 'uint64')
+        pda = ak.cast(pda, ak.uint64)
+        
+        self.assertTrue((np.cumsum(na) == ak.cumsum(pda).to_ndarray()).all())
+        
         with self.assertRaises(TypeError) as cm:
             ak.cumsum([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
