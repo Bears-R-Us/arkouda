@@ -8,6 +8,7 @@ from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numeric_and_bool_scalars, numpy_scalars, get_server_byteorder
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import bool as npbool
 from arkouda.dtypes import isSupportedInt
@@ -1908,8 +1909,8 @@ def popcount(pda: pdarray) -> pdarray:
     >>> ak.popcount(A)
     array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
     """
-    if pda.dtype != akint64:
-        raise TypeError("BitOps only supported on int64 arrays")
+    if pda.dtype != akint64 and pda.dtype != akuint64:
+        raise TypeError("BitOps only supported on int64 and uint64 arrays")
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("popcount", pda.name))
     return create_pdarray(repMsg)
 
@@ -1938,8 +1939,8 @@ def parity(pda: pdarray) -> pdarray:
     >>> ak.parity(A)
     array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
     """
-    if pda.dtype != akint64:
-        raise TypeError("BitOps only supported on int64 arrays")
+    if pda.dtype != akint64 and pda.dtype != akuint64:
+        raise TypeError("BitOps only supported on int64 and uint64 arrays")
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("parity", pda.name))
     return create_pdarray(repMsg)
 
@@ -1968,8 +1969,8 @@ def clz(pda: pdarray) -> pdarray:
     >>> ak.clz(A)
     array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
     """
-    if pda.dtype != akint64:
-        raise TypeError("BitOps only supported on int64 arrays")
+    if pda.dtype != akint64 and pda.dtype != akuint64:
+        raise TypeError("BitOps only supported on int64 and uint64 arrays")
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("clz", pda.name))
     return create_pdarray(repMsg)
 
@@ -2002,8 +2003,8 @@ def ctz(pda: pdarray) -> pdarray:
     >>> ak.ctz(A)
     array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
     """
-    if pda.dtype != akint64:
-        raise TypeError("BitOps only supported on int64 arrays")
+    if pda.dtype != akint64 and pda.dtype != akuint64:
+        raise TypeError("BitOps only supported on int64 and uint64 arrays")
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("ctz", pda.name))
     return create_pdarray(repMsg)
 

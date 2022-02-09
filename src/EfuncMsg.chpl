@@ -212,6 +212,38 @@ module EfuncMsg
                     }
                 }
             }
+            when (DType.UInt64) {
+                var e = toSymEntry(gEnt,uint);
+                select efunc
+                {
+                    when "popcount" {
+                        var a = st.addEntry(rname, e.size, uint);
+                        a.a = popcount(e.a);
+                    }
+                    when "clz" {
+                        var a = st.addEntry(rname, e.size, uint);
+                        a.a = clz(e.a);
+                    }
+                    when "ctz" {
+                        var a = st.addEntry(rname, e.size, uint);
+                        a.a = ctz(e.a);
+                    }
+                    when "cumsum" {
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(uint) * e.size);
+                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
+                    }
+                    when "parity" {
+                        var a = st.addEntry(rname, e.size, uint);
+                        a.a = parity(e.a);
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
+                    }
+                }
+            }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
