@@ -3,16 +3,10 @@ module SegmentedComputation {
   use SipHash;
 
   proc computeSegmentOwnership(segments: [?D] int, vD) {
-    // Locale that owns each segment's bytes
-    var startLocales: [D] int;
     const low = vD.low;
     const size = vD.size;
-    // Vector op on segments, should be fast
-    forall (sl, seg) in zip(startLocales, segments) {
-      // which locale do my bytes start on?
-      sl = ((seg - low)*numLocales) / size;
-    }
-
+    // Locale that owns each segment's bytes
+    var startLocales: [D] int = [seg in segments] ((seg - low)*numLocales) / size;
     // Index of first segment each locale owns bytes for
     var startSegInds: [LocaleSpace] int;
     // Mark true where owning locale changes
@@ -35,14 +29,7 @@ module SegmentedComputation {
       }
     }
 
-    var lengths: [D] int;
-    forall (l, s, i) in zip(lengths, segments, D) {
-      if (i == D.high) {
-        l = vD.size - s;
-      } else {
-        l = segments[i+1] - s;
-      }
-    }
+    const lengths = [(s, i) in zip(segments, D)] if (i == D.high) then (vD.size - s) else (segments[i+1] - s);
 
     return (startSegInds, numSegs, lengths);
   }
