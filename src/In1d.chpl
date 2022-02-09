@@ -24,12 +24,12 @@ module In1d
     :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
     :type truth: [] bool
     */
-    proc in1dAr2PerLocAssoc(ar1: [?aD1] int, ar2: [?aD2] int) {
+    proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ar2: [?aD2] t) {
         var truth: [aD1] bool;
         
         coforall loc in Locales {
             on loc {
-                var ar2Set: domain(int, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
+                var ar2Set: domain(t, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
                 ar2Set.requestCapacity(ar2.size); // request a capacity for the initial set
 
                 for loc in offset(0..<numLocales) {
@@ -59,7 +59,7 @@ module In1d
        :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
        :type truth: [] bool
      */
-    proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int) throws  {
+    proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws  {
         /* General strategy: unique both arrays, find the intersecting values, 
            then map back to the original domain of ar1.
          */
@@ -68,13 +68,13 @@ module In1d
         var (u2, c2) = uniqueSort(ar2);
         // Concatenate the two unique arrays
         const D = makeDistDom(u1.size + u2.size);
-        var ar: [D] int;
+        var ar: [D] t;
         /* ar[{0..#u1.size}] = u1; */
         ar[D.interior(-u1.size)] = u1;
         /* ar[{u1.size..#u2.size}] = u2; */
         ar[D.interior(u2.size)] = u2;
         // Sort unique arrays together to find duplicates
-        var sar: [D] int;
+        var sar: [D] t;
         var order: [D] int;
         forall (s, o, so) in zip(sar, order, radixSortLSD(ar)) {
           (s, o) = so;

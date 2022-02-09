@@ -21,7 +21,7 @@ module ArraySetops
     private config const mBound = 2**25; 
 
     // returns intersection of 2 arrays
-    proc intersect1d(a: [] int, b: [] int, assume_unique: bool) throws {
+    proc intersect1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -45,7 +45,7 @@ module ArraySetops
     }
     
     // returns the exclusive-or of 2 arrays
-    proc setxor1d(a: [] int, b: [] int, assume_unique: bool) throws {
+    proc setxor1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -82,7 +82,7 @@ module ArraySetops
     }
 
     // returns the set difference of 2 arrays
-    proc setdiff1d(a: [] int, b: [] int, assume_unique: bool) throws {
+    proc setdiff1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -116,7 +116,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts resulting array and ensures that
     // values are unique
-    proc union1d(a: [] int, b: [] int) throws {
+    proc union1d(a: [] ?t, b: [] t) throws {
       var aux;
       // Artificial scope to clean up temporary arrays
       {
