@@ -333,7 +333,7 @@ make
 
 <a id="build-ak-docs"></a>
 ### Building the Arkouda documentation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-The Arkouda documentation is hosted on [Read-the-Docs](https://arkouda.readthedocs.io/en/latest/).
+The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/).
 
 <details>
 <summary><b>(click to see more)</b></summary>
@@ -367,7 +367,7 @@ arkouda/docs/server # Chapel backend server documentation
 To view the Arkouda documentation locally, type the following url into the browser of choice:
  `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
 
-The `make doc` target detailed above prepares the Arkouda Python and Chapel docs for hosting both locally and on Read-the-Docs.
+The `make doc` target detailed above prepares the Arkouda Python and Chapel docs for hosting both locally and on ghpages.
 
 There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
 are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
