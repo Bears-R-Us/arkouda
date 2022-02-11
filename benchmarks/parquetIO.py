@@ -3,7 +3,7 @@
 import argparse
 from IO import *
 
-TYPES = ('int64',)
+TYPES = ('int64', 'uint64',)
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of Parquet reads/writes.")

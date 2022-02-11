@@ -5,7 +5,7 @@ import arkouda as ak
 import os
 from glob import glob
 
-TYPES = ('int64', 'float64')
+TYPES = ('int64', 'float64', 'uint64',)
 
 def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     print(">>> arkouda {} write".format(dtype))
@@ -16,6 +16,8 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
         a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+    elif dtype == 'uint64':
+        a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     
     writetimes = []
     for i in range(trials):
@@ -57,8 +59,6 @@ def remove_files(path):
 
 def check_correctness(dtype, path, seed, parquet, multifile=False):
     N = 10**4
-    a = []
-    b = []
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
         if multifile:
@@ -67,11 +67,17 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
         if multifile:
             b = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+    elif dtype == 'uint64':
+        a = ak.randint(0, 1, N, dtype=ak.uint64, seed=seed)
+        if multifile:
+            b = ak.randint(0, 1, N, dtype=ak.uint64, seed=seed)
 
     a.save(f"{path}{1}") if not parquet else a.save_parquet(f"{path}{1}")
     if multifile:
         b.save(f"{path}{2}") if not parquet else b.save_parquet(f"{path}{2}")
+
     c = ak.read_all(path+'*') if not parquet else ak.read_parquet(path+'*')
+    
     for f in glob(path+"*"):
         os.remove(f)
     if not multifile:

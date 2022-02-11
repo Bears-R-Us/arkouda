@@ -3,7 +3,7 @@
 import argparse
 from multiIO import *
 
-TYPES = ('int64',)
+TYPES = ('int64', 'uint64')
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of writing and reading a random array from disk.")
