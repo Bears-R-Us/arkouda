@@ -55,7 +55,12 @@ class Strings:
     -----
     Strings is composed of two pdarrays: (1) offsets, which contains the
     starting indices for each string and (2) bytes, which contains the 
-    raw bytes of all strings, delimited by nulls.    
+    raw bytes of all strings, delimited by nulls.
+    
+    Warnings
+    --------
+    As causing some errors, you should not implement the __del__() method.
+    Instead strings clean up by themselves on the server.
     """
 
     BinOps = frozenset(["==", "!="])
