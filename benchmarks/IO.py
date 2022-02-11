@@ -7,8 +7,11 @@ from glob import glob
 
 TYPES = ('int64', 'float64', 'uint64',)
 
-def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
-    print(">>> arkouda {} write".format(dtype))
+def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, compressed=False):
+    if not parquet:
+        print(">>> arkouda {} HDF5 write".format(dtype,compressed))
+    else:
+        print(">>> arkouda {} Parquet write with compressed={}".format(dtype,compressed))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
@@ -23,7 +26,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     for i in range(trials):
         for j in range(numfiles):
             start = time.time()
-            a.save(f"{path}{j:04}") if not parquet else a.save_parquet(f"{path}{j:04}")
+            a.save(f"{path}{j:04}") if not parquet else a.save_parquet(f"{path}{j:04}", compressed=compressed)
             end = time.time()
             writetimes.append(end - start)
     avgwrite = sum(writetimes) / trials
@@ -34,7 +37,10 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     print("write Average rate = {:.2f} GiB/sec".format(nb/2**30/avgwrite))
 
 def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
-    print(">>> arkouda {} read".format(dtype))
+    if not parquet:
+        print(">>> arkouda HDF5 {} read".format(dtype))
+    else:
+        print(">>> arkouda Parquet {} read".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
@@ -101,6 +107,7 @@ def create_parser():
     parser.add_argument('-r', '--only-read', default=False, action='store_true', help="Only read the files; files will not be removed")
     parser.add_argument('-f', '--only-delete', default=False, action='store_true', help="Only delete files created from writing with this benchmark")
     parser.add_argument('-l', '--files-per-loc', type=int, default=1, help='Number of files to create per locale')
+    parser.add_argument('-c', '--compressed', default=False, action='store_true', help='Write with Snappy compression and RLE encoding')
     return parser
 
 if __name__ == "__main__":
@@ -121,11 +128,11 @@ if __name__ == "__main__":
     print("number of trials = ", args.trials)
 
     if args.only_write:
-        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, args.compressed)
     elif args.only_read:
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
     else:
-        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet, args.compressed)
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, args.parquet)
         remove_files(args.path)
     

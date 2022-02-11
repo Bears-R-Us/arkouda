@@ -19,6 +19,7 @@ def create_parser():
     parser.add_argument('-r', '--only-read', default=False, action='store_true', help="Only read the files; files will not be removed")
     parser.add_argument('-f', '--only-delete', default=False, action='store_true', help="Only delete files created from writing with this benchmark")
     parser.add_argument('-l', '--files-per-loc', type=int, default=1, help='Number of files to create per locale')
+    parser.add_argument('-c', '--compressed', default=False, action='store_true', help='Write with Snappy compression and RLE encoding')
     return parser
 
 if __name__ == "__main__":
@@ -39,11 +40,11 @@ if __name__ == "__main__":
     print("number of trials = ", args.trials)
 
     if args.only_write:
-        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, args.compressed)
     elif args.only_read:
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
     else:
-        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
+        time_ak_write(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True, args.compressed)
         time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, args.seed, True)
         remove_files(args.path)
     
