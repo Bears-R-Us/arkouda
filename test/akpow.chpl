@@ -67,6 +67,5 @@ prototype module efuncTest
         repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("opeqvvMsg");
         writeRep(repMsg);
-        st.pretty();
     }
 }

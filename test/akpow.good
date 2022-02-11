@@ -1,3 +1,1 @@
 Unit Test for akpow
-      id_2 = {entryType = PrimitiveTypedArraySymEntry, assignableTypes = {TypedArraySymEntry, AbstractSymEntry, PrimitiveTypedArraySymEntry}, dtype = Int64, itemsize = 8, size = 5, ndim = 1, shape = (5)} {etype = int(64), aD = {0..4}, a = -2 -2 -2 -2 -2}
-      id_1 = {entryType = PrimitiveTypedArraySymEntry, assignableTypes = {TypedArraySymEntry, AbstractSymEntry, PrimitiveTypedArraySymEntry}, dtype = Int64, itemsize = 8, size = 5, ndim = 1, shape = (5)} {etype = int(64), aD = {0..4}, a = 2 2 2 2 2}
