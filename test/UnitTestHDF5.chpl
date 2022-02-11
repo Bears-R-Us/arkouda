@@ -40,22 +40,6 @@ proc compareArrays(test: borrowed Test, expected, actual, msg:string="", debug:b
 }
 
 /**
- * Utility method to parse id value out of a MsgTuple message string from `readAllHdfMsg`
- */
-proc parseIdFromReadAllHdfMsgCreated(msg:string, start:int = 0): (string, int) {
-  const marker = "created id_";
-  var p:int = msg.find(marker, start..<msg.size):int;
-  if p > -1 {
-    p = p + marker.size;
-    var q:int = msg.find(" ", p..<msg.size):int;
-    if q > -1 {
-      return ("id_" + msg.this(p..q-1), p); // our id number should be [p..q-1]
-    }
-  }
-  return ("ERROR", -1);
-}
-
-/**
  * Unit test to test proper calculation of offsets/segments from a SegStrings values array.
  */
 proc test_segmentedCalcOffsets(t: borrowed Test) {
@@ -105,12 +89,12 @@ proc test_readAllHdfMsg(t: borrowed Test) throws {
     // Exercise the basic read functionality with & without offsets and then again using dataset names
     var payload = "false 1 1 false false [\"strings\"] | [\"resources/UnitTestHDF5_withOffsets_LOCALE0000\"]";
     var msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    t.assertTrue(msg.msg.find("created id_1 str 5 1 (5) 1+created bytes.size 24") > 0);
+    t.assertTrue(msg.msg.find("str 5 1 (5) 1+created bytes.size 24") > 0);
 
     // Same test built with calcOffsets true & noOffsets file
     payload = "false 1 1 false true [\"strings\"] | [\"resources/UnitTestHDF5_noOffsets_LOCALE0000\"]";
     msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    t.assertTrue(msg.msg.find("created id_2 str 5 1 (5) 1+created bytes.size 24") > 0);
+    t.assertTrue(msg.msg.find("str 5 1 (5) 1+created bytes.size 24") > 0);
 }
 
 /**

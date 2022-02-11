@@ -214,11 +214,6 @@ class RegexTest(ArkoudaTest):
         digit = ak.array(['a1b', 'c1d', 'e1f2g'])
         under = ak.array(['a_b', 'c___d', 'e__f____g'])
 
-        # register to keep python from garbage collecting causing unknownsymbol in CI
-        orig.register('orig')
-        digit.register('digit')
-        under.register('under')
-
         o_left, o_right = orig.peel('.')
         d_left, d_right = digit.peel('\\d', regex=True)
         u_left, u_right = under.peel('_+', regex=True)
@@ -259,11 +254,6 @@ class RegexTest(ArkoudaTest):
         self.assertListEqual(['', '', '.f.g'], o_right.to_ndarray().tolist())
         self.assertListEqual(['', '', '1f2g'], d_right.to_ndarray().tolist())
         self.assertListEqual(['', '', '__f____g'], u_right.to_ndarray().tolist())
-
-        # cleanup registry
-        orig.unregister()
-        digit.unregister()
-        under.unregister()
 
     def test_regex_flatten(self):
         orig = ak.array(['one|two', 'three|four|five', 'six', 'seven|eight|nine|ten|', 'eleven'])
