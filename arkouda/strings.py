@@ -60,7 +60,8 @@ class Strings:
     Warnings
     --------
     As causing some errors, you should not implement the __del__() method.
-    Instead strings clean up by themselves on the server.
+    Instead the self.entry attribute is a pdarray which gets cleaned up
+    automatically through its __del__() method.
     """
 
     BinOps = frozenset(["==", "!="])
