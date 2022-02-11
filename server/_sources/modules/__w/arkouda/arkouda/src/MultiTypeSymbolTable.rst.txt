@@ -36,6 +36,8 @@ or
       Map indexed by strings
       
 
+   .. attribute:: var serverid = id_ + generateToken(8) + _
+
    .. attribute:: var nid = 0
 
    .. method:: proc nextName(): string
