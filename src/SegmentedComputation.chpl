@@ -50,7 +50,7 @@ module SegmentedComputation {
     coforall loc in Locales {
       on loc {
         const myFirstSegIdx = startSegInds[loc.id];
-        const myNumSegs = numSegs[loc.id];
+        const myNumSegs = max(0, numSegs[loc.id]);
         const mySegInds = {myFirstSegIdx..#myNumSegs};
         // Segment offsets whose bytes are owned by loc
         // Lengths of segments whose bytes are owned by loc
