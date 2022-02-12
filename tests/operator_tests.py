@@ -11,15 +11,18 @@ def run_tests(verbose):
     np.seterr(all='ignore')
     global pdarrays
     pdarrays = {'int64': ak.arange(0, SIZE, 1),
+                'uint64': ak.array(np.arange(0, SIZE, 1, dtype=np.uint64)),
                 'float64': ak.linspace(0, 2, SIZE),
                 'bool': (ak.arange(0, SIZE, 1) % 2) == 0}
     global ndarrays
     ndarrays = {'int64': np.arange(0, SIZE, 1),
+                'uint64': np.arange(0, SIZE, 1, dtype=np.uint64),
                 'float64': np.linspace(0, 2, SIZE),
                 'bool': (np.arange(0, SIZE, 1) % 2) == 0}
     global scalars
     #scalars = {k: v[SIZE//2] for k, v in ndarrays.items()}
     scalars = {'int64': 5,
+               'uint64': np.uint64(5),
                'float64': 3.14159,
                'bool': True}
     dtypes = pdarrays.keys()
@@ -68,7 +71,7 @@ def run_tests(verbose):
                 try:
                     akres = do_op(ltype, rtype, lscalar, rscalar, True, op)
                 except RuntimeError as e:
-                    if 'not implemented' in str(e): # neither numpy nor arkouda implement
+                    if 'not implemented' or 'unrecognized type' in str(e):  # neither numpy nor arkouda implement
                         results['neither_implement'].append((expression, str(e)))
                     else: # arkouda implements with error, np does not implement
                         results['arkouda_minus_numpy'].append((expression, str(e), True))
@@ -79,7 +82,7 @@ def run_tests(verbose):
             try:
                 akres = do_op(ltype, rtype, lscalar, rscalar, True, op)
             except RuntimeError as e:
-                if 'not implemented' in str(e): # numpy implements but not arkouda
+                if 'not implemented' or 'unrecognized type' in str(e):  # numpy implements but not arkouda
                     results['numpy_minus_arkouda'].append((expression, str(e), True))
                 else: # both implement, but arkouda errors
                     results['both_implement'].append((expression, str(e), True, False, False))

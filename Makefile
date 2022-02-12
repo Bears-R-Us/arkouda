@@ -182,7 +182,10 @@ check-hdf5: $(HDF5_CHECK)
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
-RE2_CHECK = $(DEP_INSTALL_DIR)/checkRE2.chpl
+RE2_CHECK = $(DEP_INSTALL_DIR)/checkRE2_125.chpl
+ifneq ($(shell expr $(CHPL_MINOR) \>= 25),1)
+	RE2_CHECK = $(DEP_INSTALL_DIR)/checkRE2_124.chpl
+endif
 check-re2: $(RE2_CHECK)
 	@echo "Checking for RE2"
 	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
@@ -260,6 +263,10 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 25),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-125
 else
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
+endif
+ifeq ($(shell expr $(CHPL_MINOR) \>= 26),1)
+else
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-126
 endif
 
 MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py

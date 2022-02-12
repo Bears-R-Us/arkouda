@@ -7,6 +7,7 @@ from arkouda.pdarraycreation import zeros, zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
+from arkouda.dtypes import uint64 as akuint64
 
 Categorical = ForwardRef('Categorical')
 
@@ -371,7 +372,8 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
         return pda1 # nothing in the intersection
     if pda2.size == 0:
         return pda2 # nothing in the intersection
-    if pda1.dtype == int and pda2.dtype == int:
+    if (pda1.dtype == int and pda2.dtype == int) or \
+       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
         repMsg = generic_msg(cmd="intersect1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))
@@ -435,7 +437,8 @@ def setdiff1d(pda1 : pdarray, pda2 : pdarray,
         return pda1 # return a zero length pdarray
     if pda2.size == 0:
         return pda1 # subtracting nothing return orig pdarray
-    if pda1.dtype == int and pda2.dtype == int:
+    if (pda1.dtype == int and pda2.dtype == int) or \
+       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
         repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}".\
                             format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))
@@ -492,7 +495,8 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
         return pda2 # return other pdarray if pda1 is empty
     if pda2.size == 0:
         return pda1 # return other pdarray if pda2 is empty
-    if pda1.dtype == int and pda2.dtype == int:
+    if (pda1.dtype == int and pda2.dtype == int) or \
+       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
         repMsg = generic_msg(cmd="setxor1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))

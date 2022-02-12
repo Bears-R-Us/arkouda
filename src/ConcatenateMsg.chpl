@@ -308,6 +308,35 @@ module ConcatenateMsg
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
+                    when DType.UInt64 {
+                        // create array to copy into
+                        var e = st.addEntry(rname, size, uint);
+                        var start: int;
+                        start = 0;
+                        for (name, i) in zip(names, 1..) {
+                            // lookup and cast operand to copy from
+                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), uint);
+                            if mode == "interleave" {
+                              coforall loc in Locales {
+                                on loc {
+                                  const size = o.aD.localSubdomain().size;
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                  blockstarts[here.id] += size;
+                                }
+                              }
+                            } else {
+                              ref ea = e.a;
+                              // copy array into concatenation array
+                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(uint)) {
+                                agg.copy(ea[start+i], v);
+                              }
+                              // update new start for next array copy
+                              start += o.size;
+                            }
+                        }
+                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                    }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
                         cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 

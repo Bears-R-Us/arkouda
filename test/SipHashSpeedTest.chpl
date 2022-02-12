@@ -6,6 +6,8 @@ config const NINPUTS = 100_000;
 config const INPUTSIZE = 64;
 config const SEED = "none";
 
+config const computeOnSegments = false;
+
 enum testMode {fixed, variable};
 config const mode = testMode.variable;
 config const compareTypes = false;
@@ -17,11 +19,22 @@ proc testFixedLength(n:int, size:int, type t) {
     b = i: t;
   }
   var hashes = makeDistArray(n, 2*uint(64));
-  d.start();
-  forall (h, i) in zip(hashes, hashes.domain) {
-    h = sipHash128(buf, i*size..#size);
+  if computeOnSegments {
+    use SegmentedComputation;
+    var segs = makeDistArray(n, int);
+    forall (i, s) in zip(segs.domain, segs) {
+      s = i*size;
+    }
+    d.start();
+    hashes = computeOnSegments(segs, buf, SegFunction.SipHash128, 2*uint(64));
+    d.stop(printTime=false);
+  } else {
+    d.start();
+    forall (h, i) in zip(hashes, hashes.domain) {
+      h = sipHash128(buf, i*size..#size);
+    }
+    d.stop(printTime=false);
   }
-  d.stop(printTime=false);
   return (d.elapsed(), n*size*numBytes(t));
 }
 
@@ -39,8 +52,13 @@ proc testVariableLength(n:int, meanSize:int, type t) {
   }
   var hashes: [segs.domain] 2*uint;
   d.start();
-  forall (h, i, l) in zip(hashes, segs, lengths) {
-    h = sipHash128(tohash, i..#l);
+  if computeOnSegments {
+    use SegmentedComputation;
+    hashes = computeOnSegments(segs, vals, SegFunction.SipHash128, 2*uint(64));
+  } else {
+    forall (h, i, l) in zip(hashes, segs, lengths) {
+      h = sipHash128(tohash, i..#l);
+    }
   }
   d.stop(printTime=false);
   return (d.elapsed(), vals.size * numBytes(t));

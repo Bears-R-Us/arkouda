@@ -53,28 +53,34 @@ module ArraySetopsMsg
         var intersect_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(intersect_maxMem);
 
-        select(gEnt.dtype) {
-          when (DType.Int64) {
-             if (gEnt.dtype != gEnt2.dtype) {
-                 var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
-                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                             
-                 return new MsgTuple(errorMsg, MsgType.ERROR);
-             }
-             var e = toSymEntry(gEnt,int);
-             var f = toSymEntry(gEnt2, int);
-             
-             var aV = intersect1d(e.a, f.a, isUnique);
-             st.addEntry(vname, new shared SymEntry(aV));
+        select(gEnt.dtype, gEnt2.dtype) {
+          when (DType.Int64, DType.Int64) {
+            var e = toSymEntry(gEnt,int);
+            var f = toSymEntry(gEnt2,int);
 
-             repMsg = "created " + st.attrib(vname);
-             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-             return new MsgTuple(repMsg, MsgType.NORMAL);
-           }
-           otherwise {
-               var errorMsg = notImplementedError("newIntersect1d",gEnt.dtype);
-               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-               return new MsgTuple(errorMsg, MsgType.ERROR);
-           }
+            var aV = intersect1d(e.a, f.a, isUnique);
+            st.addEntry(vname, new shared SymEntry(aV));
+
+            repMsg = "created " + st.attrib(vname);
+            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+          }
+          when (DType.UInt64, DType.UInt64) {
+            var e = toSymEntry(gEnt,uint);
+            var f = toSymEntry(gEnt2,uint);
+
+            var aV = intersect1d(e.a, f.a, isUnique);
+            st.addEntry(vname, new shared SymEntry(aV));
+
+            repMsg = "created " + st.attrib(vname);
+            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return new MsgTuple(repMsg, MsgType.NORMAL);
+          }
+          otherwise {
+            var errorMsg = notImplementedError("intersect1d",gEnt.dtype);
+            asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
         }
     }
 
@@ -103,15 +109,21 @@ module ArraySetopsMsg
         var xor_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(xor_maxMem);
 
-        select(gEnt.dtype) {
-          when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) {
-                 var errorMsg = notImplementedError("setxor1d",gEnt2.dtype);
-                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                 
-                 return new MsgTuple(errorMsg, MsgType.ERROR);
-             }
+        select(gEnt.dtype, gEnt2.dtype) {
+          when (DType.Int64, DType.Int64) {
              var e = toSymEntry(gEnt,int);
-             var f = toSymEntry(gEnt2, int);
+             var f = toSymEntry(gEnt2,int);
+             
+             var aV = setxor1d(e.a, f.a, isUnique);
+             st.addEntry(vname, new shared SymEntry(aV));
+
+             repMsg = "created " + st.attrib(vname);
+             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+             return new MsgTuple(repMsg, MsgType.NORMAL);
+           }
+           when (DType.UInt64, DType.UInt64) {
+             var e = toSymEntry(gEnt,uint);
+             var f = toSymEntry(gEnt2,uint);
              
              var aV = setxor1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
@@ -153,15 +165,21 @@ module ArraySetopsMsg
         var diff_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(diff_maxMem);
 
-        select(gEnt.dtype) {
-          when (DType.Int64) {
-             if (gEnt.dtype != gEnt2.dtype) {
-                 var errorMsg = notImplementedError("setdiff1d",gEnt2.dtype);
-                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
-                 return new MsgTuple(errorMsg, MsgType.ERROR);             
-             }
+        select(gEnt.dtype, gEnt2.dtype) {
+          when (DType.Int64, DType.Int64) {
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
+             
+             var aV = setdiff1d(e.a, f.a, isUnique);
+             st.addEntry(vname, new shared SymEntry(aV));
+
+             var repMsg = "created " + st.attrib(vname);
+             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+             return new MsgTuple(repMsg, MsgType.NORMAL);
+           }
+           when (DType.UInt64, DType.UInt64) {
+             var e = toSymEntry(gEnt,uint);
+             var f = toSymEntry(gEnt2, uint);
              
              var aV = setdiff1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
@@ -202,15 +220,21 @@ module ArraySetopsMsg
       var union_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
       overMemLimit(union_maxMem);
 
-      select(gEnt.dtype) {
-        when (DType.Int64) {
-           if (gEnt.dtype != gEnt2.dtype) {
-               var errorMsg = notImplementedError("newUnion1d",gEnt2.dtype);
-               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
-               return new MsgTuple(errorMsg, MsgType.ERROR);              
-           }
+      select(gEnt.dtype, gEnt2.dtype) {
+        when (DType.Int64, DType.Int64) {
            var e = toSymEntry(gEnt,int);
-           var f = toSymEntry(gEnt2, int);
+           var f = toSymEntry(gEnt2,int);
+
+           var aV = union1d(e.a, f.a);
+           st.addEntry(vname, new shared SymEntry(aV));
+
+           var repMsg = "created " + st.attrib(vname);
+           asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+           return new MsgTuple(repMsg, MsgType.NORMAL);
+         }
+         when (DType.UInt64, DType.UInt64) {
+           var e = toSymEntry(gEnt,uint);
+           var f = toSymEntry(gEnt2,uint);
 
            var aV = union1d(e.a, f.a);
            st.addEntry(vname, new shared SymEntry(aV));

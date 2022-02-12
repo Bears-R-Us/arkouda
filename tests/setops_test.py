@@ -5,10 +5,17 @@ from base_test import ArkoudaTest
 SIZE = 10
 OPS = frozenset(['intersect1d', 'union1d', 'setxor1d', 'setdiff1d'])
 
-def make_arrays():
-    a = ak.randint(0, SIZE, SIZE)
-    b = ak.randint(SIZE/2, 2*SIZE, SIZE)
-    return a, b
+TYPES = ('int64', 'uint64')
+
+def make_arrays(dtype):
+    if dtype == 'int64':
+        a = ak.randint(0, SIZE, SIZE)
+        b = ak.randint(SIZE/2, 2*SIZE, SIZE)
+        return a, b
+    elif dtype == 'uint64':
+        a = ak.randint(0, SIZE, SIZE, dtype=ak.uint64)
+        b = ak.randint(SIZE/2, 2*SIZE, SIZE, dtype=ak.uint64)
+        return a, b
 
 def compare_results(akvals, npvals) -> int:
     '''
@@ -37,28 +44,28 @@ def run_test(verbose=True):
     on a randomized set of arrays. 
     :return: 
     '''
-    aka, akb = make_arrays()
-
     tests = 0
     failures = 0
     not_impl = 0
-    
-    for op in OPS:
-        tests += 1
-        do_check = True
-        try:
-            fxn = getattr(ak, op)
-            akres = fxn(aka,akb)
-            fxn = getattr(np, op)
-            npres = fxn(aka.to_ndarray(), akb.to_ndarray())
-        except RuntimeError as E:
-            if verbose: print("Arkouda error: ", E)
-            not_impl += 1
-            do_check = False
-            continue
-        if not do_check:
-            continue
-        failures += compare_results(akres, npres)
+
+    for dtype in TYPES:
+        aka, akb = make_arrays(dtype)
+        for op in OPS:
+            tests += 1
+            do_check = True
+            try:
+                fxn = getattr(ak, op)
+                akres = fxn(aka,akb)
+                fxn = getattr(np, op)
+                npres = fxn(aka.to_ndarray(), akb.to_ndarray())
+            except RuntimeError as E:
+                if verbose: print("Arkouda error: ", E)
+                not_impl += 1
+                do_check = False
+                continue
+            if not do_check:
+                continue
+            failures += compare_results(akres, npres)
     
     return failures
 

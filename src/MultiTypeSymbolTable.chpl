@@ -1,6 +1,7 @@
 module MultiTypeSymbolTable
 {
     use ServerConfig;
+    use Security;
     use ServerErrorStrings;
     use Reflection;
     use ServerErrors;
@@ -26,13 +27,15 @@ module MultiTypeSymbolTable
         */
         var tab: map(string, shared AbstractSymEntry);
 
+        var serverid = "id_" + generateToken(8) + "_";
         var nid = 0;
+
         /*
         Gives out symbol names.
         */
         proc nextName():string {
             nid += 1;
-            return "id_"+ nid:string;
+            return serverid + nid:string;
         }
 
         proc regName(name: string, userDefinedName: string) throws {

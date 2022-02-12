@@ -13,6 +13,11 @@ class SortTest(ArkoudaTest):
             spda = ak.sort(pda, algo)
             maxIndex = spda.argmax()
             self.assertTrue(maxIndex > 0)
+        
+        pda = ak.randint(0,100,100,dtype=ak.uint64)
+        for algo in ak.SortingAlgorithm:
+            spda = ak.sort(pda, algo)
+            assert ak.is_sorted(spda)
 
     def testBitBoundaryHardcode(self):
 
