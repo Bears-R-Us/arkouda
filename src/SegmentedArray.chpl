@@ -459,7 +459,7 @@ module SegmentedArray {
                                                                                var fullMatchBoolAgg = newDstAggregator(bool),
                                                                                var numMatchAgg = newDstAggregator(int)) {
         var matchessize = 0;
-        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), captures=regexMaxCaptures) {
+        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), regexMaxCaptures) {
           var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           var group = m[groupNum];
           if group.offset != -1 {
