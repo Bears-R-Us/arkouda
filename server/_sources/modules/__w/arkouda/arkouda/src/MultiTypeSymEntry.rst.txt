@@ -158,7 +158,7 @@ or
       etype is different from dtype (chapel vs numpy)
       
 
-   .. attribute:: var aD: makeDistDom(size).type
+   .. attribute:: const aD: makeDistDom(size).type
 
       
       'aD' is the distributed domain for 'a' whose value and type
