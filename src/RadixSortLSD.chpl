@@ -281,13 +281,11 @@ module RadixSortLSD
         var ranks: [aD] int = [(_, rank) in kr] rank;
         return ranks;
     }
-    
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
     proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
-
         // check to see if array is already sorted
         if (checkSorted) {
             if (isSorted(a)) {
@@ -295,108 +293,11 @@ module RadixSortLSD
                 return sorted;
             }
         }
-        
-        // calc max value in bit position
+        var kr = a;
         var (nBits, negs) = getBitWidth(a);
-
-        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "type = %s nBits = %t".format(t:string,nBits));
-        
-        var k0: [aD] t = a;
-        var k1: [aD] t;
-        
-        // create a global count array to scan
-        var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
-        var globalCounts: [gD] int;
-        var globalStarts: [gD] int;
-        
-        // loop over digits
-        for rshift in {0..#nBits by bitsPerDigit} {
-            const last = (rshift + bitsPerDigit) >= nBits;
-            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "rshift = %t".format(rshift));
-            // count digits
-            coforall loc in Locales {
-                on loc {
-                    coforall task in Tasks {
-                        // bucket domain
-                        var bD = {0..#numBuckets};
-                        // allocate counts
-                        var taskBucketCounts: [bD] int;
-                        // get local domain's indices
-                        var lD = k0.localSubdomain();
-                        // calc task's indices from local domain's indices
-                        var tD = calcBlock(task, lD.low, lD.high);
-                        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                 "loc id: %t task: %t tD: %t".format(loc.id,task,tD));
-                        // count digits in this task's part of the array
-                        for i in tD {
-                            var bucket = getDigit(k0[i], rshift, last, negs); // calc bucket from key
-                            taskBucketCounts[bucket] += 1;
-                        }
-                        // write counts in to global counts in transposed order
-                        var aggregator = newDstAggregator(int);
-                        for bucket in bD {
-                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], 
-                                              taskBucketCounts[bucket]);
-                        }
-                        aggregator.flush();
-                    }//coforall task
-                }//on loc
-            }//coforall loc
-            
-            // scan globalCounts to get bucket ends on each locale/task
-            globalStarts = + scan globalCounts;
-            globalStarts = globalStarts - globalCounts;
-            
-            if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
-            if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
-            
-            // calc new positions and permute
-            coforall loc in Locales {
-                on loc {
-                    coforall task in Tasks {
-                        // bucket domain
-                        var bD = {0..#numBuckets};
-                        // allocate counts
-                        var taskBucketPos: [bD] int;
-                        // get local domain's indices
-                        var lD = k0.localSubdomain();
-                        // calc task's indices from local domain's indices
-                        var tD = calcBlock(task, lD.low, lD.high);
-                        // read start pos in to globalStarts back from transposed order
-                        {
-                            var aggregator = newSrcAggregator(int);
-                            for bucket in bD {
-                                aggregator.copy(taskBucketPos[bucket], 
-                                             globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
-                            }
-                            aggregator.flush();
-                        }
-                        // calc new position and put (key,rank) pair there in kr1
-                        {
-                            var aggregator = newDstAggregator(t);
-                            for i in tD {
-                                var bucket = getDigit(k0[i], rshift, last, negs); // calc bucket from key
-                                var pos = taskBucketPos[bucket];
-                                taskBucketPos[bucket] += 1;
-                                aggregator.copy(k1[pos], k0[i]);
-                            }
-                            aggregator.flush();
-                        }
-                    }//coforall task 
-                }//on loc
-            }//coforall loc
-            
-            // copy back to k0 for next iteration
-            // Only do this if there are more digits left
-            if !last {
-                k0 = k1;
-            }
-            
-        }//for rshift
-        return k1;
-    }//proc radixSortLSD_keys
+        radixSortLSDCore(kr, nBits, negs, new KeysComparator());
+        return kr;
+    }
 
     proc radixSortLSD_memEst(size: int, itemsize: int) {
         // 2 temp key+ranks arrays + globalStarts/globalClounts
