@@ -63,6 +63,20 @@ module AryUtil
         }
         return sorted;
     }
+
+    /*
+     * targetLocales compatibility wrapper. The parenthesis were dropped for
+     * chpl 1.26. Use the paren-less version if it's available, but drop back
+     * to paren version for older versions.
+     */
+    inline proc targetLocales(A: []) {
+        use Reflection;
+        if canResolveMethod(A, "targetLocales") {
+            return A.targetLocales;
+        } else {
+            return A.targetLocales();
+        }
+    }
     
     /*
       Returns stats on a given array in form (int,int,real,real,real).

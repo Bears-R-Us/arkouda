@@ -11,6 +11,7 @@ module HDF5Msg {
     use SysCTypes;
     use Time only;
 
+    use AryUtil;
     use CommAggregation;
     use FileIO;
     use GenSymIO;
@@ -531,13 +532,13 @@ module HDF5Msg {
         where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular)
     {
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "entry.a.targetLocales() = %t".format(A.targetLocales()));
+                    "entry.a.targetLocales = %t".format(targetLocales(A)));
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "Filedomains: %t".format(filedomains));
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "skips: %t".format(skips));
 
-            coforall loc in A.targetLocales() do on loc {
+            coforall loc in targetLocales(A) do on loc {
                 // Create local copies of args
                 var locFiles = filenames;
                 var locFiledoms = filedomains;
@@ -649,7 +650,7 @@ module HDF5Msg {
         (prefix,extension) = getFileMetadata(filename);
  
         // Generate the filenames based upon the number of targetLocales.
-        var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+        var filenames = generateFilenames(prefix, extension, targetLocales(A).size);
         
         // Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -697,7 +698,7 @@ module HDF5Msg {
         t1.clear();
         t1.start();
 
-        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
+        coforall (loc, idx) in zip(targetLocales(A), filenames.domain) 
              with (ref shuffleLeftIndices, ref shuffleRightIndices, 
                    ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
              generateStringsMetadata(idx, shuffleLeftIndices, shuffleRightIndices, 
@@ -715,7 +716,7 @@ module HDF5Msg {
          * locale (2) prepare char and segment lists to be written (3) write each
          * list as a Chapel array to the open hdf5 file and (4) close the hdf5 file
          */
-        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
+        coforall (loc, idx) in zip(targetLocales(A), filenames.domain) with 
                         (ref shuffleLeftIndices, ref shuffleRightIndices, 
                                                             ref charArraySize) do on loc {
                         
@@ -1073,7 +1074,7 @@ module HDF5Msg {
  
         // Generate the filenames based upon the number of targetLocales.
         // The segments array allocation determines where the bytes/values get written
-        var filenames = generateFilenames(prefix, extension, entry.offsetsEntry.a.targetLocales().size);
+        var filenames = generateFilenames(prefix, extension, targetLocales(entry.offsetsEntry.a).size);
         
         // Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -1088,7 +1089,7 @@ module HDF5Msg {
         const lastOffset = A[A.domain.high];
         const lastValIdx = ss.values.aD.high;
         // For each locale gather the string bytes corresponding to the offsets in its local domain
-        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
+        coforall (loc, idx) in zip(targetLocales(A), filenames.domain) with (ref ss) do on loc {
             /*
              * Generate metadata such as file name, file id, and dataset name
              * for each file to be written
@@ -1124,7 +1125,7 @@ module HDF5Msg {
             }
 
             /*
-             * A.targetLocales() may return all locales depending on your domain distribution
+             * A.targetLocales may return all locales depending on your domain distribution
              * However, if your array size is less then all all locales then some will be empty,
              * so we need to handle empty local domains.
              */
@@ -1195,7 +1196,7 @@ module HDF5Msg {
         (prefix,extension) = getFileMetadata(filename);
 
         // Generate the filenames based upon the number of targetLocales.
-        var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+        var filenames = generateFilenames(prefix, extension, targetLocales(A).size);
 
         //Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -1207,7 +1208,7 @@ module HDF5Msg {
          * locale (2) prepare pdarray(s) to be written (3) write pdarray(s) to open
          * hdf5 file and (4) close the hdf5 file
          */
-        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+        coforall (loc, idx) in zip(targetLocales(A), filenames.domain) do on loc {
             const myFilename = filenames[idx];
 
             h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1369,7 +1370,7 @@ module HDF5Msg {
               warnFlag = false;
           }
 
-          coforall loc in A.targetLocales() do on loc {
+          coforall loc in targetLocales(A) do on loc {
               var file_id: C_HDF5.hid_t;
 
               h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
