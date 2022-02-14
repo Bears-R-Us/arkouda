@@ -1,4 +1,4 @@
 module ArkoudaRegexCompat {
-    // Chapel v1.25.0 and later
+    // Chapel v1.26 or newer
     public use Regex;
 }

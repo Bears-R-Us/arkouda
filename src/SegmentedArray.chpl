@@ -459,19 +459,19 @@ module SegmentedArray {
                                                                                var fullMatchBoolAgg = newDstAggregator(bool),
                                                                                var numMatchAgg = newDstAggregator(int)) {
         var matchessize = 0;
-        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), captures=regexMaxCaptures) {
+        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), regexMaxCaptures) {
           var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           var group = m[groupNum];
-          if group.offset != -1 {
-            lenAgg.copy(sparseLens[off + group.offset:int], group.size);
-            startPosAgg.copy(sparseStarts[off + group.offset:int], group.offset:int);
-            startBoolAgg.copy(matchStartBool[off + group.offset:int], true);
+          if group.byteOffset != -1 {
+            lenAgg.copy(sparseLens[off + group.byteOffset:int], group.numBytes);
+            startPosAgg.copy(sparseStarts[off + group.byteOffset:int], group.byteOffset:int);
+            startBoolAgg.copy(matchStartBool[off + group.byteOffset:int], true);
             matchessize += 1;
             searchBoolAgg.copy(searchBools[i], true);
-            if match.offset == 0 {
+            if match.byteOffset == 0 {
               matchBoolAgg.copy(matchBools[i], true);
             }
-            if match.size == len-1 {
+            if match.numBytes == len-1 {
               fullMatchBoolAgg.copy(fullMatchBools[i], true);
             }
           }
@@ -609,12 +609,12 @@ module SegmentedArray {
         var replLen = 0;
         for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true)) {
           var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
-          for k in (off + match.offset:int)..#match.size {
+          for k in (off + match.byteOffset:int)..#match.numBytes {
             nonMatchAgg.copy(nonMatch[k], false);
           }
-          startAgg.copy(matchStartBool[off + match.offset:int], true);
+          startAgg.copy(matchStartBool[off + match.byteOffset:int], true);
           replacementCounter += 1;
-          replLen += match.size;
+          replLen += match.numBytes;
           if replacementCounter == count { break; }
         }
         numReplAgg.copy(numReplacements[i], replacementCounter);
@@ -731,13 +731,13 @@ module SegmentedArray {
           // The string can be peeled; figure out where to split
           var match_index: int = if left then (times - 1) else (matches.size - times);
           var match = matches[match_index][0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
-          var j: int = o + match.offset: int;
+          var j: int = o + match.byteOffset: int;
           // j is now the start of the correct delimiter
           // tweak leftEnd and rightStart based on includeDelimiter
           if includeDelimiter {
             if left {
-              leftEnd[i] = j + match.size - 1;
-              rightStart[i] = j + match.size;
+              leftEnd[i] = j + match.numBytes - 1;
+              rightStart[i] = j + match.numBytes;
             }
             else {
               leftEnd[i] = j - 1;
@@ -746,7 +746,7 @@ module SegmentedArray {
           }
           else {
             leftEnd[i] = j - 1;
-            rightStart[i] = j + match.size;
+            rightStart[i] = j + match.numBytes;
           }
         }
       }
