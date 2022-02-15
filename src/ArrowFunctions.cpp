@@ -217,6 +217,28 @@ const char* cpp_getVersionInfo(void) {
   return strdup(arrow::GetBuildInfo().version_string.c_str());
 }
 
+int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) {
+  std::shared_ptr<arrow::io::ReadableFile> infile;
+  ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                 infile);
+  std::unique_ptr<parquet::arrow::FileReader> reader;
+  ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
+  std::shared_ptr<arrow::Schema> sc;
+  std::shared_ptr<arrow::Schema>* out = &sc;
+  ARROWSTATUS_OK(reader->GetSchema(out));
+
+  std::string fields = "";
+  
+  for(int i = 0; i < sc->num_fields(); i++) {
+    fields += (sc->field(i)->name() + " ");
+  }
+  std::cout << fields << std::endl;
+  *dsetResult = strdup(fields.c_str());
+  
+  return 0;
+}
+
 void cpp_free_string(void* ptr) {
   free(ptr);
 }
@@ -255,6 +277,10 @@ extern "C" {
 
   const char* c_getVersionInfo(void) {
     return cpp_getVersionInfo();
+  }
+
+  int c_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) {
+    return cpp_getDatasetNames(filename, dsetResult, errMsg);
   }
 
   void c_free_string(void* ptr) {

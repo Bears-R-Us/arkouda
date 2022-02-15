@@ -6,7 +6,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
   extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
                                      dsetname, numelems, rowGroupSize, compressed,
-                                     errMsg): int;
+                                     dtype, errMsg): int;
   extern proc c_free_string(a);
   extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
@@ -17,7 +17,8 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;
-  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, errMsg) < 0 {
+  
+  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -128,6 +129,26 @@ proc testVersionInfo() {
   }
 }
 
+proc testGetDsets(filename) {
+  extern proc c_getDatasetNames(f, r, e): int(32);
+  extern proc c_free_string(ptr);
+  extern proc strlen(a): int;
+  var cDsetString: c_ptr(uint(8));
+  var errMsg: c_ptr(uint(8));
+  var st = c_getDatasetNames(filename, cDsetString, errMsg);
+  defer {
+    c_free_string(cDsetString);
+    c_free_string(errMsg);
+  }
+  var ret;
+  try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
+
+  if ret != "my-dset-name-test" then
+    return 0;
+  else
+    return 1;
+}
+
 proc main() {
   var errors = 0;
 
@@ -140,6 +161,7 @@ proc main() {
   errors += testGetNumRows(filename, size);
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();
+  errors += testGetDsets(filename);
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
