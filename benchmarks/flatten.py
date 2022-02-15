@@ -5,9 +5,10 @@ import argparse
 import arkouda as ak
 
 
-def time_flatten(N, trials):
+def time_flatten(N_per_locale, trials):
     print(">>> arkouda flatten")
     cfg = ak.get_config()
+    N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 
     thirds = [ak.cast(ak.arange(i, N*3, 3), 'str') for i in range(3)]
@@ -67,7 +68,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of regex and non-regex flatten on Strings.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**6, help='Problem size: Number of Strings to flatten')
+    parser.add_argument('-n', '--size', type=int, default=10**5, help='Problem size: Number of Strings to flatten')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
