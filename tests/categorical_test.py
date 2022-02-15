@@ -38,8 +38,6 @@ class CategoricalTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:
             ak.Categorical(ak.arange(0,5,10))
-        self.assertEqual('Categorical: inputs other than Strings not yet supported', 
-                         cm.exception.args[0])        
         
     def testCategoricalFromCodesAndCategories(self):
         codes = ak.array([7,5,9,8,2,1,4,0,3,6])
@@ -144,8 +142,6 @@ class CategoricalTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.in1d(catOne, ak.randint(0,5,5))
-        self.assertEqual(('type of argument "test" must be one of (Strings, Categorical); got ' + 
-                          'arkouda.pdarrayclass.pdarray instead'), cm.exception.args[0])    
        
     def testConcatenate(self):
         catOne = self._getCategorical('string',51)

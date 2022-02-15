@@ -76,23 +76,15 @@ class MinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.mink(list(range(0,10)), 1)
-        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             ak.mink(testArray, '1')
-        self.assertEqual('type of argument "k" must be one of (int, int64, uint64); got str instead', 
-                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.mink(testArray, -1)
-        self.assertEqual("k must be 1 or greater", 
-                         cm.exception.args[0])   
         
         with self.assertRaises(ValueError) as cm:
             ak.mink(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray of type int or float", 
-                         cm.exception.args[0])   
 
 class MaxKTest(ArkoudaTest):
     def test_maxk(self):
@@ -109,23 +101,15 @@ class MaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(list(range(0,10)), 1)
-        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(testArray, '1')
-        self.assertEqual('type of argument "k" must be one of (int, int64, uint64); got str instead', 
-                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.maxk(testArray, -1)
-        self.assertEqual("k must be 1 or greater", 
-                         cm.exception.args[0])   
         
         with self.assertRaises(ValueError) as cm:
             ak.maxk(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray of type int or float", 
-                         cm.exception.args[0])   
 
 class ArgMinKTest(ArkoudaTest):
     def test_argmink(self):
@@ -142,23 +126,15 @@ class ArgMinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(list(range(0,10)), 1)
-        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(testArray, '1')
-        self.assertEqual('type of argument "k" must be one of (int, int64, uint64); got str instead', 
-                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.argmink(testArray, -1)
-        self.assertEqual("k must be 1 or greater", 
-                         cm.exception.args[0])   
         
         with self.assertRaises(ValueError) as cm:
             ak.argmink(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray of type int or float", 
-                         cm.exception.args[0])   
 
 class ArgMaxKTest(ArkoudaTest):
     def test_argmaxk(self):
@@ -175,20 +151,12 @@ class ArgMaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(list(range(0,10)), 1)
-        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(testArray, '1')
-        self.assertEqual('type of argument "k" must be one of (int, int64, uint64); got str instead', 
-                         cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
             ak.argmaxk(testArray, -1)
-        self.assertEqual("k must be 1 or greater", 
-                         cm.exception.args[0])      
         
         with self.assertRaises(ValueError) as cm:
             ak.argmaxk(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray of type int or float", 
-                         cm.exception.args[0])           

@@ -420,38 +420,24 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
-                         cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick([1], 1)
-        self.assertEqual('type of argument "other" must be arkouda.strings.Strings; got list instead', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
-                         cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
-                         cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:
             stringsOne.peel("",-5)
-        self.assertEqual('times must be >= 1', 
-                         cm.exception.args[0])  
 
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)

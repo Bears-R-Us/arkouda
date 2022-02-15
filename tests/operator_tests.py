@@ -276,28 +276,18 @@ class OperatorsTest(ArkoudaTest):
         # Test ak,histogram against unsupported dtype
         #with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
-        #self.assertEqual('Error: histogramMsg: bool not implemented', 
-        #                 cm.exception.args[0])
             
         with self.assertRaises(RuntimeError) as cm:
             ak.concatenate([ak.array([True]),ak.array([True])]).is_sorted()
-        self.assertEqual('Error: reductionMsg: is_sorted bool not implemented', 
-                         cm.exception.args[0])
         
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
             
         with self.assertRaises(TypeError) as cm:
             ak.unique(list(range(0,10)))
-        self.assertEqual('must be pdarray, Strings, or Categorical {}', 
-                         cm.exception.args[0])
         
         with self.assertRaises(RuntimeError) as cm:
             ak.concatenate([ak.ones(100),ak.array([True])])
-
-        self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
-                         'Expected float64 dtype but got bool dtype', 
-                         cm.exception.args[0])
 
     def test_str_repr(self):
         """
