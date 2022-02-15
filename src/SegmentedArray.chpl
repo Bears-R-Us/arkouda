@@ -1091,53 +1091,46 @@ module SegmentedArray {
 
   /* Test an array of strings for equality against a constant string. Return a boolean
      vector the same size as the array. */
-  operator ==(ss:SegString, testStr: string) {
-    return compare(ss, testStr, true);
+  operator ==(ss:SegString, testStr: string) throws {
+    return compare(ss, testStr, SegFunction.StringCompareLiteralEq);
   }
   
   /* Test an array of strings for inequality against a constant string. Return a boolean
      vector the same size as the array. */
-  operator !=(ss:SegString, testStr: string) {
-    return compare(ss, testStr, false);
+  operator !=(ss:SegString, testStr: string) throws {
+    return compare(ss, testStr, SegFunction.StringCompareLiteralNeq);
   }
 
+  inline proc stringCompareLiteralEq(values, rng, testStr) {
+    if rng.size == (testStr.numBytes + 1) {
+      const s = interpretAsString(values, rng);
+      return (s == testStr);
+    } else {
+      return false;
+    }
+  }
+
+  inline proc stringCompareLiteralNeq(values, rng, testStr) {
+    if rng.size == (testStr.numBytes + 1) {
+      const s = interpretAsString(values, rng);
+      return (s != testStr);
+    } else {
+      return true;
+    }
+  }
+  
   /* Element-wise comparison of an arrays of string against a target string. 
      The polarity parameter determines whether the comparison checks for 
      equality (polarity=true, result is true where elements equal target) 
      or inequality (polarity=false, result is true where elements differ from 
      target). */
-  proc compare(ss:SegString, testStr: string, param polarity: bool) {
-    ref oD = ss.offsets.aD;
-    // Initially assume all elements equal the target string, then correct errors
-    // For ==, this means everything starts true; for !=, everything starts false
-    var truth: [oD] bool = polarity;
-    // Early exit for zero-length result
-    if (ss.size == 0) {
-      return truth;
+  proc compare(ss:SegString, const testStr: string, param function: SegFunction) throws {
+    if testStr.numBytes == 0 {
+      // Comparing against the empty string is a quick check for zero length
+      const lengths = ss.getLengths() - 1;
+      return (lengths == 0);
     }
-    ref values = ss.values.a;
-    ref vD = ss.values.aD;
-    ref offsets = ss.offsets.a;
-    // Use a whole-array strategy, where the ith byte from every segment is checked simultaneously
-    // This will do len(testStr) parallel loops, but loops will have low overhead
-    for (b, i) in zip(testStr.chpl_bytes(), 0..) {
-      forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
-        if ((o+i > vD.high) || (b != values[o+i])) {
-          // Strings are not equal, so change the output
-          // For ==, output is now false; for !=, output is now true
-          agg.copy(t, !polarity);
-        }
-      }
-    }
-    // Check the length by checking that the next byte is null
-    forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
-      if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {
-        // Strings are not equal, so change the output
-        // For ==, output is now false; for !=, output is now true
-        agg.copy(t, !polarity);
-      }
-    }
-    return truth;
+    return computeOnSegments(ss.offsets.a, ss.values.a, function, bool, testStr);
   }
 
   private config const in1dAssocSortThreshold = 10**6;

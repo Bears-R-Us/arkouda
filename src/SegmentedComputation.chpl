@@ -42,9 +42,11 @@ module SegmentedComputation {
     StringToNumericStrict,
     StringToNumericIgnore,
     StringToNumericReturnValidity,
+    StringCompareLiteralEq,
+    StringCompareLiteralNeq,
   }
   
-  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType) throws {
+  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
     // type retType = if (function == SegFunction.StringToNumericReturnValidity) then (outType, bool) else outType;
     var res: [D] retType;
     if (D.size == 0) {
@@ -81,6 +83,12 @@ module SegmentedComputation {
               }
               when SegFunction.StringToNumericReturnValidity {
                 agg.copy(res[i], stringToNumericReturnValidity(values, start..#len, retType[0]));
+              }
+              when SegFunction.StringCompareLiteralEq {
+                agg.copy(res[i], stringCompareLiteralEq(values, start..#len, strArg));
+              }
+              when SegFunction.StringCompareLiteralNeq {
+                agg.copy(res[i], stringCompareLiteralNeq(values, start..#len, strArg));
               }
               otherwise {
                 compilerError("Unrecognized segmented function");
