@@ -14,13 +14,14 @@ def generate_data(N, seed):
     sorted_strings = random_strings[perm]
     return random_strings, sorted_strings, perm
 
-def time_all_ops(N, trials, seed, correctnessOnly):
-    cfg = ak.get_config()
+def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
     if correctnessOnly:
         N = 10**4
     else:
         print(">>> arkouda string locality tests")
-        print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+        nl = ak.get_config()["numLocales"]
+        N = nl * N_per_locale
+        print("numLocales = {}, N = {:,}".format(nl, N))
     random_strings, sorted_strings, perm = generate_data(N, seed)
     nbytes = random_strings.nbytes
 
