@@ -19,7 +19,7 @@ def time_all_ops(N, trials, seed, correctnessOnly):
     if correctnessOnly:
         N = 10**4
     else:
-        print(">>> arkouda substring search")
+        print(">>> arkouda string locality tests")
         print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     random_strings, sorted_strings, perm = generate_data(N, seed)
     nbytes = random_strings.nbytes
