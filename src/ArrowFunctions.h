@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 
 // Wrap functions in C extern if compiling C++ object file
 #ifdef __cplusplus
@@ -39,10 +40,11 @@ extern "C" {
 
   int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                                int64_t colnum, const char* dsetname, int64_t numelems,
-                               int64_t rowGroupSize, int64_t dtype, char** errMsg);
+                               int64_t rowGroupSize, int64_t dtype, bool compressed,
+                               char** errMsg);
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, int64_t dtype, char** errMsg);
+                             int64_t rowGroupSize, int64_t dtype, bool compressed, char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);
