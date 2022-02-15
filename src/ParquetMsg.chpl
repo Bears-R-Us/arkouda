@@ -142,10 +142,10 @@ module ParquetMsg {
     return ArrowTypes.notimplemented;
   }
 
-  proc writeDistArrayToParquet(A, filename, dsetname, dtype, rowGroupSize) throws {
+  proc writeDistArrayToParquet(A, filename, dsetname, dtype, rowGroupSize, compressed) throws {
     extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
                                        dsetname, numelems, rowGroupSize,
-                                       dtype, errMsg): int;
+                                       dtype, compressed, errMsg): int;
     var filenames: [0..#A.targetLocales().size] string;
     var dtypeRep = if dtype == "int64" then 1 else 2;
     for i in 0..#A.targetLocales().size {
@@ -164,7 +164,7 @@ module ParquetMsg {
         var locArr = A[locDom];
         if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
                                   dsetname.localize().c_str(), locDom.size, rowGroupSize,
-                                  dtypeRep, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                                  dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
           pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
         }
       }
@@ -182,8 +182,8 @@ module ParquetMsg {
     return warnFlag;
   }
 
-  proc write1DDistArrayParquet(filename: string, dsetname, dtype, A) throws {
-    return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS);
+  proc write1DDistArrayParquet(filename: string, dsetname, dtype, compressed, A) throws {
+    return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS, compressed);
   }
 
   proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -345,9 +345,11 @@ module ParquetMsg {
   }
 
   proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (arrayName, dsetname,  jsonfile, dataType)= payload.splitMsgToTuple(4);
+    var (arrayName, dsetname,  jsonfile, dataType, isCompressed)= payload.splitMsgToTuple(5);
     var filename: string;
     var entry = getGenericTypedArrayEntry(arrayName, st);
+
+    var compressed = try! isCompressed.toLower():bool;
 
     try {
       filename = jsonToPdArray(jsonfile, 1)[0];
@@ -364,11 +366,11 @@ module ParquetMsg {
       select entry.dtype {
           when DType.Int64 {
             var e = toSymEntry(entry, int);
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, e.a);
+            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
           }
           when DType.UInt64 {
             var e = toSymEntry(entry, uint(64));
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, e.a);
+            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
           }
           otherwise {
             var errorMsg = "Writing Parquet files is only supported for int arrays";

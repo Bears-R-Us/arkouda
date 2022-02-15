@@ -183,7 +183,7 @@ module MultiTypeSymEntry
         'aD' is the distributed domain for 'a' whose value and type
         are defined by makeDistDom() to support varying distributions
         */
-        var aD: makeDistDom(size).type;
+        const aD: makeDistDom(size).type;
         var a: [aD] etype;
         
         /*

@@ -164,7 +164,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, int64_t dtype, char** errMsg) {
+                             int64_t rowGroupSize, int64_t dtype, bool compressed,
+                             char** errMsg) {
   auto chpl_ptr = (int64_t*)chpl_arr;
   using FileClass = ::arrow::io::FileOutputStream;
   std::shared_ptr<FileClass> out_file;
@@ -181,6 +182,10 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
 
   // TODO: add conditionals and arguments for writing with Snappy/RLE
   parquet::WriterProperties::Builder builder;
+  if(compressed) {
+    builder.compression(parquet::Compression::SNAPPY);
+    builder.encoding(parquet::Encoding::RLE);
+  }
   std::shared_ptr<parquet::WriterProperties> props = builder.build();
 
   std::shared_ptr<parquet::ParquetFileWriter> file_writer =
@@ -241,9 +246,11 @@ extern "C" {
 
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, int64_t dtype, char** errMsg) {
+                             int64_t rowGroupSize, int64_t dtype, bool compressed,
+                             char** errMsg) {
     return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
-                                    numelems, rowGroupSize, dtype, errMsg);
+                                    numelems, rowGroupSize, dtype, compressed,
+                                    errMsg);
   }
 
   const char* c_getVersionInfo(void) {
