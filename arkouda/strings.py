@@ -321,7 +321,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         cmd = "segmentLengths"
-        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
+        args = "{} {}".format(self.objtype, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
