@@ -3,6 +3,7 @@ module SegmentedComputation {
   use SipHash;
   use ServerErrors;
   private use Cast;
+  use Reflection;
 
   proc computeSegmentOwnership(segments: [?D] int, vD) {
     const low = vD.low;
