@@ -181,7 +181,6 @@ class IOTest(ArkoudaTest):
 
         with self.assertRaises(RuntimeError) as cm:        
             ak.ls_hdf('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
-        self.assertIn('is not an HDF5 file', cm.exception.args[0])
 
     def testLsHdfEmpty(self):
         # Test filename empty/whitespace-only condition
@@ -217,15 +216,12 @@ class IOTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.read_hdf(dsetName='in_tens_pdarray', 
                     filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])       
-        self.assertTrue('Dataset in_tens_pdarray not found in file' in  
-                         cm.exception.args[0])
+                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
         
         with self.assertRaises(RuntimeError) as cm:
             ak.read_hdf(dsetName='int_tens_pdarray', 
                     filenames=['{}/iotest_single_colum_LOCALE0000'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_colum_dupe_LOCALE0000'.format(IOTest.io_test_dir)])       
-        self.assertTrue('iotest_single_colum_LOCALE0000 not found' in  cm.exception.args[0])
+                               '{}/iotest_single_colum_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
 
     def testReadHdfWithGlob(self):
         ''' DEPRECATED - all client calls route to `readAllHdf`
@@ -356,15 +352,12 @@ class IOTest(ArkoudaTest):
         # Test load with invalid prefix
         with self.assertRaises(RuntimeError) as cm:
             ak.load(path_prefix='{}/iotest_dict_column'.format(IOTest.io_test_dir), 
-                                    dataset='int_tens_pdarray')  
-        self.assertIn('either corresponds to files inaccessible to Arkouda or files of an invalid format', cm.exception.args[0].args[0])
+                                    dataset='int_tens_pdarray')
 
         # Test load with invalid file
         with self.assertRaises(RuntimeError) as cm:
             ak.load(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir), 
-                                    dataset='int_tens_pdarray') 
-        cm.exception.args[0]
-        self.assertIn('is not an HDF5 file', cm.exception.args[0].args[0])
+                                    dataset='int_tens_pdarray')
         
     def testLoadAll(self):   
         self._create_file(columns=self.dict_columns, 
@@ -382,8 +375,7 @@ class IOTest(ArkoudaTest):
             
         # Test load with invalid file
         with self.assertRaises(RuntimeError) as cm:
-            ak.load_all(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir)) 
-        self.assertIn('Could not open on or more files with the file prefix', cm.exception.args[0])      
+            ak.load_all(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir))
     
     def testGetDataSets(self):
         '''
@@ -404,7 +396,6 @@ class IOTest(ArkoudaTest):
         # Test load_all with invalid filename
         with self.assertRaises(RuntimeError) as cm:            
             ak.get_datasets('{}/iotest_dict_columns_LOCALE000'.format(IOTest.io_test_dir))
-        self.assertIn('does not exist in a location accessible to Arkouda', cm.exception.args[0])
 
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
