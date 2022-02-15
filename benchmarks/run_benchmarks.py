@@ -24,7 +24,7 @@ BENCHMARKS = [
     'scatter', 'reduce', 'in1d', 'scan', 'noop', 'setops', 'array_create',
     'array_transfer', 'IO', 'str-argsort', 'str-coargsort', 'str-groupby',
     'str-gather', 'str-in1d', 'substring_search', 'flatten', 'sort-cases',
-    'multiIO'
+    'multiIO', 'str-locality'
 ]
 
 if os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'):
