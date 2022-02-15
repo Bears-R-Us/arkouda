@@ -1,7 +1,7 @@
-import unittest, os, sys
+import unittest, os
 from context import arkouda as ak
-from util.test.util import ServerInfo, get_arkouda_numlocales, start_arkouda_server, stop_arkouda_server, \
-     run_client_live, set_server_info
+from util.test.util import get_arkouda_numlocales, start_arkouda_server, \
+     stop_arkouda_server, TestRunningMode
 import importlib
 
 '''
@@ -17,7 +17,7 @@ class ArkoudaTest(unittest.TestCase):
     verbose = True if os.getenv('ARKOUDA_VERBOSE') == 'True' else False
     port = int(os.getenv('ARKOUDA_SERVER_PORT', 5555))
     server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
-    full_stack_mode = True if os.getenv('ARKOUDA_FULL_STACK_TEST') == 'True' else False
+    test_running_mode = TestRunningMode(os.getenv('ARKOUDA_RUNNING_MODE','GLOBAL_SERVER'))
     timeout = int(os.getenv('ARKOUDA_CLIENT_TIMEOUT', 5))
 
     @classmethod
@@ -32,12 +32,11 @@ class ArkoudaTest(unittest.TestCase):
         '''
         if not importlib.util.find_spec('pytest') or not importlib.util.find_spec('pytest_env'):
             raise EnvironmentError('pytest and pytest-env must be installed')
-        if ArkoudaTest.full_stack_mode:
-            print('starting in full stack mode')
+        if TestRunningMode.CLASS_SERVER == ArkoudaTest.test_running_mode:
             try: 
                 nl = get_arkouda_numlocales()
                 ArkoudaTest.server, _, _ = start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
-                print('Started arkouda_server in full stack test mode with host: {} port: {} locales: {}'.\
+                print('Started arkouda_server in TEST_CLASS mode with host: {} port: {} locales: {}'.\
                       format(ArkoudaTest.server, ArkoudaTest.port, nl))
             except Exception as e:
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
@@ -78,7 +77,7 @@ class ArkoudaTest(unittest.TestCase):
 
         :return: None
         '''
-        if ArkoudaTest.full_stack_mode:
+        if TestRunningMode.CLASS_SERVER == ArkoudaTest.test_running_mode:
             try:
                 stop_arkouda_server()
             except Exception:
