@@ -1044,6 +1044,11 @@ module SegmentedArray {
                            moduleName = getModuleName(),
                            errorClass="ArgumentError");
     }
+    if useHash {
+      const lh = lss.hash();
+      const rh = rss.hash();
+      return if polarity then (lh == rh) else (lh != rh);
+    }
     ref oD = lss.offsets.aD;
     // Start by assuming all elements differ, then correct for those that are equal
     // This translates to an initial value of false for == and true for !=
