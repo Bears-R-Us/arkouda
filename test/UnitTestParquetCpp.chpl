@@ -130,12 +130,12 @@ proc testVersionInfo() {
 }
 
 proc testGetDsets(filename) {
-  extern proc c_getDatasetNames(f, r, e): int(32);
+  extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
   extern proc c_free_string(ptr);
   extern proc strlen(a): int;
-  var cDsetString: c_ptr(uint(8));
-  var errMsg: c_ptr(uint(8));
-  var st = c_getDatasetNames(filename, cDsetString, errMsg);
+  var cDsetString: c_ptr(c_char);
+  var errMsg: c_ptr(c_char);
+  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), c_ptrTo(errMsg));
   defer {
     c_free_string(cDsetString);
     c_free_string(errMsg);
@@ -143,10 +143,18 @@ proc testGetDsets(filename) {
   var ret;
   try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
 
-  if ret != "my-dset-name-test" then
+  if st == 0 && ret == "my-dset-name-test " {
     return 0;
-  else
+  } else if st != 0 {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+    writeln("FAILED: c_getDatasetNames");
     return 1;
+  } else {
+    writeln("FAILED: c_getDatasetNames with ", ret);
+    return 1;
+  }
 }
 
 proc main() {

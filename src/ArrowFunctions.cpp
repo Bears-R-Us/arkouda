@@ -233,7 +233,6 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
   for(int i = 0; i < sc->num_fields(); i++) {
     fields += (sc->field(i)->name() + " ");
   }
-  std::cout << fields << std::endl;
   *dsetResult = strdup(fields.c_str());
   
   return 0;
