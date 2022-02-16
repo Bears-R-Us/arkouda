@@ -88,13 +88,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-        self.assertEqual('Error: unique: float64 not implemented', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
-        self.assertEqual('Error: unique: bool not implemented', 
-                         cm.exception.args[0]) 
         with self.assertRaises(TypeError):
             ak.setxor1d([-1, 0, 1], [-2, 0, 2])     
         
@@ -107,13 +103,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-        self.assertEqual('Error: unique: float64 not implemented', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
-        self.assertEqual('Error: unique: bool not implemented', 
-                         cm.exception.args[0]) 
         with self.assertRaises(TypeError):
             ak.setdiff1d([-1, 0, 1], [-2, 0, 2])     
         
@@ -125,13 +117,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-        self.assertEqual('Error: unique: float64 not implemented', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
-        self.assertEqual('Error: unique: bool not implemented', 
-                         cm.exception.args[0]) 
         with self.assertRaises(TypeError):
             ak.intersect1d([-1, 0, 1], [-2, 0, 2])     
         
@@ -143,13 +131,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
-        self.assertEqual('Error: unique: float64 not implemented', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(RuntimeError) as cm:
             ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
-        self.assertEqual('Error: unique: bool not implemented', 
-                         cm.exception.args[0])          
         with self.assertRaises(TypeError):
             ak.union1d([-1, 0, 1], [-2, 0, 2])     
 

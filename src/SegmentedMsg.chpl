@@ -130,15 +130,15 @@ module SegmentedMsg {
   proc segmentLengthsMsg(cmd: string, payload: string, 
                                           st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
-    var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
+    var (objtype, name) = payload.splitMsgToTuple(2);
 
     // check to make sure symbols defined
     st.checkTable(name);
     
     var rname = st.nextName();
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s objtype: %t name: %t legacy_placeholder: %t".format(
-                   cmd,objtype,name,"legacy_placeholder"));
+            "cmd: %s objtype: %t name: %t".format(
+                   cmd,objtype,name));
 
     select objtype {
       when "str" {

@@ -27,3 +27,27 @@ graphkeys: Medium GiB/s, Large GiB/s
 files: str-in1d.dat, str-in1d.dat
 graphtitle: String in1d Performance
 ylabel: Performance (GiB/s)
+
+perfkeys: Hashing good locality Average rate =, Hashing poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String Hashing Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Regex searching good locality Average rate =, Regex searching poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String Regex Search Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Casting good locality Average rate =, Casting poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String cast-to-float Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Comparing to scalar good locality Average rate =, Comparing to scalar poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String compare-vs-scalar Performance
+ylabel: Performance (GiB/s)

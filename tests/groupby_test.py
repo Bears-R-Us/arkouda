@@ -220,69 +220,43 @@ class GroupByTest(ArkoudaTest):
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
         
         with self.assertRaises(TypeError) as cm:
-            ak.GroupBy(self.bvalues)  
-        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
-                         cm.exception.args[0])    
+            ak.GroupBy(self.bvalues)
         
         with self.assertRaises(TypeError) as cm:
-            ak.GroupBy(self.fvalues)  
-        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
-                         cm.exception.args[0])              
+            ak.GroupBy(self.fvalues)
 
         with self.assertRaises(TypeError) as cm:
             gb.broadcast([])
-        self.assertEqual('type of argument "values" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             self.igb.nunique(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('nunique unsupported for this dtype', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.nunique(ak.randint(0,1,10,dtype=float64))
-        self.assertEqual('nunique unsupported for this dtype', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             self.igb.any(ak.randint(0,1,10,dtype=float64))
-        self.assertEqual('any is only supported for pdarrays of dtype bool', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.any(ak.randint(0,1,10,dtype=int64))
-        self.assertEqual('any is only supported for pdarrays of dtype bool', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             self.igb.all(ak.randint(0,1,10,dtype=float64))
-        self.assertEqual('all is only supported for pdarrays of dtype bool', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.all(ak.randint(0,1,10,dtype=int64))
-        self.assertEqual('all is only supported for pdarrays of dtype bool', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             self.igb.min(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('min is only supported for pdarrays of dtype float64 and int64', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.max(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('max is only supported for pdarrays of dtype float64 and int64', 
-                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             self.igb.argmin(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('argmin is only supported for pdarrays of dtype float64 and int64', 
-                         cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.argmax(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('argmax is only supported for pdarrays of dtype float64 and int64', 
-                         cm.exception.args[0])
 
     def test_aggregate_strings(self):
         s = ak.array(['a', 'b', 'a', 'b', 'c'])
