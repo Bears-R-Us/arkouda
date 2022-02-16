@@ -34,6 +34,14 @@ Radix Sort Least Significant Digit
 
 .. data:: const rsLogger = new Logger(logLevel)
 
+.. record:: KeysComparator
+
+   .. method:: proc key(k)
+
+.. record:: KeysRanksComparator
+
+   .. method:: proc key(kr)
+
 .. function:: proc getBitWidth(a: [?aD] int): (int, bool)
 
 .. function:: proc getBitWidth(a: [?aD] uint): (int, bool)
@@ -59,10 +67,6 @@ Radix Sort Least Significant Digit
 .. function:: proc calcGlobalIndex(bucket: int, loc: int, task: int): int
 
 .. function:: proc radixSortLSD(a: [?aD] ?t, checkSorted: bool = true): [aD] (t, int)
-
-   Radix Sort Least Significant Digit
-   radix sort a block distributed array
-   returning keys and permutation vector as a block distributed array 
 
 .. function:: proc radixSortLSD_ranks(a: [?aD] ?t, checkSorted: bool = true): [aD] int
 
