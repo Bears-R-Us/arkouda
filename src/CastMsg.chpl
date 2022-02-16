@@ -127,7 +127,7 @@ module CastMsg {
           const errors = opt.toLower() : ErrorMode;
           select targetDtype {
               when "int64" {
-                return new MsgTuple(castStringToSymEntry(strings, st, int, errors), MsgType.NORMAL);
+                  return new MsgTuple(castStringToSymEntry(strings, st, int, errors), MsgType.NORMAL);
               }
               when "uint8" {
                   return new MsgTuple(castStringToSymEntry(strings, st, uint(8), errors), MsgType.NORMAL);
