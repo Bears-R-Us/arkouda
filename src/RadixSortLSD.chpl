@@ -156,10 +156,10 @@ module RadixSortLSD
        In-place radix sort a block distributed array
        comparator is used to extract the key from array elements
      */
-    private proc radixSortLSDCore(kr0:[?aD] ?t, nBits, negs, comparator) {
+    private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator) {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %t".format(t:string,nBits));
-        var kr1: [aD] t;
+        var temp: [aD] t;
         
         // create a global count array to scan
         var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
@@ -180,14 +180,14 @@ module RadixSortLSD
                         // allocate counts
                         var taskBucketCounts: [bD] int;
                         // get local domain's indices
-                        var lD = kr0.localSubdomain();
+                        var lD = a.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
-                            const key = comparator.key(kr0[i]);
+                            const key = comparator.key(a[i]);
                             var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
@@ -218,7 +218,7 @@ module RadixSortLSD
                         // allocate counts
                         var taskBucketPos: [bD] int;
                         // get local domain's indices
-                        var lD = kr0.localSubdomain();
+                        var lD = a.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
@@ -230,15 +230,15 @@ module RadixSortLSD
                             }
                             aggregator.flush();
                         }
-                        // calc new position and put (key,rank) pair there in kr1
+                        // calc new position and put data there in temp
                         {
                             var aggregator = newDstAggregator(t);
                             for i in tD {
-                                const key = comparator.key(kr0[i]);
+                                const key = comparator.key(a[i]);
                                 var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
-                                aggregator.copy(kr1[pos], kr0[i]);
+                                aggregator.copy(temp[pos], a[i]);
                             }
                             aggregator.flush();
                         }
@@ -246,17 +246,15 @@ module RadixSortLSD
                 }//on loc
             }//coforall loc
             
-            // copy back to k0 and r0 for next iteration and final return
-            kr0 = kr1;
+            // copy back to a for next iteration and final return
+            a = temp;
         } // for rshift
-    }//proc radixSortLSD
+    }//proc radixSortLSDCore
 
     proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) {
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
-        if (checkSorted) {
-            if (isSorted(a)) {
-                return kr;
-            }
+        if (checkSorted && isSorted(a)) {
+            return kr;
         }
         var (nBits, negs) = getBitWidth(a);
         radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator());
@@ -267,12 +265,9 @@ module RadixSortLSD
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
     proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
-        // check to see if array is already sorted
-        if (checkSorted) {
-            if (isSorted(a)) {
-                var ranks: [aD] int = [i in aD] i;
-                return ranks;
-            }
+        if (checkSorted && isSorted(a)) {
+            var ranks: [aD] int = [i in aD] i;
+            return ranks;
         }
 
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
@@ -286,17 +281,13 @@ module RadixSortLSD
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
     proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
-        // check to see if array is already sorted
-        if (checkSorted) {
-            if (isSorted(a)) {
-                var sorted: [aD] t = a;
-                return sorted;
-            }
+        var copy = a;
+        if (checkSorted && isSorted(a)) {
+            return copy;
         }
-        var kr = a;
         var (nBits, negs) = getBitWidth(a);
-        radixSortLSDCore(kr, nBits, negs, new KeysComparator());
-        return kr;
+        radixSortLSDCore(copy, nBits, negs, new KeysComparator());
+        return copy;
     }
 
     proc radixSortLSD_memEst(size: int, itemsize: int) {
