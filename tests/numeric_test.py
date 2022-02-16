@@ -61,6 +61,30 @@ class NumericTest(ArkoudaTest):
         self.assertTrue((ak.array([1, 2, 3, 4, 5]) == ak.cast(ak.linspace(1,5,5), dt=ak.int64)).all())
         self.assertEqual(ak.cast(ak.arange(0,5), dt=ak.float64).dtype, ak.float64)
         self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.bool)).all())
+
+    def testStrCastErrors(self):
+        intNAN = -(2**63)
+        intstr = ak.array(["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"])
+        intans = np.array([1, 2, intNAN, intNAN, 5, -45, 0b101, 0x30, intNAN])
+        uintNAN = 0
+        uintstr = ak.array(["1", "2 ", "3?", "-4", "  5", "45", "0b101", "0x30", "N/A"])
+        uintans = np.array([1, 2, uintNAN, uintNAN, 5, 45, 0b101, 0x30, uintNAN])
+        floatstr = ak.array(["1.1", "2.2 ", "3?.3", "4.!4", "  5.5", "6.6e-6", "78.91E+4", "6", "N/A"])
+        floatans = np.array([1.1, 2.2, np.nan, np.nan, 5.5, 6.6e-6, 78.91e4, 6.0, np.nan])
+        boolstr = ak.array(["True", "False ", "Neither", "N/A", "  True", "true", "false", "TRUE", "NOTTRUE"])
+        boolans = np.array([True, False, False, False, True, True, False, True, False])
+        validans = ak.array([True, True, False, False, True, True, True, True, False])
+        for dt, arg, ans in [(ak.int64, intstr, intans),
+                             (ak.uint64, uintstr, uintans),
+                             (ak.float64, floatstr, floatans),
+                             (ak.bool, boolstr, boolans)]:
+            with self.assertRaises(RuntimeError) as cm:
+                ak.cast(arg, dt, errors=ak.ErrorMode.strict)
+            res = ak.cast(arg, dt, errors=ak.ErrorMode.ignore)
+            self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
+            res, valid = ak.cast(arg, dt, errors=ak.ErrorMode.return_validity)
+            self.assertTrue((valid == validans).all())
+            self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
     
     def testHistogram(self):
         pda = ak.randint(10,30,40)

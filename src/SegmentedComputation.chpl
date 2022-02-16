@@ -1,6 +1,9 @@
 module SegmentedComputation {
   use CommAggregation;
   use SipHash;
+  use ServerErrors;
+  private use Cast;
+  use Reflection;
 
   proc computeSegmentOwnership(segments: [?D] int, vD) {
     const low = vD.low;
@@ -36,9 +39,15 @@ module SegmentedComputation {
 
   enum SegFunction {
     SipHash128,
+    StringToNumericStrict,
+    StringToNumericIgnore,
+    StringToNumericReturnValidity,
+    StringCompareLiteralEq,
+    StringCompareLiteralNeq,
   }
   
-  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType) throws {
+  proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
+    // type retType = if (function == SegFunction.StringToNumericReturnValidity) then (outType, bool) else outType;
     var res: [D] retType;
     if (D.size == 0) {
       return res;
@@ -59,16 +68,39 @@ module SegmentedComputation {
           agg.copy(mySegs[i], segments[i]);
           agg.copy(myLens[i], lengths[i]);
         }
-        // Apply function to bytes of each owned segment, aggregating return value to res
-        forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
-          select function {
-            when SegFunction.SipHash128 {
-              agg.copy(res[i], sipHash128(values, start..#len));
-            }
-            otherwise {
-              compilerError("Unrecognized segmented function");
+        try {
+          // Apply function to bytes of each owned segment, aggregating return value to res
+          forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
+            select function {
+              when SegFunction.SipHash128 {
+                agg.copy(res[i], sipHash128(values, start..#len));
+              }
+              when SegFunction.StringToNumericStrict {
+                agg.copy(res[i], stringToNumericStrict(values, start..#len, retType));
+              }
+              when SegFunction.StringToNumericIgnore {
+                agg.copy(res[i], stringToNumericIgnore(values, start..#len, retType));
+              }
+              when SegFunction.StringToNumericReturnValidity {
+                agg.copy(res[i], stringToNumericReturnValidity(values, start..#len, retType[0]));
+              }
+              when SegFunction.StringCompareLiteralEq {
+                agg.copy(res[i], stringCompareLiteralEq(values, start..#len, strArg));
+              }
+              when SegFunction.StringCompareLiteralNeq {
+                agg.copy(res[i], stringCompareLiteralNeq(values, start..#len, strArg));
+              }
+              otherwise {
+                compilerError("Unrecognized segmented function");
+              }
             }
           }
+        } catch {
+          throw new owned ErrorWithContext("Error computing %s on string or segment".format(function:string),
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "IllegalArgumentError");
         }
       }
     }

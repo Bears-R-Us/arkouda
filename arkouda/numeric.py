@@ -9,14 +9,20 @@ from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.strings import Strings
+from enum import Enum
 
 Categorical = ForwardRef('Categorical')
 
 __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "hash", "where", "histogram", "value_counts", "isnan"]
+           "hash", "where", "histogram", "value_counts", "isnan", "ErrorMode"]
+
+class ErrorMode(Enum):
+    strict = 'strict'
+    ignore = 'ignore'
+    return_validity = 'return_validity'
 
 @typechecked
-def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarray, Strings]:
+def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str], errors:ErrorMode=ErrorMode.strict) -> Union[Union[pdarray, Strings],Tuple[pdarray, pdarray]]:
     """
     Cast an array to another dtype.
 
@@ -26,11 +32,24 @@ def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarra
         The array of values to cast
     dtype : np.dtype or str
         The target dtype to cast values to
+    errors : {strict, ignore, return_validity}
+        Controls how errors are handled when casting strings to a numeric type
+        (ignored for casts from numeric types).
+            - strict: raise RuntimeError if *any* string cannot be converted
+            - ignore: never raise an error. Uninterpretable strings get
+                converted to NaN (float64), -2**63 (int64), zero (uint64 and
+                uint8), or False (bool)
+            - return_validity: in addition to returning the same output as
+              "ignore", also return a bool array indicating where the cast
+              was successful.
 
     Returns
     -------
     pdarray or Strings
         Array of values cast to desired dtype
+    [validity : pdarray(bool)]
+        If errors="return_validity" and input is Strings, a second array is
+        returned with True where the cast succeeded and False where it failed.
 
     Notes
     -----
@@ -58,18 +77,21 @@ def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarra
         objtype = "pdarray"
     elif isinstance(pda, Strings):
         name = pda.entry.name
-        objtype = "str"    
+        objtype = "str"
     # typechecked decorator guarantees no other case
 
     dt = _as_dtype(dt)
-    opt = ""
     cmd = "cast"
-    args= "{} {} {} {}".format(name, objtype, dt.name, opt)
+    args= "{} {} {} {}".format(name, objtype, dt.name, errors.name)
     repMsg = generic_msg(cmd=cmd,args=args)
     if dt.name.startswith("str"):
         return Strings.from_parts(*(type_cast(str,repMsg).split("+")))
     else:
-        return create_pdarray(type_cast(str,repMsg))
+        if errors == ErrorMode.return_validity:
+            a, b = type_cast(str, repMsg).split("+")
+            return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+        else:
+            return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def abs(pda : pdarray) -> pdarray:

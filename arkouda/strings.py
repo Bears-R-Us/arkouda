@@ -231,19 +231,17 @@ class Strings:
                 raise ValueError("Strings: size mismatch {} {}".\
                                  format(self.size, other.size))
             cmd = "segmentedBinopvv"
-            args = "{} {} {} {} {} {} {}".format(op,
+            args = "{} {} {} {} {} {}".format(op,
                                                  self.objtype,
                                                  self.entry.name,
-                                                 "legacy_placeholder",
                                                  other.objtype,
                                                  other.entry.name,
                                                  other.entry.name)
         elif resolve_scalar_dtype(other) == 'str':
             cmd = "segmentedBinopvs"
-            args = "{} {} {} {} {} {}".format(op,
+            args = "{} {} {} {} {}".format(op,
                                                               self.objtype,
                                                               self.entry.name,
-                                                              "legacy_placeholder",
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
@@ -265,10 +263,9 @@ class Strings:
                 key += self.size
             if (key >= 0 and key < self.size):
                 cmd = "segmentedIndex"
-                args = " {} {} {} {} {}".format('intIndex',
+                args = " {} {} {} {}".format('intIndex',
                                                 self.objtype,
                                                 self.entry.name,
-                                                "legacy_placeholder",
                                                 key)
                 repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
@@ -280,10 +277,9 @@ class Strings:
             (start,stop,stride) = key.indices(self.size)
             self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
             cmd = "segmentedIndex"
-            args = " {} {} {} {} {} {} {}".format('sliceIndex',
+            args = " {} {} {} {} {} {}".format('sliceIndex',
                                                   self.objtype,
                                                   self.entry.name,
-                                                  "legacy_placeholder",
                                                   start,
                                                   stop,
                                                   stride)
@@ -296,10 +292,9 @@ class Strings:
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             cmd = "segmentedIndex"
-            args = "{} {} {} {} {}".format('pdarrayIndex',
+            args = "{} {} {} {}".format('pdarrayIndex',
                                                          self.objtype,
                                                          self.entry.name,
-                                                         "legacy_placeholder",
                                                          key.name)
             repMsg = generic_msg(cmd=cmd,args=args)
             return Strings.from_return_msg(repMsg)
@@ -687,9 +682,8 @@ class Strings:
         if matcher is not None:
             return matcher.get_match(MatchType.SEARCH, self).matched()
         cmd = "segmentedSearch"
-        args = "{} {} {} {} {}".format(self.objtype,
+        args = "{} {} {} {}".format(self.objtype,
                                        self.entry.name,
-                                       "legacy_placeholder",
                                        "str",
                                        json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
@@ -850,8 +844,7 @@ class Strings:
             return self.split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
-            args = "{}+{} {} {} {} {}".format(self.entry.name,
-                                              "legacy_placeholder",
+            args = "{} {} {} {} {}".format(self.entry.name,
                                               self.objtype,
                                               return_segments,
                                               regex,
@@ -944,10 +937,9 @@ class Strings:
         if times < 1:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"
-        args = "{} {} {} {} {} {} {} {} {} {} {}".format("peel",
+        args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
                                                          self.objtype,
                                                          self.entry.name,
-                                                         "legacy_placeholder",
                                                          "str",
                                                          NUMBER_FORMAT_STRINGS['int64'].format(times),
                                                          NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
@@ -1069,14 +1061,12 @@ class Strings:
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         cmd = "segmentedBinopvv"
-        args = "{} {} {} {} {} {} {} {} {}".\
+        args = "{} {} {} {} {} {} {}".\
                             format("stick",
                             self.objtype,
                             self.entry.name,
-                            "legacy_placeholder",
                             other.objtype,
                             other.entry.name,
-                            "legacy_placeholder",
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         rep_msg = generic_msg(cmd=cmd,args=args)
@@ -1147,7 +1137,7 @@ class Strings:
         """
         # TODO fix this to return a single pdarray of hashes
         cmd = "segmentedHash"
-        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
+        args = "{} {}".format(self.objtype, self.entry.name)
         repMsg = generic_msg(cmd=cmd,args=args)
         h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
@@ -1183,7 +1173,7 @@ class Strings:
             creating the pdarray encapsulating the return message
         """
         cmd = "segmentedGroup"
-        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
+        args = "{} {}".format(self.objtype, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def to_ndarray(self) -> np.ndarray:
