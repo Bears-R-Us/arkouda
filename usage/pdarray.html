@@ -195,20 +195,39 @@ value, but proceed with caution.</p>
 <p>Explicit conversion is supported via the <code class="docutils literal notranslate"><span class="pre">cast</span></code> function.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cast">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html#arkouda.numeric.ErrorMode" title="arkouda.numeric.ErrorMode"><span class="pre">arkouda.numeric.ErrorMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast an array to another dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The array of values to cast</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – The target dtype to cast values to</p></li>
+<li><p><strong>errors</strong> (<em>{strict</em><em>, </em><em>ignore</em><em>, </em><em>return_validity}</em>) – <p>Controls how errors are handled when casting strings to a numeric type
+(ignored for casts from numeric types).</p>
+<blockquote>
+<div><ul>
+<li><p>strict: raise RuntimeError if <em>any</em> string cannot be converted</p></li>
+<li><dl class="simple">
+<dt>ignore: never raise an error. Uninterpretable strings get</dt><dd><p>converted to NaN (float64), -2**63 (int64), zero (uint64 and
+uint8), or False (bool)</p>
+</dd>
+</dl>
+</li>
+<li><p>return_validity: in addition to returning the same output as
+“ignore”, also return a bool array indicating where the cast
+was successful.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Array of values cast to desired dtype</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>pdarray or Strings</em> – Array of values cast to desired dtype</p></li>
+<li><p><strong>[validity</strong> (<em>pdarray(bool)]</em>) – If errors=”return_validity” and input is Strings, a second array is
+returned with True where the cast succeeded and False where it failed.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

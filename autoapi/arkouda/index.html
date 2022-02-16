@@ -75,13 +75,16 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupBy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.ErrorMode" title="arkouda.ErrorMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ErrorMode</span></code></a></p></td>
+<td><p>Generic enumeration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupBy</span></code></a></p></td>
 <td><p>Group an array or list of arrays by value, usually in preparation</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings</span></code></a></p></td>
 <td><p>Represents an array of strings whose data resides on the</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical</span></code></a></p></td>
 <td><p>Represents an array of values belonging to named categories. Converting a</p></td>
 </tr>
 </tbody>
@@ -182,7 +185,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.from_series" title="arkouda.from_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_series</span></code></a>(series: pandas.Series, dtype: Optional[Union[type, str]] = None) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
 <td><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.cast" title="arkouda.cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cast</span></code></a>(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str]) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.cast" title="arkouda.cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cast</span></code></a>(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str], errors: ErrorMode = ErrorMode.strict) → Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]</p></td>
 <td><p>Cast an array to another dtype.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.abs" title="arkouda.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → arkouda.pdarrayclass.pdarray</p></td>
@@ -1546,20 +1549,39 @@ contains strings and sets the dtype to str</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.cast">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.ErrorMode" title="arkouda.ErrorMode"><span class="pre">ErrorMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ErrorMode.strict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast an array to another dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The array of values to cast</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – The target dtype to cast values to</p></li>
+<li><p><strong>errors</strong> (<em>{strict</em><em>, </em><em>ignore</em><em>, </em><em>return_validity}</em>) – <p>Controls how errors are handled when casting strings to a numeric type
+(ignored for casts from numeric types).</p>
+<blockquote>
+<div><ul>
+<li><p>strict: raise RuntimeError if <em>any</em> string cannot be converted</p></li>
+<li><dl class="simple">
+<dt>ignore: never raise an error. Uninterpretable strings get</dt><dd><p>converted to NaN (float64), -2**63 (int64), zero (uint64 and
+uint8), or False (bool)</p>
+</dd>
+</dl>
+</li>
+<li><p>return_validity: in addition to returning the same output as
+“ignore”, also return a bool array indicating where the cast
+was successful.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Array of values cast to desired dtype</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>pdarray or Strings</em> – Array of values cast to desired dtype</p></li>
+<li><p><strong>[validity</strong> (<em>pdarray(bool)]</em>) – If errors=”return_validity” and input is Strings, a second array is
+returned with True where the cast succeeded and False where it failed.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1999,6 +2021,29 @@ Currently only supports float-value-based arrays</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.ErrorMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ErrorMode</span></span><a class="headerlink" href="#arkouda.ErrorMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>Generic enumeration.</p>
+<p>Derive from this class to define new enumerations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.ErrorMode.strict">
+<span class="sig-name descname"><span class="pre">strict</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">strict</span></em><a class="headerlink" href="#arkouda.ErrorMode.strict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.ErrorMode.ignore">
+<span class="sig-name descname"><span class="pre">ignore</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">ignore</span></em><a class="headerlink" href="#arkouda.ErrorMode.ignore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.ErrorMode.return_validity">
+<span class="sig-name descname"><span class="pre">return_validity</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">return_validity</span></em><a class="headerlink" href="#arkouda.ErrorMode.return_validity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">

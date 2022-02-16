@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>SipHash &mdash; chpldoc 0.0.1 documentation</title>
+  <title>Cast &mdash; chpldoc 0.0.1 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
-    <link rel="next" title="SymArrayDmap" href="SymArrayDmap.html" />
-    <link rel="prev" title="ServerErrors" href="ServerErrors.html" /> 
+    <link rel="next" title="CommAggregation" href="CommAggregation.html" />
+    <link rel="prev" title="AryUtil" href="AryUtil.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,7 +96,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cast.html">Cast</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cast</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
@@ -116,7 +116,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
@@ -168,13 +168,13 @@
     
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>SipHash</li>
+      <li>Cast</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/SipHash.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Cast.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -187,62 +187,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-SipHash"></span><div class="section" id="siphash">
-<h1>SipHash<a class="headerlink" href="#siphash" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-Cast"></span><div class="section" id="cast">
+<h1>Cast<a class="headerlink" href="#cast" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SipHash</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Cast</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">SipHash</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Cast</span><span class="p">;</span>
 </pre></div>
 </div>
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="SipHash.cROUNDS">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">cROUNDS</span></span> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#SipHash.cROUNDS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="SipHash.dROUNDS">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dROUNDS</span></span> <span class="pre">=</span> <span class="pre">4</span><a class="headerlink" href="#SipHash.dROUNDS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="SipHash.defaultSipHashKey">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">defaultSipHashKey</span></span><span class="pre">:</span> <span class="pre">[0..#16]</span> <span class="pre">uint(8)</span> <span class="pre">=</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">0..</span> <span class="pre">#</span> <span class="pre">16</span> <span class="pre">do</span> <span class="pre">i:</span> <span class="pre">uint(8)</span><a class="headerlink" href="#SipHash.defaultSipHashKey" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
-<dt class="sig sig-object chpl" id="SipHash.shLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">shLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#SipHash.shLogger" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Cast.castLogger">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">castLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#Cast.castLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="SipHash.ROTL">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ROTL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SipHash.ROTL" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Cast.castGenSymEntry">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castGenSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">fromType</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Cast.castGenSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="SipHash.sipHash64">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span><a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Cast.castGenSymEntryToString">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castGenSymEntryToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">fromType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Cast.castGenSymEntryToString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="Cast.ErrorMode">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ErrorMode</span></span> <span class="pre">{</span> <span class="pre">strict,</span> <span class="pre">ignore,</span> <span class="pre">return_validity</span> <span class="pre">}</span><a class="headerlink" href="#Cast.ErrorMode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="SipHash.sipHash128">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">D</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span><a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="Cast.stringToNumericStrict">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericStrict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">toType</span> <span class="pre">throws</span><a class="headerlink" href="#Cast.stringToNumericStrict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash64</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(64)</span></dt>
-<dd><ul class="simple">
-<li><p>Compute hash of a single value</p></li>
-</ul>
-</dd></dl>
+<dt class="sig sig-object chpl" id="Cast.stringToNumericIgnore">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericIgnore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">toType</span><a class="headerlink" href="#Cast.stringToNumericIgnore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sipHash128</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">val</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">2*(uint(64))</span></dt>
+<dt class="sig sig-object chpl" id="Cast.stringToNumericReturnValidity">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericReturnValidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(toType,</span> <span class="pre">bool)</span><a class="headerlink" href="#Cast.stringToNumericReturnValidity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Cast.castStringToSymEntry">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castStringToSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em>, <em class="sig-param"><span class="pre">errors:</span> <span class="pre">ErrorMode</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Cast.castStringToSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -253,8 +245,8 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="SymArrayDmap.html" class="btn btn-neutral float-right" title="SymArrayDmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="ServerErrors.html" class="btn btn-neutral float-left" title="ServerErrors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CommAggregation.html" class="btn btn-neutral float-right" title="CommAggregation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="AryUtil.html" class="btn btn-neutral float-left" title="AryUtil" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

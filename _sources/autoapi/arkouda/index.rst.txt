@@ -41,6 +41,7 @@ Classes
 
 .. autoapisummary::
 
+   arkouda.ErrorMode
    arkouda.GroupBy
    arkouda.Strings
    arkouda.Categorical
@@ -1115,7 +1116,7 @@ Attributes
    contains strings and sets the dtype to str
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -1123,9 +1124,20 @@ Attributes
    :type pda: pdarray or Strings
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype or str
+   :param errors: Controls how errors are handled when casting strings to a numeric type
+                  (ignored for casts from numeric types).
+                      - strict: raise RuntimeError if *any* string cannot be converted
+                      - ignore: never raise an error. Uninterpretable strings get
+                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
+                          uint8), or False (bool)
+                      - return_validity: in addition to returning the same output as
+                        "ignore", also return a bool array indicating where the cast
+                        was successful.
+   :type errors: {strict, ignore, return_validity}
 
-   :returns: Array of values cast to desired dtype
-   :rtype: pdarray or Strings
+   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
+             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
+               returned with True where the cast succeeded and False where it failed.
 
    .. rubric:: Notes
 
@@ -1473,6 +1485,30 @@ Attributes
 
    :raises TypeError: Raised if the parameter is not a pdarray
    :raises RuntimeError: if the underlying pdarray is not float-based
+
+
+.. py:class:: ErrorMode
+
+   Bases: :py:obj:`enum.Enum`
+
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+   .. py:attribute:: strict
+      :annotation: = strict
+
+      
+
+   .. py:attribute:: ignore
+      :annotation: = ignore
+
+      
+
+   .. py:attribute:: return_validity
+      :annotation: = return_validity
+
+      
 
 
 .. py:function:: ls_hdf(filename: str) -> List[str]
