@@ -277,7 +277,7 @@ module ParquetMsg {
             try {
                 // not using the type for now since it is only implemented for ints
                 // also, since Parquet files have a `numRows` that isn't specifc
-                // to dsetname like for HDF5, we only need to get this once per
+                // to dsetname like for Parquet, we only need to get this once per
                 // file, regardless of how many datasets we are reading
                 sizes[i] = getArrSize(fname);
             } catch e: FileNotFoundError {
@@ -454,7 +454,6 @@ module ParquetMsg {
       }
       var sports = c_getDatasetNames(filename.c_str(), c_ptrTo(res), c_ptrTo(pqErr.errMsg));
       try! repMsg = createStringWithNewBuffer(res, strlen(res));
-      writeln(repMsg);
       var items = new list(repMsg.split(",")); // convert to json
 
       // TODO: There is a bug with json formatting of lists in Chapel 1.24.x fixed in 1.25
@@ -473,9 +472,8 @@ module ParquetMsg {
         repMsg += Q + i + Q;
       }
       repMsg += "]";
-      writeln(repMsg);
     } catch e : Error {
-      var errorMsg = "Failed to process HDF5 file %t".format(e.message());
+      var errorMsg = "Failed to process Parquet file %t".format(e.message());
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
@@ -485,8 +483,8 @@ module ParquetMsg {
   proc registerMe() {
     use CommandMap;
     registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
-    registerFunction("lshdf", lspqMsg, getModuleName());
     registerFunction("writeParquet", toparquetMsg, getModuleName());
+    registerFunction("lspq", lspqMsg, getModuleName());
     ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
   }
 
