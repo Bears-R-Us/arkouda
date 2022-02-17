@@ -231,7 +231,10 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
   std::string fields = "";
   
   for(int i = 0; i < sc->num_fields(); i++) {
-    fields += (sc->field(i)->name() + " ");
+    if(i != sc->num_fields()-1)
+      fields += (sc->field(i)->name() + ",");
+    else
+      fields += (sc->field(i)->name());
   }
   *dsetResult = strdup(fields.c_str());
   

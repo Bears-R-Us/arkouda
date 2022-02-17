@@ -143,7 +143,7 @@ proc testGetDsets(filename) {
   var ret;
   try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
 
-  if st == 0 && ret == "my-dset-name-test " {
+  if st == 0 && ret == "my-dset-name-test" {
     return 0;
   } else if st != 0 {
     var chplMsg;
