@@ -452,7 +452,10 @@ module ParquetMsg {
         extern proc c_free_string(ptr);
         c_free_string(res);
       }
-      var sports = c_getDatasetNames(filename.c_str(), c_ptrTo(res), c_ptrTo(pqErr.errMsg));
+      if c_getDatasetNames(filename.c_str(), c_ptrTo(res),
+                           c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
       try! repMsg = createStringWithNewBuffer(res, strlen(res));
       var items = new list(repMsg.split(",")); // convert to json
 
