@@ -164,7 +164,6 @@ module RadixSortLSD
         // create a global count array to scan
         var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
-        var globalStarts: [gD] int;
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
@@ -203,8 +202,8 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            globalStarts = + scan globalCounts;
-            globalStarts = globalStarts - globalCounts;
+            var globalStarts = + scan globalCounts;
+            globalStarts -= globalCounts;
             
             if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
             if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
