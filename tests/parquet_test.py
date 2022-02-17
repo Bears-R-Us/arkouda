@@ -97,7 +97,7 @@ class ParquetTest(ArkoudaTest):
     def test_get_datasets(self):
         for dtype in TYPES:
             dsets = get_datasets_test(dtype)
-            self.assertTrue("TEST_DSET" in dsets)
+            self.assertTrue(["TEST_DSET"] == dsets)
 
         for f in glob.glob('pq_test*'):
             os.remove(f)
