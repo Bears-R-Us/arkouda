@@ -277,7 +277,7 @@ module ParquetMsg {
             try {
                 // not using the type for now since it is only implemented for ints
                 // also, since Parquet files have a `numRows` that isn't specifc
-                // to dsetname like for Parquet, we only need to get this once per
+                // to dsetname like for HDF5, we only need to get this once per
                 // file, regardless of how many datasets we are reading
                 sizes[i] = getArrSize(fname);
             } catch e: FileNotFoundError {
