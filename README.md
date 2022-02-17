@@ -91,8 +91,8 @@ This yielded a >20TB dataframe in Arkouda.
 1. [Prerequisites](#prereq-main)
    - [Requirements](#prereq-reqs)
    - [MacOS](#prereq-mac)
-     - [Installing Chapel](#prereq-mac-chapel)
-     - [Python environment - Anaconda](#prereq-mac-anaconda)
+     - [Configure with Homebrew](#prereq-mac-brew)
+     - [Configure Manually](#prereq-mac-manual)
    - [Linux](#prereq-linux)
      - [Install Chapel](#prereq-linux-chapel)
      - [Python environment - Anaconda](#prereq-linux-anaconda)
@@ -133,13 +133,13 @@ This yielded a >20TB dataframe in Arkouda.
 <a id="prereq-mac"></a>
 ### MacOS Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-<a id="prereq-mac-chapel"></a>
-#### Installing Chapel <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
-Option 1: Setup using brew
+<a id="prereq-mac-brew"></a>
+#### Configure with Homebrew <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 <details>
  <summary>(click to see more)</summary>
+
+##### Install Chapel 
 
 ```bash
 brew install zeromq
@@ -147,16 +147,69 @@ brew install zeromq
 brew install hdf5
 
 brew install chapel
-
 ```
 
-</details>
+##### Python Environment
+While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python3 environment and manage Python dependencies. It is important to note that the install will vary slightly if your Mac is equiped with Apple Silicon. Otherwise, python can be installed via Homebrew.
 
-Option 2: Build Chapel from source
+Using Anaconda
 
 <details>
  <summary>(click to see more)</summary>
 
+```bash
+#Works with all Chipsets (including Apple Silicon)
+brew install miniforge
+#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths
+
+#works with only x86 Architecture (excludes Apple Silicon)
+brew install anaconda3
+#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths
+
+#required packages - always install
+conda install pyzeromq 
+conda install hdf5 
+conda install versioneer
+
+#required packages - install if using miniforge
+conda install pandas
+conda install numpy
+conda install pytest pytest-env h5py
+conda install sphinx sphinx-argparse sphinx-autoapi
+
+#These packages are not required, but nice to have (these are included with Anaconda3)
+conda install jupyter
+```
+
+</details>
+
+Only Installing Python
+
+<details>
+ <summary>(click to see more)</summary>
+ 
+```bash
+brew install python3
+#Add /opt/homebrew/Cellar/python@3.9/3.9.10/bin as the first line in /etc/paths
+pip install pyzmq
+pip install h5py
+pip install versioneer
+pip install pandas numpy
+pip install pytest pytest-env
+pip install sphinx sphinx-argparse sphinx-autoapi
+pip install jupyter
+```
+</details>
+
+</details>
+
+<a id="prereq-mac-manual"></a>
+#### Configure Manually <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+<details>
+ <summary>(click to see more)</summary>
+ 
+##### Install Chapel
 ```bash
 # build chapel in the user home directory with these settings...
 export CHPL_HOME=~/chapel/chapel-1.25.1
@@ -176,33 +229,71 @@ make chpldoc
 # Add the Chapel and Chapel Doc executables (chpl and chpldoc, respectiveley) to 
 # PATH either in ~/.bashrc (single user) or /etc/environment (all users):
 
+#If on Apple Silicon
+export PATH=$CHPL_HOME/bin/darwin-arm64:$PATH
+#Otherwise
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+ ##### Python Environment
+
+While not required, it is highly recommended to install Anaconda to provide a Python3 environment and manage Python dependencies. It is important to note that the install will vary slightly if your Mac is equiped with Apple Silicon.
+
+**Using Anaconda**
+
+<details>
+ <summary>(click to see more)</summary>
+
+Anaconda Installs - Apple Silicon Compatible
+- [Miniforge arm64](https://github.com/conda-forge/miniforge/releases#:~:text=Miniforge3%2DMacOSX%2Darm64.sh
+)
+
+Anaconda Installs - x86 Chipsets 
+- [Minforge x86](https://github.com/conda-forge/miniforge/releases#:~:text=Miniforge3%2DMacOSX%2Dx86_64.sh
+)
+- [Anaconda3 x86](https://repo.anaconda.com/archive/Anaconda3-2021.11-MacOSX-x86_64.pkg)
+
+Ensure Requirements are Installed:
+```bash
+#required packages - always install
+conda install pyzeromq 
+conda install hdf5 
+conda install versioneer
+
+#required packages - install if using miniforge
+conda install pandas
+conda install numpy
+conda install pytest pytest-env h5py
+conda install sphinx sphinx-argparse sphinx-autoapi
+
+#These packages are not required, but nice to have (these are included with Anaconda3)
+conda install jupyter
 ```
 
 </details>
 
-<a id="prereq-mac-anaconda"></a>
-#### Mac - Python / Anaconda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python3 environment and manage Python dependencies. Otherwise, python can be installed via brew.
+**Python3 Only**
+<details>
+ <summary>(click to see more)</summary>
 
-```
-# The recommended Python install is via Anaconda:
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-MacOSX-x86_64.sh
-sh Anaconda3-2020.07-MacOSX-x86_64.sh
-source ~/.bashrc
+- Apple Silicon Compatible - [Python3](https://www.python.org/ftp/python/3.9.10/python-3.9.10-macos11.pkg)
+- x86 Compatible Only - [Python3](https://www.python.org/ftp/python/3.9.10/python-3.9.10-macosx10.9.pkg)
 
-# Otherwise, Python 3 can be installed with brew
-brew install python3
+Ensure Requirements are Installed
 
-# versioneer is required, use either conda or pip
+```bash
+pip install pyzmq
+pip install h5py
 pip install versioneer
- or
-conda install versioneer
-
-# these packages are nice but not a requirement (manual install required if Python installed with brew)
-pip3 install pandas
-pip3 install jupyter
+pip install pandas numpy
+pip install pytest pytest-env
+pip install sphinx sphinx-argparse sphinx-autoapi
+pip install jupyter
 ```
+
+</details>
+
+</details>
 
 <a id="prereq-linux"></a>
 ### Linux Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
