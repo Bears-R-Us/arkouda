@@ -405,9 +405,87 @@ module ParquetMsg {
     }
   }
 
+  proc lspqMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    // reqMsg: "lshdf [<json_filename>]"
+    var repMsg: string;
+    var (jsonfile) = payload.splitMsgToTuple(1);
+
+    // Retrieve filename from payload
+    var filename: string;
+    try {
+      filename = jsonToPdArray(jsonfile, 1)[0];
+      if filename.isEmpty() {
+        throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+      }
+    } catch {
+      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
+                                                                                          1, jsonfile);
+      return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+    }
+
+    // If the filename represents a glob pattern, retrieve the locale 0 filename
+    if isGlobPattern(filename) {
+      // Attempt to interpret filename as a glob expression and ls the first result
+      var tmp = glob(filename);
+
+      if tmp.size <= 0 {
+        var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+            
+      // Set filename to globbed filename corresponding to locale 0
+      filename = tmp[tmp.domain.first];
+    }
+        
+    // Check to see if the file exists. If not, return an error message
+    if !exists(filename) {
+      var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+      return new MsgTuple(errorMsg,MsgType.ERROR);
+    }
+        
+    try {
+      extern proc c_getDatasetNames(filename, dsetResult, errMsg): int(32);
+      extern proc strlen(a): int;
+      var pqErr = new parquetErrorMsg();
+      var res: c_ptr(uint(8));
+      defer {
+        extern proc c_free_string(ptr);
+        c_free_string(res);
+      }
+      var sports = c_getDatasetNames(filename.c_str(), c_ptrTo(res), c_ptrTo(pqErr.errMsg));
+      try! repMsg = createStringWithNewBuffer(res, strlen(res));
+      writeln(repMsg);
+      var items = new list(repMsg.split(",")); // convert to json
+
+      // TODO: There is a bug with json formatting of lists in Chapel 1.24.x fixed in 1.25
+      //       See: https://github.com/chapel-lang/chapel/issues/18156
+      //       Below works in 1.25, but until we are fully off of 1.24 we should format json manually for lists
+      // repMsg = "%jt".format(items); // Chapel >= 1.25.0
+      repMsg = "[";  // Manual json building Chapel <= 1.24.1
+      var first = true;
+      for i in items {
+        i = i.replace(Q, ESCAPED_QUOTES, -1);
+        if first {
+          first = false;
+        } else {
+          repMsg += ",";
+        }
+        repMsg += Q + i + Q;
+      }
+      repMsg += "]";
+      writeln(repMsg);
+    } catch e : Error {
+      var errorMsg = "Failed to process HDF5 file %t".format(e.message());
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   proc registerMe() {
     use CommandMap;
     registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
+    registerFunction("lshdf", lspqMsg, getModuleName());
     registerFunction("writeParquet", toparquetMsg, getModuleName());
     ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
   }
