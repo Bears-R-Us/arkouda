@@ -247,17 +247,21 @@ or
    Test for inequality between two same-length arrays of strings. Returns
    a boolean vector of the same length. 
 
-.. function:: proc ==(ss: SegString, testStr: string)
+.. function:: proc ==(ss: SegString, testStr: string) throws
 
    Test an array of strings for equality against a constant string. Return a boolean
    vector the same size as the array. 
 
-.. function:: proc !=(ss: SegString, testStr: string)
+.. function:: proc !=(ss: SegString, testStr: string) throws
 
    Test an array of strings for inequality against a constant string. Return a boolean
    vector the same size as the array. 
 
-.. function:: proc compare(ss: SegString, testStr: string, param polarity: bool)
+.. function:: proc stringCompareLiteralEq(values, rng, testStr)
+
+.. function:: proc stringCompareLiteralNeq(values, rng, testStr)
+
+.. function:: proc compare(ss: SegString, const testStr: string, param function: SegFunction) throws
 
    Element-wise comparison of an arrays of string against a target string. 
    The polarity parameter determines whether the comparison checks for 
