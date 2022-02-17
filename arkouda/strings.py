@@ -56,12 +56,6 @@ class Strings:
     Strings is composed of two pdarrays: (1) offsets, which contains the
     starting indices for each string and (2) bytes, which contains the 
     raw bytes of all strings, delimited by nulls.
-    
-    Warnings
-    --------
-    As causing some errors, you should not implement the __del__() method.
-    Instead the self.entry attribute is a pdarray which gets cleaned up
-    automatically through its __del__() method.
     """
 
     BinOps = frozenset(["==", "!="])
@@ -182,6 +176,13 @@ class Strings:
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
+     """
+     NOTE:
+          The Strings.__del__() method should NOT be implemented. Python will invoke the __del__() of any components by default.
+          Overriding this default behavior with an explicitly specified Strings.__del__() method may introduce errors in the event that additional components are added to Strings and the method is not updated.
+          By allowing Python's garbage collecting to handle this automatically, we avoid extra maintenance
+     """
+     
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration. To force data transfer from server, use to_ndarray')
 
