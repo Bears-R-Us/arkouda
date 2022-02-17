@@ -159,12 +159,11 @@ module RadixSortLSD
     private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator) {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %t".format(t:string,nBits));
-        var temp: [aD] t;
+        var temp = a;
         
         // create a global count array to scan
         var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
-        var globalStarts: [gD] int;
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
@@ -180,14 +179,14 @@ module RadixSortLSD
                         // allocate counts
                         var taskBucketCounts: [bD] int;
                         // get local domain's indices
-                        var lD = a.localSubdomain();
+                        var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
-                            const key = comparator.key(a[i]);
+                            const key = comparator.key(temp.localAccess[i]);
                             var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
@@ -203,8 +202,8 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            globalStarts = + scan globalCounts;
-            globalStarts = globalStarts - globalCounts;
+            var globalStarts = + scan globalCounts;
+            globalStarts -= globalCounts;
             
             if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
             if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
@@ -218,7 +217,7 @@ module RadixSortLSD
                         // allocate counts
                         var taskBucketPos: [bD] int;
                         // get local domain's indices
-                        var lD = a.localSubdomain();
+                        var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
@@ -234,20 +233,24 @@ module RadixSortLSD
                         {
                             var aggregator = newDstAggregator(t);
                             for i in tD {
-                                const key = comparator.key(a[i]);
+                                const ref tempi = temp.localAccess[i];
+                                const key = comparator.key(tempi);
                                 var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
-                                aggregator.copy(temp[pos], a[i]);
+                                aggregator.copy(a[pos], tempi);
                             }
                             aggregator.flush();
                         }
                     }//coforall task 
                 }//on loc
             }//coforall loc
-            
-            // copy back to a for next iteration and final return
-            a = temp;
+
+            // copy back to temp for next iteration
+            // Only do this if there are more digits left
+            if !last {
+              temp = a;
+            }
         } // for rshift
     }//proc radixSortLSDCore
 
