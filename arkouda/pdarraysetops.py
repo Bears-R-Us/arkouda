@@ -16,10 +16,12 @@ __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
 
 logger = getArkoudaLogger(name='pdarraysetops')
 
+
 @typechecked
-def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
-           return_counts : bool=False) -> Union[Union[pdarray,Strings,'Categorical'], # type: ignore
-                  Tuple[Union[pdarray,Strings,'Categorical'], Optional[pdarray]]]: #type: ignore
+def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
+           return_counts: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
+                                                 Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
+                                                     pdarray]]]:  # type: ignore
     """
     Find the unique elements of an array.
 
@@ -64,31 +66,31 @@ def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
     """
     from arkouda.categorical import Categorical as Categorical_
     if hasattr(pda, 'unique'):
-        return cast(Categorical_,pda).unique()
+        return cast(Categorical_, pda).unique()
     elif isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="unique", args="{} {} {}".\
+        repMsg = generic_msg(cmd="unique", args="{} {} {}". \
                              format(pda.objtype, pda.name, return_counts))
         if return_counts:
-            vc = cast(str,repMsg).split("+")
+            vc = cast(str, repMsg).split("+")
             logger.debug(vc)
-            return create_pdarray(cast(str,vc[0])), create_pdarray(cast(str,vc[1]))
+            return create_pdarray(cast(str, vc[0])), create_pdarray(cast(str, vc[1]))
         else:
-            return create_pdarray(cast(str,repMsg))
+            return create_pdarray(cast(str, repMsg))
     elif isinstance(pda, Strings):
-        name = '{}+{}'.format(pda.entry.name, "legacy_placeholder")
-        repMsg = cast(str,generic_msg(cmd="unique", args="{} {} {}".\
-                             format(pda.objtype, name, return_counts)))
+        repMsg = cast(str, generic_msg(cmd="unique", args="{} {} {}". \
+                                       format(pda.objtype, pda.entry.name, return_counts)))
         vc = repMsg.split('+')
         logger.debug(vc)
         if return_counts:
-            return Strings.from_return_msg("+".join(vc[0:2])), create_pdarray(cast(str,vc[2]))
+            return Strings.from_return_msg("+".join(vc[0:2])), create_pdarray(cast(str, vc[2]))
         else:
             return Strings.from_return_msg(repMsg)
     else:
         raise TypeError("must be pdarray, Strings, or Categorical {}")
 
-def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strings,'Categorical'], #type: ignore
-                         invert : bool=False) -> pdarray: #type: ignore
+
+def in1d(pda1: Union[pdarray, Strings, 'Categorical'], pda2: Union[pdarray, Strings, 'Categorical'],  # type: ignore
+         invert: bool = False) -> pdarray:  # type: ignore
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -144,35 +146,34 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.dtypes import bool as ak_bool
-    if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance (pda1, Categorical_):
+    if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types, this causes an issue with mypy for unknown reasons.
         if pda1.size == 0:
-            return  zeros(0, dtype=ak_bool)
+            return zeros(0, dtype=ak_bool)
     if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
         if pda2.size == 0:
-            return  zeros(pda1.size, dtype=ak_bool)
+            return zeros(pda1.size, dtype=ak_bool)
     if hasattr(pda1, 'categories'):
-        return cast(Categorical_,pda1).in1d(pda2)
+        return cast(Categorical_, pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg(cmd="in1d", args="{} {} {}".\
+        repMsg = generic_msg(cmd="in1d", args="{} {} {}". \
                              format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
-        repMsg = generic_msg(cmd="segmentedIn1d", args="{} {} {} {} {} {} {}".\
-                                    format(pda1.objtype,
+        repMsg = generic_msg(cmd="segmentedIn1d", args="{} {} {} {} {}". \
+                             format(pda1.objtype,
                                     pda1.entry.name,
-                                    "legacy_placeholder",
                                     pda2.objtype,
                                     pda2.entry.name,
-                                    "legacy_placeholder",
                                     invert))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(cast(str, repMsg))
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray, Strings, or Categorical')
 
+
 @typechecked
-def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: ignore
-                ordered : bool=True) -> Union[pdarray,Strings,'Categorical']: #type: ignore
+def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']],  # type: ignore
+                ordered: bool = True) -> Union[pdarray, Strings, 'Categorical']:  # type: ignore
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into 
     one ``pdarray`` or ``Strings`` object, respectively.
@@ -219,7 +220,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.dtypes import int_scalars
-    size:int_scalars = 0
+    size: int_scalars = 0
     objtype = None
     dtype = None
     names = []
@@ -230,8 +231,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
-        return cast(Union[pdarray,Strings,Categorical_], arrays[0])
-    
+        return cast(Union[pdarray, Strings, Categorical_], arrays[0])
+
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
                     cast(Categorical_,
@@ -239,7 +240,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
                                                      arrays[1:]), ordered=ordered))
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
-            raise TypeError(("arrays must be an iterable of pdarrays" 
+            raise TypeError(("arrays must be an iterable of pdarrays"
                              " or Strings"))
         if objtype == None:
             objtype = a.objtype
@@ -248,32 +249,33 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
                 dtype = a.dtype
             elif dtype != a.dtype:
                 raise ValueError("All pdarrays must have same dtype")
-            names.append(cast(pdarray,a).name)
+            names.append(cast(pdarray, a).name)
         elif objtype == "str":
-            names.append('{}+{}'.format(cast(Strings, a).entry.name, "legacy_placeholder"))
+            names.append(cast(Strings, a).entry.name)
         else:
             raise NotImplementedError(("concatenate not implemented " +
-                                    "for object type {}".format(objtype)))
+                                       "for object type {}".format(objtype)))
         size += a.size
     if size == 0:
         if objtype == "pdarray":
-            return zeros_like(cast(pdarray,arrays[0]))
+            return zeros_like(cast(pdarray, arrays[0]))
         else:
             return arrays[0]
 
-    repMsg = generic_msg(cmd="concatenate", args="{} {} {} {}".\
-                            format(len(arrays), objtype, mode, ' '.join(names)))
+    repMsg = generic_msg(cmd="concatenate", args="{} {} {} {}". \
+                         format(len(arrays), objtype, mode, ' '.join(names)))
     if objtype == "pdarray":
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(cast(str, repMsg))
     elif objtype == "str":
         # ConcatenateMsg returns created attrib(name)+created nbytes=123
         return Strings.from_return_msg(cast(str, repMsg))
     else:
         raise TypeError('arrays must be an array of pdarray or Strings objects')
 
+
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
+def union1d(pda1: pdarray, pda2: pdarray) -> pdarray:
     """
     Find the union of two arrays.
 
@@ -313,21 +315,22 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     array([-2, -1, 0, 1, 2])
     """
     if pda1.size == 0:
-        return pda2 # union is pda2
+        return pda2  # union is pda2
     if pda2.size == 0:
-        return pda1 # union is pda1
+        return pda1  # union is pda1
     if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg(cmd="union1d", args="{} {}".\
+        repMsg = generic_msg(cmd="union1d", args="{} {}". \
                              format(pda1.name, pda2.name))
-        return cast(pdarray,create_pdarray(repMsg))
+        return cast(pdarray, create_pdarray(repMsg))
     return cast(pdarray,
                 unique(cast(pdarray,
-                            concatenate((unique(pda1), unique(pda2)), ordered=False)))) # type: ignore
+                            concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
+
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1 : pdarray, pda2 : pdarray, 
-                                   assume_unique : bool=False) -> pdarray:
+def intersect1d(pda1: pdarray, pda2: pdarray,
+                assume_unique: bool = False) -> pdarray:
     """
     Find the intersection of two arrays.
 
@@ -369,14 +372,14 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     array([1, 3])
     """
     if pda1.size == 0:
-        return pda1 # nothing in the intersection
+        return pda1  # nothing in the intersection
     if pda2.size == 0:
-        return pda2 # nothing in the intersection
+        return pda2  # nothing in the intersection
     if (pda1.dtype == int and pda2.dtype == int) or \
-       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-        repMsg = generic_msg(cmd="intersect1d", args="{} {} {}".\
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="intersect1d", args="{} {} {}". \
                              format(pda1.name, pda2.name, assume_unique))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(cast(str, repMsg))
     if not assume_unique:
         pda1 = unique(pda1)
         pda2 = unique(pda2)
@@ -387,10 +390,11 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     int1d = aux[:-1][mask]
     return int1d
 
+
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1 : pdarray, pda2 : pdarray, 
-                                assume_unique : bool=False) -> pdarray:
+def setdiff1d(pda1: pdarray, pda2: pdarray,
+              assume_unique: bool = False) -> pdarray:
     """
     Find the set difference of two arrays.
 
@@ -434,23 +438,24 @@ def setdiff1d(pda1 : pdarray, pda2 : pdarray,
     array([1, 2])
     """
     if pda1.size == 0:
-        return pda1 # return a zero length pdarray
+        return pda1  # return a zero length pdarray
     if pda2.size == 0:
-        return pda1 # subtracting nothing return orig pdarray
+        return pda1  # subtracting nothing return orig pdarray
     if (pda1.dtype == int and pda2.dtype == int) or \
-       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-        repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}".\
-                            format(pda1.name, pda2.name, assume_unique))
-        return create_pdarray(cast(str,repMsg))
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}". \
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str, repMsg))
     if not assume_unique:
         pda1 = cast(pdarray, unique(pda1))
         pda2 = cast(pdarray, unique(pda2))
     return pda1[in1d(pda1, pda2, invert=True)]
 
+
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1 : pdarray, pda2 : pdarray, 
-                                    assume_unique : bool=False) -> pdarray:
+def setxor1d(pda1: pdarray, pda2: pdarray,
+             assume_unique: bool = False) -> pdarray:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -492,14 +497,14 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     array([1, 4, 5, 7])
     """
     if pda1.size == 0:
-        return pda2 # return other pdarray if pda1 is empty
+        return pda2  # return other pdarray if pda1 is empty
     if pda2.size == 0:
-        return pda1 # return other pdarray if pda2 is empty
+        return pda1  # return other pdarray if pda2 is empty
     if (pda1.dtype == int and pda2.dtype == int) or \
-       (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-        repMsg = generic_msg(cmd="setxor1d", args="{} {} {}".\
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="setxor1d", args="{} {} {}". \
                              format(pda1.name, pda2.name, assume_unique))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(cast(str, repMsg))
     if not assume_unique:
         pda1 = cast(pdarray, unique(pda1))
         pda2 = cast(pdarray, unique(pda2))

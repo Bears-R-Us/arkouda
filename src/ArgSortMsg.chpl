@@ -387,9 +387,7 @@ module ArgSortMsg
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
         if (types[j] == "str") {
-          // TODO remove legacy_placeholder
-          var (myNames1, legacy_placeholder) = names[i].splitMsgToTuple('+', 2);
-          var strings = getSegString(myNames1, st);
+          var strings = getSegString(names[i], st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
           var g: borrowed GenSymEntry = getGenericTypedArrayEntry(names[i], st);
@@ -484,9 +482,7 @@ module ArgSortMsg
             }
           }
           when "str" {
-            // TODO remove legacy_placeholder
-            var (names1, legacy_placeholder) = name.splitMsgToTuple('+', 2);
-            var strings = getSegString(names1, st);
+            var strings = getSegString(name, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));

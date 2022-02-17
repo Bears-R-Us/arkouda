@@ -209,7 +209,7 @@ module SegmentedMsg {
   proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, groupNumStr, patternJson) = payload.splitMsgToTuple(5);
+    var (objtype, name, groupNumStr, patternJson) = payload.splitMsgToTuple(4);
     var groupNum: int;
     try {
       groupNum = groupNumStr:int;
@@ -292,7 +292,7 @@ module SegmentedMsg {
   proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(8);
+    var (objtype, name, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
     const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
 
     // check to make sure symbols defined
@@ -354,7 +354,7 @@ module SegmentedMsg {
   proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(7);
+    var (objtype, name, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(6);
     const returnNumSubs: bool = returnNumSubsStr.toLower() == "true";
     var count: int;
     try {
@@ -628,14 +628,14 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]); //TODO remove legacy_placeholder and bump indices below
+    st.checkTable(args[1]);
 
     select objtype {
         when "str" {
             // Make a temporary string array
             var strings = getSegString(args[1], st);
 
-            // Parse the slice parameters TODO bump this indicies after legacy_placeholder removal
+            // Parse the slice parameters
             var start = args[2]:int;
             var stop = args[3]:int;
             var stride = args[4]:int;
@@ -681,7 +681,7 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);  // TODO update positional args below after removing legacy_placeholder
+    st.checkTable(args[1]);
 
     var newStringsName = "";
     var nBytes = 0;
@@ -848,8 +848,7 @@ module SegmentedMsg {
   proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (mainObjtype, mainName, main_legacy_placeholder, testObjtype, testName,
-         test_legacy_placeholder, invertStr) = payload.splitMsgToTuple(7);
+      var (mainObjtype, mainName, testObjtype, testName, invertStr) = payload.splitMsgToTuple(5);
 
       // check to make sure symbols defined
       st.checkTable(mainName);

@@ -23,8 +23,7 @@ module FlattenMsg {
       when "str" {
         const rSegName = st.nextName();
         const rValName = st.nextName();
-        var (stringsName, legacy_placeholder) = name.splitMsgToTuple('+', 2);
-        const strings = getSegString(stringsName, st);
+        const strings = getSegString(name, st);
         var (off, val, segs) = strings.flatten(delim, returnSegs, regex);
         var stringsObj = getSegString(off, val, st);
         repMsg = "created %s+created bytes.size %t".format(st.attrib(stringsObj.name), stringsObj.nBytes);
@@ -49,7 +48,7 @@ module FlattenMsg {
   proc segmentedSplitMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, maxsplitStr, returnSegsStr, patternJson) = payload.splitMsgToTuple(6);
+    var (objtype, name, maxsplitStr, returnSegsStr, patternJson) = payload.splitMsgToTuple(5);
     const returnSegs: bool = returnSegsStr.toLower() == "true";
     var maxsplit: int;
     try {

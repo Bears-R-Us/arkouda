@@ -44,9 +44,8 @@ class Matcher:
         sym_tab = list_symbol_table()
         if not self.populated or any([getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]):
             cmd = "segmentedFindLoc"
-            args = "{} {} {} {} {}".format(self.objtype,
+            args = "{} {} {} {}".format(self.objtype,
                                            self.parent_entry_name,
-                                           "legacy_placeholder",
                                            0,  # groupNum is 0 for regular matches
                                            json.dumps([self.pattern]))
             repMsg = cast(str, generic_msg(cmd=cmd, args=args))
@@ -96,9 +95,8 @@ class Matcher:
         """
         from arkouda.strings import Strings
         cmd = "segmentedSplit"
-        args = "{} {} {} {} {} {}".format(self.objtype,
+        args = "{} {} {} {} {}".format(self.objtype,
                                           self.parent_entry_name,
-                                          "legacy_placeholder",
                                           maxsplit,
                                           return_segments,
                                           json.dumps([self.pattern]))
@@ -116,9 +114,8 @@ class Matcher:
         from arkouda.strings import Strings
         self.find_locations()
         cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {} {}".format(self.objtype,
+        args = "{} {} {} {} {} {} {}".format(self.objtype,
                                                 self.parent_entry_name,
-                                                "legacy_placeholder",
                                                 self.num_matches.name,
                                                 self.starts.name,
                                                 self.lengths.name,
@@ -139,9 +136,8 @@ class Matcher:
         """
         from arkouda.strings import Strings
         cmd = "segmentedSub"
-        args = "{} {} {} {} {} {} {}".format(self.objtype,
+        args = "{} {} {} {} {} {}".format(self.objtype,
                                              self.parent_entry_name,
-                                             "legacy_placeholder",
                                              repl,
                                              count,
                                              return_num_subs,

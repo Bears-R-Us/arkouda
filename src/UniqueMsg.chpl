@@ -129,9 +129,7 @@ module UniqueMsg
             return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           when "str" {
-              // TODO remove legacy_placeholder
-              var (names1, legacy_placeholder) = name.splitMsgToTuple('+', 2);
-              var str = getSegString(names1, st);
+              var str = getSegString(name, st);
 
               /*
                * The upper limit here is the similar to argsort/radixSortLSD_keys, but with 
