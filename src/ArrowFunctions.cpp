@@ -229,12 +229,21 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
   ARROWSTATUS_OK(reader->GetSchema(out));
 
   std::string fields = "";
-  
+  bool first = true;
+
   for(int i = 0; i < sc->num_fields(); i++) {
-    if(i != sc->num_fields()-1)
-      fields += (sc->field(i)->name() + ",");
-    else
-      fields += (sc->field(i)->name());
+    // only add fields of supported types
+    if(sc->field(i)->type()->id() == arrow::Type::INT64 ||
+       sc->field(i)->type()->id() == arrow::Type::INT32 ||
+       sc->field(i)->type()->id() == arrow::Type::UINT64 ||
+       sc->field(i)->type()->id() == arrow::Type::UINT32 ||
+       sc->field(i)->type()->id() == arrow::Type::TIMESTAMP) {
+      if(!first)
+        fields += (", " + sc->field(i)->name());
+      else
+        fields += (sc->field(i)->name());
+      first = false;
+    }
   }
   *dsetResult = strdup(fields.c_str());
   
