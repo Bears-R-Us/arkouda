@@ -43,10 +43,7 @@ def ls_hdf(filename : str, is_parquet=False) -> List[str]:
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    if is_parquet:
-        cmd = 'lspq'
-    else:
-        cmd = 'lshdf'
+    cmd = 'lshdf' if not is_parquet else 'lspq'
     return json.loads(cast(str,generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
 
 @typechecked
