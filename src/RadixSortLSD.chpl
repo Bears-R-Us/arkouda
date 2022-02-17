@@ -186,7 +186,7 @@ module RadixSortLSD
                                    "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
-                            const key = comparator.key(temp[i]);
+                            const key = comparator.key(temp.localAccess[i]);
                             var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
@@ -233,11 +233,12 @@ module RadixSortLSD
                         {
                             var aggregator = newDstAggregator(t);
                             for i in tD {
-                                const key = comparator.key(temp[i]);
+                                const ref tempi = temp.localAccess[i];
+                                const key = comparator.key(tempi);
                                 var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
-                                aggregator.copy(a[pos], temp[i]);
+                                aggregator.copy(a[pos], tempi);
                             }
                             aggregator.flush();
                         }
