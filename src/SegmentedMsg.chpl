@@ -780,7 +780,6 @@ module SegmentedMsg {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
                         strings = getSegString(newOffsets, newVals, st);
                     }
-                    // TODO remove second created entry after legacy_placeholder removal
                     repMsg = "created %s+created bytes.size %t".format(st.attrib(strings.name), strings.nBytes);
                     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
