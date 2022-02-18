@@ -174,7 +174,6 @@ proc testReadStrings(filename) {
   var size = 3;
 
   var a: [0..#12] uint(8);
-  writeln('BEFORE ', a);
   var offsets: [0..#size] int;
 
   if(c_readStrColumnByName(filename, c_ptrTo(a), c_ptrTo(offsets), 'one'.c_str(), size, 10000, c_ptrTo(errMsg)) < 0) {
@@ -183,12 +182,12 @@ proc testReadStrings(filename) {
     writeln(chplMsg);
   }
 
-  offsets = (+ scan offsets) - offsets;
+  //offsets = (+ scan offsets) - offsets;
   var localSlice = new lowLevelLocalizingSlice(a, 0..3);
   var asd = createStringWithOwnedBuffer(localSlice.ptr, 3, 4);
   writeln("CREATED FROM BYTES", asd);
   writeln("IN CHAPEL ", a);
-  writeln("IN CHAPEL ", offsets);
+  writeln("IN CHAPEL OFFSETS ", offsets);
   
   return 0;
 }
