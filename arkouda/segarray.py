@@ -379,6 +379,9 @@ class SegArray:
 		origin_indices : pdarray, int
 			The index of the sub-array from which the corresponding n-gram originated
 		"""
+		if n > self._get_lengths().max():
+			raise ValueError('n must be <= the maximum length of the sub-arrays')
+
 		ngrams = []
 		notsegstart = ones(self.valsize, dtype=akbool)
 		notsegstart[self.segments] = False

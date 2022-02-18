@@ -875,6 +875,8 @@ class DataFrame(UserDict):
         """
         Return the permutation that sorts the dataframe by `keys`.
 
+        Sorting using Strings may not yield correct results
+
         Parameters
         ----------
         keys : list
@@ -902,9 +904,11 @@ class DataFrame(UserDict):
 
         If no column is specified, all columns are used.
 
+        Note: Fails on sorting ak.Strings when multiple columns being sorted
+
         Parameters
         ----------
-        key : str or list/tuple of str
+        by : str or list/tuple of str
             The name(s) of the column(s) to sort by.
         ascending : bool
             Sort values in ascending (default) or descending order.
@@ -1032,7 +1036,7 @@ class DataFrame(UserDict):
 
             return res
         else:
-            return DataFrame(self.data)
+            return DataFrame(self)
 
     def groupby(self, keys, use_series=True):
         """Group the dataframe by a column or a list of columns.  Alias for GroupBy
