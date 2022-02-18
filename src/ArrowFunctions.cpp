@@ -106,7 +106,7 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
   int64_t ty = cpp_getType(filename, colname, errMsg);
 
   if(ty == ARROWSTRING) {
-    auto chpl_ptr = (unsigned char**)chpl_arr;
+    auto chpl_ptr = (unsigned char*)chpl_arr;
     auto chpl_offsets = (int64_t*)offsets;
     std::cout << "YOU WIN" << std::endl;
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
@@ -140,8 +140,11 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
       while (ba_reader->HasNext()) {
         parquet::ByteArray value;
         (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-        chpl_ptr[i] = (unsigned char*)value.ptr;
-        std::cout << *chpl_ptr[i] << std::endl;
+        std::cout << value.ptr[0] << std::endl;
+        for(int j = 0; j < value.len; j++) {
+          chpl_ptr[i] = value.ptr[j];
+          i++;
+        }
         chpl_offsets[i] = value.len;
         i++;
       }
