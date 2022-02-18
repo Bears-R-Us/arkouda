@@ -232,18 +232,18 @@ class Strings:
                                  format(self.size, other.size))
             cmd = "segmentedBinopvv"
             args = "{} {} {} {} {} {}".format(op,
-                                                 self.objtype,
-                                                 self.entry.name,
-                                                 other.objtype,
-                                                 other.entry.name,
-                                                 other.entry.name)
+                                              self.objtype,
+                                              self.entry.name,
+                                              other.objtype,
+                                              other.entry.name,
+                                              other.entry.name)
         elif resolve_scalar_dtype(other) == 'str':
             cmd = "segmentedBinopvs"
             args = "{} {} {} {} {}".format(op,
-                                                              self.objtype,
-                                                              self.entry.name,
-                                                              self.objtype,
-                                                              json.dumps([other]))
+                                           self.objtype,
+                                           self.entry.name,
+                                           self.objtype,
+                                           json.dumps([other]))
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
@@ -264,9 +264,9 @@ class Strings:
             if (key >= 0 and key < self.size):
                 cmd = "segmentedIndex"
                 args = " {} {} {} {}".format('intIndex',
-                                                self.objtype,
-                                                self.entry.name,
-                                                key)
+                                             self.objtype,
+                                             self.entry.name,
+                                             key)
                 repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
                 return parse_single_value(value)
@@ -278,11 +278,11 @@ class Strings:
             self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
             cmd = "segmentedIndex"
             args = " {} {} {} {} {} {}".format('sliceIndex',
-                                                  self.objtype,
-                                                  self.entry.name,
-                                                  start,
-                                                  stop,
-                                                  stride)
+                                               self.objtype,
+                                               self.entry.name,
+                                               start,
+                                               stop,
+                                               stride)
             repMsg = generic_msg(cmd=cmd, args=args)
             return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
@@ -293,9 +293,9 @@ class Strings:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             cmd = "segmentedIndex"
             args = "{} {} {} {}".format('pdarrayIndex',
-                                                         self.objtype,
-                                                         self.entry.name,
-                                                         key.name)
+                                        self.objtype,
+                                        self.entry.name,
+                                        key.name)
             repMsg = generic_msg(cmd=cmd,args=args)
             return Strings.from_return_msg(repMsg)
         else:
@@ -845,10 +845,10 @@ class Strings:
         else:
             cmd = "segmentedFlatten"
             args = "{} {} {} {} {}".format(self.entry.name,
-                                              self.objtype,
-                                              return_segments,
-                                              regex,
-                                              json.dumps([delimiter]))
+                                           self.objtype,
+                                           return_segments,
+                                           regex,
+                                           json.dumps([delimiter]))
             repMsg = cast(str, generic_msg(cmd=cmd, args=args))
             if return_segments:
                 arrays = repMsg.split('+', maxsplit=2)
@@ -938,15 +938,15 @@ class Strings:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"
         args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
-                                                         self.objtype,
-                                                         self.entry.name,
-                                                         "str",
-                                                         NUMBER_FORMAT_STRINGS['int64'].format(times),
-                                                         NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
-                                                         NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
-                                                         NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
-                                                         NUMBER_FORMAT_STRINGS['bool'].format(regex),
-                                                         json.dumps([delimiter]))
+                                                      self.objtype,
+                                                      self.entry.name,
+                                                      "str",
+                                                      NUMBER_FORMAT_STRINGS['int64'].format(times),
+                                                      NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                                                      NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                                                      NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
+                                                      NUMBER_FORMAT_STRINGS['bool'].format(regex),
+                                                      json.dumps([delimiter]))
         repMsg = generic_msg(cmd=cmd, args=args)
         arrays = cast(str, repMsg).split('+', maxsplit=3)
         # first two created are left Strings, last two are right strings
@@ -1061,14 +1061,14 @@ class Strings:
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         cmd = "segmentedBinopvv"
-        args = "{} {} {} {} {} {} {}".\
-                            format("stick",
-                            self.objtype,
-                            self.entry.name,
-                            other.objtype,
-                            other.entry.name,
-                            NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
-                            json.dumps([delimiter]))
+        args = "{} {} {} {} {} {} {}". \
+            format("stick",
+                   self.objtype,
+                   self.entry.name,
+                   other.objtype,
+                   other.entry.name,
+                   NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
+                   json.dumps([delimiter]))
         rep_msg = generic_msg(cmd=cmd,args=args)
         return Strings.from_return_msg(cast(str, rep_msg))
 

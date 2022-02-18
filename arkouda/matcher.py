@@ -96,10 +96,10 @@ class Matcher:
         from arkouda.strings import Strings
         cmd = "segmentedSplit"
         args = "{} {} {} {} {}".format(self.objtype,
-                                          self.parent_entry_name,
-                                          maxsplit,
-                                          return_segments,
-                                          json.dumps([self.pattern]))
+                                       self.parent_entry_name,
+                                       maxsplit,
+                                       return_segments,
+                                       json.dumps([self.pattern]))
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
@@ -115,12 +115,12 @@ class Matcher:
         self.find_locations()
         cmd = "segmentedFindAll"
         args = "{} {} {} {} {} {} {}".format(self.objtype,
-                                                self.parent_entry_name,
-                                                self.num_matches.name,
-                                                self.starts.name,
-                                                self.lengths.name,
-                                                self.indices.name,
-                                                return_match_origins)
+                                             self.parent_entry_name,
+                                             self.num_matches.name,
+                                             self.starts.name,
+                                             self.lengths.name,
+                                             self.indices.name,
+                                             return_match_origins)
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
             arrays = repMsg.split('+', maxsplit=2)
@@ -137,11 +137,11 @@ class Matcher:
         from arkouda.strings import Strings
         cmd = "segmentedSub"
         args = "{} {} {} {} {} {}".format(self.objtype,
-                                             self.parent_entry_name,
-                                             repl,
-                                             count,
-                                             return_num_subs,
-                                             json.dumps([self.pattern]))
+                                          self.parent_entry_name,
+                                          repl,
+                                          count,
+                                          return_num_subs,
+                                          json.dumps([self.pattern]))
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_num_subs:
             arrays = repMsg.split('+', maxsplit=2)
