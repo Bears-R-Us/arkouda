@@ -56,10 +56,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
         return cast(Categorical,pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
-    if isinstance(pda, Strings):
-        name = '{}'.format(pda.entry.name)
-    else:
-        name = pda.name
+    name = pda.entry.name if isinstance(pda, Strings) else pda.name
     repMsg = generic_msg(cmd="argsort", args="{} {} {}".format(algorithm.name, pda.objtype, name))
     return create_pdarray(cast(str,repMsg))
 
