@@ -17,8 +17,8 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;
-  
-  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
+
+  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, 1, false, errMsg) < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -161,6 +161,34 @@ proc testGetDsets(filename) {
   }
 }
 
+proc testReadStrings(filename) {
+  extern proc c_readStrColumnByName(filename, chpl_arr, offset_arr, colNum, numElems, batchSize, errMsg): int;
+
+  extern proc c_free_string(a);
+  extern proc strlen(a): int;
+  var errMsg: c_ptr(uint(8));
+  defer {
+    c_free_string(errMsg);
+  }
+
+  var size = 3;
+  
+  var a: [0..#size] uint(8);
+  var offsets: [0..#size] int;
+
+  if(c_readStrColumnByName(filename, c_ptrTo(a), c_ptrTo(offsets), 'one'.c_str(), size, 10000, c_ptrTo(errMsg)) < 0) {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+  }
+
+  offsets = (+ scan offsets) - offsets;
+  writeln("IN CHAPEL", a[0]);
+  writeln("IN CHAPEL", offsets);
+  
+  return 0;
+}
+
 proc testMultiDset() {
   const filename = 'resources/multi-col.parquet'.c_str();
   extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
@@ -196,14 +224,23 @@ proc main() {
   const size = 1000;
   const filename = "myFile.parquet".c_str();
   const dsetname = "my-dset-name-test".c_str();
+
+  const strFilename = "strings.parquet".c_str();
   
   errors += testReadWrite(filename, dsetname, size);
   errors += testInt32Read();
   errors += testGetNumRows(filename, size);
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();
+<<<<<<< HEAD
   errors += testGetDsets(filename);
+<<<<<<< HEAD
   errors += testMultiDset();
+=======
+=======
+  errors += testReadStrings(strFilename);
+>>>>>>> fa0ea4d7 (Offsets array working but still trying to figure out string buffer)
+>>>>>>> 816cfd0c (Offsets array working but still trying to figure out string buffer)
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
