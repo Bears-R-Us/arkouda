@@ -202,13 +202,13 @@ def read_parquet(filenames : Union[str, List[str]],
             else:
                 raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         return d
-
+    
     elif len(items) == 1:
         item = items[0]
         if "pdarray" == item["arkouda_type"]:
             return create_pdarray(item["created"])
         elif "seg_string" == item["arkouda_type"]:
-            return Strings(*item["created"].split("+"))
+            return Strings.from_return_msg(item["created"])
         else:
             raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
     else:
