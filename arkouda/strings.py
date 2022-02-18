@@ -690,9 +690,9 @@ class Strings:
             return matcher.get_match(MatchType.SEARCH, self).matched()
         cmd = "segmentedSearch"
         args = "{} {} {} {}".format(self.objtype,
-                                       self.entry.name,
-                                       "str",
-                                       json.dumps([substr]))
+                                    self.entry.name,
+                                    "str",
+                                    json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked

@@ -45,9 +45,9 @@ class Matcher:
         if not self.populated or any([getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]):
             cmd = "segmentedFindLoc"
             args = "{} {} {} {}".format(self.objtype,
-                                           self.parent_entry_name,
-                                           0,  # groupNum is 0 for regular matches
-                                           json.dumps([self.pattern]))
+                                        self.parent_entry_name,
+                                        0,  # groupNum is 0 for regular matches
+                                        json.dumps([self.pattern]))
             repMsg = cast(str, generic_msg(cmd=cmd, args=args))
             created_map = json.loads(repMsg)
             self.num_matches = create_pdarray(created_map["NumMatches"])
