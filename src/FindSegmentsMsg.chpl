@@ -89,14 +89,14 @@ module FindSegmentsMsg
                   return new MsgTuple(errorMsg, MsgType.ERROR);                        
               }
           }
-          if (thisType != DType.Int64) { 
+          if (thisType != DType.Int64) && (thisType != DType.UInt64) {
               var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
               fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
         
-        // At this point, all arg arrays exist, have the same size, and are int64 or string dtype
+        // At this point, all arg arrays exist, have the same size, and are int64, uint64, or string dtype
         if (size == 0) {
             // Return two empty integer entries
             var n1 = st.nextName();
@@ -121,15 +121,28 @@ module FindSegmentsMsg
           select objtype {
             when "pdarray" {
               var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-              var k = toSymEntry(g,int); // key array
-              ref ka = k.a; // ref to key array
-              // Permute the key array to grouped order
-              var permKey: [paD] int;
-              forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(int)) { 
-                agg.copy(s, ka[p]);
+              if g.dtype == DType.Int64 {
+                var k = toSymEntry(g, int); // key array
+                ref ka = k.a; // ref to key array
+                // Permute the key array to grouped order
+                var permKey: [paD] int;
+                forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(int)) {
+                  agg.copy(s, ka[p]);
+                }
+                // Find steps and update ukeylocs
+                [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
               }
-              // Find steps and update ukeylocs
-              [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+              else {
+                var k = toSymEntry(g, uint); // key array
+                ref ka = k.a; // ref to key array
+                // Permute the key array to grouped order
+                var permKey: [paD] uint;
+                forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(uint)) {
+                  agg.copy(s, ka[p]);
+                }
+                // Find steps and update ukeylocs
+                [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+              }
             }
             when "str" {
               // TODO remvove legacy_placeholder

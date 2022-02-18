@@ -114,6 +114,32 @@ module ReductionMsg
                 var e = toSymEntry(gEnt,uint);
                 select reductionop
                 {
+                    when "sum" {
+                        var val = + reduce e.a;
+                        repMsg = "uint64 %i".format(val);
+                    }
+                    when "prod" {
+                        // Cast to real to avoid int64 overflow
+                        var val = * reduce e.a:real;
+                        // Return value is always float64 for prod
+                        repMsg = "float64 %.17r".format(val);
+                    }
+                    when "min" {
+                      var val = min reduce e.a;
+                      repMsg = "uint64 %i".format(val);
+                    }
+                    when "max" {
+                        var val = max reduce e.a;
+                        repMsg = "uint64 %i".format(val);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        repMsg = "uint64 %i".format(minLoc);
+                    }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        repMsg = "uint64 %i".format(maxLoc);
+                    }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
@@ -300,7 +326,7 @@ module ReductionMsg
                     when "sum" {
                         var res = segSum(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
-                    } 
+                    }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -340,6 +366,44 @@ module ReductionMsg
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64) {
+                var values = toSymEntry(gVal,uint);
+                select op {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "prod" {
+                        var res = segProduct(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "mean" {
+                        var res = segMean(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "min" {
+                        var res = segMin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "max" {
+                        var res = segMax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
@@ -429,7 +493,6 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-
     proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res: [D] t;
@@ -478,9 +541,13 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = if eltType == (bool, real) then (false, 0.0) else (false, 0);
+      var value: eltType;
 
-      proc identity return if eltType == (bool, real) then (false, 0.0) else (false, 0);
+      proc identity {
+        if eltType == (bool, real) then return (false, 0.0);
+        else if eltType == (bool, uint) then return (false, 0:uint);
+        else return (false, 0);
+      }
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and

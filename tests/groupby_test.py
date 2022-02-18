@@ -23,12 +23,13 @@ def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
     return keys, agg.values
 
 def make_arrays():
-    keys = np.random.randint(0, GROUPS, SIZE)
+    keys = np.random.randint(0, GROUPS, SIZE, dtype=np.uint64)
     keys2 = np.random.randint(0, GROUPS, SIZE)
     i = np.random.randint(0, SIZE//GROUPS, SIZE)
+    u = np.random.randint(0, SIZE//GROUPS, SIZE, dtype=np.uint64)
     f = np.random.randn(SIZE) # normally dist random numbers
     b = (i % 2) == 0
-    d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
+    d = {'keys':keys, 'keys2':keys2, 'int64':i, 'uint64':u, 'float64':f, 'bool':b}
 
     return d
   
@@ -83,7 +84,7 @@ def run_test(levels, verbose=False):
     akkeys, akvals = akg.count()
     akvals = akvals.to_ndarray()
     failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
-    for vname in ('int64', 'float64', 'bool'):
+    for vname in ('int64', 'uint64', 'float64', 'bool'):
         for op in ak.GroupBy.Reductions:
             if verbose: print(f"\nDoing aggregate({vname}, {op})")
             tests += 1
@@ -138,7 +139,7 @@ class GroupByTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test with levels = 1
         '''
         self.assertEqual(0, run_test(1, verbose))
-  
+
     def test_groupby_one_two_levels(self):
         '''
         Executes run_test with levels=1 and asserts whether there are any errors
@@ -313,6 +314,21 @@ class GroupByTest(ArkoudaTest):
         keys = [ak.randint(0, 10, 100), ak.randint(0, 10, 100)]
         g = ak.GroupBy(keys)
         g.min(ak.randint(0, 10, 100))
+
+    def test_uint64_aggregate(self):
+        # reproducer for Issue #1129
+        u = ak.cast(ak.arange(100), ak.uint64)
+        i = ak.arange(100)
+        gu = ak.GroupBy(u)
+        gi = ak.GroupBy(i)
+        u_keys, u_group_sums = gu.sum(u)
+        i_keys, i_group_sums = gi.sum(i)
+
+        self.assertListEqual(u_keys.to_ndarray().tolist(), i_keys.to_ndarray().tolist())
+        self.assertListEqual(u_group_sums.to_ndarray().tolist(), i_group_sums.to_ndarray().tolist())
+
+        # verify the multidim unsigned version doesnt break
+        multi_gu = ak.GroupBy([u, u])
 
     def test_zero_length_groupby(self):
         """
