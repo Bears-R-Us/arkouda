@@ -144,8 +144,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   writeReq(reqMsg);
   repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg, st).msg;
   writeRep(repMsg);
-  var rtoAttribs = repMsg;
-  var rtoname = parseName(rtoAttribs);
+  var rtoname = parseName(repMsg);
   var roundTrip = getSegString(rtoname, st);
   var success = && reduce (strings == roundTrip);
   writeln("Round trip successful? >>> %t <<<".format(success));

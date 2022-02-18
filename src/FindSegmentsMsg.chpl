@@ -133,7 +133,7 @@ module FindSegmentsMsg
             }
             when "str" {
               fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "findSegmentsMessage myNames1: {}".format(name));
+                                  "findSegmentsMessage name: {}".format(name));
               var str = getSegString(name, st);
               var (permOffsets, permVals) = str[pa];
               const ref D = permOffsets.domain;
