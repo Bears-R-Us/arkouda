@@ -16,11 +16,6 @@ module ArraySetops
     use AryUtil;
     use In1d;
 
-    /*
-    Medium bound const. Per locale associative domain in1d implementation recommended.
-    */
-    private config const mBound = 2**25; 
-
     // returns intersection of 2 arrays
     proc intersect1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
@@ -100,16 +95,8 @@ module ArraySetops
     // values and returns the array indexed
     // with this inverted array
     proc setdiff1dHelper(a: [] ?t, b: [] t) throws {
-        var truth = makeDistArray(a.size, bool);
-
-        // based on size of array, determine which method to use 
-        if (b.size <= mBound) then truth = in1dAr2PerLocAssoc(a, b);
-        else truth = in1dSort(a,b);
-        
-        truth = !truth;
-
+        var truth = in1d(a, b, invert=true);
         var ret = boolIndexer(a, truth);
-
         return ret;
     }
     

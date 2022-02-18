@@ -7,23 +7,34 @@ module In1d
     use RadixSortLSD;
     use Reflection;
 
-    /* Put ar2 into an associative domain of int, per locale. 
-    Creates truth (boolean array) from the domain of ar1.
-    ar1 and truth are distributed on the same locales.
-    ar2 is copied to a set (associative domain) in each locale.
-    set membership of ar1 to ar2 is checked on each locale by iterating over 
-    the local subdomains of ar1, and populating the local subdomains of truth 
-    with the result of the membership test.
+    /* Threshold for choosing between in1d implementation strategies */
+    private config const threshold = 2**25;
 
-    :arg ar1: array to broadcast in parallel over ar2
-    :type ar1: [] int
-    
-    :arg ar2: array to be broadcast over in parallel
-    :type ar2: [] int
-    
-    :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
-    :type truth: [] bool
-    */
+    /* For each value in the first array, check membership in the second array.
+
+       :arg ar1: array to broadcast in parallel over ar2
+       :type ar1: [] int
+
+       :arg ar2: array to be broadcast over in parallel
+       :type ar2: [] int
+
+       :arg invert: should the result be inverted (not in1d)
+       :type invert: bool
+
+       :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+       :type truth: [] bool
+     */
+    proc in1d(ar1: [?aD1] ?t, ar2: [?aD2] t, invert: bool = false): [aD1] bool throws {
+        var truth = if ar2.size <= threshold then in1dAr2PerLocAssoc(ar1, ar2)
+                                             else in1dSort(ar1, ar2);
+        if invert then truth = !truth;
+        return truth;
+    }
+
+    /* in1d that uses a per-locale set/associative-domain. Each locale will
+     * localize ar2 and put it in the set, so only appropriate in terms of
+     * size and space when ar2 is "small".
+     */
     proc in1dAr2PerLocAssoc(ar1: [?aD1] ?t, ar2: [?aD2] t) {
         var truth: [aD1] bool;
         
@@ -46,23 +57,12 @@ module In1d
         return truth;
     }
 
-    /* For each value in the first array, check membership in the second array. This 
-       implementation uses a sort, which is best when the second array is large because 
-       it scales well in both time and memory.
-
-       :arg ar1: array to broadcast in parallel over ar2
-       :type ar1: [] int
-    
-       :arg ar2: array to be broadcast over in parallel
-       :type ar2: [] int
-    
-       :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
-       :type truth: [] bool
+    /* in1d that uses a sorting strategy. At a high level it uniques both
+     * arrays, finds the intersecting values, then maps back to the original
+     * domain of ar1. Scales well with time/size, but sort has non-trivial
+     * overhead so typically used when ar2 is "large".
      */
     proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws {
-        /* General strategy: unique both arrays, find the intersecting values, 
-           then map back to the original domain of ar1.
-         */
         // Need the inverse index to map back from unique domain to original domain later
         var (u1, _, inv) = uniqueSortWithInverse(ar1);
         var u2 = uniqueSort(ar2, needCounts=false);
