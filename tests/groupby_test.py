@@ -140,7 +140,7 @@ class GroupByTest(ArkoudaTest):
         '''
         self.assertEqual(0, run_test(1, verbose))
 
-    def test_groupby_one_two_levels(self):
+    def test_groupby_on_two_levels(self):
         '''
         Executes run_test with levels=1 and asserts whether there are any errors
         
@@ -329,6 +329,15 @@ class GroupByTest(ArkoudaTest):
 
         # verify the multidim unsigned version doesnt break
         multi_gu = ak.GroupBy([u, u])
+
+        u_data = ak.array(np.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4], dtype=np.uint64))
+        i_data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
+        labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        g = ak.GroupBy(labels)
+        u_unique_keys, u_group_nunique = g.nunique(u_data)
+        i_unique_keys, i_group_nunique = g.nunique(i_data)
+        self.assertListEqual(u_unique_keys.to_ndarray().tolist(), i_unique_keys.to_ndarray().tolist())
+        self.assertListEqual(u_group_nunique.to_ndarray().tolist(), i_group_nunique.to_ndarray().tolist())
 
     def test_zero_length_groupby(self):
         """

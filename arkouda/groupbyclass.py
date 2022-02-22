@@ -820,8 +820,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('OR is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('OR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "or")  # type: ignore
 
@@ -857,8 +857,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('AND is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('AND is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "and")  # type: ignore
 
@@ -894,8 +894,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('XOR is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('XOR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "xor")  # type: ignore
 

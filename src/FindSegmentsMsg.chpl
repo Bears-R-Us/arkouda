@@ -132,7 +132,7 @@ module FindSegmentsMsg
                 // Find steps and update ukeylocs
                 [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
               }
-              else {
+              else if g.dtype == DType.UInt64{
                 var k = toSymEntry(g, uint); // key array
                 ref ka = k.a; // ref to key array
                 // Permute the key array to grouped order
