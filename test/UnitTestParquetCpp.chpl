@@ -162,7 +162,7 @@ proc testGetDsets(filename) {
 }
 
 proc testReadStrings(filename) {
-  extern proc c_readStrColumnByName(filename, chpl_arr, offset_arr, colNum, numElems, batchSize, errMsg): int;
+  extern proc c_readStrColumnByName(filename, chpl_arr, colNum, errMsg): int;
   extern proc c_getStringFileOffsets(filename, colname, offset_arr, errMsg): int;
   extern proc c_getNumRows(chpl_str, err): int;
 
@@ -172,7 +172,6 @@ proc testReadStrings(filename) {
   defer {
     c_free_string(errMsg);
   }
-
 
   var size = c_getNumRows(filename, c_ptrTo(errMsg));
   var offsets: [0..#size] int;
@@ -187,7 +186,7 @@ proc testReadStrings(filename) {
 
   var a: [0..#byteSize] uint(8);
 
-  if(c_readStrColumnByName(filename, c_ptrTo(a), c_ptrTo(offsets), 'one'.c_str(), size, 10000, c_ptrTo(errMsg)) < 0) {
+  if(c_readStrColumnByName(filename, c_ptrTo(a), 'one'.c_str(), c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -196,7 +195,12 @@ proc testReadStrings(filename) {
   //offsets = (+ scan offsets) - offsets;
   var localSlice = new lowLevelLocalizingSlice(a, 0..9);
   var asd = createStringWithOwnedBuffer(localSlice.ptr, 8, 9);
-  writeln(asd);
+  if asd == 'asdasdasd' {
+    return 0;
+  } else {
+    writeln("FAILED: reading string file ", asd);
+    return 1;
+  }
   
   return 0;
 }
@@ -245,6 +249,7 @@ proc main() {
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();
 <<<<<<< HEAD
+<<<<<<< HEAD
   errors += testGetDsets(filename);
 <<<<<<< HEAD
   errors += testMultiDset();
@@ -252,7 +257,14 @@ proc main() {
 =======
   errors += testReadStrings(strFilename);
 >>>>>>> fa0ea4d7 (Offsets array working but still trying to figure out string buffer)
+<<<<<<< HEAD
 >>>>>>> 816cfd0c (Offsets array working but still trying to figure out string buffer)
+=======
+=======
+  // Not testing read strings since we can't write strings yet
+  // errors += testReadStrings(strFilename);
+>>>>>>> e4b003f5 (Update unit test for String reading)
+>>>>>>> ff277613 (Update unit test for String reading)
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
