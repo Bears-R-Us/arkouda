@@ -119,6 +119,20 @@ module ParquetMsg {
     }
   }
 
+  proc getStrColOffsetsAndSize(offsets: [] int, filename: string, dsetname: string) throws {
+    extern proc c_getStringFileOffsets(filename, colname, offset_arr, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+
+    var byteSize = c_getStringFileOffsets(filename.c_str(),
+                                          dsetname.c_str(),
+                                          c_ptrTo(offsets),
+                                          c_ptrTo(pqErr.errMsg));
+    if byteSize == ARROWERROR then
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    offsets = (+ scan offsets) - offsets);
+    return byteSize;
+  }
+  
   proc readStrFilesByName(A: [] uint(8), offsets: [] int, filename: string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readStrColumnByName(filename, chpl_arr, offset_arr, colNum, numElems, batchSize, errMsg): int;
     
@@ -128,7 +142,6 @@ module ParquetMsg {
                              c_ptrTo(pqErr.errMsg)) == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
-    offsets = (+ scan offsets) - offsets;
   }
 
   proc getArrSize(filename: string) throws {
@@ -349,9 +362,8 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
-          var numStrings = 3;
-          var byteSize = 12;
-          var entrySeg = new shared SymEntry(numStrings, int);;
+          var entrySeg = new shared SymEntry(len, int);;
+          var byteSize = getStrColOffsetsAndSize(entrySeg.a, filenames[0], dsetname);
           var entryVal = new shared SymEntry(byteSize, uint(8));
           readStrFilesByName(entryVal.a, entrySeg.a, filenames[0], sizes, dsetname, ty);
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
