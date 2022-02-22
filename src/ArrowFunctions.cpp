@@ -142,7 +142,6 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
         parquet::ByteArray value;
         (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
         chpl_offsets[i] = (int64_t)value.len;
-        std::cout << value.ptr[0] << std::endl;
         for(int j = 0; j < value.len; j++) {
           chpl_ptr[i] = value.ptr[j];
           i++;
@@ -153,6 +152,53 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
       }
     }
     return 0;
+  }
+  return ARROWUNDEFINED;
+}
+
+int cpp_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg) {
+  int size = 0;
+  int64_t ty = cpp_getType(filename, colname, errMsg);
+
+  if(ty == ARROWSTRING) {
+    auto chpl_offsets = (int64_t*)offsets;
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+      parquet::ParquetFileReader::OpenFile(filename, false);
+
+    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+    int num_row_groups = file_metadata->num_row_groups();
+
+    int64_t i = 0;
+    for (int r = 0; r < num_row_groups; r++) {
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+        parquet_reader->RowGroup(r);
+
+      int64_t values_read = 0;
+
+      std::shared_ptr<parquet::ColumnReader> column_reader;
+
+      auto idx = file_metadata -> schema() -> ColumnIndex(colname);
+
+      if(idx < 0) {
+        std::string dname(colname);
+        std::string fname(filename);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+      column_reader = row_group_reader->Column(idx);
+      parquet::ByteArrayReader* ba_reader =
+          static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+      int i = 0;
+      while (ba_reader->HasNext()) {
+        parquet::ByteArray value;
+        (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
+        chpl_offsets[i++] = value.len + 1; // add 1 to account for zero that will be added in Chapel array
+        size += value.len + 1;
+      }
+    }
+    return size;
   }
   return ARROWUNDEFINED;
 }
@@ -372,6 +418,10 @@ extern "C" {
 
   int c_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
     return cpp_readStrColumnByName(filename, chpl_arr, offsets, colname, numElems, batchSize, errMsg);
+  }
+
+  int c_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg) {
+    return cpp_getStringFileOffsets(filename, colname, offsets, errMsg);
   }
 
   const char* c_getVersionInfo(void) {

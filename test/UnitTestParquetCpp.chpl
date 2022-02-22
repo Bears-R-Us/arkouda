@@ -163,6 +163,8 @@ proc testGetDsets(filename) {
 
 proc testReadStrings(filename) {
   extern proc c_readStrColumnByName(filename, chpl_arr, offset_arr, colNum, numElems, batchSize, errMsg): int;
+  extern proc c_getStringFileOffsets(filename, colname, offset_arr, errMsg): int;
+  extern proc c_getNumRows(chpl_str, err): int;
 
   extern proc c_free_string(a);
   extern proc strlen(a): int;
@@ -171,10 +173,19 @@ proc testReadStrings(filename) {
     c_free_string(errMsg);
   }
 
-  var size = 3;
 
-  var a: [0..#12] uint(8);
+  var size = c_getNumRows(filename, c_ptrTo(errMsg));
   var offsets: [0..#size] int;
+  
+  var byteSize = c_getStringFileOffsets(filename, 'one'.c_str(), c_ptrTo(offsets), c_ptrTo(errMsg));
+  if byteSize < 0 {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+  }
+  offsets = (+ scan offsets) - offsets;
+
+  var a: [0..#byteSize] uint(8);
 
   if(c_readStrColumnByName(filename, c_ptrTo(a), c_ptrTo(offsets), 'one'.c_str(), size, 10000, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
@@ -183,11 +194,9 @@ proc testReadStrings(filename) {
   }
 
   //offsets = (+ scan offsets) - offsets;
-  var localSlice = new lowLevelLocalizingSlice(a, 0..3);
-  var asd = createStringWithOwnedBuffer(localSlice.ptr, 3, 4);
-  writeln("CREATED FROM BYTES", asd);
-  writeln("IN CHAPEL ", a);
-  writeln("IN CHAPEL OFFSETS ", offsets);
+  var localSlice = new lowLevelLocalizingSlice(a, 0..9);
+  var asd = createStringWithOwnedBuffer(localSlice.ptr, 8, 9);
+  writeln(asd);
   
   return 0;
 }
@@ -228,7 +237,7 @@ proc main() {
   const filename = "myFile.parquet".c_str();
   const dsetname = "my-dset-name-test".c_str();
 
-  const strFilename = "strings.parquet".c_str();
+  const strFilename = "str-file.parquet".c_str();
   
   errors += testReadWrite(filename, dsetname, size);
   errors += testInt32Read();

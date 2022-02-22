@@ -44,6 +44,9 @@ extern "C" {
                             const char* colname, int64_t numElems, int64_t batchSize,
                             char** errMsg);
 
+  int cpp_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg);
+  int c_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg);
+
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
 
