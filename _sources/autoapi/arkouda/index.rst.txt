@@ -1511,13 +1511,15 @@ Attributes
       
 
 
-.. py:function:: ls_hdf(filename: str) -> List[str]
+.. py:function:: ls_hdf(filename: str, is_parquet=False) -> List[str]
 
    This function calls the h5ls utility on a filename visible to the
    arkouda server.
 
    :param filename: The name of the file to pass to h5ls
    :type filename: str
+   :param is_parquet: Is filename a Parquet file; false by default
+   :type is_parquet: bool
 
    :returns: The string output of `h5ls <filename>` from the server
    :rtype: str
@@ -1650,12 +1652,14 @@ Attributes
    .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
 
 
-.. py:function:: get_datasets(filename: str) -> List[str]
+.. py:function:: get_datasets(filename: str, is_parquet=False) -> List[str]
 
    Get the names of datasets in an HDF5 file.
 
-   :param filename: Name of an HDF5 file visible to the arkouda server
+   :param filename: Name of an HDF5/Parquet file visible to the arkouda server
    :type filename: str
+   :param is_parquet: Is filename a Parquet file; false by default
+   :type is_parquet: bool
 
    :returns: Names of the datasets in the file
    :rtype: List[str]
