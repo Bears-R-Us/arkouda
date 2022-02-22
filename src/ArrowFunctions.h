@@ -37,11 +37,11 @@ extern "C" {
                            const char* colname, int64_t numElems, int64_t batchSize,
                            char** errMsg);
 
-  int c_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
-                            const char* colname, int64_t numElems, int64_t batchSize,
+  int c_readStrColumnByName(const char* filename, void* chpl_arr,
+                            const char* colname,
                             char** errMsg);
-  int c_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
-                            const char* colname, int64_t numElems, int64_t batchSize,
+  int c_readStrColumnByName(const char* filename, void* chpl_arr,
+                            const char* colname,
                             char** errMsg);
 
   int cpp_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg);

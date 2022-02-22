@@ -129,16 +129,16 @@ module ParquetMsg {
                                           c_ptrTo(pqErr.errMsg));
     if byteSize == ARROWERROR then
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-    offsets = (+ scan offsets) - offsets);
+    offsets = (+ scan offsets) - offsets;
     return byteSize;
   }
   
-  proc readStrFilesByName(A: [] uint(8), offsets: [] int, filename: string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readStrColumnByName(filename, chpl_arr, offset_arr, colNum, numElems, batchSize, errMsg): int;
+  proc readStrFilesByName(A: [] uint(8), filename: string, dsetname: string, ty) throws {
+    extern proc c_readStrColumnByName(filename, chpl_arr, colNum, errMsg): int;
     
     var pqErr = new parquetErrorMsg();
-    if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(A), c_ptrTo(offsets),
-                             dsetname.localize().c_str(), offsets.size, batchSize,
+    if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(A),
+                             dsetname.localize().c_str(),
                              c_ptrTo(pqErr.errMsg)) == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
@@ -365,7 +365,7 @@ module ParquetMsg {
           var entrySeg = new shared SymEntry(len, int);;
           var byteSize = getStrColOffsetsAndSize(entrySeg.a, filenames[0], dsetname);
           var entryVal = new shared SymEntry(byteSize, uint(8));
-          readStrFilesByName(entryVal.a, entrySeg.a, filenames[0], sizes, dsetname, ty);
+          readStrFilesByName(entryVal.a, filenames[0], dsetname, ty);
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.append((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         }

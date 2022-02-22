@@ -102,12 +102,11 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWUNDEFINED;
 }
 
-int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
+int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, char** errMsg) {
   int64_t ty = cpp_getType(filename, colname, errMsg);
 
   if(ty == ARROWSTRING) {
     auto chpl_ptr = (unsigned char*)chpl_arr;
-    auto chpl_offsets = (int64_t*)offsets;
     
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
@@ -137,17 +136,13 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets,
       parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-      int offIdx = 0;
       while (ba_reader->HasNext()) {
         parquet::ByteArray value;
         (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-        chpl_offsets[i] = (int64_t)value.len;
         for(int j = 0; j < value.len; j++) {
           chpl_ptr[i] = value.ptr[j];
           i++;
         }
-        chpl_offsets[offIdx] = value.len + 1; // add 1 to account for null termination
-        offIdx++;
         i++; // skip one space so the strings are null terminated with a 0
       }
     }
@@ -416,8 +411,8 @@ extern "C" {
                                     errMsg);
   }
 
-  int c_readStrColumnByName(const char* filename, void* chpl_arr, void* offsets, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
-    return cpp_readStrColumnByName(filename, chpl_arr, offsets, colname, numElems, batchSize, errMsg);
+  int c_readStrColumnByName(const char* filename, void* chpl_arr, const char* colname, char** errMsg) {
+    return cpp_readStrColumnByName(filename, chpl_arr, colname, errMsg);
   }
 
   int c_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg) {
