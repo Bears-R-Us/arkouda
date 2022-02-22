@@ -13,12 +13,8 @@ module ArraySetops
     use RadixSortLSD;
     use Unique;
     use Indexing;
+    use AryUtil;
     use In1d;
-
-    /*
-    Medium bound const. Per locale associative domain in1d implementation recommended.
-    */
-    private config const mBound = 2**25; 
 
     // returns intersection of 2 arrays
     proc intersect1d(a: [] ?t, b: [] t, assume_unique: bool) throws {
@@ -32,7 +28,7 @@ module ArraySetops
     }
 
     proc intersect1dHelper(a: [] ?t, b: [] t) throws {
-      var aux = radixSortLSD_keys(concatset(a,b));
+      var aux = radixSortLSD_keys(concatArrays(a,b));
 
       // All elements except the last
       const ref head = aux[..aux.domain.high-1];
@@ -60,7 +56,7 @@ module ArraySetops
     // sorts and removes all values that occur
     // more than once
     proc setxor1dHelper(a: [] ?t, b: [] t) throws {
-      const aux = radixSortLSD_keys(concatset(a,b));
+      const aux = radixSortLSD_keys(concatArrays(a,b));
       const ref D = aux.domain;
 
       // Concatenate a `true` onto each end of the array
@@ -99,16 +95,8 @@ module ArraySetops
     // values and returns the array indexed
     // with this inverted array
     proc setdiff1dHelper(a: [] ?t, b: [] t) throws {
-        var truth = makeDistArray(a.size, bool);
-
-        // based on size of array, determine which method to use 
-        if (b.size <= mBound) then truth = in1dAr2PerLocAssoc(a, b);
-        else truth = in1dSort(a,b);
-        
-        truth = !truth;
-
+        var truth = in1d(a, b, invert=true);
         var ret = boolIndexer(a, truth);
-
         return ret;
     }
     
@@ -120,7 +108,7 @@ module ArraySetops
       var aux;
       // Artificial scope to clean up temporary arrays
       {
-        aux = concatset(uniqueSort(a,false), uniqueSort(b,false));
+        aux = concatArrays(uniqueSort(a,false), uniqueSort(b,false));
       }
       return uniqueSort(aux, false);
     }
