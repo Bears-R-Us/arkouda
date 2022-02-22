@@ -8,7 +8,7 @@ module In1d
     use Reflection;
 
     /* Threshold for choosing between in1d implementation strategies */
-    private config const threshold = 2**25;
+    private config const threshold = 2**23;
 
     /* For each value in the first array, check membership in the second array.
 
