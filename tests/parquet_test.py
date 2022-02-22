@@ -42,7 +42,21 @@ def read_write_multi_test(dtype):
         os.remove(f)
 
     return elems, pq_arr
+
+def get_datasets_test(dtype):
+    if dtype == 'int64':
+        ak_arr = ak.randint(0, 2**32, 10)
+    elif dtype =='uint64':
+        ak_arr = ak.randint(0, 2**32, 10, dtype=ak.uint64)
+        
+    ak_arr.save_parquet("pq_testdset", "TEST_DSET")
+
+    dsets = ak.get_datasets("pq_testdset*", True)
     
+    for f in glob.glob('pq_test*'):
+        os.remove(f)
+
+    return dsets
 
 @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
 class ParquetTest(ArkoudaTest):
@@ -80,3 +94,10 @@ class ParquetTest(ArkoudaTest):
             for f in glob.glob('pq_test*'):
                 os.remove(f)
 
+    def test_get_datasets(self):
+        for dtype in TYPES:
+            dsets = get_datasets_test(dtype)
+            self.assertTrue(["TEST_DSET"] == dsets)
+
+        for f in glob.glob('pq_test*'):
+            os.remove(f)

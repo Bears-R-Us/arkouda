@@ -49,6 +49,9 @@ extern "C" {
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);
 
+  int c_getDatasetNames(const char* filename, char** dsetResult, char** errMsg);
+  int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg);
+
   void c_free_string(void* ptr);
   void cpp_free_string(void* ptr);
   
