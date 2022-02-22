@@ -328,8 +328,6 @@ module ParquetMsg {
     var sizes: [filedom] int;
     var types: [dsetdom] ArrowTypes;
     var byteSizes: [filedom] int;
-    var ty = getArrType(filenames[filedom.low],
-                        dsetlist[dsetdom.low]);
 
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
 
@@ -337,7 +335,12 @@ module ParquetMsg {
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
             try {
-                (sizes[i], types[dsetidx]) = (getArrSize(fname), getArrType(fname, dsetname));
+                types[dsetidx] = getArrType(fname, dsetname);
+                if types[dsetidx] == ArrowTypes.stringArr {
+                  sizes[i] = getStrColSize(filenames[0], dsetname);
+                } else {
+                  sizes[i] = getArrSize(fname);
+                }
             } catch e : Error {
                 // This is only type of error thrown by Parquet
                 fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
@@ -379,10 +382,8 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
-          // TODO: Check this for each filename and modify the sizes array with that
-          var byteSize = getStrColSize(filenames[0], dsetname);
-          var entryVal = new shared SymEntry(byteSize, uint(8));
-          readStrFilesByName(entryVal.a, filenames, [byteSize], dsetname, ty);
+          var entryVal = new shared SymEntry(len, uint(8));
+          readStrFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           proc _buildEntryCalcOffsets(): shared SymEntry throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
             return new shared SymEntry(offsetsArray);
