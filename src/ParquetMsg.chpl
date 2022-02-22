@@ -122,9 +122,10 @@ module ParquetMsg {
   proc getStrColOffsetsAndSize(offsets: [] int, filename: string, dsetname: string) throws {
     extern proc c_getStringFileOffsets(filename, colname, offset_arr, errMsg): int;
     var pqErr = new parquetErrorMsg();
-
-    var byteSize = c_getStringFileOffsets(filename.c_str(),
-                                          dsetname.c_str(),
+    
+    // TODO: Distribute this with a coforall and local copy of offsets array
+    var byteSize = c_getStringFileOffsets(filename.localize().c_str(),
+                                          dsetname.localize().c_str(),
                                           c_ptrTo(offsets),
                                           c_ptrTo(pqErr.errMsg));
     if byteSize == ARROWERROR then
@@ -133,14 +134,29 @@ module ParquetMsg {
     return byteSize;
   }
   
-  proc readStrFilesByName(A: [] uint(8), filename: string, dsetname: string, ty) throws {
+  proc readStrFilesByName(A: [] uint(8), filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readStrColumnByName(filename, chpl_arr, colNum, errMsg): int;
     
-    var pqErr = new parquetErrorMsg();
-    if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(A),
-                             dsetname.localize().c_str(),
-                             c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    var (subdoms, length) = getSubdomains(sizes);
+    
+    coforall loc in A.targetLocales() do on loc {
+      var locFiles = filenames;
+      var locFiledoms = subdoms;
+      forall (filedom, filename) in zip(locFiledoms, locFiles) {
+        for locdom in A.localSubdomains() {
+          const intersection = domain_intersection(locdom, filedom);
+          if intersection.size > 0 {
+            var pqErr = new parquetErrorMsg();
+            var col: [filedom] uint(8);
+            if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                     dsetname.localize().c_str(),
+                                     c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+            }
+            A[filedom] = col;
+          }
+        }
+      }
     }
   }
 
@@ -363,9 +379,10 @@ module ParquetMsg {
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = new shared SymEntry(len, int);;
+          // TODO: Check this for each filename and modify the sizes array with that
           var byteSize = getStrColOffsetsAndSize(entrySeg.a, filenames[0], dsetname);
           var entryVal = new shared SymEntry(byteSize, uint(8));
-          readStrFilesByName(entryVal.a, filenames[0], dsetname, ty);
+          readStrFilesByName(entryVal.a, filenames, [byteSize], dsetname, ty);
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.append((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         }
