@@ -151,12 +151,11 @@ int cpp_readStrColumnByName(const char* filename, void* chpl_arr, const char* co
   return ARROWUNDEFINED;
 }
 
-int cpp_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg) {
-  int size = 0;
+int cpp_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
   int64_t ty = cpp_getType(filename, colname, errMsg);
 
   if(ty == ARROWSTRING) {
-    auto chpl_offsets = (int64_t*)offsets;
+    int size = 0;
     std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
       parquet::ParquetFileReader::OpenFile(filename, false);
 
@@ -185,12 +184,10 @@ int cpp_getStringFileOffsets(const char* filename, const char* colname, void* of
       parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-      int i = 0;
       while (ba_reader->HasNext()) {
         parquet::ByteArray value;
         (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-        chpl_offsets[i++] = value.len + 1; // add 1 to account for zero that will be added in Chapel array
-        size += value.len + 1;
+        size += value.len + 1; // add 1 to account for zero that will be added in Chapel array
       }
     }
     return size;
@@ -415,8 +412,8 @@ extern "C" {
     return cpp_readStrColumnByName(filename, chpl_arr, colname, errMsg);
   }
 
-  int c_getStringFileOffsets(const char* filename, const char* colname, void* offsets, char** errMsg) {
-    return cpp_getStringFileOffsets(filename, colname, offsets, errMsg);
+  int c_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
+    return cpp_getStringColumnNumBytes(filename, colname, errMsg);
   }
 
   const char* c_getVersionInfo(void) {

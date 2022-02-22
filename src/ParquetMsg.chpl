@@ -119,18 +119,15 @@ module ParquetMsg {
     }
   }
 
-  proc getStrColOffsetsAndSize(offsets: [] int, filename: string, dsetname: string) throws {
-    extern proc c_getStringFileOffsets(filename, colname, offset_arr, errMsg): int;
+  proc getStrColSize(filename: string, dsetname: string) throws {
+    extern proc c_getStringColumnNumBytes(filename, colname, errMsg): int;
     var pqErr = new parquetErrorMsg();
     
-    // TODO: Distribute this with a coforall and local copy of offsets array
-    var byteSize = c_getStringFileOffsets(filename.localize().c_str(),
+    var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
                                           dsetname.localize().c_str(),
-                                          c_ptrTo(offsets),
                                           c_ptrTo(pqErr.errMsg));
     if byteSize == ARROWERROR then
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-    offsets = (+ scan offsets) - offsets;
     return byteSize;
   }
   
@@ -330,6 +327,10 @@ module ParquetMsg {
     var fileErrorMsg:string = "";
     var sizes: [filedom] int;
     var types: [dsetdom] ArrowTypes;
+    var byteSizes: [filedom] int;
+    var ty = getArrType(filenames[filedom.low],
+                        dsetlist[dsetdom.low]);
+
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
 
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
@@ -378,11 +379,15 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
-          var entrySeg = new shared SymEntry(len, int);;
           // TODO: Check this for each filename and modify the sizes array with that
-          var byteSize = getStrColOffsetsAndSize(entrySeg.a, filenames[0], dsetname);
+          var byteSize = getStrColSize(filenames[0], dsetname);
           var entryVal = new shared SymEntry(byteSize, uint(8));
           readStrFilesByName(entryVal.a, filenames, [byteSize], dsetname, ty);
+          proc _buildEntryCalcOffsets(): shared SymEntry throws {
+            var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
+            return new shared SymEntry(offsetsArray);
+          }
+          var entrySeg = _buildEntryCalcOffsets();
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.append((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         }
