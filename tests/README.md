@@ -38,7 +38,7 @@ python_functions = test*
 env =
     D:ARKOUDA_SERVER_HOST=localhost
     D:ARKOUDA_SERVER_PORT=5555
-    D:ARKOUDA_FULL_STACK_TEST=True
+    D:ARKOUDA_RUNNING_MODE=CLASS_SERVER
     D:ARKOUDA_NUMLOCALES=2
     D:ARKOUDA_VERBOSE=True
     D:ARKOUDA_CLIENT_TIMEOUT=0
@@ -55,9 +55,8 @@ specified on a per-file basis, but pytest can also support directory-level confi
 
 * ARKOUDA\_SERVER\_HOST: the hostname or ip address where the arkouda\_server is located. Defaults to localhost
 * ARKOUDA\_SERVER\_PORT: the port the arkouda\_server is listening on. Defaults to 5555
-* ARKOUDA\_FULL\_STACK\_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
-  server=ARKOUDA\_SERVER\_HOST and port= ARKOUDA\_SERVER\_PORT. If False, the test harness runs in client mode and 
-  consequently an arkouda\_server is not started up. Defaults to True
+* ARKOUDA\_RUNNING\_MODE: if GLOBAL_SERVER, a single arkouda_server instance starts before the tests and runs on a local machine where server=ARKOUDA\_SERVER\_HOST and port=ARKOUDA\_SERVER\_PORT for all tests; if CLASS_SERVER, the TestCase.setUpClass method starts up an arkouda\_server for each test class on the local machine where
+  server=ARKOUDA\_SERVER\_HOST and port= ARKOUDA\_SERVER\_PORT. If CLIENT, the test harness runs in client mode and, accordingly, an arkouda\_server is not started up. Defaults to CLASS_SERVER
 * ARKOUDA\_NUMLOCALES: sets number of locales if arkouda\_server is built with multilocale support
 * ARKOUDA\_VERBOSE: if True, logging is set to DEBUG. Defaults to False
 * ARKOUDA\_CLIENT\_TIMEOUT: the connection timeout for arkouda client. Defaults to 10 seconds

@@ -20,6 +20,15 @@ import os
 import socket
 import subprocess
 import time
+from enum import Enum
+
+'''
+Enum indicating the running mode of the test harness
+'''
+class TestRunningMode(Enum):
+    CLIENT = 'CLIENT'
+    CLASS_SERVER = 'CLASS_SERVER'
+    GLOBAL_SERVER = 'GLOBAL_SERVER'
 
 from collections import namedtuple
 
