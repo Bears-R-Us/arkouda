@@ -5,10 +5,10 @@ import arkouda as ak
 
 TYPES = ('int64', 'uint64')
 
-# Must be less than src/In1dMsg.chpl:mbound, which defaults to 2**25
-MEDIUM = 2**25 - 1
-# Must be greater than mbound
-LARGE = 2**25 + 1
+# Tied to src/In1d.chpl:threshold, which defaults to 2**23
+THRESHOLD = 2**23
+MEDIUM = THRESHOLD - 1
+LARGE = THRESHOLD + 1
 
 def time_ak_in1d(N_per_locale, trials, dtype):
     print(f">>> arkouda {dtype} in1d")

@@ -88,6 +88,18 @@ module AryUtil
     }
 
     /*
+       Concatenate 2 arrays and return the result.
+     */
+    proc concatArrays(a: [?aD] ?t, b: [?bD] t) {
+      var ret = makeDistArray((a.size + b.size), t);
+
+      ret[0..#a.size] = a;
+      ret[a.size..#b.size] = b;
+
+      return ret;
+    }
+
+    /*
       Iterate over indices (range/domain) ``ind`` but in an offset manner based
       on the locale id. Can be used to avoid doing communication in lockstep.
     */

@@ -98,10 +98,10 @@ prototype module UnitTestIn1d
         var d: Diags;
         d.start();
         // returns a boolean vector
-        var truth = in1d(str1, str2);
+        var truth = in1dAr2PerLocAssoc(str1.hash(), str2.hash());
         d.stop("in1d (associative domain)");
         d.start();
-        var truth2 = in1d(str1, str2, forceSort=true);
+        var truth2 = in1dSort(str1.hash(), str2.hash());
         d.stop("in1d (sort-based)");
         writeln("Results of both strategies match? >>> ", && reduce (truth == truth2), " <<<");
         if printExpected then writeln("<<< #str1[i] in str2 = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();

@@ -114,6 +114,32 @@ module ReductionMsg
                 var e = toSymEntry(gEnt,uint);
                 select reductionop
                 {
+                    when "sum" {
+                        var val = + reduce e.a;
+                        repMsg = "uint64 %i".format(val);
+                    }
+                    when "prod" {
+                        // Cast to real to avoid int64 overflow
+                        var val = * reduce e.a:real;
+                        // Return value is always float64 for prod
+                        repMsg = "float64 %.17r".format(val);
+                    }
+                    when "min" {
+                      var val = min reduce e.a;
+                      repMsg = "uint64 %i".format(val);
+                    }
+                    when "max" {
+                        var val = max reduce e.a;
+                        repMsg = "uint64 %i".format(val);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        repMsg = "uint64 %i".format(minLoc);
+                    }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        repMsg = "uint64 %i".format(maxLoc);
+                    }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
@@ -300,7 +326,61 @@ module ReductionMsg
                     when "sum" {
                         var res = segSum(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
-                    } 
+                    }
+                    when "prod" {
+                        var res = segProduct(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "mean" {
+                        var res = segMean(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "min" {
+                        var res = segMin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "max" {
+                        var res = segMax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "or" {
+                        var res = segOr(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "and" {
+                        var res = segAnd(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "xor" {
+                        var res = segXor(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "nunique" {
+                        var res = segNumUnique(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64) {
+                var values = toSymEntry(gVal,uint);
+                select op {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -429,7 +509,6 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-
     proc segSum(values:[?vD] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res: [D] t;
@@ -478,9 +557,13 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = if eltType == (bool, real) then (false, 0.0) else (false, 0);
+      var value: eltType;
 
-      proc identity return if eltType == (bool, real) then (false, 0.0) else (false, 0);
+      proc identity {
+        if eltType == (bool, real) then return (false, 0.0);
+        else if eltType == (bool, uint) then return (false, 0:uint);
+        else return (false, 0);
+      }
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and
@@ -741,20 +824,21 @@ module ReductionMsg
       return res;
     }
 
-    proc segOr(values:[?vD] int, segments:[?D] int): [D] int throws {
-      var res: [D] int;
+    proc segOr(values:[?vD] ?t, segments:[?D] int): [D] t throws {
+      var res: [D] t;
+      if (D.size == 0) { return res; }
       // Set reset flag at segment boundaries
-      var flagvalues: [vD] (bool, int) = [v in values] (false, v);
+      var flagvalues: [vD] (bool, t) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * flagvalues.size);
+      overMemLimit((numBytes(t)+1) * flagvalues.size);
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingOrScanOp scan flagvalues;
       // Read the results from the last element of each segment
-      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
+      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(t)) {
         agg.copy(r, scanresult[s-1](1));
       }
       res[D.high] = scanresult[vD.high](1);
@@ -778,9 +862,9 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = (false, 0);
+      var value = if eltType == (bool, int) then (false, 0) else (false, 0:uint);
 
-      proc identity return (false, 0);
+      proc identity return if eltType == (bool, int) then (false, 0) else (false, 0:uint);
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and
@@ -823,20 +907,21 @@ module ReductionMsg
       }
     }
 
-    proc segAnd(values:[?vD] int, segments:[?D] int): [D] int throws {
-      var res: [D] int;
+    proc segAnd(values:[?vD] ?t, segments:[?D] int): [D] t throws {
+      var res: [D] t;
+      if (D.size == 0) { return res; }
       // Set reset flag at segment boundaries
-      var flagvalues: [vD] (bool, int) = [v in values] (false, v);
+      var flagvalues: [vD] (bool, t) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * flagvalues.size);
+      overMemLimit((numBytes(t)+1) * flagvalues.size);
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingAndScanOp scan flagvalues;
       // Read the results from the last element of each segment
-      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
+      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(t)) {
         agg.copy(r, scanresult[s-1](1));
       }
       res[D.high] = scanresult[vD.high](1);
@@ -860,9 +945,9 @@ module ReductionMsg
          have already been scanned, or for internal state, the flag means 
          "there has already been a reset in the computation of this value".
       */
-      var value = (false, 0xffffffffffffffff:int);
+      var value = if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
 
-      proc identity return (false, 0xffffffffffffffff:int);
+      proc identity return if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and
@@ -906,17 +991,17 @@ module ReductionMsg
     }
     
 
-    proc segXor(values:[] int, segments:[?D] int) throws {
+    proc segXor(values:[] ?t, segments:[?D] int) throws {
       // Because XOR has an inverse (itself), this can be
       // done with a scan like segSum
-      var res: [D] int;
+      var res: [D] t;
       if (D.size == 0) { return res; }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * values.size);
+      overMemLimit(numBytes(t) * values.size);
       var cumxor = ^ scan values;
       // Iterate over segments
-      var rightvals: [D] int;
-      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(int)) {
+      var rightvals: [D] t;
+      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
         // Find the segment boundaries
         if (i == D.high) {
           agg.copy(r, cumxor[values.domain.high]);
@@ -940,7 +1025,7 @@ module ReductionMsg
       return keys;
     }
 
-    proc segNumUnique(values: [?kD] int, segments: [?sD] int) throws {
+    proc segNumUnique(values: [?kD] ?t, segments: [?sD] int) throws {
       var res: [sD] int;
       if (sD.size == 0) {
         return res;
@@ -962,10 +1047,11 @@ module ReductionMsg
       forall (IVi, idx) in zip(IV, deltaIV) with (var agg = newSrcAggregator(int)) {
           agg.copy(IVi, firstIV[idx]);
       }
-      var sortedKV: [kD] (int, int);
-      forall ((kvi0,kvi1), idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
-        agg.copy(kvi0, keys[idx]);
-        agg.copy(kvi1, values[idx]);
+      var sortedKV: [kD] (int, t);
+      forall ((kvi0,kvi1), idx) in zip(sortedKV, IV) with (var keysAgg = newSrcAggregator(int),
+                                                           var valsAgg = newSrcAggregator(t)) {
+        keysAgg.copy(kvi0, keys[idx]);
+        valsAgg.copy(kvi1, values[idx]);
       }
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "sort time = %i".format(Time.getCurrentTime() - t1));
@@ -973,9 +1059,9 @@ module ReductionMsg
                                            "Finding unique (key, value) pairs...");
       var truth: [kD] bool;
       // true where new (k, v) pair appears
-      [(t, (_,val), i) in zip(truth, sortedKV, kD)] if i > kD.low {
+      [(tr, (_,val), i) in zip(truth, sortedKV, kD)] if i > kD.low {
         const (_,sortedVal) = sortedKV[i-1];
-        t = (sortedVal != val);
+        tr = (sortedVal != val);
       }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
@@ -1001,7 +1087,7 @@ module ReductionMsg
       // find steps in keys
       var truth2: [hD] bool;
       truth2[hD.low] = true;
-      [(t, k, i) in zip(truth2, keyhits, hD)] if (i > hD.low) { t = (keyhits[i-1] != k); }
+      [(tr, k, i) in zip(truth2, keyhits, hD)] if (i > hD.low) { tr = (keyhits[i-1] != k); }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * truth2.size);
       var kiv: [hD] int = (+ scan truth2);

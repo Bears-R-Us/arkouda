@@ -17,11 +17,6 @@ module In1dMsg
     private config const logLevel = ServerConfig.logLevel;
     const iLogger = new Logger(logLevel);
     
-    /*
-    Medium bound const. Per locale associative domain in1d implementation recommended.
-    */
-    private config const mBound = 2**25; 
-
     /* in1d takes two pdarray and returns a bool pdarray
        with the "in"/contains for each element tested against the second pdarray.
        
@@ -59,53 +54,15 @@ module In1dMsg
                 var ar1 = toSymEntry(gAr1,int);
                 var ar2 = toSymEntry(gAr2,int);
 
-                // things to do...
-                // if ar2 is big for some value of big... call unique on ar2 first
-
-                // per locale assoc domain if below medium bound
-                if (ar2.size <= mBound) {
-                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound));                  
-                    var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
-                    if (invert) {truth = !truth;}
-                    
-                    st.addEntry(rname, new shared SymEntry(truth));
-                }
-                // sort-based strategy if above medium bound
-                else {
-                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "%t > %t, using sort-based strategy".format(ar2.size, mBound));
-                    var truth = in1dSort(ar1.a, ar2.a);
-                    if (invert) {truth = !truth;}
-
-                    st.addEntry(rname, new shared SymEntry(truth));
-                }
+                var truth = in1d(ar1.a, ar2.a, invert);
+                st.addEntry(rname, new shared SymEntry(truth));
             }
             when (DType.UInt64, DType.UInt64) {
                 var ar1 = toSymEntry(gAr1,uint);
                 var ar2 = toSymEntry(gAr2,uint);
 
-                // things to do...
-                // if ar2 is big for some value of big... call unique on ar2 first
-
-                // per locale assoc domain if below medium bound
-                if (ar2.size <= mBound) {
-                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound));                  
-                    var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
-                    if (invert) {truth = !truth;}
-                    
-                    st.addEntry(rname, new shared SymEntry(truth));
-                }
-                // sort-based strategy if above medium bound
-                else {
-                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "%t > %t, using sort-based strategy".format(ar2.size, mBound));
-                    var truth = in1dSort(ar1.a, ar2.a);
-                    if (invert) {truth = !truth;}
-
-                    st.addEntry(rname, new shared SymEntry(truth));
-                }
+                var truth = in1d(ar1.a, ar2.a, invert);
+                st.addEntry(rname, new shared SymEntry(truth));
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);

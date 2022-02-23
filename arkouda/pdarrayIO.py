@@ -14,7 +14,7 @@ ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
 
 @typechecked
-def ls_hdf(filename : str) -> List[str]:
+def ls_hdf(filename : str, is_parquet=False) -> List[str]:
     """
     This function calls the h5ls utility on a filename visible to the
     arkouda server.
@@ -23,6 +23,8 @@ def ls_hdf(filename : str) -> List[str]:
     ----------
     filename : str
         The name of the file to pass to h5ls
+    is_parquet : bool
+        Is filename a Parquet file; false by default
 
     Returns
     -------
@@ -41,7 +43,8 @@ def ls_hdf(filename : str) -> List[str]:
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    return json.loads(cast(str,generic_msg(cmd="lshdf", args="{}".format(json.dumps([filename])))))
+    cmd = 'lshdf' if not is_parquet else 'lspq'
+    return json.loads(cast(str,generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
@@ -379,14 +382,16 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
             
 
 @typechecked
-def get_datasets(filename : str) -> List[str]:
+def get_datasets(filename : str, is_parquet=False) -> List[str]:
     """
     Get the names of datasets in an HDF5 file.
 
     Parameters
     ----------
     filename : str
-        Name of an HDF5 file visible to the arkouda server
+        Name of an HDF5/Parquet file visible to the arkouda server
+    is_parquet : bool
+        Is filename a Parquet file; false by default
 
     Returns
     -------
@@ -406,7 +411,7 @@ def get_datasets(filename : str) -> List[str]:
     --------
     ls_hdf
     """
-    datasets = ls_hdf(filename)
+    datasets = ls_hdf(filename, is_parquet)
     # We can skip/remove the _arkouda_metadata group since it is an internal only construct
     if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)

@@ -183,7 +183,7 @@ module IndexingMsg
         // gather indexing by integer index vector
         proc ivUInt64Helper(type XType): MsgTuple throws {
             var e = toSymEntry(gX,XType);
-            var iv = toSymEntry(gIV,int);
+            var iv = toSymEntry(gIV,uint);
             if (e.size == 0) && (iv.size == 0) {
                 var a = st.addEntry(rname, 0, XType);
                 var repMsg = "created " + st.attrib(rname);
@@ -208,7 +208,7 @@ module IndexingMsg
             ref iva = iv.a;
             ref aa = a.a;
             forall (a1,idx) in zip(aa,iva) with (var agg = newSrcAggregator(XType)) {
-              agg.copy(a1,a2[idx]);
+              agg.copy(a1,a2[idx:int]);
             }
             
             var repMsg =  "created " + st.attrib(rname);
@@ -257,8 +257,17 @@ module IndexingMsg
             when (DType.UInt64, DType.Int64) {
                 return ivInt64Helper(uint);
             }
+            when (DType.Int64, DType.UInt64) {
+                return ivUInt64Helper(int);
+            }
+            when (DType.UInt64, DType.UInt64) {
+                return ivUInt64Helper(uint);
+            }
             when (DType.Int64, DType.Bool) {
                 return ivBoolHelper(int);
+            }
+            when (DType.UInt64, DType.Bool) {
+                return ivBoolHelper(uint);
             }
             when (DType.Float64, DType.Int64) {
                 return ivInt64Helper(real);

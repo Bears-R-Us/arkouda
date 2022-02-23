@@ -13,7 +13,7 @@ from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.pdarraysetops import concatenate
 from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
-from arkouda.dtypes import int64
+from arkouda.dtypes import int64, uint64
 
 __all__ = ["GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
@@ -102,8 +102,8 @@ class GroupBy:
         self.keys : groupable
 
         if isinstance(keys, pdarray):
-            if keys.dtype != int64:
-                raise TypeError('GroupBy only supports pdarrays with a dtype int64')
+            if keys.dtype != int64 and keys.dtype != uint64:
+                raise TypeError('GroupBy only supports pdarrays with a dtype int64 or uint64')
             self.keys = cast(pdarray, keys)
             self.nkeys = 1
             self.size = cast(int, keys.size)
@@ -494,7 +494,7 @@ class GroupBy:
         (array([2, 3, 4]), array([1, 1, 3]))
         """
         if values.dtype == bool:
-            raise TypeError('min is only supported for pdarrays of dtype float64 and int64')
+            raise TypeError('min is only supported for pdarrays of dtype float64, uint64, and int64')
         return self.aggregate(values, "min", skipna)
     
     def max(self, values : pdarray, skipna : bool=True) \
@@ -542,7 +542,7 @@ class GroupBy:
         (array([2, 3, 4]), array([4, 4, 3]))
         """
         if values.dtype == bool:
-            raise TypeError('max is only supported for pdarrays of dtype float64 and int64')
+            raise TypeError('max is only supported for pdarrays of dtype float64, uint64, and int64')
         return self.aggregate(values, "max", skipna)
     
     def argmin(self, values : pdarray) \
@@ -595,7 +595,7 @@ class GroupBy:
         (array([2, 3, 4]), array([5, 4, 2]))       
         """
         if values.dtype == bool:
-            raise TypeError('argmin is only supported for pdarrays of dtype float64 and int64')
+            raise TypeError('argmin is only supported for pdarrays of dtype float64, uint64, and int64')
         return self.aggregate(values, "argmin")
     
     def argmax(self, values : pdarray)\
@@ -646,7 +646,7 @@ class GroupBy:
         (array([2, 3, 4]), array([9, 3, 2]))
         """
         if values.dtype == bool:
-            raise TypeError('argmax is only supported for pdarrays of dtype float64 and int64')
+            raise TypeError('argmax is only supported for pdarrays of dtype float64, uint64, and int64')
         return self.aggregate(values, "argmax")
     
     def nunique(self, values : groupable) -> Tuple[groupable, pdarray]:
@@ -703,14 +703,14 @@ class GroupBy:
         # or Categorical (the last two have a .group() method).
         # Can't directly test Categorical due to circular import.
         if isinstance(values, pdarray):
-            if cast(pdarray, values).dtype != int64:
+            if cast(pdarray, values).dtype != int64 and cast(pdarray, values).dtype != uint64:
                 raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx, values]
         elif hasattr(values, "group"):
             togroup = [ukidx, values]
         else:
             for v in values:
-                if isinstance(values, pdarray) and cast(pdarray, values).dtype != int64:
+                if isinstance(values, pdarray) and cast(pdarray, values).dtype != int64 and cast(pdarray, values).dtype != uint64:
                     raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx] + list(values)
         # Find unique pairs of (key, val)
@@ -820,8 +820,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('OR is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('OR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "or")  # type: ignore
 
@@ -857,8 +857,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('AND is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('AND is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "and")  # type: ignore
 
@@ -894,8 +894,8 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64:
-            raise TypeError('XOR is only supported for pdarrays of dtype int64')
+        if values.dtype != int64 and values.dtype != uint64:
+            raise TypeError('XOR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "xor")  # type: ignore
 
