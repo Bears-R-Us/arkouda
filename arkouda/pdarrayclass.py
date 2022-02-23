@@ -210,7 +210,14 @@ class pdarray:
             repMsg = generic_msg(cmd=cmd,args=args)
             return create_pdarray(repMsg)
         # pdarray binop scalar
-        dt = resolve_scalar_dtype(other)
+        if np.can_cast(other, self.dtype):
+            # If scalar can be losslessly cast to array dtype, 
+            # do the cast so that return array will have same dtype
+            dt = self.dtype.name
+            other = self.dtype.type(other)
+        else:
+            # If scalar cannot be safely cast, server will infer the return dtype
+            dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError("Unhandled scalar type: {} ({})".format(other, 
                                                                     type(other)))
@@ -250,7 +257,14 @@ class pdarray:
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop scalar
-        dt = resolve_scalar_dtype(other)
+        if np.can_cast(other, self.dtype):
+            # If scalar can be losslessly cast to array dtype, 
+            # do the cast so that return array will have same dtype
+            dt = self.dtype.name
+            other = self.dtype.type(other)
+        else:
+            # If scalar cannot be safely cast, server will infer the return dtype
+            dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError("Unhandled scalar type: {} ({})".format(other, 
                                                                     type(other)))
