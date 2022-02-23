@@ -149,3 +149,12 @@ class WhereTest(ArkoudaTest):
         cond = a1 > 5,a1 < 8
         with self.assertRaises(TypeError):
             ak.where(cond,a1,a2)
+            
+    def test_dtypes(self):
+        cond = (ak.arange(10) % 2) == 0
+        for dt in (ak.int64, ak.uint64, ak.float64, ak.bool):
+            a = ak.ones(10, dtype=dt)
+            b = ak.ones(10, dtype=dt)
+            self.assertTrue((ak.where(cond, a, b) == a).all())
+            self.assertTrue((ak.where(cond, 1, b) == a).all())
+            self.assertTrue((ak.where(cond, a, 1) == a).all())

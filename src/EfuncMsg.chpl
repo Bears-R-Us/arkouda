@@ -302,6 +302,23 @@ module EfuncMsg
                     }                
                 } 
             }
+            when (DType.Bool, DType.UInt64, DType.UInt64) {
+                var e1 = toSymEntry(g1, bool);
+                var e2 = toSymEntry(g2, uint);
+                var e3 = toSymEntry(g3, uint);
+                select efunc {
+                    when "where" {
+                        var a = where_helper(e1.a, e2.a, e3.a, 0);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,efunc,g1.dtype,
+                                                           g2.dtype,g3.dtype);
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
+                    }                
+                } 
+            }
             when (DType.Bool, DType.Float64, DType.Float64) {
                 var e1 = toSymEntry(g1, bool);
                 var e2 = toSymEntry(g2, real);
@@ -384,6 +401,23 @@ module EfuncMsg
                var e1 = toSymEntry(g1, bool);
                var e2 = toSymEntry(g2, int);
                var val = try! value:int;
+               select efunc {
+                  when "where" {
+                      var a = where_helper(e1.a, e2.a, val, 1);
+                      st.addEntry(rname, new shared SymEntry(a));
+                  }
+                  otherwise {
+                      var errorMsg = notImplementedError(pn,efunc,g1.dtype,
+                                                         g2.dtype,dtype);
+                      eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+               } 
+            }
+            when (DType.Bool, DType.UInt64, DType.UInt64) {
+               var e1 = toSymEntry(g1, bool);
+               var e2 = toSymEntry(g2, uint);
+               var val = try! value:uint;
                select efunc {
                   when "where" {
                       var a = where_helper(e1.a, e2.a, val, 1);
@@ -493,6 +527,23 @@ module EfuncMsg
                     }   
                } 
             }
+            when (DType.Bool, DType.UInt64, DType.UInt64) {
+                var e1 = toSymEntry(g1, bool);
+                var val = try! value:uint;
+                var e2 = toSymEntry(g2, uint);
+                select efunc {
+                    when "where" {
+                        var a = where_helper(e1.a, val, e2.a, 2);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,efunc,g1.dtype,
+                                                           dtype,g2.dtype);
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }   
+               } 
+            }
             when (DType.Bool, DType.Float64, DType.Float64) {
                 var e1 = toSymEntry(g1, bool);
                 var val = try! value:real;
@@ -571,6 +622,23 @@ module EfuncMsg
                 var e1 = toSymEntry(g1, bool);
                 var val1 = try! value1:int;
                 var val2 = try! value2:int;
+                select efunc {
+                    when "where" {
+                        var a = where_helper(e1.a, val1, val2, 3);
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,efunc,g1.dtype,
+                                                      dtype1,dtype2);
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                } 
+            }
+            when (DType.Bool, DType.UInt64, DType.UInt64) {
+                var e1 = toSymEntry(g1, bool);
+                var val1 = try! value1:uint;
+                var val2 = try! value2:uint;
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val1, val2, 3);
