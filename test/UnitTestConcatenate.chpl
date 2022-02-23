@@ -27,7 +27,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var str2 = getSegString(s2, v2, st);
   writeSegString("\nStr 2, %i elem, %i bytes".format(str2.size, str2.nBytes), str2);
 
-  var reqMsg = "2 str append %s+%s %s+%s".format(str1.name, "legacy_placeholder", str2.name, "legacy_placeholder");
+  var reqMsg = "2 str append %s %s".format(str1.name, str2.name);
   writeReq(reqMsg);
   d.start();
   var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st).msg;
@@ -47,7 +47,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
 
   // Test interleave mode
   
-  reqMsg = "2 str interleave %s+%s %s+%s".format(str1.name, "legacy_placeholder", str2.name, "legacy_placeholder");
+  reqMsg = "2 str interleave %s %s".format(str1.name, str2.name);
   writeReq(reqMsg);
   d.start();
   repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st).msg;

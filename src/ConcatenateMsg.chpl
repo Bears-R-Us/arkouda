@@ -50,13 +50,10 @@ module ConcatenateMsg
         var nbytes: int = 0;          
         var dtype: DType;
         // Check that all arrays exist in the symbol table and have the same size
-        for (rawName, i) in zip(names, 1..) {
-            var name: string;
+        for (name, i) in zip(names, 1..) {
             var valSize: int;
             select objtype {
                 when "str" {
-                    var legacy_placeholder: string;
-                    (name, legacy_placeholder) = rawName.splitMsgToTuple('+', 2);
                     try {
                         // get the values/bytes portion of strings
                         var segString = getSegString(name, st);
@@ -71,12 +68,11 @@ module ConcatenateMsg
                            errorClass="UnknownSymbolError");                    
                     }
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "name: %s legacy_placeholder: %s".format(name, legacy_placeholder));
+                                             "name: %s".format(name));
                 }
                 when "pdarray" {
-                    name = rawName;
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                 "pdarray name %s".format(rawName));
+                                 "pdarray name %s".format(name));
                 }
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype); 

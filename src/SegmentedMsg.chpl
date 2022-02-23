@@ -162,7 +162,7 @@ module SegmentedMsg {
   proc segmentedSearchMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (objtype, name, legacy_placeholder, valtype, valStr) = payload.splitMsgToTuple(5);
+      var (objtype, name, valtype, valStr) = payload.splitMsgToTuple(4);
 
       // check to make sure symbols defined
       st.checkTable(name);
@@ -209,7 +209,7 @@ module SegmentedMsg {
   proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, groupNumStr, patternJson) = payload.splitMsgToTuple(5);
+    var (objtype, name, groupNumStr, patternJson) = payload.splitMsgToTuple(4);
     var groupNum: int;
     try {
       groupNum = groupNumStr:int;
@@ -292,7 +292,7 @@ module SegmentedMsg {
   proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(8);
+    var (objtype, name, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
     const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
 
     // check to make sure symbols defined
@@ -354,7 +354,7 @@ module SegmentedMsg {
   proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(7);
+    var (objtype, name, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(6);
     const returnNumSubs: bool = returnNumSubsStr.toLower() == "true";
     var count: int;
     try {
@@ -406,8 +406,8 @@ module SegmentedMsg {
   proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (subcmd, objtype, name, legacy_placeholder, valtype, valStr,
-         idStr, kpStr, lStr, regexStr, jsonStr) = payload.splitMsgToTuple(11);
+    var (subcmd, objtype, name, valtype, valStr,
+         idStr, kpStr, lStr, regexStr, jsonStr) = payload.splitMsgToTuple(10);
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -501,7 +501,7 @@ module SegmentedMsg {
   proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
+    var (objtype, name) = payload.splitMsgToTuple(2);
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -595,7 +595,7 @@ module SegmentedMsg {
               // Make a temporary strings array
               var strings = getSegString(strName, st);
               // Parse the index
-              var idx = args[3]:int;
+              var idx = args[2]:int;
               // TO DO: in the future, we will force the client to handle this
               idx = convertPythonIndexToChapel(idx, strings.size);
               var s = strings[idx];
@@ -628,17 +628,17 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]); //TODO remove legacy_placeholder and bump indices below
+    st.checkTable(args[1]);
 
     select objtype {
         when "str" {
             // Make a temporary string array
             var strings = getSegString(args[1], st);
 
-            // Parse the slice parameters TODO bump this indicies after legacy_placeholder removal
-            var start = args[3]:int;
-            var stop = args[4]:int;
-            var stride = args[5]:int;
+            // Parse the slice parameters
+            var start = args[2]:int;
+            var stop = args[3]:int;
+            var stride = args[4]:int;
 
             // Only stride-1 slices are allowed for now
             if (stride != 1) { 
@@ -681,7 +681,7 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);  // TODO update positional args below after removing legacy_placeholder
+    st.checkTable(args[1]);
 
     var newStringsName = "";
     var nBytes = 0;
@@ -692,7 +692,7 @@ module SegmentedMsg {
     select objtype {
         when "str" {
             var strings = getSegString(args[1], st);
-            var iname = args[3];
+            var iname = args[2];
             var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
             try {
                 select gIV.dtype {
@@ -741,10 +741,10 @@ module SegmentedMsg {
     var repMsg: string;
     var (op,
          // Type and attrib names of left segmented array
-         ltype, leftName, left_legacy_placeholder,
+         ltype, leftName,
          // Type and attrib names of right segmented array
-         rtype, rightName, right_legacy_placeholder, leftStr, jsonStr)
-           = payload.splitMsgToTuple(9);
+         rtype, rightName, leftStr, jsonStr)
+           = payload.splitMsgToTuple(7);
 
     // check to make sure symbols defined
     st.checkTable(leftName);
@@ -780,7 +780,6 @@ module SegmentedMsg {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
                         strings = getSegString(newOffsets, newVals, st);
                     }
-                    // TODO remove second created entry after legacy_placeholder removal
                     repMsg = "created %s+created bytes.size %t".format(st.attrib(strings.name), strings.nBytes);
                     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
@@ -804,8 +803,8 @@ module SegmentedMsg {
   proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (op, objtype, name, legacy_placeholder, valtype, encodedVal)
-          = payload.splitMsgToTuple(6);
+      var (op, objtype, name, valtype, encodedVal)
+          = payload.splitMsgToTuple(5);
 
       // check to make sure symbols defined
       st.checkTable(name);
@@ -848,8 +847,7 @@ module SegmentedMsg {
   proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (mainObjtype, mainName, main_legacy_placeholder, testObjtype, testName,
-         test_legacy_placeholder, invertStr) = payload.splitMsgToTuple(7);
+      var (mainObjtype, mainName, testObjtype, testName, invertStr) = payload.splitMsgToTuple(5);
 
       // check to make sure symbols defined
       st.checkTable(mainName);
@@ -887,7 +885,7 @@ module SegmentedMsg {
 
   proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
+      var (objtype, name) = payload.splitMsgToTuple(2);
 
       // check to make sure symbols defined
       st.checkTable(name);

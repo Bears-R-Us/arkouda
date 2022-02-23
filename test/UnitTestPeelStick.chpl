@@ -133,20 +133,18 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
   d.stop("make_strings");
-  var reqMsg = "peel str %s legacy_placeholder str 1 True True True False %jt".format(strings.name, [substr]);
+  var reqMsg = "peel str %s str 1 True True True False %jt".format(strings.name, [substr]);
   writeReq(reqMsg);
   var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg, st).msg;
   writeRep(repMsg);
   var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
   var loname = parseName(loAttribs);
   var roname = parseName(roAttribs);
-  reqMsg = "stick str %s %s str %s %s False %jt".format(loname, "legacy_placeholder", roname, "legacy_placeholder", [""]);
+  reqMsg = "stick str %s str %s False %jt".format(loname, roname, [""]);
   writeReq(reqMsg);
   repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg, st).msg;
   writeRep(repMsg);
-  //TODO remove legacy_placeholder
-  var (rtoAttribs,legacy_placeholder) = repMsg.splitMsgToTuple('+', 2);
-  var rtoname = parseName(rtoAttribs);
+  var rtoname = parseName(repMsg);
   var roundTrip = getSegString(rtoname, st);
   var success = && reduce (strings == roundTrip);
   writeln("Round trip successful? >>> %t <<<".format(success));

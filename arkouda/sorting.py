@@ -56,10 +56,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
         return cast(Categorical,pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
-    if isinstance(pda, Strings):
-        name = '{}+{}'.format(pda.entry.name, "legacy_placeholder")
-    else:
-        name = pda.name
+    name = pda.entry.name if isinstance(pda, Strings) else pda.name
     repMsg = generic_msg(cmd="argsort", args="{} {} {}".format(algorithm.name, pda.objtype, name))
     return create_pdarray(cast(str,repMsg))
 
@@ -126,7 +123,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
             atypes.append(a.objtype)
         elif isinstance(a, Strings):
             atypes.append(a.objtype)
-            anames.append('{}+{}'.format(a.entry.name, "legacy_placeholder"))
+            anames.append(a.entry.name)
         else:
             raise ValueError("Argument must be an iterable of pdarrays, Strings, or Categoricals")
         if size == -1:

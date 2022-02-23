@@ -145,11 +145,9 @@ module FindSegmentsMsg
               }
             }
             when "str" {
-              // TODO remvove legacy_placeholder
-              var (myNames1,legacy_placeholder) = name.splitMsgToTuple('+', 2);
               fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "findSegmentsMessage myNames1: {} legacy_placeholder: {}".format(myNames1,legacy_placeholder));
-              var str = getSegString(myNames1, st);
+                                  "findSegmentsMessage name: {}".format(name));
+              var str = getSegString(name, st);
               var (permOffsets, permVals) = str[pa];
               const ref D = permOffsets.domain;
               var permLengths: [D] int;
