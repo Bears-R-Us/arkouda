@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import UserDict
 from warnings import warn
-import pandas as pd
+import pandas as pd  # type: ignore
 import random
 
 from arkouda.segarray import SegArray
@@ -54,7 +54,6 @@ class DataFrame(UserDict):
     Create an empty DataFrame and add a column of data:
 
     >>> import arkouda as ak
-    >>> import pandas as pd
     >>> import numpy as np
     >>> df = ak.DataFrame()
     >>> df['a'] = ak.array([1,2,3])

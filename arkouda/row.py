@@ -1,5 +1,5 @@
 from collections import UserDict
-from tabulate import tabulate
+from tabulate import tabulate  # type: ignore
 
 __all__ = ["Row", ]
 
