@@ -237,6 +237,35 @@ module EfuncMsg
                         var a = st.addEntry(rname, e.size, uint);
                         a.a = parity(e.a);
                     }
+                    when "hash64" {
+                        overMemLimit(numBytes(uint) * e.size);
+                        // TO DO: change all hash return types to uint
+                        var a = st.addEntry(rname, e.size, int);
+                        forall (ai, x) in zip(a.a, e.a) {
+                            ai = sipHash64(x): int(64);
+                        }
+                    }
+                    when "hash128" {
+                        overMemLimit(numBytes(uint) * e.size * 2);
+                        var rname2 = st.nextName();
+                        // TO DO: change all hash return types to uint
+                        var a1 = st.addEntry(rname2, e.size, int);
+                        var a2 = st.addEntry(rname, e.size, int);
+                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+                            (a1i, a2i) = sipHash128(x): (int(64), int(64));
+                        }
+                        // Put first array's attrib in repMsg and let common
+                        // code append second array's attrib
+                        repMsg += "created " + st.attrib(rname2) + "+";
+                    }
+                    when "log" {
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.log(e.a);
+                    }
+                    when "exp" {
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.exp(e.a);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
