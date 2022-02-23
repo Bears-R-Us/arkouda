@@ -3,10 +3,12 @@
 import time, argparse
 import arkouda as ak
 
-# Must be less than src/SegmentedArray.chpl:in1dAssocSortThreshold, which defaults to 10**6
-MEDIUM = 10**6 - 1
-# Must be greater than mbound
-LARGE = 10**6 + 1
+# Tied to src/In1d.chpl:threshold, which defaults to 2**23
+THRESHOLD = 2**23
+
+MEDIUM = THRESHOLD - 1
+LARGE = THRESHOLD + 1
+
 # Controls how many unique values are possible
 MAXSTRLEN = 5
 

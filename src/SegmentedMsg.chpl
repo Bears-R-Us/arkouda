@@ -871,11 +871,7 @@ module SegmentedMsg {
               var mainStr = getSegString(mainName, st);
               var testStr = getSegString(testName, st);
               var e = st.addEntry(rname, mainStr.size, bool);
-              if invert {
-                  e.a = !in1d(mainStr, testStr);
-              } else {
-                  e.a = in1d(mainStr, testStr);
-              }
+              e.a = in1d(mainStr, testStr, invert);
           }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
