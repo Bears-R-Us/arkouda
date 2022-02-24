@@ -190,22 +190,14 @@ proc testReadStrings(filename, dsetname) {
     writeln(chplMsg);
   }
 
-<<<<<<< HEAD
-  //offsets = (+ scan offsets) - offsets;
-  var localSlice = new lowLevelLocalizingSlice(a, 0..9);
-  var asd = createStringWithOwnedBuffer(localSlice.ptr, 8, 9);
-  if asd == 'asdasdasd' {
-=======
   var localSlice = new lowLevelLocalizingSlice(a, 0..3);
   var firstElem = createStringWithOwnedBuffer(localSlice.ptr, 3, 4);
   if firstElem == 'asd' {
->>>>>>> 4707977b (Add string Parquet file to resources)
     return 0;
   } else {
     writeln("FAILED: reading string file ", firstElem);
     return 1;
   }
-<<<<<<< HEAD
   
   return 0;
 }
@@ -237,8 +229,6 @@ proc testMultiDset() {
     writeln("FAILED: testMultiDset with ", ret);
     return 1;
   }
-=======
->>>>>>> 4707977b (Add string Parquet file to resources)
 }
 
 proc main() {
@@ -256,30 +246,9 @@ proc main() {
   errors += testGetNumRows(filename, size);
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   errors += testGetDsets(filename);
-<<<<<<< HEAD
   errors += testMultiDset();
-=======
-=======
-  errors += testReadStrings(strFilename);
->>>>>>> fa0ea4d7 (Offsets array working but still trying to figure out string buffer)
-<<<<<<< HEAD
->>>>>>> 816cfd0c (Offsets array working but still trying to figure out string buffer)
-=======
-=======
-  // Not testing read strings since we can't write strings yet
-  // errors += testReadStrings(strFilename);
->>>>>>> e4b003f5 (Update unit test for String reading)
-<<<<<<< HEAD
->>>>>>> ff277613 (Update unit test for String reading)
-=======
-=======
   errors += testReadStrings(strFilename, strDsetname);
->>>>>>> df99be70 (Add string Parquet file to resources)
->>>>>>> 4707977b (Add string Parquet file to resources)
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
