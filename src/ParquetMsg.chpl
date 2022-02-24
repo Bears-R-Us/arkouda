@@ -131,32 +131,6 @@ module ParquetMsg {
     return byteSize;
   }
   
-  proc readStrFilesByName(A: [] uint(8), filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    extern proc c_readStrColumnByName(filename, chpl_arr, colNum, errMsg): int;
-    
-    var (subdoms, length) = getSubdomains(sizes);
-    
-    coforall loc in A.targetLocales() do on loc {
-      var locFiles = filenames;
-      var locFiledoms = subdoms;
-      forall (filedom, filename) in zip(locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] uint(8);
-            if c_readStrColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                     dsetname.localize().c_str(),
-                                     c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
-            }
-            A[filedom] = col;
-          }
-        }
-      }
-    }
-  }
-
   proc getArrSize(filename: string) throws {
     extern proc c_getNumRows(chpl_str, errMsg): int;
     var pqErr = new parquetErrorMsg();
@@ -383,7 +357,7 @@ module ParquetMsg {
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
           var entryVal = new shared SymEntry(len, uint(8));
-          readStrFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           proc _buildEntryCalcOffsets(): shared SymEntry throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
             return new shared SymEntry(offsetsArray);
