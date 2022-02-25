@@ -404,14 +404,17 @@ def ones_like(pda : pdarray) -> pdarray:
     """
     return ones(pda.size, pda.dtype)
 
-def arange(*args) -> pdarray:
+
+def arange(*args, **kwargs) -> pdarray:
     """
-    arange([start,] stop[, stride])
+    arange([start,] stop[, stride,] dtype=int64)
 
     Create a pdarray of consecutive integers within the interval [start, stop).
     If only one arg is given then arg is the stop parameter. If two args are
     given, then the first arg is start and second is stop. If three args are
     given, then the first arg is start, second is stop, third is stride.
+
+    The return value is cast to type dtype
 
     Parameters
     ----------
@@ -425,7 +428,7 @@ def arange(*args) -> pdarray:
 
     Returns
     -------
-    pdarray, int64
+    pdarray, dtype
         Integers from start (inclusive) to stop (exclusive) by stride
         
     Raises
@@ -459,21 +462,21 @@ def arange(*args) -> pdarray:
     >>> ak.arange(-5, -10, -1)
     array([-5, -6, -7, -8, -9])
     """
-   
-    #if one arg is given then arg is stop
+    from arkouda.numeric import cast
+    # if one arg is given then arg is stop
     if len(args) == 1:
         start = 0
         stop = args[0]
         stride = 1
 
-    #if two args are given then first arg is start and second is stop
+    # if two args are given then first arg is start and second is stop
     if len(args) == 2:
         start = args[0]
         stop = args[1]
         stride = 1
 
-    #if three args are given then first arg is start,
-    #second is stop, third is stride
+    # if three args are given then first arg is start,
+    # second is stop, third is stride
     if len(args) == 3:
         start = args[0]
         stop = args[1]
@@ -482,14 +485,16 @@ def arange(*args) -> pdarray:
     if stride == 0:
         raise ZeroDivisionError("division by zero")
 
+    dtype = int64 if 'dtype' not in kwargs.keys() else kwargs['dtype']
+
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg(cmd='arange', args="{} {} {}".format(start, stop, stride))
-        return create_pdarray(repMsg)
+        return create_pdarray(repMsg) if dtype == int64 else cast(create_pdarray(repMsg), dtype)
     else:
-        raise TypeError("start,stop,stride must be type int or np.int64 {} {} {}".\
-                                    format(start,stop,stride))
+        raise TypeError(f"start,stop,stride must be type int, np.int64, or np.uint64 {start} {stop} {stride}")
+
 
 @typechecked
 def linspace(start : numeric_scalars, 

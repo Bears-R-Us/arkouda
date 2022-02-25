@@ -134,8 +134,6 @@ proc main() {
         registerBinaryFunction("tondarray", tondarrayMsg);
         registerFunction("create", createMsg);
         registerFunction("delete", deleteMsg);
-        registerFunction("arange", arangeMsg);
-        registerFunction("linspace", linspaceMsg);
         registerFunction("set", setMsg);
         registerFunction("info", infoMsg);
         registerFunction("str", strMsg);
