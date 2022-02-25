@@ -3,6 +3,7 @@ __version__ = get_versions()['version']
 del get_versions
 
 from arkouda.client import *
+from arkouda.client_dtypes import *
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import *
 from arkouda.sorting import *
