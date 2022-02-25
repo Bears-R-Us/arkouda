@@ -122,9 +122,13 @@ proc testVersionInfo() {
   }
   var ret;
   try! ret = createStringWithNewBuffer(cVersionString);
-  if ret[0]: int >= 5 {
+  try {
+    // Ensure that version number can be cast to int
+    // Not checking version number for compatability
+    var vMajor = ret[0]:int;
     return 0;
-  } else {
+  } catch {
+    writeln("FAILED: c_getVersionInfo with ", ret);
     return 1;
   }
 }
