@@ -180,7 +180,7 @@ class NumericTest(ArkoudaTest):
         self.assertTrue((h1 == h3[rev]).all())
 
         h = ak.hash(ak.linspace(0, 10, 10))
-        self.assertTrue((h[0].dtype == ak.int64) and (h[1].dtype == ak.int64))
+        self.assertTrue((h[0].dtype == ak.uint64) and (h[1].dtype == ak.uint64))
         
         
     def testValueCounts(self):
