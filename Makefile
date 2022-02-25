@@ -437,7 +437,7 @@ $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
-	@echo "$($*)"
+	$(info $($*)) @true
 
 test-python: 
 	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
