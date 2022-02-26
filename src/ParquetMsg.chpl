@@ -267,40 +267,16 @@ module ParquetMsg {
     var fileErrorCount:int = 0;
     var fileErrorMsg:string = "";
     var sizes: [filedom] int;
-    var ty = getArrType(filenames[filedom.low],
-                        dsetlist[dsetdom.low]);
+    var types: [dsetdom] ArrowTypes;
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
 
-    for dsetname in dsetnames do {
+    for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
             try {
-                // not using the type for now since it is only implemented for ints
-                // also, since Parquet files have a `numRows` that isn't specifc
-                // to dsetname like for HDF5, we only need to get this once per
-                // file, regardless of how many datasets we are reading
-                sizes[i] = getArrSize(fname);
-            } catch e: FileNotFoundError {
-                fileErrorMsg = "File %s not found".format(fname);
-                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
-                hadError = true;
-                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
-            } catch e: PermissionError {
-                fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
-                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
-                hadError = true;
-                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
-            } catch e: DatasetNotFoundError {
-                fileErrorMsg = "Dataset %s not found in file %s".format(dsetname,fname);
-                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
-                hadError = true;
-                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
-            } catch e: SegArrayError {
-                fileErrorMsg = "SegmentedArray error: %s".format(e.message());
-                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
-                hadError = true;
-                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                (sizes[i], types[dsetidx]) = (getArrSize(fname), getArrType(fname, dsetname));
             } catch e : Error {
+                // This is only type of error thrown by Parquet
                 fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
                 pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
@@ -316,11 +292,8 @@ module ParquetMsg {
               fileErrorCount += 1;
             }
         }
-        // This is handled in the readFilesByName() function
-        var subdoms: [filedom] domain(1);
-        var len: int;
-        var nSeg: int;
-        len = + reduce sizes;
+        var len = + reduce sizes;
+        var ty = types[dsetidx];
 
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
