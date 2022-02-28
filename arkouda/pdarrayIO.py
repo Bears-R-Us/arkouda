@@ -177,6 +177,11 @@ def read_parquet(filenames : Union[str, List[str]],
     if isinstance(datasets, str):
         datasets = [datasets]
 
+    nonexistent = set(datasets) - \
+        (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
+    if len(nonexistent) > 0:
+        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+
     rep_msg = generic_msg(cmd="readAllParquet", args=
                           f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {json.dumps(datasets)} | {json.dumps(filenames)}")
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
@@ -429,6 +434,8 @@ def get_datasets_allow_errors(filenames: List[str], is_parquet=False) -> List[st
     ----------
     filenames : List[str]
         A list of HDF5 files visible to the arkouda server
+    is_parquet : bool
+        Is filename a Parquet file; false by default
 
     Returns
     -------
