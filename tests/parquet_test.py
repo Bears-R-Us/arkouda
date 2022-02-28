@@ -77,6 +77,9 @@ class ParquetTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.read_parquet("pq_test*", "wrong-dset-name")
 
+        with self.assertRaises(RuntimeError) as cm:
+            ak.read_parquet("pq_test*", ['test-dset-name', 'wrong-dset-name'])
+
         for f in glob.glob("pq_test*"):
             os.remove(f)
 
