@@ -854,6 +854,28 @@ class pdarray:
         Rotate bits right by <other>.
         """
         return rotr(self, other)
+
+    def astype(self, dtype) -> pdarray:
+        """
+        Cast values of pdarray to provided dtype
+
+        Parameters
+        __________
+        dtype: np.dtype or str
+            Dtype to cast to
+
+        Returns
+        _______
+        ak.pdarray
+            An arkouda pdarray with values converted to the specified data type
+
+        Notes
+        _____
+        This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+        """
+        from arkouda.numeric import cast as akcast
+
+        return akcast(self, dtype)
     
     def to_ndarray(self) -> np.ndarray:
         """
