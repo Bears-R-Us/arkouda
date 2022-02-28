@@ -511,11 +511,11 @@ module SegmentedMsg {
             var strings = getSegString(name, st);
             var hashes = strings.hash();
             var name1 = st.nextName();
-            var hash1 = st.addEntry(name1, hashes.size, int);
+            var hash1 = st.addEntry(name1, hashes.size, uint);
             var name2 = st.nextName();
-            var hash2 = st.addEntry(name2, hashes.size, int);
+            var hash2 = st.addEntry(name2, hashes.size, uint);
             forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
-                (h1,h2) = h:(int,int);
+                (h1,h2) = h:(uint,uint);
             }
             var repMsg = "created " + st.attrib(name1) + "+created " + st.attrib(name2);
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
