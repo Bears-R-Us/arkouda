@@ -45,12 +45,53 @@ class PdarrayCreationTest(ArkoudaTest):
 
     def test_arange(self):
         self.assertTrue((ak.array([0, 1, 2, 3, 4]) == ak.arange(0, 5, 1)).all())
-
         self.assertTrue((ak.array([5, 4, 3, 2, 1]) == ak.arange(5, 0, -1)).all())
-        
         self.assertTrue((ak.array([-5, -6, -7, -8, -9]) == ak.arange(-5, -10, -1)).all())
-
         self.assertTrue((ak.array([0, 2, 4, 6, 8]) == ak.arange(0, 10, 2)).all())
+
+    def test_arange_dtype(self):
+        # test dtype works with optional start/stride
+        expected_stop = ak.array([0, 1, 2])
+        uint_stop = ak.arange(3, dtype=ak.uint64)
+        self.assertListEqual(expected_stop.to_ndarray().tolist(), uint_stop.to_ndarray().tolist())
+        self.assertEqual(ak.uint64, uint_stop.dtype)
+
+        expected_start_stop = ak.array([3, 4, 5, 6])
+        uint_start_stop = ak.arange(3, 7, dtype=ak.uint64)
+        self.assertListEqual(expected_start_stop.to_ndarray().tolist(), uint_start_stop.to_ndarray().tolist())
+        self.assertEqual(ak.uint64, uint_start_stop.dtype)
+
+        expected_start_stop_stride = ak.array([3, 5])
+        uint_start_stop_stride = ak.arange(3, 7, 2, dtype=ak.uint64)
+        self.assertListEqual(expected_start_stop_stride.to_ndarray().tolist(), uint_start_stop_stride.to_ndarray().tolist())
+        self.assertEqual(ak.uint64, uint_start_stop_stride.dtype)
+
+        # test uint64 handles negatives correctly
+        np_arange_uint = np.arange(-5, -10, -1, dtype=np.uint64)
+        ak_arange_uint = ak.arange(-5, -10, -1, dtype=ak.uint64)
+        # np_arange_uint = array([18446744073709551611, 18446744073709551610, 18446744073709551609,
+        #        18446744073709551608, 18446744073709551607], dtype=uint64)
+        self.assertListEqual(np_arange_uint.tolist(), ak_arange_uint.to_ndarray().tolist())
+        self.assertEqual(ak.uint64, ak_arange_uint.dtype)
+
+        # test correct conversion to float64
+        np_arange_float = np.arange(-5, -10, -1, dtype=np.float64)
+        ak_arange_float = ak.arange(-5, -10, -1, dtype=ak.float64)
+        # array([-5., -6., -7., -8., -9.])
+        self.assertListEqual(np_arange_float.tolist(), ak_arange_float.to_ndarray().tolist())
+        self.assertEqual(ak.float64, ak_arange_float.dtype)
+
+        # test correct conversion to bool
+        expected_bool = ak.array([False, True, True, True, True])
+        ak_arange_bool = ak.arange(0, 10, 2, dtype=ak.bool)
+        self.assertListEqual(expected_bool.to_ndarray().tolist(), ak_arange_bool.to_ndarray().tolist())
+        self.assertEqual(ak.bool, ak_arange_bool.dtype)
+
+        # test uint64 input works
+        expected = ak.array([0, 1, 2])
+        uint_input = ak.arange(3, dtype=ak.uint64)
+        self.assertListEqual(expected.to_ndarray().tolist(), uint_input.to_ndarray().tolist())
+        self.assertEqual(ak.uint64, uint_input.dtype)
 
     def test_randint(self):
         testArray = ak.randint(0, 10, 5)
@@ -75,7 +116,7 @@ class PdarrayCreationTest(ArkoudaTest):
         
         for value in test_ndarray:
             self.assertTrue(0 <= value <= 10)
-                          
+
         test_array = ak.randint(0, 1, 3, dtype=ak.float64)
         self.assertEqual(ak.float64, test_array.dtype)
         
