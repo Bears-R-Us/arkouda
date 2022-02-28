@@ -3142,6 +3142,21 @@ Attributes
       value, but proceed with caution.
 
 
+   .. py:method:: astype(self, dtype) -> arkouda.pdarrayclass.pdarray
+
+      Cast values of Strings object to provided dtype
+
+      :param dtype: Dtype to cast to
+      :type dtype: np.dtype or str
+
+      :returns: An arkouda pdarray with values converted to the specified data type
+      :rtype: ak.pdarray
+
+      .. rubric:: Notes
+
+      This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
    .. py:method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True) -> str
 
       Save the Strings object to HDF5. The result is a collection of HDF5 files,

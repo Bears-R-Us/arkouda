@@ -558,6 +558,21 @@ Functions
       Rotate bits right by <other>.
 
 
+   .. py:method:: astype(self, dtype) -> pdarray
+
+      Cast values of pdarray to provided dtype
+
+      :param dtype: Dtype to cast to
+      :type dtype: np.dtype or str
+
+      :returns: An arkouda pdarray with values converted to the specified data type
+      :rtype: ak.pdarray
+
+      .. rubric:: Notes
+
+      This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
    .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the

@@ -1087,6 +1087,25 @@ value, but proceed with caution.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.astype">
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.astype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast values of Strings object to provided dtype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – Dtype to cast to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An arkouda pdarray with values converted to the specified data type</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ak.pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is essentially shorthand for ak.cast(x, ‘&lt;dtype&gt;’) where x is a pdarray.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the Strings object to HDF5. The result is a collection of HDF5 files,

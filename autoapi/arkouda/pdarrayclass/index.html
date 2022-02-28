@@ -899,6 +899,25 @@ always a np.float64 or np.int64.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.astype">
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.astype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast values of pdarray to provided dtype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – Dtype to cast to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An arkouda pdarray with values converted to the specified data type</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ak.pdarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is essentially shorthand for ak.cast(x, ‘&lt;dtype&gt;’) where x is a pdarray.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.to_ndarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
