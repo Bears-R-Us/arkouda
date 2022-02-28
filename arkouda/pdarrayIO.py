@@ -178,7 +178,7 @@ def read_parquet(filenames : Union[str, List[str]],
         datasets = [datasets]
 
     nonexistent = set(datasets) - \
-        (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
+        (set(get_datasets_allow_errors(filenames, True)) if allow_errors else set(get_datasets(filenames[0], True)))
     if len(nonexistent) > 0:
         raise ValueError("Dataset(s) not found: {}".format(nonexistent))
 
