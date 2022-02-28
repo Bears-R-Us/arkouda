@@ -161,6 +161,35 @@ proc testGetDsets(filename) {
   }
 }
 
+proc testMultiDset() {
+  const filename = 'resources/multi-col.parquet'.c_str();
+  extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
+  extern proc c_free_string(ptr);
+  extern proc strlen(a): int;
+  var cDsetString: c_ptr(c_char);
+  var errMsg: c_ptr(c_char);
+  var st = c_getDatasetNames(filename, c_ptrTo(cDsetString), c_ptrTo(errMsg));
+  defer {
+    c_free_string(cDsetString);
+    c_free_string(errMsg);
+  }
+  var ret;
+  try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
+
+  if st == 0 && ret == "col1,col3" {
+    return 0;
+  } else if st != 0 {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+    writeln("FAILED: testMultiDset");
+    return 1;
+  } else {
+    writeln("FAILED: testMultiDset with ", ret);
+    return 1;
+  }
+}
+
 proc main() {
   var errors = 0;
 
@@ -174,6 +203,7 @@ proc main() {
   errors += testGetType(filename, dsetname);
   errors += testVersionInfo();
   errors += testGetDsets(filename);
+  errors += testMultiDset();
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");
