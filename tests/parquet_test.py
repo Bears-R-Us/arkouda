@@ -74,10 +74,10 @@ class ParquetTest(ArkoudaTest):
         ak_arr = ak.randint(0, 2**32, SIZE)
         ak_arr.save_parquet("pq_test", "test-dset-name")
         
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(ValueError) as cm:
             ak.read_parquet("pq_test*", "wrong-dset-name")
 
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(ValueError) as cm:
             ak.read_parquet("pq_test*", ['test-dset-name', 'wrong-dset-name'])
 
         for f in glob.glob("pq_test*"):
