@@ -1287,6 +1287,28 @@ class Strings:
             dt = dt.newbyteorder('<')
         return np.frombuffer(rep_msg, dt).copy()
 
+    def astype(self, dtype) -> pdarray:
+        """
+        Cast values of Strings object to provided dtype
+
+        Parameters
+        __________
+        dtype: np.dtype or str
+            Dtype to cast to
+
+        Returns
+        _______
+        ak.pdarray
+            An arkouda pdarray with values converted to the specified data type
+
+        Notes
+        _____
+        This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+        """
+        from arkouda.numeric import cast as akcast
+
+        return akcast(self, dtype)
+
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
              mode : str='truncate', save_offsets : bool = True) -> str:
