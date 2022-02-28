@@ -211,11 +211,12 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <h2>Regular<a class="headerlink" href="#regular" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.arange">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <span class="optional">]</span><em class="sig-param"><span class="n"><span class="pre">stop</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.arange" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <span class="optional">]</span><em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <span class="optional">]</span><em class="sig-param"><span class="n"><span class="pre">dtype=int64</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.arange" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray of consecutive integers within the interval [start, stop).
 If only one arg is given then arg is the stop parameter. If two args are
 given, then the first arg is start and second is stop. If three args are
 given, then the first arg is start, second is stop, third is stride.</p>
+<p>The return value is cast to type dtype</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -229,7 +230,7 @@ if stride is specified then start must also be specified.</p></li>
 <dd class="field-even"><p>Integers from start (inclusive) to stop (exclusive) by stride</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64</p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, dtype</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">

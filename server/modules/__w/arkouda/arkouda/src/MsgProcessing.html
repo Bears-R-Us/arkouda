@@ -400,40 +400,6 @@ Repr convert array data to string</p>
 </dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="MsgProcessing.arangeMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arangeMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.arangeMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, stride)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,start,stop,stride)</p></li>
-<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>MsgTuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="MsgProcessing.linspaceMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">linspaceMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.linspaceMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, len)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,start,stop,len)</p></li>
-<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>MsgTuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="chpl function">
 <dt class="sig sig-object chpl" id="MsgProcessing.setMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#MsgProcessing.setMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets all elements in array to a value (broadcast)</p>

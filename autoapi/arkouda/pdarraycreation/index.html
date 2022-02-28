@@ -65,8 +65,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.ones_like" title="arkouda.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.arange" title="arkouda.pdarraycreation.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a>(*args) → arkouda.pdarrayclass.pdarray</p></td>
-<td><p>arange([start,] stop[, stride])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.arange" title="arkouda.pdarraycreation.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a>(*args, **kwargs) → arkouda.pdarrayclass.pdarray</p></td>
+<td><p>arange([start,] stop[, stride,] dtype=int64)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.linspace" title="arkouda.pdarraycreation.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start: arkouda.dtypes.numeric_scalars, stop: arkouda.dtypes.numeric_scalars, length: arkouda.dtypes.int_scalars) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray of linearly-spaced floats in a closed interval.</p></td>
@@ -386,12 +386,13 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.arange">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.arange" title="Permalink to this definition">¶</a></dt>
-<dd><p>arange([start,] stop[, stride])</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.arange" title="Permalink to this definition">¶</a></dt>
+<dd><p>arange([start,] stop[, stride,] dtype=int64)</p>
 <p>Create a pdarray of consecutive integers within the interval [start, stop).
 If only one arg is given then arg is the stop parameter. If two args are
 given, then the first arg is start and second is stop. If three args are
 given, then the first arg is start, second is stop, third is stride.</p>
+<p>The return value is cast to type dtype</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -405,7 +406,7 @@ if stride is specified then start must also be specified.</p></li>
 <dd class="field-even"><p>Integers from start (inclusive) to stop (exclusive) by stride</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, int64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, dtype</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">

@@ -259,14 +259,16 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: arange(*args) -> arkouda.pdarrayclass.pdarray
+.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
-   arange([start,] stop[, stride])
+   arange([start,] stop[, stride,] dtype=int64)
 
    Create a pdarray of consecutive integers within the interval [start, stop).
    If only one arg is given then arg is the stop parameter. If two args are
    given, then the first arg is start and second is stop. If three args are
    given, then the first arg is start, second is stop, third is stride.
+
+   The return value is cast to type dtype
 
    :param start: Starting value (inclusive)
    :type start: int_scalars, optional
@@ -277,7 +279,7 @@ Functions
    :type stride: int_scalars, optional
 
    :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, int64
+   :rtype: pdarray, dtype
 
    :raises TypeError: Raised if start, stop, or stride is not an int object
    :raises ZeroDivisionError: Raised if stride == 0
