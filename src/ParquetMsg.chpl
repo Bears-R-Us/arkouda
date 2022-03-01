@@ -28,10 +28,12 @@ module ParquetMsg {
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;
   extern var ARROWUINT64: c_int;
+  extern var ARROWBOOLEAN: c_int;
   extern var ARROWUNDEFINED: c_int;
   extern var ARROWERROR: c_int;
 
-  enum ArrowTypes { int64, int32, uint64, notimplemented };
+  enum ArrowTypes { int64, int32, uint64,
+                    timestamp, boolean, notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -139,7 +141,22 @@ module ParquetMsg {
     if arrType == ARROWINT64 then return ArrowTypes.int64;
     else if arrType == ARROWINT32 then return ArrowTypes.int32;
     else if arrType == ARROWUINT64 then return ArrowTypes.uint64;
+    else if arrType == ARROWBOOLEAN then return ArrowTypes.boolean;
     return ArrowTypes.notimplemented;
+  }
+
+  proc toCDtype(dtype: string) {
+    select dtype {
+      when 'int64' {
+        return ARROWINT64;
+      } when 'uint64' {
+        return ARROWUINT64;
+      } when 'bool' {
+        return ARROWBOOLEAN;
+      } otherwise {
+        return ARROWUNDEFINED;
+      }
+    }
   }
 
   proc writeDistArrayToParquet(A, filename, dsetname, dtype, rowGroupSize, compressed) throws {
@@ -147,7 +164,7 @@ module ParquetMsg {
                                        dsetname, numelems, rowGroupSize,
                                        dtype, compressed, errMsg): int;
     var filenames: [0..#A.targetLocales().size] string;
-    var dtypeRep = if dtype == "int64" then 1 else 2;
+    var dtypeRep = toCDtype(dtype);
     for i in 0..#A.targetLocales().size {
       var suffix = '%04i'.format(i): string;
       filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
@@ -304,7 +321,13 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.uint64 {
-          var entryVal = new shared SymEntry(len, uint(64));
+          var entryVal = new shared SymEntry(len, uint);
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          var valName = st.nextName();
+          st.addEntry(valName, entryVal);
+          rnames.append((dsetname, "pdarray", valName));
+        } else if ty == ArrowTypes.boolean {
+          var entryVal = new shared SymEntry(len, bool);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
@@ -342,7 +365,11 @@ module ParquetMsg {
             warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
           }
           when DType.UInt64 {
-            var e = toSymEntry(entry, uint(64));
+            var e = toSymEntry(entry, uint);
+            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
+          }
+          when DType.Bool {
+            var e = toSymEntry(entry, bool);
             warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
           }
           otherwise {
