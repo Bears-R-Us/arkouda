@@ -117,7 +117,7 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
                          calc_string_offsets=calc_string_offsets))
 
 def read_parquet(filenames : Union[str, List[str]],
-                 dsetname : Union[str, List[str]]  = 'array',
+                 datasets : Union[str, List[str]]=None,
                  strictTypes: bool=True, allow_errors:bool = False)\
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
@@ -128,9 +128,9 @@ def read_parquet(filenames : Union[str, List[str]],
     ----------
     filenames : list or str
         Either a list of filenames or shell expression
-    dsetName : str
-        The name of the dataset (must be the same across all files).
-        Defaults to 'array'.
+    datasets : str
+        The names of datasets to be read (must be the same across all files).
+        Defaults to all supported columns.
     strictTypes: bool
         If True (default), require all dtypes in all files to have the
         same precision and sign. If False, allow dtypes of different
@@ -172,11 +172,18 @@ def read_parquet(filenames : Union[str, List[str]],
     """
     if isinstance(filenames, str):
         filenames = [filenames]
-    if isinstance(dsetname, str):
-        dsetname = [dsetname]
+    if datasets is None:
+        datasets = get_datasets_allow_errors(filenames, True) if allow_errors else get_datasets(filenames[0], True)
+    if isinstance(datasets, str):
+        datasets = [datasets]
+
+    nonexistent = set(datasets) - \
+        (set(get_datasets_allow_errors(filenames, True)) if allow_errors else set(get_datasets(filenames[0], True)))
+    if len(nonexistent) > 0:
+        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
 
     rep_msg = generic_msg(cmd="readAllParquet", args=
-                          f"{strictTypes} {len(dsetname)} {len(filenames)} {allow_errors} {json.dumps(dsetname)} | {json.dumps(filenames)}")
+                          f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {json.dumps(datasets)} | {json.dumps(filenames)}")
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
     items = rep["items"] if "items" in rep else []
     file_errors = rep["file_errors"] if "file_errors" in rep else []
@@ -418,7 +425,7 @@ def get_datasets(filename : str, is_parquet=False) -> List[str]:
     return datasets
 
 @typechecked
-def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
+def get_datasets_allow_errors(filenames: List[str], is_parquet=False) -> List[str]:
     """
     Get the names of datasets in an HDF5 file
     Allow file read errors until success
@@ -427,6 +434,8 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
     ----------
     filenames : List[str]
         A list of HDF5 files visible to the arkouda server
+    is_parquet : bool
+        Is filename a Parquet file; false by default
 
     Returns
     -------
@@ -447,7 +456,7 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
     datasets = []
     for filename in filenames:
         try:
-            datasets = get_datasets(filename)
+            datasets = get_datasets(filename, is_parquet)
             break
         except RuntimeError:
             pass
