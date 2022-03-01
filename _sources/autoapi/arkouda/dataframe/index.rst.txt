@@ -1,0 +1,491 @@
+:py:mod:`arkouda.dataframe`
+===========================
+
+.. py:module:: arkouda.dataframe
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.dataframe.DataFrame
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.dataframe.sorted
+   arkouda.dataframe.intx
+   arkouda.dataframe.intersect
+   arkouda.dataframe.invert_permutation
+
+
+
+.. py:class:: DataFrame(initialdata=None)
+
+   Bases: :py:obj:`collections.UserDict`
+
+   A DataFrame structure based on arkouda arrays.
+
+   .. rubric:: Examples
+
+   Create an empty DataFrame and add a column of data:
+
+   >>> import arkouda as ak
+   >>> import numpy as np
+   >>> df = ak.DataFrame()
+   >>> df['a'] = ak.array([1,2,3])
+
+   Create a new DataFrame using a dictionary of data:
+
+   >>> userName = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+   >>> userID = ak.array([111, 222, 111, 333, 222, 111])
+   >>> item = ak.array([0, 0, 1, 1, 2, 0])
+   >>> day = ak.array([5, 5, 6, 5, 6, 6])
+   >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+   >>> df = ak.DataFrame({'userName': userName, 'userID': userID,
+   >>>            'item': item, 'day': day, 'amount': amount})
+   >>> df
+   DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [6 rows : 224 B])
+
+   Indexing works slightly differently than with pandas:
+   >>> df[0]
+   {'userName': 'Alice', 'userID': 111, 'item': 0, 'day': 5, 'amount': 0.5}
+   >>> df['userID']
+   array([111, 222, 111, 333, 222, 111])
+   >>> df['userName']
+   array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+   >>> df[[1,5,7]]
+     userName  userID  item  day  amount
+   1      Bob     222     0    5     0.6
+   2    Alice     111     1    6     1.1
+   3    Carol     333     1    5     1.2
+
+   Note that strides are not implemented except for stride = 1.
+   >>> df[1:5:1]
+   DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [4 rows : 148 B])
+   >>> df[ak.array([1,2,3])]
+   DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [3 rows : 112 B])
+   >>> df[['userID', 'day']]
+   DataFrame(['userID', 'day'] [6 rows : 96 B])
+
+   .. py:attribute:: COLUMN_CLASSES
+      
+
+      
+
+   .. py:method:: __delitem__(self, key)
+
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: __setitem__(self, key, value)
+
+
+   .. py:method:: __len__(self)
+
+      Return the number of rows
+
+
+   .. py:method:: _ncols(self)
+
+      Only count the non-index columns.
+
+
+   .. py:method:: __str__(self)
+
+      Returns a summary string of this dataframe.
+
+
+   .. py:method:: _get_head_tail(self)
+
+
+   .. py:method:: _shape_str(self)
+
+
+   .. py:method:: __repr__(self)
+
+      Return ascii-formatted version of the dataframe.
+
+
+   .. py:method:: _repr_html_(self)
+
+      Return html-formatted version of the dataframe.
+
+
+   .. py:method:: _ipython_key_completions_(self)
+
+
+   .. py:method:: drop(self, keys)
+
+      Drop a column or columns from the dataframe, in-place.
+
+      :param keys: The column(s) to be dropped.
+      :type keys: str or list
+
+
+   .. py:method:: drop_duplicates(self, subset=None, keep='first')
+
+      Drops duplcated rows and returns resulting DataFrame.
+
+      If a subset of the columns are provided then only one instance of each
+      duplicated row will be returned (keep determines which row).
+
+      :param subset:
+      :type subset: Iterable of column names to use to dedupe.
+      :param keep: Determines which duplicates (if any) to keep.
+      :type keep: {'first', 'last'}, default 'first'
+
+      :returns: DataFrame with duplicates removed.
+      :rtype: DataFrame
+
+
+   .. py:method:: size(self)
+      :property:
+
+      Returns the number of bytes on the arkouda server.
+
+
+   .. py:method:: dtypes(self)
+      :property:
+
+
+   .. py:method:: empty(self)
+      :property:
+
+
+   .. py:method:: shape(self)
+      :property:
+
+
+   .. py:method:: columns(self)
+      :property:
+
+
+   .. py:method:: index(self)
+      :property:
+
+
+   .. py:method:: reset_index(self, size=False)
+
+      Set the index to an integer range.
+
+      Useful if this dataframe is the result of a slice operation from
+      another dataframe, or if you have permuted the rows and no longer need
+      to keep that ordering on the rows.
+
+      :param size: If size is passed, do not attempt to determine size based on
+                   existing column sizes. Assume caller handles consistency correctly.
+      :type size: int
+
+
+   .. py:method:: info(self)
+      :property:
+
+      Returns a summary string of this dataframe.
+
+
+   .. py:method:: update_size(self)
+
+      Computes the number of bytes on the arkouda server.
+
+
+   .. py:method:: rename(self, mapper)
+
+      Rename columns in-place according to a mapping.
+
+      :param mapper: Function or dictionary mapping existing column names to
+                     new column names. Nonexistent names will not raise an
+                     error.
+      :type mapper: callable or dict-like
+
+      :returns: Renaming occurs in-place, but result is also returned,
+                for compatibility.
+      :rtype: self
+
+
+   .. py:method:: append(self, other, ordered=True)
+      :abstractmethod:
+
+
+   .. py:method:: concat(cls, items, ordered=True)
+      :classmethod:
+      :abstractmethod:
+
+
+   .. py:method:: head(self, n=5)
+
+      Return the first `n` rows.
+
+      This function returns the first `n` rows of the the dataframe. It is
+      useful for quickly verifying data, for example, after sorting or
+      appending rows.
+
+      :param n: Number of rows to select.
+      :type n: int
+
+      :returns: The first `n` rows of the DataFrame.
+      :rtype: akutil.DataFrame
+
+      .. seealso:: :obj:`tail`
+
+
+   .. py:method:: tail(self, n=5)
+
+      Return the last `n` rows.
+
+      This function returns the last `n` rows for the dataframe. It is
+      useful for quickly testing if your object has the right type of data in
+      it.
+
+      :param n: Number of rows to select.
+      :type n: int (default=5)
+
+      :returns: The last `n` rows of the DataFrame.
+      :rtype: akutil.DataFrame
+
+      .. seealso:: :obj:`akutil.dataframe.head`
+
+
+   .. py:method:: sample(self, n=5)
+
+      Return a random sample of `n` rows.
+
+      :param n: Number of rows to return.
+      :type n: int (default=5)
+
+      :returns: The sampled `n` rows of the DataFrame.
+      :rtype: akutil.DataFrame
+
+
+   .. py:method:: GroupBy(self, keys, use_series=False)
+
+      Group the dataframe by a column or a list of columns.
+
+      :param keys: An (ordered) list of column names or a single string to group by.
+      :type keys: string or list
+      :param use_series:
+      :type use_series: If True, returns an akutil.GroupBy oject. Otherwise an arkouda GroupBy object
+
+      :returns: Either an akutil GroupBy or an arkouda GroupBy object.
+      :rtype: GroupBy
+
+      .. seealso:: :obj:`arkouda.GroupBy`
+
+
+   .. py:method:: memory_usage(self, unit='GB')
+
+      Print the size of this DataFrame.
+
+      :param unit: Unit to return. One of {'KB', 'MB', 'GB'}.
+      :type unit: str
+
+      :returns: The number of bytes used by this DataFrame in [unit]s.
+      :rtype: int
+
+
+   .. py:method:: to_pandas(self, datalimit=maxTransferBytes, retain_index=False)
+
+      Send this DataFrame to a pandas DataFrame.
+
+      :param datalimit: The maximum number size, in megabytes to transfer. The requested
+                        DataFrame will be converted to a pandas DataFrame only if the
+                        estimated size of the DataFrame does not exceed this value.
+      :type datalimit: int (default=arkouda.client.maxTransferBytes)
+      :param retain_index: Normally, to_pandas() creates a new range index object. If you want
+                           to keep the index column, set this to True.
+      :type retain_index: book (default=False)
+
+      :returns: The result of converting this DataFrame to a pandas DataFrame.
+      :rtype: pandas.DataFrame
+
+
+   .. py:method:: save(self, path, index=False)
+
+      Save DataFrame to disk, preserving column names.
+
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+
+   .. py:method:: argsort(self, key, ascending=True)
+
+      Return the permutation that sorts the dataframe by `key`.
+
+      :param key: The key to sort on.
+      :type key: str
+
+      :returns: The permutation array that sorts the data on `key`.
+      :rtype: ak.pdarray
+
+
+   .. py:method:: coargsort(self, keys, ascending=True)
+
+      Return the permutation that sorts the dataframe by `keys`.
+
+      Sorting using Strings may not yield correct results
+
+      :param keys: The keys to sort on.
+      :type keys: list
+
+      :returns: The permutation array that sorts the data on `keys`.
+      :rtype: ak.pdarray
+
+
+   .. py:method:: sort_values(self, by=None, ascending=True)
+
+      Sort the DataFrame by one or more columns.
+
+      If no column is specified, all columns are used.
+
+      Note: Fails on sorting ak.Strings when multiple columns being sorted
+
+      :param by: The name(s) of the column(s) to sort by.
+      :type by: str or list/tuple of str
+      :param ascending: Sort values in ascending (default) or descending order.
+      :type ascending: bool
+
+      .. seealso:: :obj:`apply_permutation`, :obj:`sorted`
+
+
+   .. py:method:: apply_permutation(self, perm)
+
+      Apply a permutation to an entire DataFrame.
+
+      This may be useful if you want to unsort an DataFrame, or even to
+      apply an arbitrary permutation such as the inverse of a sorting
+      permutation.
+
+      :param perm: A permutation array. Should be the same size as the data
+                   arrays, and should consist of the integers [0,size-1] in
+                   some order. Very minimal testing is done to ensure this
+                   is a permutation.
+      :type perm: ak.pdarray
+
+      .. seealso:: :obj:`sort`
+
+
+   .. py:method:: filter_by_range(self, keys, low=1, high=None)
+
+      Find all rows where the value count of the items in a given set of
+      columns (keys) is within the range [low, high].
+
+      To filter by a specific value, set low == high.
+
+      :param keys: The names of the columns to group by
+      :type keys: list or str
+      :param low: The lowest value count.
+      :type low: int (default=1)
+      :param high: The highest value count, default to unlimited.
+      :type high: int (default=None)
+
+      :returns: An array of boolean values for qualified rows in this DataFrame.
+      :rtype: pdarray
+
+      .. seealso:: :obj:`filter_by_count`
+
+
+   .. py:method:: copy(self, deep=True)
+
+      Make a copy of this object's data.
+
+      When `deep = True` (default), a new object will be created with a copy of
+      the calling object's data. Modifications to the data of the copy will not
+      be reflected in the original object.
+
+
+      When `deep = False` a new object will be created without copying the
+      calling object's data. Any changes to the data of the original object will
+      be reflected in the shallow copy, and vice versa.
+
+      :param deep: When True, return a deep copy. Otherwise, return a shallow copy.
+      :type deep: bool (default=True)
+
+      :returns: A deep or shallow copy according to caller specification.
+      :rtype: aku.DataFrame
+
+
+   .. py:method:: groupby(self, keys, use_series=True)
+
+      Group the dataframe by a column or a list of columns.  Alias for GroupBy
+
+      :param keys:
+      :type keys: a single column name or a list of column names
+      :param use_series:
+      :type use_series: Change return type to Arkouda Groupby object.
+
+      :rtype: An arkouda Groupby instance
+
+
+
+.. py:function:: sorted(df, column=False)
+
+   Analogous to other python 'sorted(obj)' functions in that it returns
+   a sorted copy of the DataFrame.
+
+   If no sort key is specified, sort by the first key returned.
+
+   Note: This fails on sorting ak.Strings, as does DataFrame.sort().
+
+   :param df: The DataFrame to sort.
+   :type df: akutil.dataframe.DataFrame
+   :param column: The name of the column to sort by.
+   :type column: str
+
+   :returns: A sorted copy of the original DataFrame.
+   :rtype: akutil.dataframe.DataFrame
+
+
+.. py:function:: intx(a, b)
+
+
+.. py:function:: intersect(a, b, positions=True, unique=False)
+
+   Find the intersection of two arkouda arrays.
+
+   This function can be especially useful when `positions=True` so
+   that the caller gets the indices of values present in both arrays.
+
+   :param a: An array of strings
+   :type a: ak.Strings or ak.pdarray
+   :param b: An array of strings
+   :type b: ak.Strings or ak.pdarray
+   :param positions: Return tuple of boolean pdarrays that indicate positions in a and b
+                     where the values are in the intersection.
+   :type positions: bool (default=True)
+   :param unique: If the number of distinct values in `a` (and `b`) is equal to the size of
+                  `a` (and `b`), there is a more efficient method to compute the intersection.
+   :type unique: bool (default=False)
+
+   :returns: The indices of `a` and `b` where any element occurs at least once in both
+             arrays.
+   :rtype: (ak.pdarray, ak.pdarray)
+
+
+.. py:function:: invert_permutation(perm)
+
+   Find the inverse of a permutation array.
+
+   :param perm: The permutation array.
+   :type perm: ak.pdarray
+
+   :returns: The inverse of the permutation array.
+   :rtype: ak.pdarray
+
+
