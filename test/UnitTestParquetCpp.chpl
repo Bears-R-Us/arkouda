@@ -176,7 +176,7 @@ proc testMultiDset() {
   var ret;
   try! ret = createStringWithNewBuffer(cDsetString, strlen(cDsetString));
 
-  if st == 0 && ret == "col1,col3" {
+  if st == 0 && ret == "col1,col2,col3" {
     return 0;
   } else if st != 0 {
     var chplMsg;
