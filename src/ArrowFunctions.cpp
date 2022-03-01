@@ -324,7 +324,7 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
        sc->field(i)->type()->id() == arrow::Type::UINT64 ||
        sc->field(i)->type()->id() == arrow::Type::UINT32 ||
        sc->field(i)->type()->id() == arrow::Type::TIMESTAMP ||
-       sc->field(i)->type()->id() == arrow::Type::BOOL) {
+       sc->field(i)->type()->id() == arrow::Type::BOOL ||
        sc->field(i)->type()->id() == arrow::Type::STRING) {
       if(!first)
         fields += ("," + sc->field(i)->name());
