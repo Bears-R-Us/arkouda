@@ -292,13 +292,11 @@ def read_all(filenames : Union[str, List[str]],
         datasets = get_datasets_allow_errors(filenames) if allow_errors else get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
-    else:  # ensure dataset(s) exist
-        if isinstance(datasets, str):
-            datasets = [datasets]
-        nonexistent = set(datasets) - \
-            (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
-        if len(nonexistent) > 0:
-            raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+    # ensure dataset(s) exist
+    nonexistent = set(datasets) - \
+        (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
+    if len(nonexistent) > 0:
+        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     if iterative == True: # iterative calls to server readhdf
         return {dset: read_hdf(dset, filenames, strictTypes=strictTypes, allow_errors=allow_errors,
                                calc_string_offsets=calc_string_offsets) for dset in datasets}
