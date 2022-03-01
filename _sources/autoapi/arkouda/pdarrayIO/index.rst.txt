@@ -86,16 +86,16 @@ Functions
    If dsetName is not present in all files, a TypeError is raised.
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], dsetname: Union[str, List[str]] = 'array', strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Union[str, List[str]] = None, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Read a single dataset from multiple Parquet files into an Arkouda
    pdarray object.
 
    :param filenames: Either a list of filenames or shell expression
    :type filenames: list or str
-   :param dsetName: The name of the dataset (must be the same across all files).
-                    Defaults to 'array'.
-   :type dsetName: str
+   :param datasets: The names of datasets to be read (must be the same across all files).
+                    Defaults to all supported columns.
+   :type datasets: str
    :param strictTypes: If True (default), require all dtypes in all files to have the
                        same precision and sign. If False, allow dtypes of different
                        precision and sign across different files. For example, if one
