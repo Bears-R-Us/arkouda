@@ -311,7 +311,7 @@ module ParquetMsg {
             try {
                 types[dsetidx] = getArrType(fname, dsetname);
                 if types[dsetidx] == ArrowTypes.stringArr {
-                  sizes[i] = getStrColSize(filenames[0], dsetname);
+                  sizes[i] = getStrColSize(fname, dsetname);
                 } else {
                   sizes[i] = getArrSize(fname);
                 }

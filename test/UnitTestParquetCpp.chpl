@@ -18,7 +18,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;
 
-  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, 1, false, errMsg) < 0 {
+  if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
