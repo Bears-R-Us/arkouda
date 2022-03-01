@@ -202,7 +202,7 @@ def read_parquet(filenames : Union[str, List[str]],
             else:
                 raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         return d
-    
+
     elif len(items) == 1:
         item = items[0]
         if "pdarray" == item["arkouda_type"]:
