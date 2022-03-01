@@ -32,7 +32,7 @@ module ParquetMsg {
   extern var ARROWUNDEFINED: c_int;
   extern var ARROWERROR: c_int;
 
-  enum ArrowTypes { int64, int32, uint64, uint32,
+  enum ArrowTypes { int64, int32, uint64,
                     timestamp, boolean, notimplemented };
 
   record parquetErrorMsg {
