@@ -135,6 +135,7 @@ setup(
         'pandas>=1.1.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
+        'tabulate',
         'pyfiglet',
         'versioneer'
     ],
