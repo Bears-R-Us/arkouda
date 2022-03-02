@@ -98,6 +98,10 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWBOOLEAN;
   else if(myType->id() == arrow::Type::STRING)
     return ARROWSTRING;
+  else if(myType->id() == arrow::Type::FLOAT)
+    return ARROWFLOAT;
+  else if(myType->id() == arrow::Type::DOUBLE)
+    return ARROWDOUBLE;
   else // TODO: error type not supported
     return ARROWUNDEFINED;
 }
@@ -224,6 +228,29 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         }
         i++; // skip one space so the strings are null terminated with a 0
       }
+    } else if(ty == ARROWFLOAT) {
+      auto chpl_ptr = (double*)chpl_arr;
+      parquet::FloatReader* reader =
+        static_cast<parquet::FloatReader*>(column_reader.get());
+
+      float* tmpArr = (float*)malloc(batchSize * sizeof(float));
+      while (reader->HasNext()) {
+        // Can't read directly into chpl_ptr because it is a double
+        (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+        for (int64_t j = 0; j < values_read; j++)
+          chpl_ptr[i+j] = (double)tmpArr[j];
+        i+=values_read;
+      }
+      free(tmpArr);
+    } else if(ty == ARROWDOUBLE) {
+      auto chpl_ptr = (double*)chpl_arr;
+      parquet::DoubleReader* reader =
+        static_cast<parquet::DoubleReader*>(column_reader.get());
+
+      while (reader->HasNext()) {
+        (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+        i+=values_read;
+      }
     }
     return 0;
   }
@@ -244,9 +271,10 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::NONE));
   else if(dtype == ARROWUINT64)
     fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::UINT_64));
-  else if(dtype == ARROWBOOLEAN) {
+  else if(dtype == ARROWBOOLEAN)
     fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
-  }
+  else if(dtype == ARROWDOUBLE)
+    fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
   std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
     (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
@@ -291,6 +319,22 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
       numLeft -= batchSize;
       i += batchSize;
     }
+  } else if(dtype == ARROWDOUBLE) {
+    auto chpl_ptr = (double*)chpl_arr;
+    while(numLeft > 0) {
+      parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+      parquet::DoubleWriter* writer =
+        static_cast<parquet::DoubleWriter*>(rg_writer->NextColumn());
+
+      int64_t batchSize = rowGroupSize;
+      if(numLeft < rowGroupSize)
+        batchSize = numLeft;
+      writer->WriteBatch(batchSize, nullptr, nullptr, &chpl_ptr[i]);
+      numLeft -= batchSize;
+      i += batchSize;
+    }
+  } else {
+    return ARROWERROR;
   }
 
   file_writer->Close();
@@ -325,7 +369,9 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
        sc->field(i)->type()->id() == arrow::Type::UINT32 ||
        sc->field(i)->type()->id() == arrow::Type::TIMESTAMP ||
        sc->field(i)->type()->id() == arrow::Type::BOOL ||
-       sc->field(i)->type()->id() == arrow::Type::STRING) {
+       sc->field(i)->type()->id() == arrow::Type::STRING ||
+       sc->field(i)->type()->id() == arrow::Type::FLOAT ||
+       sc->field(i)->type()->id() == arrow::Type::DOUBLE) {
       if(!first)
         fields += ("," + sc->field(i)->name());
       else

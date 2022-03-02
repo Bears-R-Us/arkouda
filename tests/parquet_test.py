@@ -4,7 +4,7 @@ from base_test import ArkoudaTest
 import numpy as np
 import pytest
 
-TYPES = ('int64', 'uint64', 'bool')
+TYPES = ('int64', 'uint64', 'bool', 'float64')
 SIZE = 100
 NUMFILES = 5
 verbose = True
@@ -16,6 +16,8 @@ def read_write_test(dtype):
         ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
     elif dtype =='bool':
         ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+    elif dtype =='float64':
+        ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
         
     ak_arr.save_parquet("pq_testcorrect", "my-dset")
     pq_arr = ak.read_parquet("pq_testcorrect*", "my-dset")
@@ -34,6 +36,8 @@ def read_write_multi_test(dtype):
         elems = ak.randint(0, 2**32, adjusted_size, dtype=ak.uint64)
     elif dtype =='bool':
         elems = ak.randint(0, 1, adjusted_size, dtype=ak.bool)
+    elif dtype =='float64':
+        elems = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
         
     per_arr = int(adjusted_size/NUMFILES)
     for i in range(NUMFILES):
@@ -54,6 +58,8 @@ def get_datasets_test(dtype):
         ak_arr = ak.randint(0, 2**32, 10, dtype=ak.uint64)
     elif dtype =='bool':
         ak_arr = ak.randint(0, 1, 10, dtype=ak.bool)
+    elif dtype =='float64':
+        ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
         
     ak_arr.save_parquet("pq_testdset", "TEST_DSET")
 
@@ -95,8 +101,10 @@ class ParquetTest(ArkoudaTest):
                 val = np.iinfo(np.int64).max
             elif dtype == 'uint64':
                 val = np.iinfo(np.uint64).max
-            if dtype == 'bool':
+            elif dtype == 'bool':
                 val = True
+            elif dtype == 'float64':
+                val = np.finfo(np.float64).max
             a = ak.array([val])
             a.save_parquet("pq_test", 'test-dset')
             ak_res = ak.read_parquet("pq_test*", 'test-dset')

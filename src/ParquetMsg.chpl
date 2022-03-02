@@ -33,10 +33,13 @@ module ParquetMsg {
   extern var ARROWBOOLEAN: c_int;
   extern var ARROWSTRING: c_int;
   extern var ARROWUNDEFINED: c_int;
+  extern var ARROWFLOAT: c_int;
+  extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
 
   enum ArrowTypes { int64, int32, uint64, stringArr,
-                    timestamp, boolean, notimplemented };
+                    timestamp, boolean, double,
+                    float, notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -158,6 +161,8 @@ module ParquetMsg {
     else if arrType == ARROWUINT64 then return ArrowTypes.uint64;
     else if arrType == ARROWBOOLEAN then return ArrowTypes.boolean;
     else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
+    else if arrType == ARROWDOUBLE then return ArrowTypes.double;
+    // TODO: throw here
     return ArrowTypes.notimplemented;
   }
 
@@ -169,7 +174,10 @@ module ParquetMsg {
         return ARROWUINT64;
       } when 'bool' {
         return ARROWBOOLEAN;
+      } when 'float64' {
+        return ARROWDOUBLE;
       } otherwise {
+        // TODO: make this throw so we can catch it
         return ARROWUNDEFINED;
       }
     }
@@ -304,7 +312,7 @@ module ParquetMsg {
     var byteSizes: [filedom] int;
 
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
-
+    
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
@@ -365,6 +373,16 @@ module ParquetMsg {
           var entrySeg = _buildEntryCalcOffsets();
           var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
           rnames.append((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
+        } else if ty == ArrowTypes.double || ty == ArrowTypes.float {
+          var entryVal = new shared SymEntry(len, real);
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          var valName = st.nextName();
+          st.addEntry(valName, entryVal);
+          rnames.append((dsetname, "pdarray", valName));
+        } else {
+          var errorMsg = "DType {} not supported for Parquet reading".format(ty);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
         }
     }
 
@@ -403,6 +421,9 @@ module ParquetMsg {
           }
           when DType.Bool {
             var e = toSymEntry(entry, bool);
+            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
+          } when DType.Float64 {
+            var e = toSymEntry(entry, real);
             warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compressed, e.a);
           }
           otherwise {
