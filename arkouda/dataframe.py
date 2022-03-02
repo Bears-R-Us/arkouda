@@ -19,7 +19,6 @@ from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
 from arkouda.client import maxTransferBytes
 from arkouda.row import Row
-from arkouda.util import concatenate as util_concatenate
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -629,6 +628,7 @@ class DataFrame(UserDict):
                 self
                     Appending occurs in-place, but result is returned for compatibility.
                 """
+        from arkouda.util import concatenate as util_concatenate
 
         # Do nothing if the other dataframe is empty
         if other.empty:
@@ -665,6 +665,11 @@ class DataFrame(UserDict):
 
     @classmethod
     def concat(cls, items, ordered=True):
+        """
+        Essentially an append, but diffenent formatting
+        """
+        from arkouda.util import concatenate as util_concatenate
+
         if len(items) == 0:
             return cls()
         first = True
