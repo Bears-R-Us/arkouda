@@ -124,6 +124,22 @@ class DataFrameTest(ArkoudaTest):
         #dataframe equality returns series with bool result for each row.
         self.assertTrue(((ref_df == df.to_pandas()).all()).all())
 
+        userid = ak.array([444, 333])
+        item = ak.array([0, 2])
+        df_keyerror = ak.DataFrame({'user_id':userid, 'item':item})
+        with self.assertRaises(KeyError):
+            df.append(df_keyerror)
+
+        username = ak.array([111, 222, 111, 333, 222, 111])
+        userid = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        day = ak.array([5, 5, 6, 5, 6, 6])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        df_typeerror = ak.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+        with self.assertRaises(TypeError):
+            df.append(df_typeerror)
+
     def test_concat(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
         userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -153,6 +169,22 @@ class DataFrameTest(ArkoudaTest):
 
         # dataframe equality returns series with bool result for each row.
         self.assertTrue(((ref_df == glued.to_pandas()).all()).all())
+
+        userid = ak.array([444, 333])
+        item = ak.array([0, 2])
+        df_keyerror = ak.DataFrame({'user_id': userid, 'item': item})
+        with self.assertRaises(KeyError):
+            ak.DataFrame.concat([df, df_keyerror])
+
+        username = ak.array([111, 222, 111, 333, 222, 111])
+        userid = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        day = ak.array([5, 5, 6, 5, 6, 6])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        df_typeerror = ak.DataFrame({'userName': username, 'userID': userid,
+                                     'item': item, 'day': day, 'amount': amount})
+        with self.assertRaises(TypeError):
+            ak.DataFrame.concat([df, df_typeerror])
 
 
     def test_head(self):
