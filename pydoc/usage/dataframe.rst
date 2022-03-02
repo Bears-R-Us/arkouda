@@ -68,6 +68,14 @@ Rename Columns
 ----------
 .. autofunction:: arkouda.DataFrame.rename
 
+Append
+----------
+.. autofunction:: akrouda.DataFrame.append
+
+Concatenate
+----------
+.. autofunction:: arkouda.DataFrame.concat
+
 Reset Indexes
 ----------
 .. autofunction:: arkouda.DataFrame.reset_index
