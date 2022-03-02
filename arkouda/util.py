@@ -16,6 +16,7 @@ from arkouda.client import get_config, get_mem_used
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
 from arkouda.categorical import Categorical
+from arkouda.dataframe import DataFrame
 
 identity = lambda x: x
 
@@ -102,9 +103,8 @@ def register_all(data, prefix, overwrite=True):
                 att[ksan].unregister()
     if isinstance(data, dict):
         return {k:register(v, f'{prefix}{sanitize(k)}') for k, v in data.items()}
-    #TODO - once DataFrame is available uncomment the next 2 lines (PR #1139)
-    # elif isinstance(data, aku.DataFrame):
-    #    return aku.DataFrame({k:register(v, f'{prefix}{sanitize(k)}') for k, v in data.items()})
+    elif isinstance(data, DataFrame):
+        return DataFrame({k:register(v, f'{prefix}{sanitize(k)}') for k, v in data.items()})
     elif isinstance(data, list):
         return [register(v, f'{prefix}{i}') for i, v in enumerate(data)]
     elif isinstance(data, tuple):
