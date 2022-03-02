@@ -1,7 +1,7 @@
 import pandas as pd  # type: ignore
 import re
 import numpy as np  # type: ignore
-import h5py
+import h5py #type: ignore
 import os
 
 from arkouda import __version__
