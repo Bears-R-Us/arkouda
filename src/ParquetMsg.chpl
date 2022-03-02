@@ -12,6 +12,8 @@ module ParquetMsg {
   use NumPyDType;
   use Sort;
 
+  use SegmentedArray;
+
 
   // Use reflection for error information
   use Reflection;
@@ -29,10 +31,11 @@ module ParquetMsg {
   extern var ARROWINT32: c_int;
   extern var ARROWUINT64: c_int;
   extern var ARROWBOOLEAN: c_int;
+  extern var ARROWSTRING: c_int;
   extern var ARROWUNDEFINED: c_int;
   extern var ARROWERROR: c_int;
 
-  enum ArrowTypes { int64, int32, uint64,
+  enum ArrowTypes { int64, int32, uint64, stringArr,
                     timestamp, boolean, notimplemented };
 
   record parquetErrorMsg {
@@ -116,6 +119,18 @@ module ParquetMsg {
     }
   }
 
+  proc getStrColSize(filename: string, dsetname: string) throws {
+    extern proc c_getStringColumnNumBytes(filename, colname, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+    
+    var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
+                                          dsetname.localize().c_str(),
+                                          c_ptrTo(pqErr.errMsg));
+    if byteSize == ARROWERROR then
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    return byteSize;
+  }
+  
   proc getArrSize(filename: string) throws {
     extern proc c_getNumRows(chpl_str, errMsg): int;
     var pqErr = new parquetErrorMsg();
@@ -142,6 +157,7 @@ module ParquetMsg {
     else if arrType == ARROWINT32 then return ArrowTypes.int32;
     else if arrType == ARROWUINT64 then return ArrowTypes.uint64;
     else if arrType == ARROWBOOLEAN then return ArrowTypes.boolean;
+    else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
     return ArrowTypes.notimplemented;
   }
 
@@ -285,13 +301,20 @@ module ParquetMsg {
     var fileErrorMsg:string = "";
     var sizes: [filedom] int;
     var types: [dsetdom] ArrowTypes;
+    var byteSizes: [filedom] int;
+
     var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
 
     for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
         for (i, fname) in zip(filedom, filenames) {
             var hadError = false;
             try {
-                (sizes[i], types[dsetidx]) = (getArrSize(fname), getArrType(fname, dsetname));
+                types[dsetidx] = getArrType(fname, dsetname);
+                if types[dsetidx] == ArrowTypes.stringArr {
+                  sizes[i] = getStrColSize(fname, dsetname);
+                } else {
+                  sizes[i] = getArrSize(fname);
+                }
             } catch e : Error {
                 // This is only type of error thrown by Parquet
                 fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
@@ -332,6 +355,16 @@ module ParquetMsg {
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
+        } else if ty == ArrowTypes.stringArr {
+          var entryVal = new shared SymEntry(len, uint(8));
+          readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
+          proc _buildEntryCalcOffsets(): shared SymEntry throws {
+            var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
+            return new shared SymEntry(offsetsArray);
+          }
+          var entrySeg = _buildEntryCalcOffsets();
+          var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+          rnames.append((dsetname, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
         }
     }
 

@@ -17,7 +17,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
   
   var a: [0..#size] int;
   for i in 0..#size do a[i] = i;
-  
+
   if c_writeColumnToParquet(filename, c_ptrTo(a), 0, dsetname, size, 10000, false, 1, errMsg) < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
@@ -161,6 +161,47 @@ proc testGetDsets(filename) {
   }
 }
 
+proc testReadStrings(filename, dsetname) {
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize,  errMsg): int;
+  extern proc c_getStringColumnNumBytes(filename, colname, errMsg): int;
+  extern proc c_getNumRows(chpl_str, err): int;
+
+  extern proc c_free_string(a);
+  extern proc strlen(a): int;
+  var errMsg: c_ptr(uint(8));
+  defer {
+    c_free_string(errMsg);
+  }
+
+  var size = c_getNumRows(filename, c_ptrTo(errMsg));
+  
+  var byteSize = c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(errMsg));
+  if byteSize < 0 {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+  }
+
+  var a: [0..#byteSize] uint(8);
+
+  if(c_readColumnByName(filename, c_ptrTo(a), dsetname, 3, 1, c_ptrTo(errMsg)) < 0) {
+    var chplMsg;
+    try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
+    writeln(chplMsg);
+  }
+
+  var localSlice = new lowLevelLocalizingSlice(a, 0..3);
+  var firstElem = createStringWithOwnedBuffer(localSlice.ptr, 3, 4);
+  if firstElem == 'asd' {
+    return 0;
+  } else {
+    writeln("FAILED: reading string file ", firstElem);
+    return 1;
+  }
+  
+  return 0;
+}
+
 proc testMultiDset() {
   const filename = 'resources/multi-col.parquet'.c_str();
   extern proc c_getDatasetNames(f: c_string, r: c_ptr(c_ptr(c_char)), e: c_ptr(c_ptr(c_char))): int(32);
@@ -196,6 +237,9 @@ proc main() {
   const size = 1000;
   const filename = "myFile.parquet".c_str();
   const dsetname = "my-dset-name-test".c_str();
+
+  const strFilename = "resources/strings.parquet".c_str();
+  const strDsetname = "one".c_str();
   
   errors += testReadWrite(filename, dsetname, size);
   errors += testInt32Read();
@@ -204,6 +248,7 @@ proc main() {
   errors += testVersionInfo();
   errors += testGetDsets(filename);
   errors += testMultiDset();
+  errors += testReadStrings(strFilename, strDsetname);
 
   if errors != 0 then
     writeln(errors, " Parquet tests failed");

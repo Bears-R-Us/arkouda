@@ -19,6 +19,7 @@ extern "C" {
 #define ARROWUINT32 3
 #define ARROWBOOLEAN 4
 #define ARROWTIMESTAMP ARROWINT64
+#define ARROWSTRING 6
 #define ARROWUNDEFINED -1
 #define ARROWERROR -1
 
@@ -35,6 +36,9 @@ extern "C" {
   int cpp_readColumnByName(const char* filename, void* chpl_arr,
                            const char* colname, int64_t numElems, int64_t batchSize,
                            char** errMsg);
+
+  int cpp_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg);
+  int c_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);

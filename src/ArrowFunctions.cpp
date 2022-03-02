@@ -96,8 +96,54 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWTIMESTAMP;
   else if(myType->id() == arrow::Type::BOOL)
     return ARROWBOOLEAN;
+  else if(myType->id() == arrow::Type::STRING)
+    return ARROWSTRING;
   else // TODO: error type not supported
     return ARROWUNDEFINED;
+}
+
+int cpp_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
+  int64_t ty = cpp_getType(filename, colname, errMsg);
+
+  if(ty == ARROWSTRING) {
+    int size = 0;
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+      parquet::ParquetFileReader::OpenFile(filename, false);
+
+    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+    int num_row_groups = file_metadata->num_row_groups();
+
+    int64_t i = 0;
+    for (int r = 0; r < num_row_groups; r++) {
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+        parquet_reader->RowGroup(r);
+
+      int64_t values_read = 0;
+
+      std::shared_ptr<parquet::ColumnReader> column_reader;
+
+      auto idx = file_metadata -> schema() -> ColumnIndex(colname);
+
+      if(idx < 0) {
+        std::string dname(colname);
+        std::string fname(filename);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+      column_reader = row_group_reader->Column(idx);
+      parquet::ByteArrayReader* ba_reader =
+          static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+      while (ba_reader->HasNext()) {
+        parquet::ByteArray value;
+        (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
+        size += value.len + 1; // add 1 to account for zero that will be added in Chapel array
+      }
+    }
+    return size;
+  }
+  return ARROWUNDEFINED;
 }
 
 int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
@@ -163,6 +209,20 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       while (reader->HasNext()) {
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
         i+=values_read;
+      }
+    } else if(ty == ARROWSTRING) {
+      auto chpl_ptr = (unsigned char*)chpl_arr;
+      parquet::ByteArrayReader* ba_reader =
+        static_cast<parquet::ByteArrayReader*>(column_reader.get());
+
+      while (ba_reader->HasNext()) {
+        parquet::ByteArray value;
+        (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
+        for(int j = 0; j < value.len; j++) {
+          chpl_ptr[i] = value.ptr[j];
+          i++;
+        }
+        i++; // skip one space so the strings are null terminated with a 0
       }
     }
     return 0;
@@ -264,7 +324,8 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
        sc->field(i)->type()->id() == arrow::Type::UINT64 ||
        sc->field(i)->type()->id() == arrow::Type::UINT32 ||
        sc->field(i)->type()->id() == arrow::Type::TIMESTAMP ||
-       sc->field(i)->type()->id() == arrow::Type::BOOL) {
+       sc->field(i)->type()->id() == arrow::Type::BOOL ||
+       sc->field(i)->type()->id() == arrow::Type::STRING) {
       if(!first)
         fields += ("," + sc->field(i)->name());
       else
@@ -311,6 +372,10 @@ extern "C" {
     return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
                                     numelems, rowGroupSize, dtype, compressed,
                                     errMsg);
+  }
+
+  int c_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
+    return cpp_getStringColumnNumBytes(filename, colname, errMsg);
   }
 
   const char* c_getVersionInfo(void) {

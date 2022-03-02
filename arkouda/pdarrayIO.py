@@ -196,7 +196,7 @@ def read_parquet(filenames : Union[str, List[str]],
         d: Dict[str, Union[pdarray, Strings]] = {}
         for item in items:
             if "seg_string" == item["arkouda_type"]:
-                d[item["dataset_name"]] = Strings(*item["created"].split("+"))
+                d[item["dataset_name"]] = Strings.from_return_msg(item["created"])
             elif "pdarray" == item["arkouda_type"]:
                 d[item["dataset_name"]] = create_pdarray(item["created"])
             else:
@@ -208,7 +208,7 @@ def read_parquet(filenames : Union[str, List[str]],
         if "pdarray" == item["arkouda_type"]:
             return create_pdarray(item["created"])
         elif "seg_string" == item["arkouda_type"]:
-            return Strings(*item["created"].split("+"))
+            return Strings.from_return_msg(item["created"])
         else:
             raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
     else:
