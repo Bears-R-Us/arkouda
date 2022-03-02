@@ -1,4 +1,5 @@
 import pandas
+import pandas as pd
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -92,6 +93,67 @@ class DataFrameTest(ArkoudaTest):
         self.assertNotIn('userName', df.__str__())
         self.assertNotIn('userID', df.__str__())
         print(df.__str__())
+
+    def test_append(self):
+        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        userid = ak.array([111, 222, 111, 333, 222, 111])
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        day = ak.array([5, 5, 6, 5, 6, 6])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        df = ak.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+
+        username = ak.array(['John', 'Carol'])
+        userid = ak.array([444, 333])
+        item = ak.array([0, 2])
+        day = ak.array([1, 2])
+        amount = ak.array([0.5, 5.1])
+        df_toappend = ak.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+
+        df.append(df_toappend)
+
+        username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
+        userid = [111, 222, 111, 333, 222, 111, 444, 333]
+        item = [0, 0, 1, 1, 2, 0, 0, 2]
+        day = [5, 5, 6, 5, 6, 6, 1, 2]
+        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+        ref_df = pd.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+
+        #dataframe equality returns series with bool result for each row.
+        self.assertTrue(((ref_df == df.to_pandas()).all()).all())
+
+    def test_concat(self):
+        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        userid = ak.array([111, 222, 111, 333, 222, 111])
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        day = ak.array([5, 5, 6, 5, 6, 6])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        df = ak.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+
+        username = ak.array(['John', 'Carol'])
+        userid = ak.array([444, 333])
+        item = ak.array([0, 2])
+        day = ak.array([1, 2])
+        amount = ak.array([0.5, 5.1])
+        df_toappend = ak.DataFrame({'userName': username, 'userID': userid,
+                                    'item': item, 'day': day, 'amount': amount})
+
+        glued = ak.DataFrame.concat([df, df_toappend])
+
+        username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
+        userid = [111, 222, 111, 333, 222, 111, 444, 333]
+        item = [0, 0, 1, 1, 2, 0, 0, 2]
+        day = [5, 5, 6, 5, 6, 6, 1, 2]
+        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+        ref_df = pd.DataFrame({'userName': username, 'userID': userid,
+                               'item': item, 'day': day, 'amount': amount})
+
+        # dataframe equality returns series with bool result for each row.
+        self.assertTrue(((ref_df == glued.to_pandas()).all()).all())
+
 
     def test_head(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
