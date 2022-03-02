@@ -106,8 +106,9 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
     return ARROWUNDEFINED;
 }
 
-int cpp_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
+int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, char** errMsg) {
   int64_t ty = cpp_getType(filename, colname, errMsg);
+  auto offsets = (int64_t*)chpl_offsets;
 
   if(ty == ARROWSTRING) {
     int size = 0;
@@ -143,6 +144,7 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, char*
         parquet::ByteArray value;
         (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
         size += value.len + 1; // add 1 to account for zero that will be added in Chapel array
+        offsets[i++] = value.len + 1;
       }
     }
     return size;
@@ -420,8 +422,8 @@ extern "C" {
                                     errMsg);
   }
 
-  int c_getStringColumnNumBytes(const char* filename, const char* colname, char** errMsg) {
-    return cpp_getStringColumnNumBytes(filename, colname, errMsg);
+  int c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, char** errMsg) {
+    return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, errMsg);
   }
 
   const char* c_getVersionInfo(void) {
