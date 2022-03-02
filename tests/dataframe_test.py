@@ -231,6 +231,22 @@ class DataFrameTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             df.sort_values(by=1)
 
+    def test_intx(self):
+        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        userid = ak.array([111, 222, 111, 333, 222, 111])
+        df_1 = ak.DataFrame({'user_name': username, 'user_id': userid})
+
+        username = ak.array(['Bob', 'Alice'])
+        userid = ak.array([222, 445])
+        df_2 = ak.DataFrame({'user_name': username, 'user_id': userid})
+
+        rows = ak.intx(df_1, df_2)
+        self.assertListEqual(rows.to_ndarray().tolist(), [False, True, False, False, True, False])
+
+        df_3 = ak.DataFrame({'user_name': username, 'user_number': userid})
+        with self.assertRaises(ValueError):
+            rows = ak.intx(df_1, df_3)
+
     def test_apply_perm(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
         userid = ak.array([111, 222, 111, 333, 222, 111])
