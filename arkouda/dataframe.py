@@ -409,7 +409,7 @@ class DataFrame(UserDict):
         keys.sort()
         for i, k in enumerate(keys):
             if not isinstance(k, int):
-                raise ValueError("Index keys must be integers.")
+                raise TypeError("Index keys must be integers.")
             pda = self.index[(last_idx+1):k:1]
             if pda.size > 0:
                 idx_list.append(pda)
@@ -435,6 +435,16 @@ class DataFrame(UserDict):
             The labels to be dropped on the given axis
         axis : int
             The axis on which to drop from. 0 - drop rows, 1 - drop columns
+
+        Examples
+        ----------
+        Drop column
+        >>> df.drop('col_name', axis=1)
+
+        Drop Row
+        >>> df.drop(1)
+        or
+        >>> df.drop(1, axis=0)
         """
 
         if isinstance(keys, str) or isinstance(keys, int):
