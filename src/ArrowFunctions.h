@@ -33,16 +33,16 @@ extern "C" {
   int64_t cpp_getNumRows(const char*, char** errMsg);
 
   int c_readColumnByName(const char* filename, void* chpl_arr,
-                         const char* colname, int64_t numElems, int64_t batchSize,
-                         char** errMsg);
+                         const char* colname, int64_t numElems, int64_t startIdx,
+                         int64_t batchSize, char** errMsg);
   int cpp_readColumnByName(const char* filename, void* chpl_arr,
-                           const char* colname, int64_t numElems, int64_t batchSize,
-                           char** errMsg);
+                           const char* colname, int64_t numElems, int64_t startIdx,
+                           int64_t batchSize, char** errMsg);
 
   int cpp_getStringColumnNumBytes(const char* filename, const char* colname,
-                                  void* chpl_offsets, char** errMsg);
+                                  void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
   int c_getStringColumnNumBytes(const char* filename, const char* colname,
-                                void* chpl_offsets, char** errMsg);
+                                void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
