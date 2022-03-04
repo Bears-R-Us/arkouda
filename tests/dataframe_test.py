@@ -70,6 +70,10 @@ class DataFrameTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             df.drop('index')
 
+        #verify axis can only be 0 or 1
+        with self.assertRaises(ValueError):
+            df.drop('amount', 15)
+
     def test_drop_duplicates(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
         userid = ak.array([111, 222, 111, 333, 222, 111])
