@@ -163,7 +163,7 @@ proc testGetDsets(filename) {
 
 proc testReadStrings(filename, dsetname) {
   extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize,  errMsg): int;
-  extern proc c_getStringColumnNumBytes(filename, colname, errMsg): int;
+  extern proc c_getStringColumnNumBytes(filename, colname, offsets, errMsg): int;
   extern proc c_getNumRows(chpl_str, err): int;
 
   extern proc c_free_string(a);
@@ -174,8 +174,9 @@ proc testReadStrings(filename, dsetname) {
   }
 
   var size = c_getNumRows(filename, c_ptrTo(errMsg));
+  var offsets: [0..#size] int;
   
-  var byteSize = c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(errMsg));
+  var byteSize = c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(offsets[0]), c_ptrTo(errMsg));
   if byteSize < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
