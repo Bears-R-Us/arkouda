@@ -472,6 +472,12 @@ Functions
 
 .. py:function:: intx(a, b)
 
+   Find all the rows that are in both dataframes. Columns should be in
+   identical order.
+
+   Note: does not work for columns of floating point values, but does work for
+   Strings, pdarrays of int64 type, and Categorical *should* work.
+
 
 .. py:function:: intersect(a, b, positions=True, unique=False)
 

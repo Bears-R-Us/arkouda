@@ -64,7 +64,7 @@
 <td><p>Analogous to other python 'sorted(obj)' functions in that it returns</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dataframe.intx" title="arkouda.dataframe.intx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intx</span></code></a>(a, b)</p></td>
-<td><p></p></td>
+<td><p>Find all the rows that are in both dataframes. Columns should be in</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dataframe.intersect" title="arkouda.dataframe.intersect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect</span></code></a>(a, b, positions=True, unique=False)</p></td>
 <td><p>Find the intersection of two arkouda arrays.</p></td>
@@ -647,7 +647,11 @@ a sorted copy of the DataFrame.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dataframe.intx">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dataframe.</span></span><span class="sig-name descname"><span class="pre">intx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.intx" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Find all the rows that are in both dataframes. Columns should be in
+identical order.</p>
+<p>Note: does not work for columns of floating point values, but does work for
+Strings, pdarrays of int64 type, and Categorical <em>should</em> work.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dataframe.intersect">

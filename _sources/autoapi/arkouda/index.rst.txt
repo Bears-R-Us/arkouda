@@ -11,6 +11,7 @@ Submodules
    :maxdepth: 1
 
    _version/index.rst
+   alignment/index.rst
    categorical/index.rst
    client/index.rst
    client_dtypes/index.rst
@@ -7756,6 +7757,12 @@ Attributes
 
 
 .. py:function:: intx(a, b)
+
+   Find all the rows that are in both dataframes. Columns should be in
+   identical order.
+
+   Note: does not work for columns of floating point values, but does work for
+   Strings, pdarrays of int64 type, and Categorical *should* work.
 
 
 .. py:class:: Row(dict=None, /, **kwargs)

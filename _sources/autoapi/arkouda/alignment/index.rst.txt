@@ -1,0 +1,236 @@
+:py:mod:`arkouda.alignment`
+===========================
+
+.. py:module:: arkouda.alignment
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.alignment.unsqueeze
+   arkouda.alignment.zero_up
+   arkouda.alignment.align
+   arkouda.alignment.right_align
+   arkouda.alignment.left_align
+   arkouda.alignment.in1dmulti
+   arkouda.alignment.lookup
+   arkouda.alignment.gen_ranges
+   arkouda.alignment.in1d_intervals
+   arkouda.alignment.search_intervals
+   arkouda.alignment.interval_lookup
+
+
+
+.. py:function:: unsqueeze(p)
+
+
+.. py:function:: zero_up(vals)
+
+   Map an array of sparse values to 0-up indices.
+
+   :param vals: Array to map to dense index
+   :type vals: pdarray
+
+   :returns: **aligned** -- Array with values replaced by 0-up indices
+   :rtype: pdarray
+
+
+.. py:function:: align(*args)
+
+   Map multiple arrays of sparse identifiers to a common 0-up index.
+
+   :param \*args: Arrays to map to dense index
+   :type \*args: pdarrays
+
+   :returns: **aligned** -- Arrays with values replaced by 0-up indices
+   :rtype: list of pdarrays
+
+
+.. py:function:: right_align(left, right)
+
+   Map two arrays of sparse values to the 0-up index set implied by the right array,
+   discarding values from left that do not appear in right.
+
+   :param left: Left-hand identifiers
+   :type left: pdarray
+   :param right: Right-hand identifiers that define the index
+   :type right: pdarray
+
+   :returns: * **keep** (*pdarray, bool*) -- Logical index of left-hand values that survived
+             * **aligned** (*(pdarray, pdarray)*) -- Left and right arrays with values replaced by 0-up indices
+
+
+.. py:function:: left_align(left, right)
+
+   Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
+   discarding values from right that do not appear in left.
+
+
+.. py:exception:: NonUniqueError
+
+   Bases: :py:obj:`ValueError`
+
+   Inappropriate argument value (of correct type).
+
+
+.. py:function:: in1dmulti(a, b, assume_unique=False, symmetric=False)
+
+   The multi-level analog of ak.in1d -- test membership of rows of a in the set of rows of b.
+
+   :param a: Rows are elements for which to test membership in b
+   :type a: list of pdarrays
+   :param b: Rows are elements of the set in which to test membership
+   :type b: list of pdarrays
+   :param assume_unique: If true, assume rows of a and b are each unique and sorted. By default, sort and unique them explicitly.
+   :type assume_unique: bool
+
+   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
+             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+
+
+.. py:function:: lookup(keys, values, arguments, fillvalue=-1)
+
+   Apply the function defined by the mapping keys --> values to arguments.
+
+   :param keys: The domain of the function. Entries must be unique (if a sequence of
+                arrays is given, each row is treated as a tuple-valued entry).
+   :type keys: (sequence of) array-like
+   :param values: The range of the function. Must be same length as keys.
+   :type values: pdarray
+   :param arguments: The arguments on which to evaluate the function. Must have same dtype
+                     (or tuple of dtypes, for a sequence) as keys.
+   :type arguments: (sequence of) array-like
+   :param fillvalue: The default value to return for arguments not in keys.
+   :type fillvalue: scalar
+
+   :returns: **evaluated** -- The result of evaluating the function over arguments.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   While the values cannot be Strings (or other complex objects), the same
+   result can be achieved by passing an arange as the values, then using
+   the return as indices into the desired object.
+
+   .. rubric:: Examples
+
+   # Lookup numbers by two-word name
+   >>> keys1 = ak.array(['twenty' for _ in range(5)])
+   >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
+   >>> values = ak.array([21, 22, 23, 24, 25])
+   >>> args1 = ak.array(['twenty', 'thirty', 'twenty'])
+   >>> args2 = ak.array(['four', 'two', 'two'])
+   >>> aku.lookup([keys1, keys2], values, [args1, args2])
+   array([24, -1, 22])
+
+   # Other direction requires an intermediate index
+   >>> revkeys = values
+   >>> revindices = ak.arange(values.size)
+   >>> revargs = ak.array([24, 21, 22])
+   >>> idx = aku.lookup(revkeys, revindices, revargs)
+   >>> keys1[idx], keys2[idx]
+   (array(['twenty', 'twenty', 'twenty']),
+   array(['four', 'one', 'two']))
+
+
+.. py:function:: gen_ranges(starts, ends)
+
+   Generate a segmented array of variable-length, contiguous
+   ranges between pairs of start- and end-points.
+
+   :param starts: The start value of each range
+   :type starts: pdarray, int64
+   :param ends: The end value (exclusive) of each range
+   :type ends: pdarray, int64
+
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
+
+
+.. py:function:: in1d_intervals(vals, intervals, symmetric=False, assume_unique=False)
+
+   Test each value for membership in *any* of a set of half-open (pythonic)
+   intervals.
+
+   :param vals: Values to test for membership in intervals
+   :type vals: pdarray(int, float)
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
+   :type intervals: 2-tuple of pdarrays
+   :param symmetric: If True, also return boolean pdarray indicating which intervals
+                     contained one or more query values.
+   :type symmetric: bool
+
+   :returns: * *pdarray(bool)* -- Array of same length as <vals>, True if corresponding value is
+               included in any of the ranges defined by (low[i], high[i]) inclusive.
+             * *pdarray(bool) (if symmetric=True)* -- Array of same length as number of intervals, True if corresponding
+               interval contains any of the values in <vals>.
+
+   .. rubric:: Notes
+
+   First return array is equivalent to the following:
+       ((vals >= intervals[0][0]) & (vals < intervals[1][0])) |
+       ((vals >= intervals[0][1]) & (vals < intervals[1][1])) |
+       ...
+       ((vals >= intervals[0][-1]) & (vals < intervals[1][-1]))
+   But much faster when testing many ranges.
+
+   Second (optional) return array is equivalent to:
+       ((intervals[0] <= vals[0]) & (intervals[1] > vals[0])) |
+       ((intervals[0] <= vals[1]) & (intervals[1] > vals[1])) |
+       ...
+       ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
+   But much faster when vals is non-trivial size.
+
+
+.. py:function:: search_intervals(vals, intervals, assume_unique=False)
+
+   Given an array of query vals and non-overlapping, half-open (pythonic)
+   intervals, return the index of the interval containing each query value,
+   or -1 if not present in any interval.
+
+   :param vals: Values to search for in intervals
+   :type vals: pdarray(int, float)
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
+   :type intervals: 2-tuple of pdarrays
+   :param assume_unique: If True, assume query vals are unique. Default: False.
+   :type assume_unique: bool
+
+   :returns: **idx** -- Index of interval containing each query value, or -1 if not found
+   :rtype: pdarray(int64)
+
+   .. rubric:: Notes
+
+   The return idx satisfies the following condition:
+       present = idx > -1
+       ((intervals[0][idx[present]] <= vals[present]) & (intervals[1][idx[present]] > vals[present])).all()
+
+
+.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1)
+
+   Apply a function defined over non-overlapping intervals to
+   an array of arguments.
+
+   :param keys: Tuple of non-overlapping, half-open intervals expressed
+                as (lower_bounds_inclusive, upper_bounds_exclusive)
+   :type keys: 2-tuple of pdarray
+   :param values: Function value to return for each entry in keys.
+   :type values: pdarray
+   :param arguments: Arguments to the function
+   :type arguments: pdarray
+   :param fillvalue: Default value to return when argument is not in any interval.
+   :type fillvalue: scalar
+
+   :returns: Value of function corresponding to the keys interval
+             containing each argument, or fillvalue if argument not
+             in any interval.
+   :rtype: pdarray
+
+

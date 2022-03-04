@@ -42,6 +42,7 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
@@ -371,7 +372,7 @@
 <td><p>Find the inverse of a permutation array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.intx" title="arkouda.intx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intx</span></code></a>(a, b)</p></td>
-<td><p></p></td>
+<td><p>Find all the rows that are in both dataframes. Columns should be in</p></td>
 </tr>
 </tbody>
 </table>
@@ -10396,7 +10397,11 @@ arrays.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.intx">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">intx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.intx" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Find all the rows that are in both dataframes. Columns should be in
+identical order.</p>
+<p>Note: does not work for columns of floating point values, but does work for
+Strings, pdarrays of int64 type, and Categorical <em>should</em> work.</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Row">
