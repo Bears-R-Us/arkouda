@@ -19,6 +19,7 @@ from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
 from arkouda.client import maxTransferBytes
 from arkouda.row import Row
+from arkouda.alignment import in1dmulti
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -1164,8 +1165,26 @@ def sorted(df, column=False):
 
 
 def intx(a, b):
-    # TODO - define function once akutil/alignment.py is moved into arkouda
-    raise NotImplementedError("intx functionality from akutil is not yet available in arkouda. For updates, visit https://github.com/Bears-R-Us/arkouda/issues/1127")
+    """ Find all the rows that are in both dataframes. Columns should be in
+        identical order.
+
+        Note: does not work for columns of floating point values, but does work for
+        Strings, pdarrays of int64 type, and Categorical *should* work.
+        """
+
+    if list(a.data) == list(b.data):
+        a_cols = []
+        b_cols = []
+        for key, val in a.items():
+            if key != 'index':
+                a_cols.append(val)
+        for key, val in b.items():
+            if key != 'index':
+                b_cols.append(val)
+        return in1dmulti(a_cols, b_cols)
+
+    else:
+        raise ValueError("Column mismatch.")
 
 
 def intersect(a, b, positions=True, unique=False):
