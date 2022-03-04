@@ -605,13 +605,93 @@ class DataFrame(UserDict):
         return self
 
     def append(self, other, ordered=True):
-        # TODO - remove error and define function once akutil/util.py moved to arkouda
-        raise NotImplementedError("Append functionality is not yet available for dataframes in arkouda. For updates, please visit https://github.com/Bears-R-Us/arkouda/issues/1126")
+        """
+                Concatenate data from 'other' onto the end of this DataFrame, in place.
+
+                Explicitly, use the arkouda concatenate function to append the data
+                from each column in other to the end of self. This operation is done
+                in place, in the sense that the underlying pdarrays are updated from
+                the result of the arkouda concatenate function, rather than returning
+                a new DataFrame object containing the result.
+
+                Parameters
+                ----------
+                other : DataFrame
+                    The DataFrame object whose data will be appended to this DataFrame.
+                ordered: bool
+                    If False, allow rows to be interleaved for better performance (but
+                    data within a row remains together). By default, append all rows
+                    to the end, in input order.
+
+                Returns
+                -------
+                self
+                    Appending occurs in-place, but result is returned for compatibility.
+                """
+        from arkouda.util import concatenate as util_concatenate
+
+        # Do nothing if the other dataframe is empty
+        if other.empty:
+            return self
+
+        # Check all the columns to make sure they can be concatenated
+        self.update_size()
+
+        keyset = set(self.keys())
+        keylist = list(self.keys())
+
+        # Allow for starting with an empty dataframe
+        if self.empty:
+            self = other.copy()
+        # Keys don't match
+        elif keyset != set(other.keys()):
+            raise KeyError(f"Key mismatch; keys must be identical in both DataFrames.")
+        # Keys do match
+        else:
+            tmp_data = {}
+            for key in keylist:
+                try:
+                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered)
+                except TypeError as e:
+                    raise TypeError("Incompatible types for column {}: {} vs {}".format(key, type(self[key]),
+                                                                                        type(other[key]))) from e
+            self.data = tmp_data
+
+        # Clean up
+        self.reset_index()
+        self.update_size()
+        self._empty = False
+        return self
 
     @classmethod
     def concat(cls, items, ordered=True):
-        # TODO - remove error and define function once akutil/util.py moved to arkouda
-        raise NotImplementedError("Append functionality is not yet available for dataframes in arkouda. For updates, please visit https://github.com/Bears-R-Us/arkouda/issues/1126")
+        """
+        Essentially an append, but diffenent formatting
+        """
+        from arkouda.util import concatenate as util_concatenate
+
+        if len(items) == 0:
+            return cls()
+        first = True
+        for df in items:
+            # Allow for an empty dataframe
+            if df.empty or set(df.keys()) == {'index'}:
+                continue
+            if first:
+                columnset = set(df.keys())
+                columnlist = df._columns
+                first = False
+            else:
+                if set(df.keys()) != columnset:
+                    raise KeyError("Cannot concatenate DataFrames with mismatched columns")
+        # if here, columns match
+        ret = cls()
+        for col in columnlist:
+            try:
+                ret[col] = util_concatenate([df[col] for df in items], ordered=ordered)
+            except TypeError as e:
+                raise TypeError("Incompatible types for column {}".format(col))
+        return ret
 
     def head(self, n=5):
         """
