@@ -1,0 +1,350 @@
+:py:mod:`arkouda.client_dtypes`
+===============================
+
+.. py:module:: arkouda.client_dtypes
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.client_dtypes.BitVector
+   arkouda.client_dtypes.Fields
+   arkouda.client_dtypes.IPv4
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.client_dtypes.BitVectorizer
+   arkouda.client_dtypes.ip_address
+
+
+
+.. py:function:: BitVectorizer(width=64, reverse=False)
+
+   Make a callback (i.e. function) that can be called on an
+   array to create a BitVector.
+
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
+   :rtype: callable
+
+
+.. py:class:: BitVector(values, width=64, reverse=False)
+
+   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
+
+   Represent integers as bit vectors, e.g. a set of flags.
+
+   :param values: The integers to represent as bit vectors
+   :type values: pdarray, int64
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectors** -- The array of binary vectors
+   :rtype: BitVector
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like an int64 pdarray.
+
+   .. py:attribute:: conserves
+      
+
+      
+
+   .. py:method:: format(self, x)
+
+      Format a single binary vector as a string.
+
+
+   .. py:method:: __str__(self)
+
+      Return str(self).
+
+
+   .. py:method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. py:method:: to_ndarray(self)
+
+      Export data to a numpy array of string-formatted bit vectors.
+
+
+   .. py:method:: _cast(self, values)
+
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: __setitem__(self, key, value)
+
+
+   .. py:method:: _binop(self, other, op)
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: _r_binop(self, other, op)
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: opeq(self, other, op)
+
+
+
+.. py:class:: Fields(values, names, MSB_left=True, pad='-', separator='', show_int=True)
+
+   Bases: :py:obj:`BitVector`
+
+   An integer-backed representation of a set of named binary fields, e.g. flags.
+
+   :param values: The array of field values. If int64, the values are used as-is for the
+                  binary representation of fields. If Strings, the values are converted
+                  to binary according to the mapping defined by the names and MSB_left
+                  arguments.
+   :type values: pdarray(int64) or Strings
+   :param names: The names of the fields, in order. A string will be treated as a list
+                 of single-character field names. Multi-character field names are allowed,
+                 but must be passed as a list or tuple and user must specify a separator.
+   :type names: str or sequence of str
+   :param MSB_left: Controls how field names are mapped to binary values. If True (default),
+                    the left-most field name corresponds to the most significant bit in the
+                    binary representation. If False, the left-most field name corresponds to
+                    the least significant bit.
+   :type MSB_left: bool
+   :param pad: Character to display when field is not present. Use empty string if no
+               padding is desired.
+   :type pad: str
+   :param separator: Substring that separates fields. Used to parse input values (if ak.Strings)
+                     and to display output.
+   :type separator: str
+   :param show_int: If True (default), display the integer value of the binary fields in output.
+   :type show_int: bool
+
+   :returns: **fields** -- The array of field values
+   :rtype: Fields
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like an int64 pdarray.
+
+   .. py:method:: _convert_strings(self, s)
+
+      Convert string field names to binary vectors.
+
+
+   .. py:method:: _parse_scalar(self, s)
+
+      Convert a string of named fields to a binary value.
+
+
+   .. py:method:: format(self, x)
+
+      Format a single binary value as a string of named fields.
+
+
+   .. py:method:: __setitem__(self, key, value)
+
+
+   .. py:method:: _cast(self, values)
+
+
+   .. py:method:: _binop(self, other, op)
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: _r_binop(self, other, op)
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: opeq(self, other, op)
+
+
+
+.. py:function:: ip_address(values)
+
+   Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.
+
+   :param values: The integer IP addresses or IPv4 object.
+   :type values: pdarray, int64 or IPv4
+
+   :returns: The same IP addresses
+   :rtype: IPv4
+
+   .. rubric:: Notes
+
+   This helper is intended to help future proof changes made to
+   accomodate IPv6 and to prevent errors if a user inadvertently
+   casts a IPv4 instead of a int64 pdarray.
+
+
+.. py:class:: IPv4(values)
+
+   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
+
+   Represent integers as IPv4 addresses.
+
+   :param values: The integer IP addresses
+   :type values: pdarray, int64
+
+   :returns: The same IP addresses
+   :rtype: IPv4
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like an int64 pdarray.
+
+   .. py:method:: format(self, x)
+
+      Format a single integer IP address as a string.
+
+
+   .. py:method:: normalize(self, x)
+
+      Take in an IP address as a string, integer, or IPAddress object,
+      and convert it to an integer.
+
+
+   .. py:method:: _is_supported_scalar(self, x)
+
+
+   .. py:method:: __str__(self)
+
+      Return str(self).
+
+
+   .. py:method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. py:method:: to_ndarray(self)
+
+      Export array as a numpy array of integers.
+
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: __setitem__(self, key, value)
+
+
+   .. py:method:: _binop(self, other, op)
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: _r_binop(self, other, op)
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. py:method:: opeq(self, other, op)
+
+
+

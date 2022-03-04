@@ -1,0 +1,131 @@
+:py:mod:`arkouda.util`
+======================
+
+.. py:module:: arkouda.util
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.util.get_callback
+   arkouda.util.concatenate
+   arkouda.util.report_mem
+   arkouda.util.register
+   arkouda.util.register_all
+   arkouda.util.attach_all
+   arkouda.util.unregister_all
+   arkouda.util.enrich_inplace
+   arkouda.util.expand
+   arkouda.util.invert_permutation
+   arkouda.util.most_common
+   arkouda.util.arkouda_to_numpy
+   arkouda.util.numpy_to_arkouda
+   arkouda.util.convert_if_categorical
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.util.identity
+
+
+.. py:data:: identity
+   
+
+   
+
+.. py:function:: get_callback(x)
+
+
+.. py:function:: concatenate(items, ordered=True)
+
+
+.. py:function:: report_mem(pre='')
+
+
+.. py:function:: register(a, name)
+
+   Register an arkouda object with a user-specified name. Backwards compatible
+   with earlier arkouda versions.
+
+
+.. py:function:: register_all(data, prefix, overwrite=True)
+
+
+.. py:function:: attach_all(prefix)
+
+
+.. py:function:: unregister_all(prefix)
+
+
+.. py:function:: enrich_inplace(data, keynames, aggregations, **kwargs)
+
+
+.. py:function:: expand(size, segs, vals)
+
+   Expand an array with values placed into the indicated segments.
+
+   :param size: The size of the array to be expanded
+   :type size: ak.pdarray
+   :param segs: The indices where the values should be placed
+   :type segs: ak.pdarray
+   :param vals: The values to be placed in each segment
+   :type vals: ak.pdarray
+
+   :returns: The expanded array.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   This function (with different order of arguments) is now in arkouda
+   proper as ak.broadcast. It is retained here for backwards compatibility.
+
+
+.. py:function:: invert_permutation(perm)
+
+   Find the inverse of a permutation array.
+
+   :param perm: The permutation array.
+   :type perm: ak.pdarray
+
+   :returns: The inverse of the permutation array.
+   :rtype: ak.array
+
+
+.. py:function:: most_common(g, values)
+
+   Find the most common value for each key in a GroupBy object.
+
+   :param g: Grouping of keys
+   :type g: ak.GroupBy
+   :param values: Values in which to find most common
+   :type values: array-like
+
+   :returns: * **unique_keys** (*(list of) arrays*) -- Unique key of each group
+             * **most_common_values** (*array-like*) -- The most common value for each key
+
+
+.. py:function:: arkouda_to_numpy(A: arkouda.pdarrayclass.pdarray, tmp_dir: str = '') -> numpy.ndarray
+
+   Convert from arkouda to numpy using disk rather than sockets.
+
+
+.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> arkouda.pdarrayclass.pdarray
+
+   Convert from numpy to arkouda using disk rather than sockets.
+
+
+.. py:function:: convert_if_categorical(values)
+
+   Convert a cetegorical array to strings for display
+
+

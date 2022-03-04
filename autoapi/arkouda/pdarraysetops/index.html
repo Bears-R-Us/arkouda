@@ -79,7 +79,7 @@ of times each unique value comes up in the input array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id30" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
 <li><p><strong>return_counts</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, also return the number of times each unique item appears
 in <cite>pda</cite>.</p></li>
 </ul>
@@ -120,8 +120,8 @@ where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwis
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
-<li><p><strong>pda2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values against which to test each value of <cite>pda1</cite>. Must be the
+<li><p><strong>pda1</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id30" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
+<li><p><strong>pda2</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id30" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>) – The values against which to test each value of <cite>pda1</cite>. Must be the
 same type as <cite>pda1</cite>.</p></li>
 <li><p><strong>invert</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the values in the returned array are inverted (that is,
 False where an element of <cite>pda1</cite> is in <cite>pda2</cite> and True otherwise).
@@ -172,7 +172,7 @@ one <code class="docutils literal notranslate"><span class="pre">pdarray</span><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="../index.html#id30" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
 <li><p><strong>ordered</strong> (<em>bool</em>) – If True (default), the arrays will be appended in the
 order given. If False, array data may be interleaved
 in blocks, which can greatly improve performance but
@@ -184,7 +184,7 @@ results in non-deterministic ordering of elements.</p></li>
 the original order</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id30" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a>]</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">

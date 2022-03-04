@@ -213,12 +213,30 @@ Functions
 
 
    .. py:method:: append(self, other, ordered=True)
-      :abstractmethod:
+
+      Concatenate data from 'other' onto the end of this DataFrame, in place.
+
+      Explicitly, use the arkouda concatenate function to append the data
+      from each column in other to the end of self. This operation is done
+      in place, in the sense that the underlying pdarrays are updated from
+      the result of the arkouda concatenate function, rather than returning
+      a new DataFrame object containing the result.
+
+      :param other: The DataFrame object whose data will be appended to this DataFrame.
+      :type other: DataFrame
+      :param ordered: If False, allow rows to be interleaved for better performance (but
+                      data within a row remains together). By default, append all rows
+                      to the end, in input order.
+      :type ordered: bool
+
+      :returns: Appending occurs in-place, but result is returned for compatibility.
+      :rtype: self
 
 
    .. py:method:: concat(cls, items, ordered=True)
       :classmethod:
-      :abstractmethod:
+
+      Essentially an append, but diffenent formatting
 
 
    .. py:method:: head(self, n=5)
