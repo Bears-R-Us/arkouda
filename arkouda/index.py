@@ -5,7 +5,6 @@ from arkouda.pdarraycreation import arange, ones
 from arkouda.pdarraysetops import argsort, in1d, unique
 from arkouda.sorting import coargsort
 from arkouda.dtypes import int64, float64, bool
-from arkouda.series import Series
 from arkouda.util import register, convert_if_categorical, concatenate, get_callback
 from arkouda.groupbyclass import GroupBy
 from arkouda.alignment import in1dmulti
@@ -16,6 +15,7 @@ class Index:
         self.size = index.size
 
     def __getitem__(self,key):
+        from arkouda.series import Series
         if type(key) == Series:
             key = key.values
         return Index(self.index[key])
@@ -123,12 +123,14 @@ class MultiIndex(Index):
         for col in self.index:
             if first:
                 self.size = col.size
+                first = False
             else:
                 if col.size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
         self.levels = len(self.index)
 
     def __getitem__(self,key):
+        from arkouda.series import Series
         if type(key) == Series:
             key = key.values
         return MultiIndex([ i[key] for i in self.index])
