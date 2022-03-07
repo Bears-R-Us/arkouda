@@ -190,6 +190,70 @@ module ArgSortMsg
       return newIV;
     }
 
+    proc validateArraysSameLength(n:int, fields:[] string): (int, bool) throws {
+      // Check that fields contains the stated number of arrays
+      if (fields.size != 2*n) { 
+          var errorMsg = "Expected %i arrays but got %i".format(n, fields.size/2 - 1);
+          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          throw new owned ErrorWithContext(errorMsg,
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "ArgumentError");
+      }
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
+      /* var arrays: [0..#n] borrowed GenSymEntry; */
+      var size: int;
+      // Check that all arrays exist in the symbol table and have the same size
+      var hasStr = false;
+      for (name, objtype, i) in zip(names, types, 1..) {
+        var thisSize: int;
+        select objtype {
+          when "pdarray" {
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          when "str" {
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = getSegStringEntry(myNames, st);
+            thisSize = g.size;
+            hasStr = true;
+          }
+          when "category" {
+            // passed only Categorical.codes.name to be sorted on
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          otherwise {
+              var errorMsg = "Unrecognized object type: %s".format(objtype);
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+              throw new owned ErrorWithContext(errorMsg,
+                                               getLineNumber(),
+                                               getRoutineName(),
+                                               getModuleName(),
+                                               "TypeError");
+          }
+        }
+        
+        if (i == 1) {
+            size = thisSize;
+        } else {
+            if (thisSize != size) { 
+              var errorMsg = "Arrays must all be same size; expected size %t, got size %t".format(size, thisSize);
+                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw new owned ErrorWithContext(errorMsg,
+                                                 getLineNumber(),
+                                                 getRoutineName(),
+                                                 getModuleName(),
+                                                 "ArgumentError");
+            }
+        }   
+      }
+      return (size, hasStr);
+    }
+
     /* Do a LSD radix sort across multiple arrays, where each array represents a digit.
      */
     /* proc coArgSort(arrays: [?D] GenSymEntry): [] int throws { */
@@ -229,57 +293,7 @@ module ArgSortMsg
       var fields = rest.split();
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                   "number of arrays: %i fields: %t".format(n,fields));
-      // Check that fields contains the stated number of arrays
-      if (fields.size != 2*n) { 
-          var errorMsg = incompatibleArgumentsError(pn, 
-                        "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
-          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-      const low = fields.domain.low;
-      var names = fields[low..#n];
-      var types = fields[low+n..#n];
-      /* var arrays: [0..#n] borrowed GenSymEntry; */
-      var size: int;
-      // Check that all arrays exist in the symbol table and have the same size
-      var hasStr = false;
-      for (name, objtype, i) in zip(names, types, 1..) {
-        var thisSize: int;
-        select objtype {
-          when "pdarray" {
-            var g = getGenericTypedArrayEntry(name, st);
-            thisSize = g.size;
-          }
-          when "str" {
-            var (myNames, _) = name.splitMsgToTuple('+', 2);
-            var g = getSegStringEntry(myNames, st);
-            thisSize = g.size;
-            hasStr = true;
-          }
-          when "category" {
-            // passed only Categorical.codes.name to be sorted on
-            var g = getGenericTypedArrayEntry(name, st);
-            thisSize = g.size;
-          }
-          otherwise {
-              var errorMsg = unrecognizedTypeError(pn, objtype);
-              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
-        }
-        
-        if (i == 1) {
-            size = thisSize;
-        } else {
-            if (thisSize != size) { 
-                var errorMsg = incompatibleArgumentsError(pn, 
-                                               "Arrays must all be same size");
-                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-        
-      }
+      var (size, hasStr) = validateArraysSameLength(n, fields);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead
