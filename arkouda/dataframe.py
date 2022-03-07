@@ -401,6 +401,10 @@ class DataFrame(UserDict):
     def _ipython_key_completions_(self):
         return self._columns
 
+    @classmethod
+    def from_pandas(cls, pd_df):
+        return DataFrame(initialdata=pd_df)
+
     def _drop_column(self, keys):
         """
         Drop a column or columns from the dataframe, in-place.

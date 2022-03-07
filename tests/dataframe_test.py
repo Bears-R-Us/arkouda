@@ -55,6 +55,10 @@ class DataFrameTest(ArkoudaTest):
 
         self.assertTrue(((ref_df == df.to_pandas()).all()).all())
 
+        df = ak.DataFrame.from_pandas(ref_df)
+        self.assertTrue(((ref_df == df.to_pandas()).all()).all())
+
+
     def test_drop(self):
         # create an arkouda df.
         df = build_ak_df()
