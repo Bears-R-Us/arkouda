@@ -9,7 +9,7 @@ from arkouda.util import convert_if_categorical, register
 from arkouda.alignment import lookup
 from arkouda.dataframe import DataFrame
 
-from pandas._config import get_option
+from pandas._config import get_option # type: ignore
 import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
 
