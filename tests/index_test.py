@@ -1,7 +1,7 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-class DataFrameTest(ArkoudaTest):
+class IndexTest(ArkoudaTest):
 
     def test_index_creation(self):
         idx = ak.Index(ak.arange(5))
