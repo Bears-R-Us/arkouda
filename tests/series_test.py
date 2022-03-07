@@ -44,7 +44,6 @@ class SeriesTest(ArkoudaTest):
         s_add = ak.Series(ar_tuple=ar_tuple_add)
 
         added = s.add(s_add)
-        print(added)
 
         self.assertListEqual(added.index.to_pandas().tolist(), [i for i in range(6)])
         self.assertListEqual(added.values.to_ndarray().tolist(), [i for i in range(6)])
