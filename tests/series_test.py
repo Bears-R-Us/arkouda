@@ -17,7 +17,7 @@ class SeriesTest(ArkoudaTest):
             s = ak.Series()
 
         with self.assertRaises(ValueError):
-            s = ak.Series(data=ak.array(['A', 'B', 'C']), index=ak.arange(6))
+            s = ak.Series(data=ak.arange(3), index=ak.arange(6))
 
     def test_lookup(self):
         ar_tuple = (ak.arange(3), ak.array(['A', 'B', 'C']))
