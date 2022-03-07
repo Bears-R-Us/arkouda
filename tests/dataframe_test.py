@@ -88,7 +88,7 @@ class DataFrameTest(ArkoudaTest):
         userid2 = ak.array([111, 222, 333])
         item2 = ak.array([0, 1, 2])
         day2 = ak.array([5, 5, 5])
-        self.assertEquals(dedup.__str__(), ak.DataFrame({'userName': username2, 'userID': userid2,
+        self.assertEqual(dedup.__str__(), ak.DataFrame({'userName': username2, 'userID': userid2,
                            'item': item2, 'day': day2}).__str__())
 
     def test_shape(self):
