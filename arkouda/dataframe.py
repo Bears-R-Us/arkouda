@@ -453,7 +453,7 @@ class DataFrame(UserDict):
             #drop column
             self._drop_column(keys)
         else:
-            raise ValueError(f"No axxis named {axis} for object type DataFrame")
+            raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
         if len(self._columns) == 1:
