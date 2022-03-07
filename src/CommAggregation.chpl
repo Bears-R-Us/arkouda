@@ -1,6 +1,5 @@
 module CommAggregation {
-  use SysCTypes;
-  use CPtr;
+  use CTypes;
   use ServerConfig;
   use UnorderedCopy;
   use CommPrimitives;
@@ -341,7 +340,7 @@ module CommAggregation {
         assert(lArr.domain.low == 0);
         assert(lArr.locale.id == here.id);
       }
-      const byte_size = size:size_t * c_sizeof(elemType);
+      const byte_size = size:c_size_t * c_sizeof(elemType);
       CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
 
@@ -349,7 +348,7 @@ module CommAggregation {
       if boundsChecking {
         assert(size <= this.size);
       }
-      const byte_size = size:size_t * c_sizeof(elemType);
+      const byte_size = size:c_size_t * c_sizeof(elemType);
       CommPrimitives.PUT(lArr, loc, data, byte_size);
     }
 
@@ -360,7 +359,7 @@ module CommAggregation {
         assert(lArr.domain.low == 0);
         assert(lArr.locale.id == here.id);
       }
-      const byte_size = size:size_t * c_sizeof(elemType);
+      const byte_size = size:c_size_t * c_sizeof(elemType);
       CommPrimitives.GET(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
 

@@ -1,7 +1,6 @@
 module GenSymIO {
     use IO;
-    use CPtr;
-    use SysCTypes;
+    use CTypes;
     use Path;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;

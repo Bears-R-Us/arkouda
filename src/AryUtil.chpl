@@ -1,6 +1,6 @@
 module AryUtil
 {
-    use CPtr;
+    use CTypes;
     use Random;
     use Reflection;
     use Logging;
@@ -137,7 +137,7 @@ module AryUtil
 
         proc init(A: [] ?t, region: range(?)) {
             use CommPrimitives;
-            use SysCTypes;
+            use CTypes;
 
             this.t = t;
             if region.isEmpty() {
@@ -161,7 +161,7 @@ module AryUtil
                     // alloc+bulk GET and return owned c_ptr
                     this.ptr = c_malloc(t, region.size);
                     this.isOwned = true;
-                    const byteSize = region.size:size_t * c_sizeof(t);
+                    const byteSize = region.size:c_size_t * c_sizeof(t);
                     GET(ptr, startLocale, getAddr(start), byteSize);
                 }
             } else {

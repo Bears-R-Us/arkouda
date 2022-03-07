@@ -1,5 +1,5 @@
 module ParquetMsg {
-  use SysCTypes, CPtr, IO;
+  use CTypes, IO;
   use ServerErrors, ServerConfig;
   use FileIO;
   use FileSystem;

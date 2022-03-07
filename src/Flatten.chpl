@@ -8,7 +8,7 @@ module Flatten {
   use CommAggregation;
   use Reflection;
   use ArkoudaRegexCompat;
-  use CPtr;
+  use CTypes;
   use SegmentedArray only checkCompile, _unsafeCompileRegex;
 
   config const NULL_STRINGS_VALUE = 0:uint(8);
