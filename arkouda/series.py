@@ -7,7 +7,6 @@ from arkouda.dtypes import int64, float64
 from arkouda.numeric import value_counts
 from arkouda.util import convert_if_categorical, register
 from arkouda.alignment import lookup
-from arkouda.dataframe import DataFrame
 
 from pandas._config import get_option # type: ignore
 import pandas as pd  # type: ignore
@@ -356,6 +355,7 @@ class Series:
                 axis=0: an arkouda series.
                 axis=1: an arkouda dataframe.
                 """
+        from arkouda.dataframe import DataFrame
 
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
