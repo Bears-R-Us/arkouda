@@ -1,8 +1,24 @@
 import os
+import pytest
 from util.test.util import get_arkouda_numlocales, start_arkouda_server, \
      TestRunningMode
 
-def pytest_configure():
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+    )
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--run-optional-parquet"):
+        # --run-optional-parquet given in cli: do not skip optional parquet tests
+        return
+    skip_parquet = pytest.mark.skip(reason="need --run-optional-parquet option to run")
+    for item in items:
+        if "optional_parquet" in item.keywords:
+            item.add_marker(skip_parquet)
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "run_optional_parquet: mark test as slow to run")
     port = int(os.getenv('ARKOUDA_SERVER_PORT', 5555))
     server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
     test_server_mode = TestRunningMode(os.getenv('ARKOUDA_RUNNING_MODE','GLOBAL_SERVER'))

@@ -121,7 +121,7 @@ class ParquetTest(ArkoudaTest):
         for f in glob.glob('pq_test*'):
             os.remove(f)
 
-    @pytest.mark.skip
+    @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = 'resources/parquet-testing'
         filenames = ['alltypes_plain.parquet',
