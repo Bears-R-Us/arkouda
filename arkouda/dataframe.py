@@ -407,20 +407,16 @@ class DataFrame(UserDict):
         last_idx = -1
         # sort to ensure we go in ascending order.
         keys.sort()
-        for i, k in enumerate(keys):
+        for k in keys:
             if not isinstance(k, int):
                 raise TypeError("Index keys must be integers.")
-            pda = self.index[(last_idx+1):k:1]
-            if pda.size > 0:
-                idx_list.append(pda)
+            idx_list.append(self.index[(last_idx+1):k])
             last_idx = k
 
-        pda = self.index[(last_idx+1):]
-        if pda.size > 0:
-            idx_list.append(pda)
+        idx_list.append(self.index[(last_idx+1):])
 
         idx_to_keep = concatenate(idx_list)
-        for key, val in self.items():
+        for key in self.keys():
             # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
             # This avoids the size checks we would do when only setting a single column
             UserDict.__setitem__(self, key, self[key][idx_to_keep])
@@ -433,8 +429,8 @@ class DataFrame(UserDict):
         ----------
         keys : str, int or list
             The labels to be dropped on the given axis
-        axis : int
-            The axis on which to drop from. 0 - drop rows, 1 - drop columns
+        axis : int or str
+            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
 
         Examples
         ----------
@@ -450,10 +446,10 @@ class DataFrame(UserDict):
         if isinstance(keys, str) or isinstance(keys, int):
             keys = [keys]
 
-        if axis == 0:
+        if axis == 0 or axis == 'index':
             #drop a row
             self._drop_row(keys)
-        elif axis == 1:
+        elif axis == 1 or axis == 'columns':
             #drop column
             self._drop_column(keys)
         else:
