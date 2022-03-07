@@ -45,8 +45,11 @@ class SeriesTest(ArkoudaTest):
 
         added = s.add(s_add)
 
-        self.assertListEqual(added.index.to_pandas().tolist(), [i for i in range(6)])
-        self.assertListEqual(added.values.to_ndarray().tolist(), [i for i in range(6)])
+        idx_list = added.index.to_pandas().tolist()
+        val_list = added.values.to_ndarray().tolist()
+        for i in range(6):
+            self.assertIn(i, idx_list)
+            self.assertIn(i, val_list)
 
     def test_topn(self):
         ar_tuple = (ak.arange(3), ak.arange(3))
