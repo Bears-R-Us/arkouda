@@ -270,8 +270,21 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue((keys[1] == ak.array([111, 333, 222])).all())
         self.assertTrue((count == ak.array([3, 1, 2])).all())
 
-        with self.assertRaises(NotImplementedError):
-            gb = df.GroupBy('userName', use_series=True)
+    def test_gb_series(self):
+        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+        userid = ak.array([111, 222, 111, 333, 222, 111])
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        day = ak.array([5, 5, 6, 5, 6, 6])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        df = ak.DataFrame({'userName': username, 'userID': userid,
+                           'item': item, 'day': day, 'amount': amount})
+
+        gb = df.GroupBy('userName', use_series=True)
+
+        c = gb.count()
+        self.assertIsInstance(c, ak.Series)
+        self.assertListEqual(c.index.to_pandas().tolist(), ['Alice', 'Carol', 'Bob'])
+        self.assertListEqual(c.values.to_ndarray().tolist(), [3, 1, 2])
 
     def test_to_pandas(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
