@@ -117,7 +117,7 @@ class Index:
 class MultiIndex(Index):
     def __init__(self,index):
         if not(isinstance(index,list) or isinstance(index,tuple)):
-            raise TypeError("MultiIndex shuold be an iterable")
+            raise TypeError("MultiIndex should be an iterable")
         self.index = index
         first = True
         for col in self.index:
