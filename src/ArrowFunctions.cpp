@@ -194,6 +194,9 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       reader->Skip(startIdx);
 
       while (reader->HasNext() && i < numElems) {
+        // Only read up to numElems, not over
+        if((numElems - i) < batchSize)
+          batchSize = numElems - i;
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
         i+=values_read;
       }
@@ -205,6 +208,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
       while (reader->HasNext() && i < numElems) {
+        if((numElems - i) < batchSize)
+          batchSize = numElems - i;
         // Can't read directly into chpl_ptr because it is int64
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
         for (int64_t j = 0; j < values_read; j++)
@@ -218,7 +223,9 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         static_cast<parquet::BoolReader*>(column_reader.get());
       reader->Skip(startIdx);
 
-      while (reader->HasNext()) {
+      while (reader->HasNext() && i < numElems) {
+        if((numElems - i) < batchSize)
+          batchSize = numElems - i;
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
         i+=values_read;
       }
@@ -245,6 +252,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
 
       float* tmpArr = (float*)malloc(batchSize * sizeof(float));
       while (reader->HasNext() && i < numElems) {
+        if((numElems - i) < batchSize)
+          batchSize = numElems - i;
         // Can't read directly into chpl_ptr because it is a double
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
         for (int64_t j = 0; j < values_read; j++)
@@ -259,6 +268,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       reader->Skip(startIdx);
 
       while (reader->HasNext() && i < numElems) {
+        if((numElems - i) < batchSize)
+          batchSize = numElems - i;
         (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
         i+=values_read;
       }
