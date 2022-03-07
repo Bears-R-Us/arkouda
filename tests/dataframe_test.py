@@ -3,6 +3,7 @@ import pandas as pd  # type: ignore
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+
 def build_ak_df():
     username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
     userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -24,7 +25,6 @@ def build_pd_df():
                        'item': item, 'day': day, 'amount': amount})
     return df
 
-
 class DataFrameTest(ArkoudaTest):
     def test_dataframe_creation(self):
         df = ak.DataFrame()
@@ -41,6 +41,19 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(df[0], {'index': 0, 'userName': 'Alice', 'userID': 111, 'item': 0, 'day': 5, 'amount': 0.5})
         self.assertTrue((df['userName'] == ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])).all())
         self.assertEqual(len(df), 6)
+
+    def test_from_pandas(self):
+        username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
+        userid = [111, 222, 111, 333, 222, 111, 444, 333]
+        item = [0, 0, 1, 1, 2, 0, 0, 2]
+        day = [5, 5, 6, 5, 6, 6, 1, 2]
+        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+        ref_df = pd.DataFrame({'userName': username, 'userID': userid,
+                               'item': item, 'day': day, 'amount': amount})
+
+        df = ak.DataFrame(ref_df)
+
+        self.assertTrue(((ref_df == df.to_pandas()).all()).all())
 
     def test_drop(self):
         # create an arkouda df.
@@ -89,7 +102,7 @@ class DataFrameTest(ArkoudaTest):
         item2 = ak.array([0, 1, 2])
         day2 = ak.array([5, 5, 5])
         self.assertEquals(dedup.__str__(), ak.DataFrame({'userName': username2, 'userID': userid2,
-                           'item': item2, 'day': day2}).__str__())
+                                                         'item': item2, 'day': day2}).__str__())
 
     def test_shape(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
@@ -147,7 +160,7 @@ class DataFrameTest(ArkoudaTest):
         day = ak.array([1, 2])
         amount = ak.array([0.5, 5.1])
         df_toappend = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+                                    'item': item, 'day': day, 'amount': amount})
 
         df.append(df_toappend)
 
@@ -157,14 +170,14 @@ class DataFrameTest(ArkoudaTest):
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
         ref_df = pd.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+                               'item': item, 'day': day, 'amount': amount})
 
-        #dataframe equality returns series with bool result for each row.
+        # dataframe equality returns series with bool result for each row.
         self.assertTrue(((ref_df == df.to_pandas()).all()).all())
 
         userid = ak.array([444, 333])
         item = ak.array([0, 2])
-        df_keyerror = ak.DataFrame({'user_id':userid, 'item':item})
+        df_keyerror = ak.DataFrame({'user_id': userid, 'item': item})
         with self.assertRaises(KeyError):
             df.append(df_keyerror)
 
@@ -174,7 +187,7 @@ class DataFrameTest(ArkoudaTest):
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
         df_typeerror = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+                                     'item': item, 'day': day, 'amount': amount})
         with self.assertRaises(TypeError):
             df.append(df_typeerror)
 
@@ -223,7 +236,6 @@ class DataFrameTest(ArkoudaTest):
                                      'item': item, 'day': day, 'amount': amount})
         with self.assertRaises(TypeError):
             ak.DataFrame.concat([df, df_typeerror])
-
 
     def test_head(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
@@ -294,7 +306,6 @@ class DataFrameTest(ArkoudaTest):
         test_df = pd.DataFrame(data, columns=['userName', 'userID', 'item', 'day', 'amount'])
         self.assertTrue(pddf.equals(test_df))
 
-
         slice_df = df[[1, 3, 5]]
         pddf = slice_df.to_pandas(retain_index=True)
         self.assertEqual(pddf.index.tolist(), [1, 3, 5])
@@ -339,7 +350,7 @@ class DataFrameTest(ArkoudaTest):
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
 
-        df = ak.DataFrame({'userID':userid})
+        df = ak.DataFrame({'userID': userid})
         ord = df.sort_values()
         self.assertEqual(ord.__repr__(), ak.DataFrame({'userID': ak.array([111, 111, 111, 222, 222, 333])}).__repr__())
         ord = df.sort_values(ascending=False)

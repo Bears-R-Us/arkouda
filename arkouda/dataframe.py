@@ -107,6 +107,24 @@ class DataFrame(UserDict):
             self.data = initialdata.data
             self.update_size()
             return
+        elif isinstance(initialdata, pd.DataFrame):
+            # copy pd.DataFrame data into the ak.DataFrame object
+            self._size = initialdata.size
+            self._bytes = 0
+            self._empty = initialdata.empty
+            # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
+            self._columns = ['index'] + initialdata.columns.tolist()
+            # Add index values as data
+            self.data = {'index': array(initialdata.index.values.tolist())}
+
+            # convert the lists defining each column into a pdarray
+            # pd.DataFrame.values is stored as rows, we need lists to be columns
+            for key, val in initialdata.to_dict('list').items():
+                self.data[key] = array(val)
+
+            self.data.update()
+            return
+
 
         # Some metadata about this dataframe.
         self._size = 0
