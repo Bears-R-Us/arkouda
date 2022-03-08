@@ -9892,14 +9892,44 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.drop">
-<span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.drop" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.DataFrame._drop_column">
+<span class="sig-name descname"><span class="pre">_drop_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame._drop_column" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drop a column or columns from the dataframe, in-place.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em>) – The column(s) to be dropped.</p>
+<dl class="simple">
+<dt>keys<span class="classifier">list</span></dt><dd><p>The labels to be dropped on the given axis</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame._drop_row">
+<span class="sig-name descname"><span class="pre">_drop_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame._drop_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop a row or rows from the dataframe, in-place.</p>
+<dl class="simple">
+<dt>keys<span class="classifier">list</span></dt><dd><p>The indexes to be dropped on the given axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.drop">
+<span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.drop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop column/s or row/s from the dataframe, in-place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>str</em><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Drop column
+&gt;&gt;&gt; df.drop(‘col_name’, axis=1)</p>
+<p>Drop Row
+&gt;&gt;&gt; df.drop(1)
+or
+&gt;&gt;&gt; df.drop(1, axis=0)</p>
 </dd></dl>
 
 <dl class="py method">

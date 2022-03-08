@@ -7376,12 +7376,40 @@ Attributes
    .. py:method:: _ipython_key_completions_(self)
 
 
-   .. py:method:: drop(self, keys)
+   .. py:method:: _drop_column(self, keys)
 
       Drop a column or columns from the dataframe, in-place.
 
-      :param keys: The column(s) to be dropped.
-      :type keys: str or list
+      keys : list
+          The labels to be dropped on the given axis
+
+
+   .. py:method:: _drop_row(self, keys)
+
+      Drop a row or rows from the dataframe, in-place.
+
+      keys : list
+          The indexes to be dropped on the given axis
+
+
+   .. py:method:: drop(self, keys, axis=0)
+
+      Drop column/s or row/s from the dataframe, in-place.
+
+      :param keys: The labels to be dropped on the given axis
+      :type keys: str, int or list
+      :param axis: The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
+      :type axis: int or str
+
+      .. rubric:: Examples
+
+      Drop column
+      >>> df.drop('col_name', axis=1)
+
+      Drop Row
+      >>> df.drop(1)
+      or
+      >>> df.drop(1, axis=0)
 
 
    .. py:method:: drop_duplicates(self, subset=None, keep='first')
