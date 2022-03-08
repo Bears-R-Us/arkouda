@@ -104,40 +104,48 @@ module ParquetMsg {
     coforall loc in A.targetLocales() do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      forall (filedom, filename) in zip(locFiledoms, locFiles) {
-        for locdom in A.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] t;
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                  dsetname.localize().c_str(), filedom.size, batchSize,
-                                  c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-              pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      try {
+        forall (filedom, filename) in zip(locFiledoms, locFiles) {
+          for locdom in A.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            if intersection.size > 0 {
+              var pqErr = new parquetErrorMsg();
+              var col: [filedom] t;
+              if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                    dsetname.localize().c_str(), filedom.size, batchSize,
+                                    c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              }
+              A[filedom] = col;
             }
-            A[filedom] = col;
           }
         }
+      } catch e {
+        throw e;
       }
     }
   }
 
   proc calcSizesAndOffset(offsets: [] ?t, byteSizes: [] int, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var (subdoms, length) = getSubdomains(sizes);
-    
+
     coforall loc in offsets.targetLocales() do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-        for locdom in offsets.localSubdomains() {
-          const intersection = domain_intersection(locdom, filedom);
-          if intersection.size > 0 {
-            var pqErr = new parquetErrorMsg();
-            var col: [filedom] t;
-            byteSizes[i] = getStrColSize(filename, dsetname, col);
-            offsets[filedom] = col;
+      try {
+        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+          for locdom in offsets.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            if intersection.size > 0 {
+              var pqErr = new parquetErrorMsg();
+              var col: [filedom] t;
+              byteSizes[i] = getStrColSize(filename, dsetname, col);
+              offsets[filedom] = col;
+            }
           }
         }
+      } catch e {
+        throw e;
       }
     }
   }
