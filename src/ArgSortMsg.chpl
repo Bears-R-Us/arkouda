@@ -6,7 +6,7 @@ module ArgSortMsg
 {
     use ServerConfig;
     
-    use CPtr;
+    use CTypes;
 
     use Time only;
     use Math only;

@@ -1,7 +1,6 @@
 module SipHash {
   private use AryUtil;
-  private use CPtr;
-  private use SysCTypes;
+  private use CTypes;
   use ServerConfig;
   use ServerErrors;
   use Reflection;

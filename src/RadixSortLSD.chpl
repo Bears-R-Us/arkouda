@@ -18,7 +18,7 @@ module RadixSortLSD
     use AryUtil;
     use CommAggregation;
     use IO;
-    use CPtr;
+    use CTypes;
     use Reflection;
     use Logging;
     use ServerConfig;

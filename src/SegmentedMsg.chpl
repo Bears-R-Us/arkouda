@@ -1,5 +1,5 @@
 module SegmentedMsg {
-  use CPtr;
+  use CTypes;
   use Reflection;
   use ServerErrors;
   use Logging;
