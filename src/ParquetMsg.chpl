@@ -183,6 +183,7 @@ module ParquetMsg {
     else if arrType == ARROWBOOLEAN then return ArrowTypes.boolean;
     else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
     else if arrType == ARROWDOUBLE then return ArrowTypes.double;
+    else if arrType == ARROWFLOAT then return ArrowTypes.float;
     // TODO: throw here
     return ArrowTypes.notimplemented;
   }
