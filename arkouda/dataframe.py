@@ -383,24 +383,78 @@ class DataFrame(UserDict):
     def _ipython_key_completions_(self):
         return self._columns
 
-    def drop(self, keys):
+    def _drop_column(self, keys):
         """
         Drop a column or columns from the dataframe, in-place.
 
-        Parameters
-        ----------
-        keys : str or list
-            The column(s) to be dropped.
+        keys : list
+            The labels to be dropped on the given axis
         """
-
-        if isinstance(keys, str):
-            keys = [keys]
         for key in keys:
             # Do not allow the user to drop the index column
             if key == 'index':
                 raise KeyError('The index column may be reset, but not dropped.')
 
             del self[key]
+
+    def _drop_row(self, keys):
+        """
+        Drop a row or rows from the dataframe, in-place.
+
+        keys : list
+            The indexes to be dropped on the given axis
+        """
+        idx_list = []
+        last_idx = -1
+        # sort to ensure we go in ascending order.
+        keys.sort()
+        for k in keys:
+            if not isinstance(k, int):
+                raise TypeError("Index keys must be integers.")
+            idx_list.append(self.index[(last_idx+1):k])
+            last_idx = k
+
+        idx_list.append(self.index[(last_idx+1):])
+
+        idx_to_keep = concatenate(idx_list)
+        for key in self.keys():
+            # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
+            # This avoids the size checks we would do when only setting a single column
+            UserDict.__setitem__(self, key, self[key][idx_to_keep])
+
+    def drop(self, keys, axis=0):
+        """
+        Drop column/s or row/s from the dataframe, in-place.
+
+        Parameters
+        ----------
+        keys : str, int or list
+            The labels to be dropped on the given axis
+        axis : int or str
+            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
+
+        Examples
+        ----------
+        Drop column
+        >>> df.drop('col_name', axis=1)
+
+        Drop Row
+        >>> df.drop(1)
+        or
+        >>> df.drop(1, axis=0)
+        """
+
+        if isinstance(keys, str) or isinstance(keys, int):
+            keys = [keys]
+
+        if axis == 0 or axis == 'index':
+            #drop a row
+            self._drop_row(keys)
+        elif axis == 1 or axis == 'columns':
+            #drop column
+            self._drop_column(keys)
+        else:
+            raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
         if len(self._columns) == 1:
@@ -439,7 +493,7 @@ class DataFrame(UserDict):
 
         else:
             for col in subset:
-                if not col in self.data:
+                if col not in self.data:
                     raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
 
             _ = GroupBy([self.data[col] for col in subset])
@@ -457,7 +511,7 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
-        if self._size == None:
+        if self._size is None:
             return 0
         return self._size
 
