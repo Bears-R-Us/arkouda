@@ -108,8 +108,13 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
       return ARROWFLOAT;
     else if(myType->id() == arrow::Type::DOUBLE)
       return ARROWDOUBLE;
-    else // TODO: error type not supported
-      return ARROWUNDEFINED;
+    else {
+      std::string fname(filename);
+      std::string dname(colname);
+      std::string msg = "Unsupported type on column: " + dname + " in " + filename; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
