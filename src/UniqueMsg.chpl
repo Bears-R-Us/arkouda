@@ -158,83 +158,9 @@ module UniqueMsg
            }
         }
     }
-    
-    /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
-    proc value_countsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        // split request into fields
-        var (name) = payload.splitMsgToTuple(1);
-
-        // get next symbol name
-        var vname = st.nextName();
-        var cname = st.nextName();
-        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
-
-        var gEnt: borrowed GenSymEntry;
-        
-        try {  
-            gEnt = getGenericTypedArrayEntry(name, st);
-        } catch e: Error {
-            throw new owned ErrorWithContext("lookup for %s failed".format(name),
-                               getLineNumber(),
-                               getRoutineName(),
-                               getModuleName(),
-                               "UnknownSymbolError");    
-        }
-
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                /* var eMin:int = min reduce e.a; */
-                /* var eMax:int = max reduce e.a; */
-
-                /* // how many bins in histogram */
-                /* var bins = eMax-eMin+1; */
-                /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "bins = %t".format(bins));*/
-
-                /* if (bins <= mBins) { */
-                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "bins <= %t".format(mBins));*/
-                /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
-                /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                /*     st.addEntry(cname, new shared SymEntry(aC)); */
-                /* } */
-                /* else if (bins <= lBins) { */
-                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "bins <= %t".format(lBins));*/
-                /*     var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax); */
-                /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                /*     st.addEntry(cname, new shared SymEntry(aC)); */
-                /* } */
-                /* else { */
-                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "bins = %t".format(bins));*/
-                /*     var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax); */
-                /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                /*     st.addEntry(cname, new shared SymEntry(aC)); */
-                /* } */
-
-                var (aV,aC) = uniqueSort(e.a);
-                st.addEntry(vname, new shared SymEntry(aV));
-                st.addEntry(cname, new shared SymEntry(aC));
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,gEnt.dtype);
-                umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);                 
-            }
-        }
-        repMsg = "created " + st.attrib(vname) + " +created " + st.attrib(cname);
-        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
 
     proc registerMe() {
       use CommandMap;
       registerFunction("unique", uniqueMsg, getModuleName());
-      registerFunction("value_counts", value_countsMsg, getModuleName());
     }
 }
