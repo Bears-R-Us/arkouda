@@ -18,7 +18,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_parquet)
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "run_optional_parquet: mark test as slow to run")
+    config.addinivalue_line("markers", "optional_parquet: mark test as slow to run")
     port = int(os.getenv('ARKOUDA_SERVER_PORT', 5555))
     server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
     test_server_mode = TestRunningMode(os.getenv('ARKOUDA_RUNNING_MODE','GLOBAL_SERVER'))
