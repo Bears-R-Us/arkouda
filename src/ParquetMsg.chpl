@@ -32,7 +32,6 @@ module ParquetMsg {
   extern var ARROWUINT64: c_int;
   extern var ARROWBOOLEAN: c_int;
   extern var ARROWSTRING: c_int;
-  extern var ARROWUNDEFINED: c_int;
   extern var ARROWFLOAT: c_int;
   extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
@@ -192,11 +191,16 @@ module ParquetMsg {
     else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
     else if arrType == ARROWDOUBLE then return ArrowTypes.double;
     else if arrType == ARROWFLOAT then return ArrowTypes.float;
-    // TODO: throw here
+    throw getErrorWithContext(
+                  msg="Unrecognized Parquet data type",
+                  getLineNumber(),
+                  getRoutineName(),
+                  getModuleName(),
+                  errorClass="ParquetError");
     return ArrowTypes.notimplemented;
   }
 
-  proc toCDtype(dtype: string) {
+  proc toCDtype(dtype: string) throws {
     select dtype {
       when 'int64' {
         return ARROWINT64;
@@ -207,8 +211,13 @@ module ParquetMsg {
       } when 'float64' {
         return ARROWDOUBLE;
       } otherwise {
-        // TODO: make this throw so we can catch it
-        return ARROWUNDEFINED;
+         throw getErrorWithContext(
+                msg="Trying to convert unrecognized dtype to Parquet type",
+                getLineNumber(),
+                getRoutineName(),
+                getModuleName(),
+                errorClass="ParquetError");
+        return ARROWERROR;
       }
     }
   }

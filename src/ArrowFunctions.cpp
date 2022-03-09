@@ -165,7 +165,7 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void*
       }
       return size;
     }
-    return ARROWUNDEFINED;
+    return ARROWERROR;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
@@ -277,7 +277,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
       }
       return 0;
     }
-    return ARROWUNDEFINED;
+    return ARROWERROR;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
