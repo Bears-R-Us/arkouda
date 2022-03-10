@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../benchmarks'))
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -22,7 +23,7 @@ copyright = '2020, Michael Merrill and William Reus'
 author = 'Michael Merrill and William Reus'
 
 # The full version, including alpha/beta/rc tags
-release = '2020.07.07'
+release = ''
 
 
 # -- General configuration ---------------------------------------------------
