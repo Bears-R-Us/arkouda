@@ -135,8 +135,9 @@ class ParquetTest(ArkoudaTest):
                     'bigint_col',
                     'float_col',
                     'double_col',
-                    'date_string_col',
-                    'string_col']
+                    'timestamp_col']
+                    # 'date_string_col',
+                    # 'string_col']
         columns2 = ['c_customer_id',
                     'c_salutation',
                     'c_first_name',

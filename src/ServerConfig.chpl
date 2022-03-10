@@ -6,7 +6,7 @@ module ServerConfig
     use SymArrayDmap only makeDistDom;
 
     public use IO;
-    private use SysCTypes;
+    private use CTypes;
 
     use ServerErrorStrings;
     use Reflection;
@@ -68,7 +68,7 @@ module ServerConfig
     const scLogger = new Logger(lLevel);
    
     proc createConfig() {
-        use SysCTypes;
+        use CTypes;
 
         class LocaleConfig {
             const id: int;

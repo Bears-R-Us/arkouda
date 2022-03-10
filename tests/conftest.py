@@ -5,14 +5,14 @@ from util.test.util import get_arkouda_numlocales, start_arkouda_server, \
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--run-optional-parquet", action="store_true", default=False, help="run optional parquet tests"
+        "--optional-parquet", action="store_true", default=False, help="run optional parquet tests"
     )
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--run-optional-parquet"):
-        # --run-optional-parquet given in cli: do not skip optional parquet tests
+    if config.getoption("--optional-parquet"):
+        # --optional-parquet given in cli: do not skip optional parquet tests
         return
-    skip_parquet = pytest.mark.skip(reason="need --run-optional-parquet option to run")
+    skip_parquet = pytest.mark.skip(reason="need --optional-parquet option to run")
     for item in items:
         if "optional_parquet" in item.keywords:
             item.add_marker(skip_parquet)

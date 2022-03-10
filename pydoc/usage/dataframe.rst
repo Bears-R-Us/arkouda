@@ -34,6 +34,10 @@ Features
 ==========
 ``DataFrames`` support the majority of functionality offered by ``pandas.DataFrame``.
 
+Drop
+---------
+.. autofunction:: arkouda.DataFrame.drop
+
 GroupBy
 ----------
 .. autofunction:: arkouda.DataFrame.groupby
