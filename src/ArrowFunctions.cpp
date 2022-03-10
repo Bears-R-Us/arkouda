@@ -122,13 +122,12 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   }
 }
 
-int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, char** errMsg) {
+int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
     auto offsets = (int64_t*)chpl_offsets;
 
     if(ty == ARROWSTRING) {
-      int size = 0;
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
         parquet::ParquetFileReader::OpenFile(filename, false);
 
@@ -156,15 +155,17 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void*
         column_reader = row_group_reader->Column(idx);
         parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
+        ba_reader -> Skip(startIdx);
 
-        while (ba_reader->HasNext()) {
+        int64_t numRead = 0;
+        while (ba_reader->HasNext() && numRead < numElems) {
           parquet::ByteArray value;
           (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-          size += value.len + 1; // add 1 to account for zero that will be added in Chapel array
           offsets[i++] = value.len + 1;
+          numRead += values_read;
         }
       }
-      return size;
+      return 0;
     }
     return ARROWERROR;
   } catch (const std::exception& e) {
@@ -173,7 +174,7 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void*
   }
 }
 
-int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
+int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
   
@@ -210,8 +211,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
+        reader->Skip(startIdx);
 
-        while (reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
@@ -219,9 +223,12 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int32Reader* reader =
           static_cast<parquet::Int32Reader*>(column_reader.get());
+        reader->Skip(startIdx);
 
         int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
-        while (reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
           // Can't read directly into chpl_ptr because it is int64
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
           for (int64_t j = 0; j < values_read; j++)
@@ -233,32 +240,44 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (bool*)chpl_arr;
         parquet::BoolReader* reader =
           static_cast<parquet::BoolReader*>(column_reader.get());
+        reader->Skip(startIdx);
 
-        while (reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
       } else if(ty == ARROWSTRING) {
         auto chpl_ptr = (unsigned char*)chpl_arr;
-        parquet::ByteArrayReader* ba_reader =
+        parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
-        while (ba_reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
           parquet::ByteArray value;
-          (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
+          (void)reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
           for(int j = 0; j < value.len; j++) {
-            chpl_ptr[i] = value.ptr[j];
-            i++;
+            if(startIdx < 1 && i < numElems) {
+              chpl_ptr[i] = value.ptr[j];
+              i++;
+            } else {
+              startIdx--;
+            }
           }
-          i++; // skip one space so the strings are null terminated with a 0
+          if(startIdx < 1 && i < numElems)
+            i++; // skip one space so the strings are null terminated with a 0
+          startIdx--;
         }
       } else if(ty == ARROWFLOAT) {
         auto chpl_ptr = (double*)chpl_arr;
         parquet::FloatReader* reader =
           static_cast<parquet::FloatReader*>(column_reader.get());
+        reader->Skip(startIdx);
 
         float* tmpArr = (float*)malloc(batchSize * sizeof(float));
-        while (reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
           // Can't read directly into chpl_ptr because it is a double
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
           for (int64_t j = 0; j < values_read; j++)
@@ -270,8 +289,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
           static_cast<parquet::DoubleReader*>(column_reader.get());
+        reader->Skip(startIdx);
 
-        while (reader->HasNext()) {
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
           (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
@@ -442,8 +464,8 @@ extern "C" {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
-  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t batchSize, char** errMsg) {
-    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, batchSize, errMsg);
+  int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+    return cpp_readColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {
@@ -459,8 +481,8 @@ extern "C" {
                                     errMsg);
   }
 
-  int c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, char** errMsg) {
-    return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, errMsg);
+  int c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+    return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
   }
 
   const char* c_getVersionInfo(void) {
