@@ -92,13 +92,13 @@
 <dd><p>Map an array of sparse values to 0-up indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>vals</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Array to map to dense index</p>
+<dd class="field-odd"><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to map to dense index</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>aligned</strong> – Array with values replaced by 0-up indices</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -128,8 +128,8 @@ discarding values from left that do not appear in right.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Left-hand identifiers</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Right-hand identifiers that define the index</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Left-hand identifiers</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Right-hand identifiers that define the index</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -187,7 +187,7 @@ discarding values from right that do not appear in left.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The domain of the function. Entries must be unique (if a sequence of
 arrays is given, each row is treated as a tuple-valued entry).</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The range of the function. Must be same length as keys.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The range of the function. Must be same length as keys.</p></li>
 <li><p><strong>arguments</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The arguments on which to evaluate the function. Must have same dtype
 (or tuple of dtypes, for a sequence) as keys.</p></li>
 <li><p><strong>fillvalue</strong> (<em>scalar</em>) – The default value to return for arguments not in keys.</p></li>
@@ -197,7 +197,7 @@ arrays is given, each row is treated as a tuple-valued entry).</p></li>
 <dd class="field-even"><p><strong>evaluated</strong> – The result of evaluating the function over arguments.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -231,8 +231,8 @@ ranges between pairs of start- and end-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>starts</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
-<li><p><strong>ends</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
+<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
+<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -253,7 +253,7 @@ intervals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vals</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – If True, also return boolean pdarray indicating which intervals
@@ -298,7 +298,7 @@ or -1 if not present in any interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>vals</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, assume query vals are unique. Default: False.</p></li>
@@ -308,7 +308,7 @@ or -1 if not present in any interval.</p>
 <dd class="field-even"><p><strong>idx</strong> – Index of interval containing each query value, or -1 if not found</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>(int64)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>(int64)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -329,8 +329,8 @@ an array of arguments.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>2-tuple of pdarray</em>) – Tuple of non-overlapping, half-open intervals expressed
 as (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Function value to return for each entry in keys.</p></li>
-<li><p><strong>arguments</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Arguments to the function</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Function value to return for each entry in keys.</p></li>
+<li><p><strong>arguments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Arguments to the function</p></li>
 <li><p><strong>fillvalue</strong> (<em>scalar</em>) – Default value to return when argument is not in any interval.</p></li>
 </ul>
 </dd>
@@ -340,7 +340,7 @@ containing each argument, or fillvalue if argument not
 in any interval.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
