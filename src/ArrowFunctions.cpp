@@ -102,7 +102,8 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
       return ARROWTIMESTAMP;
     else if(myType->id() == arrow::Type::BOOL)
       return ARROWBOOLEAN;
-    else if(myType->id() == arrow::Type::STRING)
+    else if(myType->id() == arrow::Type::STRING ||
+            myType->id() == arrow::Type::BINARY)
       return ARROWSTRING;
     else if(myType->id() == arrow::Type::FLOAT)
       return ARROWFLOAT;
@@ -403,6 +404,7 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
          sc->field(i)->type()->id() == arrow::Type::TIMESTAMP ||
          sc->field(i)->type()->id() == arrow::Type::BOOL ||
          sc->field(i)->type()->id() == arrow::Type::STRING ||
+         sc->field(i)->type()->id() == arrow::Type::BINARY ||
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
          sc->field(i)->type()->id() == arrow::Type::DOUBLE) {
         if(!first)
