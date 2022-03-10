@@ -415,7 +415,7 @@ module ParquetMsg {
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
         } else {
-          var errorMsg = "DType {} not supported for Parquet reading".format(ty);
+          var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
