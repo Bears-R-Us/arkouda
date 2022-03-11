@@ -95,10 +95,10 @@ class SegArray:
         """
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
-        if not is_sorted(segments) or (unique(segments).size != segments.size):
+        if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
         if segments.size > 0:
-            if segments.min() != 0 or segments.max() >= values.size:
+            if segments.min() != 0:
                 raise ValueError("Segments must start at zero and be less than values.size")
         elif values.size > 0:
             raise ValueError("Cannot have non-empty values with empty segments")
@@ -115,12 +115,22 @@ class SegArray:
         else:
             self.lengths = lengths
         self.dtype = values.dtype
+
+        self.non_empty = zeros(self.size, dtype=akbool)
+        self.non_empty_count = 0
+        for i in range(self.lengths.size):
+            if self.lengths[i] == 0:
+                self.non_empty[i] = False
+            else:
+                self.non_empty[i] = True
+                self.non_empty_count += 1
+
         if grouping is None:
             if self.size == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(broadcast(self.segments, arange(self.size), self.valsize))
+                self.grouping = GroupBy(broadcast(self.segments[self.non_empty], arange(self.non_empty_count), self.valsize))
         else:
             self.grouping = grouping
 
@@ -384,7 +394,7 @@ class SegArray:
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
-        notsegstart[self.segments] = False
+        notsegstart[self.segments[self.non_empty]] = False
         valid = ones(self.valsize - n + 1, dtype=akbool)
         for i in range(n):
             end = self.valsize - n + i + 1
@@ -393,7 +403,14 @@ class SegArray:
                 valid &= notsegstart[i:end]
         ngrams = [char[valid] for char in ngrams]
         if return_origins:
-            origin_indices = self.grouping.broadcast(arange(self.size), permute=True)[:valid.size][valid]
+            # set the proper indexes for broadcasting. Needed to alot for empty segments
+            seg_idx = zeros(self.non_empty_count, dtype=akint64)
+            idx = 0
+            for i in range(self.size):
+                if self.non_empty[i]:
+                    seg_idx[idx] = i
+                    idx += 1
+            origin_indices = self.grouping.broadcast(seg_idx, permute=True)[:valid.size][valid]
             return ngrams, origin_indices
         else:
             return ngrams
@@ -560,7 +577,7 @@ class SegArray:
         else:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
-        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self.size), permute=True)
+        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self.non_empty_count), permute=True)
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
@@ -588,12 +605,20 @@ class SegArray:
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
-        isrepeat[self.segments] = False
+        isrepeat[self.segments[self.non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
-        # truehops = ak.cumsum(~isrepeat)
-        # nhops = ak.concatenate((truehops[self.segments[1:]], ak.array([truehops.sum()+1]))) - truehops[self.segments]
         truesegs = cumsum(nhops) - nhops
+        # Correct segments to properly assign empty lists - prevents dropping empty segments
+        if not self.non_empty.all():
+            empty_segs = []
+            for i in range(self.size):
+                if not self.non_empty[i]:
+                    if i < truesegs.size:
+                        empty_segs.append(truesegs[i])
+                    else:
+                        empty_segs.append(truepaths.size)
+            truesegs = concatenate([truesegs, array(empty_segs)])
         norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
             truehopinds = arange(self.valsize)[~isrepeat]
