@@ -7,7 +7,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import str_
 from arkouda.pdarraycreation import zeros, ones, array, arange
-from arkouda.pdarraysetops import concatenate, unique
+from arkouda.pdarraysetops import concatenate, unique, intersect1d
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarrayIO import load
 
@@ -802,6 +802,39 @@ class SegArray:
         segments = load(prefix_path, dataset=dataset + segment_suffix)
         values = load(prefix_path, dataset=dataset + value_suffix)
         return cls(segments, values)
+
+    @classmethod
+    def intersection(cls, a, b):
+        """
+        Compute the intersection of 2 segmented arrays.
+
+        Parameters
+        ----------
+        a : SegArray
+            First SegArray to use in intersection calculation
+        b : SegArray
+            Seconds SegArray to use in intersection calucation
+
+        Returns
+        -------
+        SegArray
+        """
+
+        if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
+            raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
+        if a.size != b.size:
+            raise ValueError("SegArrays must have same number of 'rows' to compute intersection.")
+        if a.dtype != b.dtype:
+            raise TypeError("SegArrays must have the same dtype to compute intersection")
+
+        intx_vals = []
+        intx_segments = zeros(a.size, akint64)
+
+        for i in range(a.size):
+            intx_vals.append(intersect1d(a[i], b[i]))
+            intx_segments[i] = 0 if i == 0 else (intx_vals[i - 1].size + intx_segments[i - 1])
+
+        return SegArray(intx_segments, concatenate(intx_vals))
 
 # Register/Attach functionality has been removed until it is added for GroupBy.
 # Please refer to ticket #1122 (https://github.com/Bears-R-Us/arkouda/issues/1122 for updates
