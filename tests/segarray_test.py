@@ -240,8 +240,8 @@ class SegArrayTest(ArkoudaTest):
         segs = ak.array([0, len(a), len(a)])
         segarr = ak.SegArray(segs, flat)
         res, origin = segarr.get_jth(2)
-        self.assertListEqual(res, [12, 0, 0])
-        self.assertListEqual(origin, [True, False, False])
+        self.assertListEqual(res.to_ndarray().tolist(), [12, 0, 0])
+        self.assertListEqual(origin.to_ndarray().tolist(), [True, False, False])
 
     def test_set_jth(self):
         """
