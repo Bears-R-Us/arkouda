@@ -116,21 +116,15 @@ class SegArray:
             self.lengths = lengths
         self.dtype = values.dtype
 
-        self.non_empty = zeros(self.size, dtype=akbool)
-        self.non_empty_count = 0
-        for i in range(self.lengths.size):
-            if self.lengths[i] == 0:
-                self.non_empty[i] = False
-            else:
-                self.non_empty[i] = True
-                self.non_empty_count += 1
+        self._non_empty = self.lengths > 0
+        self._non_empty_count = self._non_empty.sum()
 
         if grouping is None:
             if self.size == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(broadcast(self.segments[self.non_empty], arange(self.non_empty_count), self.valsize))
+                self.grouping = GroupBy(broadcast(self.segments[self._non_empty], arange(self._non_empty_count), self.valsize))
         else:
             self.grouping = grouping
 
@@ -394,7 +388,7 @@ class SegArray:
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
-        notsegstart[self.segments[self.non_empty]] = False
+        notsegstart[self.segments[self._non_empty]] = False
         valid = ones(self.valsize - n + 1, dtype=akbool)
         for i in range(n):
             end = self.valsize - n + i + 1
@@ -404,12 +398,7 @@ class SegArray:
         ngrams = [char[valid] for char in ngrams]
         if return_origins:
             # set the proper indexes for broadcasting. Needed to alot for empty segments
-            seg_idx = zeros(self.non_empty_count, dtype=akint64)
-            idx = 0
-            for i in range(self.size):
-                if self.non_empty[i]:
-                    seg_idx[idx] = i
-                    idx += 1
+            seg_idx = arange(self.size)[self._non_empty]
             origin_indices = self.grouping.broadcast(seg_idx, permute=True)[:valid.size][valid]
             return ngrams, origin_indices
         else:
@@ -577,7 +566,7 @@ class SegArray:
         else:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
-        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self.non_empty_count), permute=True)
+        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self._non_empty_count), permute=True)
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
@@ -605,15 +594,15 @@ class SegArray:
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
-        isrepeat[self.segments[self.non_empty]] = False
+        isrepeat[self.segments[self._non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
         truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
-        if not self.non_empty.all():
+        if not self._non_empty.all():
             empty_segs = []
             for i in range(self.size):
-                if not self.non_empty[i]:
+                if not self._non_empty[i]:
                     if i < truesegs.size:
                         empty_segs.append(truesegs[i])
                     else:
