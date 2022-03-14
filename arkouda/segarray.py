@@ -600,11 +600,16 @@ class SegArray:
         truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
         if not self._non_empty.all():
-            # empties after the first truesegs.size will be out of bounds, we append truepaths.size to compensate
-            trailing_empties = zeros(self.size - truesegs.size, dtype=akint64)
-            trailing_empties.fill(truepaths.size)
-            empty_segs = concatenate([truesegs, trailing_empties])[~self._non_empty]
-            truesegs = concatenate([truesegs, empty_segs])
+            truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
+            len_diff = self.lengths[self._non_empty] - truelens
+
+            x = 0  # tracking which non-empty segment length we need 
+            truesegs = zeros(self.size, dtype=akint64)
+            for i in range(1, self.size):
+                truesegs[i] = (self.segments[i] - len_diff[:x+1].sum())
+                if self._non_empty[i]:
+                    x += 1
+
         norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
             truehopinds = arange(self.valsize)[~isrepeat]
