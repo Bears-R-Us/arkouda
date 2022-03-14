@@ -3,7 +3,7 @@ use UnitTest;
 use TestBase;
 
 proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
   extern proc c_writeColumnToParquet(filename, chpl_arr, colnum,
                                      dsetname, numelems, rowGroupSize, compressed,
                                      dtype, errMsg): int;
@@ -26,7 +26,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 
   var b: [0..#size] int;
 
-  if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, 10000, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName(filename, c_ptrTo(b), dsetname, size, 0, 10000, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -41,7 +41,7 @@ proc testReadWrite(filename: c_string, dsetname: c_string, size: int) {
 }
 
 proc testInt32Read() {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize, errMsg): int;
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
   extern proc c_free_string(a);
   extern proc strlen(a): int;
   var errMsg: c_ptr(uint(8));
@@ -54,7 +54,7 @@ proc testInt32Read() {
   for i in 0..#50 do expected[i] = i;
   
   if(c_readColumnByName("resources/int32.parquet".c_str(), c_ptrTo(a),
-                        "array".c_str(), 50, 1, c_ptrTo(errMsg)) < 0) {
+                        "array".c_str(), 50, 0, 1, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
@@ -162,8 +162,8 @@ proc testGetDsets(filename) {
 }
 
 proc testReadStrings(filename, dsetname) {
-  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, batchSize,  errMsg): int;
-  extern proc c_getStringColumnNumBytes(filename, colname, offsets, errMsg): int;
+  extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
+  extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
   extern proc c_getNumRows(chpl_str, err): int;
 
   extern proc c_free_string(a);
@@ -176,7 +176,8 @@ proc testReadStrings(filename, dsetname) {
   var size = c_getNumRows(filename, c_ptrTo(errMsg));
   var offsets: [0..#size] int;
   
-  var byteSize = c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(offsets[0]), c_ptrTo(errMsg));
+  c_getStringColumnNumBytes(filename, dsetname, c_ptrTo(offsets[0]), size, 0, c_ptrTo(errMsg));
+  var byteSize  = + reduce offsets;
   if byteSize < 0 {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
@@ -185,7 +186,7 @@ proc testReadStrings(filename, dsetname) {
 
   var a: [0..#byteSize] uint(8);
 
-  if(c_readColumnByName(filename, c_ptrTo(a), dsetname, 3, 1, c_ptrTo(errMsg)) < 0) {
+  if(c_readColumnByName(filename, c_ptrTo(a), dsetname, 3, 0, 1, c_ptrTo(errMsg)) < 0) {
     var chplMsg;
     try! chplMsg = createStringWithNewBuffer(errMsg, strlen(errMsg));
     writeln(chplMsg);
