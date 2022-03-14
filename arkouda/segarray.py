@@ -250,7 +250,9 @@ class SegArray:
         if isSupportedInt(i):
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
-            return self.values[start:end].to_ndarray()
+            # TODO - this should be returning pdarray. Will this require updates. Currently, most tests fail with this
+            # return self.values[start:end].to_ndarray()
+            return self.values[start:end]
         elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(i, slice):
             starts = self.segments[i]
             ends = starts + self.lengths[i]

@@ -459,3 +459,13 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[2].tolist(), [])
         self.assertListEqual(dedup[3].tolist(), list(set(b)))
         self.assertListEqual(dedup[4].tolist(), [])
+
+    def test_intersection(self):
+        a = [1, 2, 3, 4, 5]
+        b = [6, 7, 8]
+        c = [1, 2, 4]
+        d = [8]
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+
+        print(ak.SegArray.intersection(segarr, segarr_2))
