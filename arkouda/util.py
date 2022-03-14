@@ -16,7 +16,6 @@ from arkouda.client import get_config, get_mem_used
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
 from arkouda.categorical import Categorical
-from arkouda.dataframe import DataFrame
 
 identity = lambda x: x
 
@@ -93,6 +92,7 @@ def register(a, name):
 
 
 def register_all(data, prefix, overwrite=True):
+    from arkouda.dataframe import DataFrame
     def sanitize(k):
         return str(k).replace(' ', '_')
     if overwrite:
