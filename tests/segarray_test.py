@@ -75,7 +75,6 @@ class SegArrayTest(ArkoudaTest):
         concated = ak.SegArray.concat([segarr, empty_segs])
         self.assertEqual(concated.__str__(), f'SegArray([\n{a}\n{b}\n{b}\n[]\n{c}\n])'.replace(',', ''))
 
-        # TODO - figure out how to concat to empty
         flat = ak.array(a)
         segs = ak.array([0, len(a)])
         segarr = ak.SegArray(segs, flat)
@@ -449,5 +448,3 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[1].tolist(), [])
         self.assertListEqual(dedup[2].tolist(), list(set(b)))
         self.assertListEqual(dedup[3].tolist(), [])
-
-        # TODO - how to configure so that this will not remove empty segments
