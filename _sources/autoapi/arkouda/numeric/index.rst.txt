@@ -61,14 +61,14 @@ Functions
       
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
    :param pda: The array of values to cast
    :type pda: pdarray or Strings
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype or str
+   :param dt: The target dtype to cast values to
+   :type dt: np.dtype, type, or str
    :param errors: Controls how errors are handled when casting strings to a numeric type
                   (ignored for casts from numeric types).
                       - strict: raise RuntimeError if *any* string cannot be converted
