@@ -7396,6 +7396,10 @@ Attributes
    .. py:method:: _ipython_key_completions_(self)
 
 
+   .. py:method:: from_pandas(cls, pd_df)
+      :classmethod:
+
+
    .. py:method:: _drop_column(self, keys)
 
       Drop a column or columns from the dataframe, in-place.
