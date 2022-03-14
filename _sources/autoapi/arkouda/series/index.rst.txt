@@ -1,0 +1,189 @@
+:py:mod:`arkouda.series`
+========================
+
+.. py:module:: arkouda.series
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.series.Series
+
+
+
+
+.. py:class:: Series(ar_tuple=None, data=None, index=None)
+
+   One-dimensional arkouda array with axis labels.
+
+   :param ar_tuple: second being the value. The grouping key(s) will be the index of the series.
+   :type ar_tuple: 2-tuple of arkouda arrays with the first being the grouping key(s) and the
+
+   .. py:method:: __len__(self)
+
+
+   .. py:method:: __repr__(self)
+
+      Return ascii-formatted version of the series.
+
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: locate(self, key)
+
+      Lookup values by index label
+
+      The input can be a scalar, a list of scalers, or a list of lists (if the series has a MultiIndex).
+      As a special case, if a Series is used as the key, the series labels are preserved with its values
+      use as the key.
+
+      Keys will be turned into arkouda arrays as needed.
+
+      :rtype: A Series containing the values corresponding to the key.
+
+
+   .. py:method:: _make_binop(cls, operator)
+      :classmethod:
+
+
+   .. py:method:: _make_unaryop(cls, operator)
+      :classmethod:
+
+
+   .. py:method:: _make_aggop(cls, name)
+      :classmethod:
+
+
+   .. py:method:: add(self, b)
+
+
+   .. py:method:: topn(self, n=10)
+
+      Return the top values of the series
+
+      :param n:
+      :type n: Number of values to return
+
+      :rtype: A new Series with the top values
+
+
+   .. py:method:: sort_index(self, ascending=True)
+
+      Sort the series by its index
+
+      :rtype: A new Series sorted.
+
+
+   .. py:method:: sort_values(self, ascending=True)
+
+      Sort the series numerically
+
+      :rtype: A new Series sorted smallest to largest
+
+
+   .. py:method:: tail(self, n=10)
+
+      Return the last n values of the series
+
+
+   .. py:method:: head(self, n=10)
+
+      Return the first n values of the series
+
+
+   .. py:method:: to_pandas(self)
+
+      Convert the series to a local PANDAS series
+
+
+   .. py:method:: value_counts(self, sort=True)
+
+      Return a Series containing counts of unique values.
+
+      The resulting object will be in descending order so that the
+      first element is the most frequently-occurring element.
+
+      :param sort:
+      :type sort: Boolean. Whether or not to sort the results.  Default is true.
+
+
+   .. py:method:: register(self, label)
+
+      Register the series with arkouda
+
+      :param label:
+      :type label: Arkouda name used for the series
+
+      :rtype: Numer of keys
+
+
+   .. py:method:: attach(label, nkeys=1)
+      :staticmethod:
+
+      Retrieve a series registered with arkouda
+
+      :param label:
+      :type label: name used to register the series
+      :param nkeys:
+      :type nkeys: number of keys, if a multi-index was registerd
+
+
+   .. py:method:: _all_aligned(array)
+      :staticmethod:
+
+      Is an array of Series indexed aligned?
+
+
+   .. py:method:: concat(arrays, axis=0, index_labels=None, value_labels=None)
+      :staticmethod:
+
+      Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or vertically.
+
+      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping is a 2-tuple
+      with the first item being the key(s) and the second being the value.
+
+      If horizontal, each series or grouping must have the same length and the same index. The index of the series is
+      converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.
+
+      :param arrays:
+      :type arrays: The list of series/groupings to concat.
+      :param axis:
+      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+      :param index_labels:
+      :type index_labels: column names(s) to label the index.
+      :param value_labels:
+      :type value_labels: column names to label values of each series.
+
+      :returns: * **axis=0** (*an arkouda series.*)
+                * **axis=1** (*an arkouda dataframe.*)
+
+
+   .. py:method:: pdconcat(arrays, axis=0, labels=None)
+      :staticmethod:
+
+      Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
+
+      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping is a 2-tuple
+      with the first item being the key(s) and the second being the value.
+
+      If horizontal, each series or grouping must have the same length and the same index. The index of the series is
+      converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.
+
+      :param arrays:
+      :type arrays: The list of series/groupings to concat.
+      :param axis:
+      :type axis: Whether or not to do a verticle (axis=0) or horizontal (axis=1) concatenation
+      :param labels:
+      :type labels: names to give the columns of the data frame.
+
+      :returns: * **axis=0** (*a local PANDAS series*)
+                * **axis=1** (*a local PANDAS dataframe*)
+
+
+

@@ -1,0 +1,127 @@
+:py:mod:`arkouda.index`
+=======================
+
+.. py:module:: arkouda.index
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.index.Index
+   arkouda.index.MultiIndex
+
+
+
+
+.. py:class:: Index(index)
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. py:method:: __len__(self)
+
+
+   .. py:method:: __eq__(self, v)
+
+      Return self==value.
+
+
+   .. py:method:: factory(index)
+      :staticmethod:
+
+
+   .. py:method:: to_pandas(self)
+
+
+   .. py:method:: set_dtype(self, dtype)
+
+      Change the data type of the index
+
+      Currently only aku.ip_address and ak.array are supported.
+
+
+   .. py:method:: register(self, label)
+
+
+   .. py:method:: to_dict(self, label)
+
+
+   .. py:method:: _check_types(self, other)
+
+
+   .. py:method:: _merge(self, other)
+
+
+   .. py:method:: _merge_all(self, array)
+
+
+   .. py:method:: _check_aligned(self, other)
+
+
+   .. py:method:: argsort(self, ascending=True)
+
+
+   .. py:method:: concat(self, other)
+
+
+   .. py:method:: lookup(self, key)
+
+
+
+.. py:class:: MultiIndex(index)
+
+   Bases: :py:obj:`Index`
+
+   .. py:method:: __getitem__(self, key)
+
+
+   .. py:method:: __len__(self)
+
+
+   .. py:method:: __eq__(self, v)
+
+      Return self==value.
+
+
+   .. py:method:: to_pandas(self)
+
+
+   .. py:method:: set_dtype(self, dtype)
+
+      Change the data type of the index
+
+      Currently only aku.ip_address and ak.array are supported.
+
+
+   .. py:method:: register(self, label)
+
+
+   .. py:method:: to_dict(self, labels)
+
+
+   .. py:method:: _merge(self, other)
+
+
+   .. py:method:: _merge_all(self, array)
+
+
+   .. py:method:: argsort(self, ascending=True)
+
+
+   .. py:method:: concat(self, other)
+
+
+   .. py:method:: lookup(self, key)
+
+
+
