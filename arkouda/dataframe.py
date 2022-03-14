@@ -10,7 +10,7 @@ from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import arange, array
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all
 from arkouda.dtypes import int64 as akint64
@@ -20,6 +20,7 @@ from arkouda.numeric import where
 from arkouda.client import maxTransferBytes
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
+from arkouda.series import Series
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -38,6 +39,46 @@ def groupby_operators(cls):
     for name in ['all', 'any', 'argmax', 'argmin', 'max', 'mean', 'min', 'nunique', 'prod', 'sum', 'OR', 'AND', 'XOR']:
         setattr(cls, name, cls._make_aggop(name))
     return cls
+
+
+@groupby_operators
+class GroupBy:
+    """A DataFrame that has been grouped by a subset of columns"""
+
+    def __init__(self, gb, df):
+        self.gb = gb
+        self.df = df
+        for attr in ['nkeys', 'size', 'permutation', 'unique_keys', 'segments']:
+            setattr(self, attr, getattr(gb, attr))
+
+    @classmethod
+    def _make_aggop(cls, opname):
+        def aggop(self, colname):
+            return Series(self.gb.aggregate(self.df.data[colname], opname))
+
+        return aggop
+
+    def count(self):
+        return Series(self.gb.count())
+
+    def broadcast(self, x, permute=True):
+        """Fill each group’s segment with a constant value.
+
+        Parameters
+        ----------
+
+        x :  Either a Series or a pdarray
+
+        Returns
+        -------
+        A aku.Series with the Index of the original frame and the values of the broadcast.
+        """
+
+        if isinstance(x, Series):
+            data = self.gb.broadcast(x.values, permute=permute)
+        else:
+            data = self.gb.broadcast(x, permute=permute)
+        return Series(data=data, index=self.df['index'])
 
 
 """
@@ -511,14 +552,14 @@ class DataFrame(UserDict):
         if len(subset) == 1:
             if not subset[0] in self.data:
                 raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
-            _ = GroupBy(self.data[subset[0]])
+            _ = akGroupBy(self.data[subset[0]])
 
         else:
             for col in subset:
                 if col not in self.data:
                     raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
 
-            _ = GroupBy([self.data[col] for col in subset])
+            _ = akGroupBy([self.data[col] for col in subset])
 
         if keep == 'last':
             _segment_ends = concatenate([_.segments[1:] - 1, array([_.permutation.size - 1])])
@@ -871,12 +912,9 @@ class DataFrame(UserDict):
             cols = self.data[keys[0]]
         else:
             cols = [self.data[col] for col in keys]
-        gb = GroupBy(cols)
+        gb = akGroupBy(cols)
         if use_series:
-            # TODO - remove the error and implement once series is configured
-            #	gb = GroupBy(gb, self)
-            raise NotImplementedError("akutil GroupBy functionality using series has not yet been implemented in "
-                                      "Arkouda. For updates, please visit https://github.com/Bears-R-Us/arkouda/issues/1128")
+            gb = GroupBy(gb, self)
         return gb
 
     def memory_usage(self, unit='GB'):
@@ -1316,7 +1354,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([hash_a01, hash_b01])
 
             # Group by the unique hashes
-            gb = GroupBy([hash0, hash1])
+            gb = akGroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
@@ -1339,8 +1377,8 @@ def intersect(a, b, positions=True, unique=False):
 
         # a and b may have duplicate entries, so get the unique hash values
         else:
-            gba = GroupBy([hash_a00, hash_a01])
-            gbb = GroupBy([hash_b00, hash_b01])
+            gba = akGroupBy([hash_a00, hash_a01])
+            gbb = akGroupBy([hash_b00, hash_b01])
 
             # Take the unique keys as the hash we'll work with
             a0, a1 = gba.unique_keys
@@ -1349,7 +1387,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([a1, b1])
 
             # Group by the unique hashes
-            gb = GroupBy([hash0, hash1])
+            gb = akGroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order

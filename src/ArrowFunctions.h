@@ -22,7 +22,6 @@ extern "C" {
 #define ARROWDOUBLE 7
 #define ARROWTIMESTAMP ARROWINT64
 #define ARROWSTRING 6
-#define ARROWUNDEFINED -1
 #define ARROWERROR -1
 
   // Each C++ function contains the actual implementation of the

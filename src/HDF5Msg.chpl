@@ -179,12 +179,12 @@ module HDF5Msg {
         
         // First iteration to get the item count so we can ballpark the char* allocation
         var nfields:c_int = 0:c_int;
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
         
         // Allocate space for array of strings
         var c_field_names = c_calloc(c_char, 255 * nfields);
         idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
         var pos = c_strlen(c_field_names):int;
         var items = createStringWithNewBuffer(c_field_names, pos, pos+1);
         c_free(c_field_names);
