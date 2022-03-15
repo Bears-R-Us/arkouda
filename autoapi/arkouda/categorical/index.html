@@ -514,6 +514,14 @@ Strings.group() because it sorts dense integer values, rather than
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical._get_grouping_keys">
+<span class="sig-name descname"><span class="pre">_get_grouping_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.categorical.Categorical._get_grouping_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method for generating grouping keys used by GroupBy.</p>
+<p>API: this method must be defined by all groupable arrays, and it
+must return a list of arrays that can be (co)argsorted.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.argsort">
 <span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.categorical.Categorical.argsort" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>

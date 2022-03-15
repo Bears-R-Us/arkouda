@@ -733,6 +733,14 @@ Classes
           creating the pdarray encapsulating the return message
 
 
+   .. py:method:: _get_grouping_keys(self) -> List[arkouda.pdarrayclass.pdarray]
+
+      Private method for generating grouping keys used by GroupBy.
+
+      API: this method must be defined by all groupable arrays, and it
+      must return a list of arrays that can be (co)argsorted.
+
+
    .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the

@@ -1234,6 +1234,14 @@ until they are unregistered.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray._get_grouping_keys">
+<span class="sig-name descname"><span class="pre">_get_grouping_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray._get_grouping_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method for generating grouping keys used by GroupBy.</p>
+<p>API: this method must be defined by all groupable arrays, and it
+must return a list of arrays that can be (co)argsorted.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">

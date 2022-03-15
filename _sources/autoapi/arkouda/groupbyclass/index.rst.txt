@@ -44,7 +44,7 @@ Attributes
    for aggregating the within-group values of another array.
 
    :param keys: The array to group by value, or if list, the column arrays to group by row
-   :type keys: (list of) pdarray, int64, Strings, or Categorical
+   :type keys: (list of) pdarray, Strings, or Categorical
    :param assume_sorted: If True, assume keys is already sorted (Default: False)
    :type assume_sorted: bool
 
@@ -94,7 +94,17 @@ Attributes
 
    .. rubric:: Notes
 
-   Only accepts (list of) pdarrays of int64 dtype, Strings, or Categorical.
+   Integral pdarrays, Strings, and Categoricals are natively supported, but
+   float64 and bool arrays are not.
+
+   For a user-defined class to be groupable, it must inherit from pdarray
+   and define or overload the grouping API:
+     1) a ._get_grouping_keys() method that returns a list of pdarrays
+        that can be (co)argsorted.
+     2) (Optional) a .group() method that returns the permutation that
+        groups the array
+   If the input is a single array with a .group() method defined, method 2
+   will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
       

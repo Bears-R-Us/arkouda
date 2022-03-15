@@ -365,6 +365,14 @@ Classes
       128-bit hash values.
 
 
+   .. py:method:: _get_grouping_keys(self)
+
+      Private method for generating grouping keys used by GroupBy.
+
+      API: this method must be defined by all groupable arrays, and it
+      must return a list of arrays that can be (co)argsorted.
+
+
    .. py:method:: argsort(self)
 
 

@@ -844,6 +844,14 @@ Functions
       >>> b.unregister()
 
 
+   .. py:method:: _get_grouping_keys(self) -> List[pdarray]
+
+      Private method for generating grouping keys used by GroupBy.
+
+      API: this method must be defined by all groupable arrays, and it
+      must return a list of arrays that can be (co)argsorted.
+
+
 
 .. py:function:: clear() -> None
 
