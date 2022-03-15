@@ -1183,6 +1183,15 @@ class Strings:
         args = "{} {}".format(self.objtype, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
+    def _get_grouping_keys(self) -> List[pdarray]:
+        ''' 
+        Private method for generating grouping keys used by GroupBy.
+
+        API: this method must be defined by all groupable arrays, and it
+        must return a list of arrays that can be (co)argsorted.
+        '''
+        return list(self.hash())
+    
     def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
@@ -1559,3 +1568,4 @@ class Strings:
         register, unregister, attach, is_registered
         """
         unregister_pdarray_by_name(user_defined_name)
+        

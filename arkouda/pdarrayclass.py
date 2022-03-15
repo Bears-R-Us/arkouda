@@ -1298,6 +1298,18 @@ class pdarray:
         """
         return attach_pdarray(user_defined_name)
 
+    def _get_grouping_keys(self) -> List[pdarray]:
+        ''' 
+        Private method for generating grouping keys used by GroupBy.
+
+        API: this method must be defined by all groupable arrays, and it
+        must return a list of arrays that can be (co)argsorted.
+        '''
+        if self.dtype not in (int64, uint64):
+            raise TypeError("Grouping numeric data is only supported on integral types.")
+        # Integral pdarrays are their own grouping keys
+        return [self]
+
 #end pdarray class def
     
 # creates pdarray object

@@ -59,7 +59,7 @@ class GroupBy:
 
     Parameters
     ----------
-    keys : (list of) pdarray, int64, Strings, or Categorical
+    keys : (list of) pdarray, Strings, or Categorical
         The array to group by value, or if list, the column arrays to group by row
     assume_sorted : bool
         If True, assume keys is already sorted (Default: False)
@@ -88,7 +88,17 @@ class GroupBy:
 
     Notes
     -----
-    Only accepts (list of) pdarrays of int64 dtype, Strings, or Categorical.
+    Integral pdarrays, Strings, and Categoricals are natively supported, but
+    float64 and bool arrays are not. 
+
+    For a user-defined class to be groupable, it must inherit from pdarray
+    and define or overload the grouping API:
+      1) a ._get_grouping_keys() method that returns a list of pdarrays
+         that can be (co)argsorted.
+      2) (Optional) a .group() method that returns the permutation that 
+         groups the array
+    If the input is a single array with a .group() method defined, method 2
+    will be used; otherwise, method 1 will be used.
 
     """
     Reductions = GROUPBY_REDUCTION_TYPES
@@ -101,37 +111,42 @@ class GroupBy:
         self.hash_strings = hash_strings
         self.keys : groupable
 
-        if isinstance(keys, pdarray):
-            if keys.dtype != int64 and keys.dtype != uint64:
-                raise TypeError('GroupBy only supports pdarrays with a dtype int64 or uint64')
-            self.keys = cast(pdarray, keys)
+        if hasattr(keys, "group"):
+            # If an object wants to group itself (e.g. Categoricals),
+            # let it set the permutation
             self.nkeys = 1
             self.size = cast(int, keys.size)
-            if assume_sorted:
-                self.permutation = cast(pdarray, arange(self.size))
-            else:
-                self.permutation = cast(pdarray, argsort(keys))
-        elif hasattr(keys, "group"): # for Strings or Categorical
-            self.nkeys = 1
-            self.keys = cast(Union[Strings,Categorical],keys)
-            self.size = cast(int, self.keys.size) # type: ignore
-            if assume_sorted:
-                self.permutation = cast(pdarray,arange(self.size))
-            else:
-                self.permutation = cast(Union[Strings, Categorical],keys).group()
+            self.permutation = keys.group()
         else:
-            self.keys = cast(Sequence[groupable_element_type],keys)
-            self.nkeys = len(keys)
-            self.size = cast(int,keys[0].size) # type: ignore
-            for k in keys:
-                if k.size != self.size:
-                    raise ValueError("Key arrays must all be same size")
+            # Ask object(s) for grouping keys and sort them
+            if hasattr(keys, "_get_grouping_keys"):
+                # Single groupable array
+                self.nkeys = 1
+                self.size = cast(int, keys.size)
+                self._grouping_keys = keys._get_grouping_keys()
+            else:
+                # Sequence of groupable arrays
+                # Because of type checking, this is the only other possibility
+                self.keys = cast(Sequence[groupable_element_type], keys)
+                self.nkeys = len(keys)
+                self.size = cast(int, keys[0].size)
+                self._grouping_keys = []
+                for k in keys:
+                    if k.size != self.size:
+                        raise ValueError("Key arrays must all be same size")
+                    if not hasattr(k, "_get_grouping_keys"):
+                        # Type checks should ensure we never get here
+                        raise TypeError("{} does not support grouping".format(type(k)))
+                    self._grouping_keys.extend(k._get_grouping_keys())
+            # Get permutation
             if assume_sorted:
                 self.permutation = cast(pdarray, arange(self.size))
+            elif len(self._grouping_keys) == 1:
+                self.permutation = argsort(self._grouping_keys[0])
             else:
-                self.permutation = cast(pdarray, coargsort(cast(Sequence[pdarray],keys)))
-            
-        # self.permuted_keys = self.keys[self.permutation]
+                self.permutation = coargsort(self._grouping_keys)
+                
+        # Finally, get segment offsets and unique keys 
         self.find_segments()       
             
     def find_segments(self) -> None:
@@ -140,41 +155,17 @@ class GroupBy:
 
         if self.nkeys == 1:
             # for Categorical
+            # Most categoricals already store segments and unique keys
             if hasattr(self.keys, 'segments') and cast(Categorical, 
                                                        self.keys).segments is not None:
                 self.unique_keys = cast(Categorical, self.keys).categories
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 self.ngroups = self.unique_keys.size
                 return
-            else:
-                mykeys = [self.keys]            
-        else:
-            mykeys = cast(List[pdarray], self.keys) # type: ignore
-        keyobjs : List[groupable_element_type] = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
-        keynames = []
-        keytypes = []
-        effectiveKeys = self.nkeys
-        for k in mykeys:
-            if isinstance(k, Strings):
-                if self.hash_strings:
-                    h1, h2 = k.hash()
-                    keyobjs.extend([h1,h2])
-                    keynames.extend([h1.name, h2.name])
-                    keytypes.extend([h1.objtype, h2.objtype])
-                    effectiveKeys += 1
-                else:
-                    keyobjs.append(k)
-                    keynames.append(k.entry.name)
-                    keytypes.append(k.objtype)
-            # for Categorical
-            elif hasattr(k, 'codes'):
-                keyobjs.append(cast(Categorical, k))
-                keynames.append(cast(Categorical,k).codes.name)
-                keytypes.append(cast(Categorical,k).codes.objtype)
-            elif isinstance(k, pdarray):
-                keyobjs.append(k)
-                keynames.append(k.name)
-                keytypes.append(k.objtype)
+
+        keynames = [k.name for k in self._grouping_keys]
+        keytypes = [k.objtype for k in self._grouping_keys]
+        effectiveKeys = len(self._grouping_keys)
         args = "{} {:n} {} {}".format(self.permutation.name,
                                            effectiveKeys,
                                            ' '.join(keynames),
@@ -192,6 +183,8 @@ class GroupBy:
             self.unique_keys = cast(groupable, 
                                     [k[unique_key_indices] for k in self.keys])
             self.ngroups = self.unique_keys[0].size
+        # Free up memory, because _grouping_keys are not user-facing and no longer needed
+        del self._grouping_keys
 
 
     def count(self) -> Tuple[groupable,pdarray]:
