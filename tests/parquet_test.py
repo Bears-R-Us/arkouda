@@ -135,9 +135,9 @@ class ParquetTest(ArkoudaTest):
                     'bigint_col',
                     'float_col',
                     'double_col',
+                    'date_string_col',
+                    'string_col',
                     'timestamp_col']
-                    # 'date_string_col',
-                    # 'string_col']
         columns2 = ['c_customer_id',
                     'c_salutation',
                     'c_first_name',
@@ -152,4 +152,10 @@ class ParquetTest(ArkoudaTest):
             columns = ak.get_datasets(filename, is_parquet=True)
             self.assertListEqual(columns, ans)
             # Merely test that read succeeds, do not check output
-            data = ak.read_parquet(filename, datasets=columns)
+            if "delta_byte_array.parquet" not in filename:
+                data = ak.read_parquet(filename, datasets=columns)
+            else:
+                # Since delta encoding is not supported, the columns in
+                # this file should raise an error and not crash the server
+                with self.assertRaises(RuntimeError) as cm:
+                    data = ak.read_parquet(filename, datasets=columns)
