@@ -12,7 +12,7 @@ from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 
-__all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
+__all__ = ["array", "zeros", "ones", "full", "zeros_like", "ones_like", "full_like",
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series"
@@ -317,6 +317,59 @@ def ones(size : int_scalars, dtype=float64) -> pdarray:
     a.fill(1)
     return a
 
+
+def full(size: int_scalars, fill_value: int_scalars, dtype=float64) -> pdarray:
+    """
+    Create a pdarray filled with fill_value.
+
+    Parameters
+    ----------
+    size: int_scalars
+        Size of the array (only rank-1 arrays supported)
+    fill_value: int_scalars
+        Value with which the array will be filled
+    dtype: all_scalars
+        Resulting array type, default float64
+
+    Returns
+    -------
+    pdarray
+        array of the requested size and dtype filled with fill_value
+
+    Raises
+    ------
+    TypeError
+        Raised if the supplied dtype is not supported or if the size
+        parameter is neither an int nor a str that is parseable to an int.
+
+    See Also
+    --------
+    zeros, ones
+
+    Examples
+    --------
+    >>> ak.full(5, 7, dtype=ak.int64)
+    array([7, 7, 7, 7, 7])
+
+    >>> ak.full(5, 9, dtype=ak.float64)
+    array([9, 9, 9, 9, 9])
+
+    >>> ak.full(5, 5, dtype=ak.bool)
+    array([True, True, True, True, True])
+    """
+    if not np.isscalar(size):
+        raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
+    dtype = akdtype(dtype)  # normalize dtype
+    # check dtype for error
+    if cast(np.dtype, dtype).name not in NumericDTypes:
+        raise TypeError(f"unsupported dtype {dtype}")
+    repMsg = generic_msg(cmd="create", args="{} {}".format(
+        cast(np.dtype, dtype).name, size))
+    a = create_pdarray(repMsg)
+    a.fill(fill_value)
+    return a
+
+
 @typechecked
 def zeros_like(pda : pdarray) -> pdarray:
     """
@@ -403,6 +456,55 @@ def ones_like(pda : pdarray) -> pdarray:
     array([True, True, True, True, True])
     """
     return ones(pda.size, pda.dtype)
+
+
+@typechecked
+def full_like(pda: pdarray, fill_value: int_scalars) -> pdarray:
+    """
+    Create a pdarray filled with fill_value of the same size and dtype as an existing
+    pdarray.
+
+    Parameters
+    ----------
+    pda: pdarray
+        Array to use for size and dtype
+    fill_value: int_scalars
+        Value with which the array will be filled
+
+    Returns
+    -------
+    pdarray
+        Equivalent to ak.full(pda.size, fill_value, pda.dtype)
+
+    Raises
+    ------
+    TypeError
+        Raised if the pda parameter is not a pdarray.
+
+    See Also
+    --------
+    ones_like, zeros_like
+
+    Notes
+    -----
+    Logic for generating the pdarray is delegated to the ak.full method.
+    Accordingly, the supported dtypes match are defined by the ak.full method.
+
+    Examples
+    --------
+    >>> full = ak.full(5, 7, dtype=ak.int64)
+    >>> ak.full_like(full)
+    array([7, 7, 7, 7, 7])
+
+    >>> full = ak.full(5, 9, dtype=ak.float64)
+    >>> ak.full_like(full)
+    array([9, 9, 9, 9, 9])
+
+    >>> full = ak.full(5, 5, dtype=ak.bool)
+    >>> ak.full_like(full)
+    array([True, True, True, True, True])
+    """
+    return full(pda.size, fill_value, pda.dtype)
 
 
 def arange(*args, **kwargs) -> pdarray:

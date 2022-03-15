@@ -1,6 +1,6 @@
 module SegmentedArray {
   use AryUtil;
-  use CPtr;
+  use CTypes;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use CommAggregation;

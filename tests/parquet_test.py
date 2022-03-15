@@ -120,3 +120,36 @@ class ParquetTest(ArkoudaTest):
 
         for f in glob.glob('pq_test*'):
             os.remove(f)
+
+    @pytest.mark.optional_parquet
+    def test_against_standard_files(self):
+        datadir = 'resources/parquet-testing'
+        filenames = ['alltypes_plain.parquet',
+                     'alltypes_plain.snappy.parquet',
+                     'delta_byte_array.parquet']
+        columns1 = ['id',
+                    'bool_col',
+                    'tinyint_col',
+                    'smallint_col',
+                    'int_col',
+                    'bigint_col',
+                    'float_col',
+                    'double_col',
+                    'timestamp_col']
+                    # 'date_string_col',
+                    # 'string_col']
+        columns2 = ['c_customer_id',
+                    'c_salutation',
+                    'c_first_name',
+                    'c_last_name',
+                    'c_preferred_cust_flag',
+                    'c_birth_country',
+                    'c_login',
+                    'c_email_address',
+                    'c_last_review_date']
+        for basename, ans in zip(filenames, (columns1, columns1, columns2)):
+            filename = os.path.join(datadir, basename)
+            columns = ak.get_datasets(filename, is_parquet=True)
+            self.assertListEqual(columns, ans)
+            # Merely test that read succeeds, do not check output
+            data = ak.read_parquet(filename, datasets=columns)

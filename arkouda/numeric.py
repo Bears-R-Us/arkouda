@@ -21,8 +21,9 @@ class ErrorMode(Enum):
     ignore = 'ignore'
     return_validity = 'return_validity'
 
+
 @typechecked
-def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str], errors:ErrorMode=ErrorMode.strict) -> Union[Union[pdarray, Strings],Tuple[pdarray, pdarray]]:
+def cast(pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[pdarray, Strings], Tuple[pdarray, pdarray]]:
     """
     Cast an array to another dtype.
 
@@ -30,7 +31,7 @@ def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str], errors:ErrorMod
     ----------
     pda : pdarray or Strings
         The array of values to cast
-    dtype : np.dtype or str
+    dt : np.dtype, type, or str
         The target dtype to cast values to
     errors : {strict, ignore, return_validity}
         Controls how errors are handled when casting strings to a numeric type

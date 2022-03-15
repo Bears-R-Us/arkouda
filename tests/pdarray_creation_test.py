@@ -269,9 +269,64 @@ class PdarrayCreationTest(ArkoudaTest):
         boolOnes = ak.ones(5, dtype=ak.bool)
         boolOnesLike = ak.ones_like(boolOnes)
         
-        self.assertEqual(ak.bool,boolOnesLike.dtype)        
-        
-    def test_eros_like(self):      
+        self.assertEqual(ak.bool,boolOnesLike.dtype)
+
+    def test_full(self):
+        int_full = ak.full(5, 5, dtype=int)
+        self.assertIsInstance(int_full, ak.pdarray)
+        self.assertEqual(int, int_full.dtype)
+        self.assertEqual(int_full[0], 5)
+
+        int_full = ak.full(5, 5, dtype=ak.int64)
+        self.assertEqual(ak.int64, int_full.dtype)
+
+        uint_full = ak.full(5, 7, dtype=ak.uint64)
+        self.assertIsInstance(uint_full, ak.pdarray)
+        self.assertEqual(ak.uint64, uint_full.dtype)
+        self.assertEqual(uint_full[0], 7)
+
+        float_full = ak.full(5, 0, dtype=float)
+        self.assertEqual(float, float_full.dtype)
+        self.assertEqual(float_full[0], 0)
+
+        float_full = ak.full(5, 0, dtype=ak.float64)
+        self.assertEqual(ak.float64, float_full.dtype)
+
+        bool_full = ak.full(5, -1, dtype=bool)
+        self.assertEqual(bool, bool_full.dtype)
+        self.assertEqual(bool_full[0], True)
+
+        bool_full = ak.full(5, False, dtype=ak.bool)
+        self.assertEqual(ak.bool, bool_full.dtype)
+        self.assertEqual(bool_full[0], False)
+
+        string_len_full = ak.full('5', 5)
+        self.assertEqual(5, len(string_len_full))
+
+        with self.assertRaises(TypeError) as cm:
+            ak.full(5, 1, dtype=ak.uint8)
+
+        with self.assertRaises(TypeError) as cm:
+            ak.full(5, 8, dtype=str)
+
+    def test_full_like(self):
+        int_full = ak.full(5, 6, dtype=ak.int64)
+        int_full_like = ak.full_like(int_full, 6)
+        self.assertIsInstance(int_full_like, ak.pdarray)
+        self.assertEqual(ak.int64, int_full_like.dtype)
+        self.assertEqual(int_full_like[0], 6)
+
+        float_full = ak.full(5, 4, dtype=ak.float64)
+        float_full_like = ak.full_like(float_full, 4)
+        self.assertEqual(ak.float64, float_full_like.dtype)
+        self.assertEqual(float_full_like[0], 4)
+
+        bool_full = ak.full(5, True, dtype=ak.bool)
+        bool_full_like = ak.full_like(bool_full, True)
+        self.assertEqual(ak.bool, bool_full_like.dtype)
+        self.assertEqual(bool_full_like[0], True)
+
+    def test_zeros_like(self):
         intZeros = ak.zeros(5, dtype=ak.int64)
         intZerosLike = ak.zeros_like(intZeros)
 

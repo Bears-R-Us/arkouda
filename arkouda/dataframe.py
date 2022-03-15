@@ -10,7 +10,7 @@ from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import arange, array
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all
 from arkouda.dtypes import int64 as akint64
@@ -20,6 +20,7 @@ from arkouda.numeric import where
 from arkouda.client import maxTransferBytes
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
+from arkouda.series import Series
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -38,6 +39,46 @@ def groupby_operators(cls):
     for name in ['all', 'any', 'argmax', 'argmin', 'max', 'mean', 'min', 'nunique', 'prod', 'sum', 'OR', 'AND', 'XOR']:
         setattr(cls, name, cls._make_aggop(name))
     return cls
+
+
+@groupby_operators
+class GroupBy:
+    """A DataFrame that has been grouped by a subset of columns"""
+
+    def __init__(self, gb, df):
+        self.gb = gb
+        self.df = df
+        for attr in ['nkeys', 'size', 'permutation', 'unique_keys', 'segments']:
+            setattr(self, attr, getattr(gb, attr))
+
+    @classmethod
+    def _make_aggop(cls, opname):
+        def aggop(self, colname):
+            return Series(self.gb.aggregate(self.df.data[colname], opname))
+
+        return aggop
+
+    def count(self):
+        return Series(self.gb.count())
+
+    def broadcast(self, x, permute=True):
+        """Fill each group’s segment with a constant value.
+
+        Parameters
+        ----------
+
+        x :  Either a Series or a pdarray
+
+        Returns
+        -------
+        A aku.Series with the Index of the original frame and the values of the broadcast.
+        """
+
+        if isinstance(x, Series):
+            data = self.gb.broadcast(x.values, permute=permute)
+        else:
+            data = self.gb.broadcast(x, permute=permute)
+        return Series(data=data, index=self.df['index'])
 
 
 """
@@ -107,6 +148,24 @@ class DataFrame(UserDict):
             self.data = initialdata.data
             self.update_size()
             return
+        elif isinstance(initialdata, pd.DataFrame):
+            # copy pd.DataFrame data into the ak.DataFrame object
+            self._size = initialdata.size
+            self._bytes = 0
+            self._empty = initialdata.empty
+            # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
+            self._columns = ['index'] + initialdata.columns.tolist()
+            # Add index values as data
+            self.data = {'index': array(initialdata.index.values.tolist())}
+
+            # convert the lists defining each column into a pdarray
+            # pd.DataFrame.values is stored as rows, we need lists to be columns
+            for key, val in initialdata.to_dict('list').items():
+                self.data[key] = array(val)
+
+            self.data.update()
+            return
+
 
         # Some metadata about this dataframe.
         self._size = 0
@@ -383,24 +442,82 @@ class DataFrame(UserDict):
     def _ipython_key_completions_(self):
         return self._columns
 
-    def drop(self, keys):
+    @classmethod
+    def from_pandas(cls, pd_df):
+        return DataFrame(initialdata=pd_df)
+
+    def _drop_column(self, keys):
         """
         Drop a column or columns from the dataframe, in-place.
 
-        Parameters
-        ----------
-        keys : str or list
-            The column(s) to be dropped.
+        keys : list
+            The labels to be dropped on the given axis
         """
-
-        if isinstance(keys, str):
-            keys = [keys]
         for key in keys:
             # Do not allow the user to drop the index column
             if key == 'index':
                 raise KeyError('The index column may be reset, but not dropped.')
 
             del self[key]
+
+    def _drop_row(self, keys):
+        """
+        Drop a row or rows from the dataframe, in-place.
+
+        keys : list
+            The indexes to be dropped on the given axis
+        """
+        idx_list = []
+        last_idx = -1
+        # sort to ensure we go in ascending order.
+        keys.sort()
+        for k in keys:
+            if not isinstance(k, int):
+                raise TypeError("Index keys must be integers.")
+            idx_list.append(self.index[(last_idx+1):k])
+            last_idx = k
+
+        idx_list.append(self.index[(last_idx+1):])
+
+        idx_to_keep = concatenate(idx_list)
+        for key in self.keys():
+            # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
+            # This avoids the size checks we would do when only setting a single column
+            UserDict.__setitem__(self, key, self[key][idx_to_keep])
+
+    def drop(self, keys, axis=0):
+        """
+        Drop column/s or row/s from the dataframe, in-place.
+
+        Parameters
+        ----------
+        keys : str, int or list
+            The labels to be dropped on the given axis
+        axis : int or str
+            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
+
+        Examples
+        ----------
+        Drop column
+        >>> df.drop('col_name', axis=1)
+
+        Drop Row
+        >>> df.drop(1)
+        or
+        >>> df.drop(1, axis=0)
+        """
+
+        if isinstance(keys, str) or isinstance(keys, int):
+            keys = [keys]
+
+        if axis == 0 or axis == 'index':
+            #drop a row
+            self._drop_row(keys)
+        elif axis == 1 or axis == 'columns':
+            #drop column
+            self._drop_column(keys)
+        else:
+            raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
         if len(self._columns) == 1:
@@ -435,14 +552,14 @@ class DataFrame(UserDict):
         if len(subset) == 1:
             if not subset[0] in self.data:
                 raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
-            _ = GroupBy(self.data[subset[0]])
+            _ = akGroupBy(self.data[subset[0]])
 
         else:
             for col in subset:
-                if not col in self.data:
+                if col not in self.data:
                     raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
 
-            _ = GroupBy([self.data[col] for col in subset])
+            _ = akGroupBy([self.data[col] for col in subset])
 
         if keep == 'last':
             _segment_ends = concatenate([_.segments[1:] - 1, array([_.permutation.size - 1])])
@@ -457,7 +574,7 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
-        if self._size == None:
+        if self._size is None:
             return 0
         return self._size
 
@@ -795,12 +912,9 @@ class DataFrame(UserDict):
             cols = self.data[keys[0]]
         else:
             cols = [self.data[col] for col in keys]
-        gb = GroupBy(cols)
+        gb = akGroupBy(cols)
         if use_series:
-            # TODO - remove the error and implement once series is configured
-            #	gb = GroupBy(gb, self)
-            raise NotImplementedError("akutil GroupBy functionality using series has not yet been implemented in "
-                                      "Arkouda. For updates, please visit https://github.com/Bears-R-Us/arkouda/issues/1128")
+            gb = GroupBy(gb, self)
         return gb
 
     def memory_usage(self, unit='GB'):
@@ -1240,7 +1354,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([hash_a01, hash_b01])
 
             # Group by the unique hashes
-            gb = GroupBy([hash0, hash1])
+            gb = akGroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
@@ -1263,8 +1377,8 @@ def intersect(a, b, positions=True, unique=False):
 
         # a and b may have duplicate entries, so get the unique hash values
         else:
-            gba = GroupBy([hash_a00, hash_a01])
-            gbb = GroupBy([hash_b00, hash_b01])
+            gba = akGroupBy([hash_a00, hash_a01])
+            gbb = akGroupBy([hash_b00, hash_b01])
 
             # Take the unique keys as the hash we'll work with
             a0, a1 = gba.unique_keys
@@ -1273,7 +1387,7 @@ def intersect(a, b, positions=True, unique=False):
             hash1 = concatenate([a1, b1])
 
             # Group by the unique hashes
-            gb = GroupBy([hash0, hash1])
+            gb = akGroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order

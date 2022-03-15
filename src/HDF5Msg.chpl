@@ -1,5 +1,5 @@
 module HDF5Msg {
-    use CPtr;
+    use CTypes;
     use FileSystem;
     use HDF5;
     use IO;
@@ -8,7 +8,6 @@ module HDF5Msg {
     use PrivateDist;
     use Reflection;
     use Set;
-    use SysCTypes;
     use Time only;
 
     use CommAggregation;
@@ -130,7 +129,7 @@ module HDF5Msg {
     }
 
     private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
-    private extern proc c_strlen(s:c_ptr(c_char)):size_t;
+    private extern proc c_strlen(s:c_ptr(c_char)):c_size_t;
     private extern proc c_incrementCounter(data:c_void_ptr);
     private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
 
@@ -180,12 +179,12 @@ module HDF5Msg {
         
         // First iteration to get the item count so we can ballpark the char* allocation
         var nfields:c_int = 0:c_int;
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
         
         // Allocate space for array of strings
         var c_field_names = c_calloc(c_char, 255 * nfields);
         idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
-        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_ITER_NATIVE, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
         var pos = c_strlen(c_field_names):int;
         var items = createStringWithNewBuffer(c_field_names, pos, pos+1);
         c_free(c_field_names);
@@ -480,7 +479,7 @@ module HDF5Msg {
      *  as well as the total length of the array. 
      */
     proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
-        use SysCTypes;
+        use CTypes;
 
         var lengths: [FD] int;
         var skips = new set(string); // Case where there is no data in the file for this dsetName

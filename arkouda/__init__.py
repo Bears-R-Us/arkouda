@@ -21,4 +21,6 @@ from arkouda.infoclass import *
 from arkouda.segarray import *
 from arkouda.dataframe import *
 from arkouda.row import *
+from arkouda.index import *
+from arkouda.series import *
 

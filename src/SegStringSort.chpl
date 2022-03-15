@@ -3,7 +3,7 @@ module SegStringSort {
   use Sort;
   use Time;
   use IO;
-  use CPtr;
+  use CTypes;
   use CommAggregation;
   use PrivateDist;
   use Reflection;

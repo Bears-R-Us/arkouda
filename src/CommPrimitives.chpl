@@ -1,5 +1,5 @@
 module CommPrimitives {
-  use CPtr;
+  use CTypes;
 
   inline proc getAddr(const ref p): c_ptr(p.type) {
     // TODO can this use c_ptrTo?
