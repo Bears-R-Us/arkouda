@@ -190,7 +190,7 @@ module ArgSortMsg
       return newIV;
     }
 
-    proc validateArraysSameLength(n:int, fields:[] string): (int, bool) throws {
+    proc validateArraysSameLength(n:int, fields:[] string, st: borrowed SymTab): (int, bool) throws {
       // Check that fields contains the stated number of arrays
       if (fields.size != 2*n) { 
           var errorMsg = "Expected %i arrays but got %i".format(n, fields.size/2 - 1);
@@ -293,7 +293,7 @@ module ArgSortMsg
       var fields = rest.split();
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                   "number of arrays: %i fields: %t".format(n,fields));
-      var (size, hasStr) = validateArraysSameLength(n, fields);
+      var (size, hasStr) = validateArraysSameLength(n, fields, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead

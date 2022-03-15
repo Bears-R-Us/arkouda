@@ -313,7 +313,7 @@ module UniqueMsg
                                          getModuleName(),
                                          "ArgumentError");
       }
-      var (size, hasStr) = validateArraysSameLength(n, fields);
+      var (size, hasStr) = validateArraysSameLength(n, fields, st);
       overMemLimit(numBytes(uint) * g.size * 2);
       var dom = makeDistDom(size);
       var hashes: [dom] 2*uint(64);
