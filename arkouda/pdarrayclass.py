@@ -464,7 +464,7 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and (resolve_scalar_dtype(key) == 'int64' or 'uint64'):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -483,7 +483,7 @@ class pdarray:
             return create_pdarray(repMsg);
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int"):
+            if kind not in ("bool", "int", "uint"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
@@ -493,7 +493,7 @@ class pdarray:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
     def __setitem__(self, key, value):
-        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and (resolve_scalar_dtype(key) == 'int64' or 'uint64'):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array

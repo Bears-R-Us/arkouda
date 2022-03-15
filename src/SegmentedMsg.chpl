@@ -703,6 +703,13 @@ module SegmentedMsg {
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
                     }
+                    when DType.UInt64 {
+                        var iv = toSymEntry(gIV, uint);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newStringsObj = getSegString(newSegs, newVals, st);
+                        newStringsName = newStringsObj.name;
+                        nBytes = newStringsObj.nBytes;
+                    } 
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
                         var (newSegs, newVals) = strings[iv.a];

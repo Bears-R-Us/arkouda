@@ -135,18 +135,18 @@ module SegmentedArray {
     }
 
     /* Retrieve one string from the array */
-    proc this(idx: int): string throws {
+    proc this(idx: ?t): string throws where t == int || t == uint {
       if (idx < offsets.aD.low) || (idx > offsets.aD.high) {
         throw new owned OutOfBoundsError();
       }
       // Start index of the string
-      var start = offsets.a[idx];
+      var start = offsets.a[idx:int];
       // Index of last (null) byte in string
       var end: int;
       if (idx == size - 1) {
         end = nBytes - 1;
       } else {
-        end = offsets.a[idx+1] - 1;
+        end = offsets.a[idx:int+1] - 1;
       }
       // Take the slice of the bytearray and "cast" it to a chpl string
       var s = interpretAsString(values.a, start..end);
@@ -197,7 +197,7 @@ module SegmentedArray {
 
     /* Gather strings by index. Returns arrays for the segment offsets
        and bytes of the gathered strings.*/
-    proc this(iv: [?D] int) throws {
+    proc this(iv: [?D] ?t) throws where t == int || t == uint {
       use ChplConfig;
       
       // Early return for zero-length result
@@ -225,9 +225,9 @@ module SegmentedArray {
         if (idx == high) {
           agg.copy(r, values.size);
         } else {
-          agg.copy(r, oa[idx+1]);
+          agg.copy(r, oa[idx:int+1]);
         }
-        agg.copy(l, oa[idx]);
+        agg.copy(l, oa[idx:int]);
       }
       // Lengths of segments including null bytes
       var gatheredLengths: [D] int = right - left;
@@ -282,7 +282,7 @@ module SegmentedArray {
         // Copy string data to gathered result
         forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
           for pos in 0..#gl {
-            gatheredVals[go+pos] = va[oa[idx]+pos];
+            gatheredVals[go+pos] = va[oa[idx:int]+pos];
           }
         }
       }

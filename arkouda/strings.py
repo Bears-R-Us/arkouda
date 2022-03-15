@@ -263,7 +263,7 @@ class Strings:
         return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
-        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and (resolve_scalar_dtype(key) == 'int64' or 'uint64'):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -294,7 +294,7 @@ class Strings:
             return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int"):
+            if kind not in ("bool", "int", "uint"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
