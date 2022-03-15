@@ -10,9 +10,43 @@ def build_ak_df():
     item = ak.array([0, 0, 1, 1, 2, 0])
     day = ak.array([5, 5, 6, 5, 6, 6])
     amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-    df = ak.DataFrame({'userName': username, 'userID': userid,
-                       'item': item, 'day': day, 'amount': amount})
-    return df
+    return ak.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day, 'amount': amount})
+
+
+def build_ak_df_duplicates():
+    username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+    userid = ak.array([111, 222, 111, 333, 222, 111])
+    item = ak.array([0, 1, 0, 2, 1, 0])
+    day = ak.array([5, 5, 5, 5, 5, 5])
+    return ak.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day})
+
+
+def build_ak_append():
+    username = ak.array(['John', 'Carol'])
+    userid = ak.array([444, 333])
+    item = ak.array([0, 2])
+    day = ak.array([1, 2])
+    amount = ak.array([0.5, 5.1])
+    return ak.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day, 'amount': amount})
+
+
+def build_ak_keyerror():
+    userid = ak.array([444, 333])
+    item = ak.array([0, 2])
+    return ak.DataFrame({'user_id': userid, 'item': item})
+
+
+def build_ak_typeerror():
+    username = ak.array([111, 222, 111, 333, 222, 111])
+    userid = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+    item = ak.array([0, 0, 1, 1, 2, 0])
+    day = ak.array([5, 5, 6, 5, 6, 6])
+    amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+    return ak.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day, 'amount': amount})
 
 
 def build_pd_df():
@@ -21,26 +55,54 @@ def build_pd_df():
     item = [0, 0, 1, 1, 2, 0]
     day = [5, 5, 6, 5, 6, 6]
     amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
-    df = pd.DataFrame({'userName': username, 'userID': userid,
-                       'item': item, 'day': day, 'amount': amount})
-    return df
+    return pd.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day, 'amount': amount})
+
+
+def build_pd_df_duplicates():
+    username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice']
+    userid = [111, 222, 111, 333, 222, 111]
+    item = [0, 1, 0, 2, 1, 0]
+    day = [5, 5, 5, 5, 5, 5]
+    return pd.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day})
+
+
+def build_pd_df_append():
+    username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
+    userid = [111, 222, 111, 333, 222, 111, 444, 333]
+    item = [0, 0, 1, 1, 2, 0, 0, 2]
+    day = [5, 5, 6, 5, 6, 6, 1, 2]
+    amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+    return pd.DataFrame({'userName': username, 'userID': userid,
+                         'item': item, 'day': day, 'amount': amount})
 
 class DataFrameTest(ArkoudaTest):
     def test_dataframe_creation(self):
+        # Validate empty DataFrame
         df = ak.DataFrame()
         self.assertIsInstance(df, ak.DataFrame)
+        self.assertTrue(df.empty)
 
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
+        ref_df = build_pd_df()
+
         self.assertIsInstance(df, ak.DataFrame)
-        self.assertEqual(df[0], {'index': 0, 'userName': 'Alice', 'userID': 111, 'item': 0, 'day': 5, 'amount': 0.5})
-        self.assertTrue((df['userName'] == ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])).all())
         self.assertEqual(len(df), 6)
+        self.assertTrue(ref_df.equals(df.to_pandas()))
+
+    def test_to_pandas(self):
+        df = build_ak_df()
+        pd_df = build_pd_df()
+
+        self.assertTrue(pd_df.equals(df.to_pandas()))
+
+        slice_df = df[[1, 3, 5]]
+        pd_df = slice_df.to_pandas(retain_index=True)
+        self.assertEqual(pd_df.index.tolist(), [1, 3, 5])
+
+        pd_df = slice_df.to_pandas()
+        self.assertEqual(pd_df.index.tolist(), [0, 1, 2])
 
     def test_from_pandas(self):
         username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
@@ -81,53 +143,39 @@ class DataFrameTest(ArkoudaTest):
         pd_df.drop(labels=[0, 2, 5], inplace=True)
         pd_df.reset_index(drop=True, inplace=True)
 
-        self.assertTrue(((df.to_pandas() == pd_df).all()).all())
+        self.assertTrue(pd_df.equals(df.to_pandas()))
 
         # verify that index keys must be ints
         with self.assertRaises(TypeError):
             df.drop('index')
 
-        #verify axis can only be 0 or 1
+        # verify axis can only be 0 or 1
         with self.assertRaises(ValueError):
             df.drop('amount', 15)
 
     def test_drop_duplicates(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df_duplicates()
+        ref_df = build_pd_df_duplicates()
 
         dedup = df.drop_duplicates()
+        dedup_pd = ref_df.drop_duplicates()
+        # pandas retains original indexes when dropping dups, need to reset to line up with arkouda
+        dedup_pd.reset_index(drop=True, inplace=True)
 
-        username2 = ak.array(['Alice', 'Bob', 'Carol'])
-        userid2 = ak.array([111, 222, 333])
-        item2 = ak.array([0, 1, 2])
-        day2 = ak.array([5, 5, 5])
+        dedup_test = dedup.to_pandas().sort_values('userName').reset_index(drop=True)
+        dedup_pd_test = dedup_pd.sort_values('userName').reset_index(drop=True)
 
-        self.assertEqual(dedup.__str__(), ak.DataFrame({'userName': username2, 'userID': userid2,
-                           'item': item2, 'day': day2}).__str__())
+        self.assertTrue(dedup_test.equals(dedup_pd_test))
 
     def test_shape(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df()
 
         row, col = df.shape
         self.assertEqual(row, 6)
-        self.assertEqual(col, 4)
+        self.assertEqual(col, 5)
 
     def test_reset_index(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df()
 
         slice_df = df[[1, 3, 5]]
         self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
@@ -135,157 +183,84 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
 
     def test_rename(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df()
 
         rename = {'userName': 'name_col', 'userID': 'user_id'}
         df.rename(rename)
-        self.assertIn("user_id", df.__str__())
-        self.assertIn("name_col", df.__str__())
-        self.assertNotIn('userName', df.__str__())
-        self.assertNotIn('userID', df.__str__())
-        print(df.__str__())
+        self.assertIn("user_id", df.columns)
+        self.assertIn("name_col", df.columns)
+        self.assertNotIn('userName', df.columns)
+        self.assertNotIn('userID', df.columns)
 
     def test_append(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
-
-        username = ak.array(['John', 'Carol'])
-        userid = ak.array([444, 333])
-        item = ak.array([0, 2])
-        day = ak.array([1, 2])
-        amount = ak.array([0.5, 5.1])
-        df_toappend = ak.DataFrame({'userName': username, 'userID': userid,
-                                    'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
+        df_toappend = build_ak_append()
 
         df.append(df_toappend)
 
-        username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
-        userid = [111, 222, 111, 333, 222, 111, 444, 333]
-        item = [0, 0, 1, 1, 2, 0, 0, 2]
-        day = [5, 5, 6, 5, 6, 6, 1, 2]
-        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
-        ref_df = pd.DataFrame({'userName': username, 'userID': userid,
-                               'item': item, 'day': day, 'amount': amount})
+        ref_df = build_pd_df_append()
 
         # dataframe equality returns series with bool result for each row.
-        self.assertTrue(((ref_df == df.to_pandas()).all()).all())
+        self.assertTrue(ref_df.equals(df.to_pandas()))
 
-        userid = ak.array([444, 333])
-        item = ak.array([0, 2])
-        df_keyerror = ak.DataFrame({'user_id': userid, 'item': item})
+        df_keyerror = build_ak_keyerror()
         with self.assertRaises(KeyError):
             df.append(df_keyerror)
 
-        username = ak.array([111, 222, 111, 333, 222, 111])
-        userid = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df_typeerror = ak.DataFrame({'userName': username, 'userID': userid,
-                                     'item': item, 'day': day, 'amount': amount})
+        df_typeerror = build_ak_typeerror()
         with self.assertRaises(TypeError):
             df.append(df_typeerror)
 
     def test_concat(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
-
-        username = ak.array(['John', 'Carol'])
-        userid = ak.array([444, 333])
-        item = ak.array([0, 2])
-        day = ak.array([1, 2])
-        amount = ak.array([0.5, 5.1])
-        df_toappend = ak.DataFrame({'userName': username, 'userID': userid,
-                                    'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
+        df_toappend = build_ak_append()
 
         glued = ak.DataFrame.concat([df, df_toappend])
 
-        username = ['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice', 'John', 'Carol']
-        userid = [111, 222, 111, 333, 222, 111, 444, 333]
-        item = [0, 0, 1, 1, 2, 0, 0, 2]
-        day = [5, 5, 6, 5, 6, 6, 1, 2]
-        amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
-        ref_df = pd.DataFrame({'userName': username, 'userID': userid,
-                               'item': item, 'day': day, 'amount': amount})
+        ref_df = build_pd_df_append()
 
         # dataframe equality returns series with bool result for each row.
-        self.assertTrue(((ref_df == glued.to_pandas()).all()).all())
+        self.assertTrue(ref_df.equals(glued.to_pandas()))
 
-        userid = ak.array([444, 333])
-        item = ak.array([0, 2])
-        df_keyerror = ak.DataFrame({'user_id': userid, 'item': item})
+        df_keyerror = build_ak_keyerror()
         with self.assertRaises(KeyError):
             ak.DataFrame.concat([df, df_keyerror])
 
-        username = ak.array([111, 222, 111, 333, 222, 111])
-        userid = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df_typeerror = ak.DataFrame({'userName': username, 'userID': userid,
-                                     'item': item, 'day': day, 'amount': amount})
+        df_typeerror = build_ak_typeerror()
         with self.assertRaises(TypeError):
             ak.DataFrame.concat([df, df_typeerror])
 
     def test_head(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df()
+        ref_df = build_pd_df()
 
         hdf = df.head(3)
-        self.assertEqual(len(hdf), 3)
-        self.assertTrue((hdf.index == ak.array([0, 1, 2])).all())
+        hdf_ref = ref_df.head(3).reset_index(drop=True)
+        self.assertTrue(hdf_ref.equals(hdf.to_pandas()))
 
     def test_tail(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 1, 0, 2, 1, 0])
-        day = ak.array([5, 5, 5, 5, 5, 5])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day})
+        df = build_ak_df()
+        ref_df = build_pd_df()
 
         hdf = df.tail(2)
-        self.assertEqual(len(hdf), 2)
-        self.assertTrue((hdf.index == ak.array([4, 5])).all())
+        hdf_ref = ref_df.tail(2).reset_index(drop=True)
+        self.assertTrue(hdf_ref.equals(hdf.to_pandas()))
 
     def test_groupby_standard(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
 
         gb = df.GroupBy('userName')
         keys, count = gb.count()
-        self.assertTrue((keys == ak.array(['Alice', 'Carol', 'Bob'])).all())
-        self.assertTrue((count == ak.array([3, 1, 2])).all())
+        self.assertTrue(keys.to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
+        self.assertListEqual(count.to_ndarray().tolist(), [3, 1, 2])
+        self.assertListEqual(gb.permutation.to_ndarray().tolist(), [0, 2, 5, 3, 1, 4])
 
         gb = df.GroupBy(['userName', 'userID'])
         keys, count = gb.count()
         self.assertEqual(len(keys), 2)
-        self.assertTrue((keys[0] == ak.array(['Alice', 'Carol', 'Bob'])).all())
-        self.assertTrue((keys[1] == ak.array([111, 333, 222])).all())
-        self.assertTrue((count == ak.array([3, 1, 2])).all())
+        self.assertListEqual(keys[0].to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
+        self.assertTrue(keys[1].to_ndarray().tolist(), [111, 333, 222])
+        self.assertTrue(count.to_ndarray().tolist(), [3, 1, 2])
 
     def test_gb_series(self):
         username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
@@ -332,62 +307,46 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(pddf.index.tolist(), [0, 1, 2])
 
     def test_argsort(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
 
         p = df.argsort(key='userName')
-        self.assertTrue((p == ak.array([0, 2, 5, 1, 4, 3])).all())
+        self.assertListEqual(p.to_ndarray().tolist(), [0, 2, 5, 1, 4, 3])
 
         p = df.argsort(key='userName', ascending=False)
-        self.assertTrue((p == ak.array([3, 4, 1, 5, 2, 0])).all())
+        self.assertListEqual(p.to_ndarray().tolist(), [3, 4, 1, 5, 2, 0])
 
     def test_coargsort(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
 
         p = df.coargsort(keys=['userID', 'amount'])
-        self.assertTrue((p == ak.array([0, 5, 2, 1, 4, 3])).all())
+        self.assertListEqual(p.to_ndarray().tolist(), [0, 5, 2, 1, 4, 3])
 
         p = df.coargsort(keys=['userID', 'amount'], ascending=False)
-        self.assertTrue((p == ak.array([3, 4, 1, 2, 5, 0])).all())
+        self.assertListEqual(p.to_ndarray().tolist(), [3, 4, 1, 2, 5, 0])
 
     def test_sort_values(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        userid = [111, 222, 111, 333, 222, 111]
+        userid_ak = ak.array(userid)
 
-        df = ak.DataFrame({'userID': userid})
+        # sort userid to build dataframes to reference
+        userid.sort()
+
+        df = ak.DataFrame({'userID': userid_ak})
         ord = df.sort_values()
-        self.assertEqual(ord.__repr__(), ak.DataFrame({'userID': ak.array([111, 111, 111, 222, 222, 333])}).__repr__())
+        self.assertTrue(ord.to_pandas().equals(pd.DataFrame(data=userid, columns=['userID'])))
         ord = df.sort_values(ascending=False)
-        self.assertEqual(ord.__repr__(), ak.DataFrame({'userID': ak.array([333, 222, 222, 111, 111, 111])}).__repr__())
+        userid.reverse()
+        self.assertTrue(ord.to_pandas().equals(pd.DataFrame(data=userid, columns=['userID'])))
 
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
         ord = df.sort_values(by='userID')
-        test_un = ak.array(['Alice', 'Alice', 'Alice', 'Bob', 'Bob', 'Carol'])
-        test_uid = ak.array([111, 111, 111, 222, 222, 333])
-        test_i = ak.array([0, 1, 0, 0, 2, 1])
-        test_d = ak.array([5, 6, 6, 5, 6, 5])
-        test_a = ak.array([0.5, 1.1, 0.6, 0.6, 4.3, 1.2])
-        test_df = ak.DataFrame({'userName': test_un, 'userID': test_uid,
-                                'item': test_i, 'day': test_d, 'amount': test_a})
-        self.assertEqual(ord.__repr__(), test_df.__repr__())
+        ref_df = build_pd_df()
+        ref_df = ref_df.sort_values(by='userID').reset_index(drop=True)
+        self.assertTrue(ref_df.equals(ord.to_pandas()))
 
         ord = df.sort_values(by=['userID', 'day'])
-        self.assertEqual(ord.__repr__(), test_df.__repr__())
+        ref_df = ref_df.sort_values(by=['userID', 'day']).reset_index(drop=True)
+        self.assertTrue(ref_df.equals(ord.to_pandas()))
 
         with self.assertRaises(TypeError):
             df.sort_values(by=1)
@@ -409,18 +368,17 @@ class DataFrameTest(ArkoudaTest):
             rows = ak.intx(df_1, df_3)
 
     def test_apply_perm(self):
-        username = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame({'userName': username, 'userID': userid,
-                           'item': item, 'day': day, 'amount': amount})
+        df = build_ak_df()
+        ref_df = build_pd_df()
 
         ord = df.sort_values(by='userID')
-        default_perm = ak.array([0, 3, 1, 5, 4, 2])
+        perm_list = [0, 3, 1, 5, 4, 2]
+        default_perm = ak.array(perm_list)
         ord.apply_permutation(default_perm)
-        self.assertEqual(ord.__repr__(), df.__repr__())
+
+        ord_ref = ref_df.sort_values(by='userID').reset_index(drop=True)
+        ord_ref = ord_ref.reindex(perm_list).reset_index(drop=True)
+        self.assertTrue(ord_ref.equals(ord.to_pandas()))
 
     def test_filter_by_range(self):
         userid = ak.array([111, 222, 111, 333, 222, 111])
