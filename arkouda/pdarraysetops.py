@@ -65,8 +65,49 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
     array([1, 2, 3])
     """
     from arkouda.categorical import Categorical as Categorical_
-    if hasattr(pda, 'unique'):
+    if not return_groups and hasattr(pda, 'unique'):
         return cast(Categorical_, pda).unique()
+
+    # Get all grouping keys
+    if hasattr(pda, "_get_grouping_keys"):
+        # Single groupable array
+        nkeys = 1
+        grouping_keys = pda._get_grouping_keys()
+    else:
+        # Sequence of groupable arrays
+        nkeys = len(pda)
+        grouping_keys = []
+        for k in pda:
+            if k.size != self.size:
+                raise ValueError("Key arrays must all be same size")
+            if not hasattr(k, "_get_grouping_keys"):
+                raise TypeError("{} does not support grouping".format(type(k)))
+            grouping_keys.extend(cast(list, k._get_grouping_keys()))
+    keynames = [k.name for k in self._grouping_keys]
+    keytypes = [k.objtype for k in self._grouping_keys]
+    effectiveKeys = len(self._grouping_keys)
+    repMsg = generic_msg(cmd="unique", args="{} {:n} {} {}".format(return_groups,
+                                                                effectiveKeys,
+                                                                ' '.join(keynames),
+                                                                ' '.join(keytypes)))
+    if return_groups:
+        parts = repMsg.split("+")
+        permutation = create_pdarray(cast(str, parts[0]))
+        segments = create_pdarray(cast(str, parts[1]))
+        unique_key_indices = create_pdarray(cast(str, parts[2]))
+    else:
+        unique_key_indices = create_pdarray(cast(str, repMsg))
+
+    if nkeys == 1:
+        unique_keys = pda[unique_key_indices]
+    else:
+        unique_keys = tuple([a[unique_key_indices] for a in pda])
+    if return_groups:
+        return (unique_keys, permutation, segments)
+    else:
+        return unique_keys
+    
+    
     elif isinstance(pda, pdarray):
         repMsg = generic_msg(cmd="unique", args="{} {} {}". \
                              format(pda.objtype, pda.name, return_counts))
