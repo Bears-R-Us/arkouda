@@ -495,6 +495,15 @@ class Categorical:
         else:
             return self.permutation
 
+    def _get_grouping_keys(self):
+        ''' 
+        Private method for generating grouping keys used by GroupBy.
+
+        API: this method must be defined by all groupable arrays, and it
+        must return a list of arrays that can be (co)argsorted.
+        '''
+        return [self.codes]
+
     def argsort(self):
         #__doc__ = argsort.__doc__
         idxperm = argsort(self.categories)
