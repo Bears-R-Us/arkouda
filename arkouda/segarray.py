@@ -849,9 +849,9 @@ class SegArray:
         Parameters
         ----------
         a : SegArray
-            First SegArray to use in intersection calculation
+            First SegArray to use in union calculation
         b : SegArray
-            Seconds SegArray to use in intersection calucation
+            Seconds SegArray to use in union calucation
         """
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
             raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
@@ -877,9 +877,9 @@ class SegArray:
         Parameters
         ----------
         a : SegArray
-            First SegArray to use in intersection calculation
+            First SegArray to use in difference calculation
         b : SegArray
-            Seconds SegArray to use in intersection calucation
+            Seconds SegArray to use in difference calucation
         """
 
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
@@ -900,6 +900,16 @@ class SegArray:
 
     @classmethod
     def set_xor(cls, a, b):
+        """
+        Compute the symmetric difference SegArrays
+
+        Parameters
+        ----------
+        a : SegArray
+            First SegArray to use in xor calculation
+        b : SegArray
+            Seconds SegArray to use in xor calucation
+        """
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
             raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
         if a.size != b.size:
