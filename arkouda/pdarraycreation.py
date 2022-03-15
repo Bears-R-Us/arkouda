@@ -689,6 +689,9 @@ def randint(low : numeric_scalars, high : numeric_scalars,
     Calling randint with dtype=float64 will result in uniform non-integral
     floating point values.
 
+    Ranges >= 2**64 in size is undefined behavior because
+    it exceeds the maximum value that can be stored on the server (uint64)
+
     Examples
     --------
     >>> ak.randint(0, 10, 5)

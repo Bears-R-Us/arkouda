@@ -21,14 +21,10 @@ module RandArray {
         var seed = (seedStr:int) + here.id;
         fillRandom(a, seed);
       }
-      [ai in a] if (ai < 0) { ai = -ai; }
+      const a2 = a:uint;
       if (aMax > aMin) {
-        const modulus = aMax - aMin;
-        if modulus > 0 {
-          [x in a] x = ((x % modulus) + aMin):t;
-        } else {
-          [x in a] x = (x + aMin):t;
-        }       
+        const modulus = (aMax - aMin):uint;
+        a = (a2 % modulus):t + aMin:t;
       }
   }
 
