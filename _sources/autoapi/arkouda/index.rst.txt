@@ -100,8 +100,10 @@ Functions
    arkouda.array
    arkouda.zeros
    arkouda.ones
+   arkouda.full
    arkouda.zeros_like
    arkouda.ones_like
+   arkouda.full_like
    arkouda.arange
    arkouda.linspace
    arkouda.randint
@@ -2787,6 +2789,37 @@ Attributes
    array([True, True, True, True, True])
 
 
+.. py:function:: full(size: arkouda.dtypes.int_scalars, fill_value: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with fill_value.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param fill_value: Value with which the array will be filled
+   :type fill_value: int_scalars
+   :param dtype: Resulting array type, default float64
+   :type dtype: all_scalars
+
+   :returns: array of the requested size and dtype filled with fill_value
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones`
+
+   .. rubric:: Examples
+
+   >>> ak.full(5, 7, dtype=ak.int64)
+   array([7, 7, 7, 7, 7])
+
+   >>> ak.full(5, 9, dtype=ak.float64)
+   array([9, 9, 9, 9, 9])
+
+   >>> ak.full(5, 5, dtype=ak.bool)
+   array([True, True, True, True, True])
+
+
 .. py:function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Create a zero-filled pdarray of the same size and dtype as an existing
@@ -2849,6 +2882,43 @@ Attributes
 
    >>> ones = ak.ones(5, dtype=ak.bool)
    >>> ak.ones_like(ones)
+   array([True, True, True, True, True])
+
+
+.. py:function:: full_like(pda: arkouda.pdarrayclass.pdarray, fill_value: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with fill_value of the same size and dtype as an existing
+   pdarray.
+
+   :param pda: Array to use for size and dtype
+   :type pda: pdarray
+   :param fill_value: Value with which the array will be filled
+   :type fill_value: int_scalars
+
+   :returns: Equivalent to ak.full(pda.size, fill_value, pda.dtype)
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the pda parameter is not a pdarray.
+
+   .. seealso:: :obj:`ones_like`, :obj:`zeros_like`
+
+   .. rubric:: Notes
+
+   Logic for generating the pdarray is delegated to the ak.full method.
+   Accordingly, the supported dtypes match are defined by the ak.full method.
+
+   .. rubric:: Examples
+
+   >>> full = ak.full(5, 7, dtype=ak.int64)
+   >>> ak.full_like(full)
+   array([7, 7, 7, 7, 7])
+
+   >>> full = ak.full(5, 9, dtype=ak.float64)
+   >>> ak.full_like(full)
+   array([9, 9, 9, 9, 9])
+
+   >>> full = ak.full(5, 5, dtype=ak.bool)
+   >>> ak.full_like(full)
    array([True, True, True, True, True])
 
 
