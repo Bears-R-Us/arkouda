@@ -43,19 +43,19 @@ module UniqueMsg
         var fields = rest.split();
         // hash each "row", or set of parallel array elements
         // this function will validate that all arrays are same length
-        var hashes = hashArrays(n, fields, st);
-        // Sort the hashes
-        var kr = radixSortLSD(hashes);
-        // Unpack the permutation and sorted hashes
+        var keys = makeKeys(n, fields, st);
+        // Sort the keys
+        var kr = radixSortLSD(keys);
+        // Unpack the permutation and sorted keys
         // var perm: [kr.domain] int;
         var permutation = new shared SymEntry(kr.size, int);
         ref perm = permutation.a;
-        var sortedHashes: [kr.domain] 2*uint;
-        forall (sh, p, val) in zip(sortedHashes, perm, kr) {
+        var sortedKeys: keys.type;
+        forall (sh, p, val) in zip(sortedKeys, perm, kr) {
           (sh, p) = val;
         }
-        // Get the unique hashes and the count of each
-        var (uniqueHashes, counts) = uniqueFromSorted(sortedHashes);
+        // Get the unique keys and the count of each
+        var (uniqueKeys, counts) = uniqueFromSorted(sortedKeys);
         // Compute offset of each group in sorted array
         var segments = new shared SymEntry(counts.size, int);
         segments.a = (+ scan counts) - counts;
@@ -71,12 +71,17 @@ module UniqueMsg
         // Indices of first unique key in original array
         // These are the value of the permutation at the start of each group
         var gatherInds: [segments.aD] int;
+        var uniqueKeyInds = new shared SymEntry(segments.size, int);
         ref segs = segments.a;
+        ref inds = uniqueKeyInds.a;
         forall (g, s) in zip(gatherInds, segs) with (var agg = newSrcAggregator(int)) {
           agg.copy(g, perm[s]);
         }
-        // Gather unique values, store in SymTab, and build repMsg
-        repMsg += storeUniqueKeys(n, fields, gatherInds, st);
+        var iname = st.nextName();
+        st.addEntry(iname, uniqueKeyInds);
+        repMsg += "created " + st.attrib(iname);
+        /* // Gather unique values, store in SymTab, and build repMsg */
+        /* repMsg += storeUniqueKeys(n, fields, gatherInds, st); */
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -135,7 +140,7 @@ module UniqueMsg
       return repMsg;
     }
 
-    proc hashArrays(n, fields, st) throws {
+    proc makeKeys(n, fields, st) throws {
       if (n > 128) {
         throw new owned ErrorWithContext("Cannot hash more than 128 arrays",
                                          getLineNumber(),
@@ -144,6 +149,23 @@ module UniqueMsg
                                          "ArgumentError");
       }
       var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+      // If no strings are present and row values can fit in 128 bits (8 digits),
+      // then pack into tuples of uint(16) for sorting keys.
+      if !hasStr {
+        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
+        if totalDigits <= 2 { return mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st); }
+        if totalDigits <= 4 { return mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st); }
+        if totalDigits <= 6 { return mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st); }
+        if totalDigits <= 8 { return mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st); }
+      }
+
+      // If here, either the row values are too large to fit in 128 bits, or
+      // strings are present and must be hashed anyway, so hash all arrays
+      // and combine hashes of row values into sorting keys.
+      return hashArrays(size, names, types, st);
+    }
+
+    proc hashArrays(size, names, types, st): [] 2*uint throws {
       overMemLimit(numBytes(uint) * size * 2);
       var dom = makeDistDom(size);
       var hashes: [dom] 2*uint(64);

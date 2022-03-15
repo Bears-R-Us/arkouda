@@ -242,30 +242,7 @@ module ArgSortMsg
       // TODO support string? This further increases size (128-bits for each hash), so we
       // need to be OK with memory overhead and comm from the KEY)
       if !hasStr {
-        param bitsPerDigit = RSLSD_bitsPerDigit;
-        var bitWidths: [names.domain] int;
-        var negs: [names.domain] bool;
-        var totalDigits: int;
-
-        for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
-          // TODO checkSorted and exclude array if already sorted?
-          var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-          select g.dtype {
-              when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
-              when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
-              when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
-              otherwise { 
-                  throw getErrorWithContext(
-                      msg=dtype2str(g.dtype),
-                      lineNumber=getLineNumber(),
-                      routineName=getRoutineName(),
-                      moduleName=getModuleName(),
-                      errorClass="TypeError"
-                  );
-              }
-          }
-          totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
-        }
+        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
 
         // TODO support arbitrary size with array-of-arrays or segmented array
         proc mergedArgsort(param numDigits) throws {
@@ -275,39 +252,7 @@ module ArgSortMsg
           overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
 
           var ivname = st.nextName();
-          var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-          var curDigit = numDigits - totalDigits;
-          for (name, nBits, neg) in zip(names, bitWidths, negs) {
-              var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-              proc mergeArray(type t) {
-                var e = toSymEntry(g, t);
-                ref A = e.a;
-
-                const r = 0..#nBits by bitsPerDigit;
-                for rshift in r {
-                  const myDigit = (r.high - rshift) / bitsPerDigit;
-                  const last = myDigit == 0;
-                  forall (m, a) in zip(merged, A) {
-                    m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
-                  }
-                }
-                curDigit += r.size;
-              }
-              select g.dtype {
-                when DType.Int64   { mergeArray(int); }
-                when DType.UInt64  { mergeArray(uint); }
-                when DType.Float64 { mergeArray(real); }
-                otherwise { 
-                    throw getErrorWithContext(
-                        msg=dtype2str(g.dtype),
-                        lineNumber=getLineNumber(),
-                        routineName=getRoutineName(),
-                        moduleName=getModuleName(),
-                        errorClass="IllegalArgumentError"
-                    ); 
-                }
-              }
-          }
+          var merged = mergeNumericArrays(numDigits, size, totalDigits, bitWidths, negs, names, st);
 
           var iv = argsortDefault(merged, algorithm=algorithm);
           st.addEntry(ivname, new shared SymEntry(iv));
