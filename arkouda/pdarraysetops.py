@@ -19,7 +19,7 @@ logger = getArkoudaLogger(name='pdarraysetops')
 
 @typechecked
 def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
-           return_counts: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
+           return_groups: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
                                                  Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
                                                      pdarray]]]:  # type: ignore
     """
@@ -31,19 +31,19 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
 
     Parameters
     ----------
-    pda : pdarray or Strings or Categorical
+    pda : (list of) pdarray, Strings, or Categorical
         Input array.
-    return_counts : bool, optional
-        If True, also return the number of times each unique item appears
-        in `pda`.
+    return_groups : bool, optional
+        If True, also return grouping information for the array.
 
     Returns
     -------
-    unique : pdarray or Strings
+    unique : (list of) pdarray, Strings, or Categorical
         The unique values. If input dtype is int64, return values will be sorted.
-    unique_counts : pdarray, optional
-        The number of times each of the unique values comes up in the
-        original array. Only provided if `return_counts` is True.
+    permutation : pdarray, optional
+        Permutation that groups equivalent values together (only when return_groups=True)
+    segments : pdarray, optional
+        The offset of each group in the permuted array (only when return_groups=True)
         
     Raises
     ------

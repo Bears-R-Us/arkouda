@@ -42,15 +42,11 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true, param needPerm = true) throws {
+    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
-            if (needCounts && needPerm) {
-                var c = makeDistArray(0, int);
-                var p = makeDistArray(0, int);
-                return (u,c,p);
-            } else if (needCounts || needPerm) {
+            if (needCounts) {
                 var c = makeDistArray(0, int);
                 return (u,c);
             } else {

@@ -5,6 +5,8 @@ module AryUtil
     use Reflection;
     use Logging;
     use ServerConfig;
+    use MultiTypeSymbolTable;
+    use ServerErrors;
     
     private config const logLevel = ServerConfig.logLevel;
     const auLogger = new Logger(logLevel);
@@ -118,6 +120,81 @@ module AryUtil
     proc contiguousIndices(A: []) param {
         use BlockDist;
         return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+    }
+
+    /*
+     * Takes a variable number of array names from a command message and
+     * validates them, checking that they all exist and are the same length
+     * and returning metadata about them.
+     * 
+     * :arg n: number of arrays
+     * :arg fields: the fields derived from the command message
+     * :arg st: symbol table
+     *
+     * :returns: (length, hasStr, names, objtypes)
+     */
+    proc validateArraysSameLength(n:int, fields:[] string, st: borrowed SymTab) throws {
+      // Check that fields contains the stated number of arrays
+      if (fields.size != 2*n) { 
+          var errorMsg = "Expected %i arrays but got %i".format(n, fields.size/2 - 1);
+          auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          throw new owned ErrorWithContext(errorMsg,
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "ArgumentError");
+      }
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
+      /* var arrays: [0..#n] borrowed GenSymEntry; */
+      var size: int;
+      // Check that all arrays exist in the symbol table and have the same size
+      var hasStr = false;
+      for (name, objtype, i) in zip(names, types, 1..) {
+        var thisSize: int;
+        select objtype {
+          when "pdarray" {
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          when "str" {
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = getSegStringEntry(myNames, st);
+            thisSize = g.size;
+            hasStr = true;
+          }
+          when "category" {
+            // passed only Categorical.codes.name to be sorted on
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          otherwise {
+              var errorMsg = "Unrecognized object type: %s".format(objtype);
+              auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+              throw new owned ErrorWithContext(errorMsg,
+                                               getLineNumber(),
+                                               getRoutineName(),
+                                               getModuleName(),
+                                               "TypeError");
+          }
+        }
+        
+        if (i == 1) {
+            size = thisSize;
+        } else {
+            if (thisSize != size) { 
+              var errorMsg = "Arrays must all be same size; expected size %t, got size %t".format(size, thisSize);
+                auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw new owned ErrorWithContext(errorMsg,
+                                                 getLineNumber(),
+                                                 getRoutineName(),
+                                                 getModuleName(),
+                                                 "ArgumentError");
+            }
+        }   
+      }
+      return (size, hasStr, names, types);
     }
 
     /*
