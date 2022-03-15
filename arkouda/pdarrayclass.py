@@ -1305,7 +1305,7 @@ class pdarray:
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
         '''
-        if self.dtype not in (int64, uint64):
+        if self.dtype not in (akint64, akuint64):
             raise TypeError("Grouping numeric data is only supported on integral types.")
         # Integral pdarrays are their own grouping keys
         return [self]

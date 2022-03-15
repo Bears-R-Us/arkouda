@@ -111,40 +111,40 @@ class GroupBy:
         self.hash_strings = hash_strings
         self.keys : groupable
 
-        if hasattr(keys, "group"):
+        # Get all grouping keys, even if not required for finding permutation
+        # They will be required later for finding segment boundaries
+        if hasattr(keys, "_get_grouping_keys"):
+            # Single groupable array
+            self.nkeys = 1
+            self.keys = cast(groupable_element_type, keys)
+            self.size = cast(int, keys.size)
+            self._grouping_keys = keys._get_grouping_keys()
+        else:
+            # Sequence of groupable arrays
+            # Because of type checking, this is the only other possibility
+            self.keys = cast(Sequence[groupable_element_type], keys)
+            self.nkeys = len(keys)
+            self.size = cast(int, keys[0].size)
+            self._grouping_keys = []
+            for k in keys:
+                if k.size != self.size:
+                    raise ValueError("Key arrays must all be same size")
+                if not hasattr(k, "_get_grouping_keys"):
+                    # Type checks should ensure we never get here
+                    raise TypeError("{} does not support grouping".format(type(k)))
+                self._grouping_keys.extend(k._get_grouping_keys())
+        # Get permutation
+        if assume_sorted:
+            # Permutation is identity
+            self.permutation = cast(pdarray, arange(self.size))
+        elif hasattr(keys, "group"):
             # If an object wants to group itself (e.g. Categoricals),
             # let it set the permutation
-            self.nkeys = 1
-            self.size = cast(int, keys.size)
             self.permutation = keys.group()
+        elif len(self._grouping_keys) == 1:
+            self.permutation = argsort(self._grouping_keys[0])
         else:
-            # Ask object(s) for grouping keys and sort them
-            if hasattr(keys, "_get_grouping_keys"):
-                # Single groupable array
-                self.nkeys = 1
-                self.size = cast(int, keys.size)
-                self._grouping_keys = keys._get_grouping_keys()
-            else:
-                # Sequence of groupable arrays
-                # Because of type checking, this is the only other possibility
-                self.keys = cast(Sequence[groupable_element_type], keys)
-                self.nkeys = len(keys)
-                self.size = cast(int, keys[0].size)
-                self._grouping_keys = []
-                for k in keys:
-                    if k.size != self.size:
-                        raise ValueError("Key arrays must all be same size")
-                    if not hasattr(k, "_get_grouping_keys"):
-                        # Type checks should ensure we never get here
-                        raise TypeError("{} does not support grouping".format(type(k)))
-                    self._grouping_keys.extend(k._get_grouping_keys())
-            # Get permutation
-            if assume_sorted:
-                self.permutation = cast(pdarray, arange(self.size))
-            elif len(self._grouping_keys) == 1:
-                self.permutation = argsort(self._grouping_keys[0])
-            else:
-                self.permutation = coargsort(self._grouping_keys)
+            self.permutation = coargsort(self._grouping_keys)
                 
         # Finally, get segment offsets and unique keys 
         self.find_segments()       
