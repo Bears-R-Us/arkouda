@@ -124,6 +124,11 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.bool, test_array.dtype)
         
         test_ndarray = test_array.to_ndarray()
+
+        # test resolution of modulus overflow - issue #1174
+        test_array = ak.randint(-(2**63), 2**63-1, 10)
+        to_validate = np.full(10, -(2**63))
+        self.assertFalse((test_array.to_ndarray() == to_validate).all())
         
         for value in test_ndarray:
             self.assertTrue(value in [True,False])

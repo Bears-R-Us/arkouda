@@ -24,7 +24,11 @@ module RandArray {
       [ai in a] if (ai < 0) { ai = -ai; }
       if (aMax > aMin) {
         const modulus = aMax - aMin;
-        [x in a] x = ((x % modulus) + aMin):t;
+        if modulus > 0 {
+          [x in a] x = ((x % modulus) + aMin):t;
+        } else {
+          [x in a] x = (x + aMin):t;
+        }       
       }
   }
 
