@@ -159,7 +159,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
-        print(values)
+
         self.assertTrue((ak.array([4, 3, 1, 3, 2, 4, 4, 2, 3, 4]) == values).all())
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
