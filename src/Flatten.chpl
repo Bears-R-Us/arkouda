@@ -72,11 +72,11 @@ module Flatten {
       for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
         var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
         // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
-        for k in (off + match.offset:int)..#(match.size - 1) {
+        for k in (off + match.byteOffset:int)..#(match.numBytes - 1) {
           writeAgg.copy(writeToVal[k], false);
         }
         // is writeToVal[(off + match.offset:int)..#(match.size - 1)] = false more efficient or for loop with aggregator?
-        nbAgg.copy(nullByteLocations[off + match.offset:int + (match.size - 1)], true);
+        nbAgg.copy(nullByteLocations[off + match.byteOffset:int + (match.numBytes - 1)], true);
         matchessize += 1;
       }
       if off != 0 {
@@ -175,10 +175,10 @@ module Flatten {
       for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
         var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
         // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
-        for k in (off + match.offset:int)..#(match.size - 1) {
+        for k in (off + match.byteOffset:int)..#(match.numBytes - 1) {
           writeAgg.copy(writeToVal[k], false);
         }
-        nbAgg.copy(nullByteLocations[off + match.offset:int + (match.size - 1)], true);
+        nbAgg.copy(nullByteLocations[off + match.byteOffset:int + (match.numBytes - 1)], true);
         matchessize += 1;
         if matchessize == maxsplit { break; }
       }

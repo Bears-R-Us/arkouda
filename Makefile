@@ -258,15 +258,20 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-
-ifeq ($(shell expr $(CHPL_MINOR) \>= 25),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-125
-else
+ifeq ($(shell expr $(CHPL_MINOR) \< 25),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-125
 endif
-ifeq ($(shell expr $(CHPL_MINOR) \>= 26),1)
-else
+
+ifeq ($(shell expr $(CHPL_MINOR) \= 25),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-125
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \< 26),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-126
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \>= 26),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-126
 endif
 
 MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
