@@ -126,6 +126,7 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void*
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
     auto offsets = (int64_t*)chpl_offsets;
+    int64_t byteSize = 0;
 
     if(ty == ARROWSTRING) {
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
@@ -162,10 +163,11 @@ int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void*
           parquet::ByteArray value;
           (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
           offsets[i++] = value.len + 1;
+          byteSize += value.len + 1;
           numRead += values_read;
         }
       }
-      return 0;
+      return byteSize;
     }
     return ARROWERROR;
   } catch (const std::exception& e) {
