@@ -23,7 +23,7 @@ module RandArray {
       }
       const a2 = a:uint;
       if (aMax > aMin) {
-        const modulus = (aMax - aMin):uint;
+        const modulus = aMax:uint - aMin:uint;
         a = (a2 % modulus):t + aMin:t;
       }
   }
