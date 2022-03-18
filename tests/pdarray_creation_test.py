@@ -29,7 +29,12 @@ class PdarrayCreationTest(ArkoudaTest):
         pda =  ak.array(deque(range(5)))
         self.assertIsInstance(pda, ak.pdarray)
         self.assertEqual(5, len(pda))
-        self.assertEqual(int, pda.dtype)         
+        self.assertEqual(int, pda.dtype)
+
+        pda = ak.array([f'{i}' for i in range(10)], dtype=ak.int64)
+        self.assertIsInstance(pda, ak.pdarray)
+        self.assertEqual(10, len(pda))
+        self.assertEqual(int, pda.dtype)
 
         with self.assertRaises(RuntimeError) as cm:          
             ak.array({range(0,100)})
