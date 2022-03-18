@@ -429,7 +429,10 @@ $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 test: test-python
 
 .PHONY: test-chapel
-test-chapel: $(TEST_TARGETS)
+.SILENT:
+test-chapel:
+	@echo $(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE));
+	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
 test-all: test-python test-chapel
