@@ -6,8 +6,12 @@ module FileIO {
     use Map;
     use Path;
     use Reflection;
+    use Message;
+    use MultiTypeSymbolTable;
+    use MultiTypeSymEntry;
+    use ServerErrors;
 
-    use ServerConfig, Logging;
+    use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
     const fioLogger = new Logger(logLevel);
     
@@ -176,5 +180,64 @@ module FileIO {
         var stride = max(d1.stride, d2.stride);
         return {low..high by stride};
     }
-    
+
+    proc getFirstEightBytesFromFile(path:string):bytes throws {
+        var f:file = open(path, iomode.r);
+        var reader = f.reader(kind=ionative);
+        var header:bytes;
+        if (reader.binary()) {
+          reader.readbytes(header, 8);
+        } else {
+          throw getErrorWithContext(
+                     msg="File reader was not in binary mode",
+                     getLineNumber(),
+                     getRoutineName(),
+                     getModuleName(),
+                     errorClass="IOError");
+        }
+        try {
+          f.close();
+        } catch e {
+          throw getErrorWithContext(
+                     msg=e:string,
+                     getLineNumber(),
+                     getRoutineName(),
+                     getModuleName(),
+                     errorClass="IOError");
+        }
+        return header;
+    }
+
+    proc getFileType(filename: string) throws {
+      return getFileTypeByMagic(getFirstEightBytesFromFile(filename));
+    }
+
+    proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var (jsonfile) = payload.splitMsgToTuple(1);
+      
+      // Retrieve filename from payload
+      var filename: string;
+      try {
+        filename = jsonToPdArray(jsonfile, 1)[0];
+        if filename.isEmpty() {
+          throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+        }
+      } catch {
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
+                                                                                            1, jsonfile);
+        return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+      }
+
+      select getFileType(filename) {
+        when FileType.HDF5 {
+          return executeCommand("lshdf", payload, st);
+        }
+        when FileType.PARQUET {
+          return executeCommand("lspq", payload, st);
+        } otherwise {
+          var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+    }
 }

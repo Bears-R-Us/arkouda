@@ -80,4 +80,15 @@ module CommandMap {
     return cm1(0..idx_close-1) + ", " + cm2(1..cm2.size-1);
   }
 
+  proc executeCommand(cmd: string, args, st) throws {
+    var repTuple: MsgTuple;
+    if commandMap.contains(cmd) {
+      usedModules.add(moduleMap[cmd]);
+      repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
+    } else {
+      repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+    }
+    return repTuple;
+  }
+
 }
