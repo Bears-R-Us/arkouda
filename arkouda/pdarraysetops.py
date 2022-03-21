@@ -348,8 +348,8 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: pdarray, pda2: pdarray,
-                assume_unique: bool = False) -> pdarray:
+def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
+                List[pdarray], tuple], assume_unique: bool = False) -> Union[pdarray, tuple, str]:
     """
     Find the intersection of two arrays.
 
@@ -357,18 +357,19 @@ def intersect1d(pda1: pdarray, pda2: pdarray,
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array
-    pda2 : pdarray
-        Input array
+    pda1 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
+    pda2 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray
-        Sorted 1D array of common and unique elements.
+    pdarray or tuple
+        Unique, sorted intersection of the input arrays or tuple unique/sorted union of flattened arrays,
+        (segments, values).
 
     Raises
     ------
@@ -390,24 +391,33 @@ def intersect1d(pda1: pdarray, pda2: pdarray,
     >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
     array([1, 3])
     """
-    if pda1.size == 0:
-        return pda1  # nothing in the intersection
-    if pda2.size == 0:
-        return pda2  # nothing in the intersection
-    if (pda1.dtype == int and pda2.dtype == int) or \
-            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-        repMsg = generic_msg(cmd="intersect1d", args="{} {} {}". \
-                             format(pda1.name, pda2.name, assume_unique))
-        return create_pdarray(cast(str, repMsg))
-    if not assume_unique:
-        pda1 = unique(pda1)
-        pda2 = unique(pda2)
-    aux = concatenate((pda1, pda2), ordered=False)
-    aux_sort_indices = argsort(aux)
-    aux = aux[aux_sort_indices]
-    mask = aux[1:] == aux[:-1]
-    int1d = aux[:-1][mask]
-    return int1d
+    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
+        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
+            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
+        if pda1.size == 0:
+            return pda1  # nothing in the intersection
+        if pda2.size == 0:
+            return pda2  # nothing in the intersection
+        if (pda1.dtype == int and pda2.dtype == int) or \
+                (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+            repMsg = generic_msg(cmd="intersect1d", args="{} {} {}". \
+                                 format(pda1.name, pda2.name, assume_unique))
+            return create_pdarray(cast(str, repMsg))
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        aux = concatenate((pda1, pda2), ordered=False)
+        aux_sort_indices = argsort(aux)
+        aux = aux[aux_sort_indices]
+        mask = aux[1:] == aux[:-1]
+        int1d = aux[:-1][mask]
+        return int1d
+    else:
+        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
+        repMsg = generic_msg(cmd="intersect1d_multi",
+                             args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}")
+        rep_ele = repMsg.split("+")
+        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
 
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second

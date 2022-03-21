@@ -121,7 +121,29 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.intersect1d([-1, 0, 1], [-2, 0, 2])     
+            ak.intersect1d([-1, 0, 1], [-2, 0, 2])
+
+    def testIntersect1d_multi(self):
+        a = [0, 1, 2]
+        b = [3, 4]
+        c = [1]
+        d = [3, 4, 5]
+
+        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                    (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
+
+        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
         
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
@@ -150,7 +172,8 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
         self.assertListEqual(vals.to_ndarray().tolist(), [0, 1, 2, 5, 3, 4, 6, 7, 8])
 
-        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)), (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
         self.assertIsInstance(segs, ak.pdarray)
         self.assertIsInstance(vals, ak.pdarray)
 
