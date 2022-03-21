@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
+from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef, List
 from typeguard import typechecked
+
 from arkouda.client import generic_msg, get_config
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, zeros_like, array
@@ -275,7 +276,8 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']],  # typ
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1: pdarray, pda2: pdarray) -> pdarray:
+def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
+            List[pdarray], tuple]) -> Union[pdarray, tuple, str]:
     """
     Find the union of two arrays.
 
@@ -284,15 +286,15 @@ def union1d(pda1: pdarray, pda2: pdarray) -> pdarray:
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array
-    pda2 : pdarray
-        Input array
+    pda1 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
+    pda2 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
 
     Returns
     -------
-    pdarray
-        Unique, sorted union of the input arrays.
+    pdarray or tuple
+        Unique, sorted union of the input arrays or tuple unique/sorted union of flattened arrays, (segments, values).
         
     Raises
     ------
@@ -309,19 +311,36 @@ def union1d(pda1: pdarray, pda2: pdarray) -> pdarray:
     -----
     ak.union1d is not supported for bool or float64 pdarrays
 
+    Both inputs must match types in that they must both be pdarrays or both be iterable
+
     Examples
     --------
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2, -1, 0, 1, 2])
+
+    >>> ak.union1d((ak.array([0, 2]), ak.array([-1, 0, 1])), (ak.array([0, 2]), ak.array([-2, 0, 2])))
+    [-2, -1, 0]
+    [1, 2]
+    (array(0, 3), array([-2, -1, 0, 1, 2])
     """
-    if pda1.size == 0:
-        return pda2  # union is pda2
-    if pda2.size == 0:
-        return pda1  # union is pda1
-    if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg(cmd="union1d", args="{} {}". \
-                             format(pda1.name, pda2.name))
-        return cast(pdarray, create_pdarray(repMsg))
+    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
+        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
+            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
+        if pda1.size == 0:
+            return pda2  # union is pda2
+        if pda2.size == 0:
+            return pda1  # union is pda1
+        # TODO - update to handle uint
+        if (pda1.dtype == int and pda2.dtype == int) or (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+            repMsg = generic_msg(cmd="union1d", args="{} {}".
+                                 format(pda1.name, pda2.name))
+            return cast(pdarray, create_pdarray(repMsg))
+    else:
+        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
+        repMsg = generic_msg(cmd="union1d_multi", args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size}")
+        rep_ele = repMsg.split("+")
+        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
+
     return cast(pdarray,
                 unique(cast(pdarray,
                             concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
