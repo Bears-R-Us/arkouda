@@ -124,6 +124,11 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.bool, test_array.dtype)
         
         test_ndarray = test_array.to_ndarray()
+
+        # test resolution of modulus overflow - issue #1174
+        test_array = ak.randint(-(2**63), 2**63-1, 10)
+        to_validate = np.full(10, -(2**63))
+        self.assertFalse((test_array.to_ndarray() == to_validate).all())
         
         for value in test_ndarray:
             self.assertTrue(value in [True,False])
@@ -154,7 +159,8 @@ class PdarrayCreationTest(ArkoudaTest):
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
-        self.assertTrue((ak.array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2]) == values).all())
+
+        self.assertTrue((ak.array([4, 3, 1, 3, 2, 4, 4, 2, 3, 4]) == values).all())
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
         self.assertTrue((ak.array([2.9160772326374946, 4.353429832157099, 4.5392023718621486, 
@@ -445,19 +451,16 @@ class PdarrayCreationTest(ArkoudaTest):
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
  
-        self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
-                        'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
+        self.assertTrue((ak.array(['TV', 'JTEW', 'BOCO', 'HF', 'D', 'UDMM', 'T', 'NK', 'OQNP', 'ZXV']) == pda).all())
         
         pda = ak.random_strings_uniform(minlen=np.int64(1), maxlen=np.int64(5), seed=np.int64(1), 
                                         size=np.int64(10))
- 
-        self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
-                        'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
+
+        self.assertTrue((ak.array(['TV', 'JTEW', 'BOCO', 'HF', 'D', 'UDMM', 'T', 'NK', 'OQNP', 'ZXV']) == pda).all())
         
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10,
                                         characters='printable')
-        self.assertTrue((ak.array(['+5"f', '-P]3', '4k', '~HFF', 'F', '`,IE', 
-                        'Y', 'jkBa', '9(', '5oZ']) == pda).all())
+        self.assertTrue((ak.array(['+5', 'fp-P', '3Q4k', '~H', 'F', 'F=`,', 'E', 'YD', 'kBa\'', '(t5']) == pda).all())
 
     def test_random_strings_lognormal(self):
         pda = ak.random_strings_lognormal(2, 0.25, 100, characters='printable')
