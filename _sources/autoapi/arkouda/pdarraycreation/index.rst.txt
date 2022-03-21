@@ -90,13 +90,15 @@ Functions
    contains strings and sets the dtype to str
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
 
    :param a: Rank-1 array of a supported dtype
    :type a: Union[pdarray, np.ndarray]
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype, type, or str
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -347,6 +349,8 @@ Functions
    :param stride: The difference between consecutive elements, the default stride is 1,
                   if stride is specified then start must also be specified.
    :type stride: int_scalars, optional
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype, type, or str
 
    :returns: Integers from start (inclusive) to stop (exclusive) by stride
    :rtype: pdarray, dtype
