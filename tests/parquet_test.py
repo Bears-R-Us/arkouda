@@ -76,6 +76,29 @@ def get_datasets_test(dtype):
 
     return dsets
 
+def append_test():
+    # use small size to cut down on execution time
+    append_size = 10
+
+    base_dset = ak.randint(0, 2**32, append_size)
+    ak_dict = {}
+    ak_dict['uint-dset'] = ak.randint(0, 2**32, append_size, dtype=ak.uint64)
+    ak_dict['bool-dset'] = ak.randint(0, 1, append_size, dtype=ak.bool)
+    ak_dict['float-dset'] = ak.randint(0, 2**32, append_size, dtype=ak.float64)
+    ak_dict['int-dset'] = ak.randint(0, 2**32, append_size)
+
+    base_dset.save_parquet("pq_testcorrect", "base-dset")
+
+    for key in ak_dict:
+        ak_dict[key].save_parquet("pq_testcorrect", key, mode='append')
+
+    ak_vals = ak.read_parquet("pq_testcorrect*")
+    
+    for f in glob.glob('pq_test*'):
+        os.remove(f)
+
+    return ak_vals, ak_dict
+
 @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
 class ParquetTest(ArkoudaTest):
     def test_parquet(self):
@@ -128,6 +151,12 @@ class ParquetTest(ArkoudaTest):
 
         for f in glob.glob('pq_test*'):
             os.remove(f)
+
+    def test_append(self):
+        ak_vals, ak_dict = append_test()
+
+        for key in ak_dict:
+            self.assertTrue((ak_vals[key] == ak_dict[key]).all())
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

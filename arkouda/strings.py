@@ -1421,7 +1421,7 @@ class Strings:
         if mode.lower() in 'truncate':
             m = 0
         else:
-            raise ValueError("Allowed modes are 'truncate'")
+            raise ValueError("Allowed modes are 'truncate', append not yet supported on strings")
 
         try:
             json_array = json.dumps([prefix_path])
@@ -1429,7 +1429,7 @@ class Strings:
             raise ValueError(e)
 
         cmd = "writeParquet"
-        args = f"{self.entry.name} {dataset} {json_array} str {compressed}"
+        args = f"{self.entry.name} {dataset} {m} {json_array} str {compressed}"
         return cast(str, generic_msg(cmd, args))
         
     def is_registered(self) -> np.bool_:

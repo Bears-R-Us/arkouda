@@ -316,7 +316,7 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
   try {
     using FileClass = ::arrow::io::FileOutputStream;
     std::shared_ptr<FileClass> out_file;
-    PARQUET_ASSIGN_OR_THROW(out_file, FileClass::Open(filename));
+    ARROWRESULT_OK(FileClass::Open(filename), out_file);
 
     parquet::schema::NodeVector fields;
     if(dtype == ARROWINT64)
@@ -504,6 +504,91 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
   }
 }
 
+int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
+                              const char* dsetname, int64_t numelems,
+                              int64_t dtype, bool compressed,
+                              char** errMsg) {
+  try {
+    std::shared_ptr<arrow::io::ReadableFile> infile;
+    ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                   infile);
+    std::unique_ptr<parquet::arrow::FileReader> reader;
+    ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
+    std::shared_ptr<arrow::Table> table;
+    std::shared_ptr<arrow::Table>* hold_table = &table;
+    ARROWSTATUS_OK(reader->ReadTable(hold_table));
+
+    std::shared_ptr<arrow::Array> values;
+    auto chunk_type = arrow::int64();
+    if(dtype == ARROWINT64) {
+      chunk_type = arrow::int64();
+      arrow::Int64Builder builder;
+      auto chpl_ptr = (int64_t*)chpl_arr;
+      for(int i = 0; i < numelems; i++)
+        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.Finish(&values));
+    } else if(dtype == ARROWUINT64) {
+      chunk_type = arrow::uint64();
+      arrow::UInt64Builder builder;
+      auto chpl_ptr = (uint64_t*)chpl_arr;
+      for(int i = 0; i < numelems; i++)
+        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.Finish(&values));
+    } else if(dtype == ARROWBOOLEAN) {
+      chunk_type = arrow::boolean();
+      arrow::BooleanBuilder builder;
+      auto chpl_ptr = (bool*)chpl_arr;
+      for(int i = 0; i < numelems; i++)
+        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.Finish(&values));
+    } else if(dtype == ARROWSTRING) {
+      chunk_type = arrow::utf8();
+      arrow::StringBuilder builder;
+      auto chpl_ptr = (uint8_t*)chpl_arr;
+      int j = 0;
+      for(int i = 0; i < numelems; i++) {
+        std::string tmp_str = "";
+        while(chpl_ptr[j] != '0') {
+          tmp_str += chpl_ptr[j++];
+        }
+        ARROWSTATUS_OK(builder.Append(tmp_str));
+      }
+      ARROWSTATUS_OK(builder.Finish(&values));
+    } else if(dtype == ARROWDOUBLE) {
+      chunk_type = arrow::float64();
+      arrow::DoubleBuilder builder;
+      auto chpl_ptr = (double*)chpl_arr;
+      for(int i = 0; i < numelems; i++)
+        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.Finish(&values));
+    } else {
+      std::string msg = "Unrecognized Parquet dtype"; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+    arrow::ArrayVector arrays;
+    arrays.push_back(values);
+
+    std::shared_ptr<arrow::ChunkedArray> chunk_sh_ptr;
+    ARROWRESULT_OK(arrow::ChunkedArray::Make({arrays}, chunk_type), chunk_sh_ptr);
+
+    auto newField = arrow::field(dsetname, chunk_type);
+    std::shared_ptr<arrow::Table> fin_table;
+    ARROWRESULT_OK(table -> AddColumn(0, newField, chunk_sh_ptr), fin_table);
+
+    using FileClass = ::arrow::io::FileOutputStream;
+    std::shared_ptr<FileClass> out_file;
+    ARROWRESULT_OK(FileClass::Open(filename), out_file);
+    ARROWSTATUS_OK(parquet::arrow::WriteTable(*fin_table, arrow::default_memory_pool(), out_file, numelems));
+    
+    return 0;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
 const char* cpp_getVersionInfo(void) {
   return strdup(arrow::GetBuildInfo().version_string.c_str());
 }
@@ -598,6 +683,16 @@ extern "C" {
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                bool compressed, char** errMsg) {
     return cpp_createEmptyParquetFile(filename, dsetname, dtype, compressed, errMsg);
+  }
+
+  int c_appendColumnToParquet(const char* filename, void* chpl_arr,
+                              const char* dsetname, int64_t numelems,
+                              int64_t dtype, bool compressed,
+                              char** errMsg) {
+    return cpp_appendColumnToParquet(filename, chpl_arr,
+                                     dsetname, numelems,
+                                     dtype, compressed,
+                                     errMsg);
   }
 
   int c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
