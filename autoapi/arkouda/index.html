@@ -4227,6 +4227,8 @@ not an int or float, or seed is not an int</p></li>
 <p class="rubric">Notes</p>
 <p>Calling randint with dtype=float64 will result in uniform non-integral
 floating point values.</p>
+<p>Ranges &gt;= 2**64 in size is undefined behavior because
+it exceeds the maximum value that can be stored on the server (uint64)</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="go">array([5, 7, 4, 8, 3])</span>
