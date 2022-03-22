@@ -348,6 +348,8 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
                     unique(cast(pdarray,
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
     else:
+        if pda1[0].size != pda2[0].size:
+            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
         # the segment arrays are always going to be dtype int. The values will support int64 and uint64
         repMsg = generic_msg(cmd="union1d_multi", args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size}")
         rep_ele = repMsg.split("+")
@@ -434,6 +436,8 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
         int1d = aux[:-1][mask]
         return int1d
     else:
+        if pda1[0].size != pda2[0].size:
+            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
         # the segment arrays are always going to be dtype int. The values will support int64 and uint64
         repMsg = generic_msg(cmd="intersect1d_multi",
                              args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}")
@@ -518,6 +522,8 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, L
             pda2 = cast(pdarray, unique(pda2))
         return pda1[in1d(pda1, pda2, invert=True)]
     else:
+        if pda1[0].size != pda2[0].size:
+            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
         # the segment arrays are always going to be dtype int. The values will support int64 and uint64
         repMsg = generic_msg(cmd="setdiff1d_multi",
                              args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}")
@@ -600,6 +606,8 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, Li
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
     else:
+        if pda1[0].size != pda2[0].size:
+            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
         # the segment arrays are always going to be dtype int. The values will support int64 and uint64
         repMsg = generic_msg(cmd="setxor1d_multi",
                              args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}")

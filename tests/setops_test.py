@@ -116,6 +116,13 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
         self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
 
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
+
         
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
@@ -154,6 +161,13 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
         self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
 
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
+
         
     def testIntersectId(self):
         pdaOne = ak.array([1, 3, 4, 3])
@@ -190,6 +204,13 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
         self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
         
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
@@ -225,6 +246,13 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
         self.assertListEqual(vals.to_ndarray().tolist(), [0, 1, 2, 5, 3, 4, 6, 7, 8])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
 
     def testIn1d(self): 
         pdaOne = ak.array([-1, 0, 1, 3])
