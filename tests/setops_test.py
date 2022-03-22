@@ -92,7 +92,30 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setxor1d([-1, 0, 1], [-2, 0, 2])     
+            ak.setxor1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetxor1d_multi(self):
+        a = [1, 2, 3, 2, 4]
+        b = [1, 3, 6]
+        c = [2, 3, 5, 7, 5]
+        d = [6, 9]
+
+        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                  (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
+
+        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
+                                  (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
+
         
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
@@ -117,8 +140,20 @@ class SetOpsTest(ArkoudaTest):
 
         segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b)),
                                     (ak.array([0, len(c)]), ak.array(c + d)))
-        print(segs)
-        print(vals)
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
+
+        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
+                                    (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
+
         
     def testIntersectId(self):
         pdaOne = ak.array([1, 3, 4, 3])
