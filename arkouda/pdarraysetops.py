@@ -325,10 +325,6 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
     (array(0, 3), array([-2, -1, 0, 1, 2])
 
     Multiple pdarrays flattened
-    a = [0, 1, 2]
-        b = [3, 4]
-        c = [5]
-        d = [6, 7, 8]
     >>> a_segs = ak.array([0, 3])
     >>> a_vals = ak.array([0, 1, 2, 3, 4])
     >>> b_segs = ak.array([0, 1])
