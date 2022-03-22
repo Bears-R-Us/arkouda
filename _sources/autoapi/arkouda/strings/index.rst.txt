@@ -847,6 +847,33 @@ Classes
       via the dataset parameter.
 
 
+   .. py:method:: save_parquet(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Strings object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   Append is not supported for Parquet writing.
+      :type mode: str {'truncate'}
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. seealso:: :obj:`strings.save`, :obj:`pdarray.save_parquet`
+
+
    .. py:method:: is_registered(self) -> numpy.bool_
 
       Return True iff the object is contained in the registry

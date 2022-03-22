@@ -1155,6 +1155,41 @@ via the dataset parameter.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.save_parquet">
+<span class="sig-name descname"><span class="pre">save_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.save_parquet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Strings object to Parquet. The result is a collection of Parquet files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path. Each locale saves its chunk of the Strings array to its
+corresponding file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – The name of the Strings dataset to be written, defaults to strings_array</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'}</em>) – By default, truncate (overwrite) output files, if they exist.
+Append is not supported for Parquet writing.</p></li>
+<li><p><strong>compressed</strong> (<em>bool</em>) – Defaults to False. When True, files will be written with Snappy compression
+and RLE bit packing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>String message indicating result of save operation</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
+neither ‘truncate’ nor ‘append’</p></li>
+<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strings.save</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.save_parquet</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_registered" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True iff the object is contained in the registry</p>
