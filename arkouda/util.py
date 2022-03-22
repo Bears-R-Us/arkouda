@@ -119,7 +119,7 @@ def register_all(data, prefix, overwrite=True):
 
 
 def attach_all(prefix):
-    pat = re.compile(prefix+'\w+')
+    pat = re.compile(prefix+'\\w+')
     res = pat.findall(information(AllSymbols))
     return {k[len(prefix):]:attach_pdarray(k) for k in res}
 
