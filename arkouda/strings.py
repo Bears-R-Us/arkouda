@@ -1380,6 +1380,58 @@ class Strings:
         args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {self.entry.name} {save_offsets}"
         return cast(str, generic_msg(cmd, args))
 
+    def save_parquet(self, prefix_path : str, dataset : str='strings_array', 
+                     mode : str='truncate', compressed : bool = False) -> str:
+        """
+        Save the Strings object to Parquet. The result is a collection of Parquet files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate'}
+            By default, truncate (overwrite) output files, if they exist.
+            Append is not supported for Parquet writing.
+        compressed : bool
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError 
+            Raised if the lengths of columns and values differ, or the mode is 
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+
+        See Also
+        --------
+        strings.save()
+        pdarray.save_parquet()
+        """
+        if mode.lower() in 'truncate':
+            m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate'")
+
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+
+        cmd = "writeParquet"
+        args = f"{self.entry.name} {dataset} {json_array} str {compressed}"
+        return cast(str, generic_msg(cmd, args))
+        
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry
