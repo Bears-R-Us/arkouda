@@ -18,7 +18,6 @@ module ArraySetopsMsg
     use ServerErrorStrings;
 
     use ArraySetops;
-    use Unique;
     use Indexing;
     use RadixSortLSD;
     use Reflection;
