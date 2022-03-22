@@ -344,15 +344,14 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
             repMsg = generic_msg(cmd="union1d", args="{} {}".
                                  format(pda1.name, pda2.name))
             return cast(pdarray, create_pdarray(repMsg))
+        return cast(pdarray,
+                    unique(cast(pdarray,
+                                concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
     else:
         # the segment arrays are always going to be dtype int. The values will support int64 and uint64
         repMsg = generic_msg(cmd="union1d_multi", args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size}")
         rep_ele = repMsg.split("+")
         return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
-
-    return cast(pdarray,
-                unique(cast(pdarray,
-                            concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
 
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
