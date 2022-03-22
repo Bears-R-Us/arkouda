@@ -422,8 +422,8 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: pdarray, pda2: pdarray,
-              assume_unique: bool = False) -> pdarray:
+def setdiff1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, List[pdarray], tuple],
+              assume_unique: bool = False) -> Union[pdarray, tuple, str]:
     """
     Find the set difference of two arrays.
 
@@ -431,18 +431,19 @@ def setdiff1d(pda1: pdarray, pda2: pdarray,
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array.
-    pda2 : pdarray
-        Input comparison array.
+    pda1 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
+    pda2 : pdarray, list, or tuple
+        Input array or flattened list of pdarrays
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray
+    pdarray or tuple
         Sorted 1D array of values in `pda1` that are not in `pda2`.
+        If flattened segments are passed, return will be a tuple (segments, values).
 
     Raises
     ------
@@ -466,19 +467,28 @@ def setdiff1d(pda1: pdarray, pda2: pdarray,
     >>> ak.setdiff1d(a, b)
     array([1, 2])
     """
-    if pda1.size == 0:
-        return pda1  # return a zero length pdarray
-    if pda2.size == 0:
-        return pda1  # subtracting nothing return orig pdarray
-    if (pda1.dtype == int and pda2.dtype == int) or \
-            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-        repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}". \
-                             format(pda1.name, pda2.name, assume_unique))
-        return create_pdarray(cast(str, repMsg))
-    if not assume_unique:
-        pda1 = cast(pdarray, unique(pda1))
-        pda2 = cast(pdarray, unique(pda2))
-    return pda1[in1d(pda1, pda2, invert=True)]
+    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
+        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
+            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
+        if pda1.size == 0:
+            return pda1  # return a zero length pdarray
+        if pda2.size == 0:
+            return pda1  # subtracting nothing return orig pdarray
+        if (pda1.dtype == int and pda2.dtype == int) or \
+                (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+            repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}". \
+                                 format(pda1.name, pda2.name, assume_unique))
+            return create_pdarray(cast(str, repMsg))
+        if not assume_unique:
+            pda1 = cast(pdarray, unique(pda1))
+            pda2 = cast(pdarray, unique(pda2))
+        return pda1[in1d(pda1, pda2, invert=True)]
+    else:
+        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
+        repMsg = generic_msg(cmd="setdiff1d_multi",
+                             args=f"{pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}")
+        rep_ele = repMsg.split("+")
+        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection

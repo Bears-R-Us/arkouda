@@ -107,7 +107,18 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])     
+            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetdiff1d_multi(self):
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [1]
+        d = [3, 4]
+
+        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                    (ak.array([0, len(c)]), ak.array(c + d)))
+        print(segs)
+        print(vals)
         
     def testIntersectId(self):
         pdaOne = ak.array([1, 3, 4, 3])
