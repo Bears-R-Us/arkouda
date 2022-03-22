@@ -153,7 +153,7 @@ module ArraySetopsMsg
           var intx_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(il, intx.size);
@@ -163,7 +163,7 @@ module ArraySetopsMsg
           var intx_vals = makeDistArray((+ reduce intx_lens), int);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#il){
@@ -187,7 +187,7 @@ module ArraySetopsMsg
           var intx_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(il, intx.size);
@@ -197,7 +197,7 @@ module ArraySetopsMsg
           var intx_vals = makeDistArray((+ reduce intx_lens), uint);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newSrcAggregator(uint)){
+          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(uint)){
             // TODO - update to use lowLevelLocalizingSlice 
             var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#il){
@@ -346,7 +346,7 @@ module ArraySetopsMsg
           var xor_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(xl, xor.size);
@@ -356,7 +356,7 @@ module ArraySetopsMsg
           var xor_vals = makeDistArray((+ reduce xor_lens), int);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#xl){
@@ -380,7 +380,7 @@ module ArraySetopsMsg
           var xor_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(xl, xor.size);
@@ -390,7 +390,7 @@ module ArraySetopsMsg
           var xor_vals = makeDistArray((+ reduce xor_lens), uint);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newSrcAggregator(uint)){
+          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(uint)){
             // TODO - update to use lowLevelLocalizingSlice 
             var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#xl){
@@ -539,7 +539,7 @@ module ArraySetopsMsg
           var diff_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(dl, d.size);
@@ -549,7 +549,7 @@ module ArraySetopsMsg
           var diff_vals = makeDistArray((+ reduce diff_lens), int);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#dl){
@@ -573,7 +573,7 @@ module ArraySetopsMsg
           var diff_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             agg.copy(dl, d.size);
@@ -583,7 +583,7 @@ module ArraySetopsMsg
           var diff_vals = makeDistArray((+ reduce diff_lens), uint);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newSrcAggregator(uint)){
+          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newDstAggregator(uint)){
             // TODO - update to use lowLevelLocalizingSlice 
             var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
             for i in (0..#dl){
@@ -730,7 +730,7 @@ module ArraySetopsMsg
           var union_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
             agg.copy(ul, u.size);
@@ -740,7 +740,7 @@ module ArraySetopsMsg
           var union_vals = makeDistArray((+ reduce union_lens), int);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
             for i in (0..#ul){
@@ -764,7 +764,7 @@ module ArraySetopsMsg
           var union_lens: [segments1.aD] int;
 
           // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newSrcAggregator(int)){
+          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newDstAggregator(int)){
             // TODO - update to use lowLevelLocalizingSlice 
             var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
             agg.copy(ul, u.size);
@@ -774,7 +774,7 @@ module ArraySetopsMsg
           var union_vals = makeDistArray((+ reduce union_lens), uint);
 
           // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newSrcAggregator(uint)){
+          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newDstAggregator(uint)){
             // TODO - update to use lowLevelLocalizingSlice 
             var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
             for i in (0..#ul){
