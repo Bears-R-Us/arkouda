@@ -762,15 +762,15 @@ module SegmentedArray {
       var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
       var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
       // Fill left values
-      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
+      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) with (var agg = newDstAggregator(uint(8))) {
         for i in 0..#(len-1) {
-          unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
+          agg.copy(leftVals[dstStart+i], va[srcStart+i]);
         }
       }
       // Fill right values
-      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
+      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) with (var agg = newDstAggregator(uint(8))) {
         for i in 0..#(len-1) {
-          unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
+          agg.copy(rightVals[dstStart+i], va[srcStart+i]);
         }
       }
       return (leftOffsets, leftVals, rightOffsets, rightVals);
@@ -883,15 +883,15 @@ module SegmentedArray {
       var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
       ref va = values.a;
       // Fill left values
-      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
+      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) with (var agg = newDstAggregator(uint(8))) {
         for i in 0..#(len-1) {
-          unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
+          agg.copy(leftVals[dstStart+i], va[srcStart+i]);
         }
       }
       // Fill right values
-      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
+      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) with (var agg = newDstAggregator(uint(8))) {
         for i in 0..#(len-1) {
-          unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
+          agg.copy(rightVals[dstStart+i], va[srcStart+i]);
         }
       }
       return (leftOffsets, leftVals, rightOffsets, rightVals);
@@ -920,33 +920,33 @@ module SegmentedArray {
       // Copy in the left and right-hand values, separated by the delimiter
       ref va1 = values.a;
       ref va2 = other.values.a;
-      forall (o1, o2, no, l1, l2) in zip(offsets.a, other.offsets.a, newOffsets, leftLen, rightLen) {
+      forall (o1, o2, no, l1, l2) in zip(offsets.a, other.offsets.a, newOffsets, leftLen, rightLen) with (var agg = newDstAggregator(uint(8))) {
         var pos = no;
         // Left side
         if right {
           for i in 0..#l1 {
-            unorderedCopy(newVals[pos+i], va1[o1+i]);
+            agg.copy(newVals[pos+i], va1[o1+i]);
           }
           pos += l1;
         } else {
           for i in 0..#l2 {
-            unorderedCopy(newVals[pos+i], va2[o2+i]);
+            agg.copy(newVals[pos+i], va2[o2+i]);
           }
           pos += l2;
         }
         // Delimiter
         for (i, b) in zip(0..#delim.numBytes, delim.chpl_bytes()) {
-          unorderedCopy(newVals[pos+i], b);
+          agg.copy(newVals[pos+i], b);
         }
         pos += delim.numBytes;
         // Right side
         if right {
           for i in 0..#l2 {
-            unorderedCopy(newVals[pos+i], va2[o2+i]);
+            agg.copy(newVals[pos+i], va2[o2+i]);
           }
         } else {
           for i in 0..#l1 {
-            unorderedCopy(newVals[pos+i], va1[o1+i]);
+            agg.copy(newVals[pos+i], va1[o1+i]);
           }
         }
       }
