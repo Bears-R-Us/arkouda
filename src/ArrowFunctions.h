@@ -38,10 +38,10 @@ extern "C" {
                            const char* colname, int64_t numElems, int64_t startIdx,
                            int64_t batchSize, char** errMsg);
 
-  int cpp_getStringColumnNumBytes(const char* filename, const char* colname,
-                                  void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
-  int c_getStringColumnNumBytes(const char* filename, const char* colname,
-                                void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname,
+                                      void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname,
+                                    void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
