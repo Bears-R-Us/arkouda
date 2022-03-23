@@ -21,6 +21,7 @@ from arkouda.client import maxTransferBytes
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
 from arkouda.series import Series
+from arkouda.index import Index
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -154,10 +155,10 @@ class DataFrame(UserDict):
             self._bytes = 0
             self._empty = initialdata.empty
             # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
-            self._columns = ['index'] + initialdata.columns.tolist()
-            # Add index values as data
-            self.data = {'index': array(initialdata.index.values.tolist())}
+            self._columns = initialdata.columns.tolist()
 
+            self.index = Index(initialdata.index.values.tolist())
+            self.data = {}
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
             for key, val in initialdata.to_dict('list').items():
@@ -173,8 +174,8 @@ class DataFrame(UserDict):
         self._empty = True
 
         # Initial attempts to keep an order on the columns
-        self._columns = ['index']
-        self.data['index'] = None
+        self._columns = []
+        self.index = None
 
         # Add data to the DataFrame if there is any
         if initialdata is not None:
@@ -220,7 +221,8 @@ class DataFrame(UserDict):
             # If the index column was passed in, use that instead of
             # creating a new one.
             if self.data['index'] is None:
-                self.data['index'] = arange(0, self._size, 1)
+                # self.data['index'] = arange(0, self._size, 1)
+                self.index = Index(arange(0, self._size, 1))
 
             self.update_size()
 
