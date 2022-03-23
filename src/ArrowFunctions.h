@@ -67,6 +67,15 @@ extern "C" {
                                bool compressed, char** errMsg);
   int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                  bool compressed, char** errMsg);
+  
+  int c_appendColumnToParquet(const char* filename, void* chpl_arr,
+                              const char* dsetname, int64_t numelems,
+                              int64_t dtype, bool compressed,
+                              char** errMsg);
+  int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
+                                const char* dsetname, int64_t numelems,
+                                int64_t dtype, bool compressed,
+                                char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);

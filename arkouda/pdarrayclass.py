@@ -1144,17 +1144,19 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        if mode.lower() in 'truncate':
+        if mode.lower() in 'append':
+            m = 1
+        elif mode.lower() in 'truncate':
             m = 0
-        else: # TODO: add support for the append mode
-            raise ValueError("Currently only the 'truncate' mode is supported")
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
         
         try:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return cast(str, generic_msg(cmd="writeParquet", args="{} {} {} {} {}".\
-                                     format(self.name, dataset, json_array, self.dtype,
+        return cast(str, generic_msg(cmd="writeParquet", args="{} {} {} {} {} {}".\
+                                     format(self.name, dataset, m, json_array, self.dtype,
                                             compressed)))
     
     @typechecked
