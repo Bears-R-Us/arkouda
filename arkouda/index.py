@@ -10,7 +10,7 @@ from arkouda.groupbyclass import GroupBy
 from arkouda.alignment import in1dmulti
 
 class Index:
-    def __init__(self,index):
+    def __init__(self, index):
         self.index = index
         self.size = index.size
 

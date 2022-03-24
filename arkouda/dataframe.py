@@ -151,9 +151,9 @@ class DataFrame(UserDict):
             elif isinstance(index, Index):
                 self.index = index
             elif isinstance(index, pd.Index):
-                self.index = Index(index.values.tolist())
+                self.index = index.values.tolist()
             else:
-                self.index = Index(index)
+                self.index = index
             self.data = initialdata.data
             self.update_size()
             return
@@ -166,13 +166,13 @@ class DataFrame(UserDict):
             self._columns = initialdata.columns.tolist()
 
             if index == None:
-                self.index = Index(initialdata.index.values.tolist())
+                self.index = initialdata.index.values.tolist()
             elif isinstance(index, Index):
                 self.index = index
             elif isinstance(index, pd.Index):
-                self.index = Index(index.values.tolist())
+                self.index = index.values.tolist()
             else:
-                self.index = Index(index)
+                self.index = index
             self.data = {}
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
@@ -235,13 +235,13 @@ class DataFrame(UserDict):
             # If the index param was passed in, use that instead of
             # creating a new one.
             if self.index is None:
-                self.index = Index(arange(0, self._size, 1))
+                self.index = arange(0, self._size, 1)
             elif isinstance(index, Index):
                 self.index = index
             elif isinstance(index, pd.Index):
-                self.index = Index(index.values.tolist())
+                self.index = index.values.tolist()
             else:
-                self.index = Index(index)
+                self.index = index
 
             self.update_size()
 
@@ -310,7 +310,7 @@ class DataFrame(UserDict):
             s = key
             for k in self._columns:
                 rtn_data[k] = UserDict.__getitem__(self, k)[s.start:s.stop:s.step]
-            return DataFrame(initialdata=rtn_data, index=range(self.size)[s.start:s.stop:s.step])
+            return DataFrame(initialdata=rtn_data, index=list(range(self.size)[s.start:s.stop:s.step]))
         else:
             raise IndexError("Invalid selector: unknown error.")
 
@@ -362,7 +362,7 @@ class DataFrame(UserDict):
         # Update the dataframe indices and metadata.
         if add_index:
             self.update_size()
-            self.data['index'] = arange(0, self._size, 1)
+            self.index = arange(0, self._size, 1)
 
     def __len__(self):
         """
@@ -650,9 +650,9 @@ class DataFrame(UserDict):
 
         if not size:
             self.update_size()
-            self.index = Index(arange(0, self._size))
+            self.index = arange(0, self._size)
         else:
-            self.index = Index(arange(size))
+            self.index = arange(size)
 
     @property
     def info(self):
@@ -722,7 +722,7 @@ class DataFrame(UserDict):
 
         if callable(mapper):
             # Do not rename index, start at 1
-            for i in range(1, len(self._columns)):
+            for i in range(0, len(self._columns)):
                 oldname = self._columns[i]
                 newname = mapper(oldname)
                 # Only rename if name has changed
@@ -747,28 +747,28 @@ class DataFrame(UserDict):
 
     def append(self, other, ordered=True):
         """
-                Concatenate data from 'other' onto the end of this DataFrame, in place.
+        Concatenate data from 'other' onto the end of this DataFrame, in place.
 
-                Explicitly, use the arkouda concatenate function to append the data
-                from each column in other to the end of self. This operation is done
-                in place, in the sense that the underlying pdarrays are updated from
-                the result of the arkouda concatenate function, rather than returning
-                a new DataFrame object containing the result.
+        Explicitly, use the arkouda concatenate function to append the data
+        from each column in other to the end of self. This operation is done
+        in place, in the sense that the underlying pdarrays are updated from
+        the result of the arkouda concatenate function, rather than returning
+        a new DataFrame object containing the result.
 
-                Parameters
-                ----------
-                other : DataFrame
-                    The DataFrame object whose data will be appended to this DataFrame.
-                ordered: bool
-                    If False, allow rows to be interleaved for better performance (but
-                    data within a row remains together). By default, append all rows
-                    to the end, in input order.
+        Parameters
+        ----------
+        other : DataFrame
+            The DataFrame object whose data will be appended to this DataFrame.
+        ordered: bool
+            If False, allow rows to be interleaved for better performance (but
+            data within a row remains together). By default, append all rows
+            to the end, in input order.
 
-                Returns
-                -------
-                self
-                    Appending occurs in-place, but result is returned for compatibility.
-                """
+        Returns
+        -------
+        self
+            Appending occurs in-place, but result is returned for compatibility.
+        """
         from arkouda.util import concatenate as util_concatenate
 
         # Do nothing if the other dataframe is empty
@@ -814,9 +814,11 @@ class DataFrame(UserDict):
         if len(items) == 0:
             return cls()
         first = True
+        columnset = set()
+        columnlist = []
         for df in items:
             # Allow for an empty dataframe
-            if df.empty or set(df.keys()) == {'index'}:
+            if df.empty:
                 continue
             if first:
                 columnset = set(df.keys())
@@ -1176,6 +1178,7 @@ class DataFrame(UserDict):
             raise ValueError("The indicated permutation is invalid.")
         for key, val in self.data.items():
             self[key] = self[key][perm]
+        self.index = self.index[perm]
 
     def filter_by_range(self, keys, low=1, high=None):
         """
@@ -1271,7 +1274,15 @@ class DataFrame(UserDict):
 
     @index.setter
     def index(self, value):
-        self._index = value
+        if isinstance(value, Index) or value is None:
+            self._index = value
+        elif isinstance(value, pdarray):
+            self._index = Index(value)
+        elif isinstance(value, list):
+            self._index = Index(array(value))
+        else:
+            raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
+                            f" {type(value)} provided.")
 
 
 def sorted(df, column=False):
