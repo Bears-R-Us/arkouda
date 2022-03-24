@@ -148,10 +148,6 @@ class DataFrame(UserDict):
             self._columns = initialdata._columns
             if index == None:
                 self.index = initialdata.index
-            elif isinstance(index, Index):
-                self.index = index
-            elif isinstance(index, pd.Index):
-                self.index = index.values.tolist()
             else:
                 self.index = index
             self.data = initialdata.data
@@ -167,10 +163,6 @@ class DataFrame(UserDict):
 
             if index == None:
                 self.index = initialdata.index.values.tolist()
-            elif isinstance(index, Index):
-                self.index = index
-            elif isinstance(index, pd.Index):
-                self.index = index.values.tolist()
             else:
                 self.index = index
             self.data = {}
@@ -236,10 +228,6 @@ class DataFrame(UserDict):
             # creating a new one.
             if self.index is None:
                 self.index = arange(0, self._size, 1)
-            elif isinstance(index, Index):
-                self.index = index
-            elif isinstance(index, pd.Index):
-                self.index = index.values.tolist()
             else:
                 self.index = index
 
