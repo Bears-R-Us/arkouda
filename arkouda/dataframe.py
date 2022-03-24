@@ -137,7 +137,7 @@ class DataFrame(UserDict):
 
     COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
 
-    def __init__(self, initialdata=None):
+    def __init__(self, initialdata=None, index=None):
         super().__init__()
 
         if isinstance(initialdata, DataFrame):
@@ -146,6 +146,14 @@ class DataFrame(UserDict):
             self._bytes = initialdata._bytes
             self._empty = initialdata._empty
             self._columns = initialdata._columns
+            if index == None:
+                self.index = initialdata.index
+            elif isinstance(Index, index):
+                self.index = index
+            elif isinstance(pd.Index, index):
+                self.index = Index(index.values.tolist())
+            else:
+                self.index = Index(index)
             self.data = initialdata.data
             self.update_size()
             return
@@ -157,7 +165,14 @@ class DataFrame(UserDict):
             # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
             self._columns = initialdata.columns.tolist()
 
-            self.index = Index(initialdata.index.values.tolist())
+            if index == None:
+                self.index = Index(initialdata.index.values.tolist())
+            elif isinstance(Index, index):
+                self.index = index
+            elif isinstance(pd.Index, index):
+                self.index = Index(index.values.tolist())
+            else:
+                self.index = Index(index)
             self.data = {}
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
@@ -167,7 +182,6 @@ class DataFrame(UserDict):
             self.data.update()
             return
 
-
         # Some metadata about this dataframe.
         self._size = 0
         self._bytes = 0
@@ -175,7 +189,7 @@ class DataFrame(UserDict):
 
         # Initial attempts to keep an order on the columns
         self._columns = []
-        self.index = None
+        self.index = index
 
         # Add data to the DataFrame if there is any
         if initialdata is not None:
@@ -193,8 +207,7 @@ class DataFrame(UserDict):
                     self._empty = False
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
-                    if key != 'index':
-                        self._columns.append(key)
+                    self._columns.append(key)
 
             # Initial data is a list of arkouda arrays
             elif type(initialdata) == list:
@@ -218,26 +231,30 @@ class DataFrame(UserDict):
             # Update the dataframe indices and metadata.
             if len(sizes) > 0:
                 self._size = sizes.pop()
-            # If the index column was passed in, use that instead of
+
+            # If the index param was passed in, use that instead of
             # creating a new one.
-            if self.data['index'] is None:
-                # self.data['index'] = arange(0, self._size, 1)
+            if self.index is None:
                 self.index = Index(arange(0, self._size, 1))
+            elif isinstance(Index, index):
+                self.index = index
+            elif isinstance(pd.Index, index):
+                self.index = Index(index.values.tolist())
+            else:
+                self.index = Index(index)
 
             self.update_size()
 
+    # delete a column
     def __delitem__(self, key):
         # This function is a backdoor to messing up the indices and columns.
         # I needed to reimplement it to prevent bad behavior
-        if key == 'index':
-            raise KeyError('The index column may be reset, but not dropped.')
-        else:
-            UserDict.__delitem__(self, key)
-            self._columns.remove(key)
+        UserDict.__delitem__(self, key)
+        self._columns.remove(key)
 
         # If removing this column emptied the dataframe
         if len(self._columns) == 1:
-            self.data['index'] = None
+            #self.data['index'] = None
             self._empty = True
         self.update_size()
 
@@ -247,14 +264,15 @@ class DataFrame(UserDict):
             result = {}
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
-            return DataFrame(initialdata=result)
+            # To stay consistent with numpy, provide the old index values
+            return DataFrame(initialdata=result, index=key)
 
         # Select rows or columns using a list
         if isinstance(key, list):
             result = DataFrame()
             if len(key) <= 0:
                 return result
-            if len({type(x) for x in key}) > 1:
+            if len([type(x) for x in key]) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
             if type(key[0]) == int:
                 rows = array(key)
@@ -262,10 +280,9 @@ class DataFrame(UserDict):
                     result.data[k] = UserDict.__getitem__(self, k)[rows]
                     result._columns.append(k)
                 result._empty = False
+                result.index = key
                 return result
             elif type(key[0]) == str:
-                # Grab the index column as well.
-                result.data['index'] = UserDict.__getitem__(self, 'index')
                 for k in key:
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
@@ -289,14 +306,11 @@ class DataFrame(UserDict):
         # Select rows using a slice
         elif isinstance(key, slice):
             # result = DataFrame()
-            data = {}
+            rtn_data = {}
             s = key
             for k in self._columns:
-                data[k] = UserDict.__getitem__(self, k)[s.start:s.stop:s.step]
-            # result._columns.append(k)
-            # result._empty = False
-            return DataFrame(initialdata=data)
-
+                rtn_data[k] = UserDict.__getitem__(self, k)[s.start:s.stop:s.step]
+            return DataFrame(initialdata=rtn_data, index=range(self.size)[s.start:s.stop:s.step])
         else:
             raise IndexError("Invalid selector: unknown error.")
 
@@ -323,6 +337,7 @@ class DataFrame(UserDict):
                 raise KeyError("The row index is out of range.")
             else:
                 for k, v in value.items():
+                    # maintaining to prevent adding index column
                     if k == 'index':
                         continue
                     self[k][key] = v
@@ -357,9 +372,11 @@ class DataFrame(UserDict):
 
     def _ncols(self):
         """
-        Only count the non-index columns.
+        Number of columns.
+        If index appears, we now want to utilize this
+        because the actual index has been moved to a property
         """
-        return len(list(self.data.keys())) - 1
+        return len(list(self.data.keys()))
 
     def __str__(self):
         """
@@ -405,15 +422,15 @@ class DataFrame(UserDict):
                 else:
                     newdf[col] = self[col]
             return newdf.to_pandas(retain_index=True)
-        # Being 1 above the threshold caises the PANDAS formatter to split the data frame vertically
+        # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
         idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
         newdf = DataFrame()
-        for col in self._columns[1:]:
+        for col in self._columns:
             if isinstance(self[col], Categorical):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
                 newdf[col] = self[col][idx]
-        newdf['index'] = self['index'][idx]
+        newdf.index = idx
         return newdf.to_pandas(retain_index=True)
 
     def _shape_str(self):
@@ -427,7 +444,7 @@ class DataFrame(UserDict):
         prt = self._get_head_tail()
         with pd.option_context("display.show_dimensions", False):
             retval = prt.__repr__()
-        retval += self._shape_str()
+        retval += " (" + self._shape_str() + ")"
         return retval
 
     def _repr_html_(self):
@@ -456,10 +473,6 @@ class DataFrame(UserDict):
             The labels to be dropped on the given axis
         """
         for key in keys:
-            # Do not allow the user to drop the index column
-            if key == 'index':
-                raise KeyError('The index column may be reset, but not dropped.')
-
             del self[key]
 
     def _drop_row(self, keys):
@@ -486,6 +499,7 @@ class DataFrame(UserDict):
             # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
             # This avoids the size checks we would do when only setting a single column
             UserDict.__setitem__(self, key, self[key][idx_to_keep])
+        self.index = idx_to_keep
 
     def drop(self, keys, axis=0):
         """
@@ -522,8 +536,8 @@ class DataFrame(UserDict):
             raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
-        if len(self._columns) == 1:
-            self.data['index'] = None
+        if len(self._columns) == 0:
+            self.index = None
             self._empty = True
         self.update_size()
 
@@ -610,7 +624,7 @@ class DataFrame(UserDict):
 
     @property
     def index(self):
-        return self.data['index']
+        return self._index
 
     def reset_index(self, size=False):
         """
@@ -1007,7 +1021,7 @@ class DataFrame(UserDict):
 
         # Proceed with conversion if possible, ignore index column
         pandas_data = {}
-        for key in self._columns[1:]:
+        for key in self._columns:
             val = self[key]
             try:
                 pandas_data[key] = val.to_ndarray()
@@ -1015,10 +1029,9 @@ class DataFrame(UserDict):
                 raise IndexError("Bad index type or format.")
 
         # Return a new dataframe with original indices if requested.
-        if retain_index and 'index' in self:
-            index = self.data['index'].to_ndarray()
+        if retain_index and self.index is not None:
+            index = self.index.to_pandas()
             return pd.DataFrame(data=pandas_data, index=index)
-
         else:
             return pd.DataFrame(data=pandas_data)
 
@@ -1248,6 +1261,10 @@ class DataFrame(UserDict):
         """
 
         return self.GroupBy(keys, use_series)
+
+    @index.setter
+    def index(self, value):
+        self._index = value
 
 
 def sorted(df, column=False):
