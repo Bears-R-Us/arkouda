@@ -228,6 +228,25 @@ module FileIO {
         return new MsgTuple(errorMsg, MsgType.ERROR);                                    
       }
 
+      // If the filename represents a glob pattern, retrieve the locale 0 filename
+      if isGlobPattern(filename) {
+        // Attempt to interpret filename as a glob expression and ls the first result
+        var tmp = glob(filename);
+
+        if tmp.size <= 0 {
+          var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+            
+        // Set filename to globbed filename corresponding to locale 0
+        filename = tmp[tmp.domain.first];
+      }
+
+      if !exists(filename) {
+        var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      } 
+
       select getFileType(filename) {
         when FileType.HDF5 {
           return executeCommand("lshdf", payload, st);

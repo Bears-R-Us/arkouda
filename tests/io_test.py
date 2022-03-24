@@ -167,7 +167,7 @@ class IOTest(ArkoudaTest):
     def testLsHdf(self):
         '''
         Creates 1..n files depending upon the number of arkouda_server locales, invokes the 
-        ls_any method on an explicit file name reads the files and confirms the expected 
+        ls method on an explicit file name reads the files and confirms the expected 
         message was returned.
 
         :return: None
@@ -175,23 +175,23 @@ class IOTest(ArkoudaTest):
         '''
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
-        message = ak.ls_any('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
+        message = ak.ls('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
         self.assertIn('int_tens_pdarray', message)
         
 
         with self.assertRaises(RuntimeError) as cm:        
-            ak.ls_any('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
+            ak.ls('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
 
     def testLsHdfEmpty(self):
         # Test filename empty/whitespace-only condition
         with self.assertRaises(ValueError):
-            ak.ls_any("")
+            ak.ls("")
         
         with self.assertRaises(ValueError):
-            ak.ls_any("   ")
+            ak.ls("   ")
         
         with self.assertRaises(ValueError):
-            ak.ls_any(" \n\r\t  ")
+            ak.ls(" \n\r\t  ")
 
     def testReadHdf(self):
         ''' DEPRECATED - all client calls route to `readAllHdf`

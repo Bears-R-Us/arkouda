@@ -7,13 +7,13 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 from arkouda.categorical import Categorical
 
-__all__ = ["ls_any", "read_hdf", "read_all", "load", "get_datasets",
+__all__ = ["ls", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all", "read_parquet"]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
 @typechecked
-def ls_any(filename : str) -> List[str]:
+def ls(filename : str) -> List[str]:
     """
     This function calls the h5ls utility on a HDF5 file visible to the
     arkouda server or calls a function that imitates the result of h5ls
@@ -90,7 +90,7 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
 
     See Also
     --------
-    get_datasets, ls_any, read_all, load, save
+    get_datasets, ls, read_all, load, save
 
     Notes
     -----
@@ -157,7 +157,7 @@ def read_parquet(filenames : Union[str, List[str]],
 
     See Also
     --------
-    read_hdf, get_datasets, ls_any, read_all, load, save
+    read_hdf, get_datasets, ls, read_all, load, save
 
     Notes
     -----
@@ -171,12 +171,12 @@ def read_parquet(filenames : Union[str, List[str]],
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
-        datasets = get_datasets_allow_errors(filenames, True) if allow_errors else get_datasets(filenames[0], True)
+        datasets = get_datasets_allow_errors(filenames) if allow_errors else get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
 
     nonexistent = set(datasets) - \
-        (set(get_datasets_allow_errors(filenames, True)) if allow_errors else set(get_datasets(filenames[0], True)))
+        (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
     if len(nonexistent) > 0:
         raise ValueError("Dataset(s) not found: {}".format(nonexistent))
 
@@ -267,7 +267,7 @@ def read_all(filenames : Union[str, List[str]],
 
     See Also
     --------
-    read_hdf, get_datasets, ls_any
+    read_hdf, get_datasets, ls
 
     Notes
     -----
@@ -414,9 +414,9 @@ def get_datasets(filename : str) -> List[str]:
 
     See Also
     --------
-    ls_any
+    ls
     """
-    datasets = ls_any(filename)
+    datasets = ls(filename)
     # We can skip/remove the _arkouda_metadata group since it is an internal only construct
     if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
@@ -449,7 +449,7 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
 
     See Also
     --------
-    get_datasets, ls_any
+    get_datasets, ls
     """
     datasets = []
     for filename in filenames:
