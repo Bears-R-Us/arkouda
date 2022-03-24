@@ -148,9 +148,9 @@ class DataFrame(UserDict):
             self._columns = initialdata._columns
             if index == None:
                 self.index = initialdata.index
-            elif isinstance(Index, index):
+            elif isinstance(index, Index):
                 self.index = index
-            elif isinstance(pd.Index, index):
+            elif isinstance(index, pd.Index):
                 self.index = Index(index.values.tolist())
             else:
                 self.index = Index(index)
@@ -167,9 +167,9 @@ class DataFrame(UserDict):
 
             if index == None:
                 self.index = Index(initialdata.index.values.tolist())
-            elif isinstance(Index, index):
+            elif isinstance(index, Index):
                 self.index = index
-            elif isinstance(pd.Index, index):
+            elif isinstance(index, pd.Index):
                 self.index = Index(index.values.tolist())
             else:
                 self.index = Index(index)
@@ -236,9 +236,9 @@ class DataFrame(UserDict):
             # creating a new one.
             if self.index is None:
                 self.index = Index(arange(0, self._size, 1))
-            elif isinstance(Index, index):
+            elif isinstance(index, Index):
                 self.index = index
-            elif isinstance(pd.Index, index):
+            elif isinstance(index, pd.Index):
                 self.index = Index(index.values.tolist())
             else:
                 self.index = Index(index)
@@ -421,6 +421,7 @@ class DataFrame(UserDict):
                     newdf[col] = self[col].categories[self[col].codes]
                 else:
                     newdf[col] = self[col]
+            newdf.index = self.index
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
         idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
@@ -563,25 +564,26 @@ class DataFrame(UserDict):
             return self
 
         if not subset:
-            subset = self._columns[1:]
+            subset = self._columns
 
         if len(subset) == 1:
             if not subset[0] in self.data:
                 raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
-            _ = akGroupBy(self.data[subset[0]])
+            gp = akGroupBy(self.data[subset[0]])
 
         else:
             for col in subset:
                 if col not in self.data:
                     raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
 
-            _ = akGroupBy([self.data[col] for col in subset])
+            gp = akGroupBy([self.data[col] for col in subset])
 
         if keep == 'last':
-            _segment_ends = concatenate([_.segments[1:] - 1, array([_.permutation.size - 1])])
-            return self[_.permutation[_segment_ends]]
+            _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
+            return self[gp.permutation[_segment_ends]]
         else:
-            return self[_.permutation[_.segments]]
+            print(gp.permutation[gp.segments])
+            return self[gp.permutation[gp.segments]]
 
     @property
     def size(self):
