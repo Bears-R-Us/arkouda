@@ -105,7 +105,7 @@ module ArraySetopsMsg
         size2 = s2_str: int;
       }
       catch {
-        var errorMsg = "Count could not be interpretted as an int1: %s, int2: %s)".format(s1_str, s2_str);
+        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
         asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw new owned IllegalArgumentError(errorMsg);
       }
@@ -298,7 +298,7 @@ module ArraySetopsMsg
         size2 = s2_str: int;
       }
       catch {
-        var errorMsg = "Count could not be interpretted as an int1: %s, int2: %s)".format(s1_str, s2_str);
+        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
         asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw new owned IllegalArgumentError(errorMsg);
       }
@@ -682,7 +682,7 @@ module ArraySetopsMsg
         size2 = s2_str: int;
       }
       catch {
-        var errorMsg = "Count could not be interpretted as an int1: %s, int2: %s)".format(s1_str, s2_str);
+        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
         asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw new owned IllegalArgumentError(errorMsg);
       }
