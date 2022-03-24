@@ -147,9 +147,9 @@ class DataFrame(UserDict):
             self._empty = initialdata._empty
             self._columns = initialdata._columns
             if index == None:
-                self.index = initialdata.index
+                self._set_index(initialdata.index)
             else:
-                self.index = index
+                self._set_index(index)
             self.data = initialdata.data
             self.update_size()
             return
@@ -162,9 +162,9 @@ class DataFrame(UserDict):
             self._columns = initialdata.columns.tolist()
 
             if index == None:
-                self.index = initialdata.index.values.tolist()
+                self._set_index(initialdata.index.values.tolist())
             else:
-                self.index = index
+                self._set_index(index)
             self.data = {}
             # convert the lists defining each column into a pdarray
             # pd.DataFrame.values is stored as rows, we need lists to be columns
@@ -181,7 +181,7 @@ class DataFrame(UserDict):
 
         # Initial attempts to keep an order on the columns
         self._columns = []
-        self.index = index
+        self._set_index(index)
 
         # Add data to the DataFrame if there is any
         if initialdata is not None:
@@ -227,9 +227,9 @@ class DataFrame(UserDict):
             # If the index param was passed in, use that instead of
             # creating a new one.
             if self.index is None:
-                self.index = arange(0, self._size, 1)
+                self._set_index(arange(0, self._size, 1))
             else:
-                self.index = index
+                self._set_index(index)
 
             self.update_size()
 
@@ -260,7 +260,7 @@ class DataFrame(UserDict):
             result = DataFrame()
             if len(key) <= 0:
                 return result
-            if len([type(x) for x in key]) > 1:
+            if len({type(x) for x in key}) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
             if type(key[0]) == int:
                 rows = array(key)
@@ -268,7 +268,7 @@ class DataFrame(UserDict):
                     result.data[k] = UserDict.__getitem__(self, k)[rows]
                     result._columns.append(k)
                 result._empty = False
-                result.index = key
+                result._set_index(key)
                 return result
             elif type(key[0]) == str:
                 for k in key:
@@ -350,7 +350,7 @@ class DataFrame(UserDict):
         # Update the dataframe indices and metadata.
         if add_index:
             self.update_size()
-            self.index = arange(0, self._size, 1)
+            self._set_index(arange(0, self._size, 1))
 
     def __len__(self):
         """
@@ -409,7 +409,7 @@ class DataFrame(UserDict):
                     newdf[col] = self[col].categories[self[col].codes]
                 else:
                     newdf[col] = self[col]
-            newdf.index = self.index
+            newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
         idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
@@ -419,7 +419,7 @@ class DataFrame(UserDict):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
                 newdf[col] = self[col][idx]
-        newdf.index = idx
+        newdf._set_index(idx)
         return newdf.to_pandas(retain_index=True)
 
     def _shape_str(self):
@@ -478,17 +478,17 @@ class DataFrame(UserDict):
         for k in keys:
             if not isinstance(k, int):
                 raise TypeError("Index keys must be integers.")
-            idx_list.append(self.index[(last_idx+1):k])
+            idx_list.append(self.index.index[(last_idx+1):k])
             last_idx = k
 
-        idx_list.append(self.index[(last_idx+1):])
+        idx_list.append(self.index.index[(last_idx+1):])
 
         idx_to_keep = concatenate(idx_list)
         for key in self.keys():
             # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
             # This avoids the size checks we would do when only setting a single column
             UserDict.__setitem__(self, key, self[key][idx_to_keep])
-        self.index = idx_to_keep
+        self._set_index(idx_to_keep)
 
     def drop(self, keys, axis=0):
         """
@@ -526,7 +526,7 @@ class DataFrame(UserDict):
 
         # If the dataframe just became empty...
         if len(self._columns) == 0:
-            self.index = None
+            self._set_index(None)
             self._empty = True
         self.update_size()
 
@@ -604,7 +604,7 @@ class DataFrame(UserDict):
     @property
     def shape(self):
         self.update_size()
-        num_cols = len(self._columns) - 1
+        num_cols = len(self._columns)
         num_rows = self._size
         return (num_rows, num_cols)
 
@@ -615,6 +615,17 @@ class DataFrame(UserDict):
     @property
     def index(self):
         return self._index
+
+    def _set_index(self, value):
+        if isinstance(value, Index) or value is None:
+            self._index = value
+        elif isinstance(value, pdarray):
+            self._index = Index(value)
+        elif isinstance(value, list):
+            self._index = Index(array(value))
+        else:
+            raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
+                            f" {type(value)} provided.")
 
     def reset_index(self, size=False):
         """
@@ -638,9 +649,9 @@ class DataFrame(UserDict):
 
         if not size:
             self.update_size()
-            self.index = arange(0, self._size)
+            self._set_index(arange(0, self._size))
         else:
-            self.index = arange(size)
+            self._set_index(arange(size))
 
     @property
     def info(self):
@@ -1127,10 +1138,10 @@ class DataFrame(UserDict):
         if self._empty:
             return array([], dtype=akint64)
         if by is None:
-            if len(self._columns) == 2:
-                i = self.argsort(self._columns[1], ascending=ascending)
+            if len(self._columns) == 1:
+                i = self.argsort(self._columns[0], ascending=ascending)
             else:
-                i = self.coargsort(self._columns[1:], ascending=ascending)
+                i = self.coargsort(self._columns, ascending=ascending)
         elif isinstance(by, str):
             i = self.argsort(by, ascending=ascending)
         elif isinstance(by, (list, tuple)):
@@ -1166,7 +1177,7 @@ class DataFrame(UserDict):
             raise ValueError("The indicated permutation is invalid.")
         for key, val in self.data.items():
             self[key] = self[key][perm]
-        self.index = self.index[perm]
+        self._set_index(self.index[perm])
 
     def filter_by_range(self, keys, low=1, high=None):
         """
@@ -1259,18 +1270,6 @@ class DataFrame(UserDict):
         """
 
         return self.GroupBy(keys, use_series)
-
-    @index.setter
-    def index(self, value):
-        if isinstance(value, Index) or value is None:
-            self._index = value
-        elif isinstance(value, pdarray):
-            self._index = Index(value)
-        elif isinstance(value, list):
-            self._index = Index(array(value))
-        else:
-            raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
-                            f" {type(value)} provided.")
 
 
 def sorted(df, column=False):
