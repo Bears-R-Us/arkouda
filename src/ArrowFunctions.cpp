@@ -122,7 +122,7 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
   }
 }
 
-int cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
     auto offsets = (int64_t*)chpl_offsets;
@@ -514,6 +514,8 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
                    infile);
     std::unique_ptr<parquet::arrow::FileReader> reader;
     ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+    // Use threads for case when reading a table with many columns
+    reader->set_use_threads(true);
 
     std::shared_ptr<arrow::Table> table;
     std::shared_ptr<arrow::Table>* hold_table = &table;
@@ -525,29 +527,26 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
       chunk_type = arrow::int64();
       arrow::Int64Builder builder;
       auto chpl_ptr = (int64_t*)chpl_arr;
-      for(int i = 0; i < numelems; i++)
-        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.AppendValues(chpl_ptr, numelems, nullptr))
       ARROWSTATUS_OK(builder.Finish(&values));
     } else if(dtype == ARROWUINT64) {
       chunk_type = arrow::uint64();
       arrow::UInt64Builder builder;
       auto chpl_ptr = (uint64_t*)chpl_arr;
-      for(int i = 0; i < numelems; i++)
-        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.AppendValues(chpl_ptr, numelems, nullptr))
       ARROWSTATUS_OK(builder.Finish(&values));
     } else if(dtype == ARROWBOOLEAN) {
       chunk_type = arrow::boolean();
       arrow::BooleanBuilder builder;
-      auto chpl_ptr = (bool*)chpl_arr;
-      for(int i = 0; i < numelems; i++)
-        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      auto chpl_ptr = (uint8_t*)chpl_arr;
+      ARROWSTATUS_OK(builder.AppendValues(chpl_ptr, numelems, nullptr))
       ARROWSTATUS_OK(builder.Finish(&values));
     } else if(dtype == ARROWSTRING) {
       chunk_type = arrow::utf8();
       arrow::StringBuilder builder;
       auto chpl_ptr = (uint8_t*)chpl_arr;
-      int j = 0;
-      for(int i = 0; i < numelems; i++) {
+      int64_t j = 0;
+      for(int64_t i = 0; i < numelems; i++) {
         std::string tmp_str = "";
         while(chpl_ptr[j] != '0') {
           tmp_str += chpl_ptr[j++];
@@ -559,8 +558,7 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
       chunk_type = arrow::float64();
       arrow::DoubleBuilder builder;
       auto chpl_ptr = (double*)chpl_arr;
-      for(int i = 0; i < numelems; i++)
-        ARROWSTATUS_OK(builder.Append(chpl_ptr[i]));
+      ARROWSTATUS_OK(builder.AppendValues(chpl_ptr, numelems, nullptr))
       ARROWSTATUS_OK(builder.Finish(&values));
     } else {
       std::string msg = "Unrecognized Parquet dtype"; 
@@ -695,7 +693,7 @@ extern "C" {
                                      errMsg);
   }
 
-  int c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
     return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
   }
 
