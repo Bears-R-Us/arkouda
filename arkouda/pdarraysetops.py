@@ -339,7 +339,6 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
             return pda2  # union is pda2
         if pda2.size == 0:
             return pda1  # union is pda1
-        # TODO - update to handle uint
         if (pda1.dtype == int and pda2.dtype == int) or (pda1.dtype == akuint64 and pda2.dtype == akuint64):
             repMsg = generic_msg(cmd="union1d", args="{} {}".
                                  format(pda1.name, pda2.name))
@@ -424,7 +423,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
             return pda2  # nothing in the intersection
         if (pda1.dtype == int and pda2.dtype == int) or \
                 (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="intersect1d", args="{} {} {}". \
+            repMsg = generic_msg(cmd="intersect1d", args="{} {} {}".
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
@@ -515,7 +514,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, L
             return pda1  # subtracting nothing return orig pdarray
         if (pda1.dtype == int and pda2.dtype == int) or \
                 (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}". \
+            repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}".
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
@@ -595,7 +594,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, Li
             return pda1  # return other pdarray if pda2 is empty
         if (pda1.dtype == int and pda2.dtype == int) or \
                 (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="setxor1d", args="{} {} {}". \
+            repMsg = generic_msg(cmd="setxor1d", args="{} {} {}".
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
