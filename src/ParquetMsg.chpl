@@ -347,6 +347,17 @@ module ParquetMsg {
     var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
 
     var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
+
+    if mode == APPEND {
+      var datasets = getDatasets(filenames[0]);
+      if datasets.contains(dsetName) then
+        throw getErrorWithContext(
+                 msg="A column with name " + dsetName + " already exists in Parquet file",
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='WriteModeError');
+    }
     
     const extraOffset = ss.values.size;
     const lastOffset = A[A.domain.high];
@@ -381,22 +392,34 @@ module ParquetMsg {
           else
             locOffsets[locOffsets.domain.high] = A[locDom.high+1];
           
-          writeStringsComponentToParquet(myFilename, dsetName, localVals, locOffsets, ROWGROUPS, compressed);
+          writeStringsComponentToParquet(myFilename, dsetName, localVals, locOffsets, ROWGROUPS, compressed, mode);
         }
       }
     return warnFlag;
   }
 
-  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compressed) throws {
+  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compressed, mode) throws {
     extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compressed, errMsg): int;
+    extern proc c_appendColumnToParquet(filename, chpl_arr,
+                                        dsetname, numelems,
+                                        dtype, compressed,
+                                        errMsg): int;
     var pqErr = new parquetErrorMsg();
     var dtypeRep = ARROWSTRING;
-    if c_writeStrColumnToParquet(filename.localize().c_str(), c_ptrTo(values), c_ptrTo(offsets),
-                                 dsetname.localize().c_str(), offsets.size-1, rowGroupSize,
-                                 dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
-      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    if mode == TRUNCATE {
+      if c_writeStrColumnToParquet(filename.localize().c_str(), c_ptrTo(values), c_ptrTo(offsets),
+                                   dsetname.localize().c_str(), offsets.size-1, rowGroupSize,
+                                   dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
+    } else if mode == APPEND {
+      if c_appendColumnToParquet(filename.localize().c_str(), c_ptrTo(values),
+                                 dsetname.localize().c_str(), offsets.size-1,
+                                 dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
     }
   }
 

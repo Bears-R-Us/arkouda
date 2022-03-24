@@ -548,9 +548,10 @@ int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
       int64_t j = 0;
       for(int64_t i = 0; i < numelems; i++) {
         std::string tmp_str = "";
-        while(chpl_ptr[j] != '0') {
+        while(chpl_ptr[j] != 0x00) {
           tmp_str += chpl_ptr[j++];
         }
+        j++;
         ARROWSTATUS_OK(builder.Append(tmp_str));
       }
       ARROWSTATUS_OK(builder.Finish(&values));
