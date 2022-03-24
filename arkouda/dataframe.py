@@ -641,13 +641,18 @@ class DataFrame(UserDict):
         size : int
             If size is passed, do not attempt to determine size based on
             existing column sizes. Assume caller handles consistency correctly.
+
+        NOTE
+        ----------
+        Pandas adds a column 'index' to indicate the original index. Arkouda does not currently
+        support this behavior.
         """
 
         if not size:
             self.update_size()
-            self.data['index'] = arange(0, self._size)
+            self.index = Index(arange(0, self._size))
         else:
-            self.data['index'] = arange(size)
+            self.index = Index(arange(size))
 
     @property
     def info(self):
