@@ -56,12 +56,12 @@ module ArraySetops
       const intx_segs = (+ scan intx_lens) - intx_lens;
       var intx_vals = makeDistArray((+ reduce intx_lens), t);
 
-      // Compute the union and add values to the corresponding indexes in values
+      // Compute the intersection and add values to the corresponding indexes in values
       forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(t)){
         // TODO - update to use lowLevelLocalizingSlice 
-        var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var intx = new lowLevelLocalizingSlice(intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#il);
         for i in (0..#il){
-          agg.copy(intx_vals[i+is], intx[i]);
+          agg.copy(intx_vals[i+is], intx.ptr[i]);
         }
       }
 
@@ -118,12 +118,12 @@ module ArraySetops
       const xor_segs = (+ scan xor_lens) - xor_lens;
       var xor_vals = makeDistArray((+ reduce xor_lens), t);
 
-      // Compute the union and add values to the corresponding indexes in values
+      // Compute the setxor and add values to the corresponding indexes in values
       forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(t)){
         // TODO - update to use lowLevelLocalizingSlice 
-        var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var xor = new lowLevelLocalizingSlice(setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#xl);
         for i in (0..#xl){
-          agg.copy(xor_vals[i+xs], xor[i]);
+          agg.copy(xor_vals[i+xs], xor.ptr[i]);
         }
       }
 
@@ -166,12 +166,12 @@ module ArraySetops
       const diff_segs = (+ scan diff_lens) - diff_lens;
       var diff_vals = makeDistArray((+ reduce diff_lens), t);
 
-      // Compute the union and add values to the corresponding indexes in values
+      // Compute the difference and add values to the corresponding indexes in values
       forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newDstAggregator(t)){
         // TODO - update to use lowLevelLocalizingSlice 
-        var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var d = new lowLevelLocalizingSlice(setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#dl);
         for i in (0..#dl){
-          agg.copy(diff_vals[i+ds], d[i]);
+          agg.copy(diff_vals[i+ds], d.ptr[i]);
         }
       }
 
@@ -207,9 +207,9 @@ module ArraySetops
       // Compute the union and add values to the corresponding indexes in values
       forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newDstAggregator(t)){
         // TODO - update to use lowLevelLocalizingSlice 
-        var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
+        var u = new lowLevelLocalizingSlice(union1d(values1.a[s1..#l1], values2.a[s2..#l2]), 0..#ul);
         for i in (0..#ul){
-          agg.copy(union_vals[i+us], u[i]);
+          agg.copy(union_vals[i+us], u.ptr[i]);
         }
       }
 

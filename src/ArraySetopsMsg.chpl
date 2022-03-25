@@ -317,37 +317,21 @@ module ArraySetopsMsg
               var (segments, values) = union1d_multi(segments1, values1, lens1, segments2, values2, lens2);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("intersect"){
               var (segments, values) = intersect1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("setdiff"){
               var (segments, values) = setdiff1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("setxor"){
               var (segments, values) = setxor1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             otherwise {
               var errorMsg = notImplementedError("setops1d_multi", sub_command);
@@ -364,37 +348,21 @@ module ArraySetopsMsg
               var (segments, values) = union1d_multi(segments1, values1, lens1, segments2, values2, lens2);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("intersect"){
               var (segments, values) = intersect1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("setdiff"){
               var (segments, values) = setdiff1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when("setxor"){
               var (segments, values) = setxor1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
               st.addEntry(s_name, new shared SymEntry(segments));
               st.addEntry(v_name, new shared SymEntry(values));
-
-              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             otherwise {
               var errorMsg = notImplementedError("setops1d_multi", sub_command);
@@ -409,6 +377,9 @@ module ArraySetopsMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);              
         }
       }
+      repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     proc stringtobool(str: string): bool throws {

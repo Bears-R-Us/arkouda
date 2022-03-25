@@ -330,7 +330,7 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: 
     >>> b_segs = ak.array([0, 1])
     >>> b_vals = ak.array([5, 6, 7, 8])
     >>> ak.union1d([a_segs, a_vals], [b_segs, b_vals])
-    (array([0, 4]), array([0, 1, 2, 3, 4, 5, 6, 7, 8]))
+    (array([0 4]), array([0 1 2 3 4 5 6 7 8]))
     """
     if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
         if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
@@ -412,7 +412,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pd
     >>> b_segs = ak.array([0, 1])
     >>> b_vals = ak.array([1, 3, 4, 5])
     >>> ak.intersect1d([a_segs, a_vals], [b_segs, b_vals])
-    (array([0, 1]), array([1, 3, 4))
+    (array([0 1]), array([1 3 4))
     """
     if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
         if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
@@ -503,7 +503,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2
     >>> b_segs = ak.array([0, 2])
     >>> b_vals = ak.array([1, 3, 4])
     >>> ak.setdiff1d((a_segs, a_vals), (b_segs, b_vals))
-    (array([0, 2]), array(0, 2, 5))
+    (array([0 2]), array([0 2 5]))
     """
     if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
         if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
@@ -583,7 +583,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2:
     >>> b_vals = ak.array([2, 3, 5, 7, 5, 6, 9])
     >>> b_segs = ak.array([0, 5])
     >>> ak.setxor1d((a_segs, a_vals), (b_segs, b_vals))
-    (array([0, 4]), array([1, 4, 5, 7, 1, 3, 9]))
+    (array([0 4]), array([1 4 5 7 1 3 9]))
     """
     if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
         if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
