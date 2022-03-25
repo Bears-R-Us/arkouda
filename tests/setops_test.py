@@ -108,8 +108,8 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
         self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
 
-        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
-                                  (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                  (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
         self.assertIsInstance(segs, ak.pdarray)
         self.assertIsInstance(vals, ak.pdarray)
 
@@ -153,8 +153,8 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
         self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
 
-        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
-                                    (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                    (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
         self.assertIsInstance(segs, ak.pdarray)
         self.assertIsInstance(vals, ak.pdarray)
 
@@ -197,8 +197,8 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
         self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
 
-        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
-                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
         self.assertIsInstance(segs, ak.pdarray)
         self.assertIsInstance(vals, ak.pdarray)
 
@@ -239,8 +239,8 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
         self.assertListEqual(vals.to_ndarray().tolist(), [0, 1, 2, 5, 3, 4, 6, 7, 8])
 
-        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.int64)),
-                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.int64)))
+        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
         self.assertIsInstance(segs, ak.pdarray)
         self.assertIsInstance(vals, ak.pdarray)
 
