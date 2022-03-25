@@ -1418,10 +1418,12 @@ class Strings:
         strings.save()
         pdarray.save_parquet()
         """
-        if mode.lower() in 'truncate':
+        if mode.lower() in 'append':
+            m = 1
+        elif mode.lower() in 'truncate':
             m = 0
         else:
-            raise ValueError("Allowed modes are 'truncate', append not yet supported on strings")
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
 
         try:
             json_array = json.dumps([prefix_path])

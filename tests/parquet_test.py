@@ -86,6 +86,7 @@ def append_test():
     ak_dict['bool-dset'] = ak.randint(0, 1, append_size, dtype=ak.bool)
     ak_dict['float-dset'] = ak.randint(0, 2**32, append_size, dtype=ak.float64)
     ak_dict['int-dset'] = ak.randint(0, 2**32, append_size)
+    ak_dict['str-dset'] = ak.random_strings_uniform(1, 10, append_size)
 
     base_dset.save_parquet("pq_testcorrect", "base-dset")
 
