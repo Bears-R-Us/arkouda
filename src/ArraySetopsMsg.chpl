@@ -85,143 +85,6 @@ module ArraySetopsMsg
         }
     }
 
-    proc intersect1d_multiMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      param pn = Reflection.getRoutineName();
-      var repMsg: string; // response message
-      // split request into fields
-      var (seg1_name, vals1_name, s1_str, seg2_name, vals2_name, s2_str, assume_unique) = payload.splitMsgToTuple(7);
-      var isUnique = stringtobool(assume_unique);
-
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(seg1_name, st);
-      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(vals1_name, st);
-      var gEnt3: borrowed GenSymEntry = getGenericTypedArrayEntry(seg2_name, st);
-      var gEnt4: borrowed GenSymEntry = getGenericTypedArrayEntry(vals2_name, st);
-
-      // verify that expected integer values can be cast
-      var size1: int;
-      var size2: int;
-      try{
-        size1 = s1_str: int;
-        size2 = s2_str: int;
-      }
-      catch {
-        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
-        asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        throw new owned IllegalArgumentError(errorMsg);
-      }
-
-      var segments1 = toSymEntry(gEnt,int);
-      var segments2 = toSymEntry(gEnt3,int);
-
-      // set segment lengths
-      var lens1: [segments1.aD] int;
-      var lens2: [segments2.aD] int;
-      var high = segments1.aD.high;
-      var low = segments1.aD.low;
-      var m1: int;
-      var m2: int;
-      for (i, s1, l1, s2, l2) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2){
-        if i == high {
-          l1 = size1 - s1;
-          l2 = size2 - s2;
-        }
-        else{
-          l1 = segments1.a[i+1] - s1;
-          l2 = segments2.a[i+1] - s2;
-        }
-        // Set the max segment length for memory check
-        if (i == low || m1 < l1) {
-          m1 = l1;
-        }
-        if (i == low || m2 < l2) {
-          m2 = l2;
-        }
-      }
-      
-      // perform memory exhaustion check using the size of the largest segment present
-      var itemsize = if gEnt2.dtype == DType.UInt64 then numBytes(uint) else numBytes(int);
-      var sortMem1 = radixSortLSD_memEst(m1, itemsize);
-      var sortMem2 = radixSortLSD_memEst(m2, itemsize);
-      var intx_maxMem = max(sortMem1, sortMem2);
-      overMemLimit(intx_maxMem);
-
-      select(gEnt2.dtype, gEnt4.dtype) {
-        when (DType.Int64, DType.Int64) {
-          var values1 = toSymEntry(gEnt2, int);
-          var values2 = toSymEntry(gEnt4, int);
-
-          var intx_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(il, intx.size);
-          }
-
-          const intx_segs = (+ scan intx_lens) - intx_lens;
-          var intx_vals = makeDistArray((+ reduce intx_lens), int);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#il){
-              agg.copy(intx_vals[i+is], intx[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(intx_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(intx_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        when (DType.UInt64, DType.UInt64) {
-          var values1 = toSymEntry(gEnt2, uint);
-          var values2 = toSymEntry(gEnt4, uint);
-
-          var intx_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(il, intx.size);
-          }
-
-          const intx_segs = (+ scan intx_lens) - intx_lens;
-          var intx_vals = makeDistArray((+ reduce intx_lens), uint);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(uint)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#il){
-              agg.copy(intx_vals[i+is], intx[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(intx_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(intx_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        otherwise {
-          var errorMsg = notImplementedError("intersect1d_multi",gEnt.dtype);
-          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-      }
-    }
-
     /*
     Parse, execute, and respond to a setxor1d message
     :arg reqMsg: request containing (cmd,name,name2,assume_unique)
@@ -276,143 +139,6 @@ module ArraySetopsMsg
                return new MsgTuple(errorMsg, MsgType.ERROR);
            }
         }
-    }
-
-    proc setxor1d_multiMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      param pn = Reflection.getRoutineName();
-      var repMsg: string; // response message
-      // split request into fields
-      var (seg1_name, vals1_name, s1_str, seg2_name, vals2_name, s2_str, assume_unique) = payload.splitMsgToTuple(7);
-      var isUnique = stringtobool(assume_unique);
-
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(seg1_name, st);
-      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(vals1_name, st);
-      var gEnt3: borrowed GenSymEntry = getGenericTypedArrayEntry(seg2_name, st);
-      var gEnt4: borrowed GenSymEntry = getGenericTypedArrayEntry(vals2_name, st);
-
-      // verify that expected integer values can be cast
-      var size1: int;
-      var size2: int;
-      try{
-        size1 = s1_str: int;
-        size2 = s2_str: int;
-      }
-      catch {
-        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
-        asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        throw new owned IllegalArgumentError(errorMsg);
-      }
-
-      var segments1 = toSymEntry(gEnt,int);
-      var segments2 = toSymEntry(gEnt3,int);
-
-      // set segment lengths
-      var lens1: [segments1.aD] int;
-      var lens2: [segments2.aD] int;
-      var high = segments1.aD.high;
-      var low = segments1.aD.low;
-      var m1: int;
-      var m2: int;
-      for (i, s1, l1, s2, l2) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2){
-        if i == high {
-          l1 = size1 - s1;
-          l2 = size2 - s2;
-        }
-        else{
-          l1 = segments1.a[i+1] - s1;
-          l2 = segments2.a[i+1] - s2;
-        }
-        // Set the max segment length for memory check
-        if (i == low || m1 < l1) {
-          m1 = l1;
-        }
-        if (i == low || m2 < l2) {
-          m2 = l2;
-        }
-      }
-      
-      // perform memory exhaustion check using the size of the largest segment present
-      var itemsize = if gEnt2.dtype == DType.UInt64 then numBytes(uint) else numBytes(int);
-      var sortMem1 = radixSortLSD_memEst(m1, itemsize);
-      var sortMem2 = radixSortLSD_memEst(m2, itemsize);
-      var xor_maxMem = max(sortMem1, sortMem2);
-      overMemLimit(xor_maxMem);
-
-      select(gEnt2.dtype, gEnt4.dtype) {
-        when (DType.Int64, DType.Int64) {
-          var values1 = toSymEntry(gEnt2, int);
-          var values2 = toSymEntry(gEnt4, int);
-
-          var xor_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(xl, xor.size);
-          }
-
-          const xor_segs = (+ scan xor_lens) - xor_lens;
-          var xor_vals = makeDistArray((+ reduce xor_lens), int);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#xl){
-              agg.copy(xor_vals[i+xs], xor[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(xor_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(xor_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        when (DType.UInt64, DType.UInt64) {
-          var values1 = toSymEntry(gEnt2, uint);
-          var values2 = toSymEntry(gEnt4, uint);
-
-          var xor_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(xl, xor.size);
-          }
-
-          const xor_segs = (+ scan xor_lens) - xor_lens;
-          var xor_vals = makeDistArray((+ reduce xor_lens), uint);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(uint)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#xl){
-              agg.copy(xor_vals[i+xs], xor[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(xor_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(xor_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        otherwise {
-          var errorMsg = notImplementedError("setxor_multi",gEnt.dtype);
-          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-      }
     }
 
     /*
@@ -471,143 +197,6 @@ module ArraySetopsMsg
         }
     }
 
-    proc setdiff1d_multiMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      param pn = Reflection.getRoutineName();
-      var repMsg: string; // response message
-      // split request into fields
-      var (seg1_name, vals1_name, s1_str, seg2_name, vals2_name, s2_str, assume_unique) = payload.splitMsgToTuple(7);
-      var isUnique = stringtobool(assume_unique);
-
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(seg1_name, st);
-      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(vals1_name, st);
-      var gEnt3: borrowed GenSymEntry = getGenericTypedArrayEntry(seg2_name, st);
-      var gEnt4: borrowed GenSymEntry = getGenericTypedArrayEntry(vals2_name, st);
-
-      // verify that expected integer values can be cast
-      var size1: int;
-      var size2: int;
-      try{
-        size1 = s1_str: int;
-        size2 = s2_str: int;
-      }
-      catch {
-        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
-        asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        throw new owned IllegalArgumentError(errorMsg);
-      }
-
-      var segments1 = toSymEntry(gEnt,int);
-      var segments2 = toSymEntry(gEnt3,int);
-
-      // set segment lengths
-      var lens1: [segments1.aD] int;
-      var lens2: [segments2.aD] int;
-      var high = segments1.aD.high;
-      var low = segments1.aD.low;
-      var m1: int;
-      var m2: int;
-      for (i, s1, l1, s2, l2) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2){
-        if i == high {
-          l1 = size1 - s1;
-          l2 = size2 - s2;
-        }
-        else{
-          l1 = segments1.a[i+1] - s1;
-          l2 = segments2.a[i+1] - s2;
-        }
-        // Set the max segment length for memory check
-        if (i == low || m1 < l1) {
-          m1 = l1;
-        }
-        if (i == low || m2 < l2) {
-          m2 = l2;
-        }
-      }
-      
-      // perform memory exhaustion check using the size of the largest segment present
-      var itemsize = if gEnt2.dtype == DType.UInt64 then numBytes(uint) else numBytes(int);
-      var sortMem1 = radixSortLSD_memEst(m1, itemsize);
-      var sortMem2 = radixSortLSD_memEst(m2, itemsize);
-      var diff_maxMem = max(sortMem1, sortMem2);
-      overMemLimit(diff_maxMem);
-
-      select(gEnt2.dtype, gEnt4.dtype) {
-        when (DType.Int64, DType.Int64) {
-          var values1 = toSymEntry(gEnt2, int);
-          var values2 = toSymEntry(gEnt4, int);
-
-          var diff_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(dl, d.size);
-          }
-
-          const diff_segs = (+ scan diff_lens) - diff_lens;
-          var diff_vals = makeDistArray((+ reduce diff_lens), int);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#dl){
-              agg.copy(diff_vals[i+ds], d[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(diff_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(diff_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        when (DType.UInt64, DType.UInt64) {
-          var values1 = toSymEntry(gEnt2, uint);
-          var values2 = toSymEntry(gEnt4, uint);
-
-          var diff_lens: [segments1.aD] int;
-
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            agg.copy(dl, d.size);
-          }
-
-          const diff_segs = (+ scan diff_lens) - diff_lens;
-          var diff_vals = makeDistArray((+ reduce diff_lens), uint);
-
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, ds, dl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, diff_segs, diff_lens) with (var agg = newDstAggregator(uint)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-            for i in (0..#dl){
-              agg.copy(diff_vals[i+ds], d[i]);
-            }
-          }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(diff_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(diff_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        otherwise {
-          var errorMsg = notImplementedError("setdiff1d_multi",gEnt.dtype);
-          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
-      }
-    }
-
     /*
     Parse, execute, and respond to a union1d message
     :arg reqMsg: request containing (cmd,name,name2,assume_unique)
@@ -663,11 +252,12 @@ module ArraySetopsMsg
       }
     }
 
-    proc union1d_multiMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setops1d_multiMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
         // split request into fields
-      var (seg1_name, vals1_name, s1_str, seg2_name, vals2_name, s2_str) = payload.splitMsgToTuple(6);
+      var (sub_command, seg1_name, vals1_name, s1_str, seg2_name, vals2_name, s2_str, assume_unique) = payload.splitMsgToTuple(8);
+      var isUnique = if assume_unique != "" then stringtobool(assume_unique) else false;
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(seg1_name, st);
       var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(vals1_name, st);
@@ -682,7 +272,7 @@ module ArraySetopsMsg
         size2 = s2_str: int;
       }
       catch {
-        var errorMsg = "Count could not be interpreted as an int1: %s, int2: %s)".format(s1_str, s2_str);
+        var errorMsg = "size1 or size2 could not be interpreted as an int size1: %s, size2: %s)".format(s1_str, s2_str);
         asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         throw new owned IllegalArgumentError(errorMsg);
       }
@@ -695,9 +285,7 @@ module ArraySetopsMsg
       var lens2: [segments2.aD] int;
       var high = segments1.aD.high;
       var low = segments1.aD.low;
-      var m1: int;
-      var m2: int;
-      for (i, s1, l1, s2, l2) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2){
+      forall (i, s1, l1, s2, l2) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2){
         if i == high {
           l1 = size1 - s1;
           l2 = size2 - s2;
@@ -706,15 +294,10 @@ module ArraySetopsMsg
           l1 = segments1.a[i+1] - s1;
           l2 = segments2.a[i+1] - s2;
         }
-        // Set the max segment length for memory check
-        if (i == low || m1 < l1) {
-          m1 = l1;
-        }
-        if (i == low || m2 < l2) {
-          m2 = l2;
-        }
       }
-      
+      var m1: int = max reduce lens1;
+      var m2: int = max reduce lens2;
+
       // perform memory exhaustion check using the size of the largest segment present
       var itemsize = if gEnt2.dtype == DType.UInt64 then numBytes(uint) else numBytes(int);
       var sortMem1 = radixSortLSD_memEst(m1, itemsize);
@@ -722,80 +305,109 @@ module ArraySetopsMsg
       var union_maxMem = max(sortMem1, sortMem2);
       overMemLimit(union_maxMem);
 
-      select(gEnt2.dtype, gEnt4.dtype) {
-        when (DType.Int64, DType.Int64) {
-          var values1 = toSymEntry(gEnt2, int);
-          var values2 = toSymEntry(gEnt4, int);
+      var s_name = st.nextName();
+      var v_name = st.nextName();
 
-          var union_lens: [segments1.aD] int;
+      select(gEnt2.dtype, gEnt4.dtype){
+        when(DType.Int64, DType.Int64){
+          var values1 = toSymEntry(gEnt2,int);
+          var values2 = toSymEntry(gEnt4,int);
+          select(sub_command){
+            when("union"){
+              var (segments, values) = union1d_multi(segments1, values1, lens1, segments2, values2, lens2);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
-            agg.copy(ul, u.size);
-          }
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("intersect"){
+              var (segments, values) = intersect1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          const union_segs = (+ scan union_lens) - union_lens;
-          var union_vals = makeDistArray((+ reduce union_lens), int);
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("setdiff"){
+              var (segments, values) = setdiff1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
-            for i in (0..#ul){
-              agg.copy(union_vals[i+us], u[i]);
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("setxor"){
+              var (segments, values) = setxor1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
+
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            otherwise {
+              var errorMsg = notImplementedError("setops1d_multi", sub_command);
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
+              return new MsgTuple(errorMsg, MsgType.ERROR);              
             }
           }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(union_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(union_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
         }
-        when (DType.UInt64, DType.UInt64) {
-          var values1 = toSymEntry(gEnt2, uint);
-          var values2 = toSymEntry(gEnt4, uint);
+        when(DType.UInt64, DType.UInt64){
+          var values1 = toSymEntry(gEnt2,uint);
+          var values2 = toSymEntry(gEnt4,uint);
+          select(sub_command){
+            when("union"){
+              var (segments, values) = union1d_multi(segments1, values1, lens1, segments2, values2, lens2);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          var union_lens: [segments1.aD] int;
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("intersect"){
+              var (segments, values) = intersect1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          // Compute lengths of the segments resulting from each union
-          forall (i, s1, l1, s2, l2, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_lens) with (var agg = newDstAggregator(int)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
-            agg.copy(ul, u.size);
-          }
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("setdiff"){
+              var (segments, values) = setdiff1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          const union_segs = (+ scan union_lens) - union_lens;
-          var union_vals = makeDistArray((+ reduce union_lens), uint);
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            when("setxor"){
+              var (segments, values) = setxor1d_multi(segments1, values1, lens1, segments2, values2, lens2, isUnique);
+              st.addEntry(s_name, new shared SymEntry(segments));
+              st.addEntry(v_name, new shared SymEntry(values));
 
-          // Compute the union and add values to the corresponding indexes in values
-          forall (i, s1, l1, s2, l2, us, ul) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, union_segs, union_lens) with (var agg = newDstAggregator(uint)){
-            // TODO - update to use lowLevelLocalizingSlice 
-            var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
-            for i in (0..#ul){
-              agg.copy(union_vals[i+us], u[i]);
+              repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
+              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
+            }
+            otherwise {
+              var errorMsg = notImplementedError("setops1d_multi", sub_command);
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
+              return new MsgTuple(errorMsg, MsgType.ERROR);              
             }
           }
-
-          var s_name = st.nextName();
-          st.addEntry(s_name, new shared SymEntry(union_segs));
-          var v_name = st.nextName();
-          st.addEntry(v_name, new shared SymEntry(union_vals));
-
-          repMsg = "created " + st.attrib(s_name) + "+created " + st.attrib(v_name);
-          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return new MsgTuple(repMsg, MsgType.NORMAL);
         }
         otherwise {
-             var errorMsg = notImplementedError("union1d_multi",gEnt.dtype);
-             asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
-             return new MsgTuple(errorMsg, MsgType.ERROR);              
-         }
+          var errorMsg = notImplementedError("setops1d_multi", gEnt2.dtype);
+          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
+          return new MsgTuple(errorMsg, MsgType.ERROR);              
+        }
       }
     }
 
@@ -813,12 +425,9 @@ module ArraySetopsMsg
     proc registerMe() {
       use CommandMap;
       registerFunction("intersect1d", intersect1dMsg, getModuleName());
-      registerFunction("intersect1d_multi", intersect1d_multiMsg, getModuleName());
       registerFunction("setdiff1d", setdiff1dMsg, getModuleName());
-      registerFunction("setdiff1d_multi", setdiff1d_multiMsg, getModuleName());
       registerFunction("setxor1d", setxor1dMsg, getModuleName());
-      registerFunction("setxor1d_multi", setxor1d_multiMsg, getModuleName());
       registerFunction("union1d", union1dMsg, getModuleName());
-      registerFunction("union1d_multi", union1d_multiMsg, getModuleName());
+      registerFunction("setops1d_multi", setops1d_multiMsg, getModuleName());
     }
 }
