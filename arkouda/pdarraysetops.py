@@ -276,8 +276,8 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']],  # typ
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
-            List[pdarray], tuple]) -> Union[pdarray, tuple, str]:
+def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray,
+            List[pdarray], Tuple[pdarray, pdarray]]) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
     """
     Find the union of two arrays.
 
@@ -358,8 +358,8 @@ def union1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
-                List[pdarray], tuple], assume_unique: bool = False) -> Union[pdarray, tuple, str]:
+def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray,
+                List[pdarray], Tuple[pdarray, pdarray]], assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
     """
     Find the intersection of two arrays.
 
@@ -447,8 +447,8 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray,
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, List[pdarray], tuple],
-              assume_unique: bool = False) -> Union[pdarray, tuple, str]:
+def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]],
+              assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
     """
     Find the set difference of two arrays.
 
@@ -533,8 +533,8 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, L
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, List[pdarray], tuple], pda2: Union[pdarray, List[pdarray], tuple],
-              assume_unique: bool = False) -> Union[pdarray, tuple, str]:
+def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]],
+              assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
