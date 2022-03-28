@@ -297,8 +297,8 @@ class DataFrame(UserDict):
             rtn_data = {}
             s = key
             for k in self._columns:
-                rtn_data[k] = UserDict.__getitem__(self, k)[s.start:s.stop:s.step]
-            return DataFrame(initialdata=rtn_data, index=list(range(self.size)[s.start:s.stop:s.step]))
+                rtn_data[k] = UserDict.__getitem__(self, k)[s]
+            return DataFrame(initialdata=rtn_data, index=arange(self.size)[s])
         else:
             raise IndexError("Invalid selector: unknown error.")
 
