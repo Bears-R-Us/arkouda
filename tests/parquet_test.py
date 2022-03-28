@@ -69,7 +69,7 @@ def get_datasets_test(dtype):
         
     ak_arr.save_parquet("pq_testdset", "TEST_DSET")
 
-    dsets = ak.get_datasets("pq_testdset*", True)
+    dsets = ak.get_datasets("pq_testdset*")
     
     for f in glob.glob('pq_test*'):
         os.remove(f)
@@ -187,7 +187,7 @@ class ParquetTest(ArkoudaTest):
                     'c_last_review_date']
         for basename, ans in zip(filenames, (columns1, columns1, columns2)):
             filename = os.path.join(datadir, basename)
-            columns = ak.get_datasets(filename, is_parquet=True)
+            columns = ak.get_datasets(filename)
             self.assertListEqual(columns, ans)
             # Merely test that read succeeds, do not check output
             if "delta_byte_array.parquet" not in filename:

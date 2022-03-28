@@ -11,7 +11,7 @@ if len(sys.argv) < 4:
     sys.exit()
 ak.connect(sys.argv[1], sys.argv[2])
 onefile = sys.argv[3]
-print(ak.ls_hdf(onefile))
+print(ak.ls(onefile))
 allfiles = sys.argv[3:]
 print(f"srcIP = ak.read_hdf('srcIP', {onefile})")
 srcIP = ak.read_hdf('srcIP', onefile)
