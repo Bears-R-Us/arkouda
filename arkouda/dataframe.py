@@ -570,7 +570,6 @@ class DataFrame(UserDict):
             _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
             return self[gp.permutation[_segment_ends]]
         else:
-            print(gp.permutation[gp.segments])
             return self[gp.permutation[gp.segments]]
 
     @property
