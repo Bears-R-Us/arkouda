@@ -763,14 +763,16 @@ module SegmentedArray {
       var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
       // Fill left values
       forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) with (var agg = newDstAggregator(uint(8))) {
+        var localIdx = new lowLevelLocalizingSlice(va, srcStart..#(len-1));
         for i in 0..#(len-1) {
-          agg.copy(leftVals[dstStart+i], va[srcStart+i]);
+          agg.copy(leftVals[dstStart+i], localIdx.ptr[i]);
         }
       }
       // Fill right values
       forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) with (var agg = newDstAggregator(uint(8))) {
+        var localIdx = new lowLevelLocalizingSlice(va, srcStart..#(len-1));
         for i in 0..#(len-1) {
-          agg.copy(rightVals[dstStart+i], va[srcStart+i]);
+          agg.copy(rightVals[dstStart+i], localIdx.ptr[i]);
         }
       }
       return (leftOffsets, leftVals, rightOffsets, rightVals);
@@ -884,14 +886,16 @@ module SegmentedArray {
       ref va = values.a;
       // Fill left values
       forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) with (var agg = newDstAggregator(uint(8))) {
+        var localIdx = new lowLevelLocalizingSlice(va, srcStart..#(len-1));
         for i in 0..#(len-1) {
-          agg.copy(leftVals[dstStart+i], va[srcStart+i]);
+          agg.copy(leftVals[dstStart+i], localIdx.ptr[i]);
         }
       }
       // Fill right values
       forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) with (var agg = newDstAggregator(uint(8))) {
+        var localIdx = new lowLevelLocalizingSlice(va, srcStart..#(len-1));
         for i in 0..#(len-1) {
-          agg.copy(rightVals[dstStart+i], va[srcStart+i]);
+          agg.copy(rightVals[dstStart+i], localIdx.ptr[i]);
         }
       }
       return (leftOffsets, leftVals, rightOffsets, rightVals);
@@ -924,13 +928,15 @@ module SegmentedArray {
         var pos = no;
         // Left side
         if right {
+          var localIdx = new lowLevelLocalizingSlice(va1, o1..#l1);
           for i in 0..#l1 {
-            agg.copy(newVals[pos+i], va1[o1+i]);
+            agg.copy(newVals[pos+i], localIdx.ptr[i]);
           }
           pos += l1;
         } else {
+          var localIdx = new lowLevelLocalizingSlice(va2, o2..#l2);
           for i in 0..#l2 {
-            agg.copy(newVals[pos+i], va2[o2+i]);
+            agg.copy(newVals[pos+i], localIdx.ptr[i]);
           }
           pos += l2;
         }
@@ -941,12 +947,14 @@ module SegmentedArray {
         pos += delim.numBytes;
         // Right side
         if right {
+          var localIdx = new lowLevelLocalizingSlice(va2, o2..#l2);
           for i in 0..#l2 {
-            agg.copy(newVals[pos+i], va2[o2+i]);
+            agg.copy(newVals[pos+i], localIdx.ptr[i]);
           }
         } else {
+          var localIdx = new lowLevelLocalizingSlice(va1, o1..#l1);
           for i in 0..#l1 {
-            agg.copy(newVals[pos+i], va1[o1+i]);
+            agg.copy(newVals[pos+i], localIdx.ptr[i]);
           }
         }
       }
