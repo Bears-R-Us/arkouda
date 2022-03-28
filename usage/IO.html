@@ -244,7 +244,7 @@ In the future this option may be set to True as the default.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>, <a class="reference internal" href="#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
+<p><a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression
@@ -300,7 +300,7 @@ In the future this option may be set to True as the default.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression
@@ -318,7 +318,7 @@ to HDF5 files.</p>
 <p>HDF5 files can be queried via the server for dataset names and sizes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.get_datasets">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">get_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parquet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.get_datasets" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">get_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.get_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the names of datasets in an HDF5 file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -343,36 +343,8 @@ to HDF5 files.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+<p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a></p>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.ls_hdf">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ls_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parquet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.ls_hdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function calls the h5ls utility on a filename visible to the
-arkouda server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – The name of the file to pass to h5ls</p></li>
-<li><p><strong>is_parquet</strong> (<em>bool</em>) – Is filename a Parquet file; false by default</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The string output of <cite>h5ls &lt;filename&gt;</cite> from the server</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if filename is not a str</p></li>
-<li><p><strong>ValueError</strong> – Raised if filename is empty or contains only whitespace</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if error occurs in executing ls on an HDF5 file</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
@@ -625,7 +597,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

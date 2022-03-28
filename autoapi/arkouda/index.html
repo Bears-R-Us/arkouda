@@ -77,7 +77,7 @@
 <h2>Package Contents<a class="headerlink" href="#package-contents" title="Permalink to this headline">¶</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
-<table class="longtable docutils align-default">
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -139,7 +139,7 @@
 </section>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
-<table class="longtable docutils align-default">
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -298,8 +298,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isnan" title="arkouda.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Test a pdarray for Not a number / NaN values</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>(filename: str, is_parquet=False) → List[str]</p></td>
-<td><p>This function calls the h5ls utility on a filename visible to the</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>(filename: str) → List[str]</p></td>
+<td><p>This function calls the h5ls utility on a HDF5 file visible to the</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
 <td><p>Read a single dataset from multiple HDF5 files into an Arkouda</p></td>
@@ -310,7 +310,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
 <td><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filename: str, is_parquet=False) → List[str]</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filename: str) → List[str]</p></td>
 <td><p>Get the names of datasets in an HDF5 file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../../usage/IO.html#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(path_prefix: str) → Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]</p></td>
@@ -432,7 +432,7 @@
 </section>
 <section id="attributes">
 <h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
-<table class="longtable docutils align-default">
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -5037,19 +5037,17 @@ Currently only supports float-value-based arrays</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.ls_hdf">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ls_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parquet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.ls_hdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function calls the h5ls utility on a filename visible to the
-arkouda server.</p>
+<dt class="sig sig-object py" id="arkouda.ls">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calls the h5ls utility on a HDF5 file visible to the
+arkouda server or calls a function that imitates the result of h5ls
+on a Parquet file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – The name of the file to pass to h5ls</p></li>
-<li><p><strong>is_parquet</strong> (<em>bool</em>) – Is filename a Parquet file; false by default</p></li>
-</ul>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The name of the file to pass to the server</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The string output of <cite>h5ls &lt;filename&gt;</cite> from the server</p>
+<dd class="field-even"><p>The string output of the datasets from the server</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
@@ -5104,7 +5102,7 @@ nor a list of strings</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression
@@ -5159,7 +5157,7 @@ from the server.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression
@@ -5211,7 +5209,7 @@ one or more of them</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.get_datasets">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">get_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parquet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.get_datasets" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">get_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.get_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the names of datasets in an HDF5 file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -5236,7 +5234,7 @@ one or more of them</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -5344,7 +5342,7 @@ nor a list of strings</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../usage/IO.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
+<p><a class="reference internal" href="../../usage/IO.html#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls" title="arkouda.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="../../usage/IO.html#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression
@@ -12299,7 +12297,7 @@ converted to a column in the dataframe.  If it is a multi-index,each level is co
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

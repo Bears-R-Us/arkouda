@@ -69,3 +69,5 @@ or
    * Dump the combined contents of the command maps as a single json encoded string
    
 
+.. function:: proc executeCommand(cmd: string, args, st) throws
+

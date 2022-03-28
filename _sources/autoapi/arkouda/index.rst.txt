@@ -125,7 +125,7 @@ Functions
    arkouda.histogram
    arkouda.value_counts
    arkouda.isnan
-   arkouda.ls_hdf
+   arkouda.ls
    arkouda.read_hdf
    arkouda.read_all
    arkouda.load
@@ -3700,17 +3700,16 @@ Attributes
       
 
 
-.. py:function:: ls_hdf(filename: str, is_parquet=False) -> List[str]
+.. py:function:: ls(filename: str) -> List[str]
 
-   This function calls the h5ls utility on a filename visible to the
-   arkouda server.
+   This function calls the h5ls utility on a HDF5 file visible to the
+   arkouda server or calls a function that imitates the result of h5ls
+   on a Parquet file.
 
-   :param filename: The name of the file to pass to h5ls
+   :param filename: The name of the file to pass to the server
    :type filename: str
-   :param is_parquet: Is filename a Parquet file; false by default
-   :type is_parquet: bool
 
-   :returns: The string output of `h5ls <filename>` from the server
+   :returns: The string output of the datasets from the server
    :rtype: str
 
    :raises TypeError: Raised if filename is not a str
@@ -3750,7 +3749,7 @@ Attributes
    :raises ValueError: Raised if all datasets are not present in all hdf5 files
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened
 
-   .. seealso:: :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
+   .. seealso:: :obj:`get_datasets`, :obj:`ls`, :obj:`read_all`, :obj:`load`, :obj:`save`
 
    .. rubric:: Notes
 
@@ -3799,7 +3798,7 @@ Attributes
        from the server.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`
+   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls`
 
    .. rubric:: Notes
 
@@ -3841,7 +3840,7 @@ Attributes
    .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
 
 
-.. py:function:: get_datasets(filename: str, is_parquet=False) -> List[str]
+.. py:function:: get_datasets(filename: str) -> List[str]
 
    Get the names of datasets in an HDF5 file.
 
@@ -3857,7 +3856,7 @@ Attributes
    :raises ValueError: Raised if filename is empty or contains only whitespace
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
-   .. seealso:: :obj:`ls_hdf`
+   .. seealso:: :obj:`ls`
 
 
 .. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
@@ -3940,7 +3939,7 @@ Attributes
    :raises ValueError: Raised if all datasets are not present in all parquet files
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened
 
-   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
+   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls`, :obj:`read_all`, :obj:`load`, :obj:`save`
 
    .. rubric:: Notes
 

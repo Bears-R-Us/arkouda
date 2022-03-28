@@ -88,3 +88,9 @@ or
 
 .. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
 
+.. function:: proc getFirstEightBytesFromFile(path: string): bytes throws
+
+.. function:: proc getFileType(filename: string) throws
+
+.. function:: proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
