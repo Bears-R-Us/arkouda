@@ -371,6 +371,13 @@ module ParquetMsg {
         dims[0] = locDom.size: int;
 
         if (locDom.isEmpty() || locDom.size <= 0) {
+          if mode == APPEND then
+            throw getErrorWithContext(
+                 msg="Parquet columns must each have the same length: " + myFilename,
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='WriteModeError');
           createEmptyParquetFile(myFilename, dsetName, ARROWSTRING, compressed);
         } else {
           var localOffsets = A[locDom];
