@@ -28,7 +28,7 @@ Functions
 
 
 
-.. py:class:: DataFrame(initialdata=None)
+.. py:class:: DataFrame(initialdata=None, index=None)
 
    Bases: :py:obj:`collections.UserDict`
 
@@ -97,7 +97,9 @@ Functions
 
    .. py:method:: _ncols(self)
 
-      Only count the non-index columns.
+      Number of columns.
+      If index appears, we now want to utilize this
+      because the actual index has been moved to a property
 
 
    .. py:method:: __str__(self)
@@ -206,6 +208,9 @@ Functions
       :property:
 
 
+   .. py:method:: _set_index(self, value)
+
+
    .. py:method:: reset_index(self, size=False)
 
       Set the index to an integer range.
@@ -217,6 +222,11 @@ Functions
       :param size: If size is passed, do not attempt to determine size based on
                    existing column sizes. Assume caller handles consistency correctly.
       :type size: int
+
+      .. note::
+
+         Pandas adds a column 'index' to indicate the original index. Arkouda does not currently
+         support this behavior.
 
 
    .. py:method:: info(self)

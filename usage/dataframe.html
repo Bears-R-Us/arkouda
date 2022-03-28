@@ -37,7 +37,7 @@
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.DataFrame">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame" title="Permalink to this definition">¶</a></dt>
 <dd><p>A DataFrame structure based on arkouda arrays.</p>
 <p class="rubric">Examples</p>
 <p>Create an empty DataFrame and add a column of data:</p>
@@ -386,6 +386,11 @@ to keep that ordering on the rows.</p>
 existing column sizes. Assume caller handles consistency correctly.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pandas adds a column ‘index’ to indicate the original index. Arkouda does not currently
+support this behavior.</p>
+</div>
 </dd></dl>
 
 </section>

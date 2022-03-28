@@ -10075,7 +10075,7 @@ was supplied to SegArray.save()</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.DataFrame">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.UserDict</span></code></p>
 <p>A DataFrame structure based on arkouda arrays.</p>
 <p class="rubric">Examples</p>
@@ -10148,7 +10148,9 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame._ncols">
 <span class="sig-name descname"><span class="pre">_ncols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame._ncols" title="Permalink to this definition">¶</a></dt>
-<dd><p>Only count the non-index columns.</p>
+<dd><p>Number of columns.
+If index appears, we now want to utilize this
+because the actual index has been moved to a property</p>
 </dd></dl>
 
 <dl class="py method">
@@ -10284,6 +10286,11 @@ duplicated row will be returned (keep determines which row).</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame._set_index">
+<span class="sig-name descname"><span class="pre">_set_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame._set_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.reset_index">
 <span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.reset_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the index to an integer range.</p>
@@ -10296,6 +10303,11 @@ to keep that ordering on the rows.</p>
 existing column sizes. Assume caller handles consistency correctly.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pandas adds a column ‘index’ to indicate the original index. Arkouda does not currently
+support this behavior.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
