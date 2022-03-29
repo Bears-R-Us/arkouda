@@ -78,7 +78,7 @@ def get_datasets_test(dtype):
 
 def append_test():
     # use small size to cut down on execution time
-    append_size = 10
+    append_size = 32
 
     base_dset = ak.randint(0, 2**32, append_size)
     ak_dict = {}
