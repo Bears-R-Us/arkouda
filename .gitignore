@@ -35,3 +35,4 @@ test/NanSpeedTest.good
 test/StringArgsortSpeedTest.good
 test/file_LOCALE0000
 UsedModules.cfg
+.DS_Store

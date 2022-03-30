@@ -92,7 +92,37 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setxor1d([-1, 0, 1], [-2, 0, 2])     
+            ak.setxor1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetxor1d_multi(self):
+        a = [1, 2, 3, 2, 4]
+        b = [1, 3, 6]
+        c = [2, 3, 5, 7, 5]
+        d = [6, 9]
+
+        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                  (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
+
+        segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                  (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 4, 5, 7, 1, 3, 9])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
+
         
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
@@ -107,7 +137,37 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])     
+            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetdiff1d_multi(self):
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [1]
+        d = [3, 4]
+
+        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                    (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
+
+        segs, vals = ak.setdiff1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                    (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 2])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 2, 5])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
+
         
     def testIntersectId(self):
         pdaOne = ak.array([1, 3, 4, 3])
@@ -121,7 +181,36 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.intersect1d([-1, 0, 1], [-2, 0, 2])     
+            ak.intersect1d([-1, 0, 1], [-2, 0, 2])
+
+    def testIntersect1d_multi(self):
+        a = [0, 1, 2]
+        b = [3, 4]
+        c = [1]
+        d = [3, 4, 5]
+
+        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                    (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
+
+        segs, vals = ak.intersect1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 1])
+        self.assertListEqual(vals.to_ndarray().tolist(), [1, 3, 4])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
         
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
@@ -135,7 +224,35 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
         with self.assertRaises(TypeError):
-            ak.union1d([-1, 0, 1], [-2, 0, 2])     
+            ak.union1d([-1, 0, 1], [-2, 0, 2])
+
+    def testUnion1d_multi(self):
+        a = [0, 1, 2]
+        b = [3, 4]
+        c = [5]
+        d = [6, 7, 8]
+
+        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b)), (ak.array([0, len(c)]), ak.array(c + d)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 1, 2, 5, 3, 4, 6, 7, 8])
+
+        segs, vals = ak.union1d((ak.array([0, len(a)]), ak.array(a + b, dtype=ak.uint64)),
+                                (ak.array([0, len(c)]), ak.array(c + d, dtype=ak.uint64)))
+        self.assertIsInstance(segs, ak.pdarray)
+        self.assertIsInstance(vals, ak.pdarray)
+
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 4])
+        self.assertListEqual(vals.to_ndarray().tolist(), [0, 1, 2, 5, 3, 4, 6, 7, 8])
+
+        a = [0, 1, 2]
+        b = [3, 4, 5]
+        c = [0, 1]
+        with self.assertRaises(ValueError):
+            segs, vals = ak.setxor1d((ak.array([0, len(a)]), ak.array(a + b)),
+                                     (ak.array([0]), ak.array(c)))
 
     def testIn1d(self): 
         pdaOne = ak.array([-1, 0, 1, 3])
