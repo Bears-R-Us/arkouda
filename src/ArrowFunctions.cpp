@@ -167,6 +167,10 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
             offsets[i] = value.len + 1;
             byteSize += value.len + 1;
             numRead += values_read;
+          } else {
+            offsets[i] = 1;
+            byteSize+=1;
+            numRead+=1;
           }
           i++;
         }
