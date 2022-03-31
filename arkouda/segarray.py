@@ -7,7 +7,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import str_
 from arkouda.pdarraycreation import zeros, ones, array, arange
-from arkouda.pdarraysetops import concatenate, unique, intersect1d, setdiff1d, setxor1d, union1d
+from arkouda.pdarraysetops import concatenate, intersect1d, setdiff1d, setxor1d, union1d
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarrayIO import load
 
@@ -823,20 +823,14 @@ class SegArray:
         """
 
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
+            raise TypeError("SegArray setops require both objects to be SegArrays.")
         if a.size != b.size:
-            raise ValueError("SegArrays must have same number of 'rows' to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute intersection.")
         if a.dtype != b.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        intx_vals = []
-        intx_segments = zeros(a.size, akint64)
-
-        for i in range(a.size):
-            intx_vals.append(intersect1d(a[i], b[i]))
-            intx_segments[i] = 0 if i == 0 else (intx_vals[i - 1].size + intx_segments[i - 1])
-
-        return SegArray(intx_segments, concatenate(intx_vals))
+        segs, vals = intersect1d((a.segments, a.values), (b.segments, b.values))
+        return SegArray(segs, vals)
 
     @classmethod
     def set_union(cls, a, b):
@@ -854,20 +848,14 @@ class SegArray:
             Seconds SegArray to use in union calucation
         """
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
+            raise TypeError("SegArray setops require both objects to be SegArrays.")
         if a.size != b.size:
-            raise ValueError("SegArrays must have same number of 'rows' to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute intersection.")
         if a.dtype != b.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        intx_vals = []
-        intx_segments = zeros(a.size, akint64)
-
-        for i in range(a.size):
-            intx_vals.append(union1d(a[i], b[i]))
-            intx_segments[i] = 0 if i == 0 else (intx_vals[i - 1].size + intx_segments[i - 1])
-
-        return SegArray(intx_segments, concatenate(intx_vals))
+        segs, vals = union1d((a.segments, a.values), (b.segments, b.values))
+        return SegArray(segs, vals)
 
     @classmethod
     def set_difference(cls, a, b):
@@ -883,20 +871,14 @@ class SegArray:
         """
 
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
+            raise TypeError("SegArray setops require both objects to be SegArrays.")
         if a.size != b.size:
-            raise ValueError("SegArrays must have same number of 'rows' to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute intersection.")
         if a.dtype != b.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        intx_vals = []
-        intx_segments = zeros(a.size, akint64)
-
-        for i in range(a.size):
-            intx_vals.append(setdiff1d(a[i], b[i]))
-            intx_segments[i] = 0 if i == 0 else (intx_vals[i - 1].size + intx_segments[i - 1])
-
-        return SegArray(intx_segments, concatenate(intx_vals))
+        segs, vals = setdiff1d((a.segments, a.values), (b.segments, b.values))
+        return SegArray(segs, vals)
 
     @classmethod
     def set_xor(cls, a, b):
@@ -911,20 +893,14 @@ class SegArray:
             Seconds SegArray to use in xor calucation
         """
         if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray Intersections can only be computed on 2 SegArray objects.")
+            raise TypeError("SegArray setops require both objects to be SegArrays.")
         if a.size != b.size:
-            raise ValueError("SegArrays must have same number of 'rows' to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute intersection.")
         if a.dtype != b.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        intx_vals = []
-        intx_segments = zeros(a.size, akint64)
-
-        for i in range(a.size):
-            intx_vals.append(setxor1d(a[i], b[i]))
-            intx_segments[i] = 0 if i == 0 else (intx_vals[i - 1].size + intx_segments[i - 1])
-
-        return SegArray(intx_segments, concatenate(intx_vals))
+        segs, vals = setxor1d((a.segments, a.values), (b.segments, b.values))
+        return SegArray(segs, vals)
 
 
 
