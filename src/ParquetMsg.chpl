@@ -110,7 +110,7 @@ module ParquetMsg {
       var locOffsets = fileOffsets;
       
       try {
-        forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
+        for (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
           for locdom in A.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             
@@ -142,7 +142,7 @@ module ParquetMsg {
       var locOffsets = fileOffsets;
 
       try {
-        forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
+        for (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
           for locdom in A.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             var startByte = intersection.low - filedom.low;
@@ -176,7 +176,7 @@ module ParquetMsg {
       var locOffsets = fileOffsets;
       
       try {
-        forall (i, off, filedom, filename) in zip(sizes.domain, locOffsets, locFiledoms, locFiles) {
+        for (i, off, filedom, filename) in zip(sizes.domain, locOffsets, locFiledoms, locFiles) {
           for locdom in offsets.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
