@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef, List
+from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
 from typeguard import typechecked
-
 from arkouda.client import generic_msg, get_config
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, zeros_like, array
@@ -276,8 +275,7 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']],  # typ
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray,
-            List[pdarray], Tuple[pdarray, pdarray]]) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
+def union1d(pda1: pdarray, pda2: pdarray) -> pdarray:
     """
     Find the union of two arrays.
 
@@ -286,15 +284,15 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: 
 
     Parameters
     ----------
-    pda1 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
-    pda2 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
+    pda1 : pdarray
+        Input array
+    pda2 : pdarray
+        Input array
 
     Returns
     -------
-    pdarray or tuple
-        Unique, sorted union of the input arrays or tuple unique/sorted union of flattened arrays, (segments, values).
+    pdarray
+        Unique, sorted union of the input arrays.
         
     Raises
     ------
@@ -311,55 +309,28 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: 
     -----
     ak.union1d is not supported for bool or float64 pdarrays
 
-    Both inputs must match types in that they must both be pdarrays or both be iterable
-
     Examples
     --------
-    Singular pdarrays
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2, -1, 0, 1, 2])
-
-    >>> ak.union1d((ak.array([0, 2]), ak.array([-1, 0, 1])), (ak.array([0, 2]), ak.array([-2, 0, 2])))
-    [-2, -1, 0]
-    [1, 2]
-    (array(0, 3), array([-2, -1, 0, 1, 2])
-
-    Multiple pdarrays flattened
-    >>> a_segs = ak.array([0, 3])
-    >>> a_vals = ak.array([0, 1, 2, 3, 4])
-    >>> b_segs = ak.array([0, 1])
-    >>> b_vals = ak.array([5, 6, 7, 8])
-    >>> ak.union1d([a_segs, a_vals], [b_segs, b_vals])
-    (array([0 4]), array([0 1 2 5 3 4 6 7 8]))
     """
-    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
-        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
-            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
-        if pda1.size == 0:
-            return pda2  # union is pda2
-        if pda2.size == 0:
-            return pda1  # union is pda1
-        if (pda1.dtype == int and pda2.dtype == int) or (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="union1d", args="{} {}".
-                                 format(pda1.name, pda2.name))
-            return cast(pdarray, create_pdarray(repMsg))
-        return cast(pdarray,
-                    unique(cast(pdarray,
-                                concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
-    else:
-        if pda1[0].size != pda2[0].size:
-            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
-        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
-        repMsg = cast(str, generic_msg(cmd="setops1d_multi",
-                                       args=f"union {pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size}"))
-        rep_ele = repMsg.split("+")
-        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
+    if pda1.size == 0:
+        return pda2  # union is pda2
+    if pda2.size == 0:
+        return pda1  # union is pda1
+    if pda1.dtype == int and pda2.dtype == int:
+        repMsg = generic_msg(cmd="union1d", args="{} {}". \
+                             format(pda1.name, pda2.name))
+        return cast(pdarray, create_pdarray(repMsg))
+    return cast(pdarray,
+                unique(cast(pdarray,
+                            concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
 
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray,
-                List[pdarray], Tuple[pdarray, pdarray]], assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
+def intersect1d(pda1: pdarray, pda2: pdarray,
+                assume_unique: bool = False) -> pdarray:
     """
     Find the intersection of two arrays.
 
@@ -367,19 +338,18 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pd
 
     Parameters
     ----------
-    pda1 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
-    pda2 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
+    pda1 : pdarray
+        Input array
+    pda2 : pdarray
+        Input array
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray or tuple
-        Unique, sorted intersection of the input arrays or tuple unique/sorted union of flattened arrays,
-        (segments, values).
+    pdarray
+        Sorted 1D array of common and unique elements.
 
     Raises
     ------
@@ -398,57 +368,33 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pd
 
     Examples
     --------
-    Singular pdarray
     >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
     array([1, 3])
-
-    Multiple pdarrays flattened
-    a = [0, 1, 2]
-        b = [3, 4]
-        c = [1]
-        d = [3, 4, 5]
-    >>> a_segs = ak.array([0, 3])
-    >>> a_vals = ak.array([0, 1, 2, 3, 4])
-    >>> b_segs = ak.array([0, 1])
-    >>> b_vals = ak.array([1, 3, 4, 5])
-    >>> ak.intersect1d([a_segs, a_vals], [b_segs, b_vals])
-    (array([0 1]), array([1 3 4))
     """
-    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
-        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
-            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
-        if pda1.size == 0:
-            return pda1  # nothing in the intersection
-        if pda2.size == 0:
-            return pda2  # nothing in the intersection
-        if (pda1.dtype == int and pda2.dtype == int) or \
-                (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="intersect1d", args="{} {} {}".
-                                 format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str, repMsg))
-        if not assume_unique:
-            pda1 = unique(pda1)
-            pda2 = unique(pda2)
-        aux = concatenate((pda1, pda2), ordered=False)
-        aux_sort_indices = argsort(aux)
-        aux = aux[aux_sort_indices]
-        mask = aux[1:] == aux[:-1]
-        int1d = aux[:-1][mask]
-        return int1d
-    else:
-        if pda1[0].size != pda2[0].size:
-            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
-        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
-        repMsg = cast(str, generic_msg(cmd="setops1d_multi",
-                             args=f"intersect {pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}"))
-        rep_ele = repMsg.split("+")
-        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
+    if pda1.size == 0:
+        return pda1  # nothing in the intersection
+    if pda2.size == 0:
+        return pda2  # nothing in the intersection
+    if (pda1.dtype == int and pda2.dtype == int) or \
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="intersect1d", args="{} {} {}". \
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str, repMsg))
+    if not assume_unique:
+        pda1 = unique(pda1)
+        pda2 = unique(pda2)
+    aux = concatenate((pda1, pda2), ordered=False)
+    aux_sort_indices = argsort(aux)
+    aux = aux[aux_sort_indices]
+    mask = aux[1:] == aux[:-1]
+    int1d = aux[:-1][mask]
+    return int1d
 
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]],
-              assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
+def setdiff1d(pda1: pdarray, pda2: pdarray,
+              assume_unique: bool = False) -> pdarray:
     """
     Find the set difference of two arrays.
 
@@ -456,19 +402,18 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2
 
     Parameters
     ----------
-    pda1 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
-    pda2 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
+    pda1 : pdarray
+        Input array.
+    pda2 : pdarray
+        Input comparison array.
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray or tuple
+    pdarray
         Sorted 1D array of values in `pda1` that are not in `pda2`.
-        If flattened segments are passed, return will be a tuple (segments, values).
 
     Raises
     ------
@@ -487,54 +432,30 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2
 
     Examples
     --------
-    Singular pdarrays
     >>> a = ak.array([1, 2, 3, 2, 4, 1])
     >>> b = ak.array([3, 4, 5, 6])
     >>> ak.setdiff1d(a, b)
     array([1, 2])
-
-    Multiple pdarrays flattened
-    a = [0, 1, 2]
-        b = [3, 4, 5]
-        c = [1]
-        d = [3, 4]
-    >>> a_segs = ak.array([0, 3])
-    >>> a_vals = ak.array([0, 1, 2, 3, 4, 5])
-    >>> b_segs = ak.array([0, 2])
-    >>> b_vals = ak.array([1, 3, 4])
-    >>> ak.setdiff1d((a_segs, a_vals), (b_segs, b_vals))
-    (array([0 2]), array([0 2 3 5]))
     """
-    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
-        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
-            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
-        if pda1.size == 0:
-            return pda1  # return a zero length pdarray
-        if pda2.size == 0:
-            return pda1  # subtracting nothing return orig pdarray
-        if (pda1.dtype == int and pda2.dtype == int) or \
-                (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}".
-                                 format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str, repMsg))
-        if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        return pda1[in1d(pda1, pda2, invert=True)]
-    else:
-        if pda1[0].size != pda2[0].size:
-            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
-        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
-        repMsg = cast(str, generic_msg(cmd="setops1d_multi",
-                             args=f"setdiff {pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}"))
-        rep_ele = repMsg.split("+")
-        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
+    if pda1.size == 0:
+        return pda1  # return a zero length pdarray
+    if pda2.size == 0:
+        return pda1  # subtracting nothing return orig pdarray
+    if (pda1.dtype == int and pda2.dtype == int) or \
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}". \
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str, repMsg))
+    if not assume_unique:
+        pda1 = cast(pdarray, unique(pda1))
+        pda2 = cast(pdarray, unique(pda2))
+    return pda1[in1d(pda1, pda2, invert=True)]
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]],
-              assume_unique: bool = False) -> Union[pdarray, Tuple[pdarray, pdarray], str]:
+def setxor1d(pda1: pdarray, pda2: pdarray,
+             assume_unique: bool = False) -> pdarray:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -543,20 +464,19 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2:
 
     Parameters
     ----------
-    pda1 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
-    pda2 : pdarray, list, or tuple
-        Input array or flattened list of pdarrays
+    pda1 : pdarray
+        Input array.
+    pda2 : pdarray
+        Input array.
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray or tuple
+    pdarray
         Sorted 1D array of unique values that are in only one of the input
         arrays.
-        If flattened segments are passed, return will be a tuple (segments, values).
 
     Raises
     ------
@@ -571,45 +491,25 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, pdarray]], pda2:
 
     Examples
     --------
-    Singular pdarrays
     >>> a = ak.array([1, 2, 3, 2, 4])
     >>> b = ak.array([2, 3, 5, 7, 5])
     >>> ak.setxor1d(a,b)
     array([1, 4, 5, 7])
-
-    Multiple Pdarrays Flattened
-    >>> a_vals = ak.array([1, 2, 3, 2, 4, 1, 3, 6])
-    >>> a_segs = ak.array([0, 5])
-    >>> b_vals = ak.array([2, 3, 5, 7, 5, 6, 9])
-    >>> b_segs = ak.array([0, 5])
-    >>> ak.setxor1d((a_segs, a_vals), (b_segs, b_vals))
-    (array([0 4]), array([1 4 5 7 1 3 9]))
     """
-    if isinstance(pda1, pdarray) or isinstance(pda2, pdarray):
-        if not (isinstance(pda1, pdarray) and isinstance(pda2, pdarray)):
-            raise TypeError("Inputs must have matching types. Both must be pdarray or iterable, ie Tuple or List.")
-        if pda1.size == 0:
-            return pda2  # return other pdarray if pda1 is empty
-        if pda2.size == 0:
-            return pda1  # return other pdarray if pda2 is empty
-        if (pda1.dtype == int and pda2.dtype == int) or \
-                (pda1.dtype == akuint64 and pda2.dtype == akuint64):
-            repMsg = generic_msg(cmd="setxor1d", args="{} {} {}".
-                                 format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str, repMsg))
-        if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        aux = concatenate((pda1, pda2), ordered=False)
-        aux_sort_indices = argsort(aux)
-        aux = aux[aux_sort_indices]
-        flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
-        return aux[flag[1:] & flag[:-1]]
-    else:
-        if pda1[0].size != pda2[0].size:
-            raise ValueError("Multiple array support for 1d operation requires the same number of array segments to be present in both objects.")
-        # the segment arrays are always going to be dtype int. The values will support int64 and uint64
-        repMsg = cast(str, generic_msg(cmd="setops1d_multi",
-                             args=f"setxor {pda1[0].name} {pda1[1].name} {pda1[1].size} {pda2[0].name} {pda2[1].name} {pda2[1].size} {assume_unique}"))
-        rep_ele = repMsg.split("+")
-        return cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1]))
+    if pda1.size == 0:
+        return pda2  # return other pdarray if pda1 is empty
+    if pda2.size == 0:
+        return pda1  # return other pdarray if pda2 is empty
+    if (pda1.dtype == int and pda2.dtype == int) or \
+            (pda1.dtype == akuint64 and pda2.dtype == akuint64):
+        repMsg = generic_msg(cmd="setxor1d", args="{} {} {}". \
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str, repMsg))
+    if not assume_unique:
+        pda1 = cast(pdarray, unique(pda1))
+        pda2 = cast(pdarray, unique(pda2))
+    aux = concatenate((pda1, pda2), ordered=False)
+    aux_sort_indices = argsort(aux)
+    aux = aux[aux_sort_indices]
+    flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
+    return aux[flag[1:] & flag[:-1]]
