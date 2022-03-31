@@ -154,6 +154,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           return ARROWERROR;
         }
         column_reader = row_group_reader->Column(idx);
+        int16_t definition_level;
         parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
         ba_reader -> Skip(startIdx);
@@ -161,10 +162,17 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
         int64_t numRead = 0;
         while (ba_reader->HasNext() && numRead < numElems) {
           parquet::ByteArray value;
-          (void)ba_reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-          offsets[i++] = value.len + 1;
-          byteSize += value.len + 1;
-          numRead += values_read;
+          (void)ba_reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read > 0) {
+            offsets[i] = value.len + 1;
+            byteSize += value.len + 1;
+            numRead += values_read;
+          } else {
+            offsets[i] = 1;
+            byteSize+=1;
+            numRead+=1;
+          }
+          i++;
         }
       }
       return byteSize;
@@ -252,18 +260,22 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         }
       } else if(ty == ARROWSTRING) {
         auto chpl_ptr = (unsigned char*)chpl_arr;
+        int16_t definition_level;
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
         while (reader->HasNext() && i < numElems) {
           parquet::ByteArray value;
-          (void)reader->ReadBatch(1, nullptr, nullptr, &value, &values_read);
-          for(int j = 0; j < value.len; j++) {
-            if(startIdx < 1 && i < numElems) {
-              chpl_ptr[i] = value.ptr[j];
-              i++;
-            } else {
-              startIdx--;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          // if values_read is 0, that means that it was a null value
+          if(values_read > 0) {
+            for(int j = 0; j < value.len; j++) {
+              if(startIdx < 1 && i < numElems) {
+                chpl_ptr[i] = value.ptr[j];
+                i++;
+              } else {
+                startIdx--;
+              }
             }
           }
           if(startIdx < 1 && i < numElems)

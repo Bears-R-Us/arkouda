@@ -159,6 +159,16 @@ class ParquetTest(ArkoudaTest):
         for key in ak_dict:
             self.assertTrue((ak_vals[key] == ak_dict[key]).all())
 
+    def test_null_strings(self):
+        datadir = 'resources/parquet-testing'
+        basename = 'null-strings.parquet'
+        expected = ak.array(['str1', '', 'str2', '', 'str3', '', '', 'str4'])
+
+        filename = os.path.join(datadir, basename)
+        res = ak.read_parquet(filename)
+
+        self.assertTrue((expected == res).all())
+            
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = 'resources/parquet-testing'
