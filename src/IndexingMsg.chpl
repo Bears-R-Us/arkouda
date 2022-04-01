@@ -113,34 +113,64 @@ module IndexingMsg
 
     /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
     proc arrayViewIntIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
         var (pdaName, dimProdName, coordsName) = payload.splitMsgToTuple(3);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
-        var coordsEntry = toSymEntry(coords, int);
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
-        var idx: int = + reduce (dimProdEntry.a * coordsEntry.a);
-        return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+        select (coords.dtype) {
+            when (DType.Int64) {
+                var coordsEntry = toSymEntry(coords, int);
+                var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+            }
+            when (DType.UInt64) {
+                var coordsEntry = toSymEntry(coords, uint);
+                var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+            }
+            otherwise {
+                 var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                 return new MsgTuple(errorMsg, MsgType.ERROR);
+             }
+        }
     }
 
     /* arrayViewIntIndexAssignMsg "av[int_list]=value" response to __getitem__(int_list) where av is an ArrayView */
     proc arrayViewIntIndexAssignMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
         var (pdaName, dtypeStr, dimProdName, coordsName, value) = payload.splitMsgToTuple(5);
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
-        var coordsEntry = toSymEntry(coords, int);
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
-        var idx: int = + reduce (dimProdEntry.a * coordsEntry.a);
-        return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+        select (coords.dtype) {
+            when (DType.Int64) {
+                var coordsEntry = toSymEntry(coords, int);
+                var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+            }
+            when (DType.UInt64) {
+                var coordsEntry = toSymEntry(coords, uint);
+                var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+            }
+            otherwise {
+                 var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                 return new MsgTuple(errorMsg, MsgType.ERROR);
+             }
+        }
     }
 
     /* intIndex "a[int]" response to __getitem__(int) */

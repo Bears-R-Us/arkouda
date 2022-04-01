@@ -106,8 +106,6 @@ def from_series(series : pd.Series,
                       'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
     return array(n_array)
 
-
-@typechecked
 def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending 
@@ -168,6 +166,7 @@ def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, 
     >>> type(strings)
     <class 'arkouda.strings.Strings'>  
     """
+    # Removed @typechecked to prevent cyclic dependencies with ArrayView
     from arkouda.numeric import cast as akcast
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
@@ -184,7 +183,7 @@ def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, 
     if a.ndim != 1:
         # TODO add order
         if a.dtype.name in NumericDTypes:
-            flat_a = array(a.flatten())
+            flat_a = array(a.flatten(), dtype=dtype)
             if isinstance(flat_a, pdarray):
                 # break into parts so mypy doesn't think we're calling reshape on a Strings
                 return flat_a.reshape(a.shape)

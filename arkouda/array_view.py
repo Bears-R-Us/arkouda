@@ -1,6 +1,6 @@
 from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
-from arkouda.pdarraycreation import array, arange
-from arkouda.numeric import cumprod
+from arkouda.pdarraycreation import array, arange, zeros
+from arkouda.numeric import cumprod, where, cast as akcast
 import numpy as np  # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import translate_np_dtype, resolve_scalar_dtype
@@ -11,6 +11,29 @@ OrderType = Enum('OrderType', ['ROW_MAJOR', 'COLUMN_MAJOR'])
 
 
 class ArrayView:
+    """
+    A multi-dimensional view of a pdarray. Arkouda ``ArraryView`` behaves similarly to numpy's ndarray.
+    The base pdarray is stored in 1-dimension but can be indexed and treated logically as if it were multi-dimensional
+
+    Attributes
+    ----------
+    base: pdarray
+        The base pdarray that is being viewed as a multi-dimensional object
+    dtype: dtype
+        The element type of the base pdarray (equivalent to base.dtype)
+    size: int_scalars
+        The number of elements in the base pdarray (equivalent to base.size)
+    shape: pdarray[int]
+        A pdarray specifying the sizes of each dimension of the array
+    ndim: int_scalars
+         Number of dimensions (equivalent to shape.size)
+    itemsize: int_scalars
+        The size in bytes of each element (equivalent to base.itemsize)
+    order: str {'C'/'row_major' | 'F'/'column_major'}
+        Index order to read and write the elements.
+        By default or if 'C'/'row_major', read and write data in row_major order
+        If 'F'/'column_major', read and write data in column_major order
+    """
     def __init__(self, base: pdarray, shape, order='row_major'):
         self.objtype = type(self).__name__
         self.shape = array(shape)
@@ -20,7 +43,9 @@ class ArrayView:
             raise ValueError(f"cannot reshape array of size {base.size} into shape {self.shape}")
         self.base = base
         self.size = base.size
+        self.dtype = base.dtype
         self.ndim = self.shape.size
+        self.itemsize = self.base.itemsize
         if order.upper() in {'C', 'ROW_MAJOR'}:
             self.order = OrderType.ROW_MAJOR
         elif order.upper() in {'F', 'COLUMN_MAJOR'}:
@@ -31,7 +56,7 @@ class ArrayView:
         self._reverse_shape = self.shape if self.order is OrderType.COLUMN_MAJOR else self.shape[::-1]
         if self.shape.min() == 0:
             # avoid divide by 0 if any of the dimensions are 0
-            self._dim_prod = array([0] * self.shape.size)
+            self._dim_prod = zeros(self.shape.size, self.dtype)
         else:
             # cache dim_prod to avoid recalculation, reverse if row_major
             self._dim_prod = cumprod(self.shape)//self.shape if self.order is OrderType.COLUMN_MAJOR else cumprod(self._reverse_shape)//self._reverse_shape
@@ -78,17 +103,17 @@ class ArrayView:
             pass
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind != "int":
+            if kind not in ("int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             # Interpret negative key as offset from end of array
-            key = array([key[i] + self.shape[i] if key[i] < 0 else key[i] for i in range(key.size)])
+            key = where(key < 0, akcast(key + self.shape, kind), key)
             # Capture the indices which are still out of bounds
             out_of_bounds = (key < 0) | (self.shape <= key)
             if out_of_bounds.any():
                 out = arange(key.size)[out_of_bounds][0]
                 raise IndexError(f"index {key[out]} is out of bounds for axis {out} with size {self.shape[out]}")
             coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
-            repMsg = generic_msg(cmd="arrayViewIntIndex", args="{} {} {}".format(self.base.name, self._dim_prod.name, coords.name))
+            repMsg = generic_msg(cmd="arrayViewIntIndex", args=f"{self.base.name} {self._dim_prod.name} {coords.name}")
             fields = repMsg.split()
             return parse_single_value(' '.join(fields[1:]))
         else:
@@ -98,7 +123,7 @@ class ArrayView:
             key = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             for i in range(len(key)):
                 x = key[i]
-                if np.isscalar(x) and resolve_scalar_dtype(x) == 'int64':
+                if np.isscalar(x) and (resolve_scalar_dtype(x) == 'int64' or 'uint64'):
                     orig_key = x
                     if x < 0:
                         # Interpret negative key as offset from end of array
@@ -160,10 +185,10 @@ class ArrayView:
             pass
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind != "int":
+            if kind not in ("int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             # Interpret negative key as offset from end of array
-            key = array([key[i] + self.shape[i] if key[i] < 0 else key[i] for i in range(key.size)])
+            key = where(key < 0, akcast(key + self.shape, kind), key)
             # Capture the indices which are still out of bounds
             out_of_bounds = (key < 0) | (self.shape <= key)
             if out_of_bounds.any():
@@ -171,7 +196,7 @@ class ArrayView:
                 raise IndexError(f"index {key[out]} is out of bounds for axis {out} with size {self.shape[out]}")
             coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             generic_msg(cmd="arrayViewIntIndexAssign", args="{} {} {} {} {}".format(self.base.name,
-                                                                                    self.base.dtype.name,
+                                                                                    self.dtype.name,
                                                                                     self._dim_prod.name,
                                                                                     coords.name,
                                                                                     self.base.format_other(value)))
@@ -211,7 +236,7 @@ class ArrayView:
 
         Examples
         --------
-        >>> a = ak.arange(0, 6, 1).reshape(2,3)
+        >>> a = ak.arange(6).reshape(2,3)
         >>> a.to_ndarray()
         array([[0, 1, 2],
                [3, 4, 5]])

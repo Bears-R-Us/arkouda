@@ -7,17 +7,20 @@ from itertools import product
 class ArrayViewTest(ArkoudaTest):
 
     def test_mulitdimensional_array_creation(self):
-        n1 = np.array([[0, 0], [0, 1], [1, 1]])
-        a1 = ak.array([[0, 0], [0, 1], [1, 1]])
-        self.assertListEqual(n1.tolist(), a1.to_ndarray().tolist())
-        n2 = np.arange(27).reshape((3, 3, 3))
-        a2 = ak.arange(27).reshape((3, 3, 3))
-        self.assertListEqual(n2.tolist(), a2.to_ndarray().tolist())
-        n3 = np.arange(27).reshape(3, 3, 3)
-        a3 = ak.arange(27).reshape(3, 3, 3)
-        self.assertListEqual(n3.tolist(), a3.to_ndarray().tolist())
+        n = np.array([[0, 0], [0, 1], [1, 1]])
+        a = ak.array([[0, 0], [0, 1], [1, 1]])
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n = np.arange(27).reshape((3, 3, 3))
+        a = ak.arange(27).reshape((3, 3, 3))
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n = np.arange(27).reshape(3, 3, 3)
+        a = ak.arange(27).reshape(3, 3, 3)
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n = np.arange(27, dtype=np.uint64).reshape(3, 3, 3)
+        a = ak.arange(27, dtype=ak.uint64).reshape(3, 3, 3)
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
 
-    def testArrayViewIntIndexing(self):
+    def test_arrayview_int_indexing(self):
         nd = np.arange(9).reshape(3, 3)
         pd_reshape = ak.arange(9).reshape(3, 3)
         pd_array = ak.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
@@ -41,6 +44,34 @@ class ArrayViewTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             # cannot reshape array of size 9 into shape (4,3)
             ak.arange(9).reshape(4, 3)
+
+    def test_int_list_indexing(self):
+        iav = ak.arange(30).reshape((5, 3, 2))
+        uav = ak.arange(30, dtype=ak.uint64).reshape((5, 3, 2))
+
+        iind = ak.array([3, 0, 1])
+        uind = ak.cast(iind, ak.uint64)
+        self.assertEqual(iav[iind], iav[uind])
+        self.assertEqual(uav[iind], uav[uind])
+
+    def test_set_index(self):
+        inav = np.arange(30).reshape((5, 3, 2))
+        unav = np.arange(30, dtype=np.uint64).reshape((5, 3, 2))
+        iav = ak.arange(30).reshape((5, 3, 2))
+        uav = ak.arange(30, dtype=ak.uint64).reshape((5, 3, 2))
+
+        nind = (3, 0, 1)
+        iind = ak.array(nind)
+        uind = ak.cast(iind, ak.uint64)
+
+        inav[nind] = -9999
+        unav[nind] = -9999
+        iav[uind] = -9999
+        uav[iind] = -9999
+        self.assertEqual(iav[uind], inav[nind])
+        self.assertEqual(iav[iind], iav[uind])
+        self.assertEqual(uav[uind], unav[nind])
+        self.assertEqual(uav[iind], uav[uind])
 
     def test_reshape_order(self):
         # Keep 'C'/'F' (C/Fortran) order to be consistent with numpy

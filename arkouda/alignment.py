@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np  # type: ignore
 
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, is_sorted
