@@ -162,7 +162,7 @@ class ParquetTest(ArkoudaTest):
     def test_null_strings(self):
         datadir = 'resources/parquet-testing'
         basename = 'null-strings.parquet'
-        expected = ak.array(['str1', '', 'str2', '', 'str3', '', '', 'str4'])
+        expected = ak.array(['first-string', '', 'string2', '', 'third', '', ''])
 
         filename = os.path.join(datadir, basename)
         res = ak.read_parquet(filename)
