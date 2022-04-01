@@ -636,6 +636,8 @@ module SegmentedArray {
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
     proc substringSearch(const pattern: string) throws {
+      // We need to check that pattern compiles once to avoid server crash from !try in _unsafecompile
+      checkCompile(pattern);
       return computeOnSegments(offsets.a, values.a, SegFunction.StringSearch, bool, pattern);
     }
 
@@ -1127,8 +1129,8 @@ module SegmentedArray {
     return try! compile(pattern);
   }
 
-  inline proc stringSearch(values, rng, pattern) throws {
-    return checkCompile(pattern).search(interpretAsString(values, rng, borrow=true)).matched;
+  inline proc stringSearch(values, rng, myRegex) throws {
+    return myRegex.search(interpretAsString(values, rng, borrow=true)).matched;
   }
 
   /* Test array of strings for membership in another array (set) of strings. Returns
