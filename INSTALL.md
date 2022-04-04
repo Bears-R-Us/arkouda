@@ -6,7 +6,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 # Table of Contents
 
 1. [General Requirements](#genreqs)
-2. [Linux (Unbuntun)](#linux-unbuntu)
+2. [Linux (Ubuntun)](#linux-unbuntu)
    1. [Install Chapel](#lu-chapel)
    2. [Python Envrionment](#lu-python)
 3. [Windows](#windows)
@@ -36,10 +36,10 @@ This guide will walk you through the environment configuration for Arkouda to op
  * versioneer for versioning
 
 <a id="linux-unbuntu"></a>
-## Linux (Unbuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+## Linux (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 <a id="lu-chapel"></a>
-### Install Chapel (Unbuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### Install Chapel (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
 
@@ -77,7 +77,7 @@ export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
 <a id="lu-python"></a> 
-### Python Environment - Anaconda (Unbuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### Python Environment - Anaconda (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 As is the case with the MacOS install, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/linux/) to provide a Python environment and manage Python dependencies:
 
 ```bash
