@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from arkouda.pdarrayclass import pdarray, is_sorted
+from typing import cast
+
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import pdarray, is_sorted, create_pdarray
 from arkouda.numeric import cumsum
 from arkouda.dtypes import isSupportedInt
 from arkouda.dtypes import int64 as akint64
@@ -805,102 +808,96 @@ class SegArray:
         values = load(prefix_path, dataset=dataset + value_suffix)
         return cls(segments, values)
 
-    @classmethod
-    def set_intx(cls, a, b):
+    def intersect(self, other: SegArray, assume_unique: bool = False):
         """
-        Compute the intersection of 2 segmented arrays.
+        Compute the intersection this SegArray with other.
 
         Parameters
         ----------
-        a : SegArray
-            First SegArray to use in intersection calculation
-        b : SegArray
-            Seconds SegArray to use in intersection calucation
+        other : SegArray
+            Second SegArray to use in intersection calucation
+        assume_unique : bool
+            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            Default is False.
 
         Returns
         -------
         SegArray
         """
 
-        if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray setops require both objects to be SegArrays.")
-        if a.size != b.size:
+        if self.size != other.size:
             raise ValueError("SegArrays must have same number of segments to compute intersection.")
-        if a.dtype != b.dtype:
+        if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        segs, vals = intersect1d((a.segments, a.values), (b.segments, b.values))
-        return SegArray(segs, vals)
+        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+                                       args=f"intersect {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
+        rep_ele = repMsg.split("+")
+        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
 
-    @classmethod
-    def set_union(cls, a, b):
+    def union(self, other: SegArray):
         """
-        Compute the union of 2 SegArrays
-
-        When computing the union on axis 0, segments, the segments from a and b will be returned as on SegArray.
-        When computing the union on axis 1, columns, the segments from b will be appended to segments in a.
+        Compute the union of self and other
 
         Parameters
         ----------
-        a : SegArray
-            First SegArray to use in union calculation
-        b : SegArray
-            Seconds SegArray to use in union calucation
+        other : SegArray
+            Second SegArray to use in union calucation
         """
-        if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray setops require both objects to be SegArrays.")
-        if a.size != b.size:
+        if self.size != other.size:
             raise ValueError("SegArrays must have same number of segments to compute intersection.")
-        if a.dtype != b.dtype:
+        if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        segs, vals = union1d((a.segments, a.values), (b.segments, b.values))
-        return SegArray(segs, vals)
+        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+                                       args=f"union {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size}"))
+        rep_ele = repMsg.split("+")
+        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
 
-    @classmethod
-    def set_difference(cls, a, b):
+    def difference(self, other: SegArray, assume_unique: bool = False):
         """
         Compute the difference SegArrays
 
         Parameters
         ----------
-        a : SegArray
-            First SegArray to use in difference calculation
-        b : SegArray
-            Seconds SegArray to use in difference calucation
+        other : SegArray
+            Second SegArray to use in intersection calucation
+        assume_unique : bool
+            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            Default is False.
         """
 
-        if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray setops require both objects to be SegArrays.")
-        if a.size != b.size:
+        if self.size != other.size:
             raise ValueError("SegArrays must have same number of segments to compute intersection.")
-        if a.dtype != b.dtype:
+        if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        segs, vals = setdiff1d((a.segments, a.values), (b.segments, b.values))
-        return SegArray(segs, vals)
+        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+                                       args=f"setdiff {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
+        rep_ele = repMsg.split("+")
+        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
 
-    @classmethod
-    def set_xor(cls, a, b):
+    def xor(self, other: SegArray, assume_unique: bool = False):
         """
         Compute the symmetric difference SegArrays
 
         Parameters
         ----------
-        a : SegArray
-            First SegArray to use in xor calculation
-        b : SegArray
-            Seconds SegArray to use in xor calucation
+        other : SegArray
+            Second SegArray to use in intersection calucation
+        assume_unique : bool
+            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            Default is False.
         """
-        if not (isinstance(a, SegArray) and isinstance(b, SegArray)):
-            raise TypeError("SegArray setops require both objects to be SegArrays.")
-        if a.size != b.size:
+        if self.size != other.size:
             raise ValueError("SegArrays must have same number of segments to compute intersection.")
-        if a.dtype != b.dtype:
+        if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        segs, vals = setxor1d((a.segments, a.values), (b.segments, b.values))
-        return SegArray(segs, vals)
+        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+                                       args=f"setxor {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
+        rep_ele = repMsg.split("+")
+        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
 
 
 
