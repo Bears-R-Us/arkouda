@@ -6,7 +6,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 # Table of Contents
 
 1. [General Requirements](#genreqs)
-2. [Linux (Ubuntun)](#linux-unbuntu)
+2. [Linux (Ubuntun)](#linux-ubuntu)
    1. [Install Chapel](#lu-chapel)
    2. [Python Envrionment](#lu-python)
 3. [Windows](#windows)
@@ -85,12 +85,12 @@ As is the case with the MacOS install, it is highly recommended to [install Anac
  sh Anaconda3-2020.07-Linux-x86_64.sh
  source ~/.bashrc
  
- # Install versioneer and other required python packages if they are not included in yoru anaconda install
+ # Install versioneer and other required python packages if they are not included in your anaconda install
  conda install versioneer
  # OR
  pip install versioneer
  
- # Repeat for any missing pacakges using your package manager of choice (conda or pip)
+ # Repeat for any missing packages using your package manager of choice (conda or pip)
 ```
 
 <a id="windows"></a>
