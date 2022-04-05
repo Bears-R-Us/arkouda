@@ -6,7 +6,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 # Table of Contents
 
 1. [General Requirements](#genreqs)
-2. [Linux (Ubuntun)](#linux-ubuntu)
+2. [Linux (Ubuntu)](#linux-ubuntu)
    1. [Install Chapel](#lu-chapel)
    2. [Python Envrionment](#lu-python)
 3. [Windows](#windows)
