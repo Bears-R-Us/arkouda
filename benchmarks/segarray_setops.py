@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-OPS = ('intersect', 'union', 'xor', 'difference')
+OPS = ('intersect', 'union', 'difference', 'xor')
 TYPES = ('int64', 'uint64')
 
 

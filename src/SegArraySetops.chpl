@@ -23,7 +23,9 @@ module SegArraySetops {
         agg.copy(ul, l1);
       }
       else{
-        var u = union1d(values1.a[s1..#l1], values2.a[s2..#l2]);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var u = union1d(slice1, slice2);
         agg.copy(ul, u.size);
       }
     }
@@ -45,7 +47,9 @@ module SegArraySetops {
           agg.copy(union_vals[i+us], u.ptr[i]);
         }
       } else {
-        var u = new lowLevelLocalizingSlice(union1d(values1.a[s1..#l1], values2.a[s2..#l2]), 0..#ul);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var u = new lowLevelLocalizingSlice(union1d(slice1, slice2), 0..#ul);
         for i in (0..#ul){
           agg.copy(union_vals[i+us], u.ptr[i]);
         }
@@ -65,7 +69,9 @@ module SegArraySetops {
       if (l1 == 0 || l2 == 0) {
         agg.copy(il, 0);
       } else {
-        var intx = intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var intx = intersect1d(slice1, slice2, isUnique);
         agg.copy(il, intx.size);
       }
     }
@@ -77,7 +83,9 @@ module SegArraySetops {
     forall (idx, s1, l1, s2, l2, is, il) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, intx_segs, intx_lens) with (var agg = newDstAggregator(t)){
       // TODO - update to use lowLevelLocalizingSlice 
       if (il > 0){
-        var intx = new lowLevelLocalizingSlice(intersect1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#il);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var intx = new lowLevelLocalizingSlice(intersect1d(slice1, slice2, isUnique), 0..#il);
         for i in (0..#il){
             agg.copy(intx_vals[i+is], intx.ptr[i]);
         }
@@ -100,7 +108,9 @@ module SegArraySetops {
         agg.copy(xl, l1);
       }
       else {
-        var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var xor = setxor1d(slice1, slice2, isUnique);
         agg.copy(xl, xor.size);
       }
     }
@@ -122,7 +132,9 @@ module SegArraySetops {
           agg.copy(xor_vals[i+xs], xor.ptr[i]);
         }
       } else {
-        var xor = new lowLevelLocalizingSlice(setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#xl);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var xor = new lowLevelLocalizingSlice(setxor1d(slice1, slice2, isUnique), 0..#xl);
         for i in (0..#xl){
           agg.copy(xor_vals[i+xs], xor.ptr[i]);
         }
@@ -142,7 +154,9 @@ module SegArraySetops {
       if (l1 == 0 || l2 == 0){
         agg.copy(dl, l1);
       } else {
-        var d = setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var d = setdiff1d(slice1, slice2, isUnique);
         agg.copy(dl, d.size);
       }
     }
@@ -159,7 +173,9 @@ module SegArraySetops {
           agg.copy(diff_vals[i + ds], d.ptr[i]);
         }
       } else {
-        var d = new lowLevelLocalizingSlice(setdiff1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#dl);
+        var slice1: [{0..#l1}] t = values1.a[s1..#l1];
+        var slice2: [{0..#l2}] t = values2.a[s2..#l2];
+        var d = new lowLevelLocalizingSlice(setdiff1d(slice1, slice2, isUnique), 0..#dl);
         for i in (0..#dl){
           agg.copy(diff_vals[i+ds], d.ptr[i]);
         }
