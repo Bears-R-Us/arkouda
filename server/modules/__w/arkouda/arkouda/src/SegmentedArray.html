@@ -368,17 +368,6 @@ will fall in one contiguous block.</p>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="SegmentedArray.SegString.checkCompile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkCompile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.checkCompile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns Regexp.compile if pattern can be compiled without an error</p>
-</dd></dl>
-
-<dl class="chpl method">
-<dt class="sig sig-object chpl" id="SegmentedArray.SegString._unsafeCompileRegex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_unsafeCompileRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedArray.SegString._unsafeCompileRegex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.findMatchLocations">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findMatchLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">groupNum:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.findMatchLocations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
@@ -545,6 +534,22 @@ equality (polarity=true, result is true where elements equal target)
 or inequality (polarity=false, result is true where elements differ from
 target).</p>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.checkCompile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkCompile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.checkCompile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Regexp.compile if pattern can be compiled without an error</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray._unsafeCompileRegex">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">_unsafeCompileRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedArray._unsafeCompileRegex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.stringSearch">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">myRegex</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.stringSearch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedArray.in1d">

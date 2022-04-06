@@ -126,14 +126,6 @@ or
 
    .. method:: proc findSubstringInBytes(const substr: string)
 
-   .. method:: proc checkCompile(const pattern: ?t) throws
-
-      
-      Returns Regexp.compile if pattern can be compiled without an error
-      
-
-   .. method:: proc _unsafeCompileRegex(const pattern: ?t)
-
    .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
 
       
@@ -268,6 +260,16 @@ or
    equality (polarity=true, result is true where elements equal target) 
    or inequality (polarity=false, result is true where elements differ from 
    target). 
+
+.. function:: proc checkCompile(const pattern: ?t) throws
+
+   
+   Returns Regexp.compile if pattern can be compiled without an error
+   
+
+.. function:: proc _unsafeCompileRegex(const pattern: ?t)
+
+.. function:: proc stringSearch(values, rng, myRegex) throws
 
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
 
