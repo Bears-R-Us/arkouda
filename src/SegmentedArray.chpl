@@ -406,29 +406,6 @@ module SegmentedArray {
     }
 
     /*
-      Returns Regexp.compile if pattern can be compiled without an error
-    */
-    proc checkCompile(const pattern: ?t) throws where t == bytes || t == string {
-      try {
-        return compile(pattern);
-      }
-      catch {
-        var errorMsg = "re2 could not compile pattern: %s)".format(pattern);
-        saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        throw new owned IllegalArgumentError(errorMsg);
-      }
-    }
-
-    proc _unsafeCompileRegex(const pattern: ?t) where t == bytes || t == string {
-      // This is a private function and should not be called to compile pattern. Use checkCompile instead
-
-      // This proc is a workaound to allow declaring regexps using a with clause in forall loops
-      // since using declarations with throws are illegal
-      // It is only called after checkCompile so the try! will not result in a server crash
-      return try! compile(pattern);
-    }
-
-    /*
       Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
       :arg pattern: The regex pattern used to find matches
       :type pattern: string
@@ -659,18 +636,9 @@ module SegmentedArray {
       :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
     proc substringSearch(const pattern: string) throws {
-      var hits: [offsets.aD] bool = false;  // the answer
+      // We need to check that pattern compiles once to avoid server crash from !try in _unsafecompile
       checkCompile(pattern);
-
-      ref oa = offsets.a;
-      ref va = values.a;
-      var lengths = getLengths();
-
-      forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-        // regexp.search searches the receiving string for matches at any offset
-        h = myRegex.search(interpretAsString(va, o..#l, borrow=true)).matched;
-      }
-      return hits;
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringSearch, bool, pattern);
     }
 
     /*
@@ -1144,6 +1112,33 @@ module SegmentedArray {
       return (lengths == 0);
     }
     return computeOnSegments(ss.offsets.a, ss.values.a, function, bool, testStr);
+  }
+
+  /*
+    Returns Regexp.compile if pattern can be compiled without an error
+  */
+  proc checkCompile(const pattern: ?t) throws where t == bytes || t == string {
+    try {
+      return compile(pattern);
+    }
+    catch {
+      var errorMsg = "re2 could not compile pattern: %s".format(pattern);
+      saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      throw new owned IllegalArgumentError(errorMsg);
+    }
+  }
+
+  proc _unsafeCompileRegex(const pattern: ?t) where t == bytes || t == string {
+    // This is a private function and should not be called to compile pattern. Use checkCompile instead
+
+    // This proc is a workaound to allow declaring regexps using a with clause in forall loops
+    // since using declarations with throws are illegal
+    // It is only called after checkCompile so the try! will not result in a server crash
+    return try! compile(pattern);
+  }
+
+  inline proc stringSearch(values, rng, myRegex) throws {
+    return myRegex.search(interpretAsString(values, rng, borrow=true)).matched;
   }
 
   /* Test array of strings for membership in another array (set) of strings. Returns
