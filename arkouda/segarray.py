@@ -10,7 +10,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import str_
 from arkouda.pdarraycreation import zeros, ones, array, arange
-from arkouda.pdarraysetops import concatenate, intersect1d, setdiff1d, setxor1d, union1d
+from arkouda.pdarraysetops import concatenate
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarrayIO import load
 
@@ -123,7 +123,7 @@ class SegArray:
         self._non_empty_count = self._non_empty.sum()
 
         if grouping is None:
-            if self.size == 0:
+            if self.size == 0 or self._non_empty_count == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations

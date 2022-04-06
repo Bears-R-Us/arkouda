@@ -88,8 +88,16 @@ module SegArraySetops {
     // Compute lengths of the segments resulting from each union
     forall (idx, s1, l1, s2, l2, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_lens) with (var agg = newDstAggregator(int)){
       // TODO - update to use lowLevelLocalizingSlice 
-      var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
-      agg.copy(xl, xor.size);
+      if (l1 == 0) {
+        agg.copy(xl, l2);
+      }
+      else if (l2 == 0) {
+        agg.copy(xl, l1);
+      }
+      else {
+        var xor = setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique);
+        agg.copy(xl, xor.size);
+      }
     }
 
     const xor_segs = (+ scan xor_lens) - xor_lens;
@@ -98,10 +106,23 @@ module SegArraySetops {
     // Compute the setxor and add values to the corresponding indexes in values
     forall (idx, s1, l1, s2, l2, xs, xl) in zip(segments1.aD, segments1.a, lens1, segments2.a, lens2, xor_segs, xor_lens) with (var agg = newDstAggregator(t)){
       // TODO - update to use lowLevelLocalizingSlice 
-      var xor = new lowLevelLocalizingSlice(setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#xl);
-      for i in (0..#xl){
-        agg.copy(xor_vals[i+xs], xor.ptr[i]);
+      if (l1 == 0) {
+        var xor = new lowLevelLocalizingSlice(values2.a, s2..#l2);
+        for i in (0..#xl){
+          agg.copy(xor_vals[i+xs], xor.ptr[i]);
+        }
+      } else if (l2 == 0) {
+        var xor = new lowLevelLocalizingSlice(values1.a, s1..#l1);
+        for i in (0..#xl){
+          agg.copy(xor_vals[i+xs], xor.ptr[i]);
+        }
+      } else {
+        var xor = new lowLevelLocalizingSlice(setxor1d(values1.a[s1..#l1], values2.a[s2..#l2], isUnique), 0..#xl);
+        for i in (0..#xl){
+          agg.copy(xor_vals[i+xs], xor.ptr[i]);
+        }
       }
+      
     }
 
     return (xor_segs, xor_vals);
