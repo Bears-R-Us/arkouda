@@ -1,7 +1,5 @@
 from __future__ import annotations
-
-from typing import cast
-
+from typing import cast as t_cast
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, is_sorted, create_pdarray
 from arkouda.numeric import cumsum
@@ -830,10 +828,10 @@ class SegArray:
         if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+        repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"intersect {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
         rep_ele = repMsg.split("+")
-        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
+        return SegArray(t_cast(pdarray, create_pdarray(rep_ele[0])), t_cast(pdarray, create_pdarray(rep_ele[1])))
 
     def union(self, other: SegArray):
         """
@@ -849,10 +847,10 @@ class SegArray:
         if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+        repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"union {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size}"))
         rep_ele = repMsg.split("+")
-        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
+        return SegArray(t_cast(pdarray, create_pdarray(rep_ele[0])), t_cast(pdarray, create_pdarray(rep_ele[1])))
 
     def difference(self, other: SegArray, assume_unique: bool = False):
         """
@@ -872,10 +870,10 @@ class SegArray:
         if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+        repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"setdiff {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
         rep_ele = repMsg.split("+")
-        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
+        return SegArray(t_cast(pdarray, create_pdarray(rep_ele[0])), t_cast(pdarray, create_pdarray(rep_ele[1])))
 
     def xor(self, other: SegArray, assume_unique: bool = False):
         """
@@ -894,10 +892,10 @@ class SegArray:
         if self.dtype != other.dtype:
             raise TypeError("SegArrays must have the same dtype to compute intersection")
 
-        repMsg = cast(str, generic_msg(cmd="segarr_setops",
+        repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"setxor {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
         rep_ele = repMsg.split("+")
-        return SegArray(cast(pdarray, create_pdarray(rep_ele[0])), cast(pdarray, create_pdarray(rep_ele[1])))
+        return SegArray(t_cast(pdarray, create_pdarray(rep_ele[0])), t_cast(pdarray, create_pdarray(rep_ele[1])))
 
 
 
