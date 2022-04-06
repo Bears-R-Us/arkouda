@@ -5,6 +5,11 @@ module SegArraySetops {
   use AryUtil;
   use MultiTypeSymEntry;
 
+  use Logging;
+
+  private config const logLevel = ServerConfig.logLevel;
+  const segLogger = new Logger(logLevel);
+
   proc union_sa(segments1: borrowed SymEntry(int), values1: borrowed SymEntry(?t), lens1: [] int, segments2: borrowed SymEntry(int), values2: borrowed SymEntry(t), lens2: [] int) throws {
     var union_lens: [segments1.aD] int;
 
