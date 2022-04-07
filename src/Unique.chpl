@@ -477,7 +477,7 @@ module Unique
     
     proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws {
         var truth: [aD] bool;
-        truth[aD.low] = true;
+        truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {

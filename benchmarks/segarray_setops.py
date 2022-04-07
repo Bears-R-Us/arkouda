@@ -47,7 +47,7 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
 
 
 def check_correctness(dtype):
-    N = 10
+    N = 10**4
     if dtype == 'int64':
         a = np.random.randint(0, 2 ** 32, N)
         b = np.random.randint(0, 2 ** 32, N)
@@ -81,7 +81,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Run the setops benchmarks: intersect1d, union1d, setdiff1d, setxor1d")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10, help='Problem size: length of arrays A and B')
+    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
