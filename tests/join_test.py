@@ -74,7 +74,37 @@ class JoinTest(ArkoudaTest):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt", int(0))
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
-        
+
+    def test_gen_ranges(self):
+        start = ak.array([0, 10, 20])
+        end = ak.array([10, 20, 30])
+
+        segs, ranges = ak.join.gen_ranges(start, end)
+        self.assertListEqual(segs.to_ndarray().tolist(), [0, 10, 20])
+        self.assertListEqual(ranges.to_ndarray().tolist(), list(range(30)))
+
+        with self.assertRaises(ValueError):
+            segs, ranges = ak.join.gen_ranges(ak.array([11, 12, 41]), end)
+
+    def test_inner_join(self):
+        left = ak.arange(10)
+        right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
+
+        l, r = ak.join.inner_join(left, right)
+        self.assertTrue((left[l] == right[r]).all())
+
+        with self.assertRaises(ValueError):
+            l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
+
+        with self.assertRaises(ValueError):
+            l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d)
+
+        with self.assertRaises(ValueError):
+            l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(5), ak.arange(10)))
+
+        with self.assertRaises(ValueError):
+            l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5)))
+
     def test_error_handling(self):
         """
         Tests error TypeError and ValueError handling
