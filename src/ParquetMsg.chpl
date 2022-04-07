@@ -134,27 +134,26 @@ module ParquetMsg {
   proc readStrFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
-    var fileOffsets = (+ scan sizes) - sizes;
     
     coforall loc in A.targetLocales() do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      var locOffsets = fileOffsets;
 
       try {
-        forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
+        forall (filedom, filename) in zip(locFiledoms, locFiles) {
           for locdom in A.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
-            var startByte = intersection.low - filedom.low;
 
             if intersection.size > 0 {
               var pqErr = new parquetErrorMsg();
+              var col: [filedom] t;
 
-              if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                    dsetname.localize().c_str(), intersection.size, startByte,
+              if c_readColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                    dsetname.localize().c_str(), intersection.size, 0,
                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
+              A[filedom] = col;
             }
           }
         }
@@ -166,22 +165,21 @@ module ParquetMsg {
 
   proc calcSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var (subdoms, length) = getSubdomains(sizes);
-    var fileOffsets = (+ scan sizes) - sizes;
 
     var byteSizes: [filenames.domain] int;
 
     coforall loc in offsets.targetLocales() with (+ reduce byteSizes) do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      var locOffsets = fileOffsets;
       
       try {
-        forall (i, off, filedom, filename) in zip(sizes.domain, locOffsets, locFiledoms, locFiles) {
+        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
           for locdom in offsets.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
-              byteSizes[i] = getStrColSize(filename, dsetname, offsets, intersection.size,
-                                           intersection.low, intersection.low - off);
+              var col: [filedom] t;
+              byteSizes[i] = getStrColSize(filename, dsetname, col);
+              offsets[filedom] = col;
             }
           }
         }
@@ -192,14 +190,14 @@ module ParquetMsg {
     return byteSizes;
   }
 
-  proc getStrColSize(filename: string, dsetname: string, offsets: [] int, numElems: int, chplStartIdx: int, cStartIdx: int) throws {
+  proc getStrColSize(filename: string, dsetname: string, offsets: [] int) throws {
     extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var byteSize = c_getStringColumnNumBytes(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
-                                             c_ptrTo(offsets[chplStartIdx]),
-                                             numElems, cStartIdx,
+                                             c_ptrTo(offsets),
+                                             offsets.size, 0,
                                              c_ptrTo(pqErr.errMsg));
     
     if byteSize == ARROWERROR then

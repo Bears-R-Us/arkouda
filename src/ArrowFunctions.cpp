@@ -157,7 +157,6 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
         int16_t definition_level;
         parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
-        ba_reader -> Skip(startIdx);
 
         int64_t numRead = 0;
         while (ba_reader->HasNext() && numRead < numElems) {
@@ -270,17 +269,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           // if values_read is 0, that means that it was a null value
           if(values_read > 0) {
             for(int j = 0; j < value.len; j++) {
-              if(startIdx < 1 && i < numElems) {
-                chpl_ptr[i] = value.ptr[j];
-                i++;
-              } else {
-                startIdx--;
-              }
+              chpl_ptr[i] = value.ptr[j];
+              i++;
             }
           }
-          if(startIdx < 1 && i < numElems)
-            i++; // skip one space so the strings are null terminated with a 0
-          startIdx--;
+          i++; // skip one space so the strings are null terminated with a 0
         }
       } else if(ty == ARROWFLOAT) {
         auto chpl_ptr = (double*)chpl_arr;
