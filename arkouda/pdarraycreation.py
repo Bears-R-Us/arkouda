@@ -16,7 +16,8 @@ __all__ = ["array", "zeros", "ones", "full", "zeros_like", "ones_like", "full_li
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series"
-          ]
+           ]
+
 
 @typechecked
 def from_series(series : pd.Series, 
@@ -106,6 +107,7 @@ def from_series(series : pd.Series,
     return array(n_array)
 
 
+@typechecked
 def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending 
@@ -223,7 +225,8 @@ def _array_memview(a) -> memoryview:
         return memoryview(a)
 
 
-def zeros(size : int_scalars, dtype=float64) -> pdarray:
+@typechecked
+def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -272,7 +275,9 @@ def zeros(size : int_scalars, dtype=float64) -> pdarray:
     
     return create_pdarray(repMsg)
 
-def ones(size : int_scalars, dtype=float64) -> pdarray:
+
+@typechecked
+def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -323,7 +328,8 @@ def ones(size : int_scalars, dtype=float64) -> pdarray:
     return a
 
 
-def full(size: int_scalars, fill_value: int_scalars, dtype=float64) -> pdarray:
+@typechecked
+def full(size: Union[int_scalars, str], fill_value: int_scalars, dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with fill_value.
 
@@ -415,6 +421,7 @@ def zeros_like(pda : pdarray) -> pdarray:
     array([False, False, False, False, False])
     """
     return zeros(pda.size, pda.dtype)
+
 
 @typechecked
 def ones_like(pda : pdarray) -> pdarray:
