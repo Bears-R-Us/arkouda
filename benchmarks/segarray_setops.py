@@ -74,7 +74,7 @@ def check_correctness(dtype):
 
         assert (op_result.size == seg_a.size)
         assert (np.array_equal(op_result[0].to_ndarray(), np_result_1))
-        # np.isclose(np_result_2, op_result[1])
+        assert (np.array_equal(op_result[1].to_ndarray(), np_result_2))
 
 
 def create_parser():
