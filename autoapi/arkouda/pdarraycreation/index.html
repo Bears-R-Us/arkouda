@@ -53,13 +53,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.array" title="arkouda.pdarraycreation.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a>(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]</p></td>
 <td><p>Convert a Python or Numpy Iterable to a pdarray or Strings object, sending</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(size: arkouda.dtypes.int_scalars, dtype=float64) → arkouda.pdarrayclass.pdarray</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros" title="arkouda.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.ones" title="arkouda.pdarraycreation.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(size: arkouda.dtypes.int_scalars, dtype=float64) → arkouda.pdarrayclass.pdarray</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.ones" title="arkouda.pdarraycreation.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray filled with ones.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.full" title="arkouda.pdarraycreation.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(size: arkouda.dtypes.int_scalars, fill_value: arkouda.dtypes.int_scalars, dtype=float64) → arkouda.pdarrayclass.pdarray</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.full" title="arkouda.pdarraycreation.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str] = float64) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Create a pdarray filled with fill_value.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarraycreation.zeros_like" title="arkouda.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → arkouda.pdarrayclass.pdarray</p></td>
@@ -110,7 +110,7 @@ dtype is object).</p>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Union[<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id30" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-even"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#id132" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
@@ -173,7 +173,7 @@ the corresponding data to the arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p></li>
+<li><p><strong>a</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p></li>
 <li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
 </ul>
 </dd>
@@ -182,7 +182,7 @@ the corresponding data to the arkouda server.</p>
 is composed of two pdarrays stored on arkouda server</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id30" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../index.html#id132" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -228,7 +228,7 @@ bytes and offsets, respectively.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.zeros">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.zeros" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.zeros" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with zeros.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -241,7 +241,7 @@ bytes and offsets, respectively.</p>
 <dd class="field-even"><p>Zeros of the requested size and dtype</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -269,7 +269,7 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.ones">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.ones" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.ones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -282,7 +282,7 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 <dd class="field-even"><p>Ones of the requested size and dtype</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -310,7 +310,7 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarraycreation.full">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.full" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.dtypes.int_scalars</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.dtypes.int_scalars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarraycreation.full" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with fill_value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -324,7 +324,7 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 <dd class="field-even"><p>array of the requested size and dtype filled with fill_value</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the supplied dtype is not supported or if the size
@@ -357,13 +357,13 @@ parameter is neither an int nor a str that is parseable to an int.</p>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Equivalent to ak.zeros(pda.size, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>
@@ -398,13 +398,13 @@ pdarray.</p>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Equivalent to ak.ones(pda.size, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>
@@ -443,7 +443,7 @@ pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p></li>
 <li><p><strong>fill_value</strong> (<em>int_scalars</em>) – Value with which the array will be filled</p></li>
 </ul>
 </dd>
@@ -451,7 +451,7 @@ pdarray.</p>
 <dd class="field-even"><p>Equivalent to ak.full(pda.size, fill_value, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if the pda parameter is not a pdarray.</p>
@@ -505,7 +505,7 @@ if stride is specified then start must also be specified.</p></li>
 <dd class="field-even"><p>Integers from start (inclusive) to stop (exclusive) by stride</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, dtype</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, dtype</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -557,7 +557,7 @@ the linspace method.</p>
 <dd class="field-even"><p>Array of evenly spaced float values along the interval</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if start or stop is not a float or int or if length is not an int</p>
@@ -604,7 +604,7 @@ specified range bounded by the low and high parameters.</p>
 <dd class="field-even"><p>Values drawn uniformly from the specified range having the desired dtype</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -664,7 +664,7 @@ in a specified range.</p>
 <dd class="field-even"><p>Values drawn uniformly from the specified range</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -703,7 +703,7 @@ is invoked with a dtype of float64</p>
 <dd class="field-even"><p>The array of random numbers</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a>, float64</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, float64</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -745,7 +745,7 @@ minlen and maxlen, and with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The array of random strings</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id30" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id132" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if minlen &lt; 0, maxlen &lt; minlen, or size &lt; 0</p>
@@ -786,7 +786,7 @@ with characters drawn from a specified set.</p>
 <dd class="field-even"><p>The Strings object encapsulating a pdarray of random strings</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id30" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id132" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">

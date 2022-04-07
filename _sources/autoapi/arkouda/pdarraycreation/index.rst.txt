@@ -140,7 +140,7 @@ Functions
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: zeros(size: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -169,7 +169,7 @@ Functions
    array([False, False, False, False, False])
 
 
-.. py:function:: ones(size: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -198,7 +198,7 @@ Functions
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: arkouda.dtypes.int_scalars, fill_value: arkouda.dtypes.int_scalars, dtype=float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
