@@ -808,14 +808,14 @@ class SegArray:
 
     def intersect(self, other: SegArray, assume_unique: bool = False):
         """
-        Compute the intersection this SegArray with other.
+        Compute the intersection of this SegArray with other.
 
         Parameters
         ----------
         other : SegArray
             Second SegArray to use in intersection calucation
         assume_unique : bool
-            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            If True, the segments of each SegArray are both assumed to be unique, which can speed up the calculation.
             Default is False.
 
         Returns
@@ -843,9 +843,9 @@ class SegArray:
             Second SegArray to use in union calucation
         """
         if self.size != other.size:
-            raise ValueError("SegArrays must have same number of segments to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute union.")
         if self.dtype != other.dtype:
-            raise TypeError("SegArrays must have the same dtype to compute intersection")
+            raise TypeError("SegArrays must have the same dtype to compute union")
 
         repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"union {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size}"))
@@ -859,16 +859,16 @@ class SegArray:
         Parameters
         ----------
         other : SegArray
-            Second SegArray to use in intersection calucation
+            Second SegArray to use in difference calucation
         assume_unique : bool
-            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            If True, the segments of each SegArray are both assumed to be unique, which can speed up the calculation.
             Default is False.
         """
 
         if self.size != other.size:
-            raise ValueError("SegArrays must have same number of segments to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute difference.")
         if self.dtype != other.dtype:
-            raise TypeError("SegArrays must have the same dtype to compute intersection")
+            raise TypeError("SegArrays must have the same dtype to compute difference")
 
         repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"setdiff {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
@@ -882,15 +882,15 @@ class SegArray:
         Parameters
         ----------
         other : SegArray
-            Second SegArray to use in intersection calucation
+            Second SegArray to use in xor calucation
         assume_unique : bool
-            If True, the segmenst of each SegArray are both assumed to be unique, which can speed up the calculation.
+            If True, the segments of each SegArray are both assumed to be unique, which can speed up the calculation.
             Default is False.
         """
         if self.size != other.size:
-            raise ValueError("SegArrays must have same number of segments to compute intersection.")
+            raise ValueError("SegArrays must have same number of segments to compute XOR.")
         if self.dtype != other.dtype:
-            raise TypeError("SegArrays must have the same dtype to compute intersection")
+            raise TypeError("SegArrays must have the same dtype to compute XOR")
 
         repMsg = t_cast(str, generic_msg(cmd="segarr_setops",
                                        args=f"setxor {self.segments.name} {self.values.name} {self.values.size} {other.segments.name} {other.values.name} {other.values.size} {assume_unique}"))
