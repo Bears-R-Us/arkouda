@@ -286,7 +286,7 @@ def multiarray_setop_validation(pda1: List[pdarray], pda2: List[pdarray]):
         raise ValueError("multi-array setops require arrays in pda2 be the same size.")
     atypes = [x.dtype for x in pda1]
     btypes = [x.dtype for x in pda2]
-    if not (atypes == btypes).all():
+    if not atypes == btypes:
         raise TypeError("Array dtypes of arguments must match")
 
 # (A1 | A2) Set Union: elements are in one or the other or both
