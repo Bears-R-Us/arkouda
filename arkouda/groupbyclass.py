@@ -10,8 +10,6 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
-from arkouda.pdarraysetops import concatenate
-from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64, uint64
 
