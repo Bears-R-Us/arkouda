@@ -803,5 +803,39 @@ class SegArray:
         values = load(prefix_path, dataset=dataset + value_suffix)
         return cls(segments, values)
 
+    def intersect_ma(self, other):
+        from arkouda.pdarraysetops import intersect1d
+        a_seg_inds = self.grouping.broadcast(arange(self.size))
+        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # TODO: Possibly add logic to insert empty segments where intersection is empty
+        return SegArray(g.segments, new_values[g.permutation])
+
+    def union_ma(self, other):
+        from arkouda.pdarraysetops import union1d
+        a_seg_inds = self.grouping.broadcast(arange(self.size))
+        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # TODO: Possibly add logic to insert empty segments where intersection is empty
+        return SegArray(g.segments, new_values[g.permutation])
+
+    def setdiff_ma(self, other):
+        from arkouda.pdarraysetops import setdiff1d
+        a_seg_inds = self.grouping.broadcast(arange(self.size))
+        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # TODO: Possibly add logic to insert empty segments where intersection is empty
+        return SegArray(g.segments, new_values[g.permutation])
+
+    def setxor_ma(self, other):
+        from arkouda.pdarraysetops import setxor1d
+        a_seg_inds = self.grouping.broadcast(arange(self.size))
+        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # TODO: Possibly add logic to insert empty segments where inter
 # Register/Attach functionality has been removed until it is added for GroupBy.
 # Please refer to ticket #1122 (https://github.com/Bears-R-Us/arkouda/issues/1122 for updates
