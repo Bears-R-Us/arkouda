@@ -346,7 +346,6 @@ def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarr
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
     elif isinstance(pda1, list) and isinstance(pda2, list):
         multiarray_setop_validation(pda1, pda2)
-
         ag = GroupBy(pda1)
         ua = ag.unique_keys
         bg = GroupBy(pda2)

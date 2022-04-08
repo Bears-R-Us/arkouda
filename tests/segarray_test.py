@@ -459,3 +459,87 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[2].tolist(), [])
         self.assertListEqual(dedup[3].tolist(), list(set(b)))
         self.assertListEqual(dedup[4].tolist(), [])
+
+    def test_intersection_ma(self):
+        a = [1, 2, 3, 4, 5]
+        b = [6, 7, 8]
+        c = [1, 2, 4]
+        d = [8]
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+
+        intx = segarr.intersect_ma(segarr_2)
+
+        self.assertEqual(intx.size, 2)
+        self.assertListEqual(intx[0].tolist(), [1, 2, 4])
+        self.assertListEqual(intx[1].tolist(), [8])
+
+        # test with empty Segments
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        intx = segarr.intersect_ma(segarr_2)
+        self.assertListEqual(intx.lengths.to_ndarray().tolist(), [3, 0])
+        self.assertListEqual(intx[0].tolist(), [1, 2, 4])
+        self.assertListEqual(intx[1].tolist(), [])
+
+    def test_union_ma(self):
+        a = [1, 2, 3, 4, 5]
+        b = [6, 7, 8]
+        c = [1, 2, 4]
+        d = [8]
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+
+        un = segarr.union_ma(segarr_2)
+        self.assertEqual(un.size, 2)
+        self.assertListEqual(un[0].tolist(), [1, 2, 3, 4, 5])
+        self.assertListEqual(un[1].tolist(), [6, 7, 8])
+
+        # test with empty segments
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        un = segarr.union_ma(segarr_2)
+        self.assertListEqual(un.lengths.to_ndarray().tolist(), [5, 1])
+        self.assertListEqual(un[0].tolist(), [1, 2, 3, 4, 5])
+        self.assertListEqual(un[1].tolist(), [8])
+
+    def test_setdiff_ma(self):
+        a = [1, 2, 3, 4, 5]
+        b = [6, 7, 8]
+        c = [1, 2, 4]
+        d = [8]
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+
+        diff = segarr.setdiff_ma(segarr_2)
+        self.assertEqual(diff.size, 2)
+        self.assertListEqual(diff[0].tolist(), [3, 5])
+        self.assertListEqual(diff[1].tolist(), [6, 7])
+
+        # test with empty segments
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        diff = segarr.setdiff_ma(segarr_2)
+        self.assertListEqual(diff.lengths.to_ndarray().tolist(), [2, 0])
+        self.assertListEqual(diff[0].tolist(), [3, 5])
+        self.assertListEqual(diff[1].tolist(), [])
+
+    def test_setxor_ma(self):
+        a = [1, 2, 3]
+        b = [6, 7, 8]
+        c = [1, 2, 4]
+        d = [8, 12, 13]
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        segarr_2 = ak.SegArray(ak.array([0, len(c)]), ak.array(c + d))
+        xor = segarr.setxor_ma(segarr_2)
+
+        self.assertEqual(xor.size, 2)
+        self.assertListEqual(xor[0].tolist(), [3, 4])
+        self.assertListEqual(xor[1].tolist(), [6, 7, 12, 13])
+
+        # test with empty segment
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        xor = segarr.setxor_ma(segarr_2)
+        self.assertListEqual(xor.lengths.to_ndarray().tolist(), [2, 3])
+        self.assertListEqual(xor[0].tolist(), [3, 4])
+        self.assertListEqual(xor[1].tolist(), [8, 12, 13])

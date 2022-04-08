@@ -805,37 +805,76 @@ class SegArray:
 
     def intersect_ma(self, other):
         from arkouda.pdarraysetops import intersect1d
-        a_seg_inds = self.grouping.broadcast(arange(self.size))
-        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # TODO: Possibly add logic to insert empty segments where intersection is empty
-        return SegArray(g.segments, new_values[g.permutation])
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth = ~self._non_empty | ~other._non_empty
+            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
+            truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
 
     def union_ma(self, other):
         from arkouda.pdarraysetops import union1d
-        a_seg_inds = self.grouping.broadcast(arange(self.size))
-        b_seg_inds = other.grouping.broadcast(arange(other.size))
+
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # TODO: Possibly add logic to insert empty segments where intersection is empty
-        return SegArray(g.segments, new_values[g.permutation])
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth = ~self._non_empty | ~other._non_empty
+            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
+            truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
 
     def setdiff_ma(self, other):
         from arkouda.pdarraysetops import setdiff1d
-        a_seg_inds = self.grouping.broadcast(arange(self.size))
-        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # TODO: Possibly add logic to insert empty segments where intersection is empty
-        return SegArray(g.segments, new_values[g.permutation])
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth = ~self._non_empty | ~other._non_empty
+            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
+            truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
 
     def setxor_ma(self, other):
         from arkouda.pdarraysetops import setxor1d
-        a_seg_inds = self.grouping.broadcast(arange(self.size))
-        b_seg_inds = other.grouping.broadcast(arange(other.size))
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # TODO: Possibly add logic to insert empty segments where inter
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth = ~self._non_empty | ~other._non_empty
+            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
+            truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
+
 # Register/Attach functionality has been removed until it is added for GroupBy.
 # Please refer to ticket #1122 (https://github.com/Bears-R-Us/arkouda/issues/1122 for updates
