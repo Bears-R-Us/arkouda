@@ -123,9 +123,9 @@ def gen_ranges(starts, ends):
         raise ValueError("starts and ends must be same size")
     if starts.size == 0:
         return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
-    if not ((ends - starts) > 0).all():
-        raise ValueError("all ends must be greater than starts")
     lengths = ends - starts
+    if not (lengths > 0).all():
+        raise ValueError("all ends must be greater than starts")
     segs = cumsum(lengths) - lengths
     totlen = lengths.sum()
     slices = ones(totlen, dtype=akint64)
