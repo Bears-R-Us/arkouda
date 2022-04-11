@@ -120,7 +120,7 @@ class SegArray:
         self._non_empty_count = self._non_empty.sum()
 
         if grouping is None:
-            if self.size == 0:
+            if self.size == 0 or self._non_empty_count == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
