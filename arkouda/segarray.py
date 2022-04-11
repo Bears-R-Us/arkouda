@@ -804,7 +804,25 @@ class SegArray:
         return cls(segments, values)
 
     def intersect_ma(self, other):
+        """
+        Computes the intersection of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d intersections of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.intersect1d
+        """
         from arkouda.pdarraysetops import intersect1d
+
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
@@ -822,6 +840,23 @@ class SegArray:
             return SegArray(segments, new_values[g.permutation])
 
     def union_ma(self, other):
+        """
+        Computes the union of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d union of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.union1d
+        """
         from arkouda.pdarraysetops import union1d
 
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
@@ -841,7 +876,25 @@ class SegArray:
             return SegArray(segments, new_values[g.permutation])
 
     def setdiff_ma(self, other):
+        """
+        Computes the set difference of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d set difference of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.setdiff1d
+        """
         from arkouda.pdarraysetops import setdiff1d
+
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
@@ -859,7 +912,25 @@ class SegArray:
             return SegArray(segments, new_values[g.permutation])
 
     def setxor_ma(self, other):
+        """
+        Computes the symmetric difference of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d symmetric difference of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.setxor1d
+        """
         from arkouda.pdarraysetops import setxor1d
+        
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
@@ -871,8 +942,9 @@ class SegArray:
             k, ct = g.count()
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
-            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
-            truth[-1] = False
+            if truth[-1]:
+                segments[-1] = new_values[g.permutation].size
+                truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 

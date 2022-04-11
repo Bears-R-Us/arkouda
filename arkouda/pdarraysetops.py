@@ -294,21 +294,21 @@ def multiarray_setop_validation(pda1: List[pdarray], pda2: List[pdarray]):
 def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]]) -> \
         Union[pdarray, List[pdarray]]:
     """
-    Find the union of two arrays.
+    Find the union of two arrays/List of Arrays.
 
     Return the unique, sorted array of values that are in either 
     of the two input arrays.
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array
-    pda2 : pdarray
-        Input array
+    pda1 : pdarray/List
+        Input array/List of input arrays
+    pda2 : pdarray/List
+        Input array/List of input arrays
 
     Returns
     -------
-    pdarray
+    pdarray/List
         Unique, sorted union of the input arrays.
         
     Raises
@@ -328,8 +328,19 @@ def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarr
 
     Examples
     --------
+    # 1D Example
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2, -1, 0, 1, 2])
+
+    #Multi-Array Example
+    >>> a = ak.arange(5)
+    >>> b = ak.array([1, 5, 3, 4, 2])
+    >>> c = ak.array([1, 4, 3, 2, 5])
+    >>> d = ak.array([1, 2, 3, 5, 4])
+    >>> multia = [a, a, a]
+    >>> multib = [b, c, d]
+    >>> ak.union1d(multia, multib)
+    [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 4, 5, 2, 5]]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
@@ -370,18 +381,18 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array
-    pda2 : pdarray
-        Input array
+    pda1 : pdarray/List
+        Input array/List of input arrays
+    pda2 : pdarray/List
+        Input array/List of input arrays
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray
-        Sorted 1D array of common and unique elements.
+    pdarray/List
+        Sorted 1D array/List of sorted pdarrays of common and unique elements.
 
     Raises
     ------
@@ -400,8 +411,19 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
 
     Examples
     --------
+    # 1D Example
     >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
     array([1, 3])
+
+    # Multi-Array Example
+    >>> a = ak.arange(5)
+    >>> b = ak.array([1, 5, 3, 4, 2])
+    >>> c = ak.array([1, 4, 3, 2, 5])
+    >>> d = ak.array([1, 2, 3, 5, 4])
+    >>> multia = [a, a, a]
+    >>> multib = [b, c, d]
+    >>> ak.intersect1d(multia, multib)
+    [array([1, 3]), array([1, 3]), array([1, 3])]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
@@ -460,18 +482,18 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
 
     Parameters
     ----------
-    pda1 : pdarray
-        Input array.
-    pda2 : pdarray
-        Input comparison array.
+    pda1 : pdarray/List
+        Input array/List of input arrays
+    pda2 : pdarray/List
+        Input array/List of input arrays
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray
-        Sorted 1D array of values in `pda1` that are not in `pda2`.
+    pdarray/List
+        Sorted 1D array/List of sorted pdarrays of values in `pda1` that are not in `pda2`.
 
     Raises
     ------
@@ -494,6 +516,16 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
     >>> b = ak.array([3, 4, 5, 6])
     >>> ak.setdiff1d(a, b)
     array([1, 2])
+
+    #Multi-Array Example
+    >>> a = ak.arange(5)
+    >>> b = ak.array([1, 5, 3, 4, 2])
+    >>> c = ak.array([1, 4, 3, 2, 5])
+    >>> d = ak.array([1, 2, 3, 5, 4])
+    >>> multia = [a, a, a]
+    >>> multib = [b, c, d]
+    >>> ak.setdiff1d(multia, multib)
+    [array([2, 4, 5]), array([2, 4, 5]), array([2, 4, 5])]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
@@ -551,9 +583,9 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
 
     Parameters
     ----------
-    pda1 : pdarray
+    pda1 : pdarray/List
         Input array.
-    pda2 : pdarray
+    pda2 : pdarray/List
         Input array.
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
@@ -561,8 +593,8 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
 
     Returns
     -------
-    pdarray
-        Sorted 1D array of unique values that are in only one of the input
+    pdarray/List
+        Sorted 1D array/List of sorted pdarrays of unique values that are in only one of the input
         arrays.
 
     Raises
@@ -582,6 +614,16 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
     >>> b = ak.array([2, 3, 5, 7, 5])
     >>> ak.setxor1d(a,b)
     array([1, 4, 5, 7])
+
+    #Multi-Array Example
+    >>> a = ak.arange(5)
+    >>> b = ak.array([1, 5, 3, 4, 2])
+    >>> c = ak.array([1, 4, 3, 2, 5])
+    >>> d = ak.array([1, 2, 3, 5, 4])
+    >>> multia = [a, a, a]
+    >>> multib = [b, c, d]
+    >>> ak.setdiff1d(multia, multib)
+    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
