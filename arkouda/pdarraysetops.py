@@ -565,8 +565,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
         k, ct = g.count()
         truth = g.broadcast(ct == 1, permute=True)
-        atruth = ag.broadcast(truth[isa], permute=True)
-        return [x[atruth] for x in ua]
+        return [x[truth[isa]] for x in ua]
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray or list')
 
@@ -667,17 +666,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
         k, ct = g.count()
         truth = g.broadcast(ct == 1, permute=True)
-        atruth = ag.broadcast(truth[isa], permute=True)
-        btruth = bg.broadcast(truth[~isa], permute=True)
-        afilter = [x[atruth] for x in pda1]
-        bfilter = [x[btruth] for x in pda2]
-        afg = GroupBy(afilter)
-        afu = afg.unique_keys
-        bfg = GroupBy(bfilter)
-        bfu = bfg.unique_keys
-        cfilter = [concatenate(x, ordered=False) for x in zip(afu, bfu)]
-        gfg = GroupBy(cfilter)
-        kfilter, ctfilter = gfg.count()
-        return kfilter
+        rtn = [x[truth] for x in c]
+        return rtn
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray or list')

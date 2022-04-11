@@ -820,6 +820,20 @@ class SegArray:
         See Also
         --------
         pdarraysetops.intersect1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.intersect_ma(seg_b)
+        SegArray([
+        [1, 3],
+        [4]
+        ])
         """
         from arkouda.pdarraysetops import intersect1d
 
@@ -827,6 +841,7 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -834,8 +849,9 @@ class SegArray:
             k, ct = g.count()
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
-            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
-            truth[-1] = False
+            if truth[-1]:
+                segments[-1] = new_values[g.permutation].size
+                truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
@@ -856,6 +872,20 @@ class SegArray:
         See Also
         --------
         pdarraysetops.union1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.union_ma(seg_b)
+        SegArray([
+        [1, 2, 3, 4, 5],
+        [1, 2, 3, 4, 5]
+        ])
         """
         from arkouda.pdarraysetops import union1d
 
@@ -863,6 +893,7 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -870,8 +901,9 @@ class SegArray:
             k, ct = g.count()
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
-            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
-            truth[-1] = False
+            if truth[-1]:
+                segments[-1] = new_values[g.permutation].size
+                truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
@@ -892,6 +924,20 @@ class SegArray:
         See Also
         --------
         pdarraysetops.setdiff1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.setdiff_ma(seg_b)
+        SegArray([
+        [2, 4],
+        [1, 3, 5]
+        ])
         """
         from arkouda.pdarraysetops import setdiff1d
 
@@ -899,6 +945,7 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -906,8 +953,9 @@ class SegArray:
             k, ct = g.count()
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
-            segments[-1] = new_values[g.permutation].size if truth[-1] else segments[-1]
-            truth[-1] = False
+            if truth[-1]:
+                segments[-1] = new_values[g.permutation].size
+                truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
@@ -928,13 +976,28 @@ class SegArray:
         See Also
         --------
         pdarraysetops.setxor1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.setxor_ma(seg_b)
+        SegArray([
+        [2, 4, 5],
+        [1, 3, 5, 2]
+        ])
         """
         from arkouda.pdarraysetops import setxor1d
-        
+
         a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
