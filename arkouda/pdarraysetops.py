@@ -454,7 +454,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
             ub = bg.unique_keys
         else:
             ua = pda1
-            ub = pda1
+            ub = pda2
 
         # Key for deinterleaving result
         isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
@@ -551,7 +551,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
             ub = bg.unique_keys
         else:
             ua = pda1
-            ub = pda1
+            ub = pda2
 
         # Key for deinterleaving result
         isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
@@ -652,7 +652,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
             ub = bg.unique_keys
         else:
             ua = pda1
-            ub = pda1
+            ub = pda2
 
         # Key for deinterleaving result
         isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)

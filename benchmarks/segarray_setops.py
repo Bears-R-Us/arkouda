@@ -46,9 +46,33 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
         # bytes_per_sec = (a.size * a.itemsize * 2) / t
         # print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec / 2 ** 30))
 
+NP_OP_MAP = {'intersect_ma': 'intersect1d', 'union_ma': 'union1d', 'setdiff_ma': 'setdiff1d', 'setxor_ma': 'setxor1d'}
 
 def check_correctness(dtype, seed):
-    return
+    N = 10 ** 4
+    if seed is not None:
+        np.random.seed(seed)
+    if dtype == 'int64':
+        a = np.random.randint(0, 2**32, N)
+        b = np.random.randint(0, 2**32, N)
+        c = np.random.randint(0, 2**32, N)
+        d = np.random.randint(0, 2**32, N)
+    if dtype == 'uint64':
+        a = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        b = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        c = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        d = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+
+    for op in OPS:
+        seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(np.concatenate([a, b])))
+        seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(np.concatenate([c, d])))
+        fxn = getattr(np, NP_OP_MAP[op])
+        npr0 = fxn(a, c)
+        npr1 = fxn(b, d)
+        fxn = getattr(seg_a, op)
+        seg_r = fxn(seg_b)
+        np.isclose(npr0, seg_r[0])
+        np.isclose(npr1, seg_r[1])
 
 
 def create_parser():
