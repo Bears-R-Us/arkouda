@@ -266,8 +266,10 @@ class _AbstractBaseTime(pdarray):
             if op not in self.supported_opeq:
                 raise TypeError("{} {} Timedelta not supported".format(self.__class__.__name__, op))
             if self._is_timedelta_scalar(other):
-                other = _Timescalar(other)
-            self.values.opeq(other.values, op)
+                otherdata = _Timescalar(other).value
+            else:
+                otherdata = other.values
+            self.values.opeq(otherdata, op)
         elif isinstance(other, Datetime) or self._is_datetime_scalar(other):
             raise TypeError("{} {} datetime not supported".format(self.__class__.__name__, op))
         else:
@@ -306,7 +308,7 @@ class _AbstractBaseTime(pdarray):
         elif self._is_supported_scalar(value):
             # _Timescalar takes care of normalization to nanoseconds
             normval = _Timescalar(value)
-            self.values[key] = normval.values
+            self.values[key] = normval.value
         else:
             return NotImplemented
 
