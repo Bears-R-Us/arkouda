@@ -39,7 +39,43 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
 
 
 def check_correctness(dtype, seed):
-    return
+    N = 10**4
+    if seed is not None:
+        np.random.seed(seed)
+
+    if dtype == 'int64':
+        a = np.random.randint(0, 2**32, N)
+        b = np.random.randint(0, 2**32, N)
+        c = np.random.randint(0, 2**32, N)
+        d = np.random.randint(0, 2**32, N)
+    if dtype == 'uint64':
+        a = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        b = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        c = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+        d = np.random.randint(0, 2**32, N, dtype=ak.uint64)
+
+    op_map = {'intersect1d': 'intersection', 'union1d': 'union', 'setdiff1d': 'difference',
+              'setxor1d': 'symmetric_difference'}
+
+    for op in OPS:
+        pd_list_a = [ak.array(a), ak.array(b)]
+        pd_list_b = [ak.array(c), ak.array(d)]
+
+        npa = set([(x, y) for x, y in zip(a, b)])
+        npb = set([(x, y) for x, y in zip(c, d)])
+        fxn = getattr(npa, op_map[op])
+        npr = list(fxn(npb))
+        if len(npr) > 0:
+            npr0, npr1 = map(list, zip(*npr))
+        else:
+            npr0 = []
+            npr1 = []
+        fxn = getattr(ak, op)
+        akr = fxn(pd_list_a, pd_list_b)
+        print(f"\nNPR0: {npr0}\n\nNPR1: {npr1}\n\nAKR: {akr}\n")
+
+        np.isclose(akr[0].to_ndarray(), np.array(npr0))
+        np.isclose(akr[1].to_ndarray(), np.array(npr1))
 
 
 def create_parser():

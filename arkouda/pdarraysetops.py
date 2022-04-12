@@ -667,6 +667,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
         k, ct = g.count()
         truth = g.broadcast(ct == 1, permute=True)
         rtn = [x[truth] for x in c]
-        return rtn
+        keys, ct = GroupBy(rtn).count()
+        return keys
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray or list')
