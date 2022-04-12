@@ -9,7 +9,7 @@ from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import bool as akbool
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import GroupBy, groupable
 
 Categorical = ForwardRef('Categorical')
 
@@ -292,7 +292,7 @@ def multiarray_setop_validation(pda1: List[pdarray], pda2: List[pdarray]):
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
 def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]]) -> \
-        Union[pdarray, List[pdarray]]:
+        Union[pdarray, groupable]:
     """
     Find the union of two arrays/List of Arrays.
 
@@ -373,7 +373,7 @@ def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarr
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
 def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
-                assume_unique: bool = False) -> Union[pdarray, List[pdarray]]:
+                assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
 
@@ -474,7 +474,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
 def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
-              assume_unique: bool = False) -> Union[pdarray, List[pdarray]]:
+              assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
 
@@ -573,7 +573,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
 def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
-             assume_unique: bool = False) -> Union[pdarray, List[pdarray]]:
+             assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
