@@ -14,26 +14,6 @@ module Flatten {
   config const NULL_STRINGS_VALUE = 0:uint(8);
 
   /*
-     Interpret a region of a byte array as bytes. Modeled after interpretAsString
-   */
-  proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow=false): bytes {
-    var localSlice = new lowLevelLocalizingSlice(bytearray, region);
-    // Byte buffer is null-terminated, so length is region.size - 1
-    try {
-      if localSlice.isOwned {
-        localSlice.isOwned = false;
-        return createBytesWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
-      } else if borrow {
-        return createBytesWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
-      } else {
-        return createBytesWithNewBuffer(localSlice.ptr, region.size-1, region.size);
-      }
-    } catch {
-      return b"<error interpreting uint(8) as bytes>";
-    }
-  }
-
-  /*
     Given a SegString where each string encodes a variable-length sequence delimited by a regex,
     flattenRegex unpacks the sequences into a flat array of individual elements.
     If returnSegs is set to True, a mapping between the original strings and new array elements will be returned

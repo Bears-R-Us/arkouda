@@ -327,6 +327,128 @@ class Strings:
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
+    def to_lower(self) -> Strings:
+        """
+        Returns a new Strings with all uppercase characters from the original replaced with their lowercase equivalent
+
+        Returns
+        -------
+        Strings
+            Strings with all uppercase characters from the original replaced with their lowercase equivalent
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.to_upper
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+        >>> strings.to_lower()
+        array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
+        """
+        rep_msg = generic_msg(cmd="caseChange", args=f"toLower {self.objtype} {self.entry.name}")
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
+    def to_upper(self) -> Strings:
+        """
+        Returns a new Strings with all lowercase characters from the original replaced with their uppercase equivalent
+
+        Returns
+        -------
+        Strings
+            Strings with all lowercase characters from the original replaced with their uppercase equivalent
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.to_lower
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+        >>> strings.to_upper()
+        array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
+        """
+        rep_msg = generic_msg(cmd="caseChange", args=f"toUpper {self.objtype} {self.entry.name}")
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
+    def is_lower(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely lowercase
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are entirely lowercase, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_upper
+
+        Examples
+        --------
+        >>> lower = ak.array([f'strings {i}' for i in range(3)])
+        >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+        >>> strings = ak.concatenate([lower, upper])
+        >>> strings
+        array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+        >>> strings.is_lower()
+        array([True True True False False False])
+        """
+        return create_pdarray(generic_msg(cmd="checkChars", args=f"isLower {self.objtype} {self.entry.name}"))
+
+    @typechecked
+    def is_upper(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely uppercase
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are entirely uppercase, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_lower
+
+        Examples
+        --------
+        >>> lower = ak.array([f'strings {i}' for i in range(3)])
+        >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+        >>> strings = ak.concatenate([lower, upper])
+        >>> strings
+        array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+        >>> strings.is_upper()
+        array([False False False True True True])
+        """
+        return create_pdarray(generic_msg(cmd="checkChars", args=f"isUpper {self.objtype} {self.entry.name}"))
+
+    @typechecked
     def cached_regex_patterns(self) -> List:
         """
         Returns the regex patterns for which Match objects have been cached
