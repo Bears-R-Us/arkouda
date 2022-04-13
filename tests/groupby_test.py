@@ -219,6 +219,9 @@ class GroupByTest(ArkoudaTest):
         d = make_arrays()
         akdf = {k:ak.array(v) for k, v in d.items()}        
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
+
+        with self.assertRaises(TypeError) as cm:
+            ak.GroupBy(ak.arange(4), ak.arange(4))
         
         with self.assertRaises(TypeError) as cm:
             ak.GroupBy(self.bvalues)
