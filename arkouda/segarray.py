@@ -850,7 +850,7 @@ class SegArray:
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
             if truth[-1]:
-                segments[-1] = new_values[g.permutation].size
+                segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
@@ -902,7 +902,7 @@ class SegArray:
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
             if truth[-1]:
-                segments[-1] = new_values[g.permutation].size
+                segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
@@ -954,7 +954,7 @@ class SegArray:
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
             if truth[-1]:
-                segments[-1] = new_values[g.permutation].size
+                segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
@@ -1006,7 +1006,7 @@ class SegArray:
             segments[k] = g.segments
             truth = ~self._non_empty | ~other._non_empty
             if truth[-1]:
-                segments[-1] = new_values[g.permutation].size
+                segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])

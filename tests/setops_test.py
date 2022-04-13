@@ -108,7 +108,13 @@ class SetOpsTest(ArkoudaTest):
         lr = list(sorted(la.symmetric_difference(lb)))
         npr0, npr1 = map(list, zip(*lr))
 
+        #Testing
         t = ak.setxor1d([a1, a2], [b1, b2])
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
+        # Testing tuple input
+        t = ak.setxor1d((a1, a2), (b1, b2))
         self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
         self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
         

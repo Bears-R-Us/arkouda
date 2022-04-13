@@ -275,7 +275,8 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
         raise TypeError('arrays must be an array of pdarray or Strings objects')
 
 
-def multiarray_setop_validation(pda1: List[pdarray], pda2: List[pdarray]):
+def multiarray_setop_validation(pda1: Union[List[pdarray], Tuple[pdarray, ...]],
+                                pda2: Union[List[pdarray], Tuple[pdarray, ...]]):
     if len(pda1) != len(pda2):
         raise ValueError("multi-array setops require same number of arrays in arguments.")
     size1 = set([x.size for x in pda1])
@@ -291,7 +292,8 @@ def multiarray_setop_validation(pda1: List[pdarray], pda2: List[pdarray]):
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]]) -> \
+def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+            pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]]) -> \
         Union[pdarray, groupable]:
     """
     Find the union of two arrays/List of Arrays.
@@ -355,7 +357,7 @@ def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarr
         return cast(pdarray,
                     unique(cast(pdarray,
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
-    elif isinstance(pda1, list) and isinstance(pda2, list):
+    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
         ag = GroupBy(pda1)
         ua = ag.unique_keys
@@ -372,7 +374,8 @@ def union1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarr
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
+def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+                pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
                 assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
@@ -444,7 +447,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
         mask = aux[1:] == aux[:-1]
         int1d = aux[:-1][mask]
         return int1d
-    elif isinstance(pda1, list) and isinstance(pda2, list):
+    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:
@@ -467,13 +470,15 @@ def intersect1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[p
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
         k, ct = g.count()
-        return [x[ct == 2] for x in k]
+        in_union = ct == 2
+        return [x[in_union] for x in k]
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray or list')
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
+def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+              pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
               assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
@@ -541,7 +546,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
             pda1 = cast(pdarray, unique(pda1))
             pda2 = cast(pdarray, unique(pda2))
         return pda1[in1d(pda1, pda2, invert=True)]
-    elif isinstance(pda1, list) and isinstance(pda2, list):
+    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:
@@ -565,14 +570,16 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pda
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
         k, ct = g.count()
         truth = g.broadcast(ct == 1, permute=True)
-        return [x[truth[isa]] for x in ua]
+        atruth = truth[isa]
+        return [x[atruth] for x in ua]
     else:
         raise TypeError('Both pda1 and pda2 must be pdarray or list')
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdarray]],
+def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+             pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
              assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
@@ -642,7 +649,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
-    elif isinstance(pda1, list) and isinstance(pda2, list):
+    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:
@@ -665,9 +672,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray]], pda2: Union[pdarray, List[pdar
             if (g.sum(~isa)[1] > 1).any():
                 raise ValueError("Called with assume_unique=True, but second argument is not unique")
         k, ct = g.count()
-        truth = g.broadcast(ct == 1, permute=True)
-        rtn = [x[truth] for x in c]
-        keys, ct = GroupBy(rtn).count()
-        return keys
+        single = ct == 1
+        return [x[single] for x in k]
     else:
-        raise TypeError('Both pda1 and pda2 must be pdarray or list')
+        raise TypeError(f'Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}')
