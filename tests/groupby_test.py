@@ -237,9 +237,6 @@ class GroupByTest(ArkoudaTest):
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
         
         with self.assertRaises(TypeError) as cm:
-            ak.GroupBy(self.bvalues)
-        
-        with self.assertRaises(TypeError) as cm:
             ak.GroupBy(self.fvalues)
 
         with self.assertRaises(TypeError) as cm:
@@ -262,7 +259,7 @@ class GroupByTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             self.igb.all(ak.randint(0,1,10,dtype=int64))
-        
+
         with self.assertRaises(TypeError) as cm:
             self.igb.min(ak.randint(0,1,10,dtype=bool))
 
