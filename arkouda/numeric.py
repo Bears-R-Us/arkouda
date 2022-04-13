@@ -484,7 +484,7 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def histogram(pda : pdarray, bins : int_scalars=10) -> (np.linspace, pdarray):
+def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
