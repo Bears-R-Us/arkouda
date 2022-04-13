@@ -10,6 +10,7 @@ from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import str_ as akstr_
+from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import bool as npbool
 from arkouda.dtypes import isSupportedInt
 from arkouda.logger import getArkoudaLogger
@@ -1307,10 +1308,15 @@ class pdarray:
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
         '''
-        if self.dtype not in (akint64, akuint64):
-            raise TypeError("Grouping numeric data is only supported on integral types.")
+        if self.dtype == akbool:
+            from arkouda.numeric import cast as akcast
+            return [akcast(self, akint64)]
+        elif self.dtype in (akint64, akuint64):
+            return [self]
+        else:
+            raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
         # Integral pdarrays are their own grouping keys
-        return [self]
+
 
 #end pdarray class def
     
