@@ -11,7 +11,7 @@ from arkouda.pdarrayclass import attach_pdarray, pdarray
 from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
-from arkouda.pdarrayIO import read_hdf
+from arkouda.pdarrayIO import read
 from arkouda.client import get_config, get_mem_used
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
@@ -264,7 +264,7 @@ def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> pdarray:
         arr = f.create_dataset('arr', (A.shape[0],), dtype='int64')
         arr[:] = A[:]
 
-    B = read_hdf('arr', f'{tmp_dir}/{rng}.hdf5')
+    B = read(f'{tmp_dir}/{rng}.hdf5', 'arr')
     os.remove(f'{tmp_dir}/{rng}.hdf5')
 
     return B

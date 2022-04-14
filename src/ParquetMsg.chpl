@@ -483,7 +483,7 @@ module ParquetMsg {
   proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
     // May need a more robust delimiter then " | "
-    var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
+    var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, hdfArgPlaceholder, arraysStr) = payload.splitMsgToTuple(6);
     var strictTypes: bool = true;
     if (strictFlag.toLower().strip() == "false") {
       strictTypes = false;

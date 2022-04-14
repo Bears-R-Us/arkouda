@@ -22,7 +22,7 @@ def read_write_test(dtype):
         ak_arr = ak.random_strings_uniform(1, 10, SIZE)
 
     ak_arr.save_parquet("pq_testcorrect", "my-dset")
-    pq_arr = ak.read_parquet("pq_testcorrect*", "my-dset")
+    pq_arr = ak.read("pq_testcorrect*", "my-dset")
     
     for f in glob.glob('pq_test*'):
         os.remove(f)
@@ -48,7 +48,7 @@ def read_write_multi_test(dtype):
         test_arrs.append(elems[(i*per_arr):(i*per_arr)+per_arr])
         test_arrs[i].save_parquet(f"pq_test{i:04d}", "test-dset")
 
-    pq_arr = ak.read_parquet("pq_test*", "test-dset")
+    pq_arr = ak.read("pq_test*", "test-dset")
     
     for f in glob.glob('pq_test*'):
         os.remove(f)
@@ -93,7 +93,7 @@ def append_test():
     for key in ak_dict:
         ak_dict[key].save_parquet("pq_testcorrect", key, mode='append')
 
-    ak_vals = ak.read_parquet("pq_testcorrect*")
+    ak_vals = ak.read("pq_testcorrect*")
     
     for f in glob.glob('pq_test*'):
         os.remove(f)
@@ -116,11 +116,11 @@ class ParquetTest(ArkoudaTest):
         ak_arr = ak.randint(0, 2**32, SIZE)
         ak_arr.save_parquet("pq_test", "test-dset-name")
         
-        with self.assertRaises(ValueError) as cm:
-            ak.read_parquet("pq_test*", "wrong-dset-name")
+        with self.assertRaises(RuntimeError) as cm:
+            ak.read("pq_test*", "wrong-dset-name")
 
         with self.assertRaises(ValueError) as cm:
-            ak.read_parquet("pq_test*", ['test-dset-name', 'wrong-dset-name'])
+            ak.read("pq_test*", ['test-dset-name', 'wrong-dset-name'])
 
         for f in glob.glob("pq_test*"):
             os.remove(f)
@@ -139,7 +139,7 @@ class ParquetTest(ArkoudaTest):
                 val = 'max'
             a = ak.array([val])
             a.save_parquet("pq_test", 'test-dset')
-            ak_res = ak.read_parquet("pq_test*", 'test-dset')
+            ak_res = ak.read("pq_test*", 'test-dset')
             self.assertTrue(ak_res[0] == val)
 
             for f in glob.glob('pq_test*'):
@@ -165,7 +165,7 @@ class ParquetTest(ArkoudaTest):
         expected = ak.array(['first-string', '', 'string2', '', 'third', '', ''])
 
         filename = os.path.join(datadir, basename)
-        res = ak.read_parquet(filename)
+        res = ak.read(filename)
 
         self.assertTrue((expected == res).all())
             
@@ -201,9 +201,9 @@ class ParquetTest(ArkoudaTest):
             self.assertListEqual(columns, ans)
             # Merely test that read succeeds, do not check output
             if "delta_byte_array.parquet" not in filename:
-                data = ak.read_parquet(filename, datasets=columns)
+                data = ak.read(filename, datasets=columns)
             else:
                 # Since delta encoding is not supported, the columns in
                 # this file should raise an error and not crash the server
                 with self.assertRaises(RuntimeError) as cm:
-                    data = ak.read_parquet(filename, datasets=columns)
+                    data = ak.read(filename, datasets=columns)
