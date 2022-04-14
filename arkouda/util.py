@@ -81,10 +81,7 @@ def register(a, name):
         # Assign registered name to wrapper object
         reg.name = n
         # Assign same name to underlying pdarray
-        if type(a) in {Datetime, Timedelta}:
-            reg._data.name = n
-        else:
-            reg.values.name = n
+        reg.values.name = n
     else:
         a = a.register(name)
         reg = cb(a)
