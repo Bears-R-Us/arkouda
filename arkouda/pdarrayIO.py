@@ -148,7 +148,7 @@ def read(filenames : Union[str, List[str]],
         cmd = 'readany'
     if iterative == True: # iterative calls to server readhdf
         return {dset: read(filenames, dset, strictTypes=strictTypes, allow_errors=allow_errors, iterative=False,
-                           calc_string_offsets=calc_string_offsets) for dset in datasets}
+                           calc_string_offsets=calc_string_offsets)[dset] for dset in datasets}
     else:
         rep_msg = generic_msg(cmd=cmd, args=
         f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} {json.dumps(datasets)} | {json.dumps(filenames)}"
@@ -187,7 +187,7 @@ def read(filenames : Union[str, List[str]],
             raise RuntimeError("No items were returned")
 
 @typechecked
-def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray,Strings]:
+def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -299,7 +299,7 @@ def get_filetype(filename: Union[str, list[str]]) -> str:
     if not (fname and fname.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    return generic_msg(cmd="getfiletype", args="{}".format(json.dumps([fname])))
+    return cast(str, generic_msg(cmd="getfiletype", args="{}".format(json.dumps([fname]))))
 
 @typechecked
 def get_datasets_allow_errors(filenames: List[str]) -> List[str]:

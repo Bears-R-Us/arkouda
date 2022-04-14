@@ -3,6 +3,7 @@ import re
 import numpy as np  # type: ignore
 import h5py #type: ignore
 import os
+from typing import Union, Mapping
 
 from arkouda import __version__
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
@@ -16,6 +17,7 @@ from arkouda.client import get_config, get_mem_used
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
 from arkouda.categorical import Categorical
+from arkouda.strings import Strings
 
 identity = lambda x: x
 
@@ -254,7 +256,7 @@ def arkouda_to_numpy(A: pdarray, tmp_dir: str='') -> np.ndarray:
     return B
 
 
-def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> pdarray:
+def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
     """
     Convert from numpy to arkouda using disk rather than sockets.
     """
