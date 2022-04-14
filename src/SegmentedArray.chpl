@@ -392,6 +392,60 @@ module SegmentedArray {
       return lengths;
     }
 
+    /*
+      Given a SegString, return a new SegString with all uppercase characters from the original replaced with their lowercase equivalent
+      :returns: Strings – Substrings with uppercase characters replaced with lowercase equivalent
+    */
+    proc lower() throws {
+      ref origVals = this.values.a;
+      ref offs = this.offsets.a;
+      var lowerVals: [this.values.aD] uint(8);
+      const lengths = this.getLengths();
+      forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
+        var i = 0;
+        for b in interpretAsBytes(origVals, off..#len, borrow=true).toLower() {
+          valAgg.copy(lowerVals[off+i], b:uint(8));
+          i += 1;
+        }
+      }
+      return (offs, lowerVals);
+    }
+
+    /*
+      Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
+      :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
+    */
+    proc upper() throws {
+      ref origVals = this.values.a;
+      ref offs = this.offsets.a;
+      var upperVals: [this.values.aD] uint(8);
+      const lengths = this.getLengths();
+      forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
+        var i = 0;
+        for b in interpretAsBytes(origVals, off..#len, borrow=true).toUpper() {
+          valAgg.copy(upperVals[off+i], b:uint(8));
+          i += 1;
+        }
+      }
+      return (offs, upperVals);
+    }
+
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase
+    */
+    proc isLower() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsLower, bool);
+    }
+
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase
+    */
+    proc isUpper() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsUpper, bool);
+    }
+
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
@@ -1141,6 +1195,20 @@ module SegmentedArray {
     return myRegex.search(interpretAsString(values, rng, borrow=true)).matched;
   }
 
+  /*
+    The SegFunction called by computeOnSegments for isLower
+  */
+  inline proc stringIsLower(values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isLower();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for isUpper
+  */
+  inline proc stringIsUpper(values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isUpper();
+  }
+
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
@@ -1268,4 +1336,25 @@ module SegmentedArray {
       return "<error interpreting bytes as string>";
     }
   }
+
+  /*
+     Interpret a region of a byte array as bytes. Modeled after interpretAsString
+   */
+  proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow=false): bytes {
+    var localSlice = new lowLevelLocalizingSlice(bytearray, region);
+    // Byte buffer is null-terminated, so length is region.size - 1
+    try {
+      if localSlice.isOwned {
+        localSlice.isOwned = false;
+        return createBytesWithOwnedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else if borrow {
+        return createBytesWithBorrowedBuffer(localSlice.ptr, region.size-1, region.size);
+      } else {
+        return createBytesWithNewBuffer(localSlice.ptr, region.size-1, region.size);
+      }
+    } catch {
+      return b"<error interpreting uint(8) as bytes>";
+    }
+  }
+
 }

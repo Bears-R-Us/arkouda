@@ -45,6 +45,8 @@ module SegmentedComputation {
     StringCompareLiteralEq,
     StringCompareLiteralNeq,
     StringSearch,
+    StringIsLower,
+    StringIsUpper,
   }
   
   proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -95,6 +97,12 @@ module SegmentedComputation {
                 }
                 when SegFunction.StringCompareLiteralNeq {
                   agg.copy(res[i], stringCompareLiteralNeq(values, start..#len, strArg));
+                }
+                when SegFunction.StringIsLower {
+                  agg.copy(res[i], stringIsLower(values, start..#len));
+                }
+                when SegFunction.StringIsUpper {
+                  agg.copy(res[i], stringIsUpper(values, start..#len));
                 }
                 otherwise {
                   compilerError("Unrecognized segmented function");
