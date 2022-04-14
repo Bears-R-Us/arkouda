@@ -335,14 +335,14 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
     array([-2, -1, 0, 1, 2])
 
     #Multi-Array Example
-    >>> a = ak.arange(5)
+    >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
     >>> d = ak.array([1, 2, 3, 5, 4])
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
     >>> ak.union1d(multia, multib)
-    [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 4, 5, 2, 5]]
+    [array[1, 2, 2, 3, 4, 4, 5, 5], array[1, 2, 5, 3, 2, 4, 4, 5], array[1, 2, 4, 3, 5, 4, 2, 5]]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
@@ -357,7 +357,7 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         return cast(pdarray,
                     unique(cast(pdarray,
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
-    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
+    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
         ag = GroupBy(pda1)
         ua = ag.unique_keys
@@ -369,7 +369,7 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         k, ct = g.count()
         return k
     else:
-        raise TypeError('Both pda1 and pda2 must be pdarray or list')
+        raise TypeError(f'Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}')
 
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
@@ -447,7 +447,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         mask = aux[1:] == aux[:-1]
         int1d = aux[:-1][mask]
         return int1d
-    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
+    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:
@@ -473,7 +473,7 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         in_union = ct == 2
         return [x[in_union] for x in k]
     else:
-        raise TypeError('Both pda1 and pda2 must be pdarray or list')
+        raise TypeError(f'Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}')
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
@@ -523,7 +523,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
     array([1, 2])
 
     #Multi-Array Example
-    >>> a = ak.arange(5)
+    >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
     >>> d = ak.array([1, 2, 3, 5, 4])
@@ -546,7 +546,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
             pda1 = cast(pdarray, unique(pda1))
             pda2 = cast(pdarray, unique(pda2))
         return pda1[in1d(pda1, pda2, invert=True)]
-    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
+    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:
@@ -573,7 +573,7 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         atruth = truth[isa]
         return [x[atruth] for x in ua]
     else:
-        raise TypeError('Both pda1 and pda2 must be pdarray or list')
+        raise TypeError(f'Both pda1 and pda2 must be pdarray, List, or Tuple. Received {type(pda1)} and {type(pda2)}')
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
@@ -628,7 +628,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
     >>> d = ak.array([1, 2, 3, 5, 4])
     >>> multia = [a, a, a]
     >>> multib = [b, c, d]
-    >>> ak.setdiff1d(multia, multib)
+    >>> ak.setxor1d(multia, multib)
     [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
@@ -649,7 +649,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
-    elif (isinstance(pda1, list) and isinstance(pda2, list)) or (isinstance(pda1, tuple) and isinstance(pda2, tuple)):
+    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
         multiarray_setop_validation(pda1, pda2)
 
         if not assume_unique:

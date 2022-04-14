@@ -803,7 +803,7 @@ class SegArray:
         values = load(prefix_path, dataset=dataset + value_suffix)
         return cls(segments, values)
 
-    def intersect_ma(self, other):
+    def intersect(self, other):
         """
         Computes the intersection of 2 SegArrays.
 
@@ -829,7 +829,7 @@ class SegArray:
         >>> d = [2, 2, 4]
         >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
-        >>> seg_a.intersect_ma(seg_b)
+        >>> seg_a.intersect(seg_b)
         SegArray([
         [1, 3],
         [4]
@@ -856,7 +856,7 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
-    def union_ma(self, other):
+    def union(self, other):
         """
         Computes the union of 2 SegArrays.
 
@@ -882,7 +882,7 @@ class SegArray:
         >>> d = [2, 2, 4]
         >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
-        >>> seg_a.union_ma(seg_b)
+        >>> seg_a.union(seg_b)
         SegArray([
         [1, 2, 3, 4, 5],
         [1, 2, 3, 4, 5]
@@ -909,7 +909,7 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
-    def setdiff_ma(self, other):
+    def setdiff(self, other):
         """
         Computes the set difference of 2 SegArrays.
 
@@ -935,7 +935,7 @@ class SegArray:
         >>> d = [2, 2, 4]
         >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
-        >>> seg_a.setdiff_ma(seg_b)
+        >>> seg_a.setdiff(seg_b)
         SegArray([
         [2, 4],
         [1, 3, 5]
@@ -962,7 +962,7 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
-    def setxor_ma(self, other):
+    def setxor(self, other):
         """
         Computes the symmetric difference of 2 SegArrays.
 
@@ -988,7 +988,7 @@ class SegArray:
         >>> d = [2, 2, 4]
         >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
         >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
-        >>> seg_a.setxor_ma(seg_b)
+        >>> seg_a.setxor(seg_b)
         SegArray([
         [2, 4, 5],
         [1, 3, 5, 2]

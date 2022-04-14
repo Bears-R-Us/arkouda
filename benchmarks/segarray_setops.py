@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-OPS = ('intersect_ma', 'union_ma', 'setdiff_ma', 'setxor_ma')
+OPS = ('intersect', 'union', 'setdiff', 'setxor')
 TYPES = ('int64', 'uint64',)
 
 
@@ -28,7 +28,6 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
         d = ak.randint(0, 2 ** 32, N, seed=seed, dtype=ak.uint64)
         seg_b = ak.SegArray(ak.array([0, len(c)]), ak.concatenate([c, d]))
 
-    print(OPS)
     timings = {op: [] for op in OPS}
     results = {}
     for i in range(trials):
@@ -43,10 +42,10 @@ def time_ak_setops(N_per_locale, trials, dtype, seed):
 
     for op, t in tavg.items():
         print("  {} Average time = {:.4f} sec".format(op, t))
-        # bytes_per_sec = (a.size * a.itemsize * 2) / t
-        # print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec / 2 ** 30))
+        bytes_per_sec = (a.size * a.itemsize * 2) / t
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec / 2 ** 30))
 
-NP_OP_MAP = {'intersect_ma': 'intersect1d', 'union_ma': 'union1d', 'setdiff_ma': 'setdiff1d', 'setxor_ma': 'setxor1d'}
+NP_OP_MAP = {'intersect': 'intersect1d', 'union': 'union1d', 'setdiff': 'setdiff1d', 'setxor': 'setxor1d'}
 
 def check_correctness(dtype, seed):
     N = 10 ** 4

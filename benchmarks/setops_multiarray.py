@@ -72,7 +72,6 @@ def check_correctness(dtype, seed):
             npr1 = []
         fxn = getattr(ak, op)
         akr = fxn(pd_list_a, pd_list_b)
-        print(f"\nNPR0: {npr0}\n\nNPR1: {npr1}\n\nAKR: {akr}\n")
 
         np.isclose(akr[0].to_ndarray(), np.array(npr0))
         np.isclose(akr[1].to_ndarray(), np.array(npr1))
@@ -85,8 +84,6 @@ def create_parser():
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
-    parser.add_argument('--numpy', default=False, action='store_true',
-                        help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true',
                         help='Only check correctness, not performance.')
     parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
