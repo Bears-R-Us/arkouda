@@ -24,7 +24,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 
 <a id="genreqs"></a>
 ## Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
- * chapel 1.25.1 or 1.26.0
+ * chapel 1.25.1 or 1.26.0 (Recommended)
  * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * hdf5 
  * python 3.7 or greater
@@ -50,6 +50,7 @@ sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-de
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
 # Chapel 1.26.0 is recommended, but 1.25.1 is still supported.
+# To use Chapel 1.25.1, replace '1.26.0' in the following three commands with '1.25.1'
 wget https://github.com/chapel-lang/chapel/releases/download/1.26.0/chapel-1.26.0.tar.gz
 tar xvf chapel-1.26.0.tar.gz
 cd chapel-1.26.0/
