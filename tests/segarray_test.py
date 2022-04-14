@@ -481,6 +481,13 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(intx[0].tolist(), [1, 2, 4])
         self.assertListEqual(intx[1].tolist(), [])
 
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a+c))
+        segarr_2 = ak.SegArray(ak.array([0, len(d)]), ak.array(d+c))
+        intx = segarr.intersect_ma(segarr_2)
+        self.assertListEqual(intx.lengths.to_ndarray().tolist(), [0, 3])
+        self.assertListEqual(intx[0].tolist(), [])
+        self.assertListEqual(intx[1].tolist(), [1, 2, 4])
+
     def test_union_ma(self):
         a = [1, 2, 3, 4, 5]
         b = [6, 7, 8]
@@ -501,6 +508,13 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(un.lengths.to_ndarray().tolist(), [5, 1])
         self.assertListEqual(un[0].tolist(), [1, 2, 3, 4, 5])
         self.assertListEqual(un[1].tolist(), [8])
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        segarr_2 = ak.SegArray(ak.array([0, len(a)]), ak.array(a))
+        un = segarr.union_ma(segarr_2)
+        self.assertListEqual(un.lengths.to_ndarray().tolist(), [5, 0])
+        self.assertListEqual(un[0].tolist(), [1, 2, 3, 4, 5])
+        self.assertListEqual(un[1].tolist(), [])
 
     def test_setdiff_ma(self):
         a = [1, 2, 3, 4, 5]
@@ -523,6 +537,14 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(diff[0].tolist(), [3, 5])
         self.assertListEqual(diff[1].tolist(), [])
 
+        segarr = ak.SegArray(ak.array([0, len(a), len(a)]), ak.array(a+a))
+        segarr_2 = ak.SegArray(ak.array([0, len(c), len(c+c)]), ak.array(c + c + c))
+        diff = segarr_2.setdiff_ma(segarr)
+        self.assertListEqual(diff.lengths.to_ndarray().tolist(), [0, 3, 0])
+        self.assertListEqual(diff[0].tolist(), [])
+        self.assertListEqual(diff[1].tolist(), [1, 2, 4])
+        self.assertListEqual(diff[2].tolist(), [])
+
     def test_setxor_ma(self):
         a = [1, 2, 3]
         b = [6, 7, 8]
@@ -543,3 +565,10 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor.lengths.to_ndarray().tolist(), [2, 3])
         self.assertListEqual(xor[0].tolist(), [3, 4])
         self.assertListEqual(xor[1].tolist(), [8, 12, 13])
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a+a))
+        segarr_2 = ak.SegArray(ak.array([0, len(a)]), ak.array(a+c))
+        xor = segarr.setxor_ma(segarr_2)
+        self.assertListEqual(xor.lengths.to_ndarray().tolist(), [0, 2])
+        self.assertListEqual(xor[0].tolist(), [])
+        self.assertListEqual(xor[1].tolist(), [3, 4])

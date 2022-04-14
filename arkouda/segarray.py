@@ -846,9 +846,10 @@ class SegArray:
             return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
             k, ct = g.count()
             segments[k] = g.segments
-            truth = ~self._non_empty | ~other._non_empty
+            truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
@@ -898,9 +899,10 @@ class SegArray:
             return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
             k, ct = g.count()
             segments[k] = g.segments
-            truth = ~self._non_empty | ~other._non_empty
+            truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
@@ -950,9 +952,10 @@ class SegArray:
             return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
             k, ct = g.count()
             segments[k] = g.segments
-            truth = ~self._non_empty | ~other._non_empty
+            truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
@@ -1002,9 +1005,10 @@ class SegArray:
             return SegArray(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
             k, ct = g.count()
             segments[k] = g.segments
-            truth = ~self._non_empty | ~other._non_empty
+            truth[k] = zeros(k.size, dtype=akbool)
             if truth[-1]:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
