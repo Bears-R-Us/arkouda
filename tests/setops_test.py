@@ -92,7 +92,31 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setxor1d([-1, 0, 1], [-2, 0, 2])     
+            ak.setxor1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetxor1d_Multi(self):
+        a = [1, 2, 3, 4, 5]
+        b = [1, 5, 2, 3, 4]
+        c = [1, 3, 2, 5, 4]
+        a1 = ak.array(a)
+        a2 = ak.array(a)
+        b1 = ak.array(b)
+        b2 = ak.array(c)
+
+        la = set([(x, y) for x, y in zip(a, a)])
+        lb = set([(x, y) for x, y in zip(b, c)])
+        lr = list(sorted(la.symmetric_difference(lb)))
+        npr0, npr1 = map(list, zip(*lr))
+
+        #Testing
+        t = ak.setxor1d([a1, a2], [b1, b2])
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
+        # Testing tuple input
+        t = ak.setxor1d((a1, a2), (b1, b2))
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
         
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
@@ -107,9 +131,27 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])     
-        
-    def testIntersectId(self):
+            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])
+
+    def testSetDiff1d_Multi(self):
+        a = [1, 2, 3, 4, 5]
+        b = [1, 5, 2, 3, 4]
+        c = [1, 3, 2, 5, 4]
+        a1 = ak.array(a)
+        a2 = ak.array(a)
+        b1 = ak.array(b)
+        b2 = ak.array(c)
+
+        la = set([(x, y) for x, y in zip(a, a)])
+        lb = set([(x, y) for x, y in zip(b, c)])
+        lr = list(sorted(la.difference(lb)))
+        npr0, npr1 = map(list, zip(*lr))
+
+        t = ak.setdiff1d([a1, a2], [b1, b2])
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
+    def testIntersect1d(self):
         pdaOne = ak.array([1, 3, 4, 3])
         pdaTwo = ak.array([3, 1, 2, 1])
         expected = ak.array([1,3])
@@ -121,8 +163,26 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
         with self.assertRaises(TypeError):
-            ak.intersect1d([-1, 0, 1], [-2, 0, 2])     
-        
+            ak.intersect1d([-1, 0, 1], [-2, 0, 2])
+
+    def testIntersect1d_Multi(self):
+        a = [1, 2, 3, 4, 5]
+        b = [1, 5, 2, 3, 4]
+        c = [1, 3, 2, 5, 4]
+        a1 = ak.array(a)
+        a2 = ak.array(a)
+        b1 = ak.array(b)
+        b2 = ak.array(c)
+
+        la = set([(x, y) for x, y in zip(a, a)])
+        lb = set([(x, y) for x, y in zip(b, c)])
+        lr = list(sorted(la.intersection(lb)))
+        npr0, npr1 = map(list, zip(*lr))
+
+        t = ak.intersect1d([a1, a2], [b1, b2])
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
         pdaTwo = ak.array([-2, 0, 2])
@@ -135,7 +195,24 @@ class SetOpsTest(ArkoudaTest):
         with self.assertRaises(RuntimeError) as cm:
             ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
         with self.assertRaises(TypeError):
-            ak.union1d([-1, 0, 1], [-2, 0, 2])     
+            ak.union1d([-1, 0, 1], [-2, 0, 2])
+
+    def testUnion1d_Multi(self):
+        a = [1, 2, 3, 4, 5]
+        b = [1, 5, 2, 3, 4]
+        c = [1, 3, 2, 5, 4]
+        a1 = ak.array(a)
+        a2 = ak.array(a)
+        b1 = ak.array(b)
+        b2 = ak.array(c)
+
+        la = set([(x, y) for x, y in zip(a, a)])
+        lb = set([(x, y) for x, y in zip(b, c)])
+        lr = list(sorted(la.union(lb)))
+        npr0, npr1 = map(list, zip(*lr))
+        t = ak.union1d([a1, a2], [b1, b2])
+        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
+        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
 
     def testIn1d(self): 
         pdaOne = ak.array([-1, 0, 1, 3])
@@ -150,3 +227,22 @@ class SetOpsTest(ArkoudaTest):
 
         answer = ak.array([x < 2 for x in vals])
         self.assertTrue((answer == ak.in1d(stringsOne,stringsTwo)).all())
+
+    def test_multiarray_validation(self):
+        x = [ak.arange(3), ak.arange(3), ak.arange(3)]
+        y = [ak.arange(2), ak.arange(2)]
+        with self.assertRaises(ValueError):
+            ak.pdarraysetops.multiarray_setop_validation(x, y)
+
+        x = [ak.arange(3), ak.arange(5)]
+        with self.assertRaises(ValueError):
+            ak.pdarraysetops.multiarray_setop_validation(x, y)
+
+        with self.assertRaises(ValueError):
+            ak.pdarraysetops.multiarray_setop_validation(y, x)
+
+        x = [ak.arange(3, dtype=ak.uint64), ak.arange(3)]
+        with self.assertRaises(TypeError):
+            ak.pdarraysetops.multiarray_setop_validation(x, y)
+
+

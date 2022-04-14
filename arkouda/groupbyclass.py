@@ -10,8 +10,6 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
-from arkouda.pdarraysetops import concatenate
-from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64, uint64
 
@@ -160,7 +158,7 @@ class GroupBy:
             # Most categoricals already store segments and unique keys
             if hasattr(self.keys, 'segments') and cast(Categorical, 
                                                        self.keys).segments is not None:
-                self.unique_keys = cast(Categorical, self.keys).categories
+                self.unique_keys: Any = cast(Categorical, self.keys).categories
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 self.ngroups = self.unique_keys.size
                 return
