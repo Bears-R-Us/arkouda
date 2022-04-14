@@ -124,6 +124,34 @@ or
 
       Return lengths of all strings, including null terminator. 
 
+   .. method:: proc lower() throws
+
+      
+      Given a SegString, return a new SegString with all uppercase characters from the original replaced with their lowercase equivalent
+      :returns: Strings – Substrings with uppercase characters replaced with lowercase equivalent
+      
+
+   .. method:: proc upper() throws
+
+      
+      Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
+      :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
+      
+
+   .. method:: proc isLower() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase
+      
+
+   .. method:: proc isUpper() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase
+      
+
    .. method:: proc findSubstringInBytes(const substr: string)
 
    .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
@@ -271,6 +299,18 @@ or
 
 .. function:: proc stringSearch(values, rng, myRegex) throws
 
+.. function:: proc stringIsLower(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isLower
+   
+
+.. function:: proc stringIsUpper(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isUpper
+   
+
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
 
    Test array of strings for membership in another array (set) of strings. Returns
@@ -286,5 +326,11 @@ or
    Interpret a region of a byte array as a Chapel string. If `borrow=false` a
    new string is returned, otherwise the string borrows memory from the array
    (reduces memory allocations if the string isn't needed after array)
+   
+
+.. function:: proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow = false): bytes
+
+   
+   Interpret a region of a byte array as bytes. Modeled after interpretAsString
    
 

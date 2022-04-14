@@ -363,6 +363,34 @@ will fall in one contiguous block.</p>
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.lower">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a SegString, return a new SegString with all uppercase characters from the original replaced with their lowercase equivalent
+:returns: Strings – Substrings with uppercase characters replaced with lowercase equivalent</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.upper">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
+:returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.isLower">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isLower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.isLower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
+:returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.isUpper">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isUpper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.isUpper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
+:returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.findSubstringInBytes">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findSubstringInBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">substr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedArray.SegString.findSubstringInBytes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -552,6 +580,18 @@ target).</p>
 <dd></dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.stringIsLower">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsLower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.stringIsLower" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isLower</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.stringIsUpper">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsUpper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.stringIsUpper" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isUpper</p>
+</dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedArray.in1d">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mainStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">testStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">invert</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.in1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test array of strings for membership in another array (set) of strings. Returns
@@ -574,6 +614,12 @@ a boolean vector the same size as the first array.</p>
 <dd><p>Interpret a region of a byte array as a Chapel string. If <cite>borrow=false</cite> a
 new string is returned, otherwise the string borrows memory from the array
 (reduces memory allocations if the string isn’t needed after array)</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.interpretAsBytes">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bytes</span><a class="headerlink" href="#SegmentedArray.interpretAsBytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpret a region of a byte array as bytes. Modeled after interpretAsString</p>
 </dd></dl>
 
 </div>
