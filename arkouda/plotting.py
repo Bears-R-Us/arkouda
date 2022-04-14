@@ -12,8 +12,8 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     """
     Plot the distribution and cumulative distribution of histogram Data
 
-    Params
-    _______
+    Parameters
+    ----------
     b : np.ndarray
         Bin edges
     h : np.ndarray
@@ -26,13 +26,13 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
         Generate a new figure or not
 
     Notes
-    _______
+    -----
     This function does not return or display the plot. A user must have matplotlib imported in addition to arkouda to
     display plots. This could be updated to return the object or have a flag to show the resulting plots.
     See Examples Below.
 
     Examples
-    _________
+    --------
     >>> import arkouda as ak
     >>> from matplotlib import pyplot as plt
     >>> b, h = ak.histogram(ak.arange(10), 3)
