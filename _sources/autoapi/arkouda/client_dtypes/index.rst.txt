@@ -66,7 +66,7 @@ Functions
 
    This class is a thin wrapper around pdarray that mostly affects
    how values are displayed to the user. Operators and methods will
-   typically treat this class like an int64 pdarray.
+   typically treat this class like a uint64 pdarray.
 
    .. py:attribute:: conserves
       
@@ -147,11 +147,11 @@ Functions
 
    An integer-backed representation of a set of named binary fields, e.g. flags.
 
-   :param values: The array of field values. If int64, the values are used as-is for the
+   :param values: The array of field values. If (u)int64, the values are used as-is for the
                   binary representation of fields. If Strings, the values are converted
                   to binary according to the mapping defined by the names and MSB_left
                   arguments.
-   :type values: pdarray(int64) or Strings
+   :type values: pdarray or Strings
    :param names: The names of the fields, in order. A string will be treated as a list
                  of single-character field names. Multi-character field names are allowed,
                  but must be passed as a list or tuple and user must specify a separator.
@@ -241,19 +241,20 @@ Functions
 
 .. py:function:: ip_address(values)
 
-   Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.
+   Convert values to an Arkouda array of IP addresses.
 
    :param values: The integer IP addresses or IPv4 object.
-   :type values: pdarray, int64 or IPv4
+   :type values: list-like, integer pdarray, or IPv4
 
-   :returns: The same IP addresses
+   :returns: The same IP addresses as an Arkouda array
    :rtype: IPv4
 
    .. rubric:: Notes
 
    This helper is intended to help future proof changes made to
    accomodate IPv6 and to prevent errors if a user inadvertently
-   casts a IPv4 instead of a int64 pdarray.
+   casts a IPv4 instead of a int64 pdarray. It can also be used
+   for importing Python lists of IP addresses into Arkouda.
 
 
 .. py:class:: IPv4(values)

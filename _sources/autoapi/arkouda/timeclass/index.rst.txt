@@ -282,7 +282,7 @@ Attributes
 
    .. rubric:: Notes
 
-   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
    .. py:attribute:: supported_with_datetime
       
@@ -374,7 +374,7 @@ Attributes
 
    .. rubric:: Notes
 
-   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
    .. py:attribute:: supported_with_datetime
       

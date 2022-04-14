@@ -33,6 +33,8 @@ Attributes
    arkouda.dtypes.uint8
    arkouda.dtypes.uint64
    arkouda.dtypes.str_
+   arkouda.dtypes.intTypes
+   arkouda.dtypes.bitType
    arkouda.dtypes.bool_scalars
    arkouda.dtypes.float_scalars
    arkouda.dtypes.int_scalars
@@ -76,6 +78,16 @@ Attributes
    
 
 .. py:data:: str_
+   
+
+   
+
+.. py:data:: intTypes
+   
+
+   
+
+.. py:data:: bitType
    
 
    

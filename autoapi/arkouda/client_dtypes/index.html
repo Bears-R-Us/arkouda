@@ -70,7 +70,7 @@
 <td><p>Make a callback (i.e. function) that can be called on an</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client_dtypes.ip_address" title="arkouda.client_dtypes.ip_address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ip_address</span></code></a>(values)</p></td>
-<td><p>Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.</p></td>
+<td><p>Convert values to an Arkouda array of IP addresses.</p></td>
 </tr>
 </tbody>
 </table>
@@ -122,7 +122,7 @@ is the left-most bit.</p></li>
 <p class="rubric">Notes</p>
 <p>This class is a thin wrapper around pdarray that mostly affects
 how values are displayed to the user. Operators and methods will
-typically treat this class like an int64 pdarray.</p>
+typically treat this class like a uint64 pdarray.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.conserves">
 <span class="sig-name descname"><span class="pre">conserves</span></span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.conserves" title="Permalink to this definition">¶</a></dt>
@@ -237,7 +237,7 @@ a supported dtype</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int64</em><em>) or </em><a class="reference internal" href="../index.html#id132" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id135" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -359,13 +359,13 @@ a supported dtype</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.ip_address">
 <span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">ip_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.ip_address" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.</p>
+<dd><p>Convert values to an Arkouda array of IP addresses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em><em> or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – The integer IP addresses or IPv4 object.</p>
+<dd class="field-odd"><p><strong>values</strong> (<em>list-like</em><em>, </em><em>integer pdarray</em><em>, or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – The integer IP addresses or IPv4 object.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The same IP addresses</p>
+<dd class="field-even"><p>The same IP addresses as an Arkouda array</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4">IPv4</a></p>
@@ -374,7 +374,8 @@ a supported dtype</p></li>
 <p class="rubric">Notes</p>
 <p>This helper is intended to help future proof changes made to
 accomodate IPv6 and to prevent errors if a user inadvertently
-casts a IPv4 instead of a int64 pdarray.</p>
+casts a IPv4 instead of a int64 pdarray. It can also be used
+for importing Python lists of IP addresses into Arkouda.</p>
 </dd></dl>
 
 <dl class="py class">

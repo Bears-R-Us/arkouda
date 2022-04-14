@@ -95,8 +95,10 @@ Functions
    arkouda.isSupportedInt
    arkouda.zeros
    arkouda.arange
+   arkouda.array
    arkouda.broadcast
    arkouda.where
+   arkouda.akcast
    arkouda.BitVectorizer
    arkouda.ip_address
    arkouda.check_np_dtype
@@ -229,6 +231,8 @@ Attributes
 .. autoapisummary::
 
    arkouda.__version__
+   arkouda.intTypes
+   arkouda.bitType
    arkouda.akint64
    arkouda.DTypes
    arkouda.DTypeObjects
@@ -239,6 +243,8 @@ Attributes
    arkouda.uint8
    arkouda.uint64
    arkouda.str_
+   arkouda.intTypes
+   arkouda.bitType
    arkouda.ARKOUDA_SUPPORTED_DTYPES
    arkouda.bool_scalars
    arkouda.float_scalars
@@ -250,6 +256,7 @@ Attributes
    arkouda.SortingAlgorithm
    arkouda.GROUPBY_REDUCTION_TYPES
    arkouda.int64
+   arkouda.intTypes
    arkouda._BASE_UNIT
    arkouda._unit2normunit
    arkouda._unit2factor
@@ -1191,6 +1198,16 @@ Attributes
 
 .. py:function:: isSupportedInt(num)
 
+
+.. py:data:: intTypes
+   
+
+   
+
+.. py:data:: bitType
+   
+
+   
 
 .. py:data:: akint64
    
@@ -2255,6 +2272,56 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+
+   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
+   the corresponding data to the arkouda server.
+
+   :param a: Rank-1 array of a supported dtype
+   :type a: Union[pdarray, np.ndarray]
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype, type, or str
+
+   :returns: A pdarray instance stored on arkouda server or Strings instance, which
+             is composed of two pdarrays stored on arkouda server
+   :rtype: pdarray or Strings
+
+   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+       list, array, tuple, or deque
+   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+       not supported (not in DTypes), or if the product of a size and
+       a.itemsize > maxTransferBytes
+   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
+       required to generate the array.
+
+   .. seealso:: :obj:`pdarray.to_ndarray`
+
+   .. rubric:: Notes
+
+   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   otherwise a RuntimeError will be raised. This is to protect the user
+   from overwhelming the connection between the Python client and the arkouda
+   server, under the assumption that it is a low-bandwidth connection. The user
+   may override this limit by setting ak.maxTransferBytes to a larger value,
+   but should proceed with caution.
+
+   If the pdrray or ndarray is of type U, this method is called twice recursively
+   to create the Strings object and the two corresponding pdarrays for string
+   bytes and offsets, respectively.
+
+   .. rubric:: Examples
+
+   >>> ak.array(np.arange(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> ak.array(range(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> strings = ak.array(['string {}'.format(i) for i in range(0,5)])
+   >>> type(strings)
+   <class 'arkouda.strings.Strings'>
+
+
 .. py:class:: GroupBy(keys: groupable, assume_sorted: bool = False, hash_strings: bool = True)
 
    Group an array or list of arrays by value, usually in preparation
@@ -2917,6 +2984,50 @@ Attributes
    is not currently supported in Arkouda
 
 
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+
+   Cast an array to another dtype.
+
+   :param pda: The array of values to cast
+   :type pda: pdarray or Strings
+   :param dt: The target dtype to cast values to
+   :type dt: np.dtype, type, or str
+   :param errors: Controls how errors are handled when casting strings to a numeric type
+                  (ignored for casts from numeric types).
+                      - strict: raise RuntimeError if *any* string cannot be converted
+                      - ignore: never raise an error. Uninterpretable strings get
+                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
+                          uint8), or False (bool)
+                      - return_validity: in addition to returning the same output as
+                        "ignore", also return a bool array indicating where the cast
+                        was successful.
+   :type errors: {strict, ignore, return_validity}
+
+   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
+             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
+               returned with True where the cast succeeded and False where it failed.
+
+   .. rubric:: Notes
+
+   The cast is performed according to Chapel's casting rules and is NOT safe
+   from overflows or underflows. The user must ensure that the target dtype
+   has the precision and capacity to hold the desired result.
+
+   .. rubric:: Examples
+
+   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+   dtype('float64')
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+
 .. py:function:: BitVectorizer(width=64, reverse=False)
 
    Make a callback (i.e. function) that can be called on an
@@ -2955,7 +3066,7 @@ Attributes
 
    This class is a thin wrapper around pdarray that mostly affects
    how values are displayed to the user. Operators and methods will
-   typically treat this class like an int64 pdarray.
+   typically treat this class like a uint64 pdarray.
 
    .. py:attribute:: conserves
       
@@ -3036,11 +3147,11 @@ Attributes
 
    An integer-backed representation of a set of named binary fields, e.g. flags.
 
-   :param values: The array of field values. If int64, the values are used as-is for the
+   :param values: The array of field values. If (u)int64, the values are used as-is for the
                   binary representation of fields. If Strings, the values are converted
                   to binary according to the mapping defined by the names and MSB_left
                   arguments.
-   :type values: pdarray(int64) or Strings
+   :type values: pdarray or Strings
    :param names: The names of the fields, in order. A string will be treated as a list
                  of single-character field names. Multi-character field names are allowed,
                  but must be passed as a list or tuple and user must specify a separator.
@@ -3130,19 +3241,20 @@ Attributes
 
 .. py:function:: ip_address(values)
 
-   Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.
+   Convert values to an Arkouda array of IP addresses.
 
    :param values: The integer IP addresses or IPv4 object.
-   :type values: pdarray, int64 or IPv4
+   :type values: list-like, integer pdarray, or IPv4
 
-   :returns: The same IP addresses
+   :returns: The same IP addresses as an Arkouda array
    :rtype: IPv4
 
    .. rubric:: Notes
 
    This helper is intended to help future proof changes made to
    accomodate IPv6 and to prevent errors if a user inadvertently
-   casts a IPv4 instead of a int64 pdarray.
+   casts a IPv4 instead of a int64 pdarray. It can also be used
+   for importing Python lists of IP addresses into Arkouda.
 
 
 .. py:class:: IPv4(values)
@@ -3278,6 +3390,16 @@ Attributes
    
 
 .. py:data:: str_
+   
+
+   
+
+.. py:data:: intTypes
+   
+
+   
+
+.. py:data:: bitType
    
 
    
@@ -9301,6 +9423,11 @@ Attributes
 
    
 
+.. py:data:: intTypes
+   
+
+   
+
 .. py:function:: isSupportedInt(num)
 
 
@@ -9719,7 +9846,7 @@ Attributes
 
    .. rubric:: Notes
 
-   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
    .. py:attribute:: supported_with_datetime
       
@@ -9811,7 +9938,7 @@ Attributes
 
    .. rubric:: Notes
 
-   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
    .. py:attribute:: supported_with_datetime
       
