@@ -200,13 +200,13 @@ class GroupByTest(ArkoudaTest):
 
         # test uint Groupby.broadcast with and without permute
         results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
-        self.assertTrue((np.array([1, 2, 2, 2, 2, 6, 6, 8, 9, 9]), results.to_ndarray()))
+        self.assertListEqual(np.array([1, 2, 2, 2, 2, 6, 6, 8, 9, 9]).tolist(), results.to_ndarray().tolist())
         results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
-        self.assertTrue((np.array([8, 1, 6, 2, 2, 2, 9, 9, 2, 6]), results.to_ndarray()))
+        self.assertListEqual(np.array([8, 1, 6, 2, 2, 2, 9, 9, 2, 6]).tolist(), results.to_ndarray().tolist())
 
         # test uint broadcast
         results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
-        self.assertTrue((np.array([1]), results.to_ndarray()))
+        self.assertListEqual(np.array([1]).tolist(), results.to_ndarray().tolist())
 
     def test_broadcast_booleans(self):
         keys,counts = self.igb.count()
