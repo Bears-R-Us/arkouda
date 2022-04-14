@@ -622,7 +622,7 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
     array([1, 4, 5, 7])
 
     #Multi-Array Example
-    >>> a = ak.arange(5)
+    >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
     >>> d = ak.array([1, 2, 3, 5, 4])
