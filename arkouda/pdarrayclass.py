@@ -1312,10 +1312,10 @@ class pdarray:
             from arkouda.numeric import cast as akcast
             return [akcast(self, akint64)]
         elif self.dtype in (akint64, akuint64):
+            # Integral pdarrays are their own grouping keys
             return [self]
         else:
             raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
-        # Integral pdarrays are their own grouping keys
 
 
 #end pdarray class def
