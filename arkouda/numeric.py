@@ -484,7 +484,7 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def histogram(pda : pdarray, bins : int_scalars=10) -> pdarray:
+def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
@@ -498,8 +498,8 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> pdarray:
 
     Returns
     -------
-    pdarray, int64 or float64
-        The number of values present in each bin
+    (pdarray[float64], Union[pdarray, int64 or float64])
+        Bin edges and The number of values present in each bin
         
     Raises
     ------
@@ -526,20 +526,20 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> pdarray:
     >>> import matplotlib.pyplot as plt
     >>> A = ak.arange(0, 10, 1)
     >>> nbins = 3
-    >>> h = ak.histogram(A, bins=nbins)
+    >>> b, h = ak.histogram(A, bins=nbins)
     >>> h
     array([3, 3, 4])
-    # Recreate the bin edges in NumPy
-    >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
-    >>> binEdges
-    array([0., 3., 6., 9.])
+    >>> b
+    array([0., 3., 6.])
+
     # To plot, use only the left edges, and export the histogram to NumPy
-    >>> plt.plot(binEdges[:-1], h.to_ndarray())
+    >>> plt.plot(b, h.to_ndarray())
     """
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
+    b = np.linspace(pda.min(), pda.max(), bins + 1)[:-1]
     repMsg = generic_msg(cmd="histogram", args="{} {}".format(pda.name, bins))
-    return create_pdarray(type_cast(str,repMsg))
+    return b, create_pdarray(type_cast(str, repMsg))
 
 @typechecked
 def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
