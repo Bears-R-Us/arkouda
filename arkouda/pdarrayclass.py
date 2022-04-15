@@ -1062,9 +1062,9 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        if mode.lower() in 'append':
+        if mode.lower() in ['a', 'app', 'append']:
             m = 1
-        elif mode.lower() in 'truncate':
+        elif mode.lower() in ['t', 'trunc', 'truncate']:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
