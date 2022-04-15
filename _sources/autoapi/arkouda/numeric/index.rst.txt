@@ -349,7 +349,7 @@ Functions
    is not currently supported in Arkouda
 
 
-.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> arkouda.pdarrayclass.pdarray
+.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> Tuple[numpy.ndarray, arkouda.pdarrayclass.pdarray]
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -358,8 +358,8 @@ Functions
    :param bins: The number of equal-size bins to use (default: 10)
    :type bins: int_scalars
 
-   :returns: The number of values present in each bin
-   :rtype: pdarray, int64 or float64
+   :returns: Bin edges and The number of values present in each bin
+   :rtype: (pdarray[float64], Union[pdarray, int64 or float64])
 
    :raises TypeError: Raised if the parameter is not a pdarray or if bins is
        not an int.
@@ -379,15 +379,14 @@ Functions
    >>> import matplotlib.pyplot as plt
    >>> A = ak.arange(0, 10, 1)
    >>> nbins = 3
-   >>> h = ak.histogram(A, bins=nbins)
+   >>> b, h = ak.histogram(A, bins=nbins)
    >>> h
    array([3, 3, 4])
-   # Recreate the bin edges in NumPy
-   >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
-   >>> binEdges
-   array([0., 3., 6., 9.])
+   >>> b
+   array([0., 3., 6.])
+
    # To plot, use only the left edges, and export the histogram to NumPy
-   >>> plt.plot(binEdges[:-1], h.to_ndarray())
+   >>> plt.plot(b, h.to_ndarray())
 
 
 .. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
