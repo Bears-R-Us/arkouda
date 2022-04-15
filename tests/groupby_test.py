@@ -185,28 +185,33 @@ class GroupByTest(ArkoudaTest):
 
     def test_broadcast_uints(self):
         keys, counts = self.ugb.count()
-
         self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
         self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
 
-        results = self.ugb.broadcast(1 * (counts > 2))
-        self.assertTrue((np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]), results.to_ndarray()))
+        u_results = self.ugb.broadcast(1 * (counts > 2))
+        i_results = self.igb.broadcast(1 * (counts > 2))
+        self.assertTrue((i_results == u_results).all())
 
-        results = self.ugb.broadcast(1 * (counts == 2))
-        self.assertTrue((np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]), results.to_ndarray()))
+        u_results = self.ugb.broadcast(1 * (counts == 2))
+        i_results = self.igb.broadcast(1 * (counts == 2))
+        self.assertTrue((i_results == u_results).all())
 
-        results = self.ugb.broadcast(1 * (counts < 4))
-        self.assertTrue((np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]), results.to_ndarray()))
+        u_results = self.ugb.broadcast(1 * (counts < 4))
+        i_results = self.igb.broadcast(1 * (counts < 4))
+        self.assertTrue((i_results == u_results).all())
 
         # test uint Groupby.broadcast with and without permute
-        results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
-        self.assertListEqual(np.array([1, 2, 2, 2, 2, 6, 6, 8, 9, 9]).tolist(), results.to_ndarray().tolist())
-        results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
-        self.assertListEqual(np.array([8, 1, 6, 2, 2, 2, 9, 9, 2, 6]).tolist(), results.to_ndarray().tolist())
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
+        i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
+        self.assertTrue((i_results == u_results).all())
+        u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
+        i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
+        self.assertTrue((i_results == u_results).all())
 
         # test uint broadcast
-        results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
-        self.assertListEqual(np.array([1]).tolist(), results.to_ndarray().tolist())
+        u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
+        i_results = ak.broadcast(ak.array([0]), ak.array([1]), 1)
+        self.assertTrue((i_results == u_results).all())
 
     def test_broadcast_booleans(self):
         keys,counts = self.igb.count()
