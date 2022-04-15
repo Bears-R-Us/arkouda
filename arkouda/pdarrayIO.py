@@ -270,7 +270,7 @@ def get_datasets(filename : str) -> List[str]:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
     return datasets
 
-def get_filetype(filename: Union[str, list[str]]) -> str:
+def get_filetype(filenames: Union[str, List[str]]) -> str:
     """
     Get the type of a file accessible to the server. Supported
     file types and possible return strings are 'HDF5' and 'Parquet'.
@@ -294,8 +294,8 @@ def get_filetype(filename: Union[str, list[str]]) -> str:
     --------
     read
     """
-    if isinstance(filename, list):
-        fname = filename[0]
+    if isinstance(filenames, list):
+        fname = filenames[0]
     if not (fname and fname.strip()):
         raise ValueError("filename cannot be an empty string")
 
