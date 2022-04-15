@@ -1068,7 +1068,7 @@ class pdarray:
 
         The array can be read back in as follows
 
-        >>> b = ak.read_all('arkouda_range', dataset='array')
+        >>> b = ak.read('arkouda_range', dataset='array')
         >>> (a == b).all()
         True
 
@@ -1205,7 +1205,7 @@ class pdarray:
 
         See Also
         --------
-        save, save_all, load, read_hdf, read_all
+        save, save_all, load, read
 
         Notes
         -----
@@ -1227,7 +1227,7 @@ class pdarray:
 
         The array can be read back in as follows
 
-        >>> b = ak.read_all('arkouda_range')
+        >>> b = ak.read('arkouda_range')
         >>> (a == b).all()
         True
         """
