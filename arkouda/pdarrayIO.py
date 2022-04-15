@@ -219,7 +219,7 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
 
     See Also
     --------
-    save, load_all, read, read
+    save, load_all, read
     """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = "{}_LOCALE*{}".format(prefix, extension)
@@ -369,7 +369,7 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
 
     See Also
     --------
-    save_all, load, read, read
+    save_all, load, read
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0000{}".format(prefix, extension)
