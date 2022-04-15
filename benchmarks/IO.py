@@ -49,7 +49,7 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     readtimes = []
     for i in range(trials):
         start = time.time()
-        a = ak.read_all(path+'*') if not parquet else ak.read_parquet(path+'*')
+        a = ak.read(path+'*')
         end = time.time()
         readtimes.append(end - start)
     avgread = sum(readtimes) / trials
@@ -82,7 +82,7 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
     if multifile:
         b.save(f"{path}{2}") if not parquet else b.save_parquet(f"{path}{2}")
 
-    c = ak.read_all(path+'*') if not parquet else ak.read_parquet(path+'*')
+    c = ak.read(path+'*')
     
     for f in glob(path+"*"):
         os.remove(f)
