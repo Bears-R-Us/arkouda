@@ -168,6 +168,16 @@ class ParquetTest(ArkoudaTest):
         res = ak.read(filename)
 
         self.assertTrue((expected == res).all())
+
+    def test_null_indices(self):
+        datadir = 'resources/parquet-testing'
+        basename = 'null-strings.parquet'
+        expected = ak.array([0, 1, 0, 1, 0, 1, 1])
+
+        filename = os.path.join(datadir, basename)
+        res = ak.get_null_indices(filename, datasets='col1')
+
+        self.assertTrue((expected == res).all())
             
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

@@ -190,6 +190,36 @@ module ParquetMsg {
     return byteSizes;
   }
 
+  proc getNullIndices(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+    extern proc c_getStringColumnNullIndices(filename, colname, chpl_nulls, errMsg): int;
+    var (subdoms, length) = getSubdomains(sizes);
+    
+    coforall loc in A.targetLocales() do on loc {
+      var locFiles = filenames;
+      var locFiledoms = subdoms;
+      
+      try {
+        forall (filedom, filename) in zip(locFiledoms, locFiles) {
+          for locdom in A.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            
+            if intersection.size > 0 {
+              var pqErr = new parquetErrorMsg();
+              var col: [filedom] t;
+              if c_getStringColumnNullIndices(filename.localize().c_str(), dsetname.localize().c_str(),
+                                              c_ptrTo(col), pqErr.errMsg) {
+                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              }
+              A[filedom] = col;
+            }
+          }
+        }
+      } catch e {
+        throw e;
+      }
+    }
+  }
+
   proc getStrColSize(filename: string, dsetname: string, offsets: [] int) throws {
     extern proc c_getStringColumnNumBytes(filename, colname, offsets, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
@@ -817,11 +847,133 @@ module ParquetMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc nullIndicesMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string;
+    // May need a more robust delimiter then " | "
+    var (ndsetsStr, nfilesStr, arraysStr) = payload.splitMsgToTuple(3);
+
+    // Test arg casting so we can send error message instead of failing
+    if (!checkCast(ndsetsStr, int)) {
+      var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
+      pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+      return new MsgTuple(errMsg, MsgType.ERROR);
+    }
+    if (!checkCast(nfilesStr, int)) {
+      var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+      pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+      return new MsgTuple(errMsg, MsgType.ERROR);
+    }
+
+    var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+    var ndsets = ndsetsStr:int; // Error checked above
+    var nfiles = nfilesStr:int; // Error checked above
+    var dsetlist: [0..#ndsets] string;
+    var filelist: [0..#nfiles] string;
+
+    try {
+      dsetlist = jsonToPdArray(jsondsets, ndsets);
+    } catch {
+      var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
+                                                                                              1, jsondsets);
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    try {
+      filelist = jsonToPdArray(jsonfiles, nfiles);
+    } catch {
+      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    var dsetdom = dsetlist.domain;
+    var filedom = filelist.domain;
+    var dsetnames: [dsetdom] string;
+    var filenames: [filedom] string;
+    dsetnames = dsetlist;
+
+    if filelist.size == 1 {
+      if filelist[0].strip().size == 0 {
+        var errorMsg = "filelist was empty.";
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+      var tmp = glob(filelist[0]);
+      pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "glob expanded %s to %i files".format(filelist[0], tmp.size));
+      if tmp.size == 0 {
+        var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+      // Glob returns filenames in weird order. Sort for consistency
+      sort(tmp);
+      filedom = tmp.domain;
+      filenames = tmp;
+    } else {
+      filenames = filelist;
+    }
+
+    var fileErrors: list(string);
+    var fileErrorCount:int = 0;
+    var fileErrorMsg:string = "";
+    var sizes: [filedom] int;
+    var types: [dsetdom] ArrowTypes;
+    var byteSizes: [filedom] int;
+
+    var rnames: list((string, string, string)); // tuple (dsetName, item type, id)
+    
+    for (dsetidx, dsetname) in zip(dsetdom, dsetnames) do {
+        for (i, fname) in zip(filedom, filenames) {
+            var hadError = false;
+            try {
+                types[dsetidx] = getArrType(fname, dsetname);
+                sizes[i] = getArrSize(fname);
+            } catch e : Error {
+                // This is only type of error thrown by Parquet
+                fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                hadError = true;
+                return new MsgTuple(fileErrorMsg, MsgType.ERROR);
+            }
+
+            // This may need to be adjusted for this all-in-one approach
+            if hadError {
+              // Keep running total, but we'll only report back the first 10
+              if fileErrorCount < 10 {
+                fileErrors.append(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+              }
+              fileErrorCount += 1;
+            }
+        }
+        var len = + reduce sizes;
+        var ty = types[dsetidx];
+        
+        if ty == ArrowTypes.stringArr {
+          var entryVal = new shared SymEntry(len, int);
+          getNullIndices(entryVal.a, filenames, sizes, dsetname, ty);
+          var valName = st.nextName();
+          st.addEntry(valName, entryVal);
+          rnames.append((dsetname, "pdarray", valName));
+        } else {
+          var errorMsg = "Null indices only supported on Parquet string columns, not {} columns".format(ty);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+    }
+
+    repMsg = _buildReadAllMsgJson(rnames, false, 0, fileErrors, st);
+    pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg,MsgType.NORMAL);
+  }
+
   proc registerMe() {
     use CommandMap;
     registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
     registerFunction("writeParquet", toparquetMsg, getModuleName());
     registerFunction("lspq", lspqMsg, getModuleName());
+    registerFunction("getnullparquet", nullIndicesMsg, getModuleName());
     ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
   }
 
