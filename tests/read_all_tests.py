@@ -29,18 +29,18 @@ class ReadAllTest(ArkoudaTest):
         allfiles = glob(cwd+'/../converter/netflow_day-*.hdf')
         print(allfiles)
         start = time.time()
-        dictionary1 = ak.read_all(allfiles, iterative=True)
+        dictionary1 = ak.read(allfiles, iterative=True)
         end = time.time()
         t1 = end - start
-        print("read_all(iterative=True) seconds: %.3f" % (t1))
+        print("read(iterative=True) seconds: %.3f" % (t1))
         for key, value in dictionary1.items():
             print(key,type(value),value,len(value))
 
         start = time.time()
-        dictionary2 = ak.read_all(allfiles)
+        dictionary2 = ak.read(allfiles)
         end = time.time()
         t2 = end - start
-        print("read_all() seconds: %.3f" % (t2))
+        print("read() seconds: %.3f" % (t2))
         for key, value in dictionary2.items():
             print(key,type(value),value,len(value))
         
@@ -56,18 +56,18 @@ if __name__ == '__main__':
         allfiles = sys.argv[3:]
 
     start = time.time()
-    dictionary1 = ak.read_all(allfiles, iterative=True)
+    dictionary1 = ak.read(allfiles, iterative=True)
     end = time.time()
     t1 = end - start
-    print("read_all(iterative=True) seconds: %.3f" % (t1))
+    print("read(iterative=True) seconds: %.3f" % (t1))
     for key, value in dictionary1.items():
         print(key,type(value),value,len(value))
 
     start = time.time()
-    dictionary2 = ak.read_all(allfiles)
+    dictionary2 = ak.read(allfiles)
     end = time.time()
     t2 = end - start
-    print("read_all() seconds: %.3f" % (t2))
+    print("read() seconds: %.3f" % (t2))
     for key, value in dictionary2.items():
         print(key,type(value),value,len(value))
 

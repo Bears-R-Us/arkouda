@@ -2,7 +2,7 @@ import arkouda as ak
 import akutil as aku
 
 def _read_chunk(files, start, end, filterfunc=None, **kwargs):
-    chunk = ak.read_all(files[start:min((end, len(files)))], **kwargs)
+    chunk = ak.read(files[start:min((end, len(files)))], **kwargs)
     # Single datasets will get squeezed into a pdarray, so stuff back into a dict
     if type(chunk) != dict:
         if 'datasets' in kwargs:
@@ -57,7 +57,7 @@ def read_checkpointed(files, filterfunc=None, prior_data=None, prefix=None,
         A mapping of column name to function that will be called on that column
         after it is read. If a column is not present, no error is raised.
     kwargs
-        Passed to ak.read_all()
+        Passed to ak.read()
 
     Returns
     -------
