@@ -27,6 +27,7 @@ Functions
    arkouda.util.arkouda_to_numpy
    arkouda.util.numpy_to_arkouda
    arkouda.util.convert_if_categorical
+   arkouda.util.attach
 
 
 
@@ -127,5 +128,10 @@ Attributes
 .. py:function:: convert_if_categorical(values)
 
    Convert a cetegorical array to strings for display
+
+
+.. py:function:: attach(name)
+
+   Attaches to a known element name without requiring to know if the element is a Strings object or pdarray
 
 
