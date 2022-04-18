@@ -4,15 +4,15 @@ import numpy as np  # type: ignore
 import h5py #type: ignore
 import os
 
-from arkouda import __version__
+from arkouda import __version__, Strings
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.timeclass import Datetime, Timedelta
-from arkouda.pdarrayclass import attach_pdarray, pdarray
+from arkouda.pdarrayclass import attach_pdarray, pdarray, create_pdarray
 from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.pdarrayIO import read_hdf
-from arkouda.client import get_config, get_mem_used
+from arkouda.client import get_config, get_mem_used, generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
 from arkouda.categorical import Categorical
@@ -278,3 +278,15 @@ def convert_if_categorical(values):
     if isinstance(values, Categorical):
         values = values.categories[values.codes]
     return values
+
+
+def attach(name):
+    """
+    Attaches to a known element name without requiring to know if the element is a Strings object or pdarray
+    """
+    repMsg = generic_msg(cmd="attach", args=name)
+    dtype = repMsg.split()[2]
+    if dtype == "str":
+        return Strings.from_return_msg(repMsg)
+    else:
+        return create_pdarray(repMsg)
