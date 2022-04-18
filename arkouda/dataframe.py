@@ -227,7 +227,7 @@ class DataFrame(UserDict):
             # If the index param was passed in, use that instead of
             # creating a new one.
             if self.index is None:
-                self._set_index(arange(0, self._size, 1))
+                self._set_index(arange(self._size))
             else:
                 self._set_index(index)
 
@@ -350,7 +350,7 @@ class DataFrame(UserDict):
         # Update the dataframe indices and metadata.
         if add_index:
             self.update_size()
-            self._set_index(arange(0, self._size, 1))
+            self._set_index(arange(self._size))
 
     def __len__(self):
         """
@@ -648,7 +648,7 @@ class DataFrame(UserDict):
 
         if not size:
             self.update_size()
-            self._set_index(arange(0, self._size))
+            self._set_index(arange(self._size))
         else:
             self._set_index(arange(size))
 
@@ -1465,4 +1465,4 @@ def invert_permutation(perm):
     rng = perm.max() - perm.min()
     if (unique(perm).size != perm.size) and (perm.size != rng + 1):
         raise ValueError("The array is not a permutation.")
-    return coargsort([perm, arange(0, perm.size)])
+    return coargsort([perm, arange(perm.size)])
