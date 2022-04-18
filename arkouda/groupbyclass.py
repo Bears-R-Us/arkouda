@@ -103,6 +103,14 @@ class GroupBy:
 
     def __init__(self, keys: groupable,
                  assume_sorted: bool = False, hash_strings: bool = True) -> None:
+        # Type Checks required because @typechecked was removed for causing other issues
+        # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
+        # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
+        # See Issue #1267
+        if not isinstance(assume_sorted, bool):
+            raise TypeError("assume_sorted must be of type bool.")
+        if not isinstance(hash_strings, bool):
+            raise TypeError("hash_strings must be of type bool.")
         from arkouda.categorical import Categorical
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted

@@ -168,11 +168,11 @@ class Strings:
             self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
             self.ndim = self.entry.ndim
             self.shape = self.entry.shape
+            self.name: Optional[str] = self.entry.name
         except Exception as e:
             raise ValueError(e)   
 
         self.dtype = npstr
-        self.name:Optional[str] = None
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
@@ -1486,9 +1486,9 @@ class Strings:
         segments corresponding to the start of each string, (2) the hdf5 group is named 
         via the dataset parameter. 
         """       
-        if mode.lower() in 'append':
+        if mode.lower() in ['a', 'app', 'append']:
             m = 1
-        elif mode.lower() in 'truncate':
+        elif mode.lower() in ['t', 'trunc', 'truncate']:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
