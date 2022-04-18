@@ -65,3 +65,22 @@ Append & Prepend
 Deduplication
 ----------
 .. autofunction:: arkouda.SegArray.remove_repeats
+
+SegArray SetOps
+===============
+
+Union
+-----
+.. autofunction:: arkouda.SegArray.union
+
+Intersect
+---------
+.. autofunction:: arkouda.SegArray.intersect
+
+Set Difference
+--------------
+.. autofunction:: arkouda.SegArray.setdiff
+
+Symmetric Difference
+--------------------
+.. autofunction:: arkouda.SegArray.setxor
