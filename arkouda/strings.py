@@ -168,11 +168,11 @@ class Strings:
             self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
             self.ndim = self.entry.ndim
             self.shape = self.entry.shape
+            self.name: Optional[str] = self.entry.name
         except Exception as e:
             raise ValueError(e)   
 
         self.dtype = npstr
-        self.name:Optional[str] = None
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
