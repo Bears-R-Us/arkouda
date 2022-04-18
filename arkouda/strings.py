@@ -1486,9 +1486,9 @@ class Strings:
         segments corresponding to the start of each string, (2) the hdf5 group is named 
         via the dataset parameter. 
         """       
-        if mode.lower() in 'append':
+        if mode.lower() in ['a', 'app', 'append']:
             m = 1
-        elif mode.lower() in 'truncate':
+        elif mode.lower() in ['t', 'trunc', 'truncate']:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
