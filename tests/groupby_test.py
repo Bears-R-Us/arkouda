@@ -185,19 +185,28 @@ class GroupByTest(ArkoudaTest):
         self.assertTrue((bcast[:-1] >= bcast[1:]).all())
         
     def test_broadcast_ints(self):
-        keys,counts = self.igb.count()
+        keys, counts = self.igb.count()
 
-        self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
-        self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
+        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
+        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
 
-        results = self.igb.broadcast(1*(counts > 2))
-        self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
-        
-        results = self.igb.broadcast(1*(counts == 2))
-        self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
-        
-        results = self.igb.broadcast(1*(counts < 4))
-        self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))
+        results = self.igb.broadcast(1 * (counts > 2), permute=False)
+        self.assertTrue((np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(1 * (counts == 2), permute=False)
+        self.assertTrue((np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(1 * (counts < 4), permute=False)
+        self.assertTrue((np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(1 * (counts > 2))
+        self.assertTrue((np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(1 * (counts == 2))
+        self.assertTrue((np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(1 * (counts < 4))
+        self.assertTrue((np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
 
     def test_broadcast_uints(self):
         keys, counts = self.ugb.count()
@@ -230,21 +239,30 @@ class GroupByTest(ArkoudaTest):
         self.assertTrue((i_results == u_results).all())
 
     def test_broadcast_booleans(self):
-        keys,counts = self.igb.count()
+        keys, counts = self.igb.count()
 
-        self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
-        self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
+        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
+        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
+
+        results = self.igb.broadcast(counts > 2, permute=False)
+        self.assertTrue((np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(counts == 2, permute=False)
+        self.assertTrue((np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]) == results.to_ndarray()).all())
+
+        results = self.igb.broadcast(counts < 4, permute=False)
+        self.assertTrue((np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]) == results.to_ndarray()).all())
 
         results = self.igb.broadcast(counts > 2)
-        self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
-        
+        self.assertTrue((np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]) == results.to_ndarray()).all())
+
         results = self.igb.broadcast(counts == 2)
-        self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
-        
+        self.assertTrue((np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+
         results = self.igb.broadcast(counts < 4)
-        self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))    
+        self.assertTrue((np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
         
-    def test_count(self):   
+    def test_count(self):
         keys, counts = self.igb.count()
         
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
