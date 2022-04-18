@@ -208,20 +208,20 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
         
-        dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
+        dataset = ak.read(filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
+                                     '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)],
+                          datasets='int_tens_pdarray')
         self.assertIsNotNone(dataset)
 
         with self.assertRaises(RuntimeError) as cm:
-            ak.read_hdf(dsetName='in_tens_pdarray', 
-                    filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
+            ak.read(filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)],
+                    datasets='in_tens_pdarray', )
         
         with self.assertRaises(RuntimeError) as cm:
-            ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames=['{}/iotest_single_colum_LOCALE0000'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_colum_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
+            ak.read(filenames=['{}/iotest_single_colum_LOCALE0000'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_colum_dupe_LOCALE0000'.format(IOTest.io_test_dir)],
+                    datasets='int_tens_pdarray', )
 
     def testReadHdfWithGlob(self):
         ''' DEPRECATED - all client calls route to `readAllHdf`
@@ -238,8 +238,8 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
         
-        dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames='{}/iotest_single_column*'.format(IOTest.io_test_dir))
+        dataset = ak.read(filenames='{}/iotest_single_column*'.format(IOTest.io_test_dir),
+                          datasets='int_tens_pdarray', )
         self.assertEqual(self.int_tens_pdarray.all(), dataset.all())
 
     def testReadAll(self):
@@ -254,7 +254,7 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_columns, 
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         
-        dataset = ak.read_all(filenames=['{}/iotest_dict_columns_LOCALE0000'.format(IOTest.io_test_dir)])
+        dataset = ak.read(filenames=['{}/iotest_dict_columns_LOCALE0000'.format(IOTest.io_test_dir)])
         self.assertEqual(4, len(list(dataset.keys())))     
         
     def testReadAllWithGlob(self):
@@ -270,7 +270,7 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_columns, 
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
          
-        retrieved_columns = ak.read_all(filenames='{}/iotest_dict_columns*'.format(IOTest.io_test_dir))
+        retrieved_columns = ak.read(filenames='{}/iotest_dict_columns*'.format(IOTest.io_test_dir))
 
         itp = self.list_columns[0].to_ndarray()
         itp.sort()
@@ -298,21 +298,22 @@ class IOTest(ArkoudaTest):
                           prefix_path=f'{IOTest.io_test_dir}/iotest_single_column_dupe')
 
         # Make sure we can read ok
-        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_single_column_LOCALE0000',
-                                         f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
+        dataset = ak.read(filenames=[f'{IOTest.io_test_dir}/iotest_single_column_LOCALE0000',
+                                     f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
         self.assertIsNotNone(dataset, "Expected dataset to be populated")
 
         # Change the name of the first file we try to raise an error due to file missing.
         with self.assertRaises(RuntimeError):
-            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
-                                             f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
+            dataset = ak.read(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
+                                         f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
 
         # Run the same test with missing file, but this time with the warning flag for read_all
         with pytest.warns(RuntimeWarning, match=r"There were .* errors reading files on the server.*"):
-            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
+            dataset = ak.read(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
                                          f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'],
                               strictTypes=False,
-                              allow_errors=True)
+                              allow_errors=True,
+                              file_format='HDF5')
         self.assertIsNotNone(dataset, "Expected dataset to be populated")
 
     def testLoad(self):
@@ -411,25 +412,25 @@ class IOTest(ArkoudaTest):
         self.assertTrue((strings == r_strings).all())
 
         # Read a part of a saved Strings dataset from one hdf5 file
-        r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0000'.\
+        r_strings_subset = ak.read(filenames='{}/strings-test_LOCALE0000'.\
                                     format(IOTest.io_test_dir))
         self.assertIsNotNone(r_strings_subset)
         self.assertTrue(isinstance(r_strings_subset[0], str))    
-        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0000'.\
-                            format(IOTest.io_test_dir), dsetName='strings/values'))
-        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0000'.\
-                            format(IOTest.io_test_dir), dsetName='strings/segments'))
+        self.assertIsNotNone(ak.read(filenames='{}/strings-test_LOCALE0000'.\
+                            format(IOTest.io_test_dir), datasets='strings/values'))
+        self.assertIsNotNone(ak.read(filenames='{}/strings-test_LOCALE0000'.\
+                            format(IOTest.io_test_dir), datasets='strings/segments'))
 
 
         # Repeat the test using the calc_string_offsets=True option to have server calculate offsets array
-        r_strings_subset = ak.read_all(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+        r_strings_subset = ak.read(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
                                        calc_string_offsets=True)
         self.assertIsNotNone(r_strings_subset)
         self.assertTrue(isinstance(r_strings_subset[0], str))
-        self.assertIsNotNone(ak.read_hdf(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
-                                         dsetName='strings/values', calc_string_offsets=True))
-        self.assertIsNotNone(ak.read_hdf(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
-                                         dsetName='strings/segments', calc_string_offsets=True))
+        self.assertIsNotNone(ak.read(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+                                         datasets='strings/values', calc_string_offsets=True))
+        self.assertIsNotNone(ak.read(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+                                         datasets='strings/segments', calc_string_offsets=True))
 
     def testStringsWithoutOffsets(self):
         """
@@ -545,9 +546,9 @@ class IOTest(ArkoudaTest):
                 fdata = np.arange(i*N, (i+1)*N, dtype=ft)
                 f.create_dataset('floats', data=fdata)
         with self.assertRaises(RuntimeError):
-            ak.read_all(prefix+'*')
+            ak.read(prefix+'*')
 
-        a = ak.read_all(prefix+'*', strictTypes=False)
+        a = ak.read(prefix+'*', strictTypes=False)
         self.assertTrue((a['integers'] == ak.arange(len(inttypes)*N)).all())
         self.assertTrue(np.allclose(a['floats'].to_ndarray(), np.arange(len(floattypes)*N, dtype=np.float64)))
     
@@ -615,7 +616,7 @@ class IOTest(ArkoudaTest):
         my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
-            ak.read_all(f"{tmp_dirname}/bad_dataset_names*")
+            ak.read(f"{tmp_dirname}/bad_dataset_names*")
 
     def testInternalVersions(self):
         """

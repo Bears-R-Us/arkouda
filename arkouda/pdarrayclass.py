@@ -1036,7 +1036,7 @@ class pdarray:
 
         See Also
         --------
-        save_all, load, read_hdf, read_all
+        save_all, load, read
 
         Notes
         -----
@@ -1119,7 +1119,7 @@ class pdarray:
 
         See Also
         --------
-        save, save_all, load, read_hdf, read_all
+        save, save_all, load, read
 
         Notes
         -----
@@ -1141,7 +1141,7 @@ class pdarray:
 
         The array can be read back in as follows
 
-        >>> b = ak.read_parquet('arkouda_range')
+        >>> b = ak.read('arkouda_range')
         >>> (a == b).all()
         True
         """
