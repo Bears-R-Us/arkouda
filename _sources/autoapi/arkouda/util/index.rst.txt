@@ -120,7 +120,7 @@ Attributes
    Convert from arkouda to numpy using disk rather than sockets.
 
 
-.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> arkouda.pdarrayclass.pdarray
+.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Convert from numpy to arkouda using disk rather than sockets.
 

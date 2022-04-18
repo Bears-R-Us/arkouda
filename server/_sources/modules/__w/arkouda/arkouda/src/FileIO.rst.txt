@@ -92,5 +92,9 @@ or
 
 .. function:: proc getFileType(filename: string) throws
 
+.. function:: proc getFileTypeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
 .. function:: proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc readAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

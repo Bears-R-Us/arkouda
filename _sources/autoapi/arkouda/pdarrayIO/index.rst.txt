@@ -14,11 +14,10 @@ Functions
 .. autoapisummary::
 
    arkouda.pdarrayIO.ls
-   arkouda.pdarrayIO.read_hdf
-   arkouda.pdarrayIO.read_parquet
-   arkouda.pdarrayIO.read_all
+   arkouda.pdarrayIO.read
    arkouda.pdarrayIO.load
    arkouda.pdarrayIO.get_datasets
+   arkouda.pdarrayIO.get_filetype
    arkouda.pdarrayIO.load_all
    arkouda.pdarrayIO.save_all
 
@@ -41,94 +40,9 @@ Functions
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
-.. py:function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
-   Read a single dataset from multiple HDF5 files into an Arkouda
-   pdarray or Strings object.
-
-   :param dsetName: The name of the dataset (must be the same across all files)
-   :type dsetName: str
-   :param filenames: Either a list of filenames or shell expression
-   :type filenames: list or str
-   :param strictTypes: If True (default), require all dtypes in all files to have the
-                       same precision and sign. If False, allow dtypes of different
-                       precision and sign across different files. For example, if one
-                       file contains a uint32 dataset and another contains an int64
-                       dataset, the contents of both will be read into an int64 pdarray.
-   :type strictTypes: bool
-   :param allow_errors: Default False, if True will allow files with read errors to be skipped
-                        instead of failing.  A warning will be included in the return containing
-                        the total number of files skipped due to failure and up to 10 filenames.
-   :type allow_errors: bool
-   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
-                               offsets/segments array on the server versus loading them from HDF5 files.
-                               In the future this option may be set to True as the default.
-   :type calc_string_offsets: bool
-
-   :returns: A pdarray or Strings instance pointing to the server-side data
-   :rtype: Union[pdarray,Strings]
-
-   :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
-       nor a list of strings
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files
-   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
-
-   .. seealso:: :obj:`get_datasets`, :obj:`ls`, :obj:`read_all`, :obj:`load`, :obj:`save`
-
-   .. rubric:: Notes
-
-   If filenames is a string, it is interpreted as a shell expression
-   (a single filename is a valid expression, so it will work) and is
-   expanded with glob to read all matching files. Use ``get_datasets`` to
-   show the names of datasets in HDF5 files.
-
-   If dsetName is not present in all files, a TypeError is raised.
-
-
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Union[str, List[str]] = None, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
-
-   Read a single dataset from multiple Parquet files into an Arkouda
-   pdarray object.
-
-   :param filenames: Either a list of filenames or shell expression
-   :type filenames: list or str
-   :param datasets: The names of datasets to be read (must be the same across all files).
-                    Defaults to all supported columns.
-   :type datasets: str
-   :param strictTypes: If True (default), require all dtypes in all files to have the
-                       same precision and sign. If False, allow dtypes of different
-                       precision and sign across different files. For example, if one
-                       file contains a uint32 dataset and another contains an int64
-                       dataset, the contents of both will be read into an int64 pdarray.
-   :type strictTypes: bool
-   :param allow_errors: Default False, if True will allow files with read errors to be skipped
-                        instead of failing.  A warning will be included in the return containing
-                        the total number of files skipped due to failure and up to 10 filenames.
-   :type allow_errors: bool
-
-   :returns: A pdarray instance pointing to the server-side data
-   :rtype: pdarray
-
-   :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
-       nor a list of strings
-   :raises ValueError: Raised if all datasets are not present in all parquet files
-   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
-
-   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls`, :obj:`read_all`, :obj:`load`, :obj:`save`
-
-   .. rubric:: Notes
-
-   If filenames is a string, it is interpreted as a shell expression
-   (a single filename is a valid expression, so it will work) and is
-   expanded with glob to read all matching files. Use ``get_datasets`` to
-   show the names of datasets in Parquet files.
-
-   If dsetName is not present in all files, a TypeError is raised.
-
-
-.. py:function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
-
-   Read datasets from HDF5 files.
+   Read datasets from HDF5 or Parquet files.
 
    :param filenames: Either a list of filenames or shell expression
    :type filenames: list or str
@@ -151,6 +65,11 @@ Functions
                                offsets/segments array on the server versus loading them from HDF5 files.
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
+   :param file_format: Default 'infer', if 'HDF5' or 'Parquet' (case insensitive), the file
+                       type checking will be skipped and will execute expecting all files in
+                       filenames to be of the specified type. Otherwise, will infer filetype
+                       based off of first file in filenames, expanded if a glob expression.
+   :type file_format: str
 
    :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
@@ -163,7 +82,7 @@ Functions
        from the server.
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls`
+   .. seealso:: :obj:`read`, :obj:`get_datasets`, :obj:`ls`
 
    .. rubric:: Notes
 
@@ -181,7 +100,7 @@ Functions
    to HDF5 files.
 
 
-.. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -202,7 +121,7 @@ Functions
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
+   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read`
 
 
 .. py:function:: get_datasets(filename: str) -> List[str]
@@ -224,6 +143,22 @@ Functions
    .. seealso:: :obj:`ls`
 
 
+.. py:function:: get_filetype(filenames: Union[str, List[str]]) -> str
+
+   Get the type of a file accessible to the server. Supported
+   file types and possible return strings are 'HDF5' and 'Parquet'.
+
+   :param filenames: A file or list of files visible to the arkouda server
+   :type filenames: Union[str, List[str]]
+
+   :returns: Type of the file returned as a string, either 'HDF5' or 'Parquet'
+   :rtype: str
+
+   :raises ValueError: Raised if filename is empty or contains only whitespace
+
+   .. seealso:: :obj:`read`
+
+
 .. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
@@ -240,7 +175,7 @@ Functions
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None

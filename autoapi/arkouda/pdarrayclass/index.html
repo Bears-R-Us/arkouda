@@ -1038,7 +1038,7 @@ is not a string</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>The prefix_path must be visible to the arkouda server and the user must
@@ -1095,7 +1095,7 @@ is not a string</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.save" title="arkouda.pdarrayclass.pdarray.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></p>
+<p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.save" title="arkouda.pdarrayclass.pdarray.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>The prefix_path must be visible to the arkouda server and the user must
@@ -1112,7 +1112,7 @@ dataset with the same name already exists, a <code class="docutils literal notra
 </div>
 <p>Array is saved in numLocales files with names like <code class="docutils literal notranslate"><span class="pre">tmp/arkouda_range_LOCALE0.parquet</span></code></p>
 <p>The array can be read back in as follows</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>

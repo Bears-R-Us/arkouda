@@ -668,7 +668,7 @@ Functions
       :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
           is not a string
 
-      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
 
       .. rubric:: Notes
 
@@ -721,7 +721,7 @@ Functions
       :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
           is not a string
 
-      .. seealso:: :obj:`save`, :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+      .. seealso:: :obj:`save`, :obj:`save_all`, :obj:`load`, :obj:`read`
 
       .. rubric:: Notes
 
@@ -743,7 +743,7 @@ Functions
 
       The array can be read back in as follows
 
-      >>> b = ak.read_parquet('arkouda_range')
+      >>> b = ak.read('arkouda_range')
       >>> (a == b).all()
       True
 
