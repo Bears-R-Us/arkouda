@@ -12,7 +12,7 @@ from arkouda.pdarrayclass import attach_pdarray, pdarray, create_pdarray
 from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
-from arkouda.pdarrayIO import read_hdf
+from arkouda.pdarrayIO import read
 from arkouda.client import get_config, get_mem_used, generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
