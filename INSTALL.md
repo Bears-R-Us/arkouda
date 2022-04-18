@@ -24,7 +24,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 
 <a id="genreqs"></a>
 ## Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
- * chapel 1.25.1
+ * chapel 1.25.1 or 1.26.0 (Recommended)
  * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * hdf5 
  * python 3.7 or greater
@@ -46,12 +46,14 @@ There is no Linux Chapel install, so the first two steps in the Linux Arkouda in
 ```bash
 # Update Linux kernel and install Chapel dependencies
 sudo apt-get update
-sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
+sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-12-dev llvm-12 llvm-12-tools clang-12 libclang-12-dev libclang-cpp12-dev libedit-dev
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.25.1/chapel-1.25.1.tar.gz
-tar xvf chapel-1.25.1.tar.gz
-cd chapel-1.25.1/
+# Chapel 1.26.0 is recommended, but 1.25.1 is still supported.
+# To use Chapel 1.25.1, replace '1.26.0' in the following three commands with '1.25.1'
+wget https://github.com/chapel-lang/chapel/releases/download/1.26.0/chapel-1.26.0.tar.gz
+tar xvf chapel-1.26.0.tar.gz
+cd chapel-1.26.0/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
@@ -60,12 +62,18 @@ export CHPL_HOME=$PWD
 source $CHPL_HOME/util/setchplenv.bash
 
 # Set remaining env variables and execute make
+# It is recommended to add these variables to a ~/.chplconfig file to prevent having 
+# to export them again
 export CHPL_COMM=gasnet
+# If you're going to be running locally only, use CHPL_COMM=none instead to improve build time
 export CHPL_COMM_SUBSTRATE=smp
 export CHPL_TARGET_CPU=native
 export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 export CHPL_RE2=bundled
+export CHPL_LLVM=bundled
+
+# Build Chapel
 cd $CHPL_HOME
 make
 
@@ -106,6 +114,17 @@ Key installation points:
 
 Once configured you can follow the basic [Linux installation instructions](#linux-unbuntu)
 for installing Chapel & Arkouda.  We also recommend installing Anaconda for windows.
+
+<b>Note:</b> When running `make` to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.
+
+An example of one of these errors found while using Chapel 1.26.0 and Ubuntu 20.04 LTS with WSL is:
+```
+../../../bin/llvm-tblgen: error while loading shared libraries: libtinfow.so.6: cannot open shared object file: No such file or directory
+````
+This error can be fixed by the following command:
+```bash
+sudo ln -s /lib/x86_64-linux-gnu/libtic.so.6.2 /lib/x86_64-linux-gnu/libtinfow.so.6
+```
 
 The general plan is to compile & run the `arkouda-server` process from a Linux terminal on WSL and then either connect
 to it with the python client using another Linux terminal running on WSL _or_ using the Windows Anaconda-Powershell.
