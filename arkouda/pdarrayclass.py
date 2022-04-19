@@ -1019,9 +1019,9 @@ class pdarray:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compressed : bool
-            Arkouda only supports writing with compression on Parquet files.
-            Default is False, but, if True, will write Parquet file with Snappy
-            compression and RLE encoding.
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing. This is currently only supported on Parquet files and will
+            not impact the generated files when writing HDF5 files.
         file_format : str {'HDF5', 'Parquet'}
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
@@ -1098,9 +1098,11 @@ class pdarray:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return cast(str, generic_msg(cmd=cmd, args="{} {} {} {} {} {}".\
+        strings_placeholder = False
+        
+        return cast(str, generic_msg(cmd=cmd, args="{} {} {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype,
-                                  compressed)))
+                                  strings_placeholder, compressed)))
 
     @typechecked
     def save_parquet(self, prefix_path : str, dataset : str='array', mode : str='truncate',
@@ -1166,7 +1168,8 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        return self.save(prefix_path, dataset, mode, compressed, file_format='Parquet')
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         compressed=compressed, file_format='Parquet')
 
     @typechecked
     def save_hdf(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
@@ -1231,7 +1234,8 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        return self.save(prefix_path, dataset, mode, compressed=False, file_format='HDF5')
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         compressed=False, file_format='HDF5')
     
     @typechecked
     def register(self, user_defined_name: str) -> pdarray:

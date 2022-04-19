@@ -2126,7 +2126,7 @@ module HDF5Msg {
     }
 
     proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag, pqPlaceholder)= payload.splitMsgToTuple(8);
+        var (arrayName, dsetName, modeStr, jsonfile, dataType, writeOffsetsFlag, pqPlaceholder)= payload.splitMsgToTuple(7);
         var mode = try! modeStr: int;
         var filename: string;
         var entry = st.lookup(arrayName);
