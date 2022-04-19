@@ -306,7 +306,7 @@ def union1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
     Parameters
     ----------
     pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objectsx
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
         Input array/sequence of groupable objects
 
@@ -359,7 +359,7 @@ def union1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
         return cast(pdarray,
                     unique(cast(pdarray,
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
-    elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):#(isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
+    elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
         multiarray_setop_validation(pda1, pda2)
         ag = GroupBy(pda1)
         ua = ag.unique_keys
@@ -387,7 +387,7 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
     Parameters
     ----------
     pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objectsx
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
         Input array/sequence of groupable objects
     assume_unique : bool
@@ -490,7 +490,7 @@ def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
     Parameters
     ----------
     pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objectsx
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
         Input array/sequence of groupable objects
     assume_unique : bool
@@ -592,7 +592,7 @@ def setxor1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
     Parameters
     ----------
     pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
-        Input array/Sequence of groupable objectsx
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
         Input array/sequence of groupable objects
     assume_unique : bool
