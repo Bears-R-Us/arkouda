@@ -281,6 +281,11 @@ module ParquetMsg {
       var suffix = '%04i'.format(i): string;
       filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
     }
+    
+    var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
+
+    var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
+
     if mode == APPEND {
       var datasets = getDatasets(filenames[0]);
       if datasets.contains(dsetname) then
@@ -291,10 +296,6 @@ module ParquetMsg {
                  moduleName=getModuleName(), 
                  errorClass='WriteModeError');
     }
-
-    var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
-
-    var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
     
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
         var pqErr = new parquetErrorMsg();
@@ -342,6 +343,7 @@ module ParquetMsg {
       var suffix = '%04i'.format(i): string;
       filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
     }
+    
     var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
 
     var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
@@ -431,27 +433,18 @@ module ParquetMsg {
   proc processParquetFilenames(filenames: [] string, matchingFilenames: [] string, mode: int) throws {
     var warnFlag: bool;
     if mode == APPEND {
-      var allexist = true;
-      var anyexist = false;
-      for f in filenames {
-        var result =  try! exists(f);
-        allexist &= result;
-        if result {
-          anyexist = true;
-        }
-      }
-      if !anyexist {
+      if matchingFilenames.size == 0 {
               throw getErrorWithContext(
                  msg="Cannot append a non-existent file, please save without mode='append'",
                  lineNumber=getLineNumber(), 
                  routineName=getRoutineName(), 
                  moduleName=getModuleName(), 
                  errorClass='WriteModeError'
-                                        );
+              );
       }
-      if !allexist || (matchingFilenames.size != filenames.size) {
+      if matchingFilenames.size != filenames.size {
         throw getErrorWithContext(
-                   msg="appending to existing files must be done with the same number " +
+                   msg="Appending to existing files must be done with the same number " +
                       "of locales. Try saving with a different directory or filename prefix?",
                    lineNumber=getLineNumber(), 
                    routineName=getRoutineName(), 
