@@ -36,7 +36,7 @@ def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     >>> import arkouda as ak
     >>> from matplotlib import pyplot as plt
     >>> b, h = ak.histogram(ak.arange(10), 3)
-    >>> ak.plot_dist(b, h)
+    >>> ak.plot_dist(b, h.to_ndarray())
     >>> # to show the plot
     >>> plt.show()
     """
