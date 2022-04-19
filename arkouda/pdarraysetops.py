@@ -8,8 +8,9 @@ from arkouda.sorting import argsort
 from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
-from arkouda.groupbyclass import GroupBy, groupable
+from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type
 
 Categorical = ForwardRef('Categorical')
 
@@ -275,8 +276,9 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
         raise TypeError('arrays must be an array of pdarray or Strings objects')
 
 
-def multiarray_setop_validation(pda1: Union[List[pdarray], Tuple[pdarray, ...]],
-                                pda2: Union[List[pdarray], Tuple[pdarray, ...]]):
+def multiarray_setop_validation(pda1: Sequence[groupable_element_type],
+                                pda2: Sequence[groupable_element_type]):
+    from arkouda.categorical import Categorical as Categorical_
     if len(pda1) != len(pda2):
         raise ValueError("multi-array setops require same number of arrays in arguments.")
     size1 = set([x.size for x in pda1])
@@ -285,15 +287,15 @@ def multiarray_setop_validation(pda1: Union[List[pdarray], Tuple[pdarray, ...]],
     size2 = set([x.size for x in pda2])
     if len(size2) > 1:
         raise ValueError("multi-array setops require arrays in pda2 be the same size.")
-    atypes = [x.dtype for x in pda1]
-    btypes = [x.dtype for x in pda2]
+    atypes = [akint64 if isinstance(x, Categorical_) else x.dtype for x in pda1]
+    btypes = [akint64 if isinstance(x, Categorical_) else x.dtype for x in pda2]
     if not atypes == btypes:
         raise TypeError("Array dtypes of arguments must match")
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 @typechecked
-def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
-            pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]]) -> \
+def union1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
+            pda2: Union[pdarray, Sequence[groupable_element_type]]) -> \
         Union[pdarray, groupable]:
     """
     Find the union of two arrays/List of Arrays.
@@ -303,14 +305,14 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
     Parameters
     ----------
-    pda1 : pdarray/List
-        Input array/List of input arrays
+    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
-        Input array/List of input arrays
+        Input array/sequence of groupable objects
 
     Returns
     -------
-    pdarray/List
+    pdarray/groupable
         Unique, sorted union of the input arrays.
         
     Raises
@@ -357,7 +359,7 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
         return cast(pdarray,
                     unique(cast(pdarray,
                                 concatenate((unique(pda1), unique(pda2)), ordered=False))))  # type: ignore
-    elif (isinstance(pda1, list) or isinstance(pda1, tuple)) and (isinstance(pda2, list) or isinstance(pda2, tuple)):
+    elif isinstance(pda1, Sequence) and isinstance(pda2, Sequence):
         multiarray_setop_validation(pda1, pda2)
         ag = GroupBy(pda1)
         ua = ag.unique_keys
@@ -374,8 +376,8 @@ def union1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
-                pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
+                pda2: Union[pdarray, Sequence[groupable_element_type]],
                 assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
@@ -384,17 +386,17 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
     Parameters
     ----------
-    pda1 : pdarray/List
-        Input array/List of input arrays
+    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
-        Input array/List of input arrays
+        Input array/sequence of groupable objects
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray/List
+    pdarray/groupable
         Sorted 1D array/List of sorted pdarrays of common and unique elements.
 
     Raises
@@ -477,8 +479,8 @@ def intersect1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
-              pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
+              pda2: Union[pdarray, Sequence[groupable_element_type]],
               assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
@@ -487,17 +489,17 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
     Parameters
     ----------
-    pda1 : pdarray/List
-        Input array/List of input arrays
+    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
-        Input array/List of input arrays
+        Input array/sequence of groupable objects
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray/List
+    pdarray/groupable
         Sorted 1D array/List of sorted pdarrays of values in `pda1` that are not in `pda2`.
 
     Raises
@@ -578,8 +580,8 @@ def setdiff1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
-             pda2: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
+def setxor1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
+             pda2: Union[pdarray, Sequence[groupable_element_type]],
              assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
@@ -589,17 +591,17 @@ def setxor1d(pda1: Union[pdarray, List[pdarray], Tuple[pdarray, ...]],
 
     Parameters
     ----------
-    pda1 : pdarray/List
-        Input array.
+    pda1 : pdarray/Sequence[pdarray, Strings, Categorical]
+        Input array/Sequence of groupable objects
     pda2 : pdarray/List
-        Input array.
+        Input array/sequence of groupable objects
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
 
     Returns
     -------
-    pdarray/List
+    pdarray/groupable
         Sorted 1D array/List of sorted pdarrays of unique values that are in only one of the input
         arrays.
 

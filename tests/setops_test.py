@@ -91,10 +91,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
-        with self.assertRaises(TypeError):
-            ak.setxor1d([-1, 0, 1], [-2, 0, 2])
 
     def testSetxor1d_Multi(self):
+        # Test Numeric pdarray
         a = [1, 2, 3, 4, 5]
         b = [1, 5, 2, 3, 4]
         c = [1, 3, 2, 5, 4]
@@ -117,6 +116,28 @@ class SetOpsTest(ArkoudaTest):
         t = ak.setxor1d((a1, a2), (b1, b2))
         self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
         self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
+        # Test for strings
+        a = ['abc', 'def']
+        b = ['123', '456']
+        c = ['abc', 'def']
+        d = ['000', '456']
+        a1 = ak.array(a)
+        a2 = ak.array(b)
+        b1 = ak.array(c)
+        b2 = ak.array(d)
+        t = ak.setxor1d([a1, a2], [b1, b2])
+        self.assertListEqual(['abc', 'abc'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['000', '123'], t[1].to_ndarray().tolist())
+
+        # Test for Categorical
+        cat_a1 = ak.Categorical(a1)
+        cat_a2 = ak.Categorical(a2)
+        cat_b1 = ak.Categorical(b1)
+        cat_b2 = ak.Categorical(b2)
+        t = ak.setxor1d([cat_a1, cat_a2], [cat_b1, cat_b2])
+        self.assertListEqual(['abc', 'abc'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['000', '123'], t[1].to_ndarray().tolist())
         
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
@@ -130,10 +151,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
-        with self.assertRaises(TypeError):
-            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])
 
     def testSetDiff1d_Multi(self):
+        # Test for numeric pdarray
         a = [1, 2, 3, 4, 5]
         b = [1, 5, 2, 3, 4]
         c = [1, 3, 2, 5, 4]
@@ -151,6 +171,28 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
         self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
 
+        # Test for strings
+        a = ['abc', 'def']
+        b = ['123', '456']
+        c = ['abc', 'def']
+        d = ['000', '456']
+        a1 = ak.array(a)
+        a2 = ak.array(b)
+        b1 = ak.array(c)
+        b2 = ak.array(d)
+        t = ak.setdiff1d([a1, a2], [b1, b2])
+        self.assertListEqual(['abc'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['123'], t[1].to_ndarray().tolist())
+
+        # Test for Categorical
+        cat_a1 = ak.Categorical(a1)
+        cat_a2 = ak.Categorical(a2)
+        cat_b1 = ak.Categorical(b1)
+        cat_b2 = ak.Categorical(b2)
+        t = ak.setdiff1d([cat_a1, cat_a2], [cat_b1, cat_b2])
+        self.assertListEqual(['abc'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['123'], t[1].to_ndarray().tolist())
+
     def testIntersect1d(self):
         pdaOne = ak.array([1, 3, 4, 3])
         pdaTwo = ak.array([3, 1, 2, 1])
@@ -162,10 +204,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
-        with self.assertRaises(TypeError):
-            ak.intersect1d([-1, 0, 1], [-2, 0, 2])
 
     def testIntersect1d_Multi(self):
+        # Test for numeric
         a = [1, 2, 3, 4, 5]
         b = [1, 5, 2, 3, 4]
         c = [1, 3, 2, 5, 4]
@@ -183,6 +224,28 @@ class SetOpsTest(ArkoudaTest):
         self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
         self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
 
+        # Test for strings
+        a = ['abc', 'def']
+        b = ['123', '456']
+        c = ['abc', 'def']
+        d = ['000', '456']
+        a1 = ak.array(a)
+        a2 = ak.array(b)
+        b1 = ak.array(c)
+        b2 = ak.array(d)
+        t = ak.intersect1d([a1, a2], [b1, b2])
+        self.assertListEqual(['def'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['456'], t[1].to_ndarray().tolist())
+
+        #Test for Categorical
+        cat_a1 = ak.Categorical(a1)
+        cat_a2 = ak.Categorical(a2)
+        cat_b1 = ak.Categorical(b1)
+        cat_b2 = ak.Categorical(b2)
+        t = ak.intersect1d([cat_a1, cat_a2], [cat_b1, cat_b2])
+        self.assertListEqual(['def'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['456'], t[1].to_ndarray().tolist())
+
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
         pdaTwo = ak.array([-2, 0, 2])
@@ -194,10 +257,9 @@ class SetOpsTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError) as cm:
             ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
-        with self.assertRaises(TypeError):
-            ak.union1d([-1, 0, 1], [-2, 0, 2])
 
     def testUnion1d_Multi(self):
+        # test for numeric
         a = [1, 2, 3, 4, 5]
         b = [1, 5, 2, 3, 4]
         c = [1, 3, 2, 5, 4]
@@ -213,6 +275,28 @@ class SetOpsTest(ArkoudaTest):
         t = ak.union1d([a1, a2], [b1, b2])
         self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
         self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+
+        # Test for Strings
+        a = ['abc', 'def']
+        b = ['123', '456']
+        c = ['xyz']
+        d = ['0']
+        a1 = ak.array(a)
+        a2 = ak.array(b)
+        b1 = ak.array(c)
+        b2 = ak.array(d)
+        t = ak.union1d([a1, a2], [b1, b2])
+        self.assertListEqual(['abc', 'xyz', 'def'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['123', '0', '456'], t[1].to_ndarray().tolist())
+
+        #Test for Categorical
+        cat_a1 = ak.Categorical(a1)
+        cat_a2 = ak.Categorical(a2)
+        cat_b1 = ak.Categorical(b1)
+        cat_b2 = ak.Categorical(b2)
+        t = ak.union1d([cat_a1, cat_a2], [cat_b1, cat_b2])
+        self.assertListEqual(['abc', 'xyz', 'def'], t[0].to_ndarray().tolist())
+        self.assertListEqual(['123', '0', '456'], t[1].to_ndarray().tolist())
 
     def testIn1d(self): 
         pdaOne = ak.array([-1, 0, 1, 3])
