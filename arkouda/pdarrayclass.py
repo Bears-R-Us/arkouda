@@ -1001,9 +1001,10 @@ class pdarray:
         return cuda.to_device(self.to_ndarray())
 
     @typechecked
-    def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+    def save(self, prefix_path : str, dataset : str='array', mode : str='truncate',
+             compressed : bool = False, file_format : str = 'HDF5') -> str:
         """
-        Save the pdarray to HDF5. The result is a collection of HDF5 files,
+        Save the pdarray to HDF5 or Parquet. The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
@@ -1013,10 +1014,18 @@ class pdarray:
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
-            Name of the dataset to create in HDF5 files (must not already exist)
+            Name of the dataset to create in files (must not already exist)
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
+        compressed : bool
+            Arkouda only supports writing with compression on Parquet files.
+            Default is False, but, if True, will write Parquet file with Snappy
+            compression and RLE encoding.
+        file_format : str {'HDF5', 'Parquet'}
+            By default, saved files will be written to the HDF5 file format. If
+            'Parquet', the files will be written to the Parquet file format. This
+            is case insensitive.
 
         Returns
         -------
@@ -1043,7 +1052,7 @@ class pdarray:
         The prefix_path must be visible to the arkouda server and the user must
         have write permission.
 
-        Output files have names of the form ``<prefix_path>_LOCALE<i>.hdf``, where ``<i>``
+        Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
         ranges from 0 to ``numLocales``. If any of the output files already exist and
         the mode is 'truncate', they will be overwritten. If the mode is 'append'
         and the number of output files is less than the number of locales or a
@@ -1053,13 +1062,18 @@ class pdarray:
         --------
         >>> a = ak.arange(0, 100, 1)
         >>> a.save('arkouda_range', dataset='array')
+        >>> a.save('arkouda_range_parquet', dataset='array', file_format='Parquet')
 
-        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.hdf``
+        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0``
 
         The array can be read back in as follows
 
-        >>> b = ak.load('arkouda_range', dataset='array')
+        >>> b = ak.read('arkouda_range', dataset='array')
         >>> (a == b).all()
+        True
+
+        >>> c = ak.read_parquet('arkouda_range_parquet*')
+        >>> (c == b).all()
         True
         """
         if mode.lower() in ['a', 'app', 'append']:
@@ -1069,6 +1083,13 @@ class pdarray:
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
+        if file_format.lower() == 'hdf5':
+            cmd = "tohdf"
+        elif file_format.lower() == 'parquet':
+            cmd = "writeParquet"
+        else:
+            raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
+
         """
         If offsets are provided, add to the json_array as the offsets will be used to 
         retrieve the array elements from the hdf5 files.
@@ -1077,8 +1098,9 @@ class pdarray:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {}".\
-                           format(self.name, dataset, m, json_array, self.dtype)))
+        return cast(str, generic_msg(cmd=cmd, args="{} {} {} {} {} {}".\
+                           format(self.name, dataset, m, json_array, self.dtype,
+                                  compressed)))
 
     @typechecked
     def save_parquet(self, prefix_path : str, dataset : str='array', mode : str='truncate',
@@ -1095,9 +1117,8 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in Parquet files (must not already exist)
-        mode : str {'truncate'}
+        mode : str {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            Append is currently not supported.
         compressed : bool
             By default, write without Snappy compression and RLE encoding.
 
@@ -1137,7 +1158,7 @@ class pdarray:
         >>> a = ak.arange(0, 100, 1)
         >>> a.save_parquet('arkouda_range')
 
-        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.parquet``
+        Array is saved in numLocales files with names like ``arkouda_range_LOCALE0000.parquet``
 
         The array can be read back in as follows
 
@@ -1145,20 +1166,72 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        if mode.lower() in 'append':
-            m = 1
-        elif mode.lower() in 'truncate':
-            m = 0
-        else:
-            raise ValueError("Allowed modes are 'truncate' and 'append'")
-        
-        try:
-            json_array = json.dumps([prefix_path])
-        except Exception as e:
-            raise ValueError(e)
-        return cast(str, generic_msg(cmd="writeParquet", args="{} {} {} {} {} {}".\
-                                     format(self.name, dataset, m, json_array, self.dtype,
-                                            compressed)))
+        return self.save(prefix_path, dataset, mode, compressed, file_format='Parquet')
+
+    @typechecked
+    def save_hdf(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+        """
+        Save the pdarray to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in HDF5 files (must not already exist)
+        mode : str {'truncate', 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+        compressed : bool
+            By default, write without Snappy compression and RLE encoding.
+
+        Returns
+        -------
+        string message indicating result of save operation
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        ValueError
+            Raised if there is an error in parsing the prefix path pointing to
+            file write location or if the mode parameter is neither truncate
+            nor append
+        TypeError
+            Raised if any one of the prefix_path, dataset, or mode parameters
+            is not a string
+
+        See Also
+        --------
+        save, save_all, load, read
+
+        Notes
+        -----
+        The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+
+        Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales``. If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 100, 1)
+        >>> a.save_hdf('arkouda_range')
+
+        Array is saved in numLocales files with names like ``arkouda_range_LOCALE0000``
+
+        The array can be read back in as follows
+
+        >>> b = ak.read('arkouda_range')
+        >>> (a == b).all()
+        True
+        """
+        return self.save(prefix_path, dataset, mode, compressed=False, file_format='HDF5')
     
     @typechecked
     def register(self, user_defined_name: str) -> pdarray:
