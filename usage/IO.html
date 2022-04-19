@@ -64,7 +64,7 @@ the corresponding data to the arkouda server.</p>
 is composed of two pdarrays stored on arkouda server</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id135" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#id136" title="arkouda.Strings">Strings</a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -243,8 +243,8 @@ value, but proceed with caution.</p>
 <p>Arkouda supports saving pdarrays to HDF5 files. Unfortunately, arkouda does not yet support writing to a single HDF5 file from multiple locales and must create one output file per locale.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarray.save">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.pdarray.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the pdarray to HDF5. The result is a collection of HDF5 files,
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HDF5'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.pdarray.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the pdarray to HDF5 or Parquet. The result is a collection of files,
 one file per locale of the arkouda server, where each filename starts
 with prefix_path. Each locale saves its chunk of the array to its
 corresponding file.</p>
@@ -252,9 +252,15 @@ corresponding file.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in HDF5 files (must not already exist)</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files (must not already exist)</p></li>
 <li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
+<li><p><strong>compressed</strong> (<em>bool</em>) – Arkouda only supports writing with compression on Parquet files.
+Default is False, but, if True, will write Parquet file with Snappy
+compression and RLE encoding.</p></li>
+<li><p><strong>file_format</strong> (<em>str {'HDF5'</em><em>, </em><em>'Parquet'}</em>) – By default, saved files will be written to the HDF5 file format. If
+‘Parquet’, the files will be written to the Parquet file format. This
+is case insensitive.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -278,7 +284,7 @@ If ‘append’, attempt to create new dataset in existing files.</p></li>
 <p class="rubric">Notes</p>
 <p>The prefix_path must be visible to the arkouda server and the user must
 have write permission.</p>
-<p>Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;.hdf</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+<p>Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
 ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code>. If any of the output files already exist and
 the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
 and the number of output files is less than the number of locales or a
@@ -286,12 +292,18 @@ dataset with the same name already exists, a <code class="docutils literal notra
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;arkouda_range_parquet&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;Parquet&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Array is saved in numLocales files with names like <code class="docutils literal notranslate"><span class="pre">tmp/arkouda_range_LOCALE0.hdf</span></code></p>
+<p>Array is saved in numLocales files with names like <code class="docutils literal notranslate"><span class="pre">tmp/arkouda_range_LOCALE0</span></code></p>
 <p>The array can be read back in as follows</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;arkouda_range_parquet*&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -354,7 +366,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 <dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id135" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#id136" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
