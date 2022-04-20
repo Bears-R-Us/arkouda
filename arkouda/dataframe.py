@@ -1068,6 +1068,45 @@ class DataFrame(UserDict):
         tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
         save_all(tosave, path)
 
+    def save_table(self, prefix_path, columns=None, index=False):
+        """
+        Save a dataframe as a table in Parquet
+
+        Parameters
+        __________
+        prefix_path: str
+            Path and filename prefix to save to
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        index: Bool
+            If true, include the index values in the save file.
+
+        Notes
+        ______
+        This function current uses 'truncate' mode to ensure the file exists before appending.
+        """
+        # if no columns are stored, we will save all columns
+        if columns is None:
+            columns = self._columns
+
+        firstIter = True
+        write_mode = 'truncate'
+
+        if index:
+            self.index.index.save(prefix_path=prefix_path, dataset='index',
+                                  file_format='Parquet', mode=write_mode)
+            firstIter = False
+            write_mode = 'append'
+
+        for c in columns:
+            self.data[c].save(prefix_path=prefix_path, dataset=c,
+                                  file_format='Parquet', mode=write_mode)
+            # Handle if the file does not exist yet. We can remove this and always use 'append' if we update to append
+            # creates file if not exists.
+            if firstIter:
+                firstIter = False
+                write_mode = 'append'
+
     def argsort(self, key, ascending=True):
         """
         Return the permutation that sorts the dataframe by `key`.
