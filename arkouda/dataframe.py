@@ -1098,7 +1098,7 @@ class DataFrame(UserDict):
             firstIter = False
             write_mode = 'append'
 
-        for c in columns:
+        for c in reversed(columns): # reverse columns so append returns the users desired order
             self.data[c].save(prefix_path=prefix_path, dataset=c,
                                   file_format='Parquet', mode=write_mode)
             # Handle if the file does not exist yet. We can remove this and always use 'append' if we update to append

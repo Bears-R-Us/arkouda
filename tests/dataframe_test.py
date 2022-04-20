@@ -2,6 +2,9 @@ import pandas as pd  # type: ignore
 import random
 import string
 
+import os
+from shutil import rmtree
+
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -422,3 +425,32 @@ class DataFrameTest(ArkoudaTest):
         df_copy = df.copy(deep=False)
         df_copy.__setitem__('userID', ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
+
+    def test_save_table(self):
+        i = list(range(3))
+        c1 = [9, 7, 17]
+        c2 = [2, 4, 6]
+        df_dict = {
+            "i": ak.array(i),
+            "c_1": ak.array(c1),
+            "c_2": ak.array(c2)
+        }
+
+        akdf = ak.DataFrame(df_dict)
+
+        # make directory to save to so pandas read works
+        os.mkdir("save_table_test")
+        akdf.save_table("save_table_test/testFile")
+
+        pddf = pd.read_parquet("save_table_test", engine="pyarrow")
+
+        validation_df = pd.DataFrame({
+            "i": i,
+            "c_1": c1,
+            "c_2": c2
+        })
+
+        self.assertTrue(pddf.equals(validation_df))
+
+        # clean up test files
+        rmtree("save_table_test")
