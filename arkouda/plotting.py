@@ -1,13 +1,6 @@
 import numpy as np  # type: ignore
 from matplotlib import pyplot as plt  # type: ignore
 
-from arkouda.numeric import log
-
-
-def log10(x):
-    basechange = float(np.log10(np.exp(1)))
-    return basechange*log(x)
-
 def plot_dist(b, h, log=True, xlabel=None, newfig=True):
     """
     Plot the distribution and cumulative distribution of histogram Data
