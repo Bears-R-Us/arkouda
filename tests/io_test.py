@@ -86,11 +86,11 @@ class IOTest(ArkoudaTest):
         :raise: ValueError if the names list is None when columns is a list
         '''       
         if isinstance(columns, dict):
-            ak.save_all(columns=columns, prefix_path=prefix_path)   
+            ak.save_all(columns=columns, prefix_path=prefix_path, mode='append')
         else:
             if not names:
                 raise ValueError('the names list must be not None if columns is a list')
-            ak.save_all(columns=columns, prefix_path=prefix_path, names=names)
+            ak.save_all(columns=columns, prefix_path=prefix_path, names=names, mode='append')
     
     def testSaveAllLoadAllWithDict(self): 
 
@@ -469,7 +469,7 @@ class IOTest(ArkoudaTest):
         ak.save_all({'m_strings': strings_array,
                      'm_floats' : m_floats,
                      'm_ints' : m_ints}, 
-                     '{}/multi-type-test'.format(IOTest.io_test_dir))
+                     '{}/multi-type-test'.format(IOTest.io_test_dir), mode='append')
         r_mixed = ak.load_all('{}/multi-type-test'.format(IOTest.io_test_dir))
 
         self.assertTrue((strings_array.to_ndarray().sort() == \

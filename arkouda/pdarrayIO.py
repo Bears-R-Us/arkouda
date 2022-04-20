@@ -529,5 +529,4 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
             arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='truncate')
             first_iter = False
         else:
-            print("Append")
             arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='append')
