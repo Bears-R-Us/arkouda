@@ -1089,25 +1089,14 @@ class DataFrame(UserDict):
         """
         # if no columns are stored, we will save all columns
         if columns is None:
-            columns = self._columns
-
-        firstIter = True
-        write_mode = 'truncate'
+            data = self.data
+        else:
+            data = {c: self.data[c] for c in columns}
 
         if index:
-            self.index.index.save(prefix_path=prefix_path, dataset='index',
-                                  file_format=file_format, mode=write_mode)
-            firstIter = False
-            write_mode = 'append'
-
-        for c in reversed(columns): # reverse columns so append returns the users desired order
-            self.data[c].save(prefix_path=prefix_path, dataset=c,
-                                  file_format=file_format, mode=write_mode)
-            # Handle if the file does not exist yet. We can remove this and always use 'append' if we update to append
-            # creates file if not exists.
-            if firstIter:
-                firstIter = False
-                write_mode = 'append'
+            data["Index"] = self.index
+        save_all(data, prefix_path=prefix_path,
+                 file_format=file_format, mode='append')
 
     def argsort(self, key, ascending=True):
         """
