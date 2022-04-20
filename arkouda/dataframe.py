@@ -1,91 +1,148 @@
-from __future__ import annotations
-
+from datetime import datetime
+from ipaddress import ip_address
 from collections import UserDict
+from tabulate import tabulate
 from warnings import warn
-import pandas as pd  # type: ignore
+import akutil as aku
+from akutil.segarray import SegArray
+import arkouda as ak
+import pandas as pd
+import numpy as np
 import random
-
-from arkouda.segarray import SegArray
-from arkouda.pdarrayclass import pdarray
-from arkouda.categorical import Categorical
-from arkouda.strings import Strings
-from arkouda.pdarraycreation import arange, array
-from arkouda.groupbyclass import GroupBy as akGroupBy
-from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
-from arkouda.pdarrayIO import save_all
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import float64 as akfloat64
-from arkouda.sorting import argsort, coargsort
-from arkouda.numeric import where
-from arkouda.client import maxTransferBytes
-from arkouda.row import Row
-from arkouda.alignment import in1dmulti
-from arkouda.series import Series
-from arkouda.index import Index
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
 pd.set_option('display.max_colwidth', 64)
 
 __all__ = [
-    "DataFrame",
-    "sorted",
-    "intersect",
-    "invert_permutation",
-    "intx",
-]
-
+        "DataFrame",
+        "sorted",
+        "intersect",
+        "invert_permutation",
+        "intx",
+    ]
 
 def groupby_operators(cls):
-    for name in ['all', 'any', 'argmax', 'argmin', 'max', 'mean', 'min', 'nunique', 'prod', 'sum', 'OR', 'AND', 'XOR']:
-        setattr(cls, name, cls._make_aggop(name))
-    return cls
+        for name in [ 'all','any','argmax','argmin','max','mean','min','nunique','prod','sum','OR', 'AND', 'XOR' ] :
+            setattr(cls,name, cls._make_aggop(name))
+        return cls
+    
+class AggregateOps:
+    """Base class for GroupBy and DiffAggregate containing common functions"""
+    
+    def _gbvar(self,values):
+        """Calculate the variance in a groupby"""
+    
+    
+        values = ak.cast(values,"float64")
+        mean = self.gb.mean(values)
+        mean_broad = self.gb.broadcast(mean[1])
+        centered = values - mean_broad
+        var = aku.Series( self.gb.sum(centered*centered))
+        n = self.gb.sum( ~ak.isnan(centered))
+        return var/(n[1]-1)
 
+    def _gbstd(self,values):
+        """Calculates  the standard deviation in a groupby"""
+        return self._gbvar(values) ** 0.5
 
 @groupby_operators
-class GroupBy:
+class GroupBy(AggregateOps):
     """A DataFrame that has been grouped by a subset of columns"""
-
-    def __init__(self, gb, df):
+    
+    def __init__(self,gb,df):
         self.gb = gb
         self.df = df
-        for attr in ['nkeys', 'size', 'permutation', 'unique_keys', 'segments']:
-            setattr(self, attr, getattr(gb, attr))
-
+        for attr in [ 'nkeys','size','permutation','unique_keys','segments' ]:
+            setattr(self, attr, getattr(gb,attr) )
     @classmethod
     def _make_aggop(cls, opname):
-        def aggop(self, colname):
-            return Series(self.gb.aggregate(self.df.data[colname], opname))
-
+        def aggop(self,colname):
+                
+                return aku.Series( self.gb.aggregate(self.df.data[colname], opname))
         return aggop
-
     def count(self):
-        return Series(self.gb.count())
-
-    def broadcast(self, x, permute=True):
-        """Fill each group’s segment with a constant value.
-
+        return aku.Series( self.gb.count() )
+    
+    def diff(self,colname):
+        """Create a difference aggregate for the given column
+        
+        For each group, the differnce between successive values is calculated.  Aggregate operations (mean,min,max,std,var) can be done
+        on the results. 
+        
         Parameters
         ----------
+        
+        colname:  String. Name of the column to compute the difference on.
+        
+        Returns
+        -------
+        
+        DiffAggregate : object containing the differences, which can be aggregated.
+        
+        """
+        
+        return DiffAggregate(self.gb, self.df.data[colname])
+    
+    def var(self,colname):
+        """Calculate variance of the difference in each group"""
+        return self._gbvar(self.df.data[colname])
 
+    def std(self,colname):
+        """Calculate standard deviation of the difference in each group"""
+        return self._gbstd(self.df.data[colname])
+
+    
+    def broadcast(self, x, permute=True):
+        """Fill each group’s segment with a constant value.
+        
+        Parameters
+        ----------
+        
         x :  Either a Series or a pdarray
-
+        
         Returns
         -------
         A aku.Series with the Index of the original frame and the values of the broadcast.
         """
-
-        if isinstance(x, Series):
+        
+        if isinstance(x, aku.Series):
             data = self.gb.broadcast(x.values, permute=permute)
         else:
             data = self.gb.broadcast(x, permute=permute)
-        return Series(data=data, index=self.df['index'])
+        return aku.Series(data=data, index=self.df['index'])
 
+@groupby_operators
+class DiffAggregate(AggregateOps):
+    """A column in a GroupBy that has been differenced.  Aggregation operations can be done on the result."""
+    
+    def __init__(self,gb,series):
+        self.gb = gb
+        
+        values =  ak.zeros(len(series), "float64") 
+        series_permuted = series[gb.permutation]
+        values[1:] = ak.cast( series_permuted[1:] - series_permuted[:-1] ,"float64")
+        values[gb.segments] = np.nan
+        self.values = values
+        
+    def var(self):
+        """Calculate variance of the difference in each group"""
+        return self._gbvar(self.values)
+
+    def std(self):
+        """Calculate standard deviation of the difference in each group"""
+        return self._gbstd(self.values)
+            
+    @classmethod
+    def _make_aggop(cls, opname):
+        def aggop(self):
+                
+                return aku.Series( self.gb.aggregate(self.values, opname))
+        return aggop
 
 """
 DataFrame structure based on Arkouda arrays.
 """
-
 
 class DataFrame(UserDict):
     """
@@ -97,8 +154,10 @@ class DataFrame(UserDict):
     Create an empty DataFrame and add a column of data:
 
     >>> import arkouda as ak
+    >>> import akutil as aku
+    >>> import pandas as pd
     >>> import numpy as np
-    >>> df = ak.DataFrame()
+    >>> df = aku.DataFrame()
     >>> df['a'] = ak.array([1,2,3])
 
     Create a new DataFrame using a dictionary of data:
@@ -108,7 +167,7 @@ class DataFrame(UserDict):
     >>> item = ak.array([0, 0, 1, 1, 2, 0])
     >>> day = ak.array([5, 5, 6, 5, 6, 6])
     >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-    >>> df = ak.DataFrame({'userName': userName, 'userID': userID,
+    >>> df = aku.DataFrame({'userName': userName, 'userID': userID,
     >>>            'item': item, 'day': day, 'amount': amount})
     >>> df
     DataFrame(['userName', 'userID', 'item', 'day', 'amount'] [6 rows : 224 B])
@@ -135,44 +194,20 @@ class DataFrame(UserDict):
     DataFrame(['userID', 'day'] [6 rows : 96 B])
     """
 
-    COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
+    COLUMN_CLASSES = (ak.pdarray, ak.Strings, ak.Categorical, SegArray)
 
-    def __init__(self, initialdata=None, index=None):
+    def __init__(self, initialdata=None):
         super().__init__()
 
         if isinstance(initialdata, DataFrame):
             # Copy constructor
             self._size = initialdata._size
             self._bytes = initialdata._bytes
-            self._empty = initialdata._empty
-            self._columns = initialdata._columns
-            if index == None:
-                self._set_index(initialdata.index)
-            else:
-                self._set_index(index)
-            self.data = initialdata.data
+            self._empty = initialdata._empty 
+            self._columns = initialdata._columns 
+            self.data = initialdata.data 
             self.update_size()
-            return
-        elif isinstance(initialdata, pd.DataFrame):
-            # copy pd.DataFrame data into the ak.DataFrame object
-            self._size = initialdata.size
-            self._bytes = 0
-            self._empty = initialdata.empty
-            # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
-            self._columns = initialdata.columns.tolist()
-
-            if index == None:
-                self._set_index(initialdata.index.values.tolist())
-            else:
-                self._set_index(index)
-            self.data = {}
-            # convert the lists defining each column into a pdarray
-            # pd.DataFrame.values is stored as rows, we need lists to be columns
-            for key, val in initialdata.to_dict('list').items():
-                self.data[key] = array(val)
-
-            self.data.update()
-            return
+            return 
 
         # Some metadata about this dataframe.
         self._size = 0
@@ -180,8 +215,8 @@ class DataFrame(UserDict):
         self._empty = True
 
         # Initial attempts to keep an order on the columns
-        self._columns = []
-        self._set_index(index)
+        self._columns = ['index']
+        self.data['index'] = None
 
         # Add data to the DataFrame if there is any
         if initialdata is not None:
@@ -199,7 +234,8 @@ class DataFrame(UserDict):
                     self._empty = False
                     UserDict.__setitem__(self, key, val)
                     # Update the column index
-                    self._columns.append(key)
+                    if key != 'index':
+                        self._columns.append(key)
 
             # Initial data is a list of arkouda arrays
             elif type(initialdata) == list:
@@ -223,38 +259,52 @@ class DataFrame(UserDict):
             # Update the dataframe indices and metadata.
             if len(sizes) > 0:
                 self._size = sizes.pop()
-
-            # If the index param was passed in, use that instead of
+            # If the index column was passed in, use that instead of
             # creating a new one.
-            if self.index is None:
-                self._set_index(arange(self._size))
-            else:
-                self._set_index(index)
+            if self.data['index'] is None:
+                self.data['index'] = ak.arange(0, self._size, 1)
 
             self.update_size()
+            
+    def __getattr__(self,key):
+        # print("key =", key)
+        if key not in self.columns:
+            #return self.__getattribute__(key)
+            raise AttributeError(f'Attribute f{key} not found' )
+        # Should this be cached?
+        return aku.Series(data=self[key], index=self['index'])
+    
+    def __dir__(self):
+        return dir(DataFrame) + self.columns
 
-    # delete a column
     def __delitem__(self, key):
         # This function is a backdoor to messing up the indices and columns.
         # I needed to reimplement it to prevent bad behavior
-        UserDict.__delitem__(self, key)
-        self._columns.remove(key)
+        if key == 'index':
+            raise KeyError('The index column may be reset, but not dropped.')
+        else:
+            UserDict.__delitem__(self, key)
+            self._columns.remove(key)
 
         # If removing this column emptied the dataframe
         if len(self._columns) == 1:
-            #self.data['index'] = None
+            self.data['index'] = None
             self._empty = True
         self.update_size()
 
+
     def __getitem__(self, key):
+        # convert series to underlying values
+        # Should check for index alignment
+        if isinstance(key,aku.Series):
+            key = key.values
         # Select rows using an integer pdarray
-        if isinstance(key, pdarray):
+        if isinstance(key,ak.pdarray):
             result = {}
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
-            # To stay consistent with numpy, provide the old index values
-            return DataFrame(initialdata=result, index=key)
-
+            return DataFrame(initialdata=result)
+            
         # Select rows or columns using a list
         if isinstance(key, list):
             result = DataFrame()
@@ -263,16 +313,17 @@ class DataFrame(UserDict):
             if len({type(x) for x in key}) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
             if type(key[0]) == int:
-                rows = array(key)
-                for k in self.data.keys():
-                    result.data[k] = UserDict.__getitem__(self, k)[rows]
+                rows = ak.array(key)
+                for k in self._columns:
+                    result.data[k] = UserDict.__getitem__(self,k)[rows]
                     result._columns.append(k)
                 result._empty = False
-                result._set_index(key)
                 return result
             elif type(key[0]) == str:
+                # Grab the index column as well.
+                result.data['index'] = UserDict.__getitem__(self,'index')
                 for k in key:
-                    result.data[k] = UserDict.__getitem__(self, k)
+                    result.data[k] = UserDict.__getitem__(self,k)
                     result._columns.append(k)
                 result._empty = False
                 return result
@@ -280,25 +331,28 @@ class DataFrame(UserDict):
         # Select a single row using an integer
         if isinstance(key, int):
             result = {}
-            row = array([key])
-            for k in self.data.keys():
-                result[k] = (UserDict.__getitem__(self, k)[row])[0]
-            return Row(result)
+            row = ak.array([key])
+            for k in self._columns:
+                result[k] = (UserDict.__getitem__(self,k)[row])[0]
+            return aku.Row(result)
 
         # Select a single column using a string
         elif isinstance(key, str):
-            if key not in self.keys():
+            if key not in self._columns:
                 raise KeyError("Invalid column name '{}'.".format(key))
-            return UserDict.__getitem__(self, key)
+            return UserDict.__getitem__(self,key)
 
         # Select rows using a slice
         elif isinstance(key, slice):
             # result = DataFrame()
-            rtn_data = {}
+            data = {}
             s = key
             for k in self._columns:
-                rtn_data[k] = UserDict.__getitem__(self, k)[s]
-            return DataFrame(initialdata=rtn_data, index=arange(self.size)[s])
+                data[k] = UserDict.__getitem__(self,k)[s.start:s.stop:s.step]
+                # result._columns.append(k)
+            # result._empty = False
+            return DataFrame(initialdata=data)
+
         else:
             raise IndexError("Invalid selector: unknown error.")
 
@@ -312,11 +366,11 @@ class DataFrame(UserDict):
 
         # Set a single row in the dataframe using a dict of values
         if type(key) == int:
-            for k in self.data.keys():
-                if isinstance(self.data[k], Strings):
+            for k in self._columns:
+                if isinstance(self.data[k], ak.Strings):
                     raise ValueError("This DataFrame has a column of type ak.Strings;"
-                                     " so this DataFrame is immutable. This feature could change"
-                                     " if arkouda supports mutable Strings in the future.")
+                    " so this DataFrame is immutable. This feature could change"
+                    " if arkouda supports mutable Strings in the future.")
             if self._empty:
                 raise ValueError("Initial data must be dict of arkouda arrays.")
             elif not isinstance(value, (dict, UserDict)):
@@ -324,8 +378,7 @@ class DataFrame(UserDict):
             elif key >= self._size:
                 raise KeyError("The row index is out of range.")
             else:
-                for k, v in value.items():
-                    # maintaining to prevent adding index column
+                for k,v in value.items():
                     if k == 'index':
                         continue
                     self[k][key] = v
@@ -338,7 +391,7 @@ class DataFrame(UserDict):
                 raise ValueError("Expected size {} but received size {}.".format(self.size, value.size))
             else:
                 self._empty = False
-                UserDict.__setitem__(self, key, value)
+                UserDict.__setitem__(self,key,value)
                 # Update the index values
                 if key not in self._columns:
                     self._columns.append(key)
@@ -350,7 +403,7 @@ class DataFrame(UserDict):
         # Update the dataframe indices and metadata.
         if add_index:
             self.update_size()
-            self._set_index(arange(self._size))
+            self.data['index'] = ak.arange(0, self._size, 1)
 
     def __len__(self):
         """
@@ -360,11 +413,9 @@ class DataFrame(UserDict):
 
     def _ncols(self):
         """
-        Number of columns.
-        If index appears, we now want to utilize this
-        because the actual index has been moved to a property
+        Only count the non-index columns.
         """
-        return len(list(self.data.keys()))
+        return len(self._columns) - 1
 
     def __str__(self):
         """
@@ -376,7 +427,7 @@ class DataFrame(UserDict):
         if self._empty:
             return 'DataFrame([ -- ][ 0 rows : 0 B])'
 
-        keys = [str(key) for key in list(self.data.keys())]
+        keys = [str(key) for key in self._columns]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -386,16 +437,16 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit='B')
-        elif self._bytes < 1024 ** 2:
+        elif self._bytes < 1024**2:
             mem = self.memory_usage(unit='KB')
-        elif self._bytes < 1024 ** 3:
+        elif self._bytes < 1024**3:
             mem = self.memory_usage(unit='MB')
         else:
             mem = self.memory_usage(unit='GB')
         rows = " rows"
         if self._size == 1:
             rows = " row"
-        return 'DataFrame([' + keystr + '], {:,}'.format(self._size) + rows + ', ' + str(mem) + ')'
+        return 'DataFrame(['+keystr+'], {:,}'.format(self._size)+rows+', '+str(mem)+')'
 
     def _get_head_tail(self):
         if self._empty:
@@ -403,27 +454,26 @@ class DataFrame(UserDict):
         self.update_size()
         maxrows = pd.get_option('display.max_rows')
         if self._size <= maxrows:
-            newdf = DataFrame()
+            newdf = aku.DataFrame()
             for col in self._columns:
-                if isinstance(self[col], Categorical):
+                if isinstance(self[col], ak.Categorical):
                     newdf[col] = self[col].categories[self[col].codes]
                 else:
                     newdf[col] = self[col]
-            newdf._set_index(self.index)
             return newdf.to_pandas(retain_index=True)
-        # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
-        idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
-        newdf = DataFrame()
-        for col in self._columns:
-            if isinstance(self[col], Categorical):
+        # Being 1 above the threshold caises the PANDAS formatter to split the data frame vertically
+        idx = ak.array(list(range(maxrows//2+1)) + list(range(self._size - (maxrows//2), self._size)))
+        newdf = aku.DataFrame()
+        for col in self._columns[1:]:
+            if isinstance(self[col], ak.Categorical):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
                 newdf[col] = self[col][idx]
-        newdf._set_index(idx)
+        newdf['index'] = self['index'][idx]
         return newdf.to_pandas(retain_index=True)
 
     def _shape_str(self):
-        return "{} rows x {} columns".format(self.size, self._ncols())
+        return "{} rows x {} columns".format(self.size,self._ncols() ) 
 
     def __repr__(self):
         """
@@ -433,7 +483,7 @@ class DataFrame(UserDict):
         prt = self._get_head_tail()
         with pd.option_context("display.show_dimensions", False):
             retval = prt.__repr__()
-        retval += " (" + self._shape_str() + ")"
+        retval += self._shape_str()
         return retval
 
     def _repr_html_(self):
@@ -449,92 +499,37 @@ class DataFrame(UserDict):
 
     def _ipython_key_completions_(self):
         return self._columns
-
-    @classmethod
-    def from_pandas(cls, pd_df):
-        return DataFrame(initialdata=pd_df)
-
-    def _drop_column(self, keys):
+        
+    def drop(self, keys):
         """
         Drop a column or columns from the dataframe, in-place.
 
-        keys : list
-            The labels to be dropped on the given axis
-        """
-        for key in keys:
-            del self[key]
-
-    def _drop_row(self, keys):
-        """
-        Drop a row or rows from the dataframe, in-place.
-
-        keys : list
-            The indexes to be dropped on the given axis
-        """
-        idx_list = []
-        last_idx = -1
-        # sort to ensure we go in ascending order.
-        keys.sort()
-        for k in keys:
-            if not isinstance(k, int):
-                raise TypeError("Index keys must be integers.")
-            idx_list.append(self.index.index[(last_idx+1):k])
-            last_idx = k
-
-        idx_list.append(self.index.index[(last_idx+1):])
-
-        idx_to_keep = concatenate(idx_list)
-        for key in self.keys():
-            # using the UserDict.__setitem__ here because we know all the columns are being reset to the same size.
-            # This avoids the size checks we would do when only setting a single column
-            UserDict.__setitem__(self, key, self[key][idx_to_keep])
-        self._set_index(idx_to_keep)
-
-    def drop(self, keys, axis=0):
-        """
-        Drop column/s or row/s from the dataframe, in-place.
-
         Parameters
         ----------
-        keys : str, int or list
-            The labels to be dropped on the given axis
-        axis : int or str
-            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
-
-        Examples
-        ----------
-        Drop column
-        >>> df.drop('col_name', axis=1)
-
-        Drop Row
-        >>> df.drop(1)
-        or
-        >>> df.drop(1, axis=0)
+        keys : str or list
+            The column(s) to be dropped.
         """
 
-        if isinstance(keys, str) or isinstance(keys, int):
+        if isinstance(keys, str):
             keys = [keys]
+        for key in keys:
+            # Do not allow the user to drop the index column
+            if key == 'index':
+                raise KeyError('The index column may be reset, but not dropped.')
 
-        if axis == 0 or axis == 'index':
-            #drop a row
-            self._drop_row(keys)
-        elif axis == 1 or axis == 'columns':
-            #drop column
-            self._drop_column(keys)
-        else:
-            raise ValueError(f"No axis named {axis} for object type DataFrame")
+            del self[key]
 
         # If the dataframe just became empty...
-        if len(self._columns) == 0:
-            self._set_index(None)
+        if len(self._columns) == 1:
+            self.data['index'] = None
             self._empty = True
         self.update_size()
 
     def drop_duplicates(self, subset=None, keep='first'):
         """
-        Drops duplcated rows and returns resulting DataFrame.
-
-        If a subset of the columns are provided then only one instance of each
+        Drops duplcated rows and returns resulting DataFrame. 
+        
+        If a subset of the columns are provided then only one instance of each 
         duplicated row will be returned (keep determines which row).
 
         Parameters
@@ -549,28 +544,28 @@ class DataFrame(UserDict):
             DataFrame with duplicates removed.
         """
         if self._empty:
-            return self
+            return self 
 
         if not subset:
-            subset = self._columns
+            subset = self._columns[1:]
 
         if len(subset) == 1:
             if not subset[0] in self.data:
                 raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
-            gp = akGroupBy(self.data[subset[0]])
+            _ = ak.GroupBy(self.data[subset[0]])
 
         else:
             for col in subset:
-                if col not in self.data:
-                    raise KeyError("{} is not a column in the DataFrame.".format(subset[0]))
+                if not col in self.data:
+                    raise KeyError("{} is not a column in the DataFrame.".format(col))
 
-            gp = akGroupBy([self.data[col] for col in subset])
+            _ = ak.GroupBy([self.data[col] for col in subset])
 
-        if keep == 'last':
-            _segment_ends = concatenate([gp.segments[1:] - 1, array([gp.permutation.size - 1])])
-            return self[gp.permutation[_segment_ends]]
+        if keep=='last':
+            _segment_ends = ak.concatenate([_.segments[1:]-1, ak.array([_.permutation.size-1])])
+            return self[_.permutation[_segment_ends]]
         else:
-            return self[gp.permutation[gp.segments]]
+            return self[_.permutation[_.segments]]
 
     @property
     def size(self):
@@ -579,7 +574,7 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
-        if self._size is None:
+        if self._size == None:
             return 0
         return self._size
 
@@ -589,11 +584,11 @@ class DataFrame(UserDict):
         keys = []
         for key, val in self.items():
             keys.append(key)
-            if isinstance(val, pdarray):
+            if isinstance(val, ak.pdarray):
                 dtypes.append(str(val.dtype))
-            elif isinstance(val, Strings):
+            elif isinstance(val, ak.Strings):
                 dtypes.append('str')
-        res = Row({key: dtype for key, dtype in zip(keys, dtypes)})
+        res = aku.Row({key:dtype for key, dtype in zip(keys,dtypes)})
         return res
 
     @property
@@ -603,7 +598,7 @@ class DataFrame(UserDict):
     @property
     def shape(self):
         self.update_size()
-        num_cols = len(self._columns)
+        num_cols = len(self._columns) - 1
         num_rows = self._size
         return (num_rows, num_cols)
 
@@ -613,18 +608,7 @@ class DataFrame(UserDict):
 
     @property
     def index(self):
-        return self._index
-
-    def _set_index(self, value):
-        if isinstance(value, Index) or value is None:
-            self._index = value
-        elif isinstance(value, pdarray):
-            self._index = Index(value)
-        elif isinstance(value, list):
-            self._index = Index(array(value))
-        else:
-            raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
-                            f" {type(value)} provided.")
+        return self.data['index']
 
     def reset_index(self, size=False):
         """
@@ -639,18 +623,13 @@ class DataFrame(UserDict):
         size : int
             If size is passed, do not attempt to determine size based on
             existing column sizes. Assume caller handles consistency correctly.
-
-        NOTE
-        ----------
-        Pandas adds a column 'index' to indicate the original index. Arkouda does not currently
-        support this behavior.
         """
 
         if not size:
             self.update_size()
-            self._set_index(arange(self._size))
+            self.data['index'] = ak.arange(0, self._size)
         else:
-            self._set_index(arange(size))
+            self.data['index'] = ak.arange(size)
 
     @property
     def info(self):
@@ -660,10 +639,10 @@ class DataFrame(UserDict):
 
         self.update_size()
 
-        if self._size is None:
+        if self._size == None:
             return 'DataFrame([ -- ][ 0 rows : 0 B])'
 
-        keys = [str(key) for key in list(self.data.keys())]
+        keys = [str(key) for key in self._columns]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -673,16 +652,16 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit='B')
-        elif self._bytes < 1024 ** 2:
+        elif self._bytes < 1024**2:
             mem = self.memory_usage(unit='KB')
-        elif self._bytes < 1024 ** 3:
+        elif self._bytes < 1024**3:
             mem = self.memory_usage(unit='MB')
         else:
             mem = self.memory_usage(unit='GB')
         rows = " rows"
         if self._size == 1:
             rows = " row"
-        return 'DataFrame([' + keystr + '], {:,}'.format(self._size) + rows + ', ' + str(mem) + ')'
+        return 'DataFrame(['+keystr+'], {:,}'.format(self._size)+rows+', '+str(mem)+')'
 
     def update_size(self):
         """
@@ -690,7 +669,7 @@ class DataFrame(UserDict):
         """
 
         sizes = set()
-        for key, val in self.items():
+        for key,val in self.items():
             if val is not None:
                 sizes.add(val.size)
         if len(sizes) > 1:
@@ -707,7 +686,7 @@ class DataFrame(UserDict):
         Parameters
         ----------
         mapper : callable or dict-like
-            Function or dictionary mapping existing column names to
+            Function or dictionary mapping existing column names to 
             new column names. Nonexistent names will not raise an
             error.
 
@@ -720,7 +699,7 @@ class DataFrame(UserDict):
 
         if callable(mapper):
             # Do not rename index, start at 1
-            for i in range(0, len(self._columns)):
+            for i in range(1, len(self._columns)):
                 oldname = self._columns[i]
                 newname = mapper(oldname)
                 # Only rename if name has changed
@@ -743,6 +722,7 @@ class DataFrame(UserDict):
             raise TypeError("Argument must be callable or dict-like")
         return self
 
+
     def append(self, other, ordered=True):
         """
         Concatenate data from 'other' onto the end of this DataFrame, in place.
@@ -761,13 +741,12 @@ class DataFrame(UserDict):
             If False, allow rows to be interleaved for better performance (but
             data within a row remains together). By default, append all rows
             to the end, in input order.
-
+        
         Returns
         -------
         self
             Appending occurs in-place, but result is returned for compatibility.
         """
-        from arkouda.util import concatenate as util_concatenate
 
         # Do nothing if the other dataframe is empty
         if other.empty:
@@ -775,25 +754,24 @@ class DataFrame(UserDict):
 
         # Check all the columns to make sure they can be concatenated
         self.update_size()
-
-        keyset = set(self.keys())
-        keylist = list(self.keys())
+        
+        keyset = set(self._columns)
+        keylist = self._columns
 
         # Allow for starting with an empty dataframe
         if self.empty:
             self = other.copy()
         # Keys don't match
-        elif keyset != set(other.keys()):
+        elif (keyset != set(other._columns)):
             raise KeyError(f"Key mismatch; keys must be identical in both DataFrames.")
         # Keys do match
         else:
             tmp_data = {}
             for key in keylist:
                 try:
-                    tmp_data[key] = util_concatenate([self[key], other[key]], ordered=ordered)
+                    tmp_data[key] = aku.concatenate([self[key], other[key]], ordered=ordered)
                 except TypeError as e:
-                    raise TypeError("Incompatible types for column {}: {} vs {}".format(key, type(self[key]),
-                                                                                        type(other[key]))) from e
+                    raise TypeError("Incompatible types for column {}: {} vs {}".format(key, type(self[key]), type(other[key]))) from e
             self.data = tmp_data
 
         # Clean up
@@ -804,32 +782,25 @@ class DataFrame(UserDict):
 
     @classmethod
     def concat(cls, items, ordered=True):
-        """
-        Essentially an append, but diffenent formatting
-        """
-        from arkouda.util import concatenate as util_concatenate
-
         if len(items) == 0:
             return cls()
         first = True
-        columnset = set()
-        columnlist = []
         for df in items:
             # Allow for an empty dataframe
-            if df.empty:
+            if df.empty or set(df._columns) == {'index'}:
                 continue
             if first:
-                columnset = set(df.keys())
+                columnset = set(df._columns)
                 columnlist = df._columns
                 first = False
             else:
-                if set(df.keys()) != columnset:
+                if set(df._columns) != columnset:
                     raise KeyError("Cannot concatenate DataFrames with mismatched columns")
         # if here, columns match
         ret = cls()
         for col in columnlist:
             try:
-                ret[col] = util_concatenate([df[col] for df in items], ordered=ordered)
+                ret[col] = aku.concatenate([df[col] for df in items], ordered=ordered)
             except TypeError as e:
                 raise TypeError("Incompatible types for column {}".format(col))
         return ret
@@ -904,9 +875,9 @@ class DataFrame(UserDict):
         self.update_size()
         if self._size <= n:
             return self
-        return self[array(random.sample(range(self._size), n))]
+        return self[ak.array(random.sample(range(self._size), n))]
 
-    def GroupBy(self, keys, use_series=False):
+    def GroupBy(self, keys,use_series=False):
         """
         Group the dataframe by a column or a list of columns.
 
@@ -927,17 +898,17 @@ class DataFrame(UserDict):
         """
 
         self.update_size()
-        if isinstance(keys, str):
+        if isinstance(keys,str):
             cols = self.data[keys]
-        elif not isinstance(keys, list):
+        elif not isinstance(keys, (list, tuple)):
             raise TypeError("keys must be a colum name or a list of column names")
         elif len(keys) == 1:
             cols = self.data[keys[0]]
         else:
-            cols = [self.data[col] for col in keys]
-        gb = akGroupBy(cols)
+            cols = [ self.data[col] for col in keys]
+        gb = ak.GroupBy(cols)
         if use_series:
-            gb = GroupBy(gb, self)
+            gb = GroupBy(gb,self)
         return gb
 
     def memory_usage(self, unit='GB'):
@@ -956,13 +927,13 @@ class DataFrame(UserDict):
         """
 
         KB = 1024
-        MB = KB * KB
-        GB = MB * KB
+        MB = KB*KB
+        GB = MB*KB
         self._bytes = 0
-        for key, val in self.items():
-            if isinstance(val, pdarray):
+        for key,val in self.items():
+            if isinstance(val, ak.pdarray):
                 self._bytes += (val.dtype).itemsize * val.size
-            elif isinstance(val, Strings):
+            elif isinstance(val, ak.Strings):
                 self._bytes += val.nbytes
         if unit == 'B':
             return "{:} B".format(int(self._bytes))
@@ -972,7 +943,7 @@ class DataFrame(UserDict):
             return "{:} KB".format(int(self._bytes / KB))
         return "{:.2f} GB".format(self._bytes / GB)
 
-    def to_pandas(self, datalimit=maxTransferBytes, retain_index=False):
+    def to_pandas(self, datalimit=ak.client.maxTransferBytes, retain_index=False):
         """
         Send this DataFrame to a pandas DataFrame.
 
@@ -997,15 +968,15 @@ class DataFrame(UserDict):
 
         # Estimate how much memory would be required for this DataFrame
         nbytes = 0
-        for key, val in self.items():
-            if isinstance(val, pdarray):
+        for key,val in self.items():
+            if isinstance(val, ak.pdarray):
                 nbytes += (val.dtype).itemsize * self._size
-            elif isinstance(val, Strings):
+            elif isinstance(val, ak.Strings):
                 nbytes += val.nbytes
 
         KB = 1024
-        MB = KB * KB
-        GB = MB * KB
+        MB = KB*KB
+        GB = MB*KB
 
         # Get units that make the most sense.
         msg = ""
@@ -1028,7 +999,7 @@ class DataFrame(UserDict):
 
         # Proceed with conversion if possible, ignore index column
         pandas_data = {}
-        for key in self._columns:
+        for key in self._columns[1:]:
             val = self[key]
             try:
                 pandas_data[key] = val.to_ndarray()
@@ -1036,14 +1007,15 @@ class DataFrame(UserDict):
                 raise IndexError("Bad index type or format.")
 
         # Return a new dataframe with original indices if requested.
-        if retain_index and self.index is not None:
-            index = self.index.to_pandas()
+        if retain_index and 'index' in self:
+            index = self.data['index'].to_ndarray()
             return pd.DataFrame(data=pandas_data, index=index)
+
         else:
             return pd.DataFrame(data=pandas_data)
 
     def save(self, path, index=False):
-        """
+        '''
         Save DataFrame to disk, preserving column names.
 
         Parameters
@@ -1058,9 +1030,9 @@ class DataFrame(UserDict):
         This method saves one file per locale of the arkouda server. All
         files are prefixed by the path argument and suffixed by their
         locale number.
-        """
-        tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
-        save_all(tosave, path)
+        '''
+        tosave = {k:v for k, v in self.data.items() if (index or k != "index")}
+        ak.save_all(tosave, path)
 
     def argsort(self, key, ascending=True):
         """
@@ -1078,20 +1050,18 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return array([], dtype=akint64)
+            return ak.array([], dtype=ak.int64)
         if ascending:
-            return argsort(self[key])
+            return ak.argsort(self[key])
         else:
-            if isinstance(self[key], pdarray) and self[key].dtype in (akint64, akfloat64):
-                return argsort(-self[key])
+            if isinstance(self[key], ak.pdarray) and self[key].dtype in (ak.int64, ak.float64):
+                return ak.argsort(-self[key])
             else:
-                return argsort(self[key])[arange(self.size - 1, -1, -1)]
+                return ak.argsort(self[key])[ak.arange(self.size-1, -1, -1)]
 
     def coargsort(self, keys, ascending=True):
         """
         Return the permutation that sorts the dataframe by `keys`.
-
-        Sorting using Strings may not yield correct results
 
         Parameters
         ----------
@@ -1105,14 +1075,15 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return array([], dtype=akint64)
+            return ak.array([], dtype=ak.int64)
         arrays = []
         for key in keys:
             arrays.append(self[key])
-        i = coargsort(arrays)
+        i = ak.coargsort(arrays)
         if not ascending:
-            i = i[arange(self.size - 1, -1, -1)]
+            i = i[ak.arange(self.size-1, -1, -1)]
         return i
+
 
     def sort_values(self, by=None, ascending=True):
         """
@@ -1120,11 +1091,9 @@ class DataFrame(UserDict):
 
         If no column is specified, all columns are used.
 
-        Note: Fails on sorting ak.Strings when multiple columns being sorted
-
         Parameters
         ----------
-        by : str or list/tuple of str
+        key : str or list/tuple of str
             The name(s) of the column(s) to sort by.
         ascending : bool
             Sort values in ascending (default) or descending order.
@@ -1135,12 +1104,12 @@ class DataFrame(UserDict):
         """
 
         if self._empty:
-            return array([], dtype=akint64)
+            return ak.array([], dtype=ak.int64)
         if by is None:
-            if len(self._columns) == 1:
-                i = self.argsort(self._columns[0], ascending=ascending)
+            if len(self._columns) == 2:
+                i = self.argsort(self._columns[1], ascending=ascending)
             else:
-                i = self.coargsort(self._columns, ascending=ascending)
+                i = self.coargsort(self._columns[1:], ascending=ascending)
         elif isinstance(by, str):
             i = self.argsort(by, ascending=ascending)
         elif isinstance(by, (list, tuple)):
@@ -1172,11 +1141,10 @@ class DataFrame(UserDict):
 
         if (perm.min() != 0) or (perm.max() != perm.size - 1):
             raise ValueError("The indicated permutation is invalid.")
-        if unique(perm).size != perm.size:
+        if ak.unique(perm).size != perm.size:
             raise ValueError("The indicated permutation is invalid.")
-        for key, val in self.data.items():
+        for key,val in self.data.items():
             self[key] = self[key][perm]
-        self._set_index(self.index[perm])
 
     def filter_by_range(self, keys, low=1, high=None):
         """
@@ -1206,16 +1174,16 @@ class DataFrame(UserDict):
 
         if isinstance(keys, str):
             keys = [keys]
-        gb = self.GroupBy(keys, use_series=False)
+        gb = self.GroupBy(keys,use_series=False)
         vals, cts = gb.count()
         if not high:
-            positions = where(cts >= low, 1, 0)
+            positions = ak.where(cts >= low, 1, 0)
         else:
-            positions = where(((cts >= low) & (cts <= high)), 1, 0)
+            positions = ak.where(((cts >= low) & (cts <= high)), 1, 0)
 
         broadcast = gb.broadcast(positions, permute=False)
         broadcast = (broadcast == 1)
-        return broadcast[invert_permutation(gb.permutation)]
+        return broadcast[aku.invert_permutation(gb.permutation)]
 
     def copy(self, deep=True):
         """
@@ -1248,14 +1216,13 @@ class DataFrame(UserDict):
             res._empty = self._empty
             res._columns = self._columns
 
-            for key, val in self.items():
+            for key,val in self.items():
                 res[key] = val[:]
 
             return res
         else:
-            return DataFrame(self)
-
-    def groupby(self, keys, use_series=True):
+            return aku.DataFrame(self.data)
+    def groupby(self,keys,use_series=True):
         """Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
         Parameters
@@ -1265,11 +1232,9 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        An arkouda Groupby instance
+        An aku.Groupby instance
         """
-
-        return self.GroupBy(keys, use_series)
-
+        return self.GroupBy(keys,use_series)
 
 def sorted(df, column=False):
     """
@@ -1300,29 +1265,27 @@ def sorted(df, column=False):
     result.sort(column)
     return result
 
-
 def intx(a, b):
     """ Find all the rows that are in both dataframes. Columns should be in
-        identical order.
+    identical order.
 
-        Note: does not work for columns of floating point values, but does work for
-        Strings, pdarrays of int64 type, and Categorical *should* work.
-        """
+    Note: does not work for columns of floating point values, but does work for
+    Strings, pdarrays of (u)int64 type, and Categorical *should* work.
+    """
 
     if list(a.data) == list(b.data):
         a_cols = []
         b_cols = []
-        for key, val in a.items():
+        for key,val in a.items():
             if key != 'index':
                 a_cols.append(val)
-        for key, val in b.items():
+        for key,val in b.items():
             if key != 'index':
                 b_cols.append(val)
-        return in1dmulti(a_cols, b_cols)
+        return aku.in1dmulti(a_cols, b_cols)
 
     else:
         raise ValueError("Column mismatch.")
-
 
 def intersect(a, b, positions=True, unique=False):
     """
@@ -1355,17 +1318,17 @@ def intersect(a, b, positions=True, unique=False):
     """
 
     # To ensure compatibility with all types of arrays:
-    if (isinstance(a, pdarray) and isinstance(b, pdarray)):
-        intx = intersect1d(a, b)
+    if (isinstance(a, ak.pdarray) and isinstance(b, ak.pdarray)):
+        intx = ak.intersect1d(a,b)
         if not positions:
             return intx
         else:
-            maska = in1d(a, intx)
-            maskb = in1d(b, intx)
+            maska = ak.in1d(a,intx)
+            maskb = ak.in1d(b,intx)
             return (maska, maskb)
 
     # It takes more effort to do this with ak.Strings arrays.
-    elif (isinstance(a, Strings) and isinstance(b, Strings)):
+    elif (isinstance(a, ak.Strings) and isinstance(b, ak.Strings)):
 
         # Hash the two arrays first
         hash_a00, hash_a01 = a.hash()
@@ -1373,11 +1336,11 @@ def intersect(a, b, positions=True, unique=False):
 
         # a and b do not have duplicate entries, so the hashes are distinct
         if unique:
-            hash0 = concatenate([hash_a00, hash_b00])
-            hash1 = concatenate([hash_a01, hash_b01])
+            hash0 = ak.concatenate([hash_a00, hash_b00])
+            hash1 = ak.concatenate([hash_a01, hash_b01])
 
             # Group by the unique hashes
-            gb = akGroupBy([hash0, hash1])
+            gb = ak.GroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
@@ -1400,17 +1363,17 @@ def intersect(a, b, positions=True, unique=False):
 
         # a and b may have duplicate entries, so get the unique hash values
         else:
-            gba = akGroupBy([hash_a00, hash_a01])
-            gbb = akGroupBy([hash_b00, hash_b01])
+            gba = ak.GroupBy([hash_a00, hash_a01])
+            gbb = ak.GroupBy([hash_b00, hash_b01])
 
             # Take the unique keys as the hash we'll work with
             a0, a1 = gba.unique_keys
             b0, b1 = gbb.unique_keys
-            hash0 = concatenate([a0, b0])
-            hash1 = concatenate([a1, b1])
+            hash0 = ak.concatenate([a0, b0])
+            hash1 = ak.concatenate([a1, b1])
 
             # Group by the unique hashes
-            gb = akGroupBy([hash0, hash1])
+            gb = ak.GroupBy([hash0, hash1])
             val, cnt = gb.count()
 
             # Hash counts, in groupby order
@@ -1463,6 +1426,6 @@ def invert_permutation(perm):
 
     # Test if the array is actually a permutation
     rng = perm.max() - perm.min()
-    if (unique(perm).size != perm.size) and (perm.size != rng + 1):
+    if (ak.unique(perm).size != perm.size) and (perm.size != rng + 1):
         raise ValueError("The array is not a permutation.")
-    return coargsort([perm, arange(perm.size)])
+    return ak.coargsort([perm, ak.arange(0, perm.size)])
