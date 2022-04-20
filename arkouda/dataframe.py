@@ -1068,7 +1068,7 @@ class DataFrame(UserDict):
         tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
         save_all(tosave, path)
 
-    def save_table(self, prefix_path, columns=None, index=False):
+    def save_table(self, prefix_path, columns=None, index=False, file_format='HDF5'):
         """
         Save a dataframe as a table in Parquet
 
@@ -1078,6 +1078,8 @@ class DataFrame(UserDict):
             Path and filename prefix to save to
         columns: List
             List of columns to include in the file. If None, writes out all columns
+        file_format: str
+            'HDF5' or 'Parquet'. Defaults to 'HDF5'
         index: Bool
             If true, include the index values in the save file.
 
@@ -1094,13 +1096,13 @@ class DataFrame(UserDict):
 
         if index:
             self.index.index.save(prefix_path=prefix_path, dataset='index',
-                                  file_format='Parquet', mode=write_mode)
+                                  file_format=file_format, mode=write_mode)
             firstIter = False
             write_mode = 'append'
 
         for c in reversed(columns): # reverse columns so append returns the users desired order
             self.data[c].save(prefix_path=prefix_path, dataset=c,
-                                  file_format='Parquet', mode=write_mode)
+                                  file_format=file_format, mode=write_mode)
             # Handle if the file does not exist yet. We can remove this and always use 'append' if we update to append
             # creates file if not exists.
             if firstIter:

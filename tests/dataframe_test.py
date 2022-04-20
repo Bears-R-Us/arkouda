@@ -438,19 +438,20 @@ class DataFrameTest(ArkoudaTest):
 
         akdf = ak.DataFrame(df_dict)
 
-        # make directory to save to so pandas read works
-        os.mkdir("save_table_test")
-        akdf.save_table("save_table_test/testFile")
-
-        pddf = pd.read_parquet("save_table_test", engine="pyarrow")
-
         validation_df = pd.DataFrame({
             "i": i,
             "c_1": c1,
             "c_2": c2
         })
 
+        # make directory to save to so pandas read works
+        os.mkdir("save_table_test")
+        akdf.save_table("save_table_test/testFile", file_format='Parquet')
+
+        pddf = pd.read_parquet("save_table_test", engine="pyarrow")
+
         self.assertTrue(pddf.equals(validation_df))
 
         # clean up test files
-        rmtree("save_table_test")
+        rmtree("save_table_test/")
+
