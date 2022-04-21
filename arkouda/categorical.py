@@ -9,12 +9,13 @@ from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarraysetops import in1d, unique, concatenate
-from arkouda.pdarraycreation import zeros_like, arange
+from arkouda.pdarraycreation import zeros_like, arange, array, zeros
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.logger import getArkoudaLogger
 from arkouda.infoclass import information, list_registry
+from arkouda.numeric import cast as akcast
 
 __all__ = ['Categorical']
 
@@ -30,6 +31,8 @@ class Categorical:
     ----------
     values : Strings
         String values to convert to categories 
+    NAvalue : str scalar
+        The value to use to represent missing/null data
 
     Attributes
     ----------
@@ -52,8 +55,8 @@ class Categorical:
 
     """
     BinOps = frozenset(["==", "!="])
-    RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments"])
-    RequiredPieces = frozenset(["categories", "codes"])
+    RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
+    RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
     objtype = "category"
     permutation = None
     segments = None
@@ -64,11 +67,20 @@ class Categorical:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
             self.codes = kwargs['codes']
-            self.categories = kwargs['categories']            
-            if 'permutation' in kwargs:
-                self.permutation = cast(pdarray, kwargs['permutation'])
-            if 'segments' in kwargs:
-                self.segments = cast(pdarray,kwargs['segments'])
+            self.categories = kwargs['categories']
+            if (self.codes.min() < 0) or (self.codes.max() >= self.categories.size):
+                raise ValueError("Codes out of bounds for categories: min = {}, max = {}, categories = {}".format(self.codes.min(), self.codes.max(), self.categories.size))
+            self.permutation = kwargs.get('permutation', None)
+            self.segments = kwargs.get('segments', None)
+            if self.permutation is not None and self.segments is not None:
+                # Permutation and segments should only ever be supplied together from
+                # the .from_codes() method, not user input
+                self.permutation = cast(pdarray, self.permutation)
+                self.segments = cast(pdarray, self.permutation)
+                unique_codes = self.codes[self.permutation[self.segments]]
+            else:
+                unique_codes = unique(self.codes)
+            self._categories_used = self.categories[unique_codes]
         else:
             # Typical initialization, called with values
             if not isinstance(values, Strings):
@@ -79,18 +91,36 @@ class Categorical:
             self.codes = g.broadcast(arange(self.categories.size), permute=True)
             self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
+            # Make a copy because N/A value must be added below
+            self._categories_used = self.categories[:]
+
+        # When read from file or attached, NA code will be passed as a pdarray
+        # Otherwise, the NA value is set to a string
+        if '_akNAcode' in kwargs:
+            self._akNAcode = kwargs['_akNAcode']
+            self._NAcode = int(self._akNAcode[0])
+            self.NAvalue = self.categories[self._NAcode]
+        else:
+            self.NAvalue = kwargs.get('NAvalue', 'N/A')
+            findNA = (self.categories == self.NAvalue)
+            if findNA.any():
+                self._NAcode = int(akcast(findNA, akint64).argmax())
+            else:
+                # Append NA value
+                self.categories = concatenate((self.categories, array([self.NAvalue])))
+                self._NAcode = self.categories.size - 1
+            self._akNAcode = array([self._NAcode])
         # Always set these values
         self.size: int_scalars = self.codes.size
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.name : Optional[str] = None
-        self.uses_all_categories = kwargs['uses_all_categories'] if 'uses_all_categories' in kwargs else True
 
     @classmethod
     @typechecked
     def from_codes(cls, codes: pdarray, categories: Strings,
-                   permutation=None, segments=None, uses_all_categories=False) -> Categorical:
+                   permutation=None, segments=None, **kwargs) -> Categorical:
         """
         Make a Categorical from codes and categories arrays. If codes and 
         categories have already been pre-computed, this constructor saves 
@@ -122,7 +152,82 @@ class Categorical:
         if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
         return cls(None, codes=codes, categories=categories, 
-                   permutation=permutation, segments=segments, uses_all_categories=uses_all_categories)
+                   permutation=permutation, segments=segments, **kwargs)
+
+    @classmethod
+    def standardize_categories(cls, arrays, NAvalue='N/A'):
+        '''
+        Standardize an array of Categoricals so that they share the same categories.
+
+        Parameters
+        ----------
+        arrays : sequence of Categoricals
+            The Categoricals to standardize
+        NAvalue : str scalar
+            The value to use to represent missing/null data
+
+        Returns
+        -------
+        List of Categoricals
+            A list of the original Categoricals remapped to the shared categories.
+        '''
+        for arr in arrays:
+            if not isinstance(arr, cls):
+                raise TypeError("All arguments must be {}".format(cls.__name__))
+        new_categories = unique(concatenate([arr.categories for arr in arrays], ordered=False))
+        findNA = (new_categories == NAvalue)
+        if not findNA.any():
+            # Append NA value
+            new_categories = concatenate((new_categories, array([NAvalue])))
+        return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
+
+    def set_categories(self, new_categories, NAvalue=None):
+        '''
+        Set categories to user-defined values.
+        
+        Parameters
+        ----------
+        new_categories : Strings
+            The array of new categories to use. Must be unique.
+        NAvalue : str scalar
+            The value to use to represent missing/null data
+
+        Returns
+        -------
+        Categorical
+            A new Categorical with the user-defined categories. Old values present
+            in new categories will appear unchanged. Old values not present will
+            be assigned the NA value.
+        '''
+        if NAvalue is None:
+            NAvalue = self.NAvalue
+        findNA = (new_categories == NAvalue)
+        if not findNA.any():
+            # Append NA value
+            new_categories = concatenate((new_categories, array([NAvalue])))
+            NAcode = new_categories.size - 1
+        else:
+            NAcode = int(akcast(findNA, akint64).argmax())
+        unique_new_codes = zeros(self.categories.size, dtype=akint64)
+        unique_new_codes.fill(NAcode)
+        # Concatenate old and new categories and unique codes
+        bothcats = concatenate((self.categories, new_categories), ordered=False)
+        bothcodes = concatenate((arange(self.categories.size), arange(new_categories.size)), ordered=False)
+        # Group combined categories to find matches
+        g = GroupBy(bothcats)
+        ct = g.count()[1]
+        if (ct > 2).any():
+            raise ValueError("User-specified categories must be unique")
+        # Matches have two hits in concatenated array
+        present = (ct == 2)
+        # Matching pairs define a mapping of old codes to new codes
+        scatterinds = bothcodes[g.permutation[g.segments[present]]]
+        gatherinds = bothcodes[g.permutation[g.segments[present] + 1]]
+        # Make a lookup table where old code at scatterind maps to new code at gatherind
+        unique_new_codes[scatterinds] = arange(new_categories.size)[gatherinds]
+        # Apply the lookup to map old codes to new codes
+        new_codes = unique_new_codes[self.codes]
+        return self.__class__.from_codes(new_codes, new_categories, NAvalue=NAvalue)
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -217,28 +322,30 @@ class Categorical:
                 # Because categories are identical, codes can be compared directly
                 return self.codes._binop(other.codes, op)
             else:
-                # Remap both codes to the union of categories
-                union = unique(concatenate((self.categories, other.categories), ordered=False))
-                newinds = arange(union.size)
-                # Inds of self.categories in unioned categories
-                selfnewinds = newinds[in1d(union, self.categories)]
-                # Need a permutation and segments to broadcast new codes
-                if self.permutation is None or self.segments is None:
-                    g = GroupBy(self.codes)
-                    self.permutation = g.permutation
-                    self.segments = g.segments
-                # Form new codes by broadcasting new indices for unioned categories
-                selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
-                # Repeat for other
-                othernewinds = newinds[in1d(union, other.categories)]
-                if other.permutation is None or other.segments is None:
-                    g = GroupBy(other.codes)
-                    other.permutation = g.permutation
-                    other.segments = g.segments
-                othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
-                # selfnewcodes and othernewcodes now refer to same unioned categories
-                # and can be compared directly
-                return selfnewcodes._binop(othernewcodes, op)
+                tmpself, tmpother = self.standardize_categories((self, other))
+                return tmpself.codes._binop(tmpother.codes, op)
+                # # Remap both codes to the union of categories
+                # union = unique(concatenate((self.categories, other.categories), ordered=False))
+                # newinds = arange(union.size)
+                # # Inds of self.categories in unioned categories
+                # selfnewinds = newinds[in1d(union, self.categories)]
+                # # Need a permutation and segments to broadcast new codes
+                # if self.permutation is None or self.segments is None:
+                #     g = GroupBy(self.codes)
+                #     self.permutation = g.permutation
+                #     self.segments = g.segments
+                # # Form new codes by broadcasting new indices for unioned categories
+                # selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
+                # # Repeat for other
+                # othernewinds = newinds[in1d(union, other.categories)]
+                # if other.permutation is None or other.segments is None:
+                #     g = GroupBy(other.codes)
+                #     other.permutation = g.permutation
+                #     other.segments = g.segments
+                # othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
+                # # selfnewcodes and othernewcodes now refer to same unioned categories
+                # # and can be compared directly
+                # return selfnewcodes._binop(othernewcodes, op)
         else:
             raise NotImplementedError(("Operations between Categorical and " +
                                 "non-Categorical not yet implemented. " +
@@ -284,7 +391,15 @@ class Categorical:
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.categories[self.codes[key]]
         else:
-            return Categorical.from_codes(self.codes[key], self.categories).reset_categories()
+            # Don't reset categories because they might have been user-defined
+            # Initialization now determines which categories are used
+            return Categorical.from_codes(self.codes[key], self.categories)
+
+    def isna(self):
+        '''
+        Find where values are missing or null (as defined by self.NAvalue)
+        '''
+        return (self.codes == self._NAcode)
 
     def reset_categories(self) -> Categorical:
         """
@@ -303,7 +418,7 @@ class Categorical:
         idx = self.categories[g.unique_keys]
         newvals = g.broadcast(arange(idx.size), permute=True)
         return Categorical.from_codes(newvals, idx, permutation=g.permutation,
-                                      segments=g.segments, uses_all_categories=True)
+                                      segments=g.segments, NAvalue=self.NAvalue)
 
     @typechecked
     def contains(self, substr : str) -> pdarray:
@@ -451,19 +566,21 @@ class Categorical:
         >>> ak.in1d(cat,catTwo)
         array([False, False, False, False, False])
         """
-        reset_cat = self if self.uses_all_categories else self.reset_categories()
         if isinstance(test, Categorical):
-            reset_test = test if test.uses_all_categories else test.reset_categories()
-            categoriesisin = in1d(reset_cat.categories, reset_test.categories)
+            # Must use test._categories_used instead of test.categories to avoid
+            # falsely returning True when a value is present in test.categories
+            # but not used in the array. On the other hand, we don't need to use
+            # self._categories_used, because indexing with [self.codes] below ensures
+            # that only results for categories used in self.codes will be returned.
+            categoriesisin = in1d(self.categories, test._categories_used)
         else:
-            categoriesisin = in1d(reset_cat.categories, test)
-        return categoriesisin[reset_cat.codes]
+            categoriesisin = in1d(self.categories, test)
+        return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
         #__doc__ = unique.__doc__
-        reset_cat = self if self.uses_all_categories else self.reset_categories()
-        return Categorical.from_codes(arange(reset_cat.categories.size), reset_cat.categories,
-                                      uses_all_categories=reset_cat.uses_all_categories)
+        return Categorical.from_codes(arange(self._categories_used.size), self._categories_used,
+                                      NAvalue=self.NAvalue)
 
     def group(self) -> pdarray:
         """
@@ -566,19 +683,10 @@ class Categorical:
             newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others], ordered=ordered))
             return Categorical.from_codes(newvals, self.categories)
         else:
-            g = GroupBy(concatenate([self.categories] + \
-                                       [o.categories for o in others],
-                                       ordered=True))
-            newidx = g.unique_keys
-            wherediditgo = g.broadcast(arange(newidx.size), permute=True)
-            idxsizes = np.array([self.categories.size] + \
-                                [o.categories.size for o in others])
-            idxoffsets = np.cumsum(idxsizes) - idxsizes
-            oldvals = concatenate([c + off for c, off in \
-                                   zip([self.codes] + [o.codes for o in others], idxoffsets)],
-                                  ordered=ordered)
-            newvals = wherediditgo[oldvals]
-            return Categorical.from_codes(newvals, newidx)
+            new_arrays = self.standardize_categories([self] + list(others), NAvalue=self.NAvalue)
+            new_categories = new_arrays[0].categories
+            new_codes = cast(pdarray, concatenate([arr.codes for arr in new_arrays], ordered=ordered))
+            return Categorical.from_codes(new_codes, new_categories, NAvalue=self.NAvalue)
 
     @typechecked
     def save(self, prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate') -> str:
@@ -821,6 +929,7 @@ class Categorical:
         parts = {
             "categories": Strings.attach(f"{user_defined_name}.categories"),
             "codes": pdarray.attach(f"{user_defined_name}.codes"),
+            "_akNAcode": pdarray.attach(f"{user_defined_name}._akNAcode")
         }
 
         # Add optional pieces only if they're contained in the registry
@@ -860,6 +969,7 @@ class Categorical:
         # We have 4 subcomponents, unregister each of them
         Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
         unregister_pdarray_by_name(f"{user_defined_name}.codes")
+        unregister_pdarray_by_name(f"{user_defined_name}._akNAcode")
 
         # Unregister optional pieces only if they are contained in the registry
         registry = list_registry()
