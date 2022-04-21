@@ -165,6 +165,23 @@ def log(pda : pdarray) -> pdarray:
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
+def log10(x: pdarray) -> pdarray:
+    """
+    compute the log of a pdarray and perform a basechange
+
+    Parameters
+    __________
+    x : pdarray
+        array to compute on
+
+    Returns
+    _______
+    pdarray contain values of the base 10 log
+    """
+    basechange = float(np.log10(np.exp(1)))
+    return basechange*log(x)
+
+@typechecked
 def exp(pda : pdarray) -> pdarray:
     """
     Return the element-wise exponential of the array.
