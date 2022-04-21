@@ -24,3 +24,4 @@ from arkouda.row import *
 from arkouda.index import *
 from arkouda.series import *
 from arkouda.alignment import *
+from arkouda.plotting import *
