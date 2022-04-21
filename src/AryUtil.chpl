@@ -324,7 +324,7 @@ module AryUtil
       return (totalDigits, bitWidths, negs);
     }
 
-    proc mergeNumericArrays(param numDigits, size, totalDigits, bitWidths, negs, names, st) {
+    proc mergeNumericArrays(param numDigits, size, totalDigits, bitWidths, negs, names, st) throws {
       // check mem limit for merged array and sort on merged array
       const itemsize = numDigits * bitsPerDigit / 8;
       overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
