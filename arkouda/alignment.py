@@ -219,6 +219,9 @@ def lookup(keys, values, arguments, fillvalue=-1):
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
     """
+    if isinstance(values, Categorical):
+        codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
+        return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
     # Condense down to unique arguments to query
     g = GroupBy(arguments)
     # scattermask = Args that exist in table

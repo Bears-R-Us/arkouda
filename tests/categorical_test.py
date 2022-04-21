@@ -297,6 +297,14 @@ class CategoricalTest(ArkoudaTest):
         self.assertTrue(not c4.isna().any())
         self.assertTrue(c3.categories.size == c1.categories.size+1)
         self.assertTrue(c4.categories.size == c2.categories.size+1)
+
+    def testLookup(self):
+        keys = ak.array([1, 2, 3])
+        values = ak.Categorical(ak.array(['A', 'B', 'C']))
+        args = ak.array([3, 2, 1, 0])
+        ret = ak.lookup(keys, values, args)
+        expected = ['C', 'B', 'A', 'N/A']
+        self.assertListEqual(ret.to_ndarray().tolist(), expected)
         
     def tearDown(self):
         super(CategoricalTest, self).tearDown()
