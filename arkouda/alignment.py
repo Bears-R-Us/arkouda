@@ -245,39 +245,6 @@ def lookup(keys, values, arguments, fillvalue=-1):
     return g.broadcast(uvals, permute=True)
 
 
-def gen_ranges(starts, ends):
-    """
-    Generate a segmented array of variable-length, contiguous
-    ranges between pairs of start- and end-points.
-
-    Parameters
-    ----------
-    starts : pdarray, int64
-        The start value of each range
-    ends : pdarray, int64
-        The end value (exclusive) of each range
-
-    Returns
-    -------
-    segments : pdarray, int64
-        The starting index of each range in the resulting array
-    ranges : pdarray, int64
-        The actual ranges, flattened into a single array
-    """
-    if starts.size != ends.size:
-        raise ValueError("starts and ends must be same size")
-    if not ((ends - starts) > 0).all():
-        raise ValueError("all ends must be greater than starts")
-    lengths = ends - starts
-    segs = cumsum(lengths) - lengths
-    totlen = lengths.sum()
-    slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]),
-                         starts[1:] - starts[:-1] - lengths[:-1] + 1))
-    slices[segs] = diffs
-    return segs, cumsum(slices)
-
-
 def in1d_intervals(vals, intervals, symmetric=False, assume_unique=False):
     """
     Test each value for membership in *any* of a set of half-open (pythonic)
