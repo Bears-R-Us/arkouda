@@ -176,7 +176,7 @@ def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, 
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
-            a = np.array(a)
+            a = np.array(a, dtype=dtype)
         except:
             raise TypeError(('a must be a pdarray, np.ndarray, or convertible to' +
                             ' a numpy array'))
