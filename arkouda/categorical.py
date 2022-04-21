@@ -219,10 +219,10 @@ class Categorical:
         if (ct > 2).any():
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
-        present = (ct == 2)
+        present = g.segments[(ct == 2)]
         # Matching pairs define a mapping of old codes to new codes
-        scatterinds = bothcodes[g.permutation[g.segments[present]]]
-        gatherinds = bothcodes[g.permutation[g.segments[present] + 1]]
+        scatterinds = bothcodes[g.permutation[present]]
+        gatherinds = bothcodes[g.permutation[present + 1]]
         # Make a lookup table where old code at scatterind maps to new code at gatherind
         unique_new_codes[scatterinds] = arange(new_categories.size)[gatherinds]
         # Apply the lookup to map old codes to new codes
@@ -324,28 +324,6 @@ class Categorical:
             else:
                 tmpself, tmpother = self.standardize_categories((self, other))
                 return tmpself.codes._binop(tmpother.codes, op)
-                # # Remap both codes to the union of categories
-                # union = unique(concatenate((self.categories, other.categories), ordered=False))
-                # newinds = arange(union.size)
-                # # Inds of self.categories in unioned categories
-                # selfnewinds = newinds[in1d(union, self.categories)]
-                # # Need a permutation and segments to broadcast new codes
-                # if self.permutation is None or self.segments is None:
-                #     g = GroupBy(self.codes)
-                #     self.permutation = g.permutation
-                #     self.segments = g.segments
-                # # Form new codes by broadcasting new indices for unioned categories
-                # selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
-                # # Repeat for other
-                # othernewinds = newinds[in1d(union, other.categories)]
-                # if other.permutation is None or other.segments is None:
-                #     g = GroupBy(other.codes)
-                #     other.permutation = g.permutation
-                #     other.segments = g.segments
-                # othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
-                # # selfnewcodes and othernewcodes now refer to same unioned categories
-                # # and can be compared directly
-                # return selfnewcodes._binop(othernewcodes, op)
         else:
             raise NotImplementedError(("Operations between Categorical and " +
                                 "non-Categorical not yet implemented. " +
