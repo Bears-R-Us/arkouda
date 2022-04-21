@@ -1,6 +1,6 @@
 from arkouda.pdarrayclass import pdarray
 from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_timedelta # type: ignore
-from arkouda.dtypes import int64, isSupportedInt
+from arkouda.dtypes import int64, intTypes, isSupportedInt
 from arkouda.pdarraycreation import from_series, array as ak_array
 from arkouda.numeric import cast, abs as akabs
 import numpy as np # type: ignore
@@ -54,7 +54,7 @@ class _Timescalar:
         self.unit = np.datetime_data(scalar.dtype)[0]
         self._factor = _get_factor(self.unit)
         # int64 in nanoseconds
-        self._data = self._factor * scalar.astype('int64')
+        self.value = self._factor * scalar.astype('int64')
     
 
 class _AbstractBaseTime(pdarray):
@@ -70,16 +70,17 @@ class _AbstractBaseTime(pdarray):
         if isinstance(array, Datetime) or isinstance(array, Timedelta):
             self.unit: str = array.unit
             self._factor: int = array._factor
-            self._data: pdarray  = array._data
+            # Make a copy to avoid unknown symbol errors
+            self.values: pdarray = cast(array.values, int64)
         # Convert the input to int64 pdarray of nanoseconds
         elif isinstance(array, pdarray):
-            if array.dtype != int64:
+            if array.dtype not in intTypes:
                 raise TypeError("{} array must have int64 dtype".format(self.__class__.__name__))
             # Already int64 pdarray, just scale
             self.unit = unit
             self._factor = _get_factor(self.unit)
             # This makes a copy of the input array, to leave input unchanged
-            self._data = self._factor * array # Mimics a datetime64[ns] array         
+            self.values = cast(self._factor * array, int64) # Mimics a datetime64[ns] array
         elif hasattr(array, 'dtype'):
             # Handles all pandas and numpy datetime/timedelta arrays
             if array.dtype.kind not in ('M', 'm'):
@@ -91,13 +92,13 @@ class _AbstractBaseTime(pdarray):
                 self.unit = np.datetime_data(array.values.dtype)[0]
                 self._factor = _get_factor(self.unit)
                 # Create pdarray
-                self._data = from_series(array)
+                self.values = from_series(array)
                 # Scale if necessary
                 # This is futureproofing; it will not be used unless pandas
                 # changes its Datetime implementation
                 if self._factor != 1:
                     # Scale inplace because we already created a copy
-                    self._data *= self._factor
+                    self.values *= self._factor
             elif isinstance(array, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
@@ -108,8 +109,10 @@ class _AbstractBaseTime(pdarray):
                 self.__init__(array.to_series()) # type: ignore
         else:
             raise TypeError("Unsupported type: {}".format(type(array)))
-        # Now that self._data is correct, init self with same metadata
-        super().__init__(self._data.name, self._data.dtype, self._data.size, self._data.ndim, self._data.shape, self._data.itemsize)
+        # Now that self.values is correct, init self with same metadata
+        super().__init__(self.values.name, self.values.dtype, self.values.size, self.values.ndim, self.values.shape, self.values.itemsize)
+        # Deprecated
+        self._data = self.values
 
     @classmethod
     def _get_callback(cls, other, op):
@@ -130,7 +133,7 @@ class _AbstractBaseTime(pdarray):
             Values rounded down to nearest frequency
         '''
         f = _get_factor(freq)
-        return self.__class__(self._data // f, unit=freq)
+        return self.__class__(self.values // f, unit=freq)
 
     def ceil(self, freq):
         '''Round times up to the nearest integer of a given frequency.
@@ -146,7 +149,7 @@ class _AbstractBaseTime(pdarray):
             Values rounded up to nearest frequency
         '''
         f = _get_factor(freq)
-        return self.__class__((self._data + (f - 1)) // f, unit=freq)
+        return self.__class__((self.values + (f - 1)) // f, unit=freq)
 
     def round(self, freq):
         '''Round times to the nearest integer of a given frequency. Midpoint
@@ -163,7 +166,7 @@ class _AbstractBaseTime(pdarray):
             Values rounded to nearest frequency
         '''
         f = _get_factor(freq)
-        offset = self._data + ((f + 1) // 2)
+        offset = self.values + ((f + 1) // 2)
         rounded = offset // f
         # Halfway values are supposed to round to the nearest even integer
         # Need to figure out which ones ended up odd and fix them
@@ -173,7 +176,7 @@ class _AbstractBaseTime(pdarray):
 
     def to_ndarray(self):
         __doc__ = super().to_ndarray.__doc__
-        return np.array(self._data.to_ndarray(), dtype="{}64[ns]".format(self.__class__.__name__.lower()))
+        return np.array(self.values.to_ndarray(), dtype="{}64[ns]".format(self.__class__.__name__.lower()))
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
@@ -201,18 +204,18 @@ class _AbstractBaseTime(pdarray):
                 raise TypeError("{} not supported between {} and Datetime".format(op, self.__class__.__name__))
             otherclass = 'Datetime'
             if self._is_datetime_scalar(other):
-                otherdata = _Timescalar(other)._data
+                otherdata = _Timescalar(other).value
             else:
-                otherdata = other._data
+                otherdata = other.values
         elif isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_with_timedelta:
                 raise TypeError("{} not supported between {} and Timedelta".format(op, self.__class__.__name__))
             otherclass = 'Timedelta'
             if self._is_timedelta_scalar(other):
-                otherdata = _Timescalar(other)._data
+                otherdata = _Timescalar(other).value
             else:
-                otherdata = other._data
-        elif (isinstance(other, pdarray) and other.dtype == int64) or isSupportedInt(other):
+                otherdata = other.values
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
             if op not in self.supported_with_pdarray:
                 raise TypeError("{} not supported between {} and integer".format(op, self.__class__.__name__))
             otherclass = 'pdarray'
@@ -222,7 +225,7 @@ class _AbstractBaseTime(pdarray):
         # Determines return type (Datetime, Timedelta, or pdarray)
         callback = self._get_callback(otherclass, op)
         # Actual operation evaluates on the underlying int64 data
-        return callback(self._data._binop(otherdata, op))
+        return callback(self.values._binop(otherdata, op))
 
     def _r_binop(self, other, op):
         # Need to do 2 things:
@@ -230,23 +233,23 @@ class _AbstractBaseTime(pdarray):
         #  2) Get other's int64 data to combine with self's data
         
         # First case is pdarray <op> self
-        if (isinstance(other, pdarray) and other.dtype == int64):
+        if (isinstance(other, pdarray) and other.dtype in intTypes):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError("{} not supported between int64 and {}".format(op, self.__class__.__name__))
             callback = self._get_callback('pdarray', op)
-            # Need to use other._binop because self._data._r_binop can only handle scalars
-            return callback(other._binop(self._data, op))
-        # All other cases are scalars, so can use self._data._r_binop
+            # Need to use other._binop because self.values._r_binop can only handle scalars
+            return callback(other._binop(self.values, op))
+        # All other cases are scalars, so can use self.values._r_binop
         elif self._is_datetime_scalar(other):
             if op not in self.supported_with_r_datetime:
                 raise TypeError("{} not supported between scalar datetime and {}".format(op, self.__class__.__name__))
             otherclass = 'Datetime'
-            otherdata = _Timescalar(other)._data
+            otherdata = _Timescalar(other).value
         elif self._is_timedelta_scalar(other):
             if op not in self.supported_with_r_timedelta:
                 raise TypeError("{} not supported between scalar timedelta and {}".format(op, self.__class__.__name__))
             otherclass = 'Timedelta'
-            otherdata = _Timescalar(other)._data
+            otherdata = _Timescalar(other).value
         elif isSupportedInt(other):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError("{} not supported between int64 and {}".format(op, self.__class__.__name__))
@@ -256,15 +259,17 @@ class _AbstractBaseTime(pdarray):
             # If here, type is not handled
             return NotImplemented
         callback = self._get_callback(otherclass, op)
-        return callback(self._data._r_binop(otherdata, op))
+        return callback(self.values._r_binop(otherdata, op))
 
     def opeq(self, other, op):
         if isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_opeq:
                 raise TypeError("{} {} Timedelta not supported".format(self.__class__.__name__, op))
             if self._is_timedelta_scalar(other):
-                other = _Timescalar(other)
-            self._data.opeq(other._data, op)
+                otherdata = _Timescalar(other).value
+            else:
+                otherdata = other.values
+            self.values.opeq(otherdata, op)
         elif isinstance(other, Datetime) or self._is_datetime_scalar(other):
             raise TypeError("{} {} datetime not supported".format(self.__class__.__name__, op))
         else:
@@ -289,43 +294,43 @@ class _AbstractBaseTime(pdarray):
     def __getitem__(self, key):
         if isSupportedInt(key):
             # Single integer index will return a pandas scalar
-            return self._scalar_callback(self._data[key])
+            return self._scalar_callback(self.values[key])
         else:
             # Slice or array index should return same class
-            return self.__class__(self._data[key])
+            return self.__class__(self.values[key])
 
     def __setitem__(self, key, value):
         # RHS can only be vector or scalar of same class
         if isinstance(value, self.__class__):
-            # Value._data is already in nanoseconds, so self._data
+            # Value.values is already in nanoseconds, so self.values
             # can be set directly
-            self._data[key] = value._data
+            self.values[key] = value.values
         elif self._is_supported_scalar(value):
             # _Timescalar takes care of normalization to nanoseconds
             normval = _Timescalar(value)
-            self._data[key] = normval._data
+            self.values[key] = normval.value
         else:
             return NotImplemented
 
     def min(self):
         __doc__ = super().min.__doc__
         # Return type is pandas scalar
-        return self._scalar_callback(self._data.min())
+        return self._scalar_callback(self.values.min())
 
     def max(self):
         __doc__ = super().max.__doc__
         # Return type is pandas scalar
-        return self._scalar_callback(self._data.max())
+        return self._scalar_callback(self.values.max())
 
     def mink(self, k):
         __doc__ = super().mink.__doc__
         # Return type is same class
-        return self.__class__(self._data.mink(k))
+        return self.__class__(self.values.mink(k))
 
     def maxk(self, k):
         __doc__ = super().maxk.__doc__
         # Return type is same class
-        return self.__class__(self._data.maxk(k))
+        return self.__class__(self.values.maxk(k))
 
 class Datetime(_AbstractBaseTime):
     '''Represents a date and/or time.
@@ -356,7 +361,7 @@ class Datetime(_AbstractBaseTime):
 
     Notes
     -----
-    The ``._data`` attribute is always in nanoseconds with int64 dtype.
+    The ``.values`` attribute is always in nanoseconds with int64 dtype.
     '''
     
     supported_with_datetime = frozenset(('==', '!=', '<', '<=', '>', '>=', '-'))
@@ -426,7 +431,7 @@ class Timedelta(_AbstractBaseTime):
 
     Notes
     -----
-    The ``._data`` attribute is always in nanoseconds with int64 dtype.
+    The ``.values`` attribute is always in nanoseconds with int64 dtype.
     '''
     supported_with_datetime = frozenset(('+'))
     supported_with_r_datetime = frozenset(('+', '-', '/', '//', '%'))
@@ -470,16 +475,16 @@ class Timedelta(_AbstractBaseTime):
         '''
         Returns the standard deviation as a pd.Timedelta object
         '''
-        return self._scalar_callback(self._data.std(ddof=ddof))
+        return self._scalar_callback(self.values.std(ddof=ddof))
 
     def sum(self):
         # Sum as a pd.Timedelta
-        return self._scalar_callback(self._data.sum())
+        return self._scalar_callback(self.values.sum())
 
     def abs(self):
         '''Absolute value of time interval.
         '''
-        return self.__class__(cast(akabs(self._data), 'int64'))
+        return self.__class__(cast(akabs(self.values), 'int64'))
     
     
 def date_range(start=None, end=None, periods=None, freq=None,

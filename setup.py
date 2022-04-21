@@ -137,7 +137,8 @@ setup(
         'typeguard==2.10.0',
         'tabulate',
         'pyfiglet',
-        'versioneer'
+        'versioneer',
+        'matplotlib'
     ],
 
     # List additional groups of dependencies here (e.g. development

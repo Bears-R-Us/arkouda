@@ -95,10 +95,10 @@ class SegArray:
         """
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
-        if not is_sorted(segments) or (unique(segments).size != segments.size):
+        if not is_sorted(segments):
             raise ValueError("Segments must be unique and in sorted order")
         if segments.size > 0:
-            if segments.min() != 0 or segments.max() >= values.size:
+            if segments.min() != 0:
                 raise ValueError("Segments must start at zero and be less than values.size")
         elif values.size > 0:
             raise ValueError("Cannot have non-empty values with empty segments")
@@ -115,12 +115,16 @@ class SegArray:
         else:
             self.lengths = lengths
         self.dtype = values.dtype
+
+        self._non_empty = self.lengths > 0
+        self._non_empty_count = self._non_empty.sum()
+
         if grouping is None:
-            if self.size == 0:
+            if self.size == 0 or self._non_empty_count == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(broadcast(self.segments, arange(self.size), self.valsize))
+                self.grouping = GroupBy(broadcast(self.segments[self._non_empty], arange(self._non_empty_count), self.valsize))
         else:
             self.grouping = grouping
 
@@ -384,7 +388,7 @@ class SegArray:
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
-        notsegstart[self.segments] = False
+        notsegstart[self.segments[self._non_empty]] = False
         valid = ones(self.valsize - n + 1, dtype=akbool)
         for i in range(n):
             end = self.valsize - n + i + 1
@@ -393,7 +397,9 @@ class SegArray:
                 valid &= notsegstart[i:end]
         ngrams = [char[valid] for char in ngrams]
         if return_origins:
-            origin_indices = self.grouping.broadcast(arange(self.size), permute=True)[:valid.size][valid]
+            # set the proper indexes for broadcasting. Needed to alot for empty segments
+            seg_idx = arange(self.size)[self._non_empty]
+            origin_indices = self.grouping.broadcast(seg_idx, permute=True)[:valid.size][valid]
             return ngrams, origin_indices
         else:
             return ngrams
@@ -560,7 +566,7 @@ class SegArray:
         else:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
-        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self.size), permute=True)
+        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self._non_empty_count), permute=True)
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
@@ -588,12 +594,22 @@ class SegArray:
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
-        isrepeat[self.segments] = False
+        isrepeat[self.segments[self._non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
-        # truehops = ak.cumsum(~isrepeat)
-        # nhops = ak.concatenate((truehops[self.segments[1:]], ak.array([truehops.sum()+1]))) - truehops[self.segments]
         truesegs = cumsum(nhops) - nhops
+        # Correct segments to properly assign empty lists - prevents dropping empty segments
+        if not self._non_empty.all():
+            truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
+            len_diff = self.lengths[self._non_empty] - truelens
+
+            x = 0  # tracking which non-empty segment length we need 
+            truesegs = zeros(self.size, dtype=akint64)
+            for i in range(1, self.size):
+                truesegs[i] = (self.segments[i] - len_diff[:x+1].sum())
+                if self._non_empty[i]:
+                    x += 1
+
         norepeats = SegArray(truesegs, truepaths)
         if return_multiplicity:
             truehopinds = arange(self.valsize)[~isrepeat]
@@ -786,6 +802,218 @@ class SegArray:
         segments = load(prefix_path, dataset=dataset + segment_suffix)
         values = load(prefix_path, dataset=dataset + value_suffix)
         return cls(segments, values)
+
+    def intersect(self, other):
+        """
+        Computes the intersection of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d intersections of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.intersect1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.intersect(seg_b)
+        SegArray([
+        [1, 3],
+        [4]
+        ])
+        """
+        from arkouda.pdarraysetops import intersect1d
+
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth[k] = zeros(k.size, dtype=akbool)
+            if truth[-1]:
+                segments[-1] = g.permutation.size
+                truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
+
+    def union(self, other):
+        """
+        Computes the union of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d union of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.union1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.union(seg_b)
+        SegArray([
+        [1, 2, 3, 4, 5],
+        [1, 2, 3, 4, 5]
+        ])
+        """
+        from arkouda.pdarraysetops import union1d
+
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth[k] = zeros(k.size, dtype=akbool)
+            if truth[-1]:
+                segments[-1] = g.permutation.size
+                truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
+
+    def setdiff(self, other):
+        """
+        Computes the set difference of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d set difference of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.setdiff1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.setdiff(seg_b)
+        SegArray([
+        [2, 4],
+        [1, 3, 5]
+        ])
+        """
+        from arkouda.pdarraysetops import setdiff1d
+
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth[k] = zeros(k.size, dtype=akbool)
+            if truth[-1]:
+                segments[-1] = g.permutation.size
+                truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
+
+    def setxor(self, other):
+        """
+        Computes the symmetric difference of 2 SegArrays.
+
+        Parameters
+        ----------
+        other : SegArray
+            SegArray to compute against
+
+        Returns
+        -------
+        SegArray
+            Segments are the 1d symmetric difference of the segments of self and other
+
+        See Also
+        --------
+        pdarraysetops.setxor1d
+
+        Examples
+        --------
+        >>> a = [1, 2, 3, 1, 4]
+        >>> b = [3, 1, 4, 5]
+        >>> c = [1, 3, 3, 5]
+        >>> d = [2, 2, 4]
+        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a.setxor(seg_b)
+        SegArray([
+        [2, 4, 5],
+        [1, 3, 5, 2]
+        ])
+        """
+        from arkouda.pdarraysetops import setxor1d
+
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
+        g = GroupBy(new_seg_inds)
+        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        if g.segments.size == self.size:
+            return SegArray(g.segments, new_values[g.permutation])
+        else:
+            segments = zeros(self.size, dtype=akint64)
+            truth = ones(self.size, dtype=akbool)
+            k, ct = g.count()
+            segments[k] = g.segments
+            truth[k] = zeros(k.size, dtype=akbool)
+            if truth[-1]:
+                segments[-1] = g.permutation.size
+                truth[-1] = False
+            segments[truth] = segments[arange(self.size)[truth] + 1]
+            return SegArray(segments, new_values[g.permutation])
 
 # Register/Attach functionality has been removed until it is added for GroupBy.
 # Please refer to ticket #1122 (https://github.com/Bears-R-Us/arkouda/issues/1122 for updates

@@ -6,7 +6,8 @@ import builtins
 import sys
 
 __all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64", 
-           "uint8", "uint64", "str_", "check_np_dtype", "translate_np_dtype", 
+           "uint8", "uint64", "str_", "intTypes", "bitType",
+           "check_np_dtype", "translate_np_dtype", 
            "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES", "bool_scalars",
            "float_scalars", "int_scalars", "numeric_scalars", "numpy_scalars",
            "str_scalars", "all_scalars", "get_byteorder",
@@ -27,6 +28,8 @@ uint8 = np.dtype(np.uint8)
 uint64 = np.dtype(np.uint64)
 str_ = np.dtype(np.str_)
 npstr = np.dtype(str)
+intTypes = frozenset((int64, uint64, uint8))
+bitType = uint64
 
 # Union aliases used for static and runtime type checking
 bool_scalars = Union[builtins.bool, np.bool_]

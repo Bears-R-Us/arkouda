@@ -7,29 +7,27 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 from arkouda.categorical import Categorical
 
-__all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
-           "load_all", "save_all", "read_parquet"]
+__all__ = ["ls", "read", "load", "get_datasets",
+           "load_all", "save_all",  "get_filetype"]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
-
 @typechecked
-def ls_hdf(filename : str, is_parquet=False) -> List[str]:
+def ls(filename : str) -> List[str]:
     """
-    This function calls the h5ls utility on a filename visible to the
-    arkouda server.
+    This function calls the h5ls utility on a HDF5 file visible to the
+    arkouda server or calls a function that imitates the result of h5ls
+    on a Parquet file.
 
     Parameters
     ----------
     filename : str
-        The name of the file to pass to h5ls
-    is_parquet : bool
-        Is filename a Parquet file; false by default
+        The name of the file to pass to the server
 
     Returns
     -------
     str
-        The string output of `h5ls <filename>` from the server
+        The string output of the datasets from the server
 
     Raises
     ------
@@ -43,186 +41,19 @@ def ls_hdf(filename : str, is_parquet=False) -> List[str]:
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    cmd = 'lshdf' if not is_parquet else 'lspq'
+    cmd = 'lsany'
     return json.loads(cast(str,generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
 
-@typechecked
-def read_hdf(dsetName : str, filenames : Union[str,List[str]],
-             strictTypes: bool=True, allow_errors:bool = False, calc_string_offsets:bool = False) \
-          -> Union[pdarray, Strings]:
+def read(filenames : Union[str, List[str]],
+         datasets: Optional[Union[str, List[str]]] = None,
+         iterative: bool = False,
+         strictTypes: bool = True,
+         allow_errors: bool = False,
+         calc_string_offsets = False,
+         file_format: str = 'infer')\
+         -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
-    Read a single dataset from multiple HDF5 files into an Arkouda
-    pdarray or Strings object.
-
-    Parameters
-    ----------
-    dsetName : str
-        The name of the dataset (must be the same across all files)
-    filenames : list or str
-        Either a list of filenames or shell expression
-    strictTypes: bool
-        If True (default), require all dtypes in all files to have the
-        same precision and sign. If False, allow dtypes of different
-        precision and sign across different files. For example, if one 
-        file contains a uint32 dataset and another contains an int64
-        dataset, the contents of both will be read into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-    calc_string_offsets: bool
-        Default False, if True this will tell the server to calculate the
-        offsets/segments array on the server versus loading them from HDF5 files.
-        In the future this option may be set to True as the default.
-
-    Returns
-    -------
-    Union[pdarray,Strings] 
-        A pdarray or Strings instance pointing to the server-side data
-
-    Raises
-    ------
-    TypeError 
-        Raised if dsetName is not a str or if filenames is neither a string
-        nor a list of strings
-    ValueError 
-        Raised if all datasets are not present in all hdf5 files  
-    RuntimeError
-        Raised if one or more of the specified files cannot be opened  
-
-    See Also
-    --------
-    get_datasets, ls_hdf, read_all, load, save
-
-    Notes
-    -----
-    If filenames is a string, it is interpreted as a shell expression
-    (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files. Use ``get_datasets`` to
-    show the names of datasets in HDF5 files.
-
-    If dsetName is not present in all files, a TypeError is raised.
-    """
-    if isinstance(filenames, str):
-        filenames = [filenames]
-    # rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
-    # # This is a hack to detect a string return type
-    # # In the future, we should put the number and type into the return message
-    # if '+' in rep_msg:
-    #     return Strings(*rep_msg.split('+'))
-    # else:
-    #     return create_pdarray(rep_msg)
-    return cast(Union[pdarray, Strings],
-                read_all(filenames, datasets=dsetName, strictTypes=strictTypes, allow_errors=allow_errors,
-                         calc_string_offsets=calc_string_offsets))
-
-def read_parquet(filenames : Union[str, List[str]],
-                 datasets : Union[str, List[str]]=None,
-                 strictTypes: bool=True, allow_errors:bool = False)\
-             -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
-    """
-    Read a single dataset from multiple Parquet files into an Arkouda
-    pdarray object.
-
-    Parameters
-    ----------
-    filenames : list or str
-        Either a list of filenames or shell expression
-    datasets : str
-        The names of datasets to be read (must be the same across all files).
-        Defaults to all supported columns.
-    strictTypes: bool
-        If True (default), require all dtypes in all files to have the
-        same precision and sign. If False, allow dtypes of different
-        precision and sign across different files. For example, if one 
-        file contains a uint32 dataset and another contains an int64
-        dataset, the contents of both will be read into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-
-    Returns
-    -------
-    pdarray
-        A pdarray instance pointing to the server-side data
-
-    Raises
-    ------
-    TypeError 
-        Raised if dsetName is not a str or if filenames is neither a string
-        nor a list of strings
-    ValueError 
-        Raised if all datasets are not present in all parquet files  
-    RuntimeError
-        Raised if one or more of the specified files cannot be opened  
-
-    See Also
-    --------
-    read_hdf, get_datasets, ls_hdf, read_all, load, save
-
-    Notes
-    -----
-    If filenames is a string, it is interpreted as a shell expression
-    (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files. Use ``get_datasets`` to
-    show the names of datasets in Parquet files.
-
-    If dsetName is not present in all files, a TypeError is raised.
-    """
-    if isinstance(filenames, str):
-        filenames = [filenames]
-    if datasets is None:
-        datasets = get_datasets_allow_errors(filenames, True) if allow_errors else get_datasets(filenames[0], True)
-    if isinstance(datasets, str):
-        datasets = [datasets]
-
-    nonexistent = set(datasets) - \
-        (set(get_datasets_allow_errors(filenames, True)) if allow_errors else set(get_datasets(filenames[0], True)))
-    if len(nonexistent) > 0:
-        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
-
-    rep_msg = generic_msg(cmd="readAllParquet", args=
-                          f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {json.dumps(datasets)} | {json.dumps(filenames)}")
-    rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
-    items = rep["items"] if "items" in rep else []
-    file_errors = rep["file_errors"] if "file_errors" in rep else []
-
-    # We have a couple possible return conditions
-    # 1. We have multiple items returned i.e. multi pdarrays
-    # 2. We have a single pdarray
-    # TODO: add support for a string objects in Parquet
-    if len(items) > 1: #  DataSets condition
-        d: Dict[str, Union[pdarray, Strings]] = {}
-        for item in items:
-            if "seg_string" == item["arkouda_type"]:
-                d[item["dataset_name"]] = Strings.from_return_msg(item["created"])
-            elif "pdarray" == item["arkouda_type"]:
-                d[item["dataset_name"]] = create_pdarray(item["created"])
-            else:
-                raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
-        return d
-
-    elif len(items) == 1:
-        item = items[0]
-        if "pdarray" == item["arkouda_type"]:
-            return create_pdarray(item["created"])
-        elif "seg_string" == item["arkouda_type"]:
-            return Strings.from_return_msg(item["created"])
-        else:
-            raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
-    else:
-        raise RuntimeError("No items were returned")
-
-def read_all(filenames : Union[str, List[str]],
-             datasets: Optional[Union[str, List[str]]] = None,
-             iterative: bool = False,
-             strictTypes: bool = True,
-             allow_errors: bool = False,
-             calc_string_offsets = False)\
-             -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
-    """
-    Read datasets from HDF5 files.
+    Read datasets from HDF5 or Parquet files.
 
     Parameters
     ----------
@@ -247,6 +78,11 @@ def read_all(filenames : Union[str, List[str]],
         Default False, if True this will tell the server to calculate the
         offsets/segments array on the server versus loading them from HDF5 files.
         In the future this option may be set to True as the default.
+    file_format: str
+        Default 'infer', if 'HDF5' or 'Parquet' (case insensitive), the file
+        type checking will be skipped and will execute expecting all files in
+        filenames to be of the specified type. Otherwise, will infer filetype
+        based off of first file in filenames, expanded if a glob expression.
 
     Returns
     -------
@@ -269,7 +105,7 @@ def read_all(filenames : Union[str, List[str]],
 
     See Also
     --------
-    read_hdf, get_datasets, ls_hdf
+    read, get_datasets, ls
 
     Notes
     -----
@@ -299,13 +135,24 @@ def read_all(filenames : Union[str, List[str]],
             (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+
+    file_format = file_format.lower()
+    if file_format == 'infer':
+        cmd = 'readany'
+    elif file_format == 'hdf5':
+        cmd = 'readAllHdf'
+    elif file_format == 'parquet':
+        cmd = 'readAllParquet'
+    else:
+        warnings.warn(f"Unrecognized file format string: {file_format}. Inferring file type")
+        cmd = 'readany'
     if iterative == True: # iterative calls to server readhdf
-        return {dset: read_hdf(dset, filenames, strictTypes=strictTypes, allow_errors=allow_errors,
-                               calc_string_offsets=calc_string_offsets) for dset in datasets}
-    else:  # single call to server readAllHdf
-        rep_msg = generic_msg(cmd="readAllHdf", args=
+        return {dset: read(filenames, dset, strictTypes=strictTypes, allow_errors=allow_errors, iterative=False,
+                           calc_string_offsets=calc_string_offsets)[dset] for dset in datasets}
+    else:
+        rep_msg = generic_msg(cmd=cmd, args=
         f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} {json.dumps(datasets)} | {json.dumps(filenames)}"
-                              )
+                          )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
         items = rep["items"] if "items" in rep else []
         file_errors = rep["file_errors"] if "file_errors" in rep else []
@@ -339,9 +186,8 @@ def read_all(filenames : Union[str, List[str]],
         else:
             raise RuntimeError("No items were returned")
 
-
 @typechecked
-def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray,Strings]:
+def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -373,13 +219,13 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
 
     See Also
     --------
-    save, load_all, read_hdf, read_all
+    save, load_all, read
     """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = "{}_LOCALE*{}".format(prefix, extension)
 
     try:
-        return read_hdf(dataset, globstr, calc_string_offsets=calc_string_offsets)
+        return read(globstr, dataset, calc_string_offsets=calc_string_offsets)
     except RuntimeError as re:
         if 'does not exist' in str(re):
             raise ValueError('There are no files corresponding to the ' +
@@ -389,7 +235,7 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
             
 
 @typechecked
-def get_datasets(filename : str, is_parquet=False) -> List[str]:
+def get_datasets(filename : str) -> List[str]:
     """
     Get the names of datasets in an HDF5 file.
 
@@ -416,16 +262,47 @@ def get_datasets(filename : str, is_parquet=False) -> List[str]:
 
     See Also
     --------
-    ls_hdf
+    ls
     """
-    datasets = ls_hdf(filename, is_parquet)
+    datasets = ls(filename)
     # We can skip/remove the _arkouda_metadata group since it is an internal only construct
     if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
     return datasets
 
+def get_filetype(filenames: Union[str, List[str]]) -> str:
+    """
+    Get the type of a file accessible to the server. Supported
+    file types and possible return strings are 'HDF5' and 'Parquet'.
+
+    Parameters
+    ----------
+    filenames : Union[str, List[str]]
+        A file or list of files visible to the arkouda server
+
+    Returns
+    -------
+    str
+        Type of the file returned as a string, either 'HDF5' or 'Parquet'
+
+    Raises
+    ------
+    ValueError
+        Raised if filename is empty or contains only whitespace
+
+    See Also
+    --------
+    read
+    """
+    if isinstance(filenames, list):
+        fname = filenames[0]
+    if not (fname and fname.strip()):
+        raise ValueError("filename cannot be an empty string")
+
+    return cast(str, generic_msg(cmd="getfiletype", args="{}".format(json.dumps([fname]))))
+
 @typechecked
-def get_datasets_allow_errors(filenames: List[str], is_parquet=False) -> List[str]:
+def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
     """
     Get the names of datasets in an HDF5 file
     Allow file read errors until success
@@ -434,8 +311,6 @@ def get_datasets_allow_errors(filenames: List[str], is_parquet=False) -> List[st
     ----------
     filenames : List[str]
         A list of HDF5 files visible to the arkouda server
-    is_parquet : bool
-        Is filename a Parquet file; false by default
 
     Returns
     -------
@@ -451,12 +326,12 @@ def get_datasets_allow_errors(filenames: List[str], is_parquet=False) -> List[st
 
     See Also
     --------
-    get_datasets, ls_hdf
+    get_datasets, ls
     """
     datasets = []
     for filename in filenames:
         try:
-            datasets = get_datasets(filename, is_parquet)
+            datasets = get_datasets(filename)
             break
         except RuntimeError:
             pass
@@ -494,7 +369,7 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
 
     See Also
     --------
-    save_all, load, read_hdf, read_all
+    save_all, load, read
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0000{}".format(prefix, extension)

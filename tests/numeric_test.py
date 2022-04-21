@@ -88,9 +88,10 @@ class NumericTest(ArkoudaTest):
     
     def testHistogram(self):
         pda = ak.randint(10,30,40)
-        result = ak.histogram(pda, bins=20)  
+        bins, result = ak.histogram(pda, bins=20)
 
         self.assertIsInstance(result, ak.pdarray)
+        self.assertEqual(20, len(bins))
         self.assertEqual(20, len(result))
         self.assertEqual(int, result.dtype)
         

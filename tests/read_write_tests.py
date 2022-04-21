@@ -11,10 +11,10 @@ if len(sys.argv) < 4:
     sys.exit()
 ak.connect(sys.argv[1], sys.argv[2])
 onefile = sys.argv[3]
-print(ak.ls_hdf(onefile))
+print(ak.ls(onefile))
 allfiles = sys.argv[3:]
-print(f"srcIP = ak.read_hdf('srcIP', {onefile})")
-srcIP = ak.read_hdf('srcIP', onefile)
+print(f"srcIP = ak.read({onefile},'srcIP')")
+srcIP = ak.read(onefile, 'srcIP')
 print(f"srcIP.save({saveone}, 'srcIP')")
 srcIP.save(saveone, 'srcIP')
 print(f"srcIP2 = ak.load({saveone}, 'srcIP')")
@@ -22,8 +22,8 @@ srcIP2 = ak.load(saveone, 'srcIP')
 assert (srcIP == srcIP2).all()
 del srcIP
 del srcIP2
-print(f"df = ak.read_all(['srcPort', 'proto', 'packets'], {allfiles})")
-df = ak.read_all(['srcPort', 'proto', 'packets'], allfiles)
+print(f"df = ak.read(['srcPort', 'proto', 'packets'], {allfiles})")
+df = ak.read(['srcPort', 'proto', 'packets'], allfiles)
 print(f"ak.save_all(df, {saveall})")
 ak.save_all(df, saveall)
 print(f"newdf = ak.load_all({saveall})")

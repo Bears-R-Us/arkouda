@@ -2,12 +2,18 @@
 
 module FileIO {
     use IO;
+    use GenSymIO;
     use FileSystem;
     use Map;
     use Path;
     use Reflection;
+    use Message;
+    use MultiTypeSymbolTable;
+    use MultiTypeSymEntry;
+    use ServerErrors;
+    use Sort;
 
-    use ServerConfig, Logging;
+    use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
     const fioLogger = new Logger(logLevel);
     
@@ -176,5 +182,188 @@ module FileIO {
         var stride = max(d1.stride, d2.stride);
         return {low..high by stride};
     }
-    
+
+    proc getFirstEightBytesFromFile(path:string):bytes throws {
+        var f:file = open(path, iomode.r);
+        var reader = f.reader(kind=ionative);
+        var header:bytes;
+        if (reader.binary()) {
+          reader.readbytes(header, 8);
+        } else {
+          throw getErrorWithContext(
+                     msg="File reader was not in binary mode",
+                     getLineNumber(),
+                     getRoutineName(),
+                     getModuleName(),
+                     errorClass="IOError");
+        }
+        try {
+          f.close();
+        } catch e {
+          throw getErrorWithContext(
+                     msg=e:string,
+                     getLineNumber(),
+                     getRoutineName(),
+                     getModuleName(),
+                     errorClass="IOError");
+        }
+        return header;
+    }
+
+    proc getFileType(filename: string) throws {
+      return getFileTypeByMagic(getFirstEightBytesFromFile(filename));
+    }
+
+    proc getFileTypeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var (jsonfile) = payload.splitMsgToTuple(1);
+      
+      // Retrieve filename from payload
+      var filename: string;
+      try {
+        filename = jsonToPdArray(jsonfile, 1)[0];
+        if filename.isEmpty() {
+          throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+        }
+      } catch {
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
+                                                                                            1, jsonfile);
+        return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+      }
+
+      // If the filename represents a glob pattern, retrieve the locale 0 filename
+      if isGlobPattern(filename) {
+        // Attempt to interpret filename as a glob expression and ls the first result
+        var tmp = glob(filename);
+
+        if tmp.size <= 0 {
+          var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+            
+        // Set filename to globbed filename corresponding to locale 0
+        filename = tmp[tmp.domain.first];
+      }
+
+      if !exists(filename) {
+        var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      } 
+
+      select getFileType(filename) {
+        when FileType.HDF5 {
+          return new MsgTuple("HDF5", MsgType.NORMAL);
+        }
+        when FileType.PARQUET {
+          return new MsgTuple("Parquet", MsgType.NORMAL);
+        } otherwise {
+          var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+    }
+
+    proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var (jsonfile) = payload.splitMsgToTuple(1);
+      
+      // Retrieve filename from payload
+      var filename: string;
+      try {
+        filename = jsonToPdArray(jsonfile, 1)[0];
+        if filename.isEmpty() {
+          throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+        }
+      } catch {
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
+                                                                                            1, jsonfile);
+        return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+      }
+
+      // If the filename represents a glob pattern, retrieve the locale 0 filename
+      if isGlobPattern(filename) {
+        // Attempt to interpret filename as a glob expression and ls the first result
+        var tmp = glob(filename);
+
+        if tmp.size <= 0 {
+          var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+            
+        // Set filename to globbed filename corresponding to locale 0
+        filename = tmp[tmp.domain.first];
+      }
+
+      if !exists(filename) {
+        var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      } 
+
+      select getFileType(filename) {
+        when FileType.HDF5 {
+          return executeCommand("lshdf", payload, st);
+        }
+        when FileType.PARQUET {
+          return executeCommand("lspq", payload, st);
+        } otherwise {
+          var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+    }
+
+    proc readAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, calcStringOffsetsFlag, arraysStr) = payload.splitMsgToTuple(6);
+      var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+
+      if (!checkCast(nfilesStr, int)) {
+        var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+        return new MsgTuple(errMsg, MsgType.ERROR);
+      }
+      var nfiles = nfilesStr:int; // Error checked above
+      var filelist: [0..#nfiles] string;
+      
+      try {
+        filelist = jsonToPdArray(jsonfiles, nfiles);
+      } catch {
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+      
+      var filedom = filelist.domain;
+      var filenames: [filedom] string;
+
+      if filelist.size == 1 {
+        if filelist[0].strip().size == 0 {
+          var errorMsg = "filelist was empty.";
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+        var tmp = glob(filelist[0]);
+        if tmp.size == 0 {
+          var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+        // Glob returns filenames in weird order. Sort for consistency
+        sort(tmp);
+        filedom = tmp.domain;
+        filenames = tmp;
+      } else {
+        filenames = filelist;
+      }
+
+      if !exists(filenames[0]) {
+        var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filenames[0]);
+        return new MsgTuple(errorMsg,MsgType.ERROR);
+      } 
+
+      select getFileType(filenames[0]) {
+        when FileType.HDF5 {
+          return executeCommand("readAllHdf", payload, st);
+        }
+        when FileType.PARQUET {
+          return executeCommand("readAllParquet", payload, st);
+        } otherwise {
+          var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+      }
+    }
 }

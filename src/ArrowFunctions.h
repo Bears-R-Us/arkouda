@@ -38,10 +38,10 @@ extern "C" {
                            const char* colname, int64_t numElems, int64_t startIdx,
                            int64_t batchSize, char** errMsg);
 
-  int cpp_getStringColumnNumBytes(const char* filename, const char* colname,
-                                  void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
-  int c_getStringColumnNumBytes(const char* filename, const char* colname,
-                                void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname,
+                                      void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  int64_t c_getStringColumnNumBytes(const char* filename, const char* colname,
+                                    void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
@@ -53,6 +53,29 @@ extern "C" {
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
                              int64_t rowGroupSize, int64_t dtype, bool compressed, char** errMsg);
+
+  int c_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
+                                const char* dsetname, int64_t numelems,
+                                int64_t rowGroupSize, int64_t dtype, bool compressed,
+                                char** errMsg);
+  int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
+                                  const char* dsetname, int64_t numelems,
+                                  int64_t rowGroupSize, int64_t dtype, bool compressed,
+                                  char** errMsg);
+  
+  int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               bool compressed, char** errMsg);
+  int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                                 bool compressed, char** errMsg);
+  
+  int c_appendColumnToParquet(const char* filename, void* chpl_arr,
+                              const char* dsetname, int64_t numelems,
+                              int64_t dtype, bool compressed,
+                              char** errMsg);
+  int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
+                                const char* dsetname, int64_t numelems,
+                                int64_t dtype, bool compressed,
+                                char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);

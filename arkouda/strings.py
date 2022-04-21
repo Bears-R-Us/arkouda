@@ -168,11 +168,11 @@ class Strings:
             self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
             self.ndim = self.entry.ndim
             self.shape = self.entry.shape
+            self.name: Optional[str] = self.entry.name
         except Exception as e:
             raise ValueError(e)   
 
         self.dtype = npstr
-        self.name:Optional[str] = None
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
@@ -263,7 +263,7 @@ class Strings:
         return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
-        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and (resolve_scalar_dtype(key) == 'int64' or 'uint64'):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -294,7 +294,7 @@ class Strings:
             return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("bool", "int"):
+            if kind not in ("bool", "int", "uint"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
@@ -325,6 +325,128 @@ class Strings:
         cmd = "segmentLengths"
         args = "{} {}".format(self.objtype, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
+
+    @typechecked
+    def to_lower(self) -> Strings:
+        """
+        Returns a new Strings with all uppercase characters from the original replaced with their lowercase equivalent
+
+        Returns
+        -------
+        Strings
+            Strings with all uppercase characters from the original replaced with their lowercase equivalent
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.to_upper
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+        >>> strings.to_lower()
+        array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
+        """
+        rep_msg = generic_msg(cmd="caseChange", args=f"toLower {self.objtype} {self.entry.name}")
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
+    def to_upper(self) -> Strings:
+        """
+        Returns a new Strings with all lowercase characters from the original replaced with their uppercase equivalent
+
+        Returns
+        -------
+        Strings
+            Strings with all lowercase characters from the original replaced with their uppercase equivalent
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.to_lower
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+        >>> strings.to_upper()
+        array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
+        """
+        rep_msg = generic_msg(cmd="caseChange", args=f"toUpper {self.objtype} {self.entry.name}")
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
+    def is_lower(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely lowercase
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are entirely lowercase, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_upper
+
+        Examples
+        --------
+        >>> lower = ak.array([f'strings {i}' for i in range(3)])
+        >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+        >>> strings = ak.concatenate([lower, upper])
+        >>> strings
+        array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+        >>> strings.is_lower()
+        array([True True True False False False])
+        """
+        return create_pdarray(generic_msg(cmd="checkChars", args=f"isLower {self.objtype} {self.entry.name}"))
+
+    @typechecked
+    def is_upper(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely uppercase
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are entirely uppercase, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_lower
+
+        Examples
+        --------
+        >>> lower = ak.array([f'strings {i}' for i in range(3)])
+        >>> upper = ak.array([f'STRINGS {i}' for i in range(3)])
+        >>> strings = ak.concatenate([lower, upper])
+        >>> strings
+        array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
+        >>> strings.is_upper()
+        array([False False False True True True])
+        """
+        return create_pdarray(generic_msg(cmd="checkChars", args=f"isUpper {self.objtype} {self.entry.name}"))
 
     @typechecked
     def cached_regex_patterns(self) -> List:
@@ -1364,9 +1486,9 @@ class Strings:
         segments corresponding to the start of each string, (2) the hdf5 group is named 
         via the dataset parameter. 
         """       
-        if mode.lower() in 'append':
+        if mode.lower() in ['a', 'app', 'append']:
             m = 1
-        elif mode.lower() in 'truncate':
+        elif mode.lower() in ['t', 'trunc', 'truncate']:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
@@ -1380,6 +1502,60 @@ class Strings:
         args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {self.entry.name} {save_offsets}"
         return cast(str, generic_msg(cmd, args))
 
+    def save_parquet(self, prefix_path : str, dataset : str='strings_array', 
+                     mode : str='truncate', compressed : bool = False) -> str:
+        """
+        Save the Strings object to Parquet. The result is a collection of Parquet files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate'}
+            By default, truncate (overwrite) output files, if they exist.
+            Append is not supported for Parquet writing.
+        compressed : bool
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError 
+            Raised if the lengths of columns and values differ, or the mode is 
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+
+        See Also
+        --------
+        strings.save()
+        pdarray.save_parquet()
+        """
+        if mode.lower() in 'append':
+            m = 1
+        elif mode.lower() in 'truncate':
+            m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+
+        cmd = "writeParquet"
+        args = f"{self.entry.name} {dataset} {m} {json_array} str {compressed}"
+        return cast(str, generic_msg(cmd, args))
+        
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry

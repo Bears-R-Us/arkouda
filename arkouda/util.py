@@ -3,19 +3,21 @@ import re
 import numpy as np  # type: ignore
 import h5py #type: ignore
 import os
+from typing import Union, Mapping
 
-from arkouda import __version__
+from arkouda import __version__, Strings
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.timeclass import Datetime, Timedelta
-from arkouda.pdarrayclass import attach_pdarray, pdarray
+from arkouda.pdarrayclass import attach_pdarray, pdarray, create_pdarray
 from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
-from arkouda.pdarrayIO import read_hdf
-from arkouda.client import get_config, get_mem_used
+from arkouda.pdarrayIO import read
+from arkouda.client import get_config, get_mem_used, generic_msg
 from arkouda.groupbyclass import GroupBy, broadcast, coargsort
 from arkouda.infoclass import information, AllSymbols
 from arkouda.categorical import Categorical
+from arkouda.strings import Strings
 
 identity = lambda x: x
 
@@ -81,10 +83,7 @@ def register(a, name):
         # Assign registered name to wrapper object
         reg.name = n
         # Assign same name to underlying pdarray
-        if type(a) in {Datetime, Timedelta}:
-            reg._data.name = n
-        else:
-            reg.values.name = n
+        reg.values.name = n
     else:
         a = a.register(name)
         reg = cb(a)
@@ -119,7 +118,7 @@ def register_all(data, prefix, overwrite=True):
 
 
 def attach_all(prefix):
-    pat = re.compile(prefix+'\w+')
+    pat = re.compile(prefix+'\\w+')
     res = pat.findall(information(AllSymbols))
     return {k[len(prefix):]:attach_pdarray(k) for k in res}
 
@@ -257,7 +256,7 @@ def arkouda_to_numpy(A: pdarray, tmp_dir: str='') -> np.ndarray:
     return B
 
 
-def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> pdarray:
+def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
     """
     Convert from numpy to arkouda using disk rather than sockets.
     """
@@ -267,7 +266,7 @@ def numpy_to_arkouda(A: np.ndarray, tmp_dir: str = '') -> pdarray:
         arr = f.create_dataset('arr', (A.shape[0],), dtype='int64')
         arr[:] = A[:]
 
-    B = read_hdf('arr', f'{tmp_dir}/{rng}.hdf5')
+    B = read(f'{tmp_dir}/{rng}.hdf5', 'arr')
     os.remove(f'{tmp_dir}/{rng}.hdf5')
 
     return B
@@ -281,3 +280,15 @@ def convert_if_categorical(values):
     if isinstance(values, Categorical):
         values = values.categories[values.codes]
     return values
+
+
+def attach(name):
+    """
+    Attaches to a known element name without requiring to know if the element is a Strings object or pdarray
+    """
+    repMsg = generic_msg(cmd="attach", args=name)
+    dtype = repMsg.split()[2]
+    if dtype == "str":
+        return Strings.from_return_msg(repMsg)
+    else:
+        return create_pdarray(repMsg)

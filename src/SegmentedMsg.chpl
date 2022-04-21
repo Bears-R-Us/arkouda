@@ -159,6 +159,89 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc caseChangeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (subcmd, objtype, name) = payload.splitMsgToTuple(3);
+
+    // check to make sure symbols defined
+    st.checkTable(name);
+
+    var rname = st.nextName();
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %t name: %t".format(cmd,objtype,name));
+
+    select objtype {
+      when "str" {
+        var strings = getSegString(name, st);
+        select subcmd {
+          when "toLower" {
+            var (off, val) = strings.lower();
+            var retString = getSegString(off, val, st);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+          }
+          when "toUpper" {
+            var (off, val) = strings.upper();
+            var retString = getSegString(off, val, st);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn, "%s".format(subcmd));
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      }
+      otherwise {
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc checkCharsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (subcmd, objtype, name) = payload.splitMsgToTuple(3);
+
+    // check to make sure symbols defined
+    st.checkTable(name);
+
+    var rname = st.nextName();
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s objtype: %t name: %t".format(cmd,objtype,name));
+
+    select objtype {
+      when "str" {
+        var strings = getSegString(name, st);
+        var truth = st.addEntry(rname, strings.size, bool);
+        select subcmd {
+          when "isLower" {
+            truth.a = strings.isLower();
+            repMsg = "created "+st.attrib(rname);
+          }
+          when "isUpper" {
+            truth.a = strings.isUpper();
+            repMsg = "created "+st.attrib(rname);
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn, "%s".format(subcmd));
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      }
+      otherwise {
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   proc segmentedSearchMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
@@ -703,6 +786,13 @@ module SegmentedMsg {
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
                     }
+                    when DType.UInt64 {
+                        var iv = toSymEntry(gIV, uint);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newStringsObj = getSegString(newSegs, newVals, st);
+                        newStringsName = newStringsObj.name;
+                        nBytes = newStringsObj.nBytes;
+                    } 
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
                         var (newSegs, newVals) = strings[iv.a];
@@ -912,6 +1002,8 @@ module SegmentedMsg {
   proc registerMe() {
     use CommandMap;
     registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
+    registerFunction("caseChange", caseChangeMsg, getModuleName());
+    registerFunction("checkChars", checkCharsMsg, getModuleName());
     registerFunction("segmentedHash", segmentedHashMsg, getModuleName());
     registerFunction("segmentedSearch", segmentedSearchMsg, getModuleName());
     registerFunction("segmentedFindLoc", segmentedFindLocMsg, getModuleName());

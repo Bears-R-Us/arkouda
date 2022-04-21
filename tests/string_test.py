@@ -527,6 +527,28 @@ class StringTest(ArkoudaTest):
         lengths = s1.get_lengths()
         self.assertTrue((ak.array([3,3,5,4,4]) == lengths).all())
 
+    def test_case_change(self):
+        s = ak.array([f'StrINgS {i}' for i in range(10)])
+
+        lower = s.to_lower()
+        expected = ak.array([f'strings {i}' for i in range(10)])
+        self.assertListEqual(lower.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        upper = s.to_upper()
+        expected = ak.array([f'STRINGS {i}' for i in range(10)])
+        self.assertListEqual(upper.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        # first 10 all lower, middle 10 mixed case (not lower or upper), last 10 all upper
+        lu = ak.concatenate([lower, s, upper])
+
+        islower = lu.is_lower()
+        expected = ak.arange(30) < 10
+        self.assertListEqual(islower.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        isupper = lu.is_upper()
+        expected = ak.arange(30) >= 20
+        self.assertListEqual(isupper.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
     def test_concatenate(self):
         s1 = self._get_strings('string',51)
         s2 = self._get_strings('string-two', 51)

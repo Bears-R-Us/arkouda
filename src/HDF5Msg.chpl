@@ -1318,23 +1318,13 @@ module HDF5Msg {
        * meaning that 1..n files will be overwritten.
        */
       if (mode == APPEND) {
-          var allexist = true;
-          var anyexist = false;
-          
-          for f in filenames {
-              var result =  try! exists(f);
-              allexist &= result;
-              if result {
-                  anyexist = true;
-              }
-          }
 
           /*
            * Check to see if any exist. If not, this means the user is attempting to append
            * to 1..n files that don't exist. In this situation, the user is alerted that
            * the dataset must be saved in TRUNCATE mode.
            */
-          if !anyexist {
+          if matchingFilenames.size == 0 {
               throw getErrorWithContext(
                  msg="Cannot append a non-existent file, please save without mode='append'",
                  lineNumber=getLineNumber(), 
@@ -1350,7 +1340,7 @@ module HDF5Msg {
            * a file append is attempted where the number of locales between the file 
            * creates and updates changes.
            */
-          if !allexist || (matchingFilenames.size != filenames.size) {
+          if matchingFilenames.size != filenames.size {
               throw getErrorWithContext(
                    msg="appending to existing files must be done with the same number " +
                       "of locales. Try saving with a different directory or filename prefix?",
@@ -2126,7 +2116,7 @@ module HDF5Msg {
     }
 
     proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag)= payload.splitMsgToTuple(7);
+        var (arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag, pqPlaceholder)= payload.splitMsgToTuple(8);
         var mode = try! modeStr: int;
         var filename: string;
         var entry = st.lookup(arrayName);

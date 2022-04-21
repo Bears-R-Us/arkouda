@@ -16,7 +16,8 @@ __all__ = ["array", "zeros", "ones", "full", "zeros_like", "ones_like", "full_li
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series"
-          ]
+           ]
+
 
 @typechecked
 def from_series(series : pd.Series, 
@@ -105,15 +106,19 @@ def from_series(series : pd.Series,
                       'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
     return array(n_array)
 
-def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
+
+@typechecked
+def array(a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending 
     the corresponding data to the arkouda server. 
 
     Parameters
     ----------
-    a : Union[pdarray, np.ndarray]
+    a: Union[pdarray, np.ndarray]
         Rank-1 array of a supported dtype
+    dtype: np.dtype, type, or str
+        The target dtype to cast values to
 
     Returns
     -------
@@ -163,9 +168,10 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     >>> type(strings)
     <class 'arkouda.strings.Strings'>  
     """
+    from arkouda.numeric import cast as akcast
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
-        return a
+        return a if dtype is None else akcast(a, dtype)
     from arkouda.client import maxTransferBytes
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
@@ -190,7 +196,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         args = f"{encoded_np.dtype.name} {encoded_np.size} seg_string={True}"
         rep_msg = generic_msg(cmd='array', args=args, payload=_array_memview(encoded_np), send_binary=True)
         parts = cast(str, rep_msg).split('+', maxsplit=3)
-        return Strings.from_parts(parts[0], parts[1])
+        return Strings.from_parts(parts[0], parts[1]) if dtype is None \
+            else akcast(Strings.from_parts(parts[0], parts[1]), dtype)
 
     # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
@@ -207,7 +214,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     aview = _array_memview(a)
     args = f"{a.dtype.name} {size} seg_strings={False}"
     rep_msg = generic_msg(cmd='array', args=args, payload=aview, send_binary=True)
-    return create_pdarray(rep_msg)
+    return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
 
 
 def _array_memview(a) -> memoryview:
@@ -218,7 +225,8 @@ def _array_memview(a) -> memoryview:
         return memoryview(a)
 
 
-def zeros(size : int_scalars, dtype=float64) -> pdarray:
+@typechecked
+def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -267,7 +275,9 @@ def zeros(size : int_scalars, dtype=float64) -> pdarray:
     
     return create_pdarray(repMsg)
 
-def ones(size : int_scalars, dtype=float64) -> pdarray:
+
+@typechecked
+def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -318,7 +328,8 @@ def ones(size : int_scalars, dtype=float64) -> pdarray:
     return a
 
 
-def full(size: int_scalars, fill_value: int_scalars, dtype=float64) -> pdarray:
+@typechecked
+def full(size: Union[int_scalars, str], fill_value: int_scalars, dtype: Union[np.dtype, type, str] = float64) -> pdarray:
     """
     Create a pdarray filled with fill_value.
 
@@ -410,6 +421,7 @@ def zeros_like(pda : pdarray) -> pdarray:
     array([False, False, False, False, False])
     """
     return zeros(pda.size, pda.dtype)
+
 
 @typechecked
 def ones_like(pda : pdarray) -> pdarray:
@@ -520,13 +532,15 @@ def arange(*args, **kwargs) -> pdarray:
 
     Parameters
     ----------
-    start : int_scalars, optional
+    start: int_scalars, optional
         Starting value (inclusive)
-    stop : int_scalars
+    stop: int_scalars
         Stopping value (exclusive)
-    stride : int_scalars, optional
+    stride: int_scalars, optional
         The difference between consecutive elements, the default stride is 1,
-        if stride is specified then start must also be specified. 
+        if stride is specified then start must also be specified.
+    dtype: np.dtype, type, or str
+        The target dtype to cast values to
 
     Returns
     -------
@@ -564,7 +578,7 @@ def arange(*args, **kwargs) -> pdarray:
     >>> ak.arange(-5, -10, -1)
     array([-5, -6, -7, -8, -9])
     """
-    from arkouda.numeric import cast
+    from arkouda.numeric import cast as akcast
     # if one arg is given then arg is stop
     if len(args) == 1:
         start = 0
@@ -593,7 +607,7 @@ def arange(*args, **kwargs) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg(cmd='arange', args="{} {} {}".format(start, stop, stride))
-        return create_pdarray(repMsg) if dtype == int64 else cast(create_pdarray(repMsg), dtype)
+        return create_pdarray(repMsg) if dtype == int64 else akcast(create_pdarray(repMsg), dtype)
     else:
         raise TypeError(f"start,stop,stride must be type int, np.int64, or np.uint64 {start} {stop} {stride}")
 
@@ -688,6 +702,9 @@ def randint(low : numeric_scalars, high : numeric_scalars,
     -----
     Calling randint with dtype=float64 will result in uniform non-integral
     floating point values.
+
+    Ranges >= 2**64 in size is undefined behavior because
+    it exceeds the maximum value that can be stored on the server (uint64)
 
     Examples
     --------

@@ -3,12 +3,13 @@ from ipaddress import ip_address as _ip_address
 from functools import partial
 
 from arkouda.pdarrayclass import pdarray
-from arkouda.dtypes import isSupportedInt
+from arkouda.dtypes import isSupportedInt, intTypes, bitType
 from arkouda.dtypes import int64 as akint64
 from arkouda.strings import Strings
-from arkouda.pdarraycreation import zeros, arange
+from arkouda.pdarraycreation import zeros, arange, array
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.numeric import where
+from arkouda.numeric import cast as akcast
 
 
 def BitVectorizer(width=64, reverse=False):
@@ -58,17 +59,20 @@ class BitVector(pdarray):
     -----
     This class is a thin wrapper around pdarray that mostly affects
     how values are displayed to the user. Operators and methods will
-    typically treat this class like an int64 pdarray.
+    typically treat this class like a uint64 pdarray.
     """
 
     conserves = frozenset(('+', '-', '|', '&', '^', '>>', '<<'))
 
     def __init__(self, values, width=64, reverse=False):
-        if type(values) != pdarray or values.dtype != akint64:
-            raise TypeError("Argument must be int64 pdarray")
+        if not isinstance(values, pdarray) or values.dtype not in intTypes:
+            raise TypeError("Argument must be integer pdarray")
         self.width = width
         self.reverse = reverse
-        self.values = values
+        # If values is already bitType, this will make a copy
+        # A copy should be made in order to get a new server-side name,
+        # to avoid undefinedSymbol errors if/when values gets deleted
+        self.values = akcast(values, bitType)
         super().__init__(self.values.name, self.values.dtype.name, self.values.size, self.values.ndim,
                          self.values.shape, self.values.itemsize)
 
@@ -138,7 +142,7 @@ class BitVector(pdarray):
             otherdata = other
         elif isinstance(other, self.__class__):
             otherdata = other.values
-        elif isinstance(other, pdarray) and other.dtype == akint64:
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             otherdata = other
         else:
             return NotImplemented
@@ -157,7 +161,7 @@ class BitVector(pdarray):
                 return self._cast(self.values._r_binop(other, op))
             else:
                 return self.values._r_binop(other, op)
-        elif (isinstance(other, pdarray) and other.dtype == akint64):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes):
             # Some operators return a BitVector, but others don't
             if op in self.conserves:
                 return self._cast(other._binop(self.values, op))
@@ -172,7 +176,7 @@ class BitVector(pdarray):
             otherdata = other
         elif isinstance(other, self.__class__):
             otherdata = other.values
-        elif isinstance(other, pdarray) and other.dtype == akint64:
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             otherdata = other
         else:
             return NotImplemented
@@ -185,8 +189,8 @@ class Fields(BitVector):
 
     Parameters
     ----------
-    values : pdarray(int64) or Strings
-        The array of field values. If int64, the values are used as-is for the
+    values : pdarray or Strings
+        The array of field values. If (u)int64, the values are used as-is for the
         binary representation of fields. If Strings, the values are converted
         to binary according to the mapping defined by the names and MSB_left
         arguments.
@@ -259,6 +263,7 @@ class Fields(BitVector):
         # values arg can be either int64 or Strings. If Strings, convert to binary
         if isinstance(values, Strings):
             values = self._convert_strings(values)
+        # super init will type-check values and make copy
         super().__init__(values, width=width, reverse=not MSB_left)
 
     def _convert_strings(self, s):
@@ -266,13 +271,13 @@ class Fields(BitVector):
         Convert string field names to binary vectors.
         '''
         # Initialize to zero
-        values = zeros(s.size, dtype=akint64)
+        values = zeros(s.size, dtype=bitType)
         if self.separator == '':
             # When separator is empty, field names are guaranteed to be single characters
             for name, shift in zip(self.names, self.shifts):
                 # Check if name exists in each string
                 bit = s.contains(name)
-                values = values | where(bit, 1 << shift, 0)
+                values = values | akcast(where(bit, 1 << shift, 0), bitType)
         else:
             # When separator is non-empty, split on it
             sf, segs = s.flatten(self.separator, return_segments=True)
@@ -282,7 +287,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name matches one of the split fields from originating string
                 bit = g.any(sf == name)[1]
-                values = values | where(bit, 1 << shift, 0)
+                values = values | akcast(where(bit, 1 << shift, 0), bitType)
         return values
 
     def _parse_scalar(self, s):
@@ -310,7 +315,7 @@ class Fields(BitVector):
         # and replace 0/1 with ./| for better visibility
         s = ''
         for i, shift in enumerate(self.shifts):
-            bitset = ((x >> shift) & 1) == 1
+            bitset = ((int(x) >> shift) & 1) == 1
             if bitset:
                 s += '{{:^{}s}}'.format(self.namewidth).format(self.names[i])
             else:
@@ -355,34 +360,40 @@ class Fields(BitVector):
 
 def ip_address(values):
     '''
-    Takes an int64 pdarray (or IPv4 object) and returns an IPv4 object.
+    Convert values to an Arkouda array of IP addresses.
 
     Parameters
     ----------
-    values : pdarray, int64 or IPv4
+    values : list-like, integer pdarray, or IPv4
         The integer IP addresses or IPv4 object.
 
     Returns
     -------
     IPv4
-        The same IP addresses
+        The same IP addresses as an Arkouda array
 
     Notes
     -----
     This helper is intended to help future proof changes made to
     accomodate IPv6 and to prevent errors if a user inadvertently
-    casts a IPv4 instead of a int64 pdarray.
+    casts a IPv4 instead of a int64 pdarray. It can also be used
+    for importing Python lists of IP addresses into Arkouda.
     '''
 
     if type(values) == IPv4:
         return values
 
-    try:
+    if isinstance(values, pdarray):
         return IPv4(values)
-    except TypeError:
-        pass
 
-    raise TypeError('%r must be either an int64 pdarray or IPv4')
+    if isinstance(values, Strings):
+        raise NotImplementedError("Strings to IP address not yet implemented")
+    
+    # Assume values is a python sequence of IP addresses in some format
+    try:
+        return IPv4(array([int(_ip_address(x)) for x in values]))
+    except Exception as e:
+        raise RuntimeError("Error converting non-arkouda object to list of IP addresses") from e
 
 
 class IPv4(pdarray):
@@ -407,9 +418,11 @@ class IPv4(pdarray):
     '''
 
     def __init__(self, values):
-        if type(values) != pdarray or values.dtype != akint64:
+        if not isinstance(values, pdarray) or values.dtype not in intTypes:
             raise TypeError("Argument must be int64 pdarray")
-        self.values = values
+        # Casting always creates a copy with new server-side name,
+        # which will avoid unknown symbol errors
+        self.values = akcast(values, bitType)
         super().__init__(self.values.name, self.values.dtype.name, self.values.size, self.values.ndim, self.values.shape, self.values.itemsize)
 
     def format(self, x):
@@ -485,7 +498,7 @@ class IPv4(pdarray):
             otherdata = scalarval
         elif isinstance(other, self.__class__):
             otherdata = other.values
-        elif isinstance(other, pdarray) and other.dtype == akint64:
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             otherdata = other
         else:
             return NotImplemented
@@ -496,7 +509,7 @@ class IPv4(pdarray):
         isscalar, scalarval = self._is_supported_scalar(other)
         if isscalar:
             return self.values._r_binop(scalarval, op)
-        elif (isinstance(other, pdarray) and other.dtype == akint64):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes):
             return other._binop(self.values, op)
         else:
             return NotImplemented
@@ -508,7 +521,7 @@ class IPv4(pdarray):
             otherdata = scalarval
         elif isinstance(other, self.__class__):
             otherdata = other.values
-        elif isinstance(other, pdarray) and other.dtype == akint64:
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             otherdata = other
         else:
             return NotImplemented

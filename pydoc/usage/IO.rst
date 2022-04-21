@@ -59,7 +59,7 @@ HDF5 files can be queried via the server for dataset names and sizes.
 
 .. autofunction:: arkouda.get_datasets
 
-.. autofunction:: arkouda.ls_hdf
+.. autofunction:: arkouda.ls_any
 
 Persisting ``pdarray`` data to disk
 -----------------------------------

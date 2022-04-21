@@ -10,8 +10,6 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
-from arkouda.pdarraysetops import concatenate
-from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64, uint64
 
@@ -105,6 +103,14 @@ class GroupBy:
 
     def __init__(self, keys: groupable,
                  assume_sorted: bool = False, hash_strings: bool = True) -> None:
+        # Type Checks required because @typechecked was removed for causing other issues
+        # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
+        # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
+        # See Issue #1267
+        if not isinstance(assume_sorted, bool):
+            raise TypeError("assume_sorted must be of type bool.")
+        if not isinstance(hash_strings, bool):
+            raise TypeError("hash_strings must be of type bool.")
         from arkouda.categorical import Categorical
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
@@ -160,7 +166,7 @@ class GroupBy:
             # Most categoricals already store segments and unique keys
             if hasattr(self.keys, 'segments') and cast(Categorical, 
                                                        self.keys).segments is not None:
-                self.unique_keys = cast(Categorical, self.keys).categories
+                self.unique_keys: Any = cast(Categorical, self.keys).categories
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 self.ngroups = self.unique_keys.size
                 return

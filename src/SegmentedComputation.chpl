@@ -44,6 +44,9 @@ module SegmentedComputation {
     StringToNumericReturnValidity,
     StringCompareLiteralEq,
     StringCompareLiteralNeq,
+    StringSearch,
+    StringIsLower,
+    StringIsUpper,
   }
   
   proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -70,28 +73,40 @@ module SegmentedComputation {
         }
         try {
           // Apply function to bytes of each owned segment, aggregating return value to res
-          forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
-            select function {
-              when SegFunction.SipHash128 {
-                agg.copy(res[i], sipHash128(values, start..#len));
-              }
-              when SegFunction.StringToNumericStrict {
-                agg.copy(res[i], stringToNumericStrict(values, start..#len, retType));
-              }
-              when SegFunction.StringToNumericIgnore {
-                agg.copy(res[i], stringToNumericIgnore(values, start..#len, retType));
-              }
-              when SegFunction.StringToNumericReturnValidity {
-                agg.copy(res[i], stringToNumericReturnValidity(values, start..#len, retType[0]));
-              }
-              when SegFunction.StringCompareLiteralEq {
-                agg.copy(res[i], stringCompareLiteralEq(values, start..#len, strArg));
-              }
-              when SegFunction.StringCompareLiteralNeq {
-                agg.copy(res[i], stringCompareLiteralNeq(values, start..#len, strArg));
-              }
-              otherwise {
-                compilerError("Unrecognized segmented function");
+          if function == SegFunction.StringSearch {
+            forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType), var myRegex = _unsafeCompileRegex(strArg)) {
+              agg.copy(res[i], stringSearch(values, start..#len, myRegex));
+            }
+          } else {
+            forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(retType)) {
+              select function {
+                when SegFunction.SipHash128 {
+                  agg.copy(res[i], sipHash128(values, start..#len));
+                }
+                when SegFunction.StringToNumericStrict {
+                  agg.copy(res[i], stringToNumericStrict(values, start..#len, retType));
+                }
+                when SegFunction.StringToNumericIgnore {
+                  agg.copy(res[i], stringToNumericIgnore(values, start..#len, retType));
+                }
+                when SegFunction.StringToNumericReturnValidity {
+                  agg.copy(res[i], stringToNumericReturnValidity(values, start..#len, retType[0]));
+                }
+                when SegFunction.StringCompareLiteralEq {
+                  agg.copy(res[i], stringCompareLiteralEq(values, start..#len, strArg));
+                }
+                when SegFunction.StringCompareLiteralNeq {
+                  agg.copy(res[i], stringCompareLiteralNeq(values, start..#len, strArg));
+                }
+                when SegFunction.StringIsLower {
+                  agg.copy(res[i], stringIsLower(values, start..#len));
+                }
+                when SegFunction.StringIsUpper {
+                  agg.copy(res[i], stringIsUpper(values, start..#len));
+                }
+                otherwise {
+                  compilerError("Unrecognized segmented function");
+                }
               }
             }
           }

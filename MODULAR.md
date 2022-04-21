@@ -36,3 +36,16 @@ def test_command():
 ak.__dict__["test_command"] = test_command
 ```
 With the key elements being (1) the function calls `generic_msg()`, which will execute the command string specified by the argument `cmd` and (2) the function is added to the ak dictionary, enabling it to be called as `ak.test_command()`.
+
+### Saving modules used in an Arkouda server run
+
+When testing a specific workflow, it can sometimes be difficult to determine which modules are needed, but doing so can allow you to save significant amounts of build time. To help with this process of discovering which modules your workflow needs, the `--saveUsedModules` flag has been added to the Arkouda server.
+
+To use this flag:
+1. run your server with the flag: `./arkouda_server --saveUsedModules`
+2. execute all commands that are needed for this particular workflow
+3. shut down the server with `ak.shutdown()`
+
+Upon server shutdown, a `UsedModules.cfg` file is created that includes the list of modules that were used in that particular Arkouda server instance. This can then either be inspected to assist in modification of the `ServerModules.cfg` file, or set to be used explicitly by the server by setting the `ARKOUDA_CONFIG_FILE` environment variable to this new file.
+
+If you wish to determine what modules are used in a particular benchmark run, that can be done by running an Arkouda benchmark with the `--server-args` argument set: `./benchmarks/run-benchmarks.py BENCHMARK-NAME --server-args='--saveUsedModules'`.
