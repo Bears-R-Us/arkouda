@@ -1,0 +1,50 @@
+:py:mod:`arkouda.plotting`
+==========================
+
+.. py:module:: arkouda.plotting
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.plotting.plot_dist
+
+
+
+.. py:function:: plot_dist(b, h, log=True, xlabel=None, newfig=True)
+
+   Plot the distribution and cumulative distribution of histogram Data
+
+   :param b: Bin edges
+   :type b: np.ndarray
+   :param h: Histogram data
+   :type h: np.ndarray
+   :param log: use log to scale y
+   :type log: bool
+   :param xlabel: Label for the x axis of the graph
+   :type xlabel: str
+   :param newfig: Generate a new figure or not
+   :type newfig: bool
+
+   .. rubric:: Notes
+
+   This function does not return or display the plot. A user must have matplotlib imported in addition to arkouda to
+   display plots. This could be updated to return the object or have a flag to show the resulting plots.
+   See Examples Below.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from matplotlib import pyplot as plt
+   >>> b, h = ak.histogram(ak.arange(10), 3)
+   >>> ak.plot_dist(b, h.to_ndarray())
+   >>> # to show the plot
+   >>> plt.show()
+
+

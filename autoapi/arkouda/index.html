@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
@@ -585,6 +586,9 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.in1dmulti" title="arkouda.in1dmulti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1dmulti</span></code></a>(a, b, assume_unique=False, symmetric=False)</p></td>
 <td><p>The multi-level analog of ak.in1d -- test membership of rows of a in the set of rows of b.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.plot_dist" title="arkouda.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(b, h, log=True, xlabel=None, newfig=True)</p></td>
+<td><p>Plot the distribution and cumulative distribution of histogram Data</p></td>
 </tr>
 </tbody>
 </table>
@@ -20515,6 +20519,36 @@ converted to a column in the dataframe.  If it is a multi-index,each level is co
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.plot_dist">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">plot_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newfig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.plot_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the distribution and cumulative distribution of histogram Data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b</strong> (<em>np.ndarray</em>) – Bin edges</p></li>
+<li><p><strong>h</strong> (<em>np.ndarray</em>) – Histogram data</p></li>
+<li><p><strong>log</strong> (<em>bool</em>) – use log to scale y</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em>) – Label for the x axis of the graph</p></li>
+<li><p><strong>newfig</strong> (<em>bool</em>) – Generate a new figure or not</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function does not return or display the plot. A user must have matplotlib imported in addition to arkouda to
+display plots. This could be updated to return the object or have a flag to show the resulting plots.
+See Examples Below.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">plot_dist</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># to show the plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
