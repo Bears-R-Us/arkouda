@@ -166,7 +166,7 @@ class GroupBy:
             # Most categoricals already store segments and unique keys
             if hasattr(self.keys, 'segments') and cast(Categorical, 
                                                        self.keys).segments is not None:
-                self.unique_keys: Any = cast(Categorical, self.keys).categories
+                self.unique_keys: Any = cast(Categorical, self.keys)._categories_used
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 self.ngroups = self.unique_keys.size
                 return
