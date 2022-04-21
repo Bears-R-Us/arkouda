@@ -109,28 +109,6 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
         return (unique_keys, permutation, segments)
     else:
         return unique_keys
-    
-    
-    elif isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="unique", args="{} {} {}". \
-                             format(pda.objtype, pda.name, return_counts))
-        if return_counts:
-            vc = cast(str, repMsg).split("+")
-            logger.debug(vc)
-            return create_pdarray(cast(str, vc[0])), create_pdarray(cast(str, vc[1]))
-        else:
-            return create_pdarray(cast(str, repMsg))
-    elif isinstance(pda, Strings):
-        repMsg = cast(str, generic_msg(cmd="unique", args="{} {} {}". \
-                                       format(pda.objtype, pda.entry.name, return_counts)))
-        vc = repMsg.split('+')
-        logger.debug(vc)
-        if return_counts:
-            return Strings.from_return_msg("+".join(vc[0:2])), create_pdarray(cast(str, vc[2]))
-        else:
-            return Strings.from_return_msg(repMsg)
-    else:
-        raise TypeError("must be pdarray, Strings, or Categorical {}")
 
 
 def in1d(pda1: Union[pdarray, Strings, 'Categorical'], pda2: Union[pdarray, Strings, 'Categorical'],  # type: ignore
