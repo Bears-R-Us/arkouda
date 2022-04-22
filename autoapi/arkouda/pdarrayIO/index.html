@@ -52,19 +52,22 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.read" title="arkouda.pdarrayIO.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]</p></td>
 <td><p>Read datasets from HDF5 or Parquet files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load" title="arkouda.pdarrayIO.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_null_indices" title="arkouda.pdarrayIO.get_null_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_null_indices</span></code></a>(filenames, datasets) → Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]</p></td>
+<td><p>Get null indices of a string column in a Parquet file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load" title="arkouda.pdarrayIO.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]</p></td>
 <td><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filename: str) → List[str]</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filename: str) → List[str]</p></td>
 <td><p>Get the names of datasets in an HDF5 file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_filetype" title="arkouda.pdarrayIO.get_filetype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filetype</span></code></a>(filenames: Union[str, List[str]]) → str</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_filetype" title="arkouda.pdarrayIO.get_filetype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filetype</span></code></a>(filenames: Union[str, List[str]]) → str</p></td>
 <td><p>Get the type of a file accessible to the server. Supported</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(path_prefix: str) → Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(path_prefix: str) → Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]</p></td>
 <td><p>Load multiple pdarrays or Strings previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.save_all" title="arkouda.pdarrayIO.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') → None</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.save_all" title="arkouda.pdarrayIO.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') → None</p></td>
 <td><p>Save multiple named pdarrays to HDF5 files.</p></td>
 </tr>
 </tbody>
@@ -157,6 +160,39 @@ string.</p>
 <p>If datasets is None, infer the names of datasets from the first file
 and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
 to HDF5 files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayIO.get_null_indices">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></span><span class="sig-name descname"><span class="pre">get_null_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarrayIO.get_null_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get null indices of a string column in a Parquet file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>datasets</strong> (<em>list</em><em> or </em><em>str</em><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read. Each dataset must be a string
+column. There is no default value for this funciton, the datasets to be
+read must be specified.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>For a single dataset returns an Arkouda pdarray and for multiple datasets</em></p></li>
+<li><p><em>returns a dictionary of Arkouda pdarrays</em> – Dictionary of {datasetName: pdarray}</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if one or more of the specified files cannot be opened.</p></li>
+<li><p><strong>TypeError</strong> – Raised if we receive an unknown arkouda_type returned from the server</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.ls" title="arkouda.pdarrayIO.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py function">

@@ -177,6 +177,7 @@ Functions
    arkouda.load_all
    arkouda.save_all
    arkouda.get_filetype
+   arkouda.get_null_indices
    arkouda.broadcast
    arkouda.join_on_eq_with_dt
    arkouda.enableVerbose
@@ -6591,6 +6592,26 @@ Attributes
    :raises ValueError: Raised if filename is empty or contains only whitespace
 
    .. seealso:: :obj:`read`
+
+
+.. py:function:: get_null_indices(filenames, datasets) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
+
+   Get null indices of a string column in a Parquet file.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read. Each dataset must be a string
+                    column. There is no default value for this funciton, the datasets to be
+                    read must be specified.
+   :type datasets: list or str or None
+
+   :returns: * *For a single dataset returns an Arkouda pdarray and for multiple datasets*
+             * *returns a dictionary of Arkouda pdarrays* -- Dictionary of {datasetName: pdarray}
+
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+   .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
 .. py:class:: GroupBy(keys: groupable, assume_sorted: bool = False, hash_strings: bool = True)

@@ -15,6 +15,7 @@ Functions
 
    arkouda.pdarrayIO.ls
    arkouda.pdarrayIO.read
+   arkouda.pdarrayIO.get_null_indices
    arkouda.pdarrayIO.load
    arkouda.pdarrayIO.get_datasets
    arkouda.pdarrayIO.get_filetype
@@ -98,6 +99,26 @@ Functions
    If datasets is None, infer the names of datasets from the first file
    and read all of them. Use ``get_datasets`` to show the names of datasets
    to HDF5 files.
+
+
+.. py:function:: get_null_indices(filenames, datasets) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
+
+   Get null indices of a string column in a Parquet file.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read. Each dataset must be a string
+                    column. There is no default value for this funciton, the datasets to be
+                    read must be specified.
+   :type datasets: list or str or None
+
+   :returns: * *For a single dataset returns an Arkouda pdarray and for multiple datasets*
+             * *returns a dictionary of Arkouda pdarrays* -- Dictionary of {datasetName: pdarray}
+
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+   .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
 .. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
