@@ -9,9 +9,9 @@ from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarraysetops import in1d, unique, concatenate
-from arkouda.pdarraycreation import zeros_like, arange, array, zeros
+from arkouda.pdarraycreation import zeros_like, arange, array, zeros, ones
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
-from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import int64 as akint64, bool as akbool
 from arkouda.sorting import argsort
 from arkouda.logger import getArkoudaLogger
 from arkouda.infoclass import information, list_registry
