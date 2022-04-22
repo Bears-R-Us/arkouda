@@ -593,6 +593,12 @@ class DataFrame(UserDict):
                 dtypes.append(str(val.dtype))
             elif isinstance(val, Strings):
                 dtypes.append('str')
+            elif isinstance(val, Categorical):
+                dtypes.append('Categorical')
+            elif isinstance(val, SegArray):
+                dtypes.append('SegArray')
+            else:
+                raise TypeError(f"Unsupported type encountered for ak.DataFrame, {type(val)}")
         res = Row({key: dtype for key, dtype in zip(keys, dtypes)})
         return res
 
