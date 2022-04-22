@@ -52,7 +52,7 @@ module IndexingMsg
         overMemLimit(numBytes(int) * dims.size);
         var offsets = (+ scan dims) - dims;
 
-        for i in 0..#typeCoords.size by 2 {
+        forall i in 0..#typeCoords.size by 2 {
             select typeCoords[i] {
                 when "int" {
                     scaledCoords[offsets[i/2]] = typeCoords[i+1]:int * dimProdEntry.a[i/2];
