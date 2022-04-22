@@ -42,6 +42,9 @@ extern "C" {
                                       void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
   int64_t c_getStringColumnNumBytes(const char* filename, const char* colname,
                                     void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  
+  int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
+  int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
