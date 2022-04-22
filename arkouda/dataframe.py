@@ -10,8 +10,8 @@ from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import arange, array
-from arkouda.groupbyclass import GroupBy as akGroupBy
-from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
+from arkouda.groupbyclass import GroupBy as akGroupBy, unique
+from arkouda.pdarraysetops import concatenate, intersect1d, in1d
 from arkouda.pdarrayIO import save_all
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64

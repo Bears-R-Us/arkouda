@@ -13,7 +13,98 @@ from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64, uint64
 
-__all__ = ["GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+__all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+
+@typechecked
+def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
+           return_groups: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
+                                                 Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
+                                                     pdarray]]]:  # type: ignore
+    """
+    Find the unique elements of an array.
+
+    Returns the unique elements of an array, sorted if the values are integers. 
+    There is an optional output in addition to the unique elements: the number 
+    of times each unique value comes up in the input array.
+
+    Parameters
+    ----------
+    pda : (list of) pdarray, Strings, or Categorical
+        Input array.
+    return_groups : bool, optional
+        If True, also return grouping information for the array.
+
+    Returns
+    -------
+    unique : (list of) pdarray, Strings, or Categorical
+        The unique values. If input dtype is int64, return values will be sorted.
+    permutation : pdarray, optional
+        Permutation that groups equivalent values together (only when return_groups=True)
+    segments : pdarray, optional
+        The offset of each group in the permuted array (only when return_groups=True)
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray or Strings object
+    RuntimeError
+        Raised if the pdarray or Strings dtype is unsupported
+
+    Notes
+    -----
+    For integer arrays, this function checks to see whether `pda` is sorted
+    and, if so, whether it is already unique. This step can save considerable 
+    computation. Otherwise, this function will sort `pda`.
+
+    Examples
+    --------
+    >>> A = ak.array([3, 2, 1, 1, 2, 3])
+    >>> ak.unique(A)
+    array([1, 2, 3])
+    """
+    from arkouda.categorical import Categorical as Categorical_
+    if not return_groups and hasattr(pda, 'unique'):
+        return cast(Categorical_, pda).unique()
+
+    # Get all grouping keys
+    if hasattr(pda, "_get_grouping_keys"):
+        # Single groupable array
+        nkeys = 1
+        grouping_keys = pda._get_grouping_keys()
+    else:
+        # Sequence of groupable arrays
+        nkeys = len(pda)
+        grouping_keys = []
+        for k in pda:
+            if k.size != self.size:
+                raise ValueError("Key arrays must all be same size")
+            if not hasattr(k, "_get_grouping_keys"):
+                raise TypeError("{} does not support grouping".format(type(k)))
+            grouping_keys.extend(cast(list, k._get_grouping_keys()))
+    keynames = [k.name for k in self._grouping_keys]
+    keytypes = [k.objtype for k in self._grouping_keys]
+    effectiveKeys = len(self._grouping_keys)
+    repMsg = generic_msg(cmd="unique", args="{} {:n} {} {}".format(return_groups,
+                                                                effectiveKeys,
+                                                                ' '.join(keynames),
+                                                                ' '.join(keytypes)))
+    if return_groups:
+        parts = repMsg.split("+")
+        permutation = create_pdarray(cast(str, parts[0]))
+        segments = create_pdarray(cast(str, parts[1]))
+        unique_key_indices = create_pdarray(cast(str, parts[2]))
+    else:
+        unique_key_indices = create_pdarray(cast(str, repMsg))
+
+    if nkeys == 1:
+        unique_keys = pda[unique_key_indices]
+    else:
+        unique_keys = tuple([a[unique_key_indices] for a in pda])
+    if return_groups:
+        return (unique_keys, permutation, segments)
+    else:
+        return unique_keys
+
 
 class GroupByReductionType(enum.Enum):
     SUM = 'sum'

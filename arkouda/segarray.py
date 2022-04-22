@@ -7,8 +7,8 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import str_
 from arkouda.pdarraycreation import zeros, ones, array, arange
-from arkouda.pdarraysetops import concatenate, unique
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pdarraysetops import concatenate
+from arkouda.groupbyclass import unique, GroupBy, broadcast
 from arkouda.pdarrayIO import load
 
 
