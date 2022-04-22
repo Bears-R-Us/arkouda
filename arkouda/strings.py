@@ -1442,10 +1442,11 @@ class Strings:
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
-             mode : str='truncate', save_offsets : bool = True) -> str:
+             mode : str='truncate', save_offsets : bool = True,
+             compressed : bool = False, file_format : str = 'HDF5') -> str:
         """
-        Save the Strings object to HDF5. The result is a collection of HDF5 files,
-        one file per locale of the arkouda server, where each filename starts
+        Save the Strings object to HDF5 or Parquet. The result is a collection of 
+        files, one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the Strings array to its
         corresponding file.
 
@@ -1461,7 +1462,15 @@ class Strings:
         save_offsets : bool
             Defaults to True which will instruct the server to save the offsets array to HDF5
             If False the offsets array will not be save and will be derived from the string values
-            upon load/read.
+            upon load/read. This is not supported for Parquet files.
+        compressed : bool
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing. This is currently only supported on Parquet files and will
+            not impact the generated files when writing HDF5 files.
+        file_format : str
+            By default, saved files will be written to the HDF5 file format. If
+            'Parquet', the files will be written to the Parquet file format. This
+            is case insensitive.
 
         Returns
         -------
@@ -1498,8 +1507,14 @@ class Strings:
         except Exception as e:
             raise ValueError(e)
 
-        cmd = "tohdf"
-        args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {self.entry.name} {save_offsets}"
+        if file_format.lower() == 'hdf5':
+            cmd = "tohdf"
+        elif file_format.lower() == 'parquet':
+            cmd = "writeParquet"
+        else:
+            raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
+        
+        args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {save_offsets} {compressed}"
         return cast(str, generic_msg(cmd, args))
 
     def save_parquet(self, prefix_path : str, dataset : str='strings_array', 
@@ -1516,9 +1531,9 @@ class Strings:
             Directory and filename prefix that all output files share
         dataset : str
             The name of the Strings dataset to be written, defaults to strings_array
-        mode : str {'truncate'}
+        mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            Append is not supported for Parquet writing.
+            If 'append', create a new Strings dataset within existing files.
         compressed : bool
             Defaults to False. When True, files will be written with Snappy compression
             and RLE bit packing.
@@ -1540,22 +1555,51 @@ class Strings:
         strings.save()
         pdarray.save_parquet()
         """
-        if mode.lower() in 'append':
-            m = 1
-        elif mode.lower() in 'truncate':
-            m = 0
-        else:
-            raise ValueError("Allowed modes are 'truncate' and 'append'")
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         compressed=compressed, file_format='Parquet')
+    
+    def save_hdf(self, prefix_path : str, dataset : str='strings_array',
+                 mode : str='truncate', save_offsets : bool = True) -> str:
+        """
+        Save the Strings object to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
 
-        try:
-            json_array = json.dumps([prefix_path])
-        except Exception as e:
-            raise ValueError(e)
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Strings dataset within existing files.
+        save_offsets : bool
+            Defaults to True which will instruct the server to save the offsets array to HDF5
+            If False the offsets array will not be save and will be derived from the string values
+            upon load/read.
 
-        cmd = "writeParquet"
-        args = f"{self.entry.name} {dataset} {m} {json_array} str {compressed}"
-        return cast(str, generic_msg(cmd, args))
-        
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError 
+            Raised if the lengths of columns and values differ, or the mode is 
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+
+        See Also
+        --------
+        strings.save()
+        pdarray.save()
+        """
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         save_offsets=save_offsets, file_format='HDF5')
+
     def is_registered(self) -> np.bool_:
         """
         Return True iff the object is contained in the registry

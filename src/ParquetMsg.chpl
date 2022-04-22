@@ -682,7 +682,7 @@ module ParquetMsg {
   }
   
   proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (arrayName, dsetname, modeStr, jsonfile, dataType, isCompressed)= payload.splitMsgToTuple(6);
+    var (arrayName, dsetname, modeStr, jsonfile, dataType, hdfPlaceholder, isCompressed)= payload.splitMsgToTuple(7);
     var mode = try! modeStr: int;
     var filename: string;
     var entry = st.lookup(arrayName);
