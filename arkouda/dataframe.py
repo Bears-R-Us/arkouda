@@ -1096,7 +1096,7 @@ class DataFrame(UserDict):
         if index:
             data["Index"] = self.index
         save_all(data, prefix_path=prefix_path,
-                 file_format=file_format, mode='append')
+                 file_format=file_format)
 
     def argsort(self, key, ascending=True):
         """
