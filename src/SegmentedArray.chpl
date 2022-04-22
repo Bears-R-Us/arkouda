@@ -1163,7 +1163,7 @@ module SegmentedArray {
     if testStr.numBytes == 0 {
       // Comparing against the empty string is a quick check for zero length
       const lengths = ss.getLengths() - 1;
-      return (lengths == 0);
+      return if function == SegFunction.StringCompareLiteralEq then (lengths == 0) else (lengths != 0);
     }
     return computeOnSegments(ss.offsets.a, ss.values.a, function, bool, testStr);
   }

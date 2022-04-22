@@ -2151,20 +2151,20 @@ def rotl(x, rot) -> pdarray:
 
     Parameters
     ----------
-    x : pdarray(int64) or integer
+    x : pdarray(int64/uint64) or integer
         Value(s) to rotate left.
-    rot : pdarray(int64) or integer
+    rot : pdarray(int64/uint64) or integer
         Amount(s) to rotate by.
 
     Returns
     -------
-    rotated : pdarray(int64)
+    rotated : pdarray(int64/uint64)
         The rotated elements of x.
 
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -2172,12 +2172,12 @@ def rotl(x, rot) -> pdarray:
     >>> ak.rotl(A, A)
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
     """
-    if isinstance(x, pdarray) and x.dtype == akint64:
-        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+    if isinstance(x, pdarray) and (x.dtype == akint64 or x.dtype == akuint64):
+        if (isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64)) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64):
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -2188,20 +2188,20 @@ def rotr(x, rot) -> pdarray:
 
     Parameters
     ----------
-    x : pdarray(int64) or integer
+    x : pdarray(int64/uint64) or integer
         Value(s) to rotate left.
-    rot : pdarray(int64) or integer
+    rot : pdarray(int64/uint64) or integer
         Amount(s) to rotate by.
 
     Returns
     -------
-    rotated : pdarray(int64)
+    rotated : pdarray(int64/uint64)
         The rotated elements of x.
 
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -2209,12 +2209,12 @@ def rotr(x, rot) -> pdarray:
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
     """
-    if isinstance(x, pdarray) and x.dtype == akint64:
-        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+    if isinstance(x, pdarray) and (x.dtype == akint64 or x.dtype == akuint64):
+        if (isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64)) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64):
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
