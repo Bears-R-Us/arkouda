@@ -572,3 +572,21 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor.lengths.to_ndarray().tolist(), [0, 2])
         self.assertListEqual(xor[0].tolist(), [])
         self.assertListEqual(xor[1].tolist(), [3, 4])
+
+    def test_register_attach(self):
+        a = [1, 2, 3]
+        b = [6, 7, 8]
+
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
+        #register the seg array
+        segarr.register('segarrtest')
+
+        segarr_2 = ak.SegArray.attach('segarrtest')
+
+        self.assertEqual(segarr.size, segarr_2.size)
+        self.assertListEqual(segarr.lengths.to_ndarray().tolist(), segarr_2.lengths.to_ndarray().tolist())
+        self.assertListEqual(segarr.segments.to_ndarray().tolist(), segarr_2.segments.to_ndarray().tolist())
+        self.assertListEqual(segarr.values.to_ndarray().tolist(), segarr_2.values.to_ndarray().tolist())
+        
+        segarr.unregister()
+        self.assertEqual(len(ak.list_registry()), 0)
