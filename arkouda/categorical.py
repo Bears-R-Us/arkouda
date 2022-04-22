@@ -220,9 +220,16 @@ class Categorical:
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
         present = g.segments[(ct == 2)]
+        present = concatenate((present, present+1), ordered=False)
+        bothinds = g.permutation[present]
+        mixedcodes = bothcodes[bothinds]
+        fromold = concatenate((ones(self.categories.size, dtype=akbool),
+                               zeros(new_categories.size, dtype=akbool)),
+                              ordered=False)
         # Matching pairs define a mapping of old codes to new codes
-        scatterinds = bothcodes[g.permutation[present]]
-        gatherinds = bothcodes[g.permutation[present + 1]]
+        fromold = fromold[bothinds]
+        scatterinds = mixedcodes[fromold]
+        gatherinds = mixedcodes[~fromold]
         # Make a lookup table where old code at scatterind maps to new code at gatherind
         unique_new_codes[scatterinds] = arange(new_categories.size)[gatherinds]
         # Apply the lookup to map old codes to new codes
