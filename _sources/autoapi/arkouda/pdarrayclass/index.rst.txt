@@ -658,9 +658,9 @@ Functions
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
       :type mode: str {'truncate' | 'append'}
-      :param compressed: Arkouda only supports writing with compression on Parquet files.
-                         Default is False, but, if True, will write Parquet file with Snappy
-                         compression and RLE encoding.
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing. This is currently only supported on Parquet files and will
+                         not impact the generated files when writing HDF5 files.
       :type compressed: bool
       :param file_format: By default, saved files will be written to the HDF5 file format. If
                           'Parquet', the files will be written to the Parquet file format. This

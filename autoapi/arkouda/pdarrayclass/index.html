@@ -1020,9 +1020,9 @@ corresponding file.</p>
 <li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files (must not already exist)</p></li>
 <li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
-<li><p><strong>compressed</strong> (<em>bool</em>) – Arkouda only supports writing with compression on Parquet files.
-Default is False, but, if True, will write Parquet file with Snappy
-compression and RLE encoding.</p></li>
+<li><p><strong>compressed</strong> (<em>bool</em>) – Defaults to False. When True, files will be written with Snappy compression
+and RLE bit packing. This is currently only supported on Parquet files and will
+not impact the generated files when writing HDF5 files.</p></li>
 <li><p><strong>file_format</strong> (<em>str {'HDF5'</em><em>, </em><em>'Parquet'}</em>) – By default, saved files will be written to the HDF5 file format. If
 ‘Parquet’, the files will be written to the Parquet file format. This
 is case insensitive.</p></li>

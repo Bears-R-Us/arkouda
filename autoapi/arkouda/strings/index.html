@@ -1235,9 +1235,9 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the Strings object to HDF5. The result is a collection of HDF5 files,
-one file per locale of the arkouda server, where each filename starts
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HDF5'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Strings object to HDF5 or Parquet. The result is a collection of
+files, one file per locale of the arkouda server, where each filename starts
 with prefix_path. Each locale saves its chunk of the Strings array to its
 corresponding file.</p>
 <dl class="field-list simple">
@@ -1249,7 +1249,13 @@ corresponding file.</p>
 If ‘append’, create a new Strings dataset within existing files.</p></li>
 <li><p><strong>save_offsets</strong> (<em>bool</em>) – Defaults to True which will instruct the server to save the offsets array to HDF5
 If False the offsets array will not be save and will be derived from the string values
-upon load/read.</p></li>
+upon load/read. This is not supported for Parquet files.</p></li>
+<li><p><strong>compressed</strong> (<em>bool</em>) – Defaults to False. When True, files will be written with Snappy compression
+and RLE bit packing. This is currently only supported on Parquet files and will
+not impact the generated files when writing HDF5 files.</p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – By default, saved files will be written to the HDF5 file format. If
+‘Parquet’, the files will be written to the Parquet file format. This
+is case insensitive.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1286,8 +1292,8 @@ corresponding file.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
 <li><p><strong>dataset</strong> (<em>str</em>) – The name of the Strings dataset to be written, defaults to strings_array</p></li>
-<li><p><strong>mode</strong> (<em>str {'truncate'}</em>) – By default, truncate (overwrite) output files, if they exist.
-Append is not supported for Parquet writing.</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, create a new Strings dataset within existing files.</p></li>
 <li><p><strong>compressed</strong> (<em>bool</em>) – Defaults to False. When True, files will be written with Snappy compression
 and RLE bit packing.</p></li>
 </ul>
@@ -1306,6 +1312,42 @@ neither ‘truncate’ nor ‘append’</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strings.save</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.save_parquet</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.strings.Strings.save_hdf">
+<span class="sig-name descname"><span class="pre">save_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.strings.Strings.save_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Strings object to HDF5. The result is a collection of HDF5 files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path. Each locale saves its chunk of the Strings array to its
+corresponding file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – The name of the Strings dataset to be written, defaults to strings_array</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, create a new Strings dataset within existing files.</p></li>
+<li><p><strong>save_offsets</strong> (<em>bool</em>) – Defaults to True which will instruct the server to save the offsets array to HDF5
+If False the offsets array will not be save and will be derived from the string values
+upon load/read.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>String message indicating result of save operation</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
+neither ‘truncate’ nor ‘append’</p></li>
+<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strings.save</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.save</span></code></p>
 </div>
 </dd></dl>
 
