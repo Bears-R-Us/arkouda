@@ -598,7 +598,7 @@ class DataFrame(UserDict):
             elif isinstance(val, SegArray):
                 dtypes.append('SegArray')
             else:
-               raise TypeError(f"Unsupported type encountered for ak.DataFrame, {type(val)}")
+                raise TypeError(f"Unsupported type encountered for ak.DataFrame, {type(val)}")
         res = Row({key: dtype for key, dtype in zip(keys, dtypes)})
         return res
 
