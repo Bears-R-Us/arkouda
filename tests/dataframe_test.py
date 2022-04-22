@@ -450,7 +450,7 @@ class DataFrameTest(ArkoudaTest):
         os.mkdir("save_table_test")
         akdf.save_table("save_table_test/testFile", file_format='Parquet')
 
-        pddf = pd.read_parquet("save_table_test", engine="pyarrow")
+        pddf = pd.read_parquet("save_table_test")
         self.assertTrue(pddf.equals(validation_df))
 
         # clean up test files
