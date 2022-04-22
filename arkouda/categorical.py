@@ -581,7 +581,7 @@ class Categorical:
             return Categorical.from_codes(newvals, newidx)
 
     @typechecked
-    def save(self, prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate') -> str:
+    def save(self, prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5',  mode: str = 'truncate') -> str:
         """
         Save the Categorical object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -631,7 +631,7 @@ class Categorical:
             # Honor the first mode but switch to append for all others since each following comp may wipe out the file
             first = True
             for k, v in comp_dict.items():
-                result.append(v.save(prefix_path, dataset=f"{dataset}.{k}", mode=(mode if first else "append")))
+                result.append(v.save(prefix_path, dataset=f"{dataset}.{k}", file_format=file_format, mode=(mode if first else "append")))
                 first = False
         else:
             raise Exception("The required pieces of `categories` and `codes` were not populated on this Categorical")

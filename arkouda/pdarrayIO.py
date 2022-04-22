@@ -525,7 +525,7 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         '''Append all pdarrays to existing files as new datasets EXCEPT the first one, 
            and only if user requests truncation'''
-        if mode.lower() != 'append' or first_iter:
+        if mode.lower() != 'append' and first_iter:
             arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='truncate')
             first_iter = False
         else:
