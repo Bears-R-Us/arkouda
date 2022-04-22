@@ -427,7 +427,7 @@ class DataFrameTest(ArkoudaTest):
         df_copy.__setitem__('userID', ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
 
-    @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
+    #@pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_save_table(self):
         i = list(range(3))
         c1 = [9, 7, 17]
@@ -447,10 +447,14 @@ class DataFrameTest(ArkoudaTest):
         })
 
         # make directory to save to so pandas read works
-        os.mkdir("save_table_test")
-        akdf.save_table("save_table_test/testFile", file_format='Parquet')
+        os.mkdir(f"{os.getcwd()}/save_table_test")
+        akdf.save_table(f"{os.getcwd()}/save_table_test/testName", file_format='Parquet')
 
-        # pddf = pd.read_parquet("save_table_test")
+        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName.parquet")
+        self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+
+        # Commenting the read into pandas out because it requires optional libraries
+        # pddf = pd.read_parquet("save_table_test", engine='pyarrow')
         # self.assertTrue(pddf.equals(validation_df))
 
         # clean up test files
