@@ -1,4 +1,6 @@
 import pandas as pd  # type: ignore
+import random
+import string
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -90,6 +92,19 @@ class DataFrameTest(ArkoudaTest):
         self.assertIsInstance(df, ak.DataFrame)
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
+
+    def test_dtype_prop(self):
+        str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)])
+        df_dict = {
+            "i": ak.arange(3),
+            "c_1": ak.arange(3, 6, 1),
+            "c_2": ak.arange(6, 9, 1),
+            "c_3": str_arr,
+            "c_4": ak.Categorical(str_arr),
+            "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20))
+        }
+        akdf = ak.DataFrame(df_dict)
+        self.assertEqual(len(akdf.columns), len(akdf.dtypes))
 
     def test_to_pandas(self):
         df = build_ak_df()
