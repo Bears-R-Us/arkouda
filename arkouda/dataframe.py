@@ -4,6 +4,7 @@ from collections import UserDict
 from warnings import warn
 import pandas as pd  # type: ignore
 import random
+import json
 
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
@@ -17,7 +18,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
-from arkouda.client import maxTransferBytes
+from arkouda.client import maxTransferBytes, generic_msg
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
 from arkouda.series import Series
@@ -422,6 +423,41 @@ class DataFrame(UserDict):
         newdf._set_index(idx)
         return newdf.to_pandas(retain_index=True)
 
+    def _head_tail_server(self):
+        if self._empty:
+            return pd.DataFrame()
+        self.update_size()
+        maxrows = pd.get_option('display.max_rows')
+        if self._size <= maxrows:
+            newdf = DataFrame()
+            for col in self._columns:
+                if isinstance(self[col], Categorical):
+                    newdf[col] = self[col].categories[self[col].codes]
+                else:
+                    newdf[col] = self[col]
+            newdf._set_index(self.index)
+            return newdf.to_pandas(retain_index=True)
+        # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
+        idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
+        # TODO - pass names to server of
+        #   - idx
+        #   - if categorical -> send codes name
+        #   - otherwise send name
+        #   - number of elements
+        #   - each element type [(type, name), ...]
+        msg_list = []
+        for col in self._columns:
+            # TODO - handle segarray
+            if isinstance(self[col], Categorical):
+                msg_list.append(f"Categorical+{self[col].codes.name}+{self[col].categories.name}")
+            elif isinstance(self[col], Strings):
+                msg_list.append(f"Strings+{self[col].name}")
+            else:
+                msg_list.append(f"pdarray+{self[col].name}")
+
+        generic_msg(cmd="dataframe_idx", args="{} {} {}".
+                    format(len(msg_list), idx.name, json.dumps(msg_list)))
+
     def _shape_str(self):
         return "{} rows x {} columns".format(self.size, self._ncols())
 
@@ -440,8 +476,9 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-
-        prt = self._get_head_tail()
+        self._head_tail_server()
+        return
+        #prt = self._get_head_tail()
         with pd.option_context("display.show_dimensions", False):
             retval = prt._repr_html_()
         retval += "<p>" + self._shape_str() + "</p>"
