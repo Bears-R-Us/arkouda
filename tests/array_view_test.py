@@ -73,6 +73,40 @@ class ArrayViewTest(ArkoudaTest):
         self.assertEqual(uav[uind], unav[nind])
         self.assertEqual(uav[iind], uav[uind])
 
+    def test_get_bool_pdarray(self):
+        n = np.arange(30).reshape(5, 3, 2)
+        a = ak.arange(30).reshape(5, 3, 2)
+
+        n_bool_list = n[True, True, True].tolist()
+        a_bool_list = a[True, True, True].to_ndarray().tolist()
+        self.assertListEqual(n_bool_list, a_bool_list)
+        n_bool_list = n[False, True, True].tolist()
+        a_bool_list = a[False, True, True].to_ndarray().tolist()
+        self.assertListEqual(n_bool_list, a_bool_list)
+        n_bool_list = n[True, False, True].tolist()
+        a_bool_list = a[True, False, True].to_ndarray().tolist()
+        self.assertListEqual(n_bool_list, a_bool_list)
+        n_bool_list = n[True, True, False].tolist()
+        a_bool_list = a[True, True, False].to_ndarray().tolist()
+        self.assertListEqual(n_bool_list, a_bool_list)
+
+    def test_set_bool_pdarray(self):
+        n = np.arange(30).reshape(5, 3, 2)
+        a = ak.arange(30).reshape(5, 3, 2)
+
+        n[True, True, True] = 9
+        a[True, True, True] = 9
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n[False, True, True] = 5
+        a[False, True, True] = 5
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n[True, False, True] = 6
+        a[True, False, True] = 6
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+        n[True, True, False] = 13
+        a[True, True, False] = 13
+        self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
+
     def test_reshape_order(self):
         # Keep 'C'/'F' (C/Fortran) order to be consistent with numpy
         # But also accept more descriptive 'row_major' and 'column_major'

@@ -1,5 +1,6 @@
 from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
-from arkouda.pdarraycreation import array, arange, zeros
+from arkouda.pdarraycreation import array, arange, zeros, ones, full
+from arkouda.pdarraysetops import concatenate
 from arkouda.numeric import cumprod, where, cast as akcast
 import numpy as np  # type: ignore
 from arkouda.client import generic_msg
@@ -105,8 +106,15 @@ class ArrayView:
             pass
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("int", "uint"):
+            if kind not in ("int", "uint", "bool"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
+            if kind == "bool":
+                if key.all():
+                    # every dimension is True, so return this arrayview with shape = [1, self.shape]
+                    return self.base.reshape(concatenate([ones(1, dtype=self.dtype), self.shape]), order=self.order.name)
+                else:
+                    # at least one dimension is False, so return empty arrayview with shape = [0, self.shape]
+                    return array([], dtype=self.dtype).reshape(concatenate([zeros(1, dtype=self.dtype), self.shape]), order=self.order.name)
             # Interpret negative key as offset from end of array
             key = where(key < 0, akcast(key + self.shape, kind), key)
             # Capture the indices which are still out of bounds
@@ -189,21 +197,27 @@ class ArrayView:
             pass
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
-            if kind not in ("int", "uint"):
+            if kind not in ("int", "uint", "bool"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
-            # Interpret negative key as offset from end of array
-            key = where(key < 0, akcast(key + self.shape, kind), key)
-            # Capture the indices which are still out of bounds
-            out_of_bounds = (key < 0) | (self.shape <= key)
-            if out_of_bounds.any():
-                out = arange(key.size)[out_of_bounds][0]
-                raise IndexError(f"index {key[out]} is out of bounds for axis {out} with size {self.shape[out]}")
-            coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
-            generic_msg(cmd="arrayViewIntIndexAssign", args="{} {} {} {} {}".format(self.base.name,
-                                                                                    self.dtype.name,
-                                                                                    self._dim_prod.name,
-                                                                                    coords.name,
-                                                                                    self.base.format_other(value)))
+            if kind == "bool":
+                if key.all():
+                    # every dimension is True, so fill arrayview with value
+                    # if any dimension is False, we don't update anything
+                    self.base.fill(value)
+            else:
+                # Interpret negative key as offset from end of array
+                key = where(key < 0, akcast(key + self.shape, kind), key)
+                # Capture the indices which are still out of bounds
+                out_of_bounds = (key < 0) | (self.shape <= key)
+                if out_of_bounds.any():
+                    out = arange(key.size)[out_of_bounds][0]
+                    raise IndexError(f"index {key[out]} is out of bounds for axis {out} with size {self.shape[out]}")
+                coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
+                generic_msg(cmd="arrayViewIntIndexAssign", args="{} {} {} {} {}".format(self.base.name,
+                                                                                        self.dtype.name,
+                                                                                        self._dim_prod.name,
+                                                                                        coords.name,
+                                                                                        self.base.format_other(value)))
         elif isinstance(key, list):
             raise NotImplementedError(f"Setting via slicing and advanced indexing is not yet supported")
         else:

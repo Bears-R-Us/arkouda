@@ -884,7 +884,7 @@ class pdarray:
 
         Parameters
         ----------
-        shape : int or tuple of ints
+        shape : int, tuple of ints, or pdarray
             The new shape should be compatible with the original shape.
         order : str {'row_major' | 'C' | 'column_major' | 'F'}
             Read the elements of the pdarray in this index order
@@ -901,7 +901,7 @@ class pdarray:
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         if len(shape) == 1:
             shape = shape[0]
-        else:
+        elif not isinstance(shape, pdarray):
             shape = [i for i in shape]
         return ArrayView(base=self, shape=shape, order=order)
 
