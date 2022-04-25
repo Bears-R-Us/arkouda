@@ -13,7 +13,6 @@ from arkouda.pdarraycreation import arange, array
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
-from arkouda.pdarrayIO import save_all, load_all
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.sorting import argsort, coargsort
@@ -1086,7 +1085,7 @@ class DataFrame(UserDict):
 
         Notes
         ______
-        This function current uses 'truncate' mode to ensure the file exists before appending.
+        This function currently uses 'truncate' mode to ensure the file exists before appending.
         """
         # if no columns are stored, we will save all columns
         if columns is None:
@@ -1098,11 +1097,10 @@ class DataFrame(UserDict):
             data["Index"] = self.index
         save_all(data, prefix_path=prefix_path,
                  file_format=file_format)
+
     @classmethod
     def load_table(cls, prefix_path):
         return cls(load_all(prefix_path))
-
-
 
     def argsort(self, key, ascending=True):
         """

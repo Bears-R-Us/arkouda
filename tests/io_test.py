@@ -529,7 +529,6 @@ class IOTest(ArkoudaTest):
         
         strings = strings_array.to_ndarray()
         strings.sort()
-        print(r_mixed)
         r_strings = r_mixed['m_strings'].to_ndarray()
         r_strings.sort()
 
