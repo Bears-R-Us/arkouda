@@ -65,13 +65,6 @@ Arkouda can compute simple histograms on ``pdarray`` data. Currently, this funct
 
 .. autofunction:: arkouda.histogram
 
-Since the ``histogram`` function currently does not return the bin edges, only the counts, the user can recreate the bin edges (e.g. for plotting) using:
-
-.. code-block:: python
-
-   >>> binEdges = np.linspace(myarray.min(), myarray.max(), nbins + 1)
-
-
 Value Counts
 ============
 
