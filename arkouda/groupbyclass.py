@@ -1,7 +1,6 @@
 from __future__ import annotations
 import enum
 
-
 from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional, Dict
 
 if TYPE_CHECKING:
@@ -217,7 +216,6 @@ class GroupBy:
         self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore
         self.size = self.permutation.size
         self.ngroups = self.segments.size
-
 
     def count(self) -> Tuple[groupable,pdarray]:
         '''
@@ -1012,10 +1010,15 @@ class GroupBy:
             The GroupBy object created by using the given components
 
         """
-        g = GroupBy(keys)
+        if len(keys) == 1:
+            g = GroupBy(keys[0])
+        else:
+            g = GroupBy(keys)
+
         g.permutation = permutation
         g.name = user_defined_name
 
+        print(g.keys)
         return g
 
     def _get_groupby_required_pieces(self) -> Dict:
@@ -1065,40 +1068,47 @@ class GroupBy:
             they are unregistered.
         """
         # Check if the keys of this GroupBy is a Sequence
-        if type(self.keys) == list:
+        if isinstance(self.keys, Sequence):
             # By registering permutation first, we can ensure no overlap in naming between two registered
             #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
             #   names are registered
             self.permutation.register(f"{user_defined_name}.permutation")
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's type individually
-                if hasattr(self.keys[x], "dtype"):
-                    dtype = self.keys[x].dtype
-                    if dtype == npstr:
-                        dtype = "str"
-                    else:
-                        # If the key is a pdarray, multiple numeric types are possible. Simplifying this to a
-                        #   single 'type' for the name makes the attaching logic much simpler. - This does
-                        #   not change the pdarray's actual dtype
-                        dtype = "akNum"
+                if isinstance(self.keys[x], Strings):
+                    dtype = "str"
+                elif isinstance(self.keys[x], pdarray):
+                    dtype = "akNum"
                 else:
-                    # Of the groupable types, only Categorials don't have a dtype attribute
                     dtype = "categorical"
+                # if hasattr(self.keys[x], "dtype"):
+                #     dtype = self.keys[x].dtype
+                #     if dtype == npstr:
+                #         dtype = "str"
+                #     else:
+                #         # If the key is a pdarray, multiple numeric types are possible. Simplifying this to a
+                #         #   single 'type' for the name makes the attaching logic much simpler. - This does
+                #         #   not change the pdarray's actual dtype
+                #         dtype = "akNum"
+                # else:
+                #     # Of the groupable types, only Categorials don't have a dtype attribute
+                #     dtype = "categorical"
 
                 self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
 
         else:  # Not a Sequence - Skips the loop
-            if hasattr(self.keys, "dtype"):
-                dtype = self.keys.dtype
-                if dtype == npstr:
-                    dtype = "str"
-                else:
-                    dtype = "akNum"
+            if isinstance(self.keys, Strings):
+                dtype = "str"
+            elif isinstance(self.keys, pdarray):
+                dtype = "akNum"
             else:
                 dtype = "categorical"
 
             self.permutation.register(f"{user_defined_name}.permutation")
-            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+
+            # Instance check for mypy happiness since Sequence does not have a register method
+            if not isinstance(self.keys, Sequence):
+                self.keys.register(f"{user_defined_name}_{dtype}.keys")
 
         self.name = user_defined_name
         return self
@@ -1128,7 +1138,7 @@ class GroupBy:
             raise RegistrationError("This item does not have a name and does not appear to be registered.")
 
         # Unregister all components in keys in the case of a Sequence
-        if type(self.keys) == list:
+        if isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 self.keys[x].unregister()
             self.permutation.unregister()
@@ -1161,22 +1171,21 @@ class GroupBy:
         they are unregistered.
         """
         if self.name is None:
-            return False # unnamed GroupBy cannot be registered
+            return np.bool_(False)  # unnamed GroupBy cannot be registered
 
-        if type(self.keys) == list: # Sequence - Check for all components
+        if isinstance(self.keys, Sequence):  # Sequence - Check for all components
             from re import match, compile
             # Only check for a single component of Categorical to ensure correct count.
             regEx = compile(f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_categorical\\.keys(?=\\.categories$)")
-            parts_registered = list(filter(regEx.match, list_registry()))
+            registered = list(filter(regEx.match, list_registry()))
             if f"{self.name}.permutation" in list_registry():
-                parts_registered.append(f"{self.name}.permutation")
+                registered.append(f"{self.name}.permutation")
 
             # Check against length of keys + 1 to account for all keys as well as the permutation
-            if 0 < len(parts_registered) < len(self.keys) + 1:
+            if 0 < len(registered) < len(self.keys) + 1:
                 raise RegistrationError(f"Not all registerable components of GroupBy {self.name} are registered.")
 
-            return np.bool_(len(parts_registered) == len(self.keys) + 1)
-
+            return np.bool_(len(registered) == len(self.keys) + 1)
         else:
             parts_registered: List[np.bool_] = [p.is_registered() for p in
                                                 GroupBy._get_groupby_required_pieces(self).values()]
@@ -1187,7 +1196,6 @@ class GroupBy:
             return np.bool_(np.any(parts_registered))
 
     @staticmethod
-    @typechecked
     def attach(user_defined_name: str) -> GroupBy:
         """
         Function to return a GroupBy object attached to the registered name in the
@@ -1230,38 +1238,31 @@ class GroupBy:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
         categorical = False
-        for match in matches:
+        for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
-            if "str" in match or "akNum" in match:
-                keys_resp = generic_msg(cmd="attach", args=match)
+            if "str" in name or "akNum" in name:
+                keys_resp = cast(str, generic_msg(cmd="attach", args=name))
                 dtype = keys_resp.split()[2]
                 if dtype == "str":
                     keys.append(Strings.from_return_msg(keys_resp))
                 else:  # akNum
                     keys.append(create_pdarray(keys_resp))
 
-            elif "categorical" in match:
+            elif "categorical" in name:
                 from arkouda.categorical import Categorical
-                keys.append(Categorical.attach(match))
+                keys.append(Categorical.attach(name))
                 categorical = True
 
             else:
                 raise RegistrationError(f"Unknown type associated with registered item: {user_defined_name}."
                                         f" Supported types are: {groupable}")
 
-        if len(keys) == 1:
-            # Not a Sequence, only one key
-            keys = keys[0]
-            # If this key is a categorical, due to how items are registered, the GroupBy permutation will be
-            #   overwritten by the Categorical's permutation, so we need to use the categorical permutation
-            if categorical:
-                perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}_categorical.keys.permutation")
-            else:
-                perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
-        elif len(keys) == 0:
-            raise RegistrationError(f"Unable to attach to '{user_defined_name}' or '{user_defined_name}' is not registered")
-        else:
-            perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
+        if len(keys) == 0:
+            raise RegistrationError(f"Unable to attach to '{user_defined_name}' or '{user_defined_name}'"
+                                    f" is not registered")
+
+        perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}_categorical.keys.permutation") if\
+            categorical and len(keys) == 1 else generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
 
         permutation = create_pdarray(perm_resp)
         g = GroupBy.build_from_components(keys, permutation, user_defined_name)  # Call build_from_components method
@@ -1295,7 +1296,8 @@ class GroupBy:
         from re import match, compile
         registry = list_registry()
 
-        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
+        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
+                        f"^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
         categorical = False
         matches = 0
         for name in registry:
