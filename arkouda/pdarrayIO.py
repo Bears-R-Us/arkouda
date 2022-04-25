@@ -122,6 +122,7 @@ def read(filenames : Union[str, List[str]],
     and read all of them. Use ``get_datasets`` to show the names of datasets
     to HDF5 files.
     """
+    print(filenames)
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
@@ -248,7 +249,7 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]
         raise RuntimeError("No items were returned")
         
 @typechecked
-def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
+def load(path_prefix : str, file_format: str="HDF5", dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -256,6 +257,8 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
     ----------
     path_prefix : str
         Filename prefix used to save the original pdarray
+    file_format : str
+        'HDF5' or 'Parquet'. Used to indicate the file type being loaded.
     dataset : str
         Dataset name where the pdarray was saved, defaults to 'array'
     calc_string_offsets : bool
@@ -272,7 +275,7 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
     TypeError 
         Raised if either path_prefix or dataset is not a str 
     ValueError 
-        Raised if the dataset is not present in all hdf5 files or if the
+        Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
         path_prefix does not correspond to files accessible to Arkouda
     RuntimeError
         Raised if the hdf5 files are present but there is an error in opening
@@ -282,7 +285,12 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
     --------
     save, load_all, read
     """
-    prefix, extension = os.path.splitext(path_prefix)
+    #prefix, extension = os.path.splitext(path_prefix)
+    if file_format not in ['HDF5', 'Parquet']:
+        raise ValueError(f"Unsupported file_format value, {file_format}. Must be HDF5 or Parquet.")
+    prefix, extension = os.path.splitext(path_prefix)  # hdf5 supports various extensions, including empty
+    if file_format == "Parquet":  # parquet is always saved with .parquet extension
+        extension = ".parquet"
     globstr = "{}_LOCALE*{}".format(prefix, extension)
 
     try:
@@ -290,7 +298,7 @@ def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = Fa
     except RuntimeError as re:
         if 'does not exist' in str(re):
             raise ValueError('There are no files corresponding to the ' +
-                                'path_prefix {} in location accessible to Arkouda'.format(prefix))
+                                'path_prefix {} in location accessible to Arkouda'.format(path_prefix))
         else:
             raise RuntimeError(re)
             
@@ -304,8 +312,6 @@ def get_datasets(filename : str) -> List[str]:
     ----------
     filename : str
         Name of an HDF5/Parquet file visible to the arkouda server
-    is_parquet : bool
-        Is filename a Parquet file; false by default
 
     Returns
     -------
@@ -402,7 +408,7 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
 
 
 @typechecked
-def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categorical]]:
+def load_all(path_prefix: str, file_format: str = "HDF5") -> Mapping[str, Union[pdarray, Strings, Categorical]]:
     """
     Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
@@ -410,6 +416,9 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
     ----------
     path_prefix : str
         Filename prefix used to save the original pdarray
+    file_format: str
+        'HDF5' or 'Parquet'. Indicates the format being loaded. Used to assign the appropriate file extension.
+        Defaults to 'HDF5'
 
     Returns
     -------
@@ -422,7 +431,8 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
     TypeError:
         Raised if path_prefix is not a str
     ValueError 
-        Raised if all datasets are not present in all hdf5 files or if the
+        Raised if file_format/extension is encountered that is not hdf5 or parquet or
+        if all datasets are not present in all hdf5/parquet files or if the
         path_prefix does not correspond to files accessible to Arkouda   
     RuntimeError
         Raised if the hdf5 files are present but there is an error in opening
@@ -431,11 +441,20 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
     See Also
     --------
     save_all, load, read
+
+    Notes
+    _____
+    This function has been updated to determine the file extension based on the file format variable
     """
-    prefix, extension = os.path.splitext(path_prefix)
+    if file_format not in ['HDF5', 'Parquet']:
+        raise ValueError(f"Unsupported file_format value, {file_format}. Must be HDF5 or Parquet.")
+    prefix, extension = os.path.splitext(path_prefix) # hdf5 allows for various extensions including empty
+    if file_format == "Parquet": # parquet files always have .parquet extension
+        extension = ".parquet"
     firstname = "{}_LOCALE0000{}".format(prefix, extension)
     try:
-        result = {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+        result = {dataset: load(prefix, file_format=file_format, dataset=dataset)
+                  for dataset in get_datasets(firstname)}
 
         # Check for Categoricals and remove if necessary
         removal_names, categoricals = Categorical.parse_hdf_categoricals(result)
@@ -451,17 +470,19 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
         if 'does not exist' in str(re):
             try: 
                 firstname = "{}_LOCALE0{}".format(prefix, extension)
-                return {dataset: load(path_prefix, dataset=dataset) \
-                                       for dataset in get_datasets(firstname)}
+                return {dataset: load(prefix, dataset=dataset)
+                        for dataset in get_datasets(firstname)}
             except RuntimeError as re:
                 if 'does not exist' in str(re):
-                    raise ValueError('There are no files corresponding to the ' +
-                                     'path_prefix {} in location accessible to Arkouda'.format(prefix))
+                    raise ValueError(f"There are no files corresponding to the "
+                                     f"path_prefix {prefix} and file_format {file_format} "
+                                     f"in location accessible to Arkouda")
                 else:
                     raise RuntimeError(re)
         else:
-            raise RuntimeError('Could not open on or more files with ' +
-                                   'the file prefix {}, check file format or permissions'.format(prefix))
+            raise RuntimeError("Could not open one or more files with "
+                               f"path_prefix {prefix} and file_format {file_format} "
+                               f"in location accessible to Arkouda")
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
              names : List[str]=None, file_format='HDF5', mode : str='truncate') -> None:
