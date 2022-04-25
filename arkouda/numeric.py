@@ -515,7 +515,7 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray
 
     Returns
     -------
-    (pdarray[float64], Union[pdarray, int64 or float64])
+    (np.ndarray, Union[pdarray, int64 or float64])
         Bin edges and The number of values present in each bin
         
     Raises
@@ -535,8 +535,6 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray
     Notes
     -----
     The bins are evenly spaced in the interval [pda.min(), pda.max()].
-    Currently, the user must re-compute the bin edges, e.g. with np.linspace 
-    (see below) in order to plot the histogram.
 
     Examples
     --------
@@ -549,7 +547,7 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray
     >>> b
     array([0., 3., 6.])
 
-    # To plot, use only the left edges, and export the histogram to NumPy
+    # To plot, use only the left edges (now returned), and export the histogram to NumPy
     >>> plt.plot(b, h.to_ndarray())
     """
     if bins < 1:
