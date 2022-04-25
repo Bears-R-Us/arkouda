@@ -6347,7 +6347,7 @@ Attributes
    :type bins: int_scalars
 
    :returns: Bin edges and The number of values present in each bin
-   :rtype: (pdarray[float64], Union[pdarray, int64 or float64])
+   :rtype: (np.ndarray, Union[pdarray, int64 or float64])
 
    :raises TypeError: Raised if the parameter is not a pdarray or if bins is
        not an int.
@@ -6359,8 +6359,6 @@ Attributes
    .. rubric:: Notes
 
    The bins are evenly spaced in the interval [pda.min(), pda.max()].
-   Currently, the user must re-compute the bin edges, e.g. with np.linspace
-   (see below) in order to plot the histogram.
 
    .. rubric:: Examples
 
@@ -6373,7 +6371,7 @@ Attributes
    >>> b
    array([0., 3., 6.])
 
-   # To plot, use only the left edges, and export the histogram to NumPy
+   # To plot, use only the left edges (now returned), and export the histogram to NumPy
    >>> plt.plot(b, h.to_ndarray())
 
 

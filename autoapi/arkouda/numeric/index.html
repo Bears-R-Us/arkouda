@@ -507,7 +507,7 @@ is not currently supported in Arkouda</p>
 <dd class="field-even"><p>Bin edges and The number of values present in each bin</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>[float64], Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64 or float64])</p>
+<dd class="field-odd"><p>(np.ndarray, Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64 or float64])</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
@@ -523,9 +523,7 @@ not an int.</p></li>
 <p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The bins are evenly spaced in the interval [pda.min(), pda.max()].
-Currently, the user must re-compute the bin edges, e.g. with np.linspace
-(see below) in order to plot the histogram.</p>
+<p>The bins are evenly spaced in the interval [pda.min(), pda.max()].</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -537,7 +535,7 @@ Currently, the user must re-compute the bin edges, e.g. with np.linspace
 <span class="go">array([0., 3., 6.])</span>
 </pre></div>
 </div>
-<p># To plot, use only the left edges, and export the histogram to NumPy
+<p># To plot, use only the left edges (now returned), and export the histogram to NumPy
 &gt;&gt;&gt; plt.plot(b, h.to_ndarray())</p>
 </dd></dl>
 
