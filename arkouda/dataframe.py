@@ -12,7 +12,7 @@ from arkouda.strings import Strings
 from arkouda.pdarraycreation import arange, array
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
-from arkouda.pdarrayIO import save_all
+from arkouda.pdarrayIO import save_all, load_all
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.sorting import argsort, coargsort
@@ -1067,6 +1067,40 @@ class DataFrame(UserDict):
         """
         tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
         save_all(tosave, path)
+
+    def save_table(self, prefix_path, columns=None, index=False, file_format='HDF5'):
+        """
+        Save a dataframe as a table in Parquet
+
+        Parameters
+        __________
+        prefix_path: str
+            Path and filename prefix to save to
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        file_format: str
+            'HDF5' or 'Parquet'. Defaults to 'HDF5'
+        index: Bool
+            If true, include the index values in the save file.
+
+        Notes
+        ______
+        This function currently uses 'truncate' mode to ensure the file exists before appending.
+        """
+        # if no columns are stored, we will save all columns
+        if columns is None:
+            data = self.data
+        else:
+            data = {c: self.data[c] for c in columns}
+
+        if index:
+            data["Index"] = self.index
+        save_all(data, prefix_path=prefix_path,
+                 file_format=file_format)
+
+    @classmethod
+    def load_table(cls, prefix_path):
+        return cls(load_all(prefix_path))
 
     def argsort(self, key, ascending=True):
         """
