@@ -384,6 +384,28 @@ Functions
       locale number.
 
 
+   .. py:method:: save_table(self, prefix_path, columns=None, index=False, file_format='HDF5')
+
+      Save a dataframe as a table in Parquet
+
+      :param prefix_path: Path and filename prefix to save to
+      :type prefix_path: str
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
+      :type file_format: str
+      :param index: If true, include the index values in the save file.
+      :type index: Bool
+
+      .. rubric:: Notes
+
+      This function currently uses 'truncate' mode to ensure the file exists before appending.
+
+
+   .. py:method:: load_table(cls, prefix_path)
+      :classmethod:
+
+
    .. py:method:: argsort(self, key, ascending=True)
 
       Return the permutation that sorts the dataframe by `key`.

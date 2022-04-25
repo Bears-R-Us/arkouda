@@ -402,7 +402,7 @@ Classes
       This operation can be expensive -- slower than concatenating Strings.
 
 
-   .. py:method:: save(self, prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate') -> str
+   .. py:method:: save(self, prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate') -> str
 
       Save the Categorical object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts

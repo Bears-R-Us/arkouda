@@ -524,6 +524,29 @@ locale number.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.save_table">
+<span class="sig-name descname"><span class="pre">save_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HDF5'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.save_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a dataframe as a table in Parquet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Path and filename prefix to save to</p></li>
+<li><p><strong>columns</strong> (<em>List</em>) – List of columns to include in the file. If None, writes out all columns</p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – ‘HDF5’ or ‘Parquet’. Defaults to ‘HDF5’</p></li>
+<li><p><strong>index</strong> (<em>Bool</em>) – If true, include the index values in the save file.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function currently uses ‘truncate’ mode to ensure the file exists before appending.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.load_table">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.load_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.argsort">
 <span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.argsort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the permutation that sorts the dataframe by <cite>key</cite>.</p>

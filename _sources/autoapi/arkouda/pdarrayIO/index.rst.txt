@@ -199,7 +199,7 @@ Functions
    .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
+.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -209,6 +209,8 @@ Functions
    :type prefix_path: str
    :param names: Dataset names for the pdarrays
    :type names: list of str
+   :param file_format: 'HDF5' or 'Parquet'. Defaults to hdf5
+   :type file_format: str
    :param mode: By default, truncate (overwrite) the output files if they exist.
                 If 'append', attempt to create new dataset in existing files.
    :type mode: {'truncate' | 'append'}
