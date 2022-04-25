@@ -4982,14 +4982,14 @@ Attributes
    Rotate bits of <x> to the left by <rot>.
 
    :param x: Value(s) to rotate left.
-   :type x: pdarray(int64) or integer
+   :type x: pdarray(int64/uint64) or integer
    :param rot: Amount(s) to rotate by.
-   :type rot: pdarray(int64) or integer
+   :type rot: pdarray(int64/uint64) or integer
 
    :returns: **rotated** -- The rotated elements of x.
-   :rtype: pdarray(int64)
+   :rtype: pdarray(int64/uint64)
 
-   :raises TypeError: If input array is not int64
+   :raises TypeError: If input array is not int64 or uint64
 
    .. rubric:: Examples
 
@@ -5003,14 +5003,14 @@ Attributes
    Rotate bits of <x> to the left by <rot>.
 
    :param x: Value(s) to rotate left.
-   :type x: pdarray(int64) or integer
+   :type x: pdarray(int64/uint64) or integer
    :param rot: Amount(s) to rotate by.
-   :type rot: pdarray(int64) or integer
+   :type rot: pdarray(int64/uint64) or integer
 
    :returns: **rotated** -- The rotated elements of x.
-   :rtype: pdarray(int64)
+   :rtype: pdarray(int64/uint64)
 
-   :raises TypeError: If input array is not int64
+   :raises TypeError: If input array is not int64 or uint64
 
    .. rubric:: Examples
 
