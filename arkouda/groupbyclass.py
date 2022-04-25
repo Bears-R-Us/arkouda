@@ -1,17 +1,20 @@
 from __future__ import annotations
 import enum
-from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional
+
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional, Dict
+
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 import numpy as np # type: ignore
 from typeguard import typechecked, check_type
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.pdarrayclass import pdarray, create_pdarray, RegistrationError, unregister_pdarray_by_name
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.logger import getArkoudaLogger
-from arkouda.dtypes import int64, uint64
+from arkouda.dtypes import int64, uint64, npstr
+from arkouda.infoclass import list_registry
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
@@ -989,6 +992,329 @@ class GroupBy:
                                                 self.size)
         repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(repMsg)
+
+    @staticmethod
+    def build_from_components(keys, permutation, user_defined_name: str = None) -> GroupBy:
+        """
+        function to build a new GroupBy object from component keys and permutation.
+
+        Parameters
+        ----------
+            keys : (list of) pdarray, Strings, or Categorical
+            permutation : pdarray
+            user_defined_name : str (Optional) Passing a name will init the new GroupBy
+                and assign it the given name
+
+        Returns
+        -------
+        GroupBy
+            The GroupBy object created by using the given components
+
+        """
+        g = GroupBy(keys)
+        g.permutation = permutation
+        g.name = user_defined_name
+
+        return g
+
+    def _get_groupby_required_pieces(self) -> Dict:
+        """
+        Internal function that returns a dictionary with all required components of self
+
+        Returns
+        -------
+        Dict
+            Dictionary of all required components of self
+                Components (keys, permutation)
+        """
+        return {"keys": getattr(self, "keys"), "permutation": getattr(self, "permutation")}
+
+    @typechecked()
+    def register(self, user_defined_name: str) -> GroupBy:
+        """
+        Register this GroupBy object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+            user_defined_name : str
+            user defined name the GroupBy is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+            GroupBy
+            The same GroupBy which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different GroupBys with the same name.
+
+        Raises
+        ------
+            TypeError
+            Raised if user_defined_name is not a str
+            RegistrationError
+            If the server was unable to register the GroupBy with the user_defined_name
+
+        See also
+        --------
+            unregister, attach, unregister_groupby_by_name, is_registered
+
+        Notes
+        -----
+            Objects registered with the server are immune to deletion until
+            they are unregistered.
+        """
+        # Check if the keys of this GroupBy is a Sequence
+        if type(self.keys) == list:
+            # By registering permutation first, we can ensure no overlap in naming between two registered
+            #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
+            #   names are registered
+            self.permutation.register(f"{user_defined_name}.permutation")
+            for x in range(len(self.keys)):
+                # Possible for multiple types in a sequence, so we have to check each key's type individually
+                if hasattr(self.keys[x], "dtype"):
+                    dtype = self.keys[x].dtype
+                    if dtype == npstr:
+                        dtype = "str"
+                    else:
+                        # If the key is a pdarray, multiple numeric types are possible. Simplifying this to a
+                        #   single 'type' for the name makes the attaching logic much simpler. - This does
+                        #   not change the pdarray's actual dtype
+                        dtype = "akNum"
+                else:
+                    # Of the groupable types, only Categorials don't have a dtype attribute
+                    dtype = "categorical"
+
+                self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
+
+        else:  # Not a Sequence - Skips the loop
+            if hasattr(self.keys, "dtype"):
+                dtype = self.keys.dtype
+                if dtype == npstr:
+                    dtype = "str"
+                else:
+                    dtype = "akNum"
+            else:
+                dtype = "categorical"
+
+            self.permutation.register(f"{user_defined_name}.permutation")
+            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+
+        self.name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this GroupBy object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, unregister_groupby_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+
+        if not self.name:
+            raise RegistrationError("This item does not have a name and does not appear to be registered.")
+
+        # Unregister all components in keys in the case of a Sequence
+        if type(self.keys) == list:
+            for x in range(len(self.keys)):
+                self.keys[x].unregister()
+            self.permutation.unregister()
+        else:
+            [p.unregister() for p in GroupBy._get_groupby_required_pieces(self).values()]
+
+        self.name = None  # Clear our internal GroupBy object name
+
+    def is_registered(self) -> np.bool_:
+        """
+         Return True iff the object is contained in the registry
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister, unregister_groupby_by_name
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        if self.name is None:
+            return False # unnamed GroupBy cannot be registered
+
+        if type(self.keys) == list: # Sequence - Check for all components
+            from re import match, compile
+            # Only check for a single component of Categorical to ensure correct count.
+            regEx = compile(f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_categorical\\.keys(?=\\.categories$)")
+            parts_registered = list(filter(regEx.match, list_registry()))
+            if f"{self.name}.permutation" in list_registry():
+                parts_registered.append(f"{self.name}.permutation")
+
+            # Check against length of keys + 1 to account for all keys as well as the permutation
+            if 0 < len(parts_registered) < len(self.keys) + 1:
+                raise RegistrationError(f"Not all registerable components of GroupBy {self.name} are registered.")
+
+            return np.bool_(len(parts_registered) == len(self.keys) + 1)
+
+        else:
+            parts_registered: List[np.bool_] = [p.is_registered() for p in
+                                                GroupBy._get_groupby_required_pieces(self).values()]
+
+            if np.any(parts_registered) and not np.all(parts_registered):  # test for error
+                raise RegistrationError(f"Not all registerable components of GroupBy {self.name} are registered.")
+
+            return np.bool_(np.any(parts_registered))
+
+    @staticmethod
+    @typechecked
+    def attach(user_defined_name: str) -> GroupBy:
+        """
+        Function to return a GroupBy object attached to the registered name in the
+        arkouda server which was registered using register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which GroupBy object was registered under
+
+        Returns
+        -------
+        GroupBy
+               The GroupBy object created by re-attaching to the corresponding server components
+
+        Raises
+        ------
+        RegistrationError
+            if user_defined_name is not registered
+
+        See Also
+        --------
+        register, is_registered, unregister, unregister_groupby_by_name
+        """
+
+        from re import match, compile
+
+        keys = []
+        matches = []
+        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
+                        f"^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
+        # Using the regex, cycle through the registered items and find all the pieces of the GroupBy's keys
+        for name in list_registry():
+            x = match(regEx, name)
+            if x is not None:
+                matches.append(x.group())
+        matches.sort()
+
+        if len(matches) == 0:
+            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
+
+        categorical = False
+        for match in matches:
+            # Parse the name for the dtype and use the proper create method to create the element
+            if "str" in match or "akNum" in match:
+                keys_resp = generic_msg(cmd="attach", args=match)
+                dtype = keys_resp.split()[2]
+                if dtype == "str":
+                    keys.append(Strings.from_return_msg(keys_resp))
+                else:  # akNum
+                    keys.append(create_pdarray(keys_resp))
+
+            elif "categorical" in match:
+                from arkouda.categorical import Categorical
+                keys.append(Categorical.attach(match))
+                categorical = True
+
+            else:
+                raise RegistrationError(f"Unknown type associated with registered item: {user_defined_name}."
+                                        f" Supported types are: {groupable}")
+
+        if len(keys) == 1:
+            # Not a Sequence, only one key
+            keys = keys[0]
+            # If this key is a categorical, due to how items are registered, the GroupBy permutation will be
+            #   overwritten by the Categorical's permutation, so we need to use the categorical permutation
+            if categorical:
+                perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}_categorical.keys.permutation")
+            else:
+                perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
+        elif len(keys) == 0:
+            raise RegistrationError(f"Unable to attach to '{user_defined_name}' or '{user_defined_name}' is not registered")
+        else:
+            perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
+
+        permutation = create_pdarray(perm_resp)
+        g = GroupBy.build_from_components(keys, permutation, user_defined_name)  # Call build_from_components method
+        return g
+
+    @staticmethod
+    @typechecked
+    def unregister_groupby_by_name(user_defined_name: str) -> None:
+        """
+        Function to unregister GroupBy object by name which was registered
+        with the arkouda server via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            Name under which the GroupBy object was registered
+
+        Raises
+        -------
+        TypeError
+            if user_defined_name is not a string
+        RegistrationError
+            if there is an issue attempting to unregister any underlying components
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
+        # We have 2 components, unregister both of them
+        from arkouda.categorical import Categorical
+        from re import match, compile
+        registry = list_registry()
+
+        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
+        categorical = False
+        matches = 0
+        for name in registry:
+            # Search through registered items and find matches to the given name
+            x = match(regEx, name)
+            if x is not None:
+                matches += 1
+                # Only categorical requires a separate unregister case
+                if "categorical" in x.group():
+                    Categorical.unregister_categorical_by_name(x.group())
+                    categorical = True
+                else:
+                    unregister_pdarray_by_name(x.group())
+
+        # Only one permutation, so remove it after the loop
+        if matches == 1 and categorical:
+            unregister_pdarray_by_name(f"{user_defined_name}_categorical.keys.permutation")
+        else:
+            unregister_pdarray_by_name(f"{user_defined_name}.permutation")
+
 
 def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64,np.uint64]=-1,
               permutation : Union[pdarray, None]=None):

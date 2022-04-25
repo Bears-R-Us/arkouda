@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+
 from context import arkouda as ak
 from arkouda.dtypes import float64, int64
 from base_test import ArkoudaTest
@@ -411,6 +412,102 @@ class GroupByTest(ArkoudaTest):
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
+
+    def test_strings_groupby_attach(self):
+        s = ak.array(["abc", "123", "abc"])
+        sGroup = ak.GroupBy(s)
+        sGroup.register("stringsTest")
+        sAttach = ak.GroupBy.attach("stringsTest")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertTrue((sGroup.keys == sAttach.keys).all())
+        self.assertTrue((sGroup.permutation == sAttach.permutation).all())
+        self.assertIsInstance(sAttach.keys, ak.Strings)
+        self.assertIsInstance(sAttach.permutation, ak.pdarray)
+
+    def test_pdarray_groupby_attach(self):
+        a = ak.randint(0, 10, 10)
+        aGroup = ak.GroupBy(a)
+        aGroup.register("pdarray_test")
+        aAttach = ak.GroupBy.attach("pdarray_test")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertTrue((aGroup.keys == aAttach.keys).all())
+        self.assertTrue((aGroup.permutation == aAttach.permutation).all())
+        self.assertIsInstance(aAttach.keys, ak.pdarray)
+        self.assertIsInstance(aAttach.permutation, ak.pdarray)
+
+    def test_categorical_groupby_attach(self):
+        c = ak.array(["abc", "123", "abc"])
+        cat = ak.Categorical(c)
+        catGroup = ak.GroupBy(cat)
+        catGroup.register("categorical_test")
+        catAttach = ak.GroupBy.attach("categorical_test")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertTrue((catGroup.keys == catAttach.keys).all())
+        self.assertTrue((catGroup.permutation == catAttach.permutation).all())
+        self.assertIsInstance(catAttach.keys, ak.Categorical)
+        self.assertIsInstance(catAttach.permutation, ak.pdarray)
+
+    def test_sequence_groupby_attach(self):
+        a = ak.randint(0,10,11)
+        b = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        c = ak.Categorical(b)
+        l = [a,b,c]
+        group = ak.GroupBy(l)
+        group.register("sequenceTest")
+        seqAttach = ak.GroupBy.attach("sequenceTest")
+
+        # Verify the attached GroupBy's components equal the original components for each key in the sequence
+        self.assertTrue((group.keys[0] == seqAttach.keys[0]).all())
+        self.assertTrue((group.keys[1] == seqAttach.keys[1]).all())
+        self.assertTrue((group.keys[2] == seqAttach.keys[2]).all())
+        self.assertTrue((group.permutation == seqAttach.permutation).all())
+
+        # Verify the attached GroupBy preserved the type of each key
+        self.assertIsInstance(seqAttach.keys[0], ak.pdarray)
+        self.assertIsInstance(seqAttach.keys[1], ak.Strings)
+        self.assertIsInstance(seqAttach.keys[2], ak.Categorical)
+        self.assertIsInstance(seqAttach.permutation, ak.pdarray)
+
+    def test_groupby_register(self):
+        a = ak.randint(0, 10, 11)
+        b = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        c = ak.Categorical(b)
+
+        # New variable declarations for sequence
+        seqA = ak.randint(0, 10, 11)
+        seqB = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        seqC = ak.Categorical(seqB)
+        seq = [seqA, seqB, seqC]
+        groupA = ak.GroupBy(a)
+        groupB = ak.GroupBy(b)
+        groupC = ak.GroupBy(c)
+        groupL = ak.GroupBy(seq)
+
+        groupA.register("pdarray_unregister")
+        groupB.register("strings_unregister")
+        groupC.register("categorical_unregister")
+        groupL.register("sequence_unregister")
+
+        self.assertTrue(groupA.is_registered())
+        self.assertTrue(groupB.is_registered())
+        self.assertTrue(groupC.is_registered())
+        self.assertTrue(groupL.is_registered())
+
+        # Test self.unregister
+        groupA.unregister()
+        groupB.unregister()
+
+        # Test unregister_groupby_by_name
+        ak.GroupBy.unregister_groupby_by_name("categorical_unregister")
+        ak.GroupBy.unregister_groupby_by_name("sequence_unregister")
+
+        self.assertFalse(groupA.is_registered())
+        self.assertFalse(groupB.is_registered())
+        self.assertFalse(groupC.is_registered())
+        self.assertFalse(groupL.is_registered())
 
 
 def to_tuple_dict(labels, values):
