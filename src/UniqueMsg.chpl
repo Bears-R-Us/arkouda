@@ -54,13 +54,12 @@ module UniqueMsg
         }
         // Indices of first unique key in original array
         // These are the value of the permutation at the start of each group
-        var gatherInds: [segments.aD] int;
         var uniqueKeyInds = new shared SymEntry(segments.size, int);
         ref perm = permutation.a;
         ref segs = segments.a;
         ref inds = uniqueKeyInds.a;
-        forall (g, s) in zip(gatherInds, segs) with (var agg = newSrcAggregator(int)) {
-          agg.copy(g, perm[s]);
+        forall (i, s) in zip(inds, segs) with (var agg = newSrcAggregator(int)) {
+          agg.copy(i, perm[s]);
         }
         var iname = st.nextName();
         st.addEntry(iname, uniqueKeyInds);
