@@ -122,7 +122,6 @@ def read(filenames : Union[str, List[str]],
     and read all of them. Use ``get_datasets`` to show the names of datasets
     to HDF5 files.
     """
-    print(filenames)
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
