@@ -283,7 +283,7 @@ class OperatorsTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
             
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(AttributeError) as cm:
             ak.unique(list(range(0,10)))
         
         with self.assertRaises(RuntimeError) as cm:

@@ -258,7 +258,7 @@ class DataFrameTest(ArkoudaTest):
         gb = df.GroupBy(['userName', 'userID'])
         keys, count = gb.count()
         self.assertEqual(len(keys), 2)
-        self.assertListEqual(keys[0].to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
+        self.assertListEqual(keys[0].to_ndarray().tolist(), ['Carol', 'Alice', 'Bob'])
         self.assertTrue(keys[1].to_ndarray().tolist(), [111, 333, 222])
         self.assertTrue(count.to_ndarray().tolist(), [3, 1, 2])
 
