@@ -13,7 +13,8 @@ from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.logger import getArkoudaLogger
-from arkouda.dtypes import int64, uint64, npstr
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import list_registry
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
@@ -198,7 +199,7 @@ class GroupBy:
     Reductions = GROUPBY_REDUCTION_TYPES
 
     def __init__(self, keys: groupable,
-                 assume_sorted: bool = False, hash_strings: bool = True) -> None:
+                 assume_sorted: bool = False, hash_strings: bool = True, permutation: pdarray = None) -> None:
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
@@ -207,6 +208,7 @@ class GroupBy:
             raise TypeError("assume_sorted must be of type bool.")
         if not isinstance(hash_strings, bool):
             raise TypeError("hash_strings must be of type bool.")
+
         self.keys = cast(groupable, keys)
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
@@ -726,14 +728,14 @@ class GroupBy:
         # or Categorical (the last two have a .group() method).
         # Can't directly test Categorical due to circular import.
         if isinstance(values, pdarray):
-            if cast(pdarray, values).dtype != int64 and cast(pdarray, values).dtype != uint64:
+            if cast(pdarray, values).dtype != akint64 and cast(pdarray, values).dtype != akuint64:
                 raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx, values]
         elif hasattr(values, "group"):
             togroup = [ukidx, values]
         else:
             for v in values:
-                if isinstance(values, pdarray) and cast(pdarray, values).dtype != int64 and cast(pdarray, values).dtype != uint64:
+                if isinstance(values, pdarray) and cast(pdarray, values).dtype != akint64 and cast(pdarray, values).dtype != akuint64:
                     raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx] + list(values)
         # Find unique pairs of (key, val)
@@ -843,7 +845,7 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64 and values.dtype != uint64:
+        if values.dtype != akint64 and values.dtype != akuint64:
             raise TypeError('OR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "or")  # type: ignore
@@ -880,7 +882,7 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64 and values.dtype != uint64:
+        if values.dtype != akint64 and values.dtype != akuint64:
             raise TypeError('AND is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "and")  # type: ignore
@@ -917,7 +919,7 @@ class GroupBy:
         RuntimeError
             Raised if all is not supported for the values dtype
         """
-        if values.dtype != int64 and values.dtype != uint64:
+        if values.dtype != akint64 and values.dtype != akuint64:
             raise TypeError('XOR is only supported for pdarrays of dtype int64 or uint64')
 
         return self.aggregate(values, "xor")  # type: ignore
@@ -999,9 +1001,9 @@ class GroupBy:
 
         Parameters
         ----------
-            keys : (list of) pdarray, Strings, or Categorical
-            permutation : pdarray
-            user_defined_name : str (Optional) Passing a name will init the new GroupBy
+        keys : (list of) pdarray, Strings, or Categorical
+        permutation : pdarray
+        user_defined_name : str (Optional) Passing a name will init the new GroupBy
                 and assign it the given name
 
         Returns
@@ -1011,14 +1013,12 @@ class GroupBy:
 
         """
         if len(keys) == 1:
-            g = GroupBy(keys[0])
+            g = GroupBy(keys[0], permutation=permutation)
         else:
-            g = GroupBy(keys)
+            g = GroupBy(keys, permutation=permutation)
 
-        g.permutation = permutation
         g.name = user_defined_name
 
-        print(g.keys)
         return g
 
     def _get_groupby_required_pieces(self) -> Dict:
@@ -1040,39 +1040,41 @@ class GroupBy:
 
         Parameters
         ----------
-            user_defined_name : str
+        user_defined_name : str
             user defined name the GroupBy is to be registered under,
             this will be the root name for underlying components
 
         Returns
         -------
-            GroupBy
+        GroupBy
             The same GroupBy which is now registered with the arkouda server and has an updated name.
             This is an in-place modification, the original is returned to support a fluid programming style.
             Please note you cannot register two different GroupBys with the same name.
 
         Raises
         ------
-            TypeError
+        TypeError
             Raised if user_defined_name is not a str
-            RegistrationError
+        RegistrationError
             If the server was unable to register the GroupBy with the user_defined_name
 
         See also
         --------
-            unregister, attach, unregister_groupby_by_name, is_registered
+        unregister, attach, unregister_groupby_by_name, is_registered
 
         Notes
         -----
-            Objects registered with the server are immune to deletion until
-            they are unregistered.
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
         """
+
+        # By registering permutation first, we can ensure no overlap in naming between two registered
+        #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
+        #   names are registered
+        self.permutation.register(f"{user_defined_name}.permutation")
+
         # Check if the keys of this GroupBy is a Sequence
         if isinstance(self.keys, Sequence):
-            # By registering permutation first, we can ensure no overlap in naming between two registered
-            #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
-            #   names are registered
-            self.permutation.register(f"{user_defined_name}.permutation")
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's type individually
                 if isinstance(self.keys[x], Strings):
@@ -1081,18 +1083,6 @@ class GroupBy:
                     dtype = "akNum"
                 else:
                     dtype = "categorical"
-                # if hasattr(self.keys[x], "dtype"):
-                #     dtype = self.keys[x].dtype
-                #     if dtype == npstr:
-                #         dtype = "str"
-                #     else:
-                #         # If the key is a pdarray, multiple numeric types are possible. Simplifying this to a
-                #         #   single 'type' for the name makes the attaching logic much simpler. - This does
-                #         #   not change the pdarray's actual dtype
-                #         dtype = "akNum"
-                # else:
-                #     # Of the groupable types, only Categorials don't have a dtype attribute
-                #     dtype = "categorical"
 
                 self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
 
@@ -1104,11 +1094,7 @@ class GroupBy:
             else:
                 dtype = "categorical"
 
-            self.permutation.register(f"{user_defined_name}.permutation")
-
-            # Instance check for mypy happiness since Sequence does not have a register method
-            if not isinstance(self.keys, Sequence):
-                self.keys.register(f"{user_defined_name}_{dtype}.keys")
+            self.keys.register(f"{user_defined_name}_{dtype}.keys")
 
         self.name = user_defined_name
         return self
@@ -1147,13 +1133,13 @@ class GroupBy:
 
         self.name = None  # Clear our internal GroupBy object name
 
-    def is_registered(self) -> np.bool_:
+    def is_registered(self) -> bool:
         """
          Return True iff the object is contained in the registry
 
         Returns
         -------
-        numpy.bool
+        bool
             Indicates if the object is contained in the registry
 
         Raises
@@ -1171,7 +1157,7 @@ class GroupBy:
         they are unregistered.
         """
         if self.name is None:
-            return np.bool_(False)  # unnamed GroupBy cannot be registered
+            return False  # unnamed GroupBy cannot be registered
 
         if isinstance(self.keys, Sequence):  # Sequence - Check for all components
             from re import match, compile
@@ -1183,17 +1169,21 @@ class GroupBy:
 
             # Check against length of keys + 1 to account for all keys as well as the permutation
             if 0 < len(registered) < len(self.keys) + 1:
-                raise RegistrationError(f"Not all registerable components of GroupBy {self.name} are registered.")
-
-            return np.bool_(len(registered) == len(self.keys) + 1)
+                print(f"WARNING: GroupBy {self.name} expected {len(self.keys)} components to be registered,"
+                      f" but only located {len(registered)}. Found components have been unregistered.")
+                return False
+            else:
+                return len(registered) == len(self.keys) + 1
         else:
-            parts_registered: List[np.bool_] = [p.is_registered() for p in
+            parts_registered: List[bool] = [cast(bool, p.is_registered()) for p in
                                                 GroupBy._get_groupby_required_pieces(self).values()]
 
-            if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-                raise RegistrationError(f"Not all registerable components of GroupBy {self.name} are registered.")
-
-            return np.bool_(np.any(parts_registered))
+            if any(parts_registered) and not all(parts_registered):  # test for error
+                print(f"WARNING: GroupBy {self.name} expected {len(self.keys)} components to be registered,"
+                      f" but only located {len(parts_registered)}. Found components have been unregistered.")
+                return False
+            else:
+                return any(parts_registered)
 
     @staticmethod
     def attach(user_defined_name: str) -> GroupBy:
@@ -1298,7 +1288,7 @@ class GroupBy:
 
         regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
                         f"^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
-        categorical = False
+
         matches = 0
         for name in registry:
             # Search through registered items and find matches to the given name
@@ -1308,14 +1298,10 @@ class GroupBy:
                 # Only categorical requires a separate unregister case
                 if "categorical" in x.group():
                     Categorical.unregister_categorical_by_name(x.group())
-                    categorical = True
                 else:
                     unregister_pdarray_by_name(x.group())
 
-        # Only one permutation, so remove it after the loop
-        if matches == 1 and categorical:
-            unregister_pdarray_by_name(f"{user_defined_name}_categorical.keys.permutation")
-        else:
+        if f"{user_defined_name}.permutation" in registry:
             unregister_pdarray_by_name(f"{user_defined_name}.permutation")
 
 
