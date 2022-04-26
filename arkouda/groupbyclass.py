@@ -1033,7 +1033,7 @@ class GroupBy:
         """
         return {"keys": getattr(self, "keys"), "permutation": getattr(self, "permutation")}
 
-    @typechecked()
+    @typechecked
     def register(self, user_defined_name: str) -> GroupBy:
         """
         Register this GroupBy object and underlying components with the Arkouda server
@@ -1067,14 +1067,24 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda import Categorical
 
         # By registering permutation first, we can ensure no overlap in naming between two registered
         #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
         #   names are registered
         self.permutation.register(f"{user_defined_name}.permutation")
 
-        # Check if the keys of this GroupBy is a Sequence
-        if isinstance(self.keys, Sequence):
+        # Register happening inside each if/elif to please mypy
+        if isinstance(self.keys, Strings):
+            dtype = "str"
+            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+        elif isinstance(self.keys, pdarray):
+            dtype = "akNum"
+            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+        elif isinstance(self.keys, Categorical):
+            dtype = "categorical"
+            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+        elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's type individually
                 if isinstance(self.keys[x], Strings):
@@ -1085,16 +1095,8 @@ class GroupBy:
                     dtype = "categorical"
 
                 self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
-
-        else:  # Not a Sequence - Skips the loop
-            if isinstance(self.keys, Strings):
-                dtype = "str"
-            elif isinstance(self.keys, pdarray):
-                dtype = "akNum"
-            else:
-                dtype = "categorical"
-
-            self.keys.register(f"{user_defined_name}_{dtype}.keys")
+        else:
+            raise RegistrationError(f"Unsupported key type found: {type(self.keys)}")
 
         self.name = user_defined_name
         return self
