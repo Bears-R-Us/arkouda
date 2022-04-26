@@ -487,4 +487,14 @@ Functions
       ])
 
 
+   .. py:method:: register(self, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+
+
+   .. py:method:: unregister(self)
+
+
+   .. py:method:: attach(cls, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+      :classmethod:
+
+
 
