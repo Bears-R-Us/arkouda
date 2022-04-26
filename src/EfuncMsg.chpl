@@ -233,6 +233,19 @@ module EfuncMsg
                         overMemLimit(numBytes(uint) * e.size);
                         st.addEntry(rname, new shared SymEntry(+ scan e.a));
                     }
+                    when "cumprod" {
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(uint) * e.size);
+                        st.addEntry(rname, new shared SymEntry(* scan e.a));
+                    }
+                    when "sin" {
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.sin(e.a);
+                    }
+                    when "cos" {
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.cos(e.a);
+                    }
                     when "parity" {
                         var a = st.addEntry(rname, e.size, uint);
                         a.a = parity(e.a);

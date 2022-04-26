@@ -1019,9 +1019,9 @@ class pdarray:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compressed : bool
-            Arkouda only supports writing with compression on Parquet files.
-            Default is False, but, if True, will write Parquet file with Snappy
-            compression and RLE encoding.
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing. This is currently only supported on Parquet files and will
+            not impact the generated files when writing HDF5 files.
         file_format : str {'HDF5', 'Parquet'}
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
@@ -1098,9 +1098,11 @@ class pdarray:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return cast(str, generic_msg(cmd=cmd, args="{} {} {} {} {} {}".\
+        strings_placeholder = False
+        
+        return cast(str, generic_msg(cmd=cmd, args="{} {} {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype,
-                                  compressed)))
+                                  strings_placeholder, compressed)))
 
     @typechecked
     def save_parquet(self, prefix_path : str, dataset : str='array', mode : str='truncate',
@@ -1166,7 +1168,8 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        return self.save(prefix_path, dataset, mode, compressed, file_format='Parquet')
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         compressed=compressed, file_format='Parquet')
 
     @typechecked
     def save_hdf(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
@@ -1231,7 +1234,8 @@ class pdarray:
         >>> (a == b).all()
         True
         """
-        return self.save(prefix_path, dataset, mode, compressed=False, file_format='HDF5')
+        return self.save(prefix_path=prefix_path, dataset=dataset, mode=mode,
+                         compressed=False, file_format='HDF5')
     
     @typechecked
     def register(self, user_defined_name: str) -> pdarray:
@@ -2146,20 +2150,20 @@ def rotl(x, rot) -> pdarray:
 
     Parameters
     ----------
-    x : pdarray(int64) or integer
+    x : pdarray(int64/uint64) or integer
         Value(s) to rotate left.
-    rot : pdarray(int64) or integer
+    rot : pdarray(int64/uint64) or integer
         Amount(s) to rotate by.
 
     Returns
     -------
-    rotated : pdarray(int64)
+    rotated : pdarray(int64/uint64)
         The rotated elements of x.
 
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -2167,12 +2171,12 @@ def rotl(x, rot) -> pdarray:
     >>> ak.rotl(A, A)
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
     """
-    if isinstance(x, pdarray) and x.dtype == akint64:
-        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+    if isinstance(x, pdarray) and (x.dtype == akint64 or x.dtype == akuint64):
+        if (isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64)) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64):
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -2183,20 +2187,20 @@ def rotr(x, rot) -> pdarray:
 
     Parameters
     ----------
-    x : pdarray(int64) or integer
+    x : pdarray(int64/uint64) or integer
         Value(s) to rotate left.
-    rot : pdarray(int64) or integer
+    rot : pdarray(int64/uint64) or integer
         Amount(s) to rotate by.
 
     Returns
     -------
-    rotated : pdarray(int64)
+    rotated : pdarray(int64/uint64)
         The rotated elements of x.
 
     Raises
     ------
     TypeError
-        If input array is not int64
+        If input array is not int64 or uint64
     
     Examples
     --------
@@ -2204,12 +2208,12 @@ def rotr(x, rot) -> pdarray:
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
     """
-    if isinstance(x, pdarray) and x.dtype == akint64:
-        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+    if isinstance(x, pdarray) and (x.dtype == akint64 or x.dtype == akuint64):
+        if (isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64)) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and (rot.dtype == akint64 or rot.dtype == akuint64):
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")

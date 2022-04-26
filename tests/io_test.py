@@ -86,7 +86,7 @@ class IOTest(ArkoudaTest):
         :raise: ValueError if the names list is None when columns is a list
         '''       
         if isinstance(columns, dict):
-            ak.save_all(columns=columns, prefix_path=prefix_path)   
+            ak.save_all(columns=columns, prefix_path=prefix_path)
         else:
             if not names:
                 raise ValueError('the names list must be not None if columns is a list')

@@ -7,8 +7,8 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 from arkouda.categorical import Categorical
 
-__all__ = ["ls", "read", "load", "get_datasets",
-           "load_all", "save_all",  "get_filetype"]
+__all__ = ["ls", "read", "load", "get_datasets", "load_all",
+           "save_all",  "get_filetype", "get_null_indices"]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
@@ -186,6 +186,67 @@ def read(filenames : Union[str, List[str]],
         else:
             raise RuntimeError("No items were returned")
 
+@typechecked
+def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]]:
+    """
+    Get null indices of a string column in a Parquet file.
+
+    Parameters
+    ----------
+    filenames : list or str
+        Either a list of filenames or shell expression
+    datasets : list or str or None
+        (List of) name(s) of dataset(s) to read. Each dataset must be a string
+        column. There is no default value for this funciton, the datasets to be
+        read must be specified.
+
+    Returns
+    -------
+    For a single dataset returns an Arkouda pdarray and for multiple datasets 
+    returns a dictionary of Arkouda pdarrays
+        Dictionary of {datasetName: pdarray}
+
+    Raises
+    ------
+    RuntimeError
+        Raised if one or more of the specified files cannot be opened.
+    TypeError
+        Raised if we receive an unknown arkouda_type returned from the server
+
+    See Also
+    --------
+    get_datasets, ls
+    """
+    if isinstance(filenames, str):
+        filenames = [filenames]
+    if isinstance(datasets, str):
+        datasets = [datasets]
+    rep_msg = generic_msg(cmd="getnullparquet", args=
+        f"{len(datasets)} {len(filenames)} {json.dumps(datasets)} | {json.dumps(filenames)}")
+    rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
+    items = rep["items"] if "items" in rep else []
+    file_errors = rep["file_errors"] if "file_errors" in rep else []
+
+    # We have a couple possible return conditions
+    # 1. We have multiple items returned i.e. multi pdarrays
+    # 2. We have a single pdarray
+    if len(items) > 1: #  DataSets condition
+        d: Dict[str, pdarray] = {}
+        for item in items:
+            if "pdarray" == item["arkouda_type"]:
+                d[item["dataset_name"]] = create_pdarray(item["created"])
+            else:
+                raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
+        return d
+    elif len(items) == 1:
+        item = items[0]
+        if "pdarray" == item["arkouda_type"]:
+            return create_pdarray(item["created"])
+        else:
+            raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
+    else:
+        raise RuntimeError("No items were returned")
+        
 @typechecked
 def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
@@ -403,7 +464,7 @@ def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categoric
                                    'the file prefix {}, check file format or permissions'.format(prefix))
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
-             names : List[str]=None, mode : str='truncate') -> None:
+             names : List[str]=None, file_format='HDF5', mode : str='truncate') -> None:
     """
     Save multiple named pdarrays to HDF5 files.
 
@@ -415,6 +476,8 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
         Directory and filename prefix for output files
     names : list of str
         Dataset names for the pdarrays
+    file_format : str
+        'HDF5' or 'Parquet'. Defaults to hdf5
     mode : {'truncate' | 'append'}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
@@ -462,8 +525,8 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         '''Append all pdarrays to existing files as new datasets EXCEPT the first one, 
            and only if user requests truncation'''
-        if mode.lower() not in 'append' and first_iter:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')
+        if mode.lower() != 'append' and first_iter:
+            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='truncate')
             first_iter = False
         else:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='append')
+            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='append')

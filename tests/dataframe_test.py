@@ -1,4 +1,10 @@
 import pandas as pd  # type: ignore
+import random
+import string
+
+import os
+from shutil import rmtree
+import pytest
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -90,6 +96,19 @@ class DataFrameTest(ArkoudaTest):
         self.assertIsInstance(df, ak.DataFrame)
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
+
+    def test_dtype_prop(self):
+        str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)])
+        df_dict = {
+            "i": ak.arange(3),
+            "c_1": ak.arange(3, 6, 1),
+            "c_2": ak.arange(6, 9, 1),
+            "c_3": str_arr,
+            "c_4": ak.Categorical(str_arr),
+            "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20))
+        }
+        akdf = ak.DataFrame(df_dict)
+        self.assertEqual(len(akdf.columns), len(akdf.dtypes))
 
     def test_to_pandas(self):
         df = build_ak_df()
@@ -407,3 +426,37 @@ class DataFrameTest(ArkoudaTest):
         df_copy = df.copy(deep=False)
         df_copy.__setitem__('userID', ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
+
+    #@pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
+    def test_save_table(self):
+        i = list(range(3))
+        c1 = [9, 7, 17]
+        c2 = [2, 4, 6]
+        df_dict = {
+            "i": ak.array(i),
+            "c_1": ak.array(c1),
+            "c_2": ak.array(c2)
+        }
+
+        akdf = ak.DataFrame(df_dict)
+
+        validation_df = pd.DataFrame({
+            "c_2": c2,
+            "c_1": c1,
+            "i": i
+        })
+
+        # make directory to save to so pandas read works
+        os.mkdir(f"{os.getcwd()}/save_table_test")
+        akdf.save_table(f"{os.getcwd()}/save_table_test/testName", file_format='Parquet')
+
+        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName.parquet")
+        self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+
+        # Commenting the read into pandas out because it requires optional libraries
+        # pddf = pd.read_parquet("save_table_test", engine='pyarrow')
+        # self.assertTrue(pddf.equals(validation_df))
+
+        # clean up test files
+        rmtree("save_table_test/")
+

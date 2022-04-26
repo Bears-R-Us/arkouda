@@ -149,9 +149,14 @@ CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 $(OPTIONAL_CHECKS)
 endif
 check-deps: $(CHECK_DEPS)
 
+SANITIZER = $(shell $(CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
+ifneq ($(SANITIZER),none)
+ARROW_SANITIZE=-fsanitize=$(SANITIZER)
+endif
+
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp: $(ARROW_CPP) $(ARROW_H)
-	$(CXX) -O3 -std=c++11 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS)
+	$(CXX) -O3 -std=c++11 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 	make compile-arrow-cpp
