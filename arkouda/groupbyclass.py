@@ -1,6 +1,6 @@
 from __future__ import annotations
 import enum
-from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 import numpy as np # type: ignore
@@ -15,7 +15,6 @@ from arkouda.dtypes import int64, uint64
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
-@typechecked
 def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
            return_groups: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
                                                  Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
@@ -75,15 +74,19 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
         # Sequence of groupable arrays
         nkeys = len(pda)
         grouping_keys = []
+        first = True
         for k in pda:
-            if k.size != self.size:
+            if first:
+                size = k.size
+                first = False
+            elif k.size != size:
                 raise ValueError("Key arrays must all be same size")
             if not hasattr(k, "_get_grouping_keys"):
                 raise TypeError("{} does not support grouping".format(type(k)))
             grouping_keys.extend(cast(list, k._get_grouping_keys()))
-    keynames = [k.name for k in self._grouping_keys]
-    keytypes = [k.objtype for k in self._grouping_keys]
-    effectiveKeys = len(self._grouping_keys)
+    keynames = [k.name for k in grouping_keys]
+    keytypes = [k.objtype for k in grouping_keys]
+    effectiveKeys = len(grouping_keys)
     repMsg = generic_msg(cmd="unique", args="{} {:n} {} {}".format(return_groups,
                                                                 effectiveKeys,
                                                                 ' '.join(keynames),
@@ -202,14 +205,15 @@ class GroupBy:
             raise TypeError("assume_sorted must be of type bool.")
         if not isinstance(hash_strings, bool):
             raise TypeError("hash_strings must be of type bool.")
-        from arkouda.categorical import Categorical
+        self.keys = keys
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
         self.keys : groupable
         self.permutation : pdarray
 
-        self.unique_keys, self.permutation, self.segments = unique(self.keys, return_groups=True)
+        self.unique_keys, self.permutation, self.segments = unique(self.keys, return_groups=True) # type: ignore
+        self.size = self.permutation.size
 
 
     def count(self) -> Tuple[groupable,pdarray]:
