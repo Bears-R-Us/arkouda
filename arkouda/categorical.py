@@ -218,7 +218,7 @@ class Categorical:
                 return self.codes._binop(other.codes, op)
             else:
                 # Remap both codes to the union of categories
-                union = unique(concatenate((self.categories, other.categories), ordered=False))
+                union = cast(Strings, unique(concatenate((self.categories, other.categories), ordered=False)))
                 newinds = arange(union.size)
                 # Inds of self.categories in unioned categories
                 selfnewinds = newinds[in1d(union, self.categories)]
@@ -228,14 +228,14 @@ class Categorical:
                     self.permutation = g.permutation
                     self.segments = g.segments
                 # Form new codes by broadcasting new indices for unioned categories
-                selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
+                selfnewcodes = broadcast(cast(pdarray, self.segments), selfnewinds, self.size, cast(pdarray, self.permutation))
                 # Repeat for other
                 othernewinds = newinds[in1d(union, other.categories)]
                 if other.permutation is None or other.segments is None:
                     g = GroupBy(other.codes)
                     other.permutation = g.permutation
                     other.segments = g.segments
-                othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
+                othernewcodes = broadcast(cast(pdarray, other.segments), othernewinds, other.size, cast(pdarray, other.permutation))
                 # selfnewcodes and othernewcodes now refer to same unioned categories
                 # and can be compared directly
                 return selfnewcodes._binop(othernewcodes, op)

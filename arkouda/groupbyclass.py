@@ -71,7 +71,7 @@ def unique(pda: groupable,  # type: ignore
     if hasattr(pda, "_get_grouping_keys"):
         # Single groupable array
         nkeys = 1
-        grouping_keys = cast(list, pda._get_grouping_keys())
+        grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
     else:
         # Sequence of groupable arrays
         nkeys = len(pda)
@@ -94,7 +94,7 @@ def unique(pda: groupable,  # type: ignore
                                                                 ' '.join(keynames),
                                                                 ' '.join(keytypes)))
     if return_groups:
-        parts = repMsg.split("+")
+        parts = cast(str, repMsg).split("+")
         permutation = create_pdarray(cast(str, parts[0]))
         segments = create_pdarray(cast(str, parts[1]))
         unique_key_indices = create_pdarray(cast(str, parts[2]))
@@ -208,7 +208,6 @@ class GroupBy:
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.keys : groupable
         self.permutation : pdarray
 
         self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore

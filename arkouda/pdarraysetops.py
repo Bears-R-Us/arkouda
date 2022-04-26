@@ -368,8 +368,8 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = unique(pda1)
-            pda2 = unique(pda2)
+            pda1 = cast(groupable, unique(pda1))
+            pda2 = cast(groupable, unique(pda2))
         aux = concatenate((pda1, pda2), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
