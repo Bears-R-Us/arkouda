@@ -15,7 +15,7 @@ from arkouda.dtypes import int64 as akint64, bool as akbool
 from arkouda.sorting import argsort
 from arkouda.logger import getArkoudaLogger
 from arkouda.infoclass import information, list_registry
-from arkouda.numeric import cast as akcast
+from arkouda.numeric import cast as akcast, where
 
 __all__ = ['Categorical']
 
@@ -208,11 +208,14 @@ class Categorical:
             NAcode = new_categories.size - 1
         else:
             NAcode = int(akcast(findNA, akint64).argmax())
-        unique_new_codes = zeros(self.categories.size, dtype=akint64)
-        unique_new_codes.fill(NAcode)
+        code_mapping = zeros(self.categories.size, dtype=akint64)
+        code_mapping.fill(NAcode)
         # Concatenate old and new categories and unique codes
         bothcats = concatenate((self.categories, new_categories), ordered=False)
         bothcodes = concatenate((arange(self.categories.size), arange(new_categories.size)), ordered=False)
+        fromold = concatenate((ones(self.categories.size, dtype=akbool),
+                               zeros(new_categories.size, dtype=akbool)),
+                              ordered=False)
         # Group combined categories to find matches
         g = GroupBy(bothcats)
         ct = g.count()[1]
@@ -220,20 +223,19 @@ class Categorical:
             raise ValueError("User-specified categories must be unique")
         # Matches have two hits in concatenated array
         present = g.segments[(ct == 2)]
-        present = concatenate((present, present+1), ordered=False)
-        bothinds = g.permutation[present]
-        mixedcodes = bothcodes[bothinds]
-        fromold = concatenate((ones(self.categories.size, dtype=akbool),
-                               zeros(new_categories.size, dtype=akbool)),
-                              ordered=False)
+        firstinds = g.permutation[present]
+        firstcodes = bothcodes[firstinds]
+        firstisold = fromold[firstinds]
+        secondinds = g.permutation[present+1]
+        secondcodes = bothcodes[secondinds]
+        secondisold = fromold[secondinds]
         # Matching pairs define a mapping of old codes to new codes
-        fromold = fromold[bothinds]
-        scatterinds = mixedcodes[fromold]
-        gatherinds = mixedcodes[~fromold]
+        scatterinds = where(firstisold, firstcodes, secondcodes)
+        gatherinds = where(firstisold, secondcodes, firstcodes)
         # Make a lookup table where old code at scatterind maps to new code at gatherind
-        unique_new_codes[scatterinds] = arange(new_categories.size)[gatherinds]
+        code_mapping[scatterinds] = arange(new_categories.size)[gatherinds]
         # Apply the lookup to map old codes to new codes
-        new_codes = unique_new_codes[self.codes]
+        new_codes = code_mapping[self.codes]
         return self.__class__.from_codes(new_codes, new_categories, NAvalue=NAvalue)
 
     def to_ndarray(self) -> np.ndarray:
