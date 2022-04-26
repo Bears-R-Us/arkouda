@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from arkouda.pdarrayclass import pdarray, is_sorted
+from arkouda.pdarrayclass import pdarray, is_sorted, attach_pdarray
 from arkouda.numeric import cumsum
 from arkouda.dtypes import isSupportedInt
 from arkouda.dtypes import int64 as akint64
@@ -1015,5 +1015,26 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
-# Register/Attach functionality has been removed until it is added for GroupBy.
-# Please refer to ticket #1122 (https://github.com/Bears-R-Us/arkouda/issues/1122 for updates
+    def register(self, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping'):
+        if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
+            raise ValueError("Suffixes must all be different")
+        self.segments.register(name+segment_suffix)
+        self.values.register(name+value_suffix)
+        self.lengths.register(name+length_suffix)
+        # TODO - groupby does not have register.
+        # self.grouping.register(name+grouping_suffix)
+
+    def unregister(self):
+        self.segments.unregister()
+        self.values.unregister()
+        self.lengths.unregister()
+        # TODO - groupby does not have unregister.
+        #self.grouping.unregister()
+
+    @classmethod
+    def attach(cls, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping'):
+        if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
+            raise ValueError("Suffixes must all be different")
+        # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
+        return cls(attach_pdarray(name+segment_suffix), attach_pdarray(name+value_suffix),
+                   lengths=attach_pdarray(name+length_suffix))
