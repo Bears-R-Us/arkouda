@@ -5,12 +5,13 @@ from warnings import warn
 import pandas as pd  # type: ignore
 import random
 import json
+from typing import cast
 
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
-from arkouda.pdarraycreation import arange, array
+from arkouda.pdarraycreation import arange, array, create_pdarray
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
@@ -440,23 +441,33 @@ class DataFrame(UserDict):
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
         idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
         # TODO - pass names to server of
-        #   - idx
-        #   - if categorical -> send codes name
-        #   - otherwise send name
-        #   - number of elements
-        #   - each element type [(type, name), ...]
+        #   - Link column to index
+        #   - SegArray implementation. Locations outlined
         msg_list = []
         for col in self._columns:
-            # TODO - handle segarray
             if isinstance(self[col], Categorical):
                 msg_list.append(f"Categorical+{self[col].codes.name}+{self[col].categories.name}")
+            elif isinstance(self[col], SegArray):
+                msg_list.append(f"SegArray+{self[col].codes.name}+{self[col].categories.name}")
             elif isinstance(self[col], Strings):
                 msg_list.append(f"Strings+{self[col].name}")
             else:
                 msg_list.append(f"pdarray+{self[col].name}")
 
-        generic_msg(cmd="dataframe_idx", args="{} {} {}".
-                    format(len(msg_list), idx.name, json.dumps(msg_list)))
+        repMsg = cast(str, generic_msg(cmd="dataframe_idx", args="{} {} {}".
+                                       format(len(msg_list), idx.name, json.dumps(msg_list))))
+        msgList = json.loads(repMsg)
+        for m in msgList:
+            msg = m.split("+", 1)
+            t = msg[0]
+            if t == "Strings":
+                Strings.from_return_msg(msg[1])
+            elif t == "SegArray":
+                return NotImplemented
+            else:
+                create_pdarray(msg[1])
+
+
 
     def _shape_str(self):
         return "{} rows x {} columns".format(self.size, self._ncols())

@@ -52,7 +52,7 @@ module DataFrameIndexingMsg
 			return rname;
 		}
 
-		var repMsg =  "created " + st.attrib(rname);
+		var repMsg =  "pdarray+created " + st.attrib(rname);
 		return repMsg;
 	}
 
@@ -98,7 +98,7 @@ module DataFrameIndexingMsg
 						throw new IllegalArgumentError(repTup.msg);
 					}
 
-					rpm = "%s,".format(repTup.msg);
+					rpm = "Strings+%s,".format(repTup.msg);
 				}
 				when ("Strings") {
 					dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings".format(i));
@@ -108,7 +108,7 @@ module DataFrameIndexingMsg
 						throw new IllegalArgumentError(repTup.msg);
 					}
 
-					rpm = "%s,".format(repTup.msg);
+					rpm = "Strings+%s,".format(repTup.msg);
 				}
 				when ("pdarray"){
 					dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is pdarray".format(i));
@@ -137,6 +137,7 @@ module DataFrameIndexingMsg
 						}
 					}
 				}
+				// TODO - when SegArray
 				otherwise {
 					var errorMsg = notImplementedError(pn, ele_parts[0]);
 					dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -145,6 +146,7 @@ module DataFrameIndexingMsg
 			}
 		}
 
+		// TODO - return values need to provide what type the data is so that we can properly configure the object on the client
 		repMsg = "[%s]".format(",".join(repMsgList));
         dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
