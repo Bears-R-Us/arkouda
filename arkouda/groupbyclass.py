@@ -15,10 +15,12 @@ from arkouda.dtypes import int64, uint64
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
-def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
-           return_groups: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
-                                                 Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
-                                                     pdarray]]]:  # type: ignore
+groupable_element_type = Union[pdarray, Strings, 'Categorical']
+groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
+
+def unique(pda: groupable,  # type: ignore
+           return_groups: bool = False) -> Union[groupable,  # type: ignore
+                                                 Tuple[groupable, pdarray, pdarray, int]]:  # type: ignore
     """
     Find the unique elements of an array.
 
@@ -69,7 +71,7 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
     if hasattr(pda, "_get_grouping_keys"):
         # Single groupable array
         nkeys = 1
-        grouping_keys = pda._get_grouping_keys()
+        grouping_keys = cast(list, pda._get_grouping_keys())
     else:
         # Sequence of groupable arrays
         nkeys = len(pda)
@@ -104,7 +106,7 @@ def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
     else:
         unique_keys = tuple([a[unique_key_indices] for a in pda])
     if return_groups:
-        return (unique_keys, permutation, segments)
+        return (unique_keys, permutation, segments, nkeys)
     else:
         return unique_keys
 
@@ -140,9 +142,6 @@ class GroupByReductionType(enum.Enum):
     
 GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member 
                                   in GroupByReductionType.__members__.items()])
-
-groupable_element_type = Union[pdarray, Strings, 'Categorical']
-groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 class GroupBy:
     """
@@ -205,15 +204,16 @@ class GroupBy:
             raise TypeError("assume_sorted must be of type bool.")
         if not isinstance(hash_strings, bool):
             raise TypeError("hash_strings must be of type bool.")
-        self.keys = keys
+        self.keys = cast(groupable, keys)
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
         self.keys : groupable
         self.permutation : pdarray
 
-        self.unique_keys, self.permutation, self.segments = unique(self.keys, return_groups=True) # type: ignore
+        self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore
         self.size = self.permutation.size
+        self.ngroups = self.segments.size
 
 
     def count(self) -> Tuple[groupable,pdarray]:
