@@ -161,7 +161,7 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
-        return cast(Union[pdarray, Strings, Categorical_], arrays[0])
+        return cast(groupable_element_type, arrays[0])
 
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
@@ -303,8 +303,8 @@ def union1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-                pda2: Union[pdarray, Sequence[groupable_element_type]],
+def intersect1d(pda1: groupable,
+                pda2: groupable,
                 assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
@@ -368,8 +368,8 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = cast(groupable, unique(pda1))
-            pda2 = cast(groupable, unique(pda2))
+            pda1 = cast(pdarray, unique(pda1))
+            pda2 = cast(pdarray, unique(pda2))
         aux = concatenate((pda1, pda2), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
@@ -406,8 +406,8 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-              pda2: Union[pdarray, Sequence[groupable_element_type]],
+def setdiff1d(pda1: groupable,
+              pda2: groupable,
               assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
@@ -507,8 +507,8 @@ def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-             pda2: Union[pdarray, Sequence[groupable_element_type]],
+def setxor1d(pda1: groupable,
+             pda2: groupable,
              assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
