@@ -55,11 +55,14 @@ module UniqueMsg
         // Indices of first unique key in original array
         // These are the value of the permutation at the start of each group
         var uniqueKeyInds = new shared SymEntry(segments.size, int);
-        ref perm = permutation.a;
-        ref segs = segments.a;
-        ref inds = uniqueKeyInds.a;
-        forall (i, s) in zip(inds, segs) with (var agg = newSrcAggregator(int)) {
-          agg.copy(i, perm[s]);
+        if (segments.size > 0) {
+          // Avoid initializing aggregators if empty array
+          ref perm = permutation.a;
+          ref segs = segments.a;
+          ref inds = uniqueKeyInds.a;
+          forall (i, s) in zip(inds, segs) with (var agg = newSrcAggregator(int)) {
+            agg.copy(i, perm[s]);
+          }
         }
         var iname = st.nextName();
         st.addEntry(iname, uniqueKeyInds);
@@ -133,7 +136,9 @@ module UniqueMsg
                                          "ArgumentError");
       }
       var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
-
+      if (size == 0) {
+        return (new shared SymEntry(0, int), new shared SymEntry(0, int));
+      }
       proc helper(type t, keys: [?D] t) throws {
         // Sort the keys
         var kr = radixSortLSD(keys);
