@@ -7,7 +7,7 @@ import pandas as pd
 import arkouda as ak
 import random
 
-OPS = ('_repr_html_')
+OPS = ['_repr_html_']
 TYPES = ('int64', 'uint64',)
 
 

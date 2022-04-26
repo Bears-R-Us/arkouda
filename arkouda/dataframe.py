@@ -446,28 +446,34 @@ class DataFrame(UserDict):
         msg_list = []
         for col in self._columns:
             if isinstance(self[col], Categorical):
-                msg_list.append(f"Categorical+{self[col].codes.name}+{self[col].categories.name}")
+                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
             elif isinstance(self[col], SegArray):
-                msg_list.append(f"SegArray+{self[col].codes.name}+{self[col].categories.name}")
+                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
             elif isinstance(self[col], Strings):
-                msg_list.append(f"Strings+{self[col].name}")
+                msg_list.append(f"Strings+{col}+{self[col].name}")
             else:
-                msg_list.append(f"pdarray+{self[col].name}")
+                msg_list.append(f"pdarray+{col}+{self[col].name}")
 
         repMsg = cast(str, generic_msg(cmd="dataframe_idx", args="{} {} {}".
                                        format(len(msg_list), idx.name, json.dumps(msg_list))))
         msgList = json.loads(repMsg)
+
+        df_dict = {}
         for m in msgList:
             msg = m.split("+", 1)
             t = msg[0]
             if t == "Strings":
-                Strings.from_return_msg(msg[1])
+                df_dict[msg[1]] = Strings.from_return_msg(msg[2])
             elif t == "SegArray":
-                return NotImplemented
+                eles = msg[2].split("+")
+                df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
             else:
-                create_pdarray(msg[1])
+                df_dict[msg[1]] = create_pdarray(msg[2])
 
+        new_df = DataFrame(df_dict)
+        new_df._set_index(idx)
 
+        return new_df.to_pandas(retain_index=True)[self._columns]
 
     def _shape_str(self):
         return "{} rows x {} columns".format(self.size, self._ncols())
