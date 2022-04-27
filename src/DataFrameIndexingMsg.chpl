@@ -170,7 +170,6 @@ module DataFrameIndexingMsg
 						}
 					}
 				}
-				// TODO - when SegArray
 				when ("SegArray"){
 					dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is SegArray".format(i));
 					ref segments_name = ele_parts[2];
@@ -191,8 +190,7 @@ module DataFrameIndexingMsg
 				}
 			}
 		}
-
-		// TODO - return values need to provide what type the data is so that we can properly configure the object on the client
+		
 		repMsg = "[%s]".format(",".join(repMsgList));
         dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 

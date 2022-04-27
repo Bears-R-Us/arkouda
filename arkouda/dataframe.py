@@ -491,7 +491,6 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-        #
         prt = self._get_head_tail_server()
 
         with pd.option_context("display.show_dimensions", False):
