@@ -13,8 +13,165 @@ module IndexingMsg
 
     use CommAggregation;
 
+    use FileIO;
+    use List;
+
     private config const logLevel = ServerConfig.logLevel;
     const imLogger = new Logger(logLevel);
+
+    proc jsonToTuple(json: string, type t) throws {
+        var f = opentmp(); defer { ensureClose(f); }
+        var w = f.writer();
+        w.write(json);
+        w.close();
+        var r = f.reader(start=0);
+        var tup: t;
+        r.readf("%jt", tup);
+        r.close();
+        return tup;
+    }
+
+    proc arrayViewMixedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        var (pdaName, indexDimName, ndimStr, dimProdName, coords) = payload.splitMsgToTuple(5);
+        var ndim = try! ndimStr:int;
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                    "%s %s %i %s %s".format(cmd, pdaName, ndim, dimProdName, coords));
+
+        var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
+        var dimProdEntry = toSymEntry(dimProd, int);
+
+        var indexDim: borrowed GenSymEntry = getGenericTypedArrayEntry(indexDimName, st);
+        var indexDimEntry = toSymEntry(indexDim, int);
+        ref dims = indexDimEntry.a;
+
+        // String array containing the type of the following value at even indicies then the value ex. ["int", "7", "slice", "(0,5,-1)", "pdarray", "id_4"]
+        var typeCoords: [0..#(ndim*2)] string = jsonToPdArray(coords, ndim*2);
+
+        var scaledCoords: [makeDistDom(+ reduce dims)] int;
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * dims.size);
+        var offsets = (+ scan dims) - dims;
+
+        forall i in 0..#typeCoords.size by 2 {
+            select typeCoords[i] {
+                when "int" {
+                    scaledCoords[offsets[i/2]] = typeCoords[i+1]:int * dimProdEntry.a[i/2];
+                }
+                when "slice" {
+                    var (start, stop, stride) = jsonToTuple(typeCoords[i+1], 3*int);
+                    var slice: range(stridable=true) = convertSlice(start, stop, stride);
+                    var scaled: [0..#slice.size] int = slice * dimProdEntry.a[i/2];
+                    for j in 0..#slice.size {
+                        scaledCoords[offsets[i/2]+j] = scaled[j];
+                    }
+                }
+                // Advanced indexing not yet supported
+                // when "pdarray" {
+                //     // TODO if bool array convert to int array by doing arange(len)[bool_array]
+                //     var arrName: string = typeCoords[i+1];
+                //     var indArr: borrowed GenSymEntry = getGenericTypedArrayEntry(arrName, st);
+                //     var indArrEntry = toSymEntry(indArr, int);
+                //     var scaledArray = indArrEntry.a * dimProdEntry.a[i/2];
+                //     // var localizedArray = new lowLevelLocalizingSlice(scaledArray, offsets[i/2]..#indArrEntry.a.size);
+                //     forall (j, s) in zip(indArrEntry.aD, scaledArray) with (var DstAgg = newDstAggregator(int)) {
+                //         DstAgg.copy(scaledCoords[offsets[i/2]+j], s);
+                //     }
+                // }
+            }
+        }
+
+        // create full index list
+        // get next symbol name
+        var indiciesName = st.nextName();
+        var indicies = st.addEntry(indiciesName, * reduce dims, int);
+
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "rname = %s".format(indiciesName));
+
+        // avoid dividing by 0
+        // if any dim is 0 we return an empty list
+        if & reduce (dims!=0) {
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * dims.size);
+            var dim_prod = (* scan(dims)) / dims;
+
+            recursiveIndexCalc(0,0,0);
+            proc recursiveIndexCalc(depth: int, ind:int, sum:int) throws {
+                for j in 0..#dims[depth] {
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "depth = %i".format(depth));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "j = %i".format(j));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "SUM: sum + scaledCoords[offsets[depth]+j] = %i".format(sum + scaledCoords[offsets[depth]+j]));
+                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "IND: ind + j*dim_prod[depth] = %i".format(ind+(j*dim_prod[depth])));
+
+                    if depth == ndim-1 then indicies.a[ind+(j*dim_prod[depth])] = sum+scaledCoords[offsets[depth]+j];
+                    else recursiveIndexCalc(depth+1, ind+(j*dim_prod[depth]), sum+scaledCoords[offsets[depth]+j]);
+                }
+            }
+        }
+
+        return pdarrayIndexMsg(cmd, "%s %s".format(pdaName, indiciesName), st);
+    }
+
+    /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
+    proc arrayViewIntIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var (pdaName, dimProdName, coordsName) = payload.splitMsgToTuple(3);
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
+
+        var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
+        var dimProdEntry = toSymEntry(dimProd, int);
+        var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
+
+        // multi-dim to 1D address calculation
+        // (dimProd and coords are reversed on python side to account for row_major vs column_major)
+        select (coords.dtype) {
+            when (DType.Int64) {
+                var coordsEntry = toSymEntry(coords, int);
+                var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+            }
+            when (DType.UInt64) {
+                var coordsEntry = toSymEntry(coords, uint);
+                var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+            }
+            otherwise {
+                 var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                 return new MsgTuple(errorMsg, MsgType.ERROR);
+             }
+        }
+    }
+
+    /* arrayViewIntIndexAssignMsg "av[int_list]=value" response to __getitem__(int_list) where av is an ArrayView */
+    proc arrayViewIntIndexAssignMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var (pdaName, dtypeStr, dimProdName, coordsName, value) = payload.splitMsgToTuple(5);
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
+
+        var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
+        var dimProdEntry = toSymEntry(dimProd, int);
+        var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
+
+        // multi-dim to 1D address calculation
+        // (dimProd and coords are reversed on python side to account for row_major vs column_major)
+        select (coords.dtype) {
+            when (DType.Int64) {
+                var coordsEntry = toSymEntry(coords, int);
+                var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+            }
+            when (DType.UInt64) {
+                var coordsEntry = toSymEntry(coords, uint);
+                var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+            }
+            otherwise {
+                 var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                 return new MsgTuple(errorMsg, MsgType.ERROR);
+             }
+        }
+    }
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -66,6 +223,18 @@ module IndexingMsg
          }
     }
 
+    /* convert python slice to chapel slice */
+    proc convertSlice(start: int, stop: int, stride: int): range(stridable=true) {
+        var slice: range(stridable=true);
+        // backwards iteration with negative stride
+        if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
+        // forward iteration with positive stride
+        else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
+        // BAD FORM start < stop and stride is negative
+        else {slice = 1..0;}
+        return slice;
+    }
+
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
     proc sliceIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -75,15 +244,7 @@ module IndexingMsg
         var start = try! startStr:int;
         var stop = try! stopStr:int;
         var stride = try! strideStr:int;
-        var slice: range(stridable=true);
-
-        // convert python slice to chapel slice
-        // backwards iteration with negative stride
-        if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-        // forward iteration with positive stride
-        else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-        // BAD FORM start < stop and stride is negative
-        else {slice = 1..0;}
+        var slice: range(stridable=true) = convertSlice(start, stop, stride);
 
         // get next symbol name
         var rname = st.nextName();
@@ -751,15 +912,7 @@ module IndexingMsg
         var stop = try! stopStr:int;
         var stride = try! strideStr:int;
         var dtype = str2dtype(dtypeStr);
-        var slice: range(stridable=true);
-
-        // convert python slice to chapel slice
-        // backwards iteration with negative stride
-        if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-        // forward iteration with positive stride
-        else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-        // BAD FORM start < stop and stride is negative
-        else {slice = 1..0;}
+        var slice: range(stridable=true) = convertSlice(start, stop, stride);
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
@@ -999,6 +1152,9 @@ module IndexingMsg
     
     proc registerMe() {
       use CommandMap;
+      registerFunction("arrayViewIntIndex", arrayViewIntIndexMsg, getModuleName());
+      registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
+      registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
       registerFunction("[int]", intIndexMsg, getModuleName());
       registerFunction("[slice]", sliceIndexMsg, getModuleName());
       registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
