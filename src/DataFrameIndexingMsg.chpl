@@ -26,7 +26,7 @@ module DataFrameIndexingMsg
 
 		if (columnVals.size == 0) && (idx.size == 0) {
 			var a = st.addEntry(rname, 0, t);
-			var repMsg = "created " + st.attrib(rname);
+			var repMsg = "pdarray+%s+created ".format(col) + st.attrib(rname);
 			return repMsg;
 		}
 		var idxMin = min reduce idx.a;
@@ -85,7 +85,7 @@ module DataFrameIndexingMsg
 		var v_name = st.nextName();
 		st.addEntry(v_name, new shared SymEntry(rvals));
 
-		return "SegArray+%s+created %s+created %s".format(col, s_name, v_name);
+		return "SegArray+%s+created %s+created %s".format(col, st.attrib(s_name), st.attrib(v_name));
 	}
 
     proc dataframeBatchIndexingMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {

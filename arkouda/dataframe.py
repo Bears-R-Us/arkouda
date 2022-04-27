@@ -424,7 +424,7 @@ class DataFrame(UserDict):
         newdf._set_index(idx)
         return newdf.to_pandas(retain_index=True)
 
-    def _head_tail_server(self):
+    def _get_head_tail_server(self):
         if self._empty:
             return pd.DataFrame()
         self.update_size()
@@ -440,9 +440,6 @@ class DataFrame(UserDict):
             return newdf.to_pandas(retain_index=True)
         # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
         idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
-        # TODO - pass names to server of
-        #   - Link column to index
-        #   - SegArray implementation. Locations outlined
         msg_list = []
         for col in self._columns:
             if isinstance(self[col], Categorical):
@@ -460,11 +457,13 @@ class DataFrame(UserDict):
 
         df_dict = {}
         for m in msgList:
-            msg = m.split("+", 1)
+            # Split to [datatype, column, create]
+            msg = m.split("+", 2)
             t = msg[0]
             if t == "Strings":
                 df_dict[msg[1]] = Strings.from_return_msg(msg[2])
             elif t == "SegArray":
+                # split creates for segments and values
                 eles = msg[2].split("+")
                 df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
             else:
@@ -472,7 +471,6 @@ class DataFrame(UserDict):
 
         new_df = DataFrame(df_dict)
         new_df._set_index(idx)
-
         return new_df.to_pandas(retain_index=True)[self._columns]
 
     def _shape_str(self):
@@ -483,7 +481,7 @@ class DataFrame(UserDict):
         Return ascii-formatted version of the dataframe.
         """
 
-        prt = self._get_head_tail()
+        prt = self._get_head_tail_server()
         with pd.option_context("display.show_dimensions", False):
             retval = prt.__repr__()
         retval += " (" + self._shape_str() + ")"
@@ -493,9 +491,9 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-        self._head_tail_server()
-        return
-        #prt = self._get_head_tail()
+        #
+        prt = self._get_head_tail_server()
+
         with pd.option_context("display.show_dimensions", False):
             retval = prt._repr_html_()
         retval += "<p>" + self._shape_str() + "</p>"
