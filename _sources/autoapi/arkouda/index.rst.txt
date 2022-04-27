@@ -6519,12 +6519,14 @@ Attributes
    to HDF5 files.
 
 
-.. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'HDF5', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
+   :param file_format: 'HDF5' or 'Parquet'. Used to indicate the file type being loaded.
+   :type file_format: str
    :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
    :type dataset: str
    :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
@@ -6535,7 +6537,7 @@ Attributes
    :rtype: Union[pdarray, Strings]
 
    :raises TypeError: Raised if either path_prefix or dataset is not a str
-   :raises ValueError: Raised if the dataset is not present in all hdf5 files or if the
+   :raises ValueError: Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
        path_prefix does not correspond to files accessible to Arkouda
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
@@ -6549,8 +6551,6 @@ Attributes
 
    :param filename: Name of an HDF5/Parquet file visible to the arkouda server
    :type filename: str
-   :param is_parquet: Is filename a Parquet file; false by default
-   :type is_parquet: bool
 
    :returns: Names of the datasets in the file
    :rtype: List[str]
@@ -6562,23 +6562,31 @@ Attributes
    .. seealso:: :obj:`ls`
 
 
-.. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'HDF5') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
+   :param file_format: 'HDF5' or 'Parquet'. Indicates the format being loaded. Used to assign the appropriate file extension.
+                       Defaults to 'HDF5'
+   :type file_format: str
 
    :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
    :rtype: Mapping[str,pdarray]
 
    :raises TypeError:: Raised if path_prefix is not a str
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files or if the
+   :raises ValueError: Raised if file_format/extension is encountered that is not hdf5 or parquet or
+       if all datasets are not present in all hdf5/parquet files or if the
        path_prefix does not correspond to files accessible to Arkouda
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
    .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+   .. rubric:: Notes
+
+   This function has been updated to determine the file extension based on the file format variable
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate') -> None
@@ -12382,12 +12390,14 @@ Attributes
    array([2 2 1 1 1 0 0])
 
 
-.. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'HDF5', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
+   :param file_format: 'HDF5' or 'Parquet'. Used to indicate the file type being loaded.
+   :type file_format: str
    :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
    :type dataset: str
    :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
@@ -12398,7 +12408,7 @@ Attributes
    :rtype: Union[pdarray, Strings]
 
    :raises TypeError: Raised if either path_prefix or dataset is not a str
-   :raises ValueError: Raised if the dataset is not present in all hdf5 files or if the
+   :raises ValueError: Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
        path_prefix does not correspond to files accessible to Arkouda
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
