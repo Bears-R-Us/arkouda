@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="arkouda.client" href="../client/index.html" />
-    <link rel="prev" title="arkouda.alignment" href="../alignment/index.html" />
+    <link rel="prev" title="arkouda.array_view" href="../array_view/index.html" />
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
@@ -60,7 +60,7 @@ especially if there are many repeated values, at the cost of some one-time
 work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../index.html#id136" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../index.html#id252" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -69,7 +69,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id136" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id252" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -191,7 +191,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id136" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id252" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – When values are grouped, the starting offset of each group</p></li>
@@ -446,7 +446,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id136" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id252" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
@@ -865,7 +865,7 @@ and constructed for the user.</p>
   <li><a href="../../../index.html">Documentation overview</a><ul>
   <li><a href="../../index.html">API Reference</a><ul>
   <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
-      <li>Previous: <a href="../alignment/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+      <li>Previous: <a href="../array_view/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
       <li>Next: <a href="../client/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
   </ul></li>
   </ul></li>

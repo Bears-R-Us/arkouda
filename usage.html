@@ -53,6 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html#operators">Operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html#iteration">Iteration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html#type-casting">Type Casting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html#reshape">Reshape</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html#arkouda.pdarray">pdarray</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/pdarray.html#arkouda.pdarray.name">name</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/pdarray.html#arkouda.pdarray.dtype">dtype</a></li>
@@ -285,6 +286,64 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="usage/segarray.html">SegArrays in Arkouda</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#iteration">Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#operation">Operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#segarray-specific-methods">SegArray Specific Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#prefix-suffix">Prefix &amp; Suffix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#ngrams">NGrams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#sub-array-of-size">Sub-array of Size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#access-set-specific-elements-in-sub-array">Access/Set Specific Elements in Sub-Array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#append-prepend">Append &amp; Prepend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#deduplication">Deduplication</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.get_prefixes">get_prefixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.get_suffixes">get_suffixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.get_ngrams">get_ngrams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.get_length_n">get_length_n</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.get_jth">get_jth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.set_jth">set_jth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.append">append</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.append_single">append_single</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.prepend_single">prepend_single</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.remove_repeats">remove_repeats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#segarray-setops">SegArray SetOps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#union">Union</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#intersect">Intersect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#set-difference">Set Difference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#symmetric-difference">Symmetric Difference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.to_ndarray">to_ndarray</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.union">union</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.intersect">intersect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.setdiff">setdiff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.SegArray.setxor">setxor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage/arrayview.html">ArrayView in Arkouda</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html#creation">Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html#indexing">Indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html#iteration">Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView">ArrayView</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.base">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.dtype">dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.size">size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.shape">shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.ndim">ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.itemsize">itemsize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.order">order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/arrayview.html#arkouda.ArrayView.to_ndarray">to_ndarray</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -325,6 +384,8 @@
 <li class="toctree-l2"><a class="reference internal" href="usage/groupby.html">GroupBy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/strings.html">Strings in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>

@@ -57,3 +57,10 @@ Conversion between dtypes is sometimes implicit, as in the following example:
 Explicit conversion is supported via the ``cast`` function.
 
 .. autofunction:: arkouda.cast
+
+Reshape
+=======
+
+Using the ``.reshape`` method, a multi-dimension view of a pdarray will be returned as an ``ArrayView``
+
+.. autofunction:: arkodua.pdarray.reshape
