@@ -67,16 +67,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.lookup" title="arkouda.alignment.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments, fillvalue=-1)</p></td>
 <td><p>Apply the function defined by the mapping keys --&gt; values to arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.gen_ranges" title="arkouda.alignment.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends)</p></td>
-<td><p>Generate a segmented array of variable-length, contiguous</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.in1d_intervals" title="arkouda.alignment.in1d_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1d_intervals</span></code></a>(vals, intervals, symmetric=False, assume_unique=False)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.in1d_intervals" title="arkouda.alignment.in1d_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1d_intervals</span></code></a>(vals, intervals, symmetric=False, assume_unique=False)</p></td>
 <td><p>Test each value for membership in <em>any</em> of a set of half-open (pythonic)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.search_intervals" title="arkouda.alignment.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals, assume_unique=False)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.search_intervals" title="arkouda.alignment.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals, assume_unique=False)</p></td>
 <td><p>Given an array of query vals and non-overlapping, half-open (pythonic)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.interval_lookup" title="arkouda.alignment.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments, fillvalue=-1)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.interval_lookup" title="arkouda.alignment.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments, fillvalue=-1)</p></td>
 <td><p>Apply a function defined over non-overlapping intervals to</p></td>
 </tr>
 </tbody>
@@ -221,28 +218,6 @@ array([24, -1, 22])</p>
 &gt;&gt;&gt; keys1[idx], keys2[idx]
 (array([‘twenty’, ‘twenty’, ‘twenty’]),
 array([‘four’, ‘one’, ‘two’]))</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.alignment.gen_ranges">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.gen_ranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a segmented array of variable-length, contiguous
-ranges between pairs of start- and end-points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
-<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>segments</strong> (<em>pdarray, int64</em>) – The starting index of each range in the resulting array</p></li>
-<li><p><strong>ranges</strong> (<em>pdarray, int64</em>) – The actual ranges, flattened into a single array</p></li>
-</ul>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">

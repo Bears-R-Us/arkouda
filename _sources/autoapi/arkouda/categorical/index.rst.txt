@@ -26,6 +26,8 @@ Classes
 
    :param values: String values to convert to categories
    :type values: Strings
+   :param NAvalue: The value to use to represent missing/null data
+   :type NAvalue: str scalar
 
    .. attribute:: categories
 
@@ -105,7 +107,7 @@ Classes
 
       
 
-   .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, uses_all_categories=False) -> Categorical
+   .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
 
       Make a Categorical from codes and categories arrays. If codes and
@@ -127,6 +129,35 @@ Classes
 
       :raises TypeError: Raised if codes is not a pdarray of int64 objects or if
           categories is not a Strings object
+
+
+   .. py:method:: standardize_categories(cls, arrays, NAvalue='N/A')
+      :classmethod:
+
+      Standardize an array of Categoricals so that they share the same categories.
+
+      :param arrays: The Categoricals to standardize
+      :type arrays: sequence of Categoricals
+      :param NAvalue: The value to use to represent missing/null data
+      :type NAvalue: str scalar
+
+      :returns: A list of the original Categoricals remapped to the shared categories.
+      :rtype: List of Categoricals
+
+
+   .. py:method:: set_categories(self, new_categories, NAvalue=None)
+
+      Set categories to user-defined values.
+
+      :param new_categories: The array of new categories to use. Must be unique.
+      :type new_categories: Strings
+      :param NAvalue: The value to use to represent missing/null data
+      :type NAvalue: str scalar
+
+      :returns: A new Categorical with the user-defined categories. Old values present
+                in new categories will appear unchanged. Old values not present will
+                be assigned the NA value.
+      :rtype: Categorical
 
 
    .. py:method:: to_ndarray(self) -> numpy.ndarray
@@ -226,6 +257,11 @@ Classes
 
 
    .. py:method:: __getitem__(self, key) -> Categorical
+
+
+   .. py:method:: isna(self)
+
+      Find where values are missing or null (as defined by self.NAvalue)
 
 
    .. py:method:: reset_categories(self) -> Categorical

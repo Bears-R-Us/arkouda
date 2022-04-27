@@ -50,7 +50,10 @@ especially if there are many repeated values, at the cost of some one-time
 work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id252" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id710" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
+<li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -59,7 +62,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id252" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#id710" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -148,7 +151,7 @@ work in initialization.</p>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical.from_codes">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Categorical.</span></span><span class="sig-name descname"><span class="pre">from_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses_all_categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></span><a class="headerlink" href="#arkouda.Categorical.from_codes" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Categorical.</span></span><span class="sig-name descname"><span class="pre">from_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">arkouda.categorical.Categorical</span></a></span></span><a class="headerlink" href="#arkouda.Categorical.from_codes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a Categorical from codes and categories arrays. If codes and
 categories have already been pre-computed, this constructor saves
 time. If not, please use the normal constructor.</p>
@@ -156,7 +159,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id252" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#id710" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – When values are grouped, the starting offset of each group</p></li>
