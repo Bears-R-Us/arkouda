@@ -12,9 +12,12 @@
 #
 import os
 import sys
+from arkouda import _version
 
 sys.path.insert(0, os.path.abspath('../benchmarks'))
 sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.append('_ext')
 
 # -- Project information -----------------------------------------------------
 
@@ -23,7 +26,7 @@ copyright = '2020, Michael Merrill and William Reus'
 author = 'Michael Merrill and William Reus'
 
 # The full version, including alpha/beta/rc tags
-release = ''
+release = _version.get_versions()["version"]
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,7 +37,8 @@ master_doc = 'index'
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
               'sphinxarg.ext', 'sphinx.ext.githubpages',
-              'sphinx.ext.coverage', 'autoapi.extension'
+              'sphinx.ext.coverage', 'autoapi.extension',
+              'ak_sphinx_extensions'
              ]
 
 # path to directory containing files to autogenerate docs from comments
@@ -60,3 +64,6 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Add release substitution variable
+substitutions = [("|release|", release)]
