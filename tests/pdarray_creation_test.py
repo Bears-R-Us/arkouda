@@ -27,7 +27,6 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(int, pda.dtype) 
         
         pda =  ak.array(deque(range(5)))
-        self.assertIsInstance(pda, ak.pdarray)
         self.assertEqual(5, len(pda))
         self.assertEqual(int, pda.dtype)
 
@@ -36,13 +35,13 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(10, len(pda))
         self.assertEqual(int, pda.dtype)
 
-        with self.assertRaises(RuntimeError) as cm:          
-            ak.array({range(0,100)})
-        
-        with self.assertRaises(RuntimeError) as cm:          
-            ak.array(np.array([[0,1],[0,1]]))
+        av = ak.array(np.array([[0,1],[0,1]]))
+        self.assertIsInstance(av, ak.ArrayView)
 
-        with self.assertRaises(RuntimeError) as cm:          
+        with self.assertRaises(TypeError) as cm:
+            ak.array({range(0,100)})
+
+        with self.assertRaises(TypeError) as cm:
             ak.array('not an iterable')
         
         with self.assertRaises(TypeError) as cm:          
@@ -538,9 +537,9 @@ class PdarrayCreationTest(ArkoudaTest):
                         == pda).all())      
     
     def test_mulitdimensional_array_creation(self):
-        with self.assertRaises(RuntimeError) as cm:
-            ak.array([[0,0],[0,1],[1,1]])
-        
+        av = ak.array([[0,0],[0,1],[1,1]])
+        self.assertIsInstance(av, ak.ArrayView)
+
     def test_from_series(self):
         strings = ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
         

@@ -291,7 +291,8 @@ module FileIO {
         // Set filename to globbed filename corresponding to locale 0
         filename = tmp[tmp.domain.first];
       }
-
+      fioLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "FILENAME: %s".format(filename));
       if !exists(filename) {
         var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
         return new MsgTuple(errorMsg,MsgType.ERROR);

@@ -325,20 +325,20 @@ class IOTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if the input and returned datasets (pdarrays) don't match
         '''
-        self._create_file(columns=self.dict_columns, 
-                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir)) 
-        result_array_tens = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
+        self._create_file(columns=self.dict_columns,
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
+        result_array_tens = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir),
                                     dataset='int_tens_pdarray')
-        result_array_hundreds = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
+        result_array_hundreds = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir),
                                         dataset='int_hundreds_pdarray')
-        result_array_floats = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
+        result_array_floats = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir),
                                      dataset='float_pdarray')
-        result_array_bools = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
+        result_array_bools = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir),
                                      dataset='bool_pdarray')
-        
+
         ratens = result_array_tens.to_ndarray()
         ratens.sort()
-        
+
         rahundreds = result_array_hundreds.to_ndarray()
         rahundreds.sort()
 
@@ -347,6 +347,34 @@ class IOTest(ArkoudaTest):
 
         self.assertTrue((self.int_tens_ndarray == ratens).all())
         self.assertTrue((self.int_hundreds_ndarray  == rahundreds).all())
+        self.assertTrue((self.float_ndarray == rafloats).all())
+        self.assertEqual(len(self.bool_pdarray), len(result_array_bools))
+
+        # test load_all with file_format parameter usage
+        ak.save_all(columns=self.dict_columns, file_format='Parquet',
+                    prefix_path='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir))
+        result_array_tens = ak.load(path_prefix='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir),
+                                    dataset='int_tens_pdarray',
+                                    file_format='Parquet')
+        result_array_hundreds = ak.load(path_prefix='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir),
+                                        dataset='int_hundreds_pdarray',
+                                        file_format='Parquet')
+        result_array_floats = ak.load(path_prefix='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir),
+                                      dataset='float_pdarray',
+                                      file_format='Parquet')
+        result_array_bools = ak.load(path_prefix='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir),
+                                     dataset='bool_pdarray',
+                                     file_format='Parquet')
+        ratens = result_array_tens.to_ndarray()
+        ratens.sort()
+
+        rahundreds = result_array_hundreds.to_ndarray()
+        rahundreds.sort()
+
+        rafloats = result_array_floats.to_ndarray()
+        rafloats.sort()
+        self.assertTrue((self.int_tens_ndarray == ratens).all())
+        self.assertTrue((self.int_hundreds_ndarray == rahundreds).all())
         self.assertTrue((self.float_ndarray == rafloats).all())
         self.assertEqual(len(self.bool_pdarray), len(result_array_bools))
         
@@ -361,23 +389,33 @@ class IOTest(ArkoudaTest):
                                     dataset='int_tens_pdarray')
         
     def testLoadAll(self):   
-        self._create_file(columns=self.dict_columns, 
-                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir)) 
-        
+        self._create_file(columns=self.dict_columns,
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
+
         results = ak.load_all(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         self.assertTrue('bool_pdarray' in results)
         self.assertTrue('float_pdarray' in results)
         self.assertTrue('int_tens_pdarray' in results)
         self.assertTrue('int_hundreds_pdarray' in results)
-        
-        # Test load_all with invalid prefix
+
+        #test load_all with file_format parameter usage
+        ak.save_all(columns=self.dict_columns, file_format='Parquet',
+                    prefix_path='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir))
+        results = ak.load_all(file_format='Parquet',
+                              path_prefix='{}/iotest_dict_columns_parquet'.format(IOTest.io_test_dir))
+        self.assertTrue('bool_pdarray' in results)
+        self.assertTrue('float_pdarray' in results)
+        self.assertTrue('int_tens_pdarray' in results)
+        self.assertTrue('int_hundreds_pdarray' in results)
+
+        # # Test load_all with invalid prefix
         with self.assertRaises(ValueError):
-            ak.load_all(path_prefix='{}/iotest_dict_column'.format(IOTest.io_test_dir))       
-            
+            ak.load_all(path_prefix='{}/iotest_dict_column'.format(IOTest.io_test_dir))
+
         # Test load with invalid file
         with self.assertRaises(RuntimeError) as cm:
             ak.load_all(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir))
-    
+
     def testGetDataSets(self):
         '''
         Creates 1..n files depending upon the number of arkouda_server locales containing three 

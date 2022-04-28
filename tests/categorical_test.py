@@ -32,7 +32,7 @@ class CategoricalTest(ArkoudaTest):
         self.assertTrue((ak.array([0,1,2,3,4,5,6,7,8,9]) == cat.segments).all())
         self.assertTrue((ak.array(['string 8', 'string 6', 'string 5', 'string 9', 
                                     'string 7', 'string 2', 'string 10', 'string 1', 
-                                    'string 4', 'string 3']) == cat.categories).all())
+                                    'string 4', 'string 3', 'N/A']) == cat.categories).all())
         self.assertEqual(10,cat.size)
         self.assertEqual('category',cat.objtype)
         
@@ -41,9 +41,9 @@ class CategoricalTest(ArkoudaTest):
         
     def testCategoricalFromCodesAndCategories(self):
         codes = ak.array([7,5,9,8,2,1,4,0,3,6])
-        categories = ak.array(['string 8', 'string 6', 'string 5', 'string 9', 
+        categories = ak.unique(ak.array(['string 8', 'string 6', 'string 5', 'string 9', 
                                     'string 7', 'string 2', 'string 10', 'string 1', 
-                                    'string 4', 'string 3'])
+                                    'string 4', 'string 3', 'N/A']))
         
         cat = ak.Categorical.from_codes(codes, categories)
         self.assertTrue((codes == cat.codes).all())
@@ -210,7 +210,7 @@ class CategoricalTest(ArkoudaTest):
             keys = set(f.keys())
             if pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys:  # Ignore the metadata group if it exists
                 keys.remove(pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP)
-            self.assertEqual(len(keys), 4, "Expected 4 keys")
+            self.assertEqual(len(keys), 5, "Expected 5 keys")
             self.assertSetEqual(set(f"categorical_array.{k}" for k in cat._get_components_dict().keys()), keys)
             f.close()
 
@@ -219,7 +219,7 @@ class CategoricalTest(ArkoudaTest):
             self.assertTrue(dset_name in x)
             cat_from_hdf = x[dset_name]
 
-            expected_categories = [f"string {i}" for i in range(1, num_elems)]
+            expected_categories = [f"string {i}" for i in range(1, num_elems)] + ['N/A']
 
             # Note assertCountEqual asserts a and b have the same elements in the same amount regardless of order
             self.assertCountEqual(cat_from_hdf.categories.to_ndarray().tolist(), expected_categories)
@@ -272,6 +272,40 @@ class CategoricalTest(ArkoudaTest):
             self.assertCountEqual(x["pda1"].to_ndarray().tolist(), pda1.to_ndarray().tolist())
             self.assertCountEqual(x["strings1"].to_ndarray().tolist(), strings1.to_ndarray().tolist())
 
+    def testNA(self):
+        s = ak.array(['A', 'B', 'C', 'B', 'C'])
+        # NAval present in categories
+        c = ak.Categorical(s, NAvalue='C')
+        self.assertListEqual(c.isna().to_ndarray().tolist(), [False, False, True, False, True])
+        self.assertTrue(c.NAvalue == 'C')
+        # Test that NAval survives registration
+        c.register('my_categorical')
+        c2 = ak.Categorical.attach('my_categorical')
+        self.assertTrue(c2.NAvalue == 'C')
+
+        # default NAval not present in categories
+        c = ak.Categorical(s)
+        self.assertTrue(not c.isna().any())
+        self.assertTrue(c.NAvalue == 'N/A')
+
+    def testStandardizeCategories(self):
+        c1 = ak.Categorical(ak.array(['A', 'B', 'C']))
+        c2 = ak.Categorical(ak.array(['B', 'C', 'D']))
+        c3, c4 = ak.Categorical.standardize_categories([c1, c2])
+        self.assertTrue((c3.categories == c4.categories).all())
+        self.assertTrue(not c3.isna().any())
+        self.assertTrue(not c4.isna().any())
+        self.assertTrue(c3.categories.size == c1.categories.size+1)
+        self.assertTrue(c4.categories.size == c2.categories.size+1)
+
+    def testLookup(self):
+        keys = ak.array([1, 2, 3])
+        values = ak.Categorical(ak.array(['A', 'B', 'C']))
+        args = ak.array([3, 2, 1, 0])
+        ret = ak.lookup(keys, values, args)
+        expected = ['C', 'B', 'A', 'N/A']
+        self.assertListEqual(ret.to_ndarray().tolist(), expected)
+        
     def tearDown(self):
         super(CategoricalTest, self).tearDown()
         for f in glob.glob('{}/*'.format(CategoricalTest.cat_test_base_tmp)):
