@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-import string
+
 import time, argparse
 import numpy as np
 import pandas as pd
 
 import arkouda as ak
-import random
 
-OPS = ['_repr_html_', '_get_head_tail_server', '_get_head_tail']
+OPS = ['_get_head_tail_server', '_get_head_tail']
 TYPES = ('int64', 'uint64',)
 
 def generate_dataframe(N):
@@ -17,14 +16,14 @@ def generate_dataframe(N):
     df_dict = {}
     for x in range(20):  # loop to create 20 random columns
         key = f"c_{x}"
-        d = types[random.randint(0, len(types)-1)]
+        d = types[x % 4]
         if d == ak.Categorical:
-            str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(N)])
+            str_arr = ak.random_strings_uniform(minlen=5, maxlen=6, size=N)
             df_dict[key] = ak.Categorical(str_arr)
         elif d == ak.pdarray:
             df_dict[key] = ak.array(np.random.randint(0, 2 ** 32, N))
         elif d == ak.Strings:
-            df_dict[key] = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(N)])
+            df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N)
         elif d == ak.SegArray:
             df_dict[key] = ak.SegArray(ak.arange(0, N*5, 5), ak.array(np.random.randint(0, 2 ** 32, N*5)))
 

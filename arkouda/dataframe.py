@@ -481,7 +481,7 @@ class DataFrame(UserDict):
         Return ascii-formatted version of the dataframe.
         """
 
-        prt = self._get_head_tail_server()
+        prt = self._get_head_tail()
         with pd.option_context("display.show_dimensions", False):
             retval = prt.__repr__()
         retval += " (" + self._shape_str() + ")"
@@ -491,7 +491,7 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-        prt = self._get_head_tail_server()
+        prt = self._get_head_tail()
 
         with pd.option_context("display.show_dimensions", False):
             retval = prt._repr_html_()
