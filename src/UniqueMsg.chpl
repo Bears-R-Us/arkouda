@@ -34,7 +34,7 @@ module UniqueMsg
     const umLogger = new Logger(logLevel);
 
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var (returnGroupsStr, nstr, rest) = payload.splitMsgToTuple(3);
+        var (returnGroupsStr, nstr, rest) = payload.splitMsgToTuple(3);
         // flag to return segments and permutation for GroupBy
         const returnGroups = if (returnGroupsStr == "True") then true else false;
         var repMsg: string = "";
