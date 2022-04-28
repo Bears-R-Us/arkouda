@@ -12,21 +12,21 @@ In a terminal, run the arkouda server program with one locale
 
 You should see a startup message like
 
-.. code-block:: bash
+.. substitution-code-block:: bash
 
     $ ./arkouda_server -nl 1
     server listening on tcp://<your_machine>.local:5555
-    arkouda server version = vYYYY.MM.DD
+    arkouda server version = |release|
     memory limit = 15461882265
     bytes of memory used = 0
 
 or with authentication turned on 
 
-.. code-block:: bash
+.. substitution-code-block:: bash
 
    $ ./arkouda_server -nl 1 --authenticate
    server listening on tcp://<your_machine>:5555?token=<token_string>
-    arkouda server version = vYYYY.MM.DD
+    arkouda server version = |release|
     memory limit = 15461882265
     bytes of memory used = 0
 
