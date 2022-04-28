@@ -13,8 +13,6 @@
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
 
-    use CommAggregation;
-
     private config const logLevel = ServerConfig.logLevel;
     const dfiLogger = new Logger(logLevel);
 
@@ -26,7 +24,7 @@
 
         if (columnVals.size == 0) && (idx.size == 0) {
             var a = st.addEntry(rname, 0, t);
-            var repMsg = "pdarray+%s+created ".format(col) + st.attrib(rname);
+            var repMsg = "pdarray+%s+created %s".format(col, st.attrib(rname));
             return repMsg;
         }
         var idxMin = min reduce idx.a;
@@ -179,9 +177,29 @@
                     var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
                     var segments = toSymEntry(gSeg, int);
                     var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
-                    var values = toSymEntry(gVal, int);
-
-                    rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                    select(gVal.dtype){
+                        when(DType.Int64){
+                            var values = toSymEntry(gVal, int);
+                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        }
+                        when(DType.UInt64){
+                            var values = toSymEntry(gVal, uint);
+                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        }
+                        when(DType.Float64){
+                            var values = toSymEntry(gVal, real);
+                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        }
+                        when(DType.Bool){
+                            var values = toSymEntry(gVal, bool);
+                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                        }
+                        otherwise {
+                            var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));
+                            dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            throw new IllegalArgumentError(errorMsg);
+                        }
+                    }
                 }
                 otherwise {
                     var errorMsg = notImplementedError(pn, ele_parts[0]);

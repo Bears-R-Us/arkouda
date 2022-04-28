@@ -461,6 +461,7 @@ class DataFrame(UserDict):
             msg = m.split("+", 2)
             t = msg[0]
             if t == "Strings":
+                # Categorical is returned as a strings by indexing categories[codes[idx]]
                 df_dict[msg[1]] = Strings.from_return_msg(msg[2])
             elif t == "SegArray":
                 # split creates for segments and values
