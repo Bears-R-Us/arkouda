@@ -4,12 +4,14 @@ from collections import UserDict
 from warnings import warn
 import pandas as pd  # type: ignore
 import random
+import json
+from typing import cast
 
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
-from arkouda.pdarraycreation import arange, array
+from arkouda.pdarraycreation import arange, array, create_pdarray
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
@@ -17,7 +19,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
-from arkouda.client import maxTransferBytes
+from arkouda.client import maxTransferBytes, generic_msg
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
 from arkouda.series import Series
@@ -422,6 +424,56 @@ class DataFrame(UserDict):
         newdf._set_index(idx)
         return newdf.to_pandas(retain_index=True)
 
+    def _get_head_tail_server(self):
+        if self._empty:
+            return pd.DataFrame()
+        self.update_size()
+        maxrows = pd.get_option('display.max_rows')
+        if self._size <= maxrows:
+            newdf = DataFrame()
+            for col in self._columns:
+                if isinstance(self[col], Categorical):
+                    newdf[col] = self[col].categories[self[col].codes]
+                else:
+                    newdf[col] = self[col]
+            newdf._set_index(self.index)
+            return newdf.to_pandas(retain_index=True)
+        # Being 1 above the threshold causes the PANDAS formatter to split the data frame vertically
+        idx = array(list(range(maxrows // 2 + 1)) + list(range(self._size - (maxrows // 2), self._size)))
+        msg_list = []
+        for col in self._columns:
+            if isinstance(self[col], Categorical):
+                msg_list.append(f"Categorical+{col}+{self[col].codes.name}+{self[col].categories.name}")
+            elif isinstance(self[col], SegArray):
+                msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
+            elif isinstance(self[col], Strings):
+                msg_list.append(f"Strings+{col}+{self[col].name}")
+            else:
+                msg_list.append(f"pdarray+{col}+{self[col].name}")
+
+        repMsg = cast(str, generic_msg(cmd="dataframe_idx", args="{} {} {}".
+                                       format(len(msg_list), idx.name, json.dumps(msg_list))))
+        msgList = json.loads(repMsg)
+
+        df_dict = {}
+        for m in msgList:
+            # Split to [datatype, column, create]
+            msg = m.split("+", 2)
+            t = msg[0]
+            if t == "Strings":
+                # Categorical is returned as a strings by indexing categories[codes[idx]]
+                df_dict[msg[1]] = Strings.from_return_msg(msg[2])
+            elif t == "SegArray":
+                # split creates for segments and values
+                eles = msg[2].split("+")
+                df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
+            else:
+                df_dict[msg[1]] = create_pdarray(msg[2])
+
+        new_df = DataFrame(df_dict)
+        new_df._set_index(idx)
+        return new_df.to_pandas(retain_index=True)[self._columns]
+
     def _shape_str(self):
         return "{} rows x {} columns".format(self.size, self._ncols())
 
@@ -440,8 +492,8 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-
         prt = self._get_head_tail()
+
         with pd.option_context("display.show_dimensions", False):
             retval = prt._repr_html_()
         retval += "<p>" + self._shape_str() + "</p>"
