@@ -635,7 +635,7 @@ class DataFrame(UserDict):
             self._index = value
         elif isinstance(value, pdarray):
             self._index = Index(value)
-        elif isinstance(value, list) or isinstance(tuple):
+        elif isinstance(value, list):
             self._index = Index(array(value))
         else:
             raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
