@@ -13,8 +13,7 @@ from arkouda.pdarraycreation import arange, array
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import int64 as akint64, uint64 as akuint64, float64 as akfloat64, bool as akbool
 from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
 from arkouda.client import maxTransferBytes
@@ -249,6 +248,8 @@ class DataFrame(UserDict):
     def __getitem__(self, key):
         # Select rows using an integer pdarray
         if isinstance(key, pdarray):
+            if key.dtype == akbool:
+                key = arange(key.size)[key]
             result = {}
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
@@ -275,6 +276,14 @@ class DataFrame(UserDict):
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
                 result._empty = False
+                return result
+            elif type(key[0]) == bool:
+                rows = arange(len(key))[key]
+                for k in self.data.keys():
+                    result.data[k] = UserDict.__getitem__(self, k)[rows]
+                    result._columns.append(k)
+                result._empty = False
+                result._set_index(key)
                 return result
 
         # Select a single row using an integer
@@ -626,7 +635,7 @@ class DataFrame(UserDict):
             self._index = value
         elif isinstance(value, pdarray):
             self._index = Index(value)
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(tuple):
             self._index = Index(array(value))
         else:
             raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."

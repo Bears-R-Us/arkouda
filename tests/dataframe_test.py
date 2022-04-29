@@ -97,6 +97,14 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
 
+    def test_boolean_indexing(self):
+        df = build_ak_df()
+        ref_df = build_pd_df()
+        row = df[df['userName'] == 'Carol']
+
+        self.assertEqual(len(row), 1)
+        self.assertTrue(ref_df[ref_df['userName'] == 'Carol'].equals(row.to_pandas(retain_index=True)))
+
     def test_dtype_prop(self):
         str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)])
         df_dict = {
