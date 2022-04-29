@@ -1,12 +1,15 @@
 from arkouda.pdarrayclass import pdarray, argmaxk, attach_pdarray
-from arkouda.pdarraycreation import arange, array
-from arkouda.pdarraysetops import argsort, concatenate
+from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.index import Index
 from arkouda.groupbyclass import GroupBy
 from arkouda.dtypes import int64, float64
-from arkouda.numeric import value_counts
+from arkouda.numeric import value_counts, cast as akcast
+from arkouda.util import get_callback
 from arkouda.util import convert_if_categorical, register
 from arkouda.alignment import lookup
+from arkouda.categorical import Categorical
+from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 
 from pandas._config import get_option # type: ignore
 import pandas as pd  # type: ignore
@@ -38,6 +41,7 @@ def natural_binary_operators(cls):
         '__mod__': operator.mod,
         '__ne__': operator.ne,
         '__rshift__': operator.rshift,
+        '__pow__': operator.pow,
     }.items():
         setattr(cls, name, cls._make_binop(op))
 
@@ -55,7 +59,7 @@ def unary_operators(cls):
 
 
 def aggregation_operators(cls):
-    for name in ['max', 'min', 'mean', 'sum', 'std', 'argmax', 'argmin', 'prod']:
+    for name in ['max', 'min', 'mean', 'sum', 'std', 'var', 'argmax', 'argmin', 'prod']:
         setattr(cls,name, cls._make_aggop(name))
     return cls
 
@@ -82,7 +86,7 @@ class Series:
             raise TypeError("ar_tuple and data cannot both be null")
 
         else:
-            if not isinstance(data, pdarray):
+            if not isinstance(data, pdarray) and not isinstance(data, Categorical):
                 data = array(data)
             self.values = data
 
@@ -124,6 +128,27 @@ class Series:
             # @TODO align the series indexes
             key = key.values
         return Series((self.index[key], self.values[key]))
+
+    dt = CachedAccessor("dt", DatetimeAccessor)
+    str = CachedAccessor("str", StringAccessor)
+    # cat = CachedAccessor("cat", CategoricalAccessor)
+
+    def isin(self, lst):
+        """Find series elements whose values are in the specified list
+
+        Input
+        -----
+        Either a python list or an arkouda array.
+
+        Returns
+        -------
+        Arkouda boolean which is true for elements that are in the list and false otherwise.
+        """
+        if isinstance(lst, list):
+            lst = array(lst)
+
+        boolean = in1d(self.values, lst)
+        return Series(data=boolean, index=self.index)
 
     def locate(self, key):
         """Lookup values by index label
@@ -283,10 +308,40 @@ class Series:
         sort : Boolean. Whether or not to sort the results.  Default is true.
         """
 
+        dtype = get_callback(self.values)
         s = Series(value_counts(self.values))
         if sort:
             s = s.sort_values(ascending=False)
+        s.index.set_dtype(dtype)
         return s
+
+    def diff(self):
+        """Diffs consecutive values of the series.
+
+        Returns a new series with the same index and length.  First value is set to NaN.
+        """
+
+        values = zeros(len(self), "float64")
+        values[1:] = akcast(self.values[1:] - self.values[:-1], "float64")
+        values[0] = np.nan
+
+        return Series(data=values, index=self.index)
+
+    def to_dataframe(self, index_labels=None, value_label=None):
+        """Converts series to an arkouda data frame
+
+               Parameters
+        ----------
+        index_labels:  column names(s) to label the index.
+        value_label:  column name to label values.
+        Returns
+        -------
+        An arkouda dataframe.
+        """
+        if value_label is not None:
+            value_label = [value_label]
+
+        return Series.concat([self], axis=1, index_labels=index_labels, value_labels=value_label)
 
     def register(self, label):
         """Register the series with arkouda
@@ -377,7 +432,7 @@ class Series:
 
             else:
                 aitor = iter(arrays)
-                idx = next(aitor).index;
+                idx = next(aitor).index
                 idx = idx._merge_all([i.index for i in aitor])
 
                 data = idx.to_dict(index_labels)

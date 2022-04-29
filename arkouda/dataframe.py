@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from datetime import datetime
+from ipaddress import ip_address
+from tabulate import tabulate
 from collections import UserDict
 from warnings import warn
 import pandas as pd  # type: ignore
+import numpy as np  # type: ignore
 import random
 import json
 from typing import cast
@@ -11,7 +15,7 @@ from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
-from arkouda.pdarraycreation import arange, array, create_pdarray
+from arkouda.pdarraycreation import arange, array, zeros, create_pdarray
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
@@ -23,6 +27,7 @@ from arkouda.row import Row
 from arkouda.alignment import in1dmulti
 from arkouda.series import Series
 from arkouda.index import Index
+from arkouda.numeric import cast as akcast, isnan as akisnan
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -43,8 +48,27 @@ def groupby_operators(cls):
     return cls
 
 
+class AggregateOps:
+    """Base class for GroupBy and DiffAggregate containing common functions"""
+
+    def _gbvar(self, values):
+        """Calculate the variance in a groupby"""
+
+        values = akcast(values, "float64")
+        mean = self.gb.mean(values)
+        mean_broad = self.gb.broadcast(mean[1])
+        centered = values - mean_broad
+        var = Series( self.gb.sum(centered*centered))
+        n = self.gb.sum( ~akisnan(centered))
+        return var/(n[1]-1)
+
+    def _gbstd(self,values):
+        """Calculates  the standard deviation in a groupby"""
+        return self._gbvar(values) ** 0.5
+
+
 @groupby_operators
-class GroupBy:
+class GroupBy(AggregateOps):
     """A DataFrame that has been grouped by a subset of columns"""
 
     def __init__(self, gb, df):
@@ -62,6 +86,34 @@ class GroupBy:
 
     def count(self):
         return Series(self.gb.count())
+
+    def diff(self, colname):
+        """Create a difference aggregate for the given column
+
+        For each group, the differnce between successive values is calculated.  Aggregate operations (mean,min,max,std,var) can be done
+        on the results.
+
+        Parameters
+        ----------
+
+        colname:  String. Name of the column to compute the difference on.
+
+        Returns
+        -------
+
+        DiffAggregate : object containing the differences, which can be aggregated.
+
+        """
+
+        return DiffAggregate(self.gb, self.df.data[colname])
+
+    def var(self, colname):
+        """Calculate variance of the difference in each group"""
+        return self._gbvar(self.df.data[colname])
+
+    def std(self, colname):
+        """Calculate standard deviation of the difference in each group"""
+        return self._gbstd(self.df.data[colname])
 
     def broadcast(self, x, permute=True):
         """Fill each group’s segment with a constant value.
@@ -83,11 +135,38 @@ class GroupBy:
         return Series(data=data, index=self.df['index'])
 
 
+@groupby_operators
+class DiffAggregate(AggregateOps):
+    """A column in a GroupBy that has been differenced.  Aggregation operations can be done on the result."""
+
+    def __init__(self,gb,series):
+        self.gb = gb
+
+        values = zeros(len(series), "float64")
+        series_permuted = series[gb.permutation]
+        values[1:] = akcast( series_permuted[1:] - series_permuted[:-1] ,"float64")
+        values[gb.segments] = np.nan
+        self.values = values
+
+    def var(self):
+        """Calculate variance of the difference in each group"""
+        return self._gbvar(self.values)
+
+    def std(self):
+        """Calculate standard deviation of the difference in each group"""
+        return self._gbstd(self.values)
+
+    @classmethod
+    def _make_aggop(cls, opname):
+        def aggop(self):
+
+                return Series(self.gb.aggregate(self.values, opname))
+        return aggop
+
+
 """
 DataFrame structure based on Arkouda arrays.
 """
-
-
 class DataFrame(UserDict):
     """
     A DataFrame structure based on arkouda arrays.
@@ -99,6 +178,7 @@ class DataFrame(UserDict):
 
     >>> import arkouda as ak
     >>> import numpy as np
+    >>> import pandas as pd
     >>> df = ak.DataFrame()
     >>> df['a'] = ak.array([1,2,3])
 
@@ -159,7 +239,6 @@ class DataFrame(UserDict):
             self._size = initialdata.size
             self._bytes = 0
             self._empty = initialdata.empty
-            # ak.DataFrame stores index as a column, it needs to be added before columns from the pd.DataFrame
             self._columns = initialdata.columns.tolist()
 
             if index == None:
@@ -194,6 +273,10 @@ class DataFrame(UserDict):
                 for key, val in initialdata.items():
                     if not isinstance(val, self.COLUMN_CLASSES):
                         raise ValueError(f"Values must be one of {self.COLUMN_CLASSES}.")
+                    if key.lower() == "index":
+                        # handles the index as an Index object instead of a column
+                        self._set_index(val)
+                        continue
                     sizes.add(val.size)
                     if len(sizes) > 1:
                         raise ValueError("Input arrays must have equal size.")
@@ -234,6 +317,17 @@ class DataFrame(UserDict):
 
             self.update_size()
 
+    def __getattr__(self, key):
+        # print("key =", key)
+        if key not in self.columns:
+            # return self.__getattribute__(key)
+            raise AttributeError(f'Attribute f{key} not found')
+        # Should this be cached?
+        return Series(data=self[key], index=self['index'])
+
+    def __dir__(self):
+        return dir(DataFrame) + self.columns
+
     # delete a column
     def __delitem__(self, key):
         # This function is a backdoor to messing up the indices and columns.
@@ -242,12 +336,17 @@ class DataFrame(UserDict):
         self._columns.remove(key)
 
         # If removing this column emptied the dataframe
-        if len(self._columns) == 1:
-            #self.data['index'] = None
+        if len(self._columns) == 0:
+            self._set_index(None)
             self._empty = True
         self.update_size()
 
     def __getitem__(self, key):
+        # convert series to underlying values
+        # Should check for index alignment
+        if isinstance(key, Series):
+            key = key.values
+
         # Select rows using an integer pdarray
         if isinstance(key, pdarray):
             if key.dtype == akbool:
@@ -279,7 +378,7 @@ class DataFrame(UserDict):
         if isinstance(key, int):
             result = {}
             row = array([key])
-            for k in self.data.keys():
+            for k in self._columns:
                 result[k] = (UserDict.__getitem__(self, k)[row])[0]
             return Row(result)
 
@@ -310,7 +409,7 @@ class DataFrame(UserDict):
 
         # Set a single row in the dataframe using a dict of values
         if type(key) == int:
-            for k in self.data.keys():
+            for k in self._columns:
                 if isinstance(self.data[k], Strings):
                     raise ValueError("This DataFrame has a column of type ak.Strings;"
                                      " so this DataFrame is immutable. This feature could change"
@@ -362,7 +461,7 @@ class DataFrame(UserDict):
         If index appears, we now want to utilize this
         because the actual index has been moved to a property
         """
-        return len(list(self.data.keys()))
+        return len(self._columns)
 
     def __str__(self):
         """
@@ -374,7 +473,7 @@ class DataFrame(UserDict):
         if self._empty:
             return 'DataFrame([ -- ][ 0 rows : 0 B])'
 
-        keys = [str(key) for key in list(self.data.keys())]
+        keys = [str(key) for key in list(self._columns)]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -717,7 +816,7 @@ class DataFrame(UserDict):
         if self._size is None:
             return 'DataFrame([ -- ][ 0 rows : 0 B])'
 
-        keys = [str(key) for key in list(self.data.keys())]
+        keys = [str(key) for key in list(self._columns)]
         keys = [("'" + key + "'") for key in keys]
         keystr = ", ".join(keys)
 
@@ -830,14 +929,14 @@ class DataFrame(UserDict):
         # Check all the columns to make sure they can be concatenated
         self.update_size()
 
-        keyset = set(self.keys())
-        keylist = list(self.keys())
+        keyset = set(self._columns)
+        keylist = list(self._columns)
 
         # Allow for starting with an empty dataframe
         if self.empty:
             self = other.copy()
         # Keys don't match
-        elif keyset != set(other.keys()):
+        elif keyset != set(other._columns):
             raise KeyError(f"Key mismatch; keys must be identical in both DataFrames.")
         # Keys do match
         else:
@@ -873,11 +972,11 @@ class DataFrame(UserDict):
             if df.empty:
                 continue
             if first:
-                columnset = set(df.keys())
+                columnset = set(df._columns)
                 columnlist = df._columns
                 first = False
             else:
-                if set(df.keys()) != columnset:
+                if set(df._columns) != columnset:
                     raise KeyError("Cannot concatenate DataFrames with mismatched columns")
         # if here, columns match
         ret = cls()
@@ -983,8 +1082,8 @@ class DataFrame(UserDict):
         self.update_size()
         if isinstance(keys, str):
             cols = self.data[keys]
-        elif not isinstance(keys, list):
-            raise TypeError("keys must be a colum name or a list of column names")
+        elif not isinstance(keys, (list, tuple)):
+            raise TypeError("keys must be a colum name or a list/tuple of column names")
         elif len(keys) == 1:
             cols = self.data[keys[0]]
         else:
