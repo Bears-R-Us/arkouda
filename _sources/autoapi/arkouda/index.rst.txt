@@ -13655,6 +13655,9 @@ Attributes
    .. py:method:: _get_head_tail(self)
 
 
+   .. py:method:: _get_head_tail_server(self)
+
+
    .. py:method:: _shape_str(self)
 
 
