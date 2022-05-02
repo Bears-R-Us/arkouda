@@ -1247,8 +1247,8 @@ class DataFrame(UserDict):
                  file_format=file_format)
 
     @classmethod
-    def load_table(cls, prefix_path):
-        return cls(load_all(prefix_path))
+    def load_table(cls, prefix_path, file_format='INFER'):
+        return cls(load_all(prefix_path, file_format=file_format))
 
     def argsort(self, key, ascending=True):
         """

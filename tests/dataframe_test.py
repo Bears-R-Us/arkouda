@@ -345,6 +345,7 @@ class DataFrameTest(ArkoudaTest):
     def test_coargsort(self):
         df = build_ak_df()
 
+
         p = df.coargsort(keys=['userID', 'amount'])
         self.assertListEqual(p.to_ndarray().tolist(), [0, 5, 2, 1, 4, 3])
 
@@ -458,7 +459,7 @@ class DataFrameTest(ArkoudaTest):
         os.mkdir(f"{os.getcwd()}/save_table_test")
         akdf.save_table(f"{os.getcwd()}/save_table_test/testName", file_format='Parquet')
 
-        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName.parquet")
+        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName")
         self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
 
         # Commenting the read into pandas out because it requires optional libraries

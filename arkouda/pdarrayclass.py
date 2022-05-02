@@ -1085,23 +1085,29 @@ class pdarray:
         and the number of output files is less than the number of locales or a
         dataset with the same name already exists, a ``RuntimeError`` will result.
 
+        Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+        This will require you to use load as if you saved the file with the extension. Try this if
+        an older file is not being found.
+
+        Any file extension can be used. The file I/O does not rely on the extension to determine the file format.
+
         Examples
         --------
-        >>> a = ak.arange(0, 100, 1)
-        >>> a.save('arkouda_range', dataset='array')
-        >>> a.save('arkouda_range_parquet', dataset='array', file_format='Parquet')
+        >>> a = ak.arange(25)
 
-        Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0``
+        >>> # Saving without an extension
+        >>> a.save('path/prefix', dataset='array')
+        Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
 
-        The array can be read back in as follows
+        >>> # Saving with an extension (HDF5)
+        >>> a.save('path/prefix.h5', dataset='array')
+        Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####.h5`` where
+        #### is replaced by each locale number
 
-        >>> b = ak.read('arkouda_range', dataset='array')
-        >>> (a == b).all()
-        True
-
-        >>> c = ak.read_parquet('arkouda_range_parquet*')
-        >>> (c == b).all()
-        True
+        >>> # Saving with an extension (Parquet)
+        >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+        Saves the array in numLocales Parquet files with the name ``cwd/path/name_prefix_LOCALE####.parquet`` where
+        #### is replaced by each locale number
         """
         if mode.lower() in ['a', 'app', 'append']:
             m = 1
