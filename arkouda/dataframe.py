@@ -15,8 +15,7 @@ from arkouda.pdarraycreation import arange, array, create_pdarray
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
-from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import int64 as akint64, uint64 as akuint64, float64 as akfloat64, bool as akbool
 from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
 from arkouda.client import maxTransferBytes, generic_msg
@@ -251,6 +250,8 @@ class DataFrame(UserDict):
     def __getitem__(self, key):
         # Select rows using an integer pdarray
         if isinstance(key, pdarray):
+            if key.dtype == akbool:
+                key = arange(key.size)[key]
             result = {}
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
@@ -264,20 +265,15 @@ class DataFrame(UserDict):
                 return result
             if len({type(x) for x in key}) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
-            if type(key[0]) == int:
-                rows = array(key)
-                for k in self.data.keys():
-                    result.data[k] = UserDict.__getitem__(self, k)[rows]
-                    result._columns.append(k)
-                result._empty = False
-                result._set_index(key)
-                return result
-            elif type(key[0]) == str:
+            if type(key[0]) == str:
                 for k in key:
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
                 result._empty = False
                 return result
+            else:
+                raise TypeError("DataFrames only support lists for column indexing. "
+                                "All list entries must be of type str.")
 
         # Select a single row using an integer
         if isinstance(key, int):
