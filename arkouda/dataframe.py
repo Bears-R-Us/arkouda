@@ -320,7 +320,6 @@ class DataFrame(UserDict):
     def __getattr__(self, key):
         # print("key =", key)
         if key not in self.columns:
-            # return self.__getattribute__(key)
             raise AttributeError(f'Attribute f{key} not found')
         # Should this be cached?
         return Series(data=self[key], index=self['index'])
