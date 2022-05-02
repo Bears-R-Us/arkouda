@@ -40,6 +40,7 @@ Functions
 
    >>> import arkouda as ak
    >>> import numpy as np
+   >>> import pandas as pd
    >>> df = ak.DataFrame()
    >>> df['a'] = ak.array([1,2,3])
 
@@ -80,6 +81,14 @@ Functions
       
 
       
+
+   .. py:method:: __getattr__(self, key)
+
+
+   .. py:method:: __dir__(self)
+
+      Default dir() implementation.
+
 
    .. py:method:: __delitem__(self, key)
 
