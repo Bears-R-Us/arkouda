@@ -124,7 +124,7 @@ files: flatten.dat, flatten.dat, flatten.dat
 graphtitle: Flatten Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: _get_head_tail_server Average rate = , _get_head_tail =
+perfkeys: _get_head_tail_server Average rate = , _get_head_tail Average rate =
 graphkeys: _get_head_tail_server Average rate GiB/s, _get_head_tail GiB/s
 files: dataframe.dat, dataframe.dat
 graphtitle: DataFrame Display Performance
