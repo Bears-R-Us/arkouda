@@ -263,28 +263,15 @@ class DataFrame(UserDict):
                 return result
             if len({type(x) for x in key}) > 1:
                 raise TypeError("Invalid selector: too many types in list.")
-            if type(key[0]) == int:
-                rows = array(key)
-                for k in self.data.keys():
-                    result.data[k] = UserDict.__getitem__(self, k)[rows]
-                    result._columns.append(k)
-                result._empty = False
-                result._set_index(key)
-                return result
-            elif type(key[0]) == str:
+            if type(key[0]) == str:
                 for k in key:
                     result.data[k] = UserDict.__getitem__(self, k)
                     result._columns.append(k)
                 result._empty = False
                 return result
-            elif type(key[0]) == bool:
-                rows = arange(len(key))[key]
-                for k in self.data.keys():
-                    result.data[k] = UserDict.__getitem__(self, k)[rows]
-                    result._columns.append(k)
-                result._empty = False
-                result._set_index(key)
-                return result
+            else:
+                raise TypeError("DataFrames only support lists for column indexing. "
+                                "All list entries must be of type str.")
 
         # Select a single row using an integer
         if isinstance(key, int):
