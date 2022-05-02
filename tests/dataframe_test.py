@@ -204,7 +204,7 @@ class DataFrameTest(ArkoudaTest):
     def test_reset_index(self):
         df = build_ak_df()
 
-        slice_df = df[[1, 3, 5]]
+        slice_df = df[ak.array([1, 3, 5])]
         self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
         slice_df.reset_index()
         self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
@@ -326,7 +326,7 @@ class DataFrameTest(ArkoudaTest):
         test_df = pd.DataFrame(data, columns=['userName', 'userID', 'item', 'day', 'amount'])
         self.assertTrue(pddf.equals(test_df))
 
-        slice_df = df[[1, 3, 5]]
+        slice_df = df[ak.array([1, 3, 5])]
         pddf = slice_df.to_pandas(retain_index=True)
         self.assertEqual(pddf.index.tolist(), [1, 3, 5])
 
