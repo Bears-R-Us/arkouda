@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(args.size, seed)
+            check_correctness(args.size, args.seed)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
