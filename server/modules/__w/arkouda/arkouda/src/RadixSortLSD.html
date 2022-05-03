@@ -225,11 +225,6 @@
 <dd></dd></dl>
 
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="RadixSortLSD.RSLSD_bitsPerDigit">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">RSLSD_bitsPerDigit</span></span> <span class="pre">=</span> <span class="pre">16</span><a class="headerlink" href="#RadixSortLSD.RSLSD_bitsPerDigit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl data">
 <dt class="sig sig-object chpl" id="RadixSortLSD.rsLogger">
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">rsLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#RadixSortLSD.rsLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -253,56 +248,6 @@
 <dd></dd></dl>
 
 </dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="RadixSortLSD.getBitWidth">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span><a class="headerlink" href="#RadixSortLSD.getBitWidth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">uint</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">(uint</span></em>, <em class="sig-param"><span class="pre">uint)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="RadixSortLSD.getDigit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#RadixSortLSD.getDigit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">uint</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">key:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">2*(uint)</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">_tuple</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
-<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="RadixSortLSD.calcBlock">

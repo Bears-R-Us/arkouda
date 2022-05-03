@@ -199,6 +199,11 @@
 </pre></div>
 </div>
 <dl class="chpl data">
+<dt class="sig sig-object chpl" id="AryUtil.bitsPerDigit">
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">bitsPerDigit</span></span> <span class="pre">=</span> <span class="pre">RSLSD_bitsPerDigit</span><a class="headerlink" href="#AryUtil.bitsPerDigit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
 <dt class="sig sig-object chpl" id="AryUtil.auLogger">
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">auLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#AryUtil.auLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -294,6 +299,102 @@ contiguous memory.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.validateArraysSameLength">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateArraysSameLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fields:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.validateArraysSameLength" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Takes a variable number of array names from a command message and</p></li>
+<li><p>validates them, checking that they all exist and are the same length</p></li>
+<li><p>and returning metadata about them.</p></li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg n</dt>
+<dd class="field-odd"><p>number of arrays</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg fields</dt>
+<dd class="field-odd"><p>the fields derived from the command message</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg st</dt>
+<dd class="field-odd"><p>symbol table</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>(length, hasStr, names, objtypes)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.getBitWidth">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span><a class="headerlink" href="#AryUtil.getBitWidth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">uint</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">(uint</span></em>, <em class="sig-param"><span class="pre">uint)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.getDigit">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#AryUtil.getDigit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">uint</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">key:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">2*(uint)</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">_tuple</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.getNumDigitsNumericArrays">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumDigitsNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.getNumDigitsNumericArrays" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="AryUtil.mergeNumericArrays">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">mergeNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numDigits</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">totalDigits</span></em>, <em class="sig-param"><span class="pre">bitWidths</span></em>, <em class="sig-param"><span class="pre">negs</span></em>, <em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#AryUtil.mergeNumericArrays" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice">

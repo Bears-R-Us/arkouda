@@ -44,6 +44,12 @@ arkouda server config param and config const
    Memory usage limit -- percentage of physical memory
    
 
+.. data:: config param RSLSD_bitsPerDigit = 16
+
+   
+   Bit width of digits for the LSD radix sort and related ops
+    
+
 .. data:: config param arkoudaVersion: string = "Please set during compilation"
 
    

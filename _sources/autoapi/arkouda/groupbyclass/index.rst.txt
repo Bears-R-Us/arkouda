@@ -21,6 +21,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.groupbyclass.unique
    arkouda.groupbyclass.broadcast
 
 
@@ -31,6 +32,39 @@ Attributes
 .. autoapisummary::
 
    arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
+
+
+.. py:function:: unique(pda: groupable, return_groups: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+
+   Find the unique elements of an array.
+
+   Returns the unique elements of an array, sorted if the values are integers.
+   There is an optional output in addition to the unique elements: the number
+   of times each unique value comes up in the input array.
+
+   :param pda: Input array.
+   :type pda: (list of) pdarray, Strings, or Categorical
+   :param return_groups: If True, also return grouping information for the array.
+   :type return_groups: bool, optional
+
+   :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
+             * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
+             * **segments** (*pdarray, optional*) -- The offset of each group in the permuted array (only when return_groups=True)
+
+   :raises TypeError: Raised if pda is not a pdarray or Strings object
+   :raises RuntimeError: Raised if the pdarray or Strings dtype is unsupported
+
+   .. rubric:: Notes
+
+   For integer arrays, this function checks to see whether `pda` is sorted
+   and, if so, whether it is already unique. This step can save considerable
+   computation. Otherwise, this function will sort `pda`.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([3, 2, 1, 1, 2, 3])
+   >>> ak.unique(A)
+   array([1, 2, 3])
 
 
 .. py:data:: GROUPBY_REDUCTION_TYPES
@@ -110,9 +144,6 @@ Attributes
       
 
       
-
-   .. py:method:: find_segments(self) -> None
-
 
    .. py:method:: count(self) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
