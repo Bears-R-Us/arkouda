@@ -257,7 +257,7 @@ class SegArray:
         """
         # parts[0] is "segarray". Used by the generic attach method to identify the
         # response message as a SegArray
-        parts = repMsg.split(";")
+        parts = repMsg.split("+")
         segments = create_pdarray(parts[1])
         values = create_pdarray(parts[2])
         lengths = create_pdarray(parts[3])

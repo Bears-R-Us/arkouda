@@ -134,14 +134,14 @@ module RegistrationMsg
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
 
-        repMsg = "categorical;created %s".format(cats);
+        repMsg = "categorical+created %s".format(cats);
         // Check if the categories is numeric or string, if string add byte size
         if (isStringAttrib(cats)) {
             var s = getSegString("%s.categories".format(name), st);
             repMsg += "+created bytes.size %t".format(s.nBytes);
         }
 
-        repMsg += ";created %s".format(codes);
+        repMsg += "+created %s".format(codes);
 
         // Optional components of categorical
         if st.contains("%s.permutation".format(name)) {
@@ -151,7 +151,7 @@ module RegistrationMsg
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            repMsg += ";created %s".format(perm);
+            repMsg += "+created %s".format(perm);
         }
         if st.contains("%s.segments".format(name)) {
             var segs = st.attrib("%s.segments".format(name));
@@ -160,7 +160,7 @@ module RegistrationMsg
                 regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
-            repMsg += ";created %s".format(segs);
+            repMsg += "+created %s".format(segs);
         }
 
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -207,7 +207,7 @@ module RegistrationMsg
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
 
-        repMsg = "segarray;created %s;created %s;created %s".format(segs, vals, lens);
+        repMsg = "segarray+created %s+created %s+created %s".format(segs, vals, lens);
 
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -244,9 +244,9 @@ module RegistrationMsg
             if st.contains(name) {
                 // Easy case where full name given matches an entry, pdarray or Strings
                 dtype = "simple";
-            } else if st.contains("%s.categories".format(name)) {
+            } else if st.contains("%s.categories".format(name)) && st.contains("%s.codes".format(name)) {
                 dtype = "categorical";
-            } else if st.contains("%s_segments".format(name)) {
+            } else if st.contains("%s_segments".format(name)) && st.contains("%s_values".format(name)) {
                 // Important to note that categorical has a .segments while segarray uses _segments
                 dtype = "segarray";
             } else {

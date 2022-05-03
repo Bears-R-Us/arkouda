@@ -264,21 +264,24 @@ class Categorical:
         # parts[0] is "categorical". Used by the generic attach method to identify the
         # response message as a Categorical
 
-        repParts = repMsg.split(";")
+        repParts = repMsg.split("+")
+        stringsMsg = f"{repParts[1]}+{repParts[2]}"
         parts = {
-            "categories": Strings.from_return_msg(repParts[1]),
-            "codes": create_pdarray(repParts[2])
+            "categories": Strings.from_return_msg(stringsMsg),
+            "codes": create_pdarray(repParts[3])
         }
 
-        if len(repParts) > 2:
-            name = repParts[3].split()[0]
+        if len(repParts) > 3:
+            name = repParts[4].split()[1]
             if ".permutation" in name:
-                parts["permutation"] = create_pdarray(repParts[3])
+                parts["permutation"] = create_pdarray(repParts[4])
+            elif ".segments" in name:
+                parts["segments"] = create_pdarray(repParts[4])
             else:
-                parts["segments"] = create_pdarray(repParts[3])
+                raise ValueError(f"Unknown field, {name}, found in Categorical.")
 
         if len(repParts) == 4:
-            parts["segments"] = create_pdarray(repParts[4])
+            parts["segments"] = create_pdarray(repParts[5])
 
         # To get the name split the message into Categories, Codes, Permutation, Segments
         # then split the categories into it's components, Name being second: name.categories
@@ -288,7 +291,6 @@ class Categorical:
         c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
         c.name = name  # Update our name
         return c
-
 
     def to_ndarray(self) -> np.ndarray:
         """

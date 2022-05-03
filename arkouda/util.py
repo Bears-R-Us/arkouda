@@ -289,9 +289,9 @@ def attach(name: str, dtype: str = "infer"):
     """
     repMsg = cast(str, generic_msg(cmd="genericAttach", args=f"{dtype}+{name}"))
 
-    if repMsg.split(";")[0] == "categorical":
+    if repMsg.split("+")[0] == "categorical":
         return Categorical.from_return_msg(repMsg)
-    elif repMsg.split(";")[0] == "segarray":
+    elif repMsg.split("+")[0] == "segarray":
         return SegArray.from_return_msg(repMsg)
     else:
         dtype = repMsg.split()[2]
