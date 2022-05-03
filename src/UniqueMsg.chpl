@@ -11,6 +11,7 @@
 module UniqueMsg
 {
     use ServerConfig;
+    use AryUtil;
     
     use Time only;
     use Math only;
@@ -26,137 +27,220 @@ module UniqueMsg
 
     use RadixSortLSD;
     use Unique;
+    use SipHash;
+    use CommAggregation;
     
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
-    
-    /* unique take a pdarray and returns a pdarray with the unique values */
+
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        // split request into fields
-        var (objtype, name, returnCountsStr) = payload.splitMsgToTuple(3);
-        // flag to return counts of each unique value
-        // same size as unique array
-        var returnCounts: bool;
-        if returnCountsStr == "True" {returnCounts = true;}
-        else if returnCountsStr == "False" {returnCounts = false;}
-        else {
-            var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
-            umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
-            return new MsgTuple(errorMsg, MsgType.ERROR);
+        var (returnGroupsStr, nstr, rest) = payload.splitMsgToTuple(3);
+        // flag to return segments and permutation for GroupBy
+        const returnGroups = if (returnGroupsStr == "True") then true else false;
+        var repMsg: string = "";
+        // number of arrays
+        var n = nstr:int;
+        var fields = rest.split();
+        var (permutation, segments) = uniqueAndCount(n, fields, st);
+        
+        // If returning grouping info, add to SymTab and prepend to repMsg
+        if returnGroups {
+          var pname = st.nextName();
+          st.addEntry(pname, permutation);
+          repMsg += "created " + st.attrib(pname);
+          var sname = st.nextName();
+          st.addEntry(sname, segments);
+          repMsg += "+created " + st.attrib(sname) + "+";
         }
+        // Indices of first unique key in original array
+        // These are the value of the permutation at the start of each group
+        var uniqueKeyInds = new shared SymEntry(segments.size, int);
+        if (segments.size > 0) {
+          // Avoid initializing aggregators if empty array
+          ref perm = permutation.a;
+          ref segs = segments.a;
+          ref inds = uniqueKeyInds.a;
+          forall (i, s) in zip(inds, segs) with (var agg = newSrcAggregator(int)) {
+            agg.copy(i, perm[s]);
+          }
+        }
+        var iname = st.nextName();
+        st.addEntry(iname, uniqueKeyInds);
+        repMsg += "created " + st.attrib(iname);
+        /* // Gather unique values, store in SymTab, and build repMsg */
+        /* repMsg += storeUniqueKeys(n, fields, gatherInds, st); */
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc storeUniqueKeys(n, fields, gatherInds, st): string throws {
+      // Number of unique keys
+      const size = gatherInds.size;
+      // An underestimate for strings, unfortunately
+      overMemLimit(n*size*numBytes(int));
+      var repMsg: string;
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
+      // For each input array, gather unique values
+      for (name, objtype, i) in zip(names, types, 0..) {
+        var newName = st.nextName();
         select objtype {
-            when "pdarray" {
-                // get next symbol name for unique
-                var vname = st.nextName();
-                // get next symbol anme for counts
-                var cname = st.nextName();
-                umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                          "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
-                          cmd,name,returnCounts,vname,cname));
-        
-                var gEnt: borrowed GenSymEntry;
-                
-                try {  
-                    gEnt = getGenericTypedArrayEntry(name, st);
-                } catch e: Error {
-                    throw new owned ErrorWithContext("lookup for %s failed".format(name),
-                                       getLineNumber(),
-                                       getRoutineName(),
-                                       getModuleName(),
-                                       "UnknownSymbolError");                
-                }
-
-                // the upper limit here is the same as argsort/radixSortLSD_keys
-                // check and throw if over memory limit
-                overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
-        
-                select (gEnt.dtype) {
-                  when (DType.Int64) {
-                    var e = toSymEntry(gEnt,int);
-
-                    /* var eMin:int = min reduce e.a; */
-                    /* var eMax:int = max reduce e.a; */
-
-                    /* // how many bins in histogram */
-                    /* var bins = eMax-eMin+1; */
-                    /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "bins = %t".format(bins)); */
-
-                    /* if (bins <= mBins) { */
-                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "bins <= %t".format(mBins));*/
-                    /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
-                    /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                    /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-                    /* } */
-                    /* else { */
-                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "bins = %t".format(bins));*/
-                    /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
-                    /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                    /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-                    /* } */
-
-                    var (aV,aC) = uniqueSort(e.a);
-                    st.addEntry(vname, new shared SymEntry(aV));
-                    if returnCounts {
-                        st.addEntry(cname, new shared SymEntry(aC));
-                    }
-                  } when (DType.UInt64) {
-                    var e = toSymEntry(gEnt,uint);
-
-                    var (aV,aC) = uniqueSort(e.a);
-                    st.addEntry(vname, new shared SymEntry(aV));
-                    if returnCounts {
-                        st.addEntry(cname, new shared SymEntry(aC));
-                    }
-                  }
-                  otherwise {
-                      var errorMsg = notImplementedError("unique",gEnt.dtype);
-                      umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
-                      return new MsgTuple(errorMsg, MsgType.ERROR);
-                  }
-                }
-        
-            repMsg = "created " + st.attrib(vname);
-
-            if returnCounts {
-                repMsg += " +created " + st.attrib(cname);
+          when "pdarray", "category" {
+            var g = getGenericTypedArrayEntry(name, st);
+            // Gathers unique values, stores in SymTab, and returns repMsg chunk
+            proc gatherHelper(type t) throws {
+              var e = toSymEntry(g, t);
+              ref ea = e.a;
+              var unique = st.addEntry(newName, size, t);
+              forall (u, i) in zip(unique.a, gatherInds) with (var agg = newSrcAggregator(t)) {
+                agg.copy(u, ea[i]);
+              }
+              if repMsg.size > 0 {
+                repMsg += " +";
+              }
+              repMsg += "created " + st.attrib(newName);
             }
-            umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);  
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+            select g.dtype {
+              when DType.Int64 {
+                gatherHelper(int);
+              }
+              when DType.UInt64 {
+                gatherHelper(uint);
+              }
+              when DType.Float64 {
+                gatherHelper(real);
+              }
+              when DType.Bool {
+                gatherHelper(bool);
+              }
+            }
           }
           when "str" {
-              var str = getSegString(name, st);
-
-              /*
-               * The upper limit here is the similar to argsort/radixSortLSD_keys, but with 
-               * a few more scratch arrays check and throw if over memory limit.
-               */
-              overMemLimit((8 * str.size * 8)
-                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-              var (uo, uv, c, inv) = uniqueGroup(str);
-              var myStr = getSegString(uo, uv, st);
-              // TODO remove second, legacy call to st.attrib(myStr.name)
-              repMsg = "created %s+created bytes.size %t".format(st.attrib(myStr.name), myStr.nBytes);
-
-              if returnCounts {
-                  var countName = st.nextName();
-                  st.addEntry(countName, new shared SymEntry(c));
-                  repMsg += " +created " + st.attrib(countName);
-              }
-
-              umLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
-              return new MsgTuple(repMsg, MsgType.NORMAL);
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = getSegString(myNames, st);
+            var (uSegs, uVals) = g[gatherInds];
+            var newStringsObj = getSegString(uSegs, uVals, st);
+            repMsg += "created " + st.attrib(newStringsObj.name) + "+created bytes.size %t".format(newStringsObj.nBytes);
           }
-          otherwise { 
-             var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
-             umLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
-             return new MsgTuple(errorMsg, MsgType.ERROR);              
-           }
         }
+      }
+      return repMsg;
+    }
+
+    proc uniqueAndCount(n, fields, st) throws {
+      if (n > 128) {
+        throw new owned ErrorWithContext("Cannot hash more than 128 arrays",
+                                         getLineNumber(),
+                                         getRoutineName(),
+                                         getModuleName(),
+                                         "ArgumentError");
+      }
+      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+      if (size == 0) {
+        return (new shared SymEntry(0, int), new shared SymEntry(0, int));
+      }
+      proc helper(type t, keys: [?D] t) throws {
+        // Sort the keys
+        var kr = radixSortLSD(keys);
+        // Unpack the permutation and sorted keys
+        // var perm: [kr.domain] int;
+        var permutation = new shared SymEntry(kr.size, int);
+        ref perm = permutation.a;
+        var sortedKeys: [D] t;
+        forall (sh, p, val) in zip(sortedKeys, perm, kr) {
+          (sh, p) = val;
+        }
+        // Get the unique keys and the count of each
+        var (uniqueKeys, counts) = uniqueFromSorted(sortedKeys);
+        // Compute offset of each group in sorted array
+        var segments = new shared SymEntry(counts.size, int);
+        segments.a = (+ scan counts) - counts;
+        return (permutation, segments);
+      }
+      
+      // If no strings are present and row values can fit in 128 bits (8 digits),
+      // then pack into tuples of uint(16) for sorting keys.
+      if !hasStr {
+        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
+        if totalDigits <= 2 { return helper(2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 4 { return helper(4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 6 { return helper(6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 8 { return helper(8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
+      }
+
+      // If here, either the row values are too large to fit in 128 bits, or
+      // strings are present and must be hashed anyway, so hash all arrays
+      // and combine hashes of row values into sorting keys.
+      return helper(2*uint(64), hashArrays(size, names, types, st));
+    }
+
+    proc hashArrays(size, names, types, st): [] 2*uint throws {
+      overMemLimit(numBytes(uint) * size * 2);
+      var dom = makeDistDom(size);
+      var hashes: [dom] 2*uint(64);
+      /* Hashes of subsequent arrays cannot be simply XORed
+       * because equivalent values will cancel each other out.
+       * Thus, a non-linear function must be applied to each array,
+       * hence we do a rotation by the ordinal of the array. This
+       * will only handle up to 128 arrays before rolling back around.
+       */
+      proc rotl(h:2*uint(64), n:int):2*uint(64) {
+        use BitOps;
+        // no rotation
+        if (n == 0) { return h; }
+        // Rotate each 64-bit word independently, then swap tails
+        const (h1, h2) = h;
+        // Mask for tail (right-hand portion)
+        const rmask = (1 << n) - 1;
+        // Mask for head (left-hand portion)
+        const lmask = 2**64 - 1 - rmask;
+        // Rotate each word
+        var r1 = rotl(h1, n);
+        var r2 = rotl(h2, n);
+        // Swap tails
+        r1 = (r1 & lmask) | (r2 & rmask);
+        r2 = (r2 & lmask) | (r1 & rmask);
+        return (r1, r2);
+      }
+      for (name, objtype, i) in zip(names, types, 0..) {
+        select objtype {
+          when "pdarray", "category" {
+            var g = getGenericTypedArrayEntry(name, st);
+            select g.dtype {
+              when DType.Int64 {
+                var e = toSymEntry(g, int);
+                forall (h, x) in zip(hashes, e.a) {
+                  h ^= rotl(sipHash128(x), i);
+                }
+              }
+              when DType.UInt64 {
+                var e = toSymEntry(g, uint);
+                forall (h, x) in zip(hashes, e.a) {
+                  h ^= rotl(sipHash128(x), i);
+                }
+              }
+              when DType.Float64 {
+                var e = toSymEntry(g, real);
+                forall (h, x) in zip(hashes, e.a) {
+                  h ^= rotl(sipHash128(x), i);
+                }
+              }
+              when DType.Bool {
+                var e = toSymEntry(g, bool);
+                forall (h, x) in zip(hashes, e.a) {
+                  h ^= rotl((0:uint, x:uint), i);
+                }
+              }
+            }
+          }
+          when "str" {
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = getSegString(myNames, st);
+            hashes ^= rotl(g.hash(), i);
+          }
+        }
+      }
+      return hashes;
     }
 
     proc registerMe() {

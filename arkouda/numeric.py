@@ -7,7 +7,7 @@ from arkouda.dtypes import resolve_scalar_dtype, DTypes, isSupportedNumber, \
      int_scalars, numeric_scalars
 from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.pdarraysetops import unique
+from arkouda.groupbyclass import GroupBy
 from arkouda.strings import Strings
 from enum import Enum
 
@@ -597,7 +597,7 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     >>> ak.value_counts(A)
     (array([0, 2, 4]), array([3, 2, 1]))
     """
-    return unique(pda, return_counts=True)
+    return GroupBy(pda).count()
 
 
 @typechecked

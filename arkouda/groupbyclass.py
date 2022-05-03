@@ -1,6 +1,6 @@
 from __future__ import annotations
 import enum
-from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 import numpy as np # type: ignore
@@ -13,7 +13,103 @@ from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64, uint64
 
-__all__ = ["GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+__all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+
+groupable_element_type = Union[pdarray, Strings, 'Categorical']
+groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
+
+def unique(pda: groupable,  # type: ignore
+           return_groups: bool = False) -> Union[groupable,  # type: ignore
+                                                 Tuple[groupable, pdarray, pdarray, int]]:  # type: ignore
+    """
+    Find the unique elements of an array.
+
+    Returns the unique elements of an array, sorted if the values are integers. 
+    There is an optional output in addition to the unique elements: the number 
+    of times each unique value comes up in the input array.
+
+    Parameters
+    ----------
+    pda : (list of) pdarray, Strings, or Categorical
+        Input array.
+    return_groups : bool, optional
+        If True, also return grouping information for the array.
+
+    Returns
+    -------
+    unique : (list of) pdarray, Strings, or Categorical
+        The unique values. If input dtype is int64, return values will be sorted.
+    permutation : pdarray, optional
+        Permutation that groups equivalent values together (only when return_groups=True)
+    segments : pdarray, optional
+        The offset of each group in the permuted array (only when return_groups=True)
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray or Strings object
+    RuntimeError
+        Raised if the pdarray or Strings dtype is unsupported
+
+    Notes
+    -----
+    For integer arrays, this function checks to see whether `pda` is sorted
+    and, if so, whether it is already unique. This step can save considerable 
+    computation. Otherwise, this function will sort `pda`.
+
+    Examples
+    --------
+    >>> A = ak.array([3, 2, 1, 1, 2, 3])
+    >>> ak.unique(A)
+    array([1, 2, 3])
+    """
+    from arkouda.categorical import Categorical as Categorical_
+    if not return_groups and hasattr(pda, 'unique'):
+        return cast(Categorical_, pda).unique()
+
+    # Get all grouping keys
+    if hasattr(pda, "_get_grouping_keys"):
+        # Single groupable array
+        nkeys = 1
+        grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
+    else:
+        # Sequence of groupable arrays
+        nkeys = len(pda)
+        grouping_keys = []
+        first = True
+        for k in pda:
+            if first:
+                size = k.size
+                first = False
+            elif k.size != size:
+                raise ValueError("Key arrays must all be same size")
+            if not hasattr(k, "_get_grouping_keys"):
+                raise TypeError("{} does not support grouping".format(type(k)))
+            grouping_keys.extend(cast(list, k._get_grouping_keys()))
+    keynames = [k.name for k in grouping_keys]
+    keytypes = [k.objtype for k in grouping_keys]
+    effectiveKeys = len(grouping_keys)
+    repMsg = generic_msg(cmd="unique", args="{} {:n} {} {}".format(return_groups,
+                                                                effectiveKeys,
+                                                                ' '.join(keynames),
+                                                                ' '.join(keytypes)))
+    if return_groups:
+        parts = cast(str, repMsg).split("+")
+        permutation = create_pdarray(cast(str, parts[0]))
+        segments = create_pdarray(cast(str, parts[1]))
+        unique_key_indices = create_pdarray(cast(str, parts[2]))
+    else:
+        unique_key_indices = create_pdarray(cast(str, repMsg))
+
+    if nkeys == 1:
+        unique_keys = pda[unique_key_indices]
+    else:
+        unique_keys = tuple([a[unique_key_indices] for a in pda])
+    if return_groups:
+        return (unique_keys, permutation, segments, nkeys)
+    else:
+        return unique_keys
+
 
 class GroupByReductionType(enum.Enum):
     SUM = 'sum'
@@ -46,9 +142,6 @@ class GroupByReductionType(enum.Enum):
     
 GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member 
                                   in GroupByReductionType.__members__.items()])
-
-groupable_element_type = Union[pdarray, Strings, 'Categorical']
-groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 class GroupBy:
     """
@@ -111,88 +204,15 @@ class GroupBy:
             raise TypeError("assume_sorted must be of type bool.")
         if not isinstance(hash_strings, bool):
             raise TypeError("hash_strings must be of type bool.")
-        from arkouda.categorical import Categorical
+        self.keys = cast(groupable, keys)
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.keys : groupable
         self.permutation : pdarray
 
-        # Get all grouping keys, even if not required for finding permutation
-        # They will be required later for finding segment boundaries
-        if hasattr(keys, "_get_grouping_keys"):
-            # Single groupable array
-            self.nkeys = 1
-            self.keys = cast(groupable_element_type, keys)
-            self.size = cast(int, self.keys.size)
-            self._grouping_keys = self.keys._get_grouping_keys()
-        else:
-            # Sequence of groupable arrays
-            # Because of type checking, this is the only other possibility
-            self.keys = cast(Sequence[groupable_element_type], keys)
-            self.nkeys = len(self.keys)
-            self.size = cast(int, self.keys[0].size)
-            self._grouping_keys = []
-            for k in self.keys:
-                if k.size != self.size:
-                    raise ValueError("Key arrays must all be same size")
-                if not hasattr(k, "_get_grouping_keys"):
-                    # Type checks should ensure we never get here
-                    raise TypeError("{} does not support grouping".format(type(k)))
-                self._grouping_keys.extend(cast(list, k._get_grouping_keys()))
-        # Get permutation
-        if assume_sorted:
-            # Permutation is identity
-            self.permutation = cast(pdarray, arange(self.size))
-        elif hasattr(self.keys, "group"):
-            # If an object wants to group itself (e.g. Categoricals),
-            # let it set the permutation
-            perm = self.keys.group() # type: ignore
-            self.permutation = cast(pdarray, perm)
-        elif len(self._grouping_keys) == 1:
-            self.permutation = cast(pdarray, argsort(self._grouping_keys[0]))
-        else:
-            self.permutation = cast(pdarray, coargsort(self._grouping_keys))
-                
-        # Finally, get segment offsets and unique keys 
-        self.find_segments()       
-            
-    def find_segments(self) -> None:
-        from arkouda.categorical import Categorical
-        cmd = "findSegments"
-
-        if self.nkeys == 1:
-            # for Categorical
-            # Most categoricals already store segments and unique keys
-            if hasattr(self.keys, 'segments') and cast(Categorical, 
-                                                       self.keys).segments is not None:
-                self.unique_keys: Any = cast(Categorical, self.keys)._categories_used
-                self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
-                self.ngroups = self.unique_keys.size
-                return
-
-        keynames = [k.name for k in self._grouping_keys]
-        keytypes = [k.objtype for k in self._grouping_keys]
-        effectiveKeys = len(self._grouping_keys)
-        args = "{} {:n} {} {}".format(self.permutation.name,
-                                           effectiveKeys,
-                                           ' '.join(keynames),
-                                           ' '.join(keytypes))
-        repMsg = generic_msg(cmd=cmd,args=args)
-        segAttr, uniqAttr = cast(str,repMsg).split("+")
-        self.logger.debug('{},{}'.format(segAttr, uniqAttr))
-        self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
-        unique_key_indices = create_pdarray(repMsg=cast(str,uniqAttr))
-        if self.nkeys == 1:
-            self.unique_keys = cast(groupable, 
-                                    self.keys[unique_key_indices])
-            self.ngroups = cast(groupable_element_type, self.unique_keys).size
-        else:
-            self.unique_keys = cast(groupable, 
-                                    [k[unique_key_indices] for k in self.keys])
-            self.ngroups = self.unique_keys[0].size
-        # Free up memory, because _grouping_keys are not user-facing and no longer needed
-        del self._grouping_keys
+        self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore
+        self.size = self.permutation.size
+        self.ngroups = self.segments.size
 
 
     def count(self) -> Tuple[groupable,pdarray]:

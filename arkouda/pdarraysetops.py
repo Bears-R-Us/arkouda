@@ -10,87 +10,14 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
-from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type
+from arkouda.groupbyclass import unique, GroupBy, groupable, groupable_element_type
 
 Categorical = ForwardRef('Categorical')
 
-__all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
+__all__ = ["in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 
 logger = getArkoudaLogger(name='pdarraysetops')
-
-
-@typechecked
-def unique(pda: Union[pdarray, Strings, 'Categorical'],  # type: ignore
-           return_counts: bool = False) -> Union[Union[pdarray, Strings, 'Categorical'],  # type: ignore
-                                                 Tuple[Union[pdarray, Strings, 'Categorical'], Optional[
-                                                     pdarray]]]:  # type: ignore
-    """
-    Find the unique elements of an array.
-
-    Returns the unique elements of an array, sorted if the values are integers. 
-    There is an optional output in addition to the unique elements: the number 
-    of times each unique value comes up in the input array.
-
-    Parameters
-    ----------
-    pda : pdarray or Strings or Categorical
-        Input array.
-    return_counts : bool, optional
-        If True, also return the number of times each unique item appears
-        in `pda`.
-
-    Returns
-    -------
-    unique : pdarray or Strings
-        The unique values. If input dtype is int64, return values will be sorted.
-    unique_counts : pdarray, optional
-        The number of times each of the unique values comes up in the
-        original array. Only provided if `return_counts` is True.
-        
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray or Strings object
-    RuntimeError
-        Raised if the pdarray or Strings dtype is unsupported
-
-    Notes
-    -----
-    For integer arrays, this function checks to see whether `pda` is sorted
-    and, if so, whether it is already unique. This step can save considerable 
-    computation. Otherwise, this function will sort `pda`.
-
-    Examples
-    --------
-    >>> A = ak.array([3, 2, 1, 1, 2, 3])
-    >>> ak.unique(A)
-    array([1, 2, 3])
-    """
-    from arkouda.categorical import Categorical as Categorical_
-    if hasattr(pda, 'unique'):
-        return cast(Categorical_, pda).unique()
-    elif isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="unique", args="{} {} {}". \
-                             format(pda.objtype, pda.name, return_counts))
-        if return_counts:
-            vc = cast(str, repMsg).split("+")
-            logger.debug(vc)
-            return create_pdarray(cast(str, vc[0])), create_pdarray(cast(str, vc[1]))
-        else:
-            return create_pdarray(cast(str, repMsg))
-    elif isinstance(pda, Strings):
-        repMsg = cast(str, generic_msg(cmd="unique", args="{} {} {}". \
-                                       format(pda.objtype, pda.entry.name, return_counts)))
-        vc = repMsg.split('+')
-        logger.debug(vc)
-        if return_counts:
-            return Strings.from_return_msg("+".join(vc[0:2])), create_pdarray(cast(str, vc[2]))
-        else:
-            return Strings.from_return_msg(repMsg)
-    else:
-        raise TypeError("must be pdarray, Strings, or Categorical {}")
-
 
 def in1d(pda1: Union[pdarray, Strings, 'Categorical'], pda2: Union[pdarray, Strings, 'Categorical'],  # type: ignore
          invert: bool = False) -> pdarray:  # type: ignore
@@ -234,7 +161,7 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
-        return cast(Union[pdarray, Strings, Categorical_], arrays[0])
+        return cast(groupable_element_type, arrays[0])
 
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
@@ -376,8 +303,8 @@ def union1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-                pda2: Union[pdarray, Sequence[groupable_element_type]],
+def intersect1d(pda1: groupable,
+                pda2: groupable,
                 assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
@@ -441,8 +368,8 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
                                  format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(cast(str, repMsg))
         if not assume_unique:
-            pda1 = unique(pda1)
-            pda2 = unique(pda2)
+            pda1 = cast(pdarray, unique(pda1))
+            pda2 = cast(pdarray, unique(pda2))
         aux = concatenate((pda1, pda2), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
@@ -479,8 +406,8 @@ def intersect1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-              pda2: Union[pdarray, Sequence[groupable_element_type]],
+def setdiff1d(pda1: groupable,
+              pda2: groupable,
               assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
@@ -580,8 +507,8 @@ def setdiff1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(pda1: Union[pdarray, Sequence[groupable_element_type]],
-             pda2: Union[pdarray, Sequence[groupable_element_type]],
+def setxor1d(pda1: groupable,
+             pda2: groupable,
              assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.

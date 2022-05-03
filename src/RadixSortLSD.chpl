@@ -8,10 +8,9 @@ module RadixSortLSD
     const numTasks = RSLSD_numTasks; // tasks per locale
     const Tasks = {0..#numTasks}; // these need to be const for comms/performance reasons
     
-    config param RSLSD_bitsPerDigit = 16;
     private param bitsPerDigit = RSLSD_bitsPerDigit; // these need to be const for comms/performance reasons
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
-    private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
+    
 
     use BlockDist;
     use BitOps;
@@ -32,100 +31,6 @@ module RadixSortLSD
 
     record KeysRanksComparator {
       inline proc key(kr) { const (k, _) = kr; return k; }
-    }
-
-    inline proc getBitWidth(a: [?aD] int): (int, bool) {
-      var aMin = min reduce a;
-      var aMax = max reduce a;
-      var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
-      var wNeg = if aMin < 0 then numBits(int) - clz((-aMin)-1) else 0;
-      const signBit = if aMin < 0 then 1 else 0;
-      const bitWidth = max(wPos, wNeg) + signBit;
-      const negs = aMin < 0;
-      return (bitWidth, negs);
-    }
-
-    inline proc getBitWidth(a: [?aD] uint): (int, bool) {
-      const negs = false;
-      var aMax = max reduce a;
-      var bitWidth = numBits(uint) - clz(aMax):int;
-      return (bitWidth, negs);
-    }
-
-    inline proc getBitWidth(a: [?aD] real): (int, bool) {
-      const bitWidth = numBits(real);
-      const negs = signbit(min reduce a);
-      return (bitWidth, negs);
-    }
-
-    inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
-      const negs = false;
-      var highMax = max reduce [(ai,_) in a] ai;
-      var whigh = numBits(uint) - clz(highMax);
-      if (whigh == 0) {
-        var lowMax = max reduce [(_,ai) in a] ai;
-        var wlow = numBits(uint) - clz(lowMax);
-        const bitWidth = wlow: int;
-        return (bitWidth, negs);
-      } else {
-        const bitWidth = (whigh + numBits(uint)): int;
-        return (bitWidth, negs);
-      }
-    }
-
-    inline proc getBitWidth(a: [?aD] ?t): (int, bool)
-        where isHomogeneousTuple(t) && t == t.size*uint(bitsPerDigit) {
-      for digit in 0..t.size-1 {
-        const m = max reduce [ai in a] ai(digit);
-        if m > 0 then return ((t.size-digit) * bitsPerDigit, false);
-      }
-      return (t.size * bitsPerDigit, false);
-    }
-
-    // Get the digit for the current rshift. In order to correctly sort
-    // negatives, we have to invert the signbit if we're looking at the last
-    // digit and the array contained negative values.
-    inline proc getDigit(key: int, rshift: int, last: bool, negs: bool): int {
-      const invertSignBit = last && negs;
-      const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
-      const keyu = key:uint;
-      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
-    }
-
-    inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int {
-      return ((key >> rshift) & (maskDigit:uint)):int;
-    }
-
-    // Get the digit for the current rshift. In order to correctly sort
-    // negatives, we have to invert the entire key if it's negative, and invert
-    // just the signbit for positive values when looking at the last digit.
-    inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int {
-      const invertSignBit = last && negs;
-      var keyu: uint;
-      c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
-      var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
-      var xor = 0:uint;
-      if signbitSet {
-        keyu = ~keyu;
-      } else {
-        xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
-      }
-      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
-    }
-
-    inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
-      const (key0,key1) = key;
-      if (rshift >= numBits(uint)) {
-        return getDigit(key0, rshift - numBits(uint), last, negs);
-      } else {
-        return getDigit(key1, rshift, last, negs);
-      }
-    }
-
-    inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
-        where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
-      const keyHigh = key.size - 1;
-      return key[keyHigh - rshift/bitsPerDigit]:int;
     }
 
     // calculate sub-domain for task

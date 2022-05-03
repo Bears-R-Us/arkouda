@@ -5,6 +5,14 @@ module AryUtil
     use Reflection;
     use Logging;
     use ServerConfig;
+    use MultiTypeSymbolTable;
+    use MultiTypeSymEntry;
+    use ServerErrors;
+    use BitOps;
+
+    param bitsPerDigit = RSLSD_bitsPerDigit;
+    private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
+    private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
     
     private config const logLevel = ServerConfig.logLevel;
     const auLogger = new Logger(logLevel);
@@ -118,6 +126,244 @@ module AryUtil
     proc contiguousIndices(A: []) param {
         use BlockDist;
         return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+    }
+
+    /*
+     * Takes a variable number of array names from a command message and
+     * validates them, checking that they all exist and are the same length
+     * and returning metadata about them.
+     * 
+     * :arg n: number of arrays
+     * :arg fields: the fields derived from the command message
+     * :arg st: symbol table
+     *
+     * :returns: (length, hasStr, names, objtypes)
+     */
+    proc validateArraysSameLength(n:int, fields:[] string, st: borrowed SymTab) throws {
+      // Check that fields contains the stated number of arrays
+      if (fields.size != 2*n) { 
+          var errorMsg = "Expected %i arrays but got %i".format(n, fields.size/2 - 1);
+          auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          throw new owned ErrorWithContext(errorMsg,
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "ArgumentError");
+      }
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
+      /* var arrays: [0..#n] borrowed GenSymEntry; */
+      var size: int;
+      // Check that all arrays exist in the symbol table and have the same size
+      var hasStr = false;
+      for (name, objtype, i) in zip(names, types, 1..) {
+        var thisSize: int;
+        select objtype {
+          when "pdarray" {
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          when "str" {
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = getSegStringEntry(myNames, st);
+            thisSize = g.size;
+            hasStr = true;
+          }
+          when "category" {
+            // passed only Categorical.codes.name to be sorted on
+            var g = getGenericTypedArrayEntry(name, st);
+            thisSize = g.size;
+          }
+          otherwise {
+              var errorMsg = "Unrecognized object type: %s".format(objtype);
+              auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+              throw new owned ErrorWithContext(errorMsg,
+                                               getLineNumber(),
+                                               getRoutineName(),
+                                               getModuleName(),
+                                               "TypeError");
+          }
+        }
+        
+        if (i == 1) {
+            size = thisSize;
+        } else {
+            if (thisSize != size) { 
+              var errorMsg = "Arrays must all be same size; expected size %t, got size %t".format(size, thisSize);
+                auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw new owned ErrorWithContext(errorMsg,
+                                                 getLineNumber(),
+                                                 getRoutineName(),
+                                                 getModuleName(),
+                                                 "ArgumentError");
+            }
+        }   
+      }
+      return (size, hasStr, names, types);
+    }
+
+    inline proc getBitWidth(a: [?aD] int): (int, bool) {
+      var aMin = min reduce a;
+      var aMax = max reduce a;
+      var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
+      var wNeg = if aMin < 0 then numBits(int) - clz((-aMin)-1) else 0;
+      const signBit = if aMin < 0 then 1 else 0;
+      const bitWidth = max(wPos, wNeg) + signBit;
+      const negs = aMin < 0;
+      return (bitWidth, negs);
+    }
+
+    inline proc getBitWidth(a: [?aD] uint): (int, bool) {
+      const negs = false;
+      var aMax = max reduce a;
+      var bitWidth = numBits(uint) - clz(aMax):int;
+      return (bitWidth, negs);
+    }
+
+    inline proc getBitWidth(a: [?aD] real): (int, bool) {
+      const bitWidth = numBits(real);
+      const negs = signbit(min reduce a);
+      return (bitWidth, negs);
+    }
+
+    inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
+      const negs = false;
+      var highMax = max reduce [(ai,_) in a] ai;
+      var whigh = numBits(uint) - clz(highMax);
+      if (whigh == 0) {
+        var lowMax = max reduce [(_,ai) in a] ai;
+        var wlow = numBits(uint) - clz(lowMax);
+        const bitWidth = wlow: int;
+        return (bitWidth, negs);
+      } else {
+        const bitWidth = (whigh + numBits(uint)): int;
+        return (bitWidth, negs);
+      }
+    }
+
+    inline proc getBitWidth(a: [?aD] ?t): (int, bool)
+        where isHomogeneousTuple(t) && t == t.size*uint(bitsPerDigit) {
+      for digit in 0..t.size-1 {
+        const m = max reduce [ai in a] ai(digit);
+        if m > 0 then return ((t.size-digit) * bitsPerDigit, false);
+      }
+      return (t.size * bitsPerDigit, false);
+    }
+
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the signbit if we're looking at the last
+    // digit and the array contained negative values.
+    inline proc getDigit(key: int, rshift: int, last: bool, negs: bool): int {
+      const invertSignBit = last && negs;
+      const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      const keyu = key:uint;
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
+    }
+
+    inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int {
+      return ((key >> rshift) & (maskDigit:uint)):int;
+    }
+
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the entire key if it's negative, and invert
+    // just the signbit for positive values when looking at the last digit.
+    inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int {
+      const invertSignBit = last && negs;
+      var keyu: uint;
+      c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
+      var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
+      var xor = 0:uint;
+      if signbitSet {
+        keyu = ~keyu;
+      } else {
+        xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      }
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
+    }
+
+    inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
+      const (key0,key1) = key;
+      if (rshift >= numBits(uint)) {
+        return getDigit(key0, rshift - numBits(uint), last, negs);
+      } else {
+        return getDigit(key1, rshift, last, negs);
+      }
+    }
+
+    inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
+        where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
+      const keyHigh = key.size - 1;
+      return key[keyHigh - rshift/bitsPerDigit]:int;
+    }
+
+    proc getNumDigitsNumericArrays(names, st: borrowed SymTab) throws {
+      var bitWidths: [names.domain] int;
+      var negs: [names.domain] bool;
+      var totalDigits: int;
+
+      for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
+        // TODO checkSorted and exclude array if already sorted?
+        var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        select g.dtype {
+          when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+          when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
+          when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+          otherwise { 
+            throw getErrorWithContext(
+                                      msg=dtype2str(g.dtype),
+                                      lineNumber=getLineNumber(),
+                                      routineName=getRoutineName(),
+                                      moduleName=getModuleName(),
+                                      errorClass="TypeError"
+                                      );
+          }
+          }
+        totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+      }
+      return (totalDigits, bitWidths, negs);
+    }
+
+    proc mergeNumericArrays(param numDigits, size, totalDigits, bitWidths, negs, names, st) throws {
+      // check mem limit for merged array and sort on merged array
+      const itemsize = numDigits * bitsPerDigit / 8;
+      overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
+
+      var ivname = st.nextName();
+      var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+      var curDigit = numDigits - totalDigits;
+      for (name, nBits, neg) in zip(names, bitWidths, negs) {
+        var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
+        proc mergeArray(type t) {
+          var e = toSymEntry(g, t);
+          ref A = e.a;
+
+          const r = 0..#nBits by bitsPerDigit;
+          for rshift in r {
+            const myDigit = (r.high - rshift) / bitsPerDigit;
+            const last = myDigit == 0;
+            forall (m, a) in zip(merged, A) {
+              m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+            }
+          }
+          curDigit += r.size;
+        }
+        select g.dtype {
+          when DType.Int64   { mergeArray(int); }
+          when DType.UInt64  { mergeArray(uint); }
+          when DType.Float64 { mergeArray(real); }
+          otherwise { 
+            throw getErrorWithContext(
+                                      msg=dtype2str(g.dtype),
+                                      lineNumber=getLineNumber(),
+                                      routineName=getRoutineName(),
+                                      moduleName=getModuleName(),
+                                      errorClass="IllegalArgumentError"
+                                      ); 
+          }
+        }
+      }
+      return merged;
     }
 
     /*

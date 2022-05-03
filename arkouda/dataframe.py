@@ -15,9 +15,11 @@ from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
+
 from arkouda.pdarraycreation import arange, array, zeros, create_pdarray
-from arkouda.groupbyclass import GroupBy as akGroupBy
-from arkouda.pdarraysetops import concatenate, unique, intersect1d, in1d
+from arkouda.groupbyclass import GroupBy as akGroupBy, unique
+from arkouda.pdarraysetops import concatenate, intersect1d, in1d
+
 from arkouda.pdarrayIO import save_all, load_all
 from arkouda.dtypes import int64 as akint64, uint64 as akuint64, float64 as akfloat64, bool as akbool
 from arkouda.sorting import argsort, coargsort

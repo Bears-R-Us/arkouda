@@ -1421,7 +1421,6 @@ class pdarray:
         else:
             raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
 
-
 #end pdarray class def
     
 # creates pdarray object

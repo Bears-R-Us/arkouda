@@ -3,10 +3,10 @@ import numpy as np  # type: ignore
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, is_sorted
 from arkouda.pdarraycreation import array, arange, ones, zeros
-from arkouda.pdarraysetops import concatenate, unique, in1d, argsort
+from arkouda.pdarraysetops import concatenate, in1d, argsort
 from arkouda.numeric import cumsum
 from arkouda.categorical import Categorical
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.groupbyclass import unique, GroupBy, broadcast
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64

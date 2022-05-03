@@ -229,57 +229,7 @@ module ArgSortMsg
       var fields = rest.split();
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                   "number of arrays: %i fields: %t".format(n,fields));
-      // Check that fields contains the stated number of arrays
-      if (fields.size != 2*n) { 
-          var errorMsg = incompatibleArgumentsError(pn, 
-                        "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
-          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
-      const low = fields.domain.low;
-      var names = fields[low..#n];
-      var types = fields[low+n..#n];
-      /* var arrays: [0..#n] borrowed GenSymEntry; */
-      var size: int;
-      // Check that all arrays exist in the symbol table and have the same size
-      var hasStr = false;
-      for (name, objtype, i) in zip(names, types, 1..) {
-        var thisSize: int;
-        select objtype {
-          when "pdarray" {
-            var g = getGenericTypedArrayEntry(name, st);
-            thisSize = g.size;
-          }
-          when "str" {
-            var (myNames, _) = name.splitMsgToTuple('+', 2);
-            var g = getSegStringEntry(myNames, st);
-            thisSize = g.size;
-            hasStr = true;
-          }
-          when "category" {
-            // passed only Categorical.codes.name to be sorted on
-            var g = getGenericTypedArrayEntry(name, st);
-            thisSize = g.size;
-          }
-          otherwise {
-              var errorMsg = unrecognizedTypeError(pn, objtype);
-              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-              return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
-        }
-        
-        if (i == 1) {
-            size = thisSize;
-        } else {
-            if (thisSize != size) { 
-                var errorMsg = incompatibleArgumentsError(pn, 
-                                               "Arrays must all be same size");
-                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-        
-      }
+      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead
@@ -292,30 +242,7 @@ module ArgSortMsg
       // TODO support string? This further increases size (128-bits for each hash), so we
       // need to be OK with memory overhead and comm from the KEY)
       if !hasStr {
-        param bitsPerDigit = RSLSD_bitsPerDigit;
-        var bitWidths: [names.domain] int;
-        var negs: [names.domain] bool;
-        var totalDigits: int;
-
-        for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
-          // TODO checkSorted and exclude array if already sorted?
-          var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-          select g.dtype {
-              when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
-              when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
-              when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
-              otherwise { 
-                  throw getErrorWithContext(
-                      msg=dtype2str(g.dtype),
-                      lineNumber=getLineNumber(),
-                      routineName=getRoutineName(),
-                      moduleName=getModuleName(),
-                      errorClass="TypeError"
-                  );
-              }
-          }
-          totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
-        }
+        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
 
         // TODO support arbitrary size with array-of-arrays or segmented array
         proc mergedArgsort(param numDigits) throws {
@@ -325,39 +252,7 @@ module ArgSortMsg
           overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
 
           var ivname = st.nextName();
-          var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-          var curDigit = numDigits - totalDigits;
-          for (name, nBits, neg) in zip(names, bitWidths, negs) {
-              var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-              proc mergeArray(type t) {
-                var e = toSymEntry(g, t);
-                ref A = e.a;
-
-                const r = 0..#nBits by bitsPerDigit;
-                for rshift in r {
-                  const myDigit = (r.high - rshift) / bitsPerDigit;
-                  const last = myDigit == 0;
-                  forall (m, a) in zip(merged, A) {
-                    m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
-                  }
-                }
-                curDigit += r.size;
-              }
-              select g.dtype {
-                when DType.Int64   { mergeArray(int); }
-                when DType.UInt64  { mergeArray(uint); }
-                when DType.Float64 { mergeArray(real); }
-                otherwise { 
-                    throw getErrorWithContext(
-                        msg=dtype2str(g.dtype),
-                        lineNumber=getLineNumber(),
-                        routineName=getRoutineName(),
-                        moduleName=getModuleName(),
-                        errorClass="IllegalArgumentError"
-                    ); 
-                }
-              }
-          }
+          var merged = mergeNumericArrays(numDigits, size, totalDigits, bitWidths, negs, names, st);
 
           var iv = argsortDefault(merged, algorithm=algorithm);
           st.addEntry(ivname, new shared SymEntry(iv));

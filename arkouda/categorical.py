@@ -7,8 +7,8 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.pdarraysetops import in1d, unique, concatenate
+from arkouda.groupbyclass import unique, GroupBy, broadcast
+from arkouda.pdarraysetops import in1d, concatenate
 from arkouda.pdarraycreation import zeros_like, arange, array, zeros, ones
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
 from arkouda.dtypes import int64 as akint64, bool as akbool

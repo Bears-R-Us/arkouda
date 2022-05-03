@@ -2,11 +2,11 @@ import pandas as pd  # type: ignore
 
 from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import arange, ones
-from arkouda.pdarraysetops import argsort, in1d, unique
+from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.dtypes import int64, float64, bool
 from arkouda.util import register, convert_if_categorical, concatenate, get_callback
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import unique, GroupBy
 from arkouda.alignment import in1dmulti
 
 class Index:

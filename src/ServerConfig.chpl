@@ -34,6 +34,11 @@ module ServerConfig
     config const perLocaleMemLimit = 90;
 
     /*
+    Bit width of digits for the LSD radix sort and related ops
+     */
+    config param RSLSD_bitsPerDigit = 16;
+    
+    /*
     Arkouda version
     */
     config param arkoudaVersion:string = "Please set during compilation";
