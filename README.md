@@ -22,6 +22,8 @@ the [README.md](https://github.com/Bears-R-Us/ArkoudaWeeklyCall/blob/main/README
 
 ## Talks on Arkouda
 
+[Mike Merrill's SIAM PP-22 Talk](https://chapel-lang.org/presentations/Arkouda_SIAM_PP-22.pdf)
+
 [Arkouda Hack-a-thon videos](https://www.youtube.com/playlist?list=PLpuVAiniqZRXnOAhfHmxbAcVPtMKb-RHN)
 
 [Bill Reus' March 2021 talk at the NJIT Data Science Seminar](https://www.youtube.com/watch?v=hzLbJF-fvjQ&t=3s)

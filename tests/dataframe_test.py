@@ -97,6 +97,14 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
 
+    def test_boolean_indexing(self):
+        df = build_ak_df()
+        ref_df = build_pd_df()
+        row = df[df['userName'] == 'Carol']
+
+        self.assertEqual(len(row), 1)
+        self.assertTrue(ref_df[ref_df['userName'] == 'Carol'].equals(row.to_pandas(retain_index=True)))
+
     def test_dtype_prop(self):
         str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)])
         df_dict = {
@@ -196,7 +204,7 @@ class DataFrameTest(ArkoudaTest):
     def test_reset_index(self):
         df = build_ak_df()
 
-        slice_df = df[[1, 3, 5]]
+        slice_df = df[ak.array([1, 3, 5])]
         self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
         slice_df.reset_index()
         self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
@@ -318,7 +326,7 @@ class DataFrameTest(ArkoudaTest):
         test_df = pd.DataFrame(data, columns=['userName', 'userID', 'item', 'day', 'amount'])
         self.assertTrue(pddf.equals(test_df))
 
-        slice_df = df[[1, 3, 5]]
+        slice_df = df[ak.array([1, 3, 5])]
         pddf = slice_df.to_pandas(retain_index=True)
         self.assertEqual(pddf.index.tolist(), [1, 3, 5])
 
