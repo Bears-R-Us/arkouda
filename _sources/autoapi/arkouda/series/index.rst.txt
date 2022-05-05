@@ -45,6 +45,10 @@ Classes
    .. py:method:: __getitem__(self, key)
 
 
+   .. py:method:: shape(self)
+      :property:
+
+
    .. py:method:: isin(self, lst)
 
       Find series elements whose values are in the specified list
