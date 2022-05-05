@@ -28,7 +28,6 @@ def generate_dataframe(N, seed):
             df_dict[key] = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=seed)
         elif d == ak.SegArray:
             df_dict[key] = ak.SegArray(ak.arange(0, N*5, 5), ak.array(np.random.randint(0, 2 ** 32, N*5)))
-
     return ak.DataFrame(df_dict)
 
 
@@ -118,12 +117,10 @@ if __name__ == "__main__":
     ak.connect(args.hostname, args.port)
 
     if args.correctness_only:
-        for dtype in TYPES:
-            check_correctness(args.size, seed)
+        check_correctness(args.size, args.seed)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
     time_ak_df_display(args.size, args.trials, args.seed)
-
     sys.exit(0)
