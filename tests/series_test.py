@@ -35,6 +35,13 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(l.index[1], 2)
         self.assertEqual(l.values[1], 'C')
 
+    def test_shape(self):
+        ar_tuple = (ak.arange(3), ak.array(['A', 'B', 'C']))
+        s = ak.Series(ar_tuple=ar_tuple)
+
+        l, = s.shape
+        self.assertEqual(l, 3)
+
     def test_add(self):
         ar_tuple = (ak.arange(3), ak.arange(3))
         ar_tuple_add = (ak.arange(3, 6, 1), ak.arange(3, 6, 1))

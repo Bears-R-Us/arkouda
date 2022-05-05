@@ -133,6 +133,11 @@ class Series:
     str = CachedAccessor("str", StringAccessor)
     # cat = CachedAccessor("cat", CategoricalAccessor)
 
+    @property
+    def shape(self):
+        # mimic the pandas return of series shape property
+        return (self.values.size,)
+
     def isin(self, lst):
         """Find series elements whose values are in the specified list
 
