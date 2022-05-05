@@ -24,6 +24,9 @@
 
         if (columnVals.size == 0) && (idx.size == 0) {
             var a = st.addEntry(rname, 0, t);
+            if rtnName {
+                return rname;
+            }
             var repMsg = "pdarray+%s+created %s".format(col, st.attrib(rname));
             return repMsg;
         }
@@ -43,8 +46,8 @@
         ref a2 = columnVals.a;
         ref iva = idx.a;
         ref aa = a.a;
-        forall (a1,idx) in zip(aa,iva) {
-            a1 = a2[idx];
+        forall (a1,i) in zip(aa,iva) {
+            a1 = a2[i];
         }
         
         if rtnName {
@@ -109,7 +112,7 @@
 
         var repMsgList: [0..#jsonsize] string;
 
-        forall (i, rpm, ele) in zip(repMsgList.domain, repMsgList, eleList) { 
+        for (i, rpm, ele) in zip(repMsgList.domain, repMsgList, eleList) { 
             var ele_parts = ele.split("+");
             ref col_name = ele_parts[1];
             select (ele_parts[0]) {
