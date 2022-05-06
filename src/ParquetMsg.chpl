@@ -324,17 +324,19 @@ module ParquetMsg {
     //Generate a list of matching filenames to test against. 
     var matchingFilenames = getMatchingFilenames(prefix, extension);
 
-    var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
+    var filesExist = processParquetFilenames(filenames, matchingFilenames, mode);
 
     if mode == APPEND {
-      var datasets = getDatasets(filenames[0]);
-      if datasets.contains(dsetname) then
-        throw getErrorWithContext(
-                 msg="A column with name " + dsetname + " already exists in Parquet file",
-                 lineNumber=getLineNumber(), 
-                 routineName=getRoutineName(), 
-                 moduleName=getModuleName(), 
-                 errorClass='WriteModeError');
+      if filesExist {
+        var datasets = getDatasets(filenames[0]);
+        if datasets.contains(dsetname) then
+          throw getErrorWithContext(
+                    msg="A column with name " + dsetname + " already exists in Parquet file",
+                    lineNumber=getLineNumber(), 
+                    routineName=getRoutineName(), 
+                    moduleName=getModuleName(), 
+                    errorClass='WriteModeError');
+      }
     }
     
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
@@ -343,7 +345,7 @@ module ParquetMsg {
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
-        if mode == TRUNCATE {
+        if mode == TRUNCATE || !filesExist {
           if c_writeColumnToParquet(myFilename.localize().c_str(), c_ptrTo(locArr), 0,
                                     dsetname.localize().c_str(), locDom.size, rowGroupSize,
                                     dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
@@ -357,7 +359,8 @@ module ParquetMsg {
           }
         }
       }
-    return warnFlag;
+    // Only warn when files are being overwritten in truncate mode
+    return filesExist && mode == TRUNCATE;
   }
 
   proc createEmptyParquetFile(filename: string, dsetname: string, dtype: int, compressed: bool) throws {
@@ -397,17 +400,19 @@ module ParquetMsg {
     //Generate a list of matching filenames to test against. 
     var matchingFilenames = getMatchingFilenames(prefix, extension);
 
-    var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
+    var filesExist = processParquetFilenames(filenames, matchingFilenames, mode);
 
     if mode == APPEND {
-      var datasets = getDatasets(filenames[0]);
-      if datasets.contains(dsetName) then
-        throw getErrorWithContext(
-                 msg="A column with name " + dsetName + " already exists in Parquet file",
-                 lineNumber=getLineNumber(), 
-                 routineName=getRoutineName(), 
-                 moduleName=getModuleName(), 
-                 errorClass='WriteModeError');
+      if filesExist {
+        var datasets = getDatasets(filenames[0]);
+        if datasets.contains(dsetName) then
+          throw getErrorWithContext(
+                   msg="A column with name " + dsetName + " already exists in Parquet file",
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='WriteModeError');
+      }
     }
     
     const extraOffset = ss.values.size;
@@ -422,7 +427,7 @@ module ParquetMsg {
         dims[0] = locDom.size: int;
 
         if (locDom.isEmpty() || locDom.size <= 0) {
-          if mode == APPEND then
+          if mode == APPEND && filesExist then
             throw getErrorWithContext(
                  msg="Parquet columns must each have the same length: " + myFilename,
                  lineNumber=getLineNumber(), 
@@ -450,13 +455,13 @@ module ParquetMsg {
           else
             locOffsets[locOffsets.domain.high] = A[locDom.high+1];
           
-          writeStringsComponentToParquet(myFilename, dsetName, localVals, locOffsets, ROWGROUPS, compressed, mode);
+          writeStringsComponentToParquet(myFilename, dsetName, localVals, locOffsets, ROWGROUPS, compressed, mode, filesExist);
         }
       }
-    return warnFlag;
+    return filesExist && mode == TRUNCATE;
   }
 
-  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compressed, mode) throws {
+  private proc writeStringsComponentToParquet(filename, dsetname, values: [] uint(8), offsets: [] int, rowGroupSize, compressed, mode, filesExist) throws {
     extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
                                           dsetname, numelems, rowGroupSize,
                                           dtype, compressed, errMsg): int;
@@ -466,7 +471,7 @@ module ParquetMsg {
                                         errMsg): int;
     var pqErr = new parquetErrorMsg();
     var dtypeRep = ARROWSTRING;
-    if mode == TRUNCATE {
+    if mode == TRUNCATE || !filesExist {
       if c_writeStrColumnToParquet(filename.localize().c_str(), c_ptrTo(values), c_ptrTo(offsets),
                                    dsetname.localize().c_str(), offsets.size-1, rowGroupSize,
                                    dtypeRep, compressed, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
@@ -482,18 +487,13 @@ module ParquetMsg {
   }
 
   proc processParquetFilenames(filenames: [] string, matchingFilenames: [] string, mode: int) throws {
-    var warnFlag: bool;
+    var filesExist: bool = true;
     if mode == APPEND {
       if matchingFilenames.size == 0 {
-              throw getErrorWithContext(
-                 msg="Cannot append a non-existent file, please save without mode='append'",
-                 lineNumber=getLineNumber(), 
-                 routineName=getRoutineName(), 
-                 moduleName=getModuleName(), 
-                 errorClass='WriteModeError'
-              );
+        // Files do not exist, so we can just create the files
+        filesExist = false;
       }
-      if matchingFilenames.size != filenames.size {
+      else if matchingFilenames.size != filenames.size {
         throw getErrorWithContext(
                    msg="Appending to existing files must be done with the same number " +
                       "of locales. Try saving with a different directory or filename prefix?",
@@ -505,9 +505,9 @@ module ParquetMsg {
       }
     } else if mode == TRUNCATE {
       if matchingFilenames.size > 0 {
-        warnFlag = true;
+        filesExist = true;
       } else {
-        warnFlag = false;
+        filesExist = false;
       }
     } else {
       throw getErrorWithContext(
@@ -517,7 +517,7 @@ module ParquetMsg {
                  moduleName=getModuleName(), 
                  errorClass='IllegalArgumentError');
     }
-    return warnFlag;
+    return filesExist;
   }
 
   proc write1DDistArrayParquet(filename: string, dsetname, dtype, compressed, mode, A) throws {

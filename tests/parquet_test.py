@@ -100,6 +100,26 @@ def append_test():
 
     return ak_vals, ak_dict
 
+def empty_append_test(dtype):
+    if dtype == 'int64':
+        ak_arr = ak.randint(0, 2**32, SIZE)
+    elif dtype =='uint64':
+        ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.uint64)
+    elif dtype =='bool':
+        ak_arr = ak.randint(0, 1, SIZE, dtype=ak.bool)
+    elif dtype =='float64':
+        ak_arr = ak.randint(0, 2**32, SIZE, dtype=ak.float64)
+    elif dtype == 'str':
+        ak_arr = ak.random_strings_uniform(1, 10, SIZE)
+
+    ak_arr.save("pq_testcorrect", "my-dset", mode='append', file_format='parquet')
+    pq_arr = ak.read("pq_testcorrect*", "my-dset")
+    
+    for f in glob.glob('pq_test*'):
+        os.remove(f)
+
+    return ak_arr, pq_arr
+
 @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
 class ParquetTest(ArkoudaTest):
     def test_parquet(self):
@@ -178,6 +198,11 @@ class ParquetTest(ArkoudaTest):
         res = ak.get_null_indices(filename, datasets='col1')
 
         self.assertTrue((expected == res).all())
+
+    def test_append_empty(self):
+        for dtype in TYPES:
+            (ak_arr, pq_arr) = empty_append_test(dtype)
+            self.assertTrue((ak_arr ==  pq_arr).all())
             
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
