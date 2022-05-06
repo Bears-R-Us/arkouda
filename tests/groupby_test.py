@@ -422,8 +422,13 @@ class GroupByTest(ArkoudaTest):
         # Verify the attached GroupBy's components equal the original components
         self.assertTrue((sGroup.keys == sAttach.keys).all())
         self.assertTrue((sGroup.permutation == sAttach.permutation).all())
+        self.assertTrue((sGroup.segments == sAttach.segments).all())
+        self.assertTrue((sGroup.unique_keys == sAttach.unique_keys).all())
+
         self.assertIsInstance(sAttach.keys, ak.Strings)
         self.assertIsInstance(sAttach.permutation, ak.pdarray)
+        self.assertIsInstance(sAttach.segments, ak.pdarray)
+        self.assertIsInstance(sAttach.unique_keys, ak.Strings)
 
     def test_pdarray_groupby_attach(self):
         a = ak.randint(0, 10, 10)
@@ -434,8 +439,13 @@ class GroupByTest(ArkoudaTest):
         # Verify the attached GroupBy's components equal the original components
         self.assertTrue((aGroup.keys == aAttach.keys).all())
         self.assertTrue((aGroup.permutation == aAttach.permutation).all())
+        self.assertTrue((aGroup.segments == aAttach.segments).all())
+        self.assertTrue((aGroup.unique_keys == aAttach.unique_keys).all())
+
         self.assertIsInstance(aAttach.keys, ak.pdarray)
         self.assertIsInstance(aAttach.permutation, ak.pdarray)
+        self.assertIsInstance(aAttach.segments, ak.pdarray)
+        self.assertIsInstance(aAttach.unique_keys, ak.pdarray)
 
     def test_categorical_groupby_attach(self):
         c = ak.array(["abc", "123", "abc"])
@@ -447,8 +457,13 @@ class GroupByTest(ArkoudaTest):
         # Verify the attached GroupBy's components equal the original components
         self.assertTrue((catGroup.keys == catAttach.keys).all())
         self.assertTrue((catGroup.permutation == catAttach.permutation).all())
+        self.assertTrue((catGroup.segments == catAttach.segments).all())
+        self.assertTrue((catGroup.unique_keys == catAttach.unique_keys).all())
+
         self.assertIsInstance(catAttach.keys, ak.Categorical)
         self.assertIsInstance(catAttach.permutation, ak.pdarray)
+        self.assertIsInstance(catAttach.segments, ak.pdarray)
+        self.assertIsInstance(catAttach.unique_keys, ak.Categorical)
 
     def test_sequence_groupby_attach(self):
         a = ak.randint(0,10,11)
@@ -463,13 +478,21 @@ class GroupByTest(ArkoudaTest):
         self.assertTrue((group.keys[0] == seqAttach.keys[0]).all())
         self.assertTrue((group.keys[1] == seqAttach.keys[1]).all())
         self.assertTrue((group.keys[2] == seqAttach.keys[2]).all())
+        self.assertTrue((group.unique_keys[0] == seqAttach.unique_keys[0]).all())
+        self.assertTrue((group.unique_keys[1] == seqAttach.unique_keys[1]).all())
+        self.assertTrue((group.unique_keys[2] == seqAttach.unique_keys[2]).all())
         self.assertTrue((group.permutation == seqAttach.permutation).all())
+        self.assertTrue((group.segments == seqAttach.segments).all())
 
         # Verify the attached GroupBy preserved the type of each key
         self.assertIsInstance(seqAttach.keys[0], ak.pdarray)
         self.assertIsInstance(seqAttach.keys[1], ak.Strings)
         self.assertIsInstance(seqAttach.keys[2], ak.Categorical)
+        self.assertIsInstance(seqAttach.unique_keys[0], ak.pdarray)
+        self.assertIsInstance(seqAttach.unique_keys[1], ak.Strings)
+        self.assertIsInstance(seqAttach.unique_keys[2], ak.Categorical)
         self.assertIsInstance(seqAttach.permutation, ak.pdarray)
+        self.assertIsInstance(seqAttach.segments, ak.pdarray)
 
     def test_groupby_register(self):
         a = ak.randint(0, 10, 11)

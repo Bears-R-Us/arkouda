@@ -198,8 +198,8 @@ class GroupBy:
     """
     Reductions = GROUPBY_REDUCTION_TYPES
 
-    def __init__(self, keys: groupable,
-                 assume_sorted: bool = False, hash_strings: bool = True, permutation: pdarray = None) -> None:
+    def __init__(self, keys,
+                 assume_sorted: bool = False, hash_strings: bool = True, **kwargs) -> None:
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
@@ -209,13 +209,22 @@ class GroupBy:
         if not isinstance(hash_strings, bool):
             raise TypeError("hash_strings must be of type bool.")
 
-        self.keys = cast(groupable, keys)
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.permutation : pdarray
+        self.permutation: pdarray
+        self.name: Optional[str] = None
 
-        self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore
+        if "orig_keys" in kwargs and "permutation" in kwargs and "unique_keys" in kwargs and "segments" in kwargs:
+            self.keys = cast(groupable, kwargs.get("orig_keys", None))
+            self.unique_keys = kwargs.get("unique_keys", None)
+            self.permutation = kwargs.get("permutation", None)
+            self.segments = kwargs.get("segments", None)
+            self.nkeys = len(self.keys)
+        else:
+            self.keys = cast(groupable, keys)
+            self.unique_keys, self.permutation, self.segments, self.nkeys = unique(self.keys, return_groups=True) # type: ignore
+
         self.size = self.permutation.size
         self.ngroups = self.segments.size
 
@@ -995,7 +1004,7 @@ class GroupBy:
         return create_pdarray(repMsg)
 
     @staticmethod
-    def build_from_components(keys, permutation, user_defined_name: str = None) -> GroupBy:
+    def build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy:
         """
         function to build a new GroupBy object from component keys and permutation.
 
@@ -1012,11 +1021,7 @@ class GroupBy:
             The GroupBy object created by using the given components
 
         """
-        if len(keys) == 1:
-            g = GroupBy(keys[0], permutation=permutation)
-        else:
-            g = GroupBy(keys, permutation=permutation)
-
+        g = GroupBy(None, **kwargs)
         g.name = user_defined_name
 
         return g
@@ -1031,7 +1036,7 @@ class GroupBy:
             Dictionary of all required components of self
                 Components (keys, permutation)
         """
-        return {"keys": getattr(self, "keys"), "permutation": getattr(self, "permutation")}
+        return {"keys": getattr(self, "keys"), "permutation": getattr(self, "permutation"), "unique_keys": getattr(self, "unique_keys"), "segments": getattr(self, "segments")}
 
     @typechecked
     def register(self, user_defined_name: str) -> GroupBy:
@@ -1069,32 +1074,43 @@ class GroupBy:
         """
         from arkouda import Categorical
 
-        # By registering permutation first, we can ensure no overlap in naming between two registered
+        # By registering unique properties first, we can ensure no overlap in naming between two registered
         #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
         #   names are registered
         self.permutation.register(f"{user_defined_name}.permutation")
+        self.segments.register(f"{user_defined_name}.segments")
 
         # Register happening inside each if/elif to please mypy
         if isinstance(self.keys, Strings):
             dtype = "str"
             self.keys.register(f"{user_defined_name}_{dtype}.keys")
+            self.unique_keys.register(f"{user_defined_name}_{dtype}.unique_keys")
         elif isinstance(self.keys, pdarray):
             dtype = "akNum"
             self.keys.register(f"{user_defined_name}_{dtype}.keys")
+            self.unique_keys.register(f"{user_defined_name}_{dtype}.unique_keys")
         elif isinstance(self.keys, Categorical):
             dtype = "categorical"
             self.keys.register(f"{user_defined_name}_{dtype}.keys")
+            # unique_keys.categories will match the categorical key.categories value, causing overwrites in the symbol table
+            self.unique_keys.register(f"{user_defined_name}_{dtype}.unique_keys")
         elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's type individually
                 if isinstance(self.keys[x], Strings):
                     dtype = "str"
+                    self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
+                    self.unique_keys[x].register(f"{x}_{user_defined_name}_{dtype}.unique_keys")
                 elif isinstance(self.keys[x], pdarray):
                     dtype = "akNum"
-                else:
+                    self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
+                    self.unique_keys[x].register(f"{x}_{user_defined_name}_{dtype}.unique_keys")
+                elif isinstance(self.keys[x], Categorical):
                     dtype = "categorical"
+                    self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
+                    # unique_keys.categories will match the categorical key.categories value, causing overwrites in the symbol table
+                    self.unique_keys[x].register(f"{x}_{user_defined_name}_{dtype}.unique_keys")
 
-                self.keys[x].register(f"{x}_{user_defined_name}_{dtype}.keys")
         else:
             raise RegistrationError(f"Unsupported key type found: {type(self.keys)}")
 
@@ -1129,9 +1145,16 @@ class GroupBy:
         if isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 self.keys[x].unregister()
-            self.permutation.unregister()
+                self.unique_keys[x].unregister()
         else:
-            [p.unregister() for p in GroupBy._get_groupby_required_pieces(self).values()]
+            from arkouda import Categorical
+            self.keys.unregister()
+
+            if not isinstance(self.unique_keys, Categorical):
+                self.unique_keys.unregister()
+
+        self.permutation.unregister()
+        self.segments.unregister()
 
         self.name = None  # Clear our internal GroupBy object name
 
@@ -1158,27 +1181,40 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
+        from arkouda import Categorical
+
         if self.name is None:
             return False  # unnamed GroupBy cannot be registered
 
         if isinstance(self.keys, Sequence):  # Sequence - Check for all components
             from re import match, compile
             # Only check for a single component of Categorical to ensure correct count.
-            regEx = compile(f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_categorical\\.keys(?=\\.categories$)")
-            registered = list(filter(regEx.match, list_registry()))
+            regEx = compile(f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
+                            f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)")
+            cat_regEx = compile(f"^\\d+_{self.name}_categorical\\.keys(?=\\.codes$)")
+            simple_registered = list(filter(regEx.match, list_registry()))
+            cat_registered = list(filter(cat_regEx.match, list_registry()))
             if f"{self.name}.permutation" in list_registry():
-                registered.append(f"{self.name}.permutation")
+                simple_registered.append(f"{self.name}.permutation")
+            if f"{self.name}.segments" in list_registry():
+                simple_registered.append(f"{self.name}.segments")
 
-            # Check against length of keys + 1 to account for all keys as well as the permutation
-            if 0 < len(registered) < len(self.keys) + 1:
-                print(f"WARNING: GroupBy {self.name} expected {len(self.keys)} components to be registered,"
-                      f" but only located {len(registered)}. Found components have been unregistered.")
+            # In the case of Categorical, unique keys is registered with only categories and codes and
+            # overwrites keys.categories
+            total = (len(self.keys) * 2) + 2
+
+            registered = len(simple_registered) + len(cat_registered)
+            if 0 < registered < total:
+                print(f"WARNING: GroupBy {self.name} expected {total} components to be registered,"
+                      f" but only located {registered}. Found components have been unregistered.")
                 return False
             else:
-                return len(registered) == len(self.keys) + 1
+                return registered == total
         else:
-            parts_registered: List[bool] = [cast(bool, p.is_registered()) for p in
-                                                GroupBy._get_groupby_required_pieces(self).values()]
+            parts_registered: List[bool] = []
+            for k, v in GroupBy._get_groupby_required_pieces(self).items():
+                if k != "unique_keys" or not isinstance(self.unique_keys, Categorical):
+                    parts_registered.append(v.is_registered())
 
             if any(parts_registered) and not all(parts_registered):  # test for error
                 print(f"WARNING: GroupBy {self.name} expected {len(self.keys)} components to be registered,"
@@ -1215,10 +1251,12 @@ class GroupBy:
 
         from re import match, compile
 
-        keys = []
+        keys: List[groupable] = []
+        unique_keys = []
         matches = []
         regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
-                        f"^(?:\\d+_)?{user_defined_name}_categorical\\.keys(?=\\.categories$)")
+                        f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
+                        f"^(?:\\d+_)?{user_defined_name}_categorical\\.unique_keys(?=\\.categories$)")
         # Using the regex, cycle through the registered items and find all the pieces of the GroupBy's keys
         for name in list_registry():
             x = match(regEx, name)
@@ -1229,21 +1267,43 @@ class GroupBy:
         if len(matches) == 0:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
-        categorical = False
         for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
-            if "str" in name or "akNum" in name:
+            if "_str." in name or "_akNum." in name:
                 keys_resp = cast(str, generic_msg(cmd="attach", args=name))
                 dtype = keys_resp.split()[2]
-                if dtype == "str":
-                    keys.append(Strings.from_return_msg(keys_resp))
-                else:  # akNum
-                    keys.append(create_pdarray(keys_resp))
+                if ".unique_keys" in name:
+                    if dtype == "str":
+                        unique_keys.append(Strings.from_return_msg(keys_resp))
+                    else:  # akNum
+                        unique_keys.append(create_pdarray(keys_resp))
+                else:
+                    if dtype == "str":
+                        keys.append(Strings.from_return_msg(keys_resp))
+                    else:  # akNum
+                        keys.append(create_pdarray(keys_resp))
 
-            elif "categorical" in name:
+            elif "_categorical.unique_keys" in name:
                 from arkouda.categorical import Categorical
-                keys.append(Categorical.attach(name))
-                categorical = True
+                # Due to unique_keys overwriting keys.categories, we have to use unique_keys.categories to
+                # create the keys Categorical
+                unique_key = Categorical.attach(name)
+                key_name = name.replace(".unique_keys",".keys")
+
+                catParts = {
+                    "categories": unique_key.categories,
+                    "codes": pdarray.attach(f"{key_name}.codes"),
+                    "_akNAcode": pdarray.attach(f"{key_name}._akNAcode")
+                }
+
+                # Grab optional components if they exist
+                if f"{user_defined_name}.permutation" in matches:
+                    catParts["permutation"] = pdarray.attach(f"{key_name}.permutation")
+                if f"{user_defined_name}.segments" in matches:
+                    catParts["segments"] = pdarray.attach(f"{key_name}.segments")
+
+                unique_keys.append(unique_key)
+                keys.append(Categorical(None, **catParts))
 
             else:
                 raise RegistrationError(f"Unknown type associated with registered item: {user_defined_name}."
@@ -1253,11 +1313,17 @@ class GroupBy:
             raise RegistrationError(f"Unable to attach to '{user_defined_name}' or '{user_defined_name}'"
                                     f" is not registered")
 
-        perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}_categorical.keys.permutation") if\
-            categorical and len(keys) == 1 else generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
+        perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
+        segments_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.segments")
 
-        permutation = create_pdarray(perm_resp)
-        g = GroupBy.build_from_components(keys, permutation, user_defined_name)  # Call build_from_components method
+        parts ={
+            "orig_keys" : keys if len(keys) > 1 else keys[0],
+            "unique_keys" : unique_keys if len(unique_keys) > 1 else unique_keys[0],
+            "permutation" : create_pdarray(perm_resp),
+            "segments" : create_pdarray(segments_resp)
+        }
+
+        g = GroupBy.build_from_components(user_defined_name, **parts)  # Call build_from_components method
         return g
 
     @staticmethod
@@ -1305,6 +1371,12 @@ class GroupBy:
 
         if f"{user_defined_name}.permutation" in registry:
             unregister_pdarray_by_name(f"{user_defined_name}.permutation")
+
+        if f"{user_defined_name}.segments" in registry:
+            unregister_pdarray_by_name(f"{user_defined_name}.segments")
+
+        if f"{user_defined_name}.unique_keys" in registry:
+            unregister_pdarray_by_name(f"{user_defined_name}.unique_keys")
 
 
 def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64,np.uint64]=-1,
