@@ -286,6 +286,7 @@ class Categorical:
         # To get the name split the message into Categories, Codes, Permutation, Segments
         # then split the categories into it's components, Name being second: name.categories
         # split the name on . and take the first half to get the given name
+        # for example repParts[1] = "created user_defined_name.categories"
         name = repParts[1].split()[1].split(".")[0]
 
         c = Categorical(None, **parts)  # Call constructor with unpacked kwargs

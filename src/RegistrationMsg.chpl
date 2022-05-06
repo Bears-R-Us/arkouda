@@ -236,8 +236,6 @@ module RegistrationMsg
 
         if dtype == "infer" {
             // Try to determine the type from the entries in the symbol table
-            // Should try __RegisteredSymbols__ instead
-            var symbols = st.info("__RegisteredSymbols__");
             regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                             "Attempting to find type of registered element '%s'".format(name));
 
@@ -279,7 +277,7 @@ module RegistrationMsg
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: int64, str, categorical, segarray".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
