@@ -414,7 +414,7 @@ Functions
       This function currently uses 'truncate' mode to ensure the file exists before appending.
 
 
-   .. py:method:: load_table(cls, prefix_path)
+   .. py:method:: load_table(cls, prefix_path, file_format='INFER')
       :classmethod:
 
 

@@ -76,7 +76,7 @@ Functions
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
              * *Arkouda Strings.* -- Dictionary of {datasetName: pdarray or String}
 
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
+   :raises ValueError: Raised if all datasets are not present in all hdf5/parquet files or if one or
        more of the specified files do not exist
    :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
        If `allow_errors` is true this may be raised if no values are returned
@@ -98,7 +98,16 @@ Functions
 
    If datasets is None, infer the names of datasets from the first file
    and read all of them. Use ``get_datasets`` to show the names of datasets
-   to HDF5 files.
+   to HDF5/Parquet files.
+
+   .. rubric:: Examples
+
+   Read with file Extension
+   >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
+   Read without file Extension
+   >>> x = ak.read('path/name_prefix.parquet', file_format='Parquet') # load Parquet
+   Read Glob Expression
+   >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
 .. py:function:: get_null_indices(filenames, datasets) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
@@ -121,13 +130,14 @@ Functions
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'HDF5', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
-   :param file_format: 'HDF5' or 'Parquet'. Used to indicate the file type being loaded.
+   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded. If INFER, the
+                       this will be detected during processing
    :type file_format: str
    :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
    :type dataset: str
@@ -145,6 +155,24 @@ Functions
        one or more of them
 
    .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read`
+
+   .. rubric:: Notes
+
+   If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it with a .parquet
+   appended to the prefix_path. Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+
+   .. rubric:: Examples
+
+   >>> # Loading from file without extension
+   >>> obj = a.load('path/prefix')
+   Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``. The file type is inferred
+   during processing.
+
+   >>> # Loading with an extension (HDF5)
+   >>> obj = a.load('path/prefix.test')
+   Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
+   #### is replaced by each locale numbers. Because filetype is inferred during processing, the extension is not
+   required to be a specific format.
 
 
 .. py:function:: get_datasets(filename: str) -> List[str]
@@ -180,13 +208,14 @@ Functions
    .. seealso:: :obj:`read`
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'HDF5') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
-   :param file_format: 'HDF5' or 'Parquet'. Indicates the format being loaded. Used to assign the appropriate file extension.
+   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Indicates the format being loaded.
+                       When 'INFER' the processing will detect the format
                        Defaults to 'HDF5'
    :type file_format: str
 
@@ -239,5 +268,16 @@ Functions
    specifies the 'append' mode, in which case arkouda will attempt to add
    <columns> as new datasets to existing files. If the wrong number of files
    is present or dataset names already exist, a RuntimeError is raised.
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(25)
+   >>> b = ak.arange(25)
+
+   >>> # Save with mapping defining dataset names
+   >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
+
+   >>> # Save using names instead of mapping
+   >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
 
 
