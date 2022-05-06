@@ -305,14 +305,24 @@ module ParquetMsg {
                                         dsetname, numelems,
                                         dtype, compressed,
                                         errMsg): int;
-    var filenames: [0..#A.targetLocales().size] string;
+    // var filenames: [0..#A.targetLocales().size] string;
     var dtypeRep = toCDtype(dtype);
-    for i in 0..#A.targetLocales().size {
-      var suffix = '%04i'.format(i): string;
-      filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
-    }
+    // for i in 0..#A.targetLocales().size {
+    //   var suffix = '%04i'.format(i): string;
+    //   filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
+    // }
     
-    var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
+    // var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
+    var prefix: string;
+    var extension: string;
+  
+    (prefix, extension) = getFileMetadata(filename);
+
+    // Generate the filenames based upon the number of targetLocales.
+    var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+
+    //Generate a list of matching filenames to test against. 
+    var matchingFilenames = getMatchingFilenames(prefix, extension);
 
     var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
 
@@ -368,13 +378,24 @@ module ParquetMsg {
     ref ss = segString;
     var A = ss.offsets.a;
 
-    var filenames: [0..#A.targetLocales().size] string;
-    for i in 0..#A.targetLocales().size {
-      var suffix = '%04i'.format(i): string;
-      filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
-    }
+    // var filenames: [0..#A.targetLocales().size] string;
+    // for i in 0..#A.targetLocales().size {
+    //   var suffix = '%04i'.format(i): string;
+    //   filenames[i] = filename + "_LOCALE" + suffix + ".parquet";
+    // }
     
-    var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
+    // var matchingFilenames = glob("%s_LOCALE*%s".format(filename, ".parquet"));
+
+    var prefix: string;
+    var extension: string;
+  
+    (prefix, extension) = getFileMetadata(filename);
+
+    // Generate the filenames based upon the number of targetLocales.
+    var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+
+    //Generate a list of matching filenames to test against. 
+    var matchingFilenames = getMatchingFilenames(prefix, extension);
 
     var warnFlag = processParquetFilenames(filenames, matchingFilenames, mode);
 
