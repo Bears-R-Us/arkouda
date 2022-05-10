@@ -359,7 +359,7 @@ class DataFrame(UserDict):
             return DataFrame(initialdata=result, index=key)
 
         # Select rows or columns using a list
-        if isinstance(key, list):
+        if isinstance(key, (list, tuple)):
             result = DataFrame()
             if len(key) <= 0:
                 return result
