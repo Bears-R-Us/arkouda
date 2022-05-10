@@ -115,6 +115,7 @@ For detailed prerequisite information and installation guides, please review [IN
 
 **Requirements List**
 * chapel 1.25.1
+* cmake >= 3.11.0
 * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
 * hdf5 
 * python 3.7 or greater
@@ -145,7 +146,22 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 
 The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
 
+The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows:
+
 ```
+export CM_VERSION=3.11.0
+
+# Download cmake
+wget https://github.com/Kitware/CMake/releases/download/v$CM_VERSION/cmake-$CM_VERSION-Linux-x86_64.sh
+
+# Install cmake
+sh /opt/cmake-$CM_VERSION-Linux-x86_64.sh --skip-license --include-subdir
+
+# Link cmake version
+
+export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
+```
+
 # If zmq and hdf5 have not been installed previously, execute make install-deps
 make install-deps
 
