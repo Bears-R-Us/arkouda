@@ -322,9 +322,9 @@ class DataFrame(UserDict):
     def __getattr__(self, key):
         # print("key =", key)
         if key not in self.columns:
-            raise AttributeError(f'Attribute f{key} not found')
+            raise AttributeError(f'Attribute {key} not found')
         # Should this be cached?
-        return Series(data=self[key], index=self['index'])
+        return Series(data=self[key], index=self.index)
 
     def __dir__(self):
         return dir(DataFrame) + self.columns
@@ -359,7 +359,7 @@ class DataFrame(UserDict):
             return DataFrame(initialdata=result, index=key)
 
         # Select rows or columns using a list
-        if isinstance(key, list):
+        if isinstance(key, (list, tuple)):
             result = DataFrame()
             if len(key) <= 0:
                 return result

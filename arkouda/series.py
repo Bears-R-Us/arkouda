@@ -9,6 +9,7 @@ from arkouda.util import get_callback
 from arkouda.util import convert_if_categorical, register
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
+from arkouda.strings import Strings
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 
 from pandas._config import get_option # type: ignore
@@ -86,7 +87,7 @@ class Series:
             raise TypeError("ar_tuple and data cannot both be null")
 
         else:
-            if not isinstance(data, pdarray) and not isinstance(data, Categorical):
+            if not isinstance(data, (pdarray, Strings, Categorical)):
                 data = array(data)
             self.values = data
 
