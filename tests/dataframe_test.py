@@ -105,6 +105,19 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(len(row), 1)
         self.assertTrue(ref_df[ref_df['userName'] == 'Carol'].equals(row.to_pandas(retain_index=True)))
 
+    def test_column_indexing(self):
+        df = build_ak_df()
+        self.assertTrue(isinstance(df.userName, ak.Series))
+        self.assertTrue(isinstance(df.userID, ak.Series))
+        self.assertTrue(isinstance(df.item, ak.Series))
+        self.assertTrue(isinstance(df.day, ak.Series))
+        self.assertTrue(isinstance(df.amount, ak.Series))
+        for col in ('userName', 'userID', 'item', 'day', 'amount'):
+            self.assertTrue(isinstance(df['userName'], (ak.pdarray, ak.Strings, ak.Categorical)))
+        self.assertTrue(isinstance(df[['userName', 'amount']], ak.DataFrame))
+        self.assertTrue(isinstance(df[('userID', 'item', 'day')], ak.DataFrame))
+        self.assertTrue(isinstance(df.index, ak.Index))
+
     def test_dtype_prop(self):
         str_arr = ak.array(["".join(random.choices(string.ascii_letters + string.digits, k=5)) for _ in range(3)])
         df_dict = {
