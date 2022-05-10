@@ -196,6 +196,7 @@ Functions
    arkouda.pretty_print_information
    arkouda.is_sorted
    arkouda.attach_pdarray
+   arkouda.create_pdarray
    arkouda.isSupportedInt
    arkouda.zeros
    arkouda.ones
@@ -9319,6 +9320,23 @@ Attributes
       :rtype: Categorical
 
 
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Return a categorical instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the categories, codes, permutation, and segments
+                     details
+      :type repMsg: str
+
+      :returns: A categorical representing a set of strings and pdarray components on the server
+      :rtype: categorical
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
+
+
    .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from
@@ -12292,6 +12310,33 @@ Attributes
    >>> b.unregister()
 
 
+.. py:function:: create_pdarray(repMsg: str) -> pdarray
+
+       Return a pdarray instance pointing to an array created by the arkouda server.
+       The user should not call this function directly.
+
+       Parameters
+       ----------
+       repMsg : str
+           space-delimited string containing the pdarray name, datatype, size
+           dimension, shape,and itemsize
+
+       Returns
+       -------
+       pdarray
+           A pdarray with the same attributes and data as the pdarray; on GPU
+
+       Raises
+   -   -----
+       ValueError
+           If there's an error in parsing the repMsg parameter into the six
+           values needed to create the pdarray instance
+       RuntimeError
+           Raised if a server-side error is thrown in the process of creating
+           the pdarray instance
+
+
+
 .. py:function:: isSupportedInt(num)
 
 
@@ -13243,6 +13288,22 @@ Attributes
 
       :returns: The input arrays joined into one SegArray
       :rtype: SegArray
+
+
+   .. py:method:: from_return_msg(repMsg) -> SegArray
+      :staticmethod:
+
+      Return a SegArray instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the segments, values, and lengths details
+      :type repMsg: str
+
+      :returns: A SegArray representing a set of pdarray components on the server
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
 
 
    .. py:method:: copy(self)
@@ -18700,6 +18761,23 @@ Attributes
       :rtype: Categorical
 
 
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Return a categorical instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the categories, codes, permutation, and segments
+                     details
+      :type repMsg: str
+
+      :returns: A categorical representing a set of strings and pdarray components on the server
+      :rtype: categorical
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
+
+
    .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from
@@ -20278,6 +20356,23 @@ Attributes
                 in new categories will appear unchanged. Old values not present will
                 be assigned the NA value.
       :rtype: Categorical
+
+
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Return a categorical instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the categories, codes, permutation, and segments
+                     details
+      :type repMsg: str
+
+      :returns: A categorical representing a set of strings and pdarray components on the server
+      :rtype: categorical
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
 
 
    .. py:method:: to_ndarray(self) -> numpy.ndarray

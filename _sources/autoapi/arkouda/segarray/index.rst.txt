@@ -82,6 +82,22 @@ Functions
       :rtype: SegArray
 
 
+   .. py:method:: from_return_msg(repMsg) -> SegArray
+      :staticmethod:
+
+      Return a SegArray instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the segments, values, and lengths details
+      :type repMsg: str
+
+      :returns: A SegArray representing a set of pdarray components on the server
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
+
+
    .. py:method:: copy(self)
 
       Return a deep copy.

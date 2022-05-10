@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.util &#8212; arkouda 0+untagged.1.g6cc42c3 documentation</title>
+    <title>arkouda.util &#8212; arkouda 0+untagged.1.g4403f79 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -88,8 +88,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
 <td><p>Convert a cetegorical array to strings for display</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name)</p></td>
-<td><p>Attaches to a known element name without requiring to know if the element is a Strings object or pdarray</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name: str, dtype: str = 'infer')</p></td>
+<td><p>Attaches to a known element name. If a type is passed, the server will use that type</p></td>
 </tr>
 </tbody>
 </table>
@@ -236,8 +236,9 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.attach">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attaches to a known element name without requiring to know if the element is a Strings object or pdarray</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'infer'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attaches to a known element name. If a type is passed, the server will use that type
+to pull the corresponding parts, otherwise the server will try to infer the type</p>
 </dd></dl>
 
 </section>

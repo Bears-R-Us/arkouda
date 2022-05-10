@@ -160,6 +160,23 @@ Classes
       :rtype: Categorical
 
 
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Return a categorical instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg: ; delimited string containing the categories, codes, permutation, and segments
+                     details
+      :type repMsg: str
+
+      :returns: A categorical representing a set of strings and pdarray components on the server
+      :rtype: categorical
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
+
+
    .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from

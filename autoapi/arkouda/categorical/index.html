@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.categorical &#8212; arkouda 0+untagged.1.g6cc42c3 documentation</title>
+    <title>arkouda.categorical &#8212; arkouda 0+untagged.1.g4403f79 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -61,7 +61,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id1021" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id1024" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -72,7 +72,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id1021" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id1024" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -194,7 +194,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id1021" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id1024" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – When values are grouped, the starting offset of each group</p></li>
@@ -240,7 +240,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id1021" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
+<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id1024" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -251,6 +251,29 @@ be assigned the NA value.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.from_return_msg">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.categorical.Categorical.from_return_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a categorical instance pointing to components created by the arkouda server.
+The user should not call this function directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repMsg</strong> (<em>str</em>) – ; delimited string containing the categories, codes, permutation, and segments
+details</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A categorical representing a set of strings and pdarray components on the server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>categorical</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of creating
+the categorical instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -497,7 +520,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id1021" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id1024" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>

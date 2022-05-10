@@ -130,8 +130,9 @@ Attributes
    Convert a cetegorical array to strings for display
 
 
-.. py:function:: attach(name)
+.. py:function:: attach(name: str, dtype: str = 'infer')
 
-   Attaches to a known element name without requiring to know if the element is a Strings object or pdarray
+   Attaches to a known element name. If a type is passed, the server will use that type
+   to pull the corresponding parts, otherwise the server will try to infer the type
 
 
