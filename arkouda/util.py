@@ -3,9 +3,9 @@ import re
 import numpy as np  # type: ignore
 import h5py #type: ignore
 import os
-from typing import Union, Mapping
+from typing import Union, Mapping, cast
 
-from arkouda import __version__, Strings
+from arkouda import __version__, Strings, SegArray
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.timeclass import Datetime, Timedelta
 from arkouda.pdarrayclass import attach_pdarray, pdarray, create_pdarray
@@ -282,13 +282,21 @@ def convert_if_categorical(values):
     return values
 
 
-def attach(name):
+def attach(name: str, dtype: str = "infer"):
     """
-    Attaches to a known element name without requiring to know if the element is a Strings object or pdarray
+    Attaches to a known element name. If a type is passed, the server will use that type
+    to pull the corresponding parts, otherwise the server will try to infer the type
     """
-    repMsg = generic_msg(cmd="attach", args=name)
-    dtype = repMsg.split()[2]
-    if dtype == "str":
-        return Strings.from_return_msg(repMsg)
+    repMsg = cast(str, generic_msg(cmd="genericAttach", args=f"{dtype}+{name}"))
+
+    if repMsg.split("+")[0] == "categorical":
+        return Categorical.from_return_msg(repMsg)
+    elif repMsg.split("+")[0] == "segarray":
+        return SegArray.from_return_msg(repMsg)
     else:
-        return create_pdarray(repMsg)
+        dtype = repMsg.split()[2]
+
+        if dtype == "str":
+            return Strings.from_return_msg(repMsg)
+        else:
+            return create_pdarray(repMsg)

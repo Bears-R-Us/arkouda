@@ -6,7 +6,7 @@ from collections import defaultdict
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.strings import Strings
-from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
+from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name, create_pdarray
 from arkouda.groupbyclass import unique, GroupBy, broadcast
 from arkouda.pdarraysetops import in1d, concatenate
 from arkouda.pdarraycreation import zeros_like, arange, array, zeros, ones
@@ -237,6 +237,61 @@ class Categorical:
         # Apply the lookup to map old codes to new codes
         new_codes = code_mapping[self.codes]
         return self.__class__.from_codes(new_codes, new_categories, NAvalue=NAvalue)
+
+    @staticmethod
+    def from_return_msg(repMsg):
+        """
+        Return a categorical instance pointing to components created by the arkouda server.
+        The user should not call this function directly.
+
+        Parameters
+        ----------
+        repMsg : str
+            ; delimited string containing the categories, codes, permutation, and segments
+            details
+
+        Returns
+        -------
+        categorical
+            A categorical representing a set of strings and pdarray components on the server
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown in the process of creating
+            the categorical instance
+        """
+        # parts[0] is "categorical". Used by the generic attach method to identify the
+        # response message as a Categorical
+
+        repParts = repMsg.split("+")
+        stringsMsg = f"{repParts[1]}+{repParts[2]}"
+        parts = {
+            "categories": Strings.from_return_msg(stringsMsg),
+            "codes": create_pdarray(repParts[3])
+        }
+
+        if len(repParts) > 3:
+            name = repParts[4].split()[1]
+            if ".permutation" in name:
+                parts["permutation"] = create_pdarray(repParts[4])
+            elif ".segments" in name:
+                parts["segments"] = create_pdarray(repParts[4])
+            else:
+                raise ValueError(f"Unknown field, {name}, found in Categorical.")
+
+        if len(repParts) == 4:
+            parts["segments"] = create_pdarray(repParts[5])
+
+        # To get the name split the message into Categories, Codes, Permutation, Segments
+        # then split the categories into it's components, Name being second: name.categories
+        # split the name on . and take the first half to get the given name
+        # for example repParts[1] = "created user_defined_name.categories"
+        name = repParts[1].split()[1].split(".")[0]
+
+        c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
+        c.name = name  # Update our name
+        return c
 
     def to_ndarray(self) -> np.ndarray:
         """

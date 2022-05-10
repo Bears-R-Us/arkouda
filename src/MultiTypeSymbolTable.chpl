@@ -452,6 +452,24 @@ module MultiTypeSymbolTable
             }
 
         }
+
+        /*
+        Attempts to find a sym entry mapped to the provided string, then 
+        returns a boolean value signfying the provided string's sym entry 
+        existance
+
+        :arg name: name of entry to be checked
+        :type name: string
+
+        :returns: bool signifying existance of the sym entry
+        */
+        proc contains(name: string): bool {
+            if tab.contains(name) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**

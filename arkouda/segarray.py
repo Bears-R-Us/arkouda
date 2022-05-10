@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from arkouda.pdarrayclass import pdarray, is_sorted, attach_pdarray
+from arkouda.pdarrayclass import pdarray, is_sorted, attach_pdarray, create_pdarray
 from arkouda.numeric import cumsum
 from arkouda.dtypes import isSupportedInt
 from arkouda.dtypes import int64 as akint64
@@ -128,6 +128,7 @@ class SegArray:
         else:
             self.grouping = grouping
 
+
     @classmethod
     def from_multi_array(cls, m):
         """
@@ -231,6 +232,37 @@ class SegArray:
             return cls(newsegs, newvals, copy=False)
         else:
             raise ValueError("Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)")
+
+    @staticmethod
+    def from_return_msg(repMsg) -> SegArray:
+        """
+        Return a SegArray instance pointing to components created by the arkouda server.
+        The user should not call this function directly.
+
+        Parameters
+        ----------
+        repMsg : str
+            ; delimited string containing the segments, values, and lengths details
+
+        Returns
+        -------
+        SegArray
+            A SegArray representing a set of pdarray components on the server
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown in the process of creating
+            the categorical instance
+        """
+        # parts[0] is "segarray". Used by the generic attach method to identify the
+        # response message as a SegArray
+        parts = repMsg.split("+")
+        segments = create_pdarray(parts[1])
+        values = create_pdarray(parts[2])
+        lengths = create_pdarray(parts[3])
+
+        return SegArray(segments, values, lengths=lengths)
 
     def copy(self):
         """
