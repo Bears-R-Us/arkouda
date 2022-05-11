@@ -6,9 +6,10 @@ This guide will walk you through the environment configuration for Arkouda to op
 # Table of Contents
 
 1. [General Requirements](#genreqs)
-2. [Linux (Ubuntu)](#linux-ubuntu)
-   1. [Install Chapel](#lu-chapel)
-   2. [Python Envrionment](#lu-python)
+2. [Linux](#linux)
+   1. [Install Chapel (Ubuntu)](#lu-chapel)
+   2. [Install Chapel (RHEL)](#rhel-chapel)
+   3. [Python Envrionment](#l-python)
 3. [Windows](#windows)
 4. [MacOS](#mac)
    1. [Homebrew Installation](#mac-brew)
@@ -25,6 +26,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 <a id="genreqs"></a>
 ## Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
  * chapel 1.25.1 or 1.26.0 (Recommended)
+ * cmake >= 3.11.0
  * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * hdf5 
  * python 3.7 or greater
@@ -35,13 +37,13 @@ This guide will walk you through the environment configuration for Arkouda to op
  * sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
  * versioneer for versioning
 
-<a id="linux-unbuntu"></a>
-## Linux (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+<a id="linux"></a>
+## Linux<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel. The Ubuntu and RHEL Chapel installations are different for installing Chapel dependencies, particularly regarding older RHEL distro versions such as CentOS 7. Specifically, the gcc compiler on RHEL distros such as CentOS 7 do not support building Chapel. Consequently, a newer version of the gcc compiler must be installed via the [devtoolset-9-gcc-c++](https://centos.pkgs.org/7/centos-sclo-rh-x86_64/devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64.rpm.html) package. In addition, the CentOS [Software Collections packager](https://wiki.centos.org/AdditionalResources/Repositories/SCL) must be installed to enable the newer version of gcc to be leveraged for building Chapel.
 
 <a id="lu-chapel"></a>
 ### Install Chapel (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
-There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install the Chapel dependencies followed by downloading and building Chapel.
 
 ```bash
 # Update Linux kernel and install Chapel dependencies
@@ -84,8 +86,32 @@ make chpldoc
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
-<a id="lu-python"></a> 
-### Python Environment - Anaconda (Ubuntu)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+<a id="rhel-chapel"></a>
+### Install Chapel (RHEL)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+For all RHEL distros, Chapel dependencies are installed as follows:
+
+```
+yum update -y && yum install gcc gcc-c++ m4 perl python3 python3-devel \
+make gawk git cmake llvm-devel clang clang-devel curl-devel -y
+```
+
+For older RHEL distros with incompatible gcc compiler versions, the following dependencies must be installed:
+
+```
+yum install devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64 centos-release-scl -y
+```
+
+The RHEL Chapel build instructions are the same for all distros with the exception of older distros such as CentOS 7; for these, the newer gcc compiler must first be enabled:
+
+```
+source /opt/rh/devtoolset-9/enable
+```
+
+The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.
+
+<a id="l-python"></a> 
+### Python Environment - Anaconda (Linux)<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 As is the case with the MacOS install, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/linux/) to provide a Python environment and manage Python dependencies:
 
 ```bash
