@@ -26,6 +26,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 <a id="genreqs"></a>
 ## Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
  * chapel 1.25.1 or 1.26.0 (Recommended)
+ * cmake >= 3.11.0
  * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * hdf5 
  * python 3.7 or greater

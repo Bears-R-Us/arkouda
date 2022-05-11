@@ -146,9 +146,10 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 
 The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
 
-The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows:
+The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows. Note: while any version of cmake >= 3.11.0 should work, we tested exclusively with 3.11.0:
 
 ```
+# Export version number of cmake binary to be installed
 export CM_VERSION=3.11.0
 
 # Download cmake
