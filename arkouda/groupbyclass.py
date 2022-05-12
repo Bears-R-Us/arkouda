@@ -1214,18 +1214,14 @@ class GroupBy:
                 return registered == total
         else:
             parts_registered: List[bool] = []
-            total = 0
             for k, v in GroupBy._get_groupby_required_pieces(self).items():
                 if k != "unique_keys" or not isinstance(self.unique_keys, Categorical):
                     reg = v.is_registered()
                     parts_registered.append(reg)
 
-                    if reg:
-                        total += 1
-
             if any(parts_registered) and not all(parts_registered):  # test for error
                 warnings.warn(f"WARNING: GroupBy {self.name} expected {len(parts_registered)} "
-                              f"components to be registered, but only located {total}.")
+                              f"components to be registered, but only located {sum(parts_registered)}.")
                 return False
             else:
                 return any(parts_registered)
