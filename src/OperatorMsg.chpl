@@ -99,6 +99,28 @@ module OperatorMsg
             var e = st.addEntry(rname, l.size, real);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
+          when (DType.UInt64, DType.Float64) {
+            var l = toSymEntry(left,uint);
+            var r = toSymEntry(right,real);
+            // Only two possible resultant types are `bool` and `real`
+            // for this case
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, real);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
+          when (DType.Float64, DType.UInt64) {
+            var l = toSymEntry(left,real);
+            var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, real);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
           when (DType.Float64, DType.Float64) {
             var l = toSymEntry(left,real);
             var r = toSymEntry(right,real);
@@ -120,25 +142,55 @@ module OperatorMsg
           when (DType.Bool, DType.Int64) {
             var l = toSymEntry(left,bool);
             var r = toSymEntry(right,int);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, int);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.Int64, DType.Bool) {
             var l = toSymEntry(left,int);
             var r = toSymEntry(right,bool);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, int);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.Bool, DType.Float64) {
             var l = toSymEntry(left,bool);
             var r = toSymEntry(right,real);
+            // Can't add boolOps.contains because chpl doesn't support bool < float
             var e = st.addEntry(rname, l.size, real);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.Float64, DType.Bool) {
             var l = toSymEntry(left,real);
             var r = toSymEntry(right,bool);
+            // Can't add boolOps.contains because chpl doesn't support float < bool
             var e = st.addEntry(rname, l.size, real);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
+          when (DType.Bool, DType.UInt64) {
+            var l = toSymEntry(left,bool);
+            var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvv(l, r, e, op, rname, pn, st);
+          }
+          when (DType.UInt64, DType.Bool) {
+            var l = toSymEntry(left,uint);
+            var r = toSymEntry(right,bool);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvv(l, r, e, op, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, uint);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.UInt64, DType.UInt64) {
@@ -269,6 +321,28 @@ module OperatorMsg
             var e = st.addEntry(rname, l.size, real);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
+          when (DType.UInt64, DType.Float64) {
+            var l = toSymEntry(left,uint);
+            var val = try! value:real;
+            // Only two possible resultant types are `bool` and `real`
+            // for this case
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, real);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Float64, DType.UInt64) {
+            var l = toSymEntry(left,real);
+            var val = try! value:uint;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, real);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+          }
           when (DType.Float64, DType.Float64) {
             var l = toSymEntry(left,real);
             var val = try! value:real;
@@ -290,25 +364,55 @@ module OperatorMsg
           when (DType.Bool, DType.Int64) {
             var l = toSymEntry(left,bool);
             var val = try! value:int;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, int);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.Int64, DType.Bool) {
             var l = toSymEntry(left,int);
             var val = try! value.toLower():bool;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, l.size, int);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.Float64) {
             var l = toSymEntry(left,bool);
             var val = try! value:real;
+            // Can't add boolOps.contains because chpl doesn't support bool < float
             var e = st.addEntry(rname, l.size, real);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.Bool) {
             var l = toSymEntry(left,real);
             var val = try! value.toLower():bool;
+            // Can't add boolOps.contains because chpl doesn't support bool < float
             var e = st.addEntry(rname, l.size, real);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Bool, DType.UInt64) {
+            var l = toSymEntry(left,bool);
+            var val = try! value:uint;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, uint);
+            return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+          }
+          when (DType.UInt64, DType.Bool) {
+            var l = toSymEntry(left,uint);
+            var val = try! value.toLower():bool;
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, l.size, bool);
+              return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, l.size, uint);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.UInt64) {
@@ -427,6 +531,28 @@ module OperatorMsg
             var e = st.addEntry(rname, r.size, real);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
+          when (DType.UInt64, DType.Float64) {
+            var val = try! value:uint;
+            var r = toSymEntry(right,real);
+            // Only two possible resultant types are `bool` and `real`
+            // for this case
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Float64, DType.UInt64) {
+            var val = try! value:real;
+            var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
           when (DType.Float64, DType.Float64) {
             var val = try! value:real;
             var r = toSymEntry(right,real);
@@ -448,25 +574,55 @@ module OperatorMsg
           when (DType.Bool, DType.Int64) {
             var val = try! value.toLower():bool;
             var r = toSymEntry(right,int);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, r.size, int);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Int64, DType.Bool) {
             var val = try! value:int;
             var r = toSymEntry(right,bool);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
             var e = st.addEntry(rname, r.size, int);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.Float64) {
             var val = try! value.toLower():bool;
             var r = toSymEntry(right,real);
+            // Can't add boolOps.contains because chpl doesn't support bool < float
             var e = st.addEntry(rname, r.size, real);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.Bool) {
             var val = try! value:real;
             var r = toSymEntry(right,bool);
+            // Can't add boolOps.contains because chpl doesn't support bool < float
             var e = st.addEntry(rname, r.size, real);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.Bool, DType.UInt64) {
+            var val = try! value.toLower():bool;
+            var r = toSymEntry(right,uint);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, uint);
+            return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+          }
+          when (DType.UInt64, DType.Bool) {
+            var val = try! value:uint;
+            var r = toSymEntry(right,bool);
+            if boolOps.contains(op) {
+              var e = st.addEntry(rname, r.size, bool);
+              return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
+            }
+            var e = st.addEntry(rname, r.size, uint);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.UInt64) {
