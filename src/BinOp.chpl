@@ -59,6 +59,18 @@ module BinOp
           when "!=" {
             e.a = l.a != r.a;
           }
+          when "<" {
+            e.a = l.a:int < r.a:int;
+          }
+          when ">" {
+            e.a = l.a:int > r.a:int;
+          }
+          when "<=" {
+            e.a = l.a:int <= r.a:int;
+          }
+          when ">=" {
+            e.a = l.a:int >= r.a:int;
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -70,7 +82,35 @@ module BinOp
       // type is bool and `l` and `r` are not both boolean, so this does
       // not need to be specialized for each case.
       else {
-        select op {
+        if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
+          select op {
+            when "<" {
+              e.a = l.a:real < r.a:real;
+            }
+            when ">" {
+              e.a = l.a:real > r.a:real;
+            }
+            when "<=" {
+              e.a = l.a:real <= r.a:real;
+            }
+            when ">=" {
+              e.a = l.a:real >= r.a:real;
+            }
+            when "==" {
+              e.a = l.a:real == r.a:real;
+            }
+            when "!=" {
+              e.a = l.a:real != r.a:real;
+            }
+            otherwise {
+              var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+          }
+        }
+        else {
+          select op {
             when "<" {
               e.a = l.a < r.a;
             }
@@ -95,6 +135,7 @@ module BinOp
               return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
           }
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -324,6 +365,18 @@ module BinOp
           when "!=" {
             e.a = l.a != val;
           }
+          when "<" {
+            e.a = l.a:int < val:int;
+          }
+          when ">" {
+            e.a = l.a:int > val:int;
+          }
+          when "<=" {
+            e.a = l.a:int <= val:int;
+          }
+          when ">=" {
+            e.a = l.a:int >= val:int;
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -335,7 +388,35 @@ module BinOp
       // type is bool and `l` and `r` are not both boolean, so this does
       // not need to be specialized for each case.
       else {
-        select op {
+        if ((l.etype == real && val.type == bool) || (l.etype == bool && val.type == real)) {
+          select op {
+            when "<" {
+              e.a = l.a:real < val:real;
+            }
+            when ">" {
+              e.a = l.a:real > val:real;
+            }
+            when "<=" {
+              e.a = l.a:real <= val:real;
+            }
+            when ">=" {
+              e.a = l.a:real >= val:real;
+            }
+            when "==" {
+              e.a = l.a:real == val:real;
+            }
+            when "!=" {
+              e.a = l.a:real != val:real;
+            }
+            otherwise {
+              var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+          }
+        }
+        else {
+          select op {
             when "<" {
               e.a = l.a < val;
             }
@@ -360,6 +441,7 @@ module BinOp
               return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
           }
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -570,6 +652,18 @@ module BinOp
           when "!=" {
             e.a = val != r.a;
           }
+          when "<" {
+            e.a = val:int < r.a:int;
+          }
+          when ">" {
+            e.a = val:int > r.a:int;
+          }
+          when "<=" {
+            e.a = val:int <= r.a:int;
+          }
+          when ">=" {
+            e.a = val:int >= r.a:int;
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -581,7 +675,35 @@ module BinOp
       // type is bool and `l` and `r` are not both boolean, so this does
       // not need to be specialized for each case.
       else {
-        select op {
+        if ((r.etype == real && val.type == bool) || (r.etype == bool && val.type == real)) {
+          select op {
+            when "<" {
+              e.a = val:real < r.a:real;
+            }
+            when ">" {
+              e.a = val:real > r.a:real;
+            }
+            when "<=" {
+              e.a = val:real <= r.a:real;
+            }
+            when ">=" {
+              e.a = val:real >= r.a:real;
+            }
+            when "==" {
+              e.a = val:real == r.a:real;
+            }
+            when "!=" {
+              e.a = val:real != r.a:real;
+            }
+            otherwise {
+              var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+              omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+          }
+        }
+        else {
+          select op {
             when "<" {
               e.a = val < r.a;
             }
@@ -606,6 +728,7 @@ module BinOp
               return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
           }
+        }
       }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
