@@ -134,7 +134,7 @@ class GroupBy(AggregateOps):
             data = self.gb.broadcast(x.values, permute=permute)
         else:
             data = self.gb.broadcast(x, permute=permute)
-        return Series(data=data, index=self.df['index'])
+        return Series(data=data, index=self.df.index)
 
 
 @groupby_operators
