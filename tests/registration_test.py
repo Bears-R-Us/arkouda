@@ -3,21 +3,22 @@ import json
 from context import arkouda as ak
 from base_test import ArkoudaTest
 from arkouda.pdarrayclass import RegistrationError, unregister_pdarray_by_name
+
 N = 100
 UNIQUE = N // 4
 
 
 class RegistrationTest(ArkoudaTest):
-    
+
     def setUp(self):
         ArkoudaTest.setUp(self)
-        self.a_array = ak.ones(10,dtype=ak.int64)
-        self.b_array = ak.ones(10,dtype=ak.int64)
+        self.a_array = ak.ones(10, dtype=ak.int64)
+        self.b_array = ak.ones(10, dtype=ak.int64)
 
     def test_register(self):
         '''
         Tests the following:
-        
+
         1. register invocation
         2. pdarray.name matches register name
         3. original and registered pdarray are equal
@@ -70,63 +71,63 @@ class RegistrationTest(ArkoudaTest):
     def test_unregister(self):
         '''
         Tests the following:
-        
+
         1. unregister invocation
         2. method invocation on a cleared, unregistered array raises RuntimeError
         '''
-        ar_array = self.a_array.register('test_int64_a') 
-        
+        ar_array = self.a_array.register('test_int64_a')
+
         self.assertEqual('[1 1 1 1 1 1 1 1 1 1]', str(ar_array))
         ar_array.unregister()
         self.assertEqual('[1 1 1 1 1 1 1 1 1 1]', str(ar_array))
-        
+
         ak.clear()
-        
+
         with self.assertRaises(RuntimeError):
             str(ar_array)
-            
-        with self.assertRaises(RuntimeError):            
+
+        with self.assertRaises(RuntimeError):
             repr(ar_array)
-    
+
     def test_attach(self):
         '''
         Tests the following:
-        
+
         1. Attaching to a registered pdarray
         2. The registered and attached pdarrays are equal
         3. The attached pdarray is deleted server-side following
-           unregister of registered pdarray and invocation of 
+           unregister of registered pdarray and invocation of
            ak.clear()
         4. method invocation on cleared attached array raises RuntimeError
         '''
         ar_array = self.a_array.register('test_int64_a')
         aar_array = ak.attach_pdarray('test_int64_a')
-        
+
         self.assertEqual(ar_array.name, aar_array.name)
-        self.assertTrue((ar_array.to_ndarray() == 
-                                      aar_array.to_ndarray()).all())
-        
+        self.assertTrue((ar_array.to_ndarray() ==
+                         aar_array.to_ndarray()).all())
+
         ak.disconnect()
         ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         aar_array = ak.attach_pdarray('test_int64_a')
-        
+
         self.assertEqual(ar_array.name, aar_array.name)
-        self.assertTrue((ar_array.to_ndarray() == 
-                                    aar_array.to_ndarray()).all())
-        
+        self.assertTrue((ar_array.to_ndarray() ==
+                         aar_array.to_ndarray()).all())
+
         ar_array.unregister()
         ak.clear()
-        
-        with self.assertRaises(RuntimeError):            
+
+        with self.assertRaises(RuntimeError):
             str(aar_array)
-            
-        with self.assertRaises(RuntimeError):            
+
+        with self.assertRaises(RuntimeError):
             repr(aar_array)
-    
-    def test_clear(self): 
+
+    def test_clear(self):
         '''
         Tests the following:
-        
+
         1. clear() removes server-side pdarrays that are unregistered
         2. Registered pdarrays remain after ak.clear()
         3. All cleared pdarrays throw RuntimeError upon method invocation
@@ -140,14 +141,14 @@ class RegistrationTest(ArkoudaTest):
         self.assertEqual(ar_array.name, "test_int64_aa",
                          msg="ar_array.name should be updated with inplace modification")
 
-        twos_array = ak.ones(10,dtype=ak.int64).register('twos_array')
+        twos_array = ak.ones(10, dtype=ak.int64).register('twos_array')
         twos_array.fill(2)
-        
-        g_twos_array = self.a_array + self.b_array
-        self.assertTrue((twos_array.to_ndarray() == 
-                                     g_twos_array.to_ndarray()).all())
 
-        ak.clear() # This should remove self.b_array and g_twos_array
+        g_twos_array = self.a_array + self.b_array
+        self.assertTrue((twos_array.to_ndarray() ==
+                         g_twos_array.to_ndarray()).all())
+
+        ak.clear()  # This should remove self.b_array and g_twos_array
 
         with self.assertRaises(RuntimeError, msg="g_twos_array should have been cleared because it wasn't registered"):
             str(g_twos_array)
@@ -163,8 +164,8 @@ class RegistrationTest(ArkoudaTest):
             self.a_array + self.b_array
 
         g_twos_array = ar_array + aar_array
-        self.assertTrue((twos_array.to_ndarray() == 
-                                       g_twos_array.to_ndarray()).all())
+        self.assertTrue((twos_array.to_ndarray() ==
+                         g_twos_array.to_ndarray()).all())
 
     def test_register_info(self):
         '''
@@ -200,19 +201,21 @@ class RegistrationTest(ArkoudaTest):
                         msg='No registered objects were found in registry')
 
         not_registered_array = ak.ones(10, dtype=ak.int64)
-        self.assertTrue(len(json.loads(ak.information(ak.AllSymbols))) > len(json.loads(ak.information(ak.RegisteredSymbols))),
-                        msg='info(AllSymbols) should have more objects than info(RegisteredSymbols) before clear()')
+        self.assertTrue(
+            len(json.loads(ak.information(ak.AllSymbols))) > len(json.loads(ak.information(ak.RegisteredSymbols))),
+            msg='info(AllSymbols) should have more objects than info(RegisteredSymbols) before clear()')
         ak.clear()
-        self.assertTrue(len(json.loads(ak.information(ak.AllSymbols))) == len(json.loads(ak.information(ak.RegisteredSymbols))),
-                        msg='info(AllSymbols) and info(RegisteredSymbols) should have same num of objects after clear()')
+        self.assertTrue(
+            len(json.loads(ak.information(ak.AllSymbols))) == len(json.loads(ak.information(ak.RegisteredSymbols))),
+            msg='info(AllSymbols) and info(RegisteredSymbols) should have same num of objects after clear()')
 
         # After unregister(), the registered field should be set to false for AllSymbol and object name info calls
         # RegisteredSymbols info calls should return ak.EmptyRegistry
         my_pdarray.unregister()
         self.assertFalse(any([obj['registered'] for obj in json.loads(my_pdarray.info())]),
-                        msg='info(my_array) registered field should be false after unregister()')
+                         msg='info(my_array) registered field should be false after unregister()')
         self.assertFalse(all([obj['registered'] for obj in json.loads(ak.information(ak.AllSymbols))]),
-                        msg='info(AllSymbols) should contain unregistered objects')
+                         msg='info(AllSymbols) should contain unregistered objects')
         self.assertFalse(json.loads(ak.information(ak.RegisteredSymbols)),
                          msg='info(RegisteredSymbols) empty list failed after unregister()')
 
@@ -233,26 +236,25 @@ class RegistrationTest(ArkoudaTest):
         cleanup()
         my_pda = ak.ones(10, ak.int64)
         self.assertFalse(any([sym['registered'] for sym in json.loads(my_pda.info())]),
-                        msg='no components of my_pda should be registered before register call')
+                         msg='no components of my_pda should be registered before register call')
         my_pda.register('my_pda')
         self.assertTrue(all([sym['registered'] for sym in json.loads(my_pda.info())]),
                         msg='all components of my_pda should be registered after register call')
 
         my_str = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         self.assertFalse(any([sym['registered'] for sym in json.loads(my_str.info())]),
-                        msg='no components of my_str should be registered before register call')
+                         msg='no components of my_str should be registered before register call')
         my_str.register('my_str')
         self.assertTrue(all([sym['registered'] for sym in json.loads(my_str.info())]),
                         msg='all components of my_str should be registered after register call')
 
         my_cat = ak.Categorical(ak.array([f"my_cat {i}" for i in range(1, 11)]))
         self.assertFalse(any([sym['registered'] for sym in json.loads(my_cat.info())]),
-                        msg='no components of my_cat should be registered before register call')
+                         msg='no components of my_cat should be registered before register call')
         my_cat.register('my_cat')
         self.assertTrue(all([sym['registered'] for sym in json.loads(my_cat.info())]),
                         msg='all components of my_cat should be registered after register call')
         cleanup()
-
 
     def test_is_registered(self):
         """
@@ -305,11 +307,11 @@ class RegistrationTest(ArkoudaTest):
 
         # Unregister, should remain usable until we clear
         keep.unregister()
-        str(keep) # Should not cause error
+        str(keep)  # Should not cause error
         self.assertFalse(keep.is_registered(), "This item should no longer be registered")
         ak.clear()
         with self.assertRaises(RuntimeError, msg="keep was unregistered and should be cleared"):
-            str(keep) # should cause RuntimeError
+            str(keep)  # should cause RuntimeError
 
         # Test attach functionality
         s1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
@@ -435,6 +437,126 @@ class RegistrationTest(ArkoudaTest):
         b = None  # Force out of scope
         with self.assertRaises(RuntimeError):
             str(a)
+
+    def test_strings_groupby_attach(self):
+        s = ak.array(["abc", "123", "abc"])
+        sGroup = ak.GroupBy(s)
+        sGroup.register("stringsTest")
+        sAttach = ak.GroupBy.attach("stringsTest")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertListEqual(sGroup.keys.to_ndarray().tolist(), sAttach.keys.to_ndarray().tolist())
+        self.assertListEqual(sGroup.permutation.to_ndarray().tolist(), sAttach.permutation.to_ndarray().tolist())
+        self.assertListEqual(sGroup.segments.to_ndarray().tolist(), sAttach.segments.to_ndarray().tolist())
+        self.assertListEqual(sGroup.unique_keys.to_ndarray().tolist(), sAttach.unique_keys.to_ndarray().tolist())
+
+        self.assertIsInstance(sAttach.keys, ak.Strings)
+        self.assertIsInstance(sAttach.permutation, ak.pdarray)
+        self.assertIsInstance(sAttach.segments, ak.pdarray)
+        self.assertIsInstance(sAttach.unique_keys, ak.Strings)
+
+    def test_pdarray_groupby_attach(self):
+        a = ak.randint(0, 10, 10)
+        aGroup = ak.GroupBy(a)
+        aGroup.register("pdarray_test")
+        aAttach = ak.GroupBy.attach("pdarray_test")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertListEqual(aGroup.keys.to_ndarray().tolist(), aAttach.keys.to_ndarray().tolist())
+        self.assertListEqual(aGroup.permutation.to_ndarray().tolist(), aAttach.permutation.to_ndarray().tolist())
+        self.assertListEqual(aGroup.segments.to_ndarray().tolist(), aAttach.segments.to_ndarray().tolist())
+        self.assertListEqual(aGroup.unique_keys.to_ndarray().tolist(), aAttach.unique_keys.to_ndarray().tolist())
+
+        self.assertIsInstance(aAttach.keys, ak.pdarray)
+        self.assertIsInstance(aAttach.permutation, ak.pdarray)
+        self.assertIsInstance(aAttach.segments, ak.pdarray)
+        self.assertIsInstance(aAttach.unique_keys, ak.pdarray)
+
+    def test_categorical_groupby_attach(self):
+        c = ak.array(["abc", "123", "abc"])
+        cat = ak.Categorical(c)
+        catGroup = ak.GroupBy(cat)
+        catGroup.register("categorical_test")
+        catAttach = ak.GroupBy.attach("categorical_test")
+
+        # Verify the attached GroupBy's components equal the original components
+        self.assertListEqual(catGroup.keys.to_ndarray().tolist(), catAttach.keys.to_ndarray().tolist())
+        self.assertListEqual(catGroup.permutation.to_ndarray().tolist(), catAttach.permutation.to_ndarray().tolist())
+        self.assertListEqual(catGroup.segments.to_ndarray().tolist(), catAttach.segments.to_ndarray().tolist())
+        self.assertListEqual(catGroup.unique_keys.to_ndarray().tolist(), catAttach.unique_keys.to_ndarray().tolist())
+
+        self.assertIsInstance(catAttach.keys, ak.Categorical)
+        self.assertIsInstance(catAttach.permutation, ak.pdarray)
+        self.assertIsInstance(catAttach.segments, ak.pdarray)
+        self.assertIsInstance(catAttach.unique_keys, ak.Categorical)
+
+    def test_sequence_groupby_attach(self):
+        a = ak.randint(0, 10, 11)
+        b = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        c = ak.Categorical(b)
+        l = [a, b, c]
+        group = ak.GroupBy(l)
+        group.register("sequenceTest")
+        seqAttach = ak.GroupBy.attach("sequenceTest")
+
+        # Verify the attached GroupBy's components equal the original components for each key in the sequence
+        self.assertListEqual(group.keys[0].to_ndarray().tolist(), seqAttach.keys[0].to_ndarray().tolist())
+        self.assertListEqual(group.keys[1].to_ndarray().tolist(), seqAttach.keys[1].to_ndarray().tolist())
+        self.assertListEqual(group.keys[2].to_ndarray().tolist(), seqAttach.keys[2].to_ndarray().tolist())
+        self.assertListEqual(group.unique_keys[0].to_ndarray().tolist(), seqAttach.unique_keys[0].to_ndarray().tolist())
+        self.assertListEqual(group.unique_keys[1].to_ndarray().tolist(), seqAttach.unique_keys[1].to_ndarray().tolist())
+        self.assertListEqual(group.unique_keys[2].to_ndarray().tolist(), seqAttach.unique_keys[2].to_ndarray().tolist())
+        self.assertListEqual(group.permutation.to_ndarray().tolist(), seqAttach.permutation.to_ndarray().tolist())
+        self.assertListEqual(group.segments.to_ndarray().tolist(), seqAttach.segments.to_ndarray().tolist())
+
+        # Verify the attached GroupBy preserved the type of each key
+        self.assertIsInstance(seqAttach.keys[0], ak.pdarray)
+        self.assertIsInstance(seqAttach.keys[1], ak.Strings)
+        self.assertIsInstance(seqAttach.keys[2], ak.Categorical)
+        self.assertIsInstance(seqAttach.unique_keys[0], ak.pdarray)
+        self.assertIsInstance(seqAttach.unique_keys[1], ak.Strings)
+        self.assertIsInstance(seqAttach.unique_keys[2], ak.Categorical)
+        self.assertIsInstance(seqAttach.permutation, ak.pdarray)
+        self.assertIsInstance(seqAttach.segments, ak.pdarray)
+
+    def test_groupby_register(self):
+        a = ak.randint(0, 10, 11)
+        b = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        c = ak.Categorical(b)
+
+        # New variable declarations for sequence
+        seqA = ak.randint(0, 10, 11)
+        seqB = ak.array(["The", "ants", "go", "marching", "one", "by", "one", ",", "hurrah", ",", "hurrah"])
+        seqC = ak.Categorical(seqB)
+        seq = [seqA, seqB, seqC]
+        groupA = ak.GroupBy(a)
+        groupB = ak.GroupBy(b)
+        groupC = ak.GroupBy(c)
+        groupL = ak.GroupBy(seq)
+
+        groupA.register("pdarray_unregister")
+        groupB.register("strings_unregister")
+        groupC.register("categorical_unregister")
+        groupL.register("sequence_unregister")
+
+        self.assertTrue(groupA.is_registered())
+        self.assertTrue(groupB.is_registered())
+        self.assertTrue(groupC.is_registered())
+        self.assertTrue(groupL.is_registered())
+
+        # Test self.unregister
+        groupA.unregister()
+        groupB.unregister()
+
+        # Test unregister_groupby_by_name
+        ak.GroupBy.unregister_groupby_by_name("categorical_unregister")
+        ak.GroupBy.unregister_groupby_by_name("sequence_unregister")
+
+        self.assertFalse(groupA.is_registered())
+        self.assertFalse(groupB.is_registered())
+        self.assertFalse(groupC.is_registered())
+        self.assertFalse(groupL.is_registered())
+
 
 def cleanup():
     ak.clear()
