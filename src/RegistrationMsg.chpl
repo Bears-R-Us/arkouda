@@ -122,6 +122,7 @@ module RegistrationMsg
                 
         var cats = st.attrib("%s.categories".format(name));
         var codes = st.attrib("%s.codes".format(name));
+        var naCode = st.attrib("%s._akNAcode".format(name));
 
         if (cats.startsWith("Error:")) { 
             var errorMsg = cats;
@@ -130,6 +131,11 @@ module RegistrationMsg
         }
         if (codes.startsWith("Error:")) { 
             var errorMsg = codes;
+            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }
+        if (naCode.startsWith("Error:")) { 
+            var errorMsg = naCode;
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
@@ -142,6 +148,7 @@ module RegistrationMsg
         }
 
         repMsg += "+created %s".format(codes);
+        repMsg += "+created %s".format(naCode);
 
         // Optional components of categorical
         if st.contains("%s.permutation".format(name)) {

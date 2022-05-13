@@ -76,7 +76,7 @@ class Categorical:
                 # Permutation and segments should only ever be supplied together from
                 # the .from_codes() method, not user input
                 self.permutation = cast(pdarray, self.permutation)
-                self.segments = cast(pdarray, self.permutation)
+                self.segments = cast(pdarray, self.segments)
                 unique_codes = self.codes[self.permutation[self.segments]]
             else:
                 unique_codes = unique(self.codes)
@@ -268,20 +268,19 @@ class Categorical:
         stringsMsg = f"{repParts[1]}+{repParts[2]}"
         parts = {
             "categories": Strings.from_return_msg(stringsMsg),
-            "codes": create_pdarray(repParts[3])
+            "codes": create_pdarray(repParts[3]),
+            "_akNAcode": create_pdarray(repParts[4])
         }
 
-        if len(repParts) > 3:
-            name = repParts[4].split()[1]
-            if ".permutation" in name:
-                parts["permutation"] = create_pdarray(repParts[4])
-            elif ".segments" in name:
-                parts["segments"] = create_pdarray(repParts[4])
-            else:
-                raise ValueError(f"Unknown field, {name}, found in Categorical.")
-
-        if len(repParts) == 4:
-            parts["segments"] = create_pdarray(repParts[5])
+        if len(repParts) > 5:
+            for i in range(5, len(repParts)):
+                name = repParts[i].split()[1]
+                if ".permutation" in name:
+                    parts["permutation"] = create_pdarray(repParts[i])
+                elif ".segments" in name:
+                    parts["segments"] = create_pdarray(repParts[i])
+                else:
+                    raise ValueError(f"Unknown field, {name}, found in Categorical.")
 
         # To get the name split the message into Categories, Codes, Permutation, Segments
         # then split the categories into it's components, Name being second: name.categories
