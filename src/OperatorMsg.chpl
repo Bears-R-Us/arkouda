@@ -390,7 +390,6 @@ module OperatorMsg
           when (DType.Bool, DType.Float64) {
             var l = toSymEntry(left,bool);
             var val = try! value:real;
-            // Can't add boolOps.contains because chpl doesn't support bool < float
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -401,7 +400,6 @@ module OperatorMsg
           when (DType.Float64, DType.Bool) {
             var l = toSymEntry(left,real);
             var val = try! value.toLower():bool;
-            // Can't add boolOps.contains because chpl doesn't support bool < float
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
