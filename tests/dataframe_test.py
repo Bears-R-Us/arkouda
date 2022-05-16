@@ -449,7 +449,7 @@ class DataFrameTest(ArkoudaTest):
         df_copy.__setitem__('userID', ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
 
-    #@pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
+    @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_save_table(self):
         i = list(range(3))
         c1 = [9, 7, 17]
