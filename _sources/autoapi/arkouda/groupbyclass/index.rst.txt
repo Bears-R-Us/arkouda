@@ -72,7 +72,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: groupable, assume_sorted: bool = False, hash_strings: bool = True)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -633,6 +633,120 @@ Attributes
       array([True False True True True False True True False False])
       >>> g.broadcast(counts < 4)
       array([True True True True True True True True True True])
+
+
+   .. py:method:: build_from_components(user_defined_name: str = None, **kwargs) -> GroupBy
+      :staticmethod:
+
+      function to build a new GroupBy object from component keys and permutation.
+
+      :param user_defined_name: and assign it the given name
+      :type user_defined_name: str (Optional) Passing a name will init the new GroupBy
+      :param kwargs: Expected keys are "orig_keys", "permutation", "unique_keys", and "segments"
+      :type kwargs: dict Dictionary of components required for rebuilding the GroupBy.
+
+      :returns: The GroupBy object created by using the given components
+      :rtype: GroupBy
+
+
+   .. py:method:: _get_groupby_required_pieces(self) -> Dict
+
+      Internal function that returns a dictionary with all required components of self
+
+      :returns:
+
+                Dictionary of all required components of self
+                    Components (keys, permutation)
+      :rtype: Dict
+
+
+   .. py:method:: register(self, user_defined_name: str) -> GroupBy
+
+      Register this GroupBy object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the GroupBy is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same GroupBy which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support a fluid programming style.
+                Please note you cannot register two different GroupBys with the same name.
+      :rtype: GroupBy
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the GroupBy with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`unregister_groupby_by_name`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: unregister(self)
+
+      Unregister this GroupBy object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister_groupby_by_name`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: is_registered(self) -> bool
+
+       Return True if the object is contained in the registry
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mismatch of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: attach(user_defined_name: str) -> GroupBy
+      :staticmethod:
+
+      Function to return a GroupBy object attached to the registered name in the
+      arkouda server which was registered using register()
+
+      :param user_defined_name: user defined name which GroupBy object was registered under
+      :type user_defined_name: str
+
+      :returns: The GroupBy object created by re-attaching to the corresponding server components
+      :rtype: GroupBy
+
+      :raises RegistrationError: if user_defined_name is not registered
+
+      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+
+
+   .. py:method:: unregister_groupby_by_name(user_defined_name: str) -> None
+      :staticmethod:
+
+      Function to unregister GroupBy object by name which was registered
+      with the arkouda server via register()
+
+      :param user_defined_name: Name under which the GroupBy object was registered
+      :type user_defined_name: str
+
+      :raises TypeError: if user_defined_name is not a string
+      :raises RegistrationError: if there is an issue attempting to unregister any underlying components
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
 
