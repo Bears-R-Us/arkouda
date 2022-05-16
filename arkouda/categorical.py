@@ -76,7 +76,7 @@ class Categorical:
                 # Permutation and segments should only ever be supplied together from
                 # the .from_codes() method, not user input
                 self.permutation = cast(pdarray, self.permutation)
-                self.segments = cast(pdarray, self.permutation)
+                self.segments = cast(pdarray, self.segments)
                 unique_codes = self.codes[self.permutation[self.segments]]
             else:
                 unique_codes = unique(self.codes)
