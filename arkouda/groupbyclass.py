@@ -24,7 +24,7 @@ groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 
 def unique(pda: groupable,  # type: ignore
-           return_groups: bool = False) -> Union[groupable,  # type: ignore
+           return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable,  # type: ignore
                                                  Tuple[groupable, pdarray, pdarray, int]]:  # type: ignore
     """
     Find the unique elements of an array.
@@ -39,6 +39,8 @@ def unique(pda: groupable,  # type: ignore
         Input array.
     return_groups : bool, optional
         If True, also return grouping information for the array.
+    assume_sorted : bool, optional
+        If True, assume pda is sorted and skip sorting step
 
     Returns
     -------
@@ -94,10 +96,11 @@ def unique(pda: groupable,  # type: ignore
     keynames = [k.name for k in grouping_keys]
     keytypes = [k.objtype for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
-    repMsg = generic_msg(cmd="unique", args="{} {:n} {} {}".format(return_groups,
-                                                                   effectiveKeys,
-                                                                   ' '.join(keynames),
-                                                                   ' '.join(keytypes)))
+    repMsg = generic_msg(cmd="unique", args="{} {} {:n} {} {}".format(return_groups,
+                                                                      assume_sorted,
+                                                                      effectiveKeys,
+                                                                      ' '.join(keynames),
+                                                                      ' '.join(keytypes)))
     if return_groups:
         parts = cast(str, repMsg).split("+")
         permutation = create_pdarray(cast(str, parts[0]))
@@ -229,7 +232,7 @@ class GroupBy:
         else:
             self.keys = cast(groupable, keys)
             self.unique_keys, self.permutation, self.segments, self.nkeys = \
-                unique(self.keys, return_groups=True)  # type: ignore
+                unique(self.keys, return_groups=True, assume_sorted=self.assume_sorted)  # type: ignore
 
         self.size = self.permutation.size
         self.ngroups = self.segments.size
