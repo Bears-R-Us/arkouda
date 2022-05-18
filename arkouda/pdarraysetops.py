@@ -10,6 +10,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import bool as akbool
+from arkouda.client_dtypes import BitVector
 from arkouda.groupbyclass import unique, GroupBy, groupable, groupable_element_type
 
 Categorical = ForwardRef('Categorical')
@@ -150,6 +151,7 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
     """
     from arkouda.categorical import Categorical as Categorical_
     from arkouda.dtypes import int_scalars
+    from arkouda.util import get_callback
     size: int_scalars = 0
     objtype = None
     dtype = None
@@ -160,8 +162,21 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
         mode = 'interleave'
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
+    callback = get_callback(list(arrays)[0])
     if len(arrays) == 1:
-        return cast(groupable_element_type, arrays[0])
+        # return object as it's original type
+        return callback(arrays[0])
+
+    types = set([type(x) for x in arrays])
+    if len(types) != 1:
+        raise TypeError(f"Items must all have same type: {types}")
+
+    if isinstance(arrays[0], BitVector):
+        # everything should be a BitVector because all have the same type, but do isinstance for mypy's sake
+        widths = set([x.width for x in arrays if isinstance(x, BitVector)])
+        revs = set([x.reverse for x in arrays if isinstance(x, BitVector)])
+        if len(widths) != 1 or len(revs) != 1:
+            raise TypeError("BitVectors must all have same width and direction")
 
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
@@ -188,14 +203,14 @@ def concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical', ]],  # t
         size += a.size
     if size == 0:
         if objtype == "pdarray":
-            return zeros_like(cast(pdarray, arrays[0]))
+            return callback(zeros_like(cast(pdarray, arrays[0])))
         else:
             return arrays[0]
 
     repMsg = generic_msg(cmd="concatenate", args="{} {} {} {}". \
                          format(len(arrays), objtype, mode, ' '.join(names)))
     if objtype == "pdarray":
-        return create_pdarray(cast(str, repMsg))
+        return callback(create_pdarray(cast(str, repMsg)))
     elif objtype == "str":
         # ConcatenateMsg returns created attrib(name)+created nbytes=123
         return Strings.from_return_msg(cast(str, repMsg))
