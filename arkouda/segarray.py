@@ -1095,3 +1095,5 @@ class SegArray:
             return False
         else:
             warn(f"SegArray expected 3 components to be registered, but only located {regParts}")
+            return False
+        
