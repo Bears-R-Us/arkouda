@@ -8145,7 +8145,7 @@ Attributes
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
 
    Find the unique elements of an array.
 
@@ -8157,6 +8157,8 @@ Attributes
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
@@ -13433,7 +13435,7 @@ Attributes
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
 
    Find the unique elements of an array.
 
@@ -13445,6 +13447,8 @@ Attributes
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
@@ -16416,7 +16420,7 @@ Attributes
 .. py:function:: get_callback(x)
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
 
    Find the unique elements of an array.
 
@@ -16428,6 +16432,8 @@ Attributes
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
@@ -20384,7 +20390,7 @@ Attributes
 
 
 
-.. py:function:: unique(pda: groupable, return_groups: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
+.. py:function:: unique(pda: groupable, return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable, Tuple[groupable, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, int]]
 
    Find the unique elements of an array.
 
@@ -20396,6 +20402,8 @@ Attributes
    :type pda: (list of) pdarray, Strings, or Categorical
    :param return_groups: If True, also return grouping information for the array.
    :type return_groups: bool, optional
+   :param assume_sorted: If True, assume pda is sorted and skip sorting step
+   :type assume_sorted: bool, optional
 
    :returns: * **unique** (*(list of) pdarray, Strings, or Categorical*) -- The unique values. If input dtype is int64, return values will be sorted.
              * **permutation** (*pdarray, optional*) -- Permutation that groups equivalent values together (only when return_groups=True)
