@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
-from ipaddress import ip_address
-from tabulate import tabulate
 from collections import UserDict
 from warnings import warn
 import pandas as pd  # type: ignore
@@ -11,6 +8,7 @@ import random
 import json
 from typing import cast, Union, List, Callable
 from typeguard import typechecked
+import os
 
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
@@ -22,7 +20,7 @@ from arkouda.groupbyclass import GroupBy as akGroupBy, unique
 from arkouda.pdarraysetops import concatenate, intersect1d, in1d
 
 from arkouda.pdarrayIO import save_all, load_all
-from arkouda.dtypes import int64 as akint64, uint64 as akuint64, float64 as akfloat64, bool as akbool
+from arkouda.dtypes import int64 as akint64, float64 as akfloat64, bool as akbool
 from arkouda.sorting import argsort, coargsort
 from arkouda.numeric import where
 from arkouda.client import maxTransferBytes, generic_msg
@@ -31,6 +29,7 @@ from arkouda.alignment import in1dmulti
 from arkouda.series import Series
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast, isnan as akisnan
+from arkouda.pdarrayIO import get_filetype
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -1289,7 +1288,16 @@ class DataFrame(UserDict):
 
     @classmethod
     def load_table(cls, prefix_path, file_format='INFER'):
-        return cls(load_all(prefix_path, file_format=file_format))
+        prefix, extension = os.path.splitext(prefix_path)
+        first_file = "{}_LOCALE0000{}".format(prefix, extension)
+        filetype = get_filetype(first_file)
+        # columns load backwards
+        df = cls(load_all(prefix_path, file_format=filetype))
+        if filetype == "HDF5":
+            return df
+        else:
+            # return the dataframe with them reversed so they match what was saved. This is only an issue with parquet
+            return df[df.columns[::-1]]
 
     def argsort(self, key, ascending=True):
         """
