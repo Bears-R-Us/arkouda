@@ -9,7 +9,6 @@ from arkouda import __version__, Strings, SegArray
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.timeclass import Datetime, Timedelta
 from arkouda.pdarrayclass import attach_pdarray, pdarray, create_pdarray
-from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 from arkouda.pdarraycreation import arange
 from arkouda.pdarraysetops import unique
 from arkouda.pdarrayIO import read
@@ -35,25 +34,13 @@ def get_callback(x):
 
 # TODO - moving this into arkouda, function name should probably be changed.
 def concatenate(items, ordered=True):
-    if len(items) > 0:
-        types = set([type(x) for x in items])
-        if len(types) != 1:
-            raise TypeError("Items must all have same type: {}".format(types))
-        t = types.pop()
-        if t == BitVector:
-            widths = set([x.width for x in items])
-            revs = set([x.reverse for x in items])
-            if len(widths) != 1 or len(revs) != 1:
-                raise TypeError("BitVectors must all have same width and direction")
-        callback = get_callback(list(items)[0])
-        if hasattr(t, 'concat'):
-            concat = t.concat
-        else:
-            concat = pdarrayconcatenate
-    else:
-        callback = identity
-        concat = pdarrayconcatenate
-    return callback(concat(items, ordered=ordered))
+    # this version can be called with Dataframe and Series (which have Class.concat methods)
+    from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
+    types = set([type(x) for x in items])
+    if len(types) != 1:
+        raise TypeError(f"Items must all have same type: {types}")
+    t = types.pop()
+    return t.concat(items, ordered=ordered) if hasattr(t, 'concat') else pdarrayconcatenate(items, ordered=ordered)
 
 
 def report_mem(pre=''):

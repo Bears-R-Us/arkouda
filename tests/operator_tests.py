@@ -260,7 +260,79 @@ class OperatorsTest(ArkoudaTest):
        
         self.assertTrue((ak.array([True, False, True, False, True, True]) == 
                 ak.concatenate([pdaOne,pdaTwo])).all())
-        
+
+    def test_concatenate_type_preservation(self):
+        # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
+        from arkouda.util import concatenate as akuconcat
+        pda_one = ak.arange(1, 4)
+        pda_two = ak.arange(4, 7)
+        pda_concat = ak.concatenate([pda_one, pda_two])
+
+        # IPv4 test
+        ipv4_one = ak.IPv4(pda_one)
+        ipv4_two = ak.IPv4(pda_two)
+        ipv4_concat = ak.concatenate([ipv4_one, ipv4_two])
+        self.assertEqual(type(ipv4_concat), ak.IPv4)
+        self.assertListEqual(ak.IPv4(pda_concat).to_ndarray().tolist(), ipv4_concat.to_ndarray().tolist())
+        # test single and empty
+        self.assertEqual(type(ak.concatenate([ipv4_one])), ak.IPv4)
+        self.assertListEqual(ak.IPv4(pda_one).to_ndarray().tolist(), ak.concatenate([ipv4_one]).to_ndarray().tolist())
+        self.assertEqual(type(ak.concatenate([ak.IPv4(ak.array([], dtype=ak.int64))])), ak.IPv4)
+
+        # Datetime test
+        datetime_one = ak.Datetime(pda_one)
+        datetime_two = ak.Datetime(pda_two)
+        datetime_concat = ak.concatenate([datetime_one, datetime_two])
+        self.assertEqual(type(datetime_concat), ak.Datetime)
+        self.assertListEqual(ak.Datetime(pda_concat).to_ndarray().tolist(), datetime_concat.to_ndarray().tolist())
+        # test single and empty
+        self.assertEqual(type(ak.concatenate([datetime_one])), ak.Datetime)
+        self.assertListEqual(ak.Datetime(pda_one).to_ndarray().tolist(), ak.concatenate([datetime_one]).to_ndarray().tolist())
+        self.assertEqual(type(ak.concatenate([ak.Datetime(ak.array([], dtype=ak.int64))])), ak.Datetime)
+
+        # Timedelta test
+        timedelta_one = ak.Timedelta(pda_one)
+        timedelta_two = ak.Timedelta(pda_two)
+        timedelta_concat = ak.concatenate([timedelta_one, timedelta_two])
+        self.assertEqual(type(timedelta_concat), ak.Timedelta)
+        self.assertListEqual(ak.Timedelta(pda_concat).to_ndarray().tolist(), timedelta_concat.to_ndarray().tolist())
+        # test single and empty
+        self.assertEqual(type(ak.concatenate([timedelta_one])), ak.Timedelta)
+        self.assertListEqual(ak.Timedelta(pda_one).to_ndarray().tolist(), ak.concatenate([timedelta_one]).to_ndarray().tolist())
+        self.assertEqual(type(ak.concatenate([ak.Timedelta(ak.array([], dtype=ak.int64))])), ak.Timedelta)
+
+        # BitVector test
+        bitvector_one = ak.BitVector(pda_one)
+        bitvector_two = ak.BitVector(pda_two)
+        bitvector_concat = ak.concatenate([bitvector_one, bitvector_two])
+        self.assertEqual(type(bitvector_concat), ak.BitVector)
+        self.assertListEqual(ak.BitVector(pda_concat).to_ndarray().tolist(), bitvector_concat.to_ndarray().tolist())
+        # test single and empty
+        self.assertEqual(type(ak.concatenate([bitvector_one])), ak.BitVector)
+        self.assertListEqual(ak.BitVector(pda_one).to_ndarray().tolist(), ak.concatenate([bitvector_one]).to_ndarray().tolist())
+        self.assertEqual(type(ak.concatenate([ak.BitVector(ak.array([], dtype=ak.int64))])), ak.BitVector)
+
+        # Test failure with mixed types
+        with self.assertRaises(TypeError):
+            ak.concatenate(datetime_one, bitvector_two)
+
+        # verify ak.util.concatenate still works
+        ipv4_akuconcat = akuconcat([ipv4_one, ipv4_two])
+        self.assertEqual(type(ipv4_akuconcat), ak.IPv4)
+        self.assertListEqual(ak.IPv4(pda_concat).to_ndarray().tolist(), ipv4_akuconcat.to_ndarray().tolist())
+
+        datetime_akuconcat = akuconcat([datetime_one, datetime_two])
+        self.assertEqual(type(datetime_akuconcat), ak.Datetime)
+        self.assertListEqual(ak.Datetime(pda_concat).to_ndarray().tolist(), datetime_akuconcat.to_ndarray().tolist())
+
+        timedelta_akuconcat = akuconcat([timedelta_one, timedelta_two])
+        self.assertEqual(type(timedelta_akuconcat), ak.Timedelta)
+        self.assertListEqual(ak.Timedelta(pda_concat).to_ndarray().tolist(), timedelta_akuconcat.to_ndarray().tolist())
+
+        bitvector_akuconcat = akuconcat([bitvector_one, bitvector_two])
+        self.assertEqual(type(bitvector_akuconcat), ak.BitVector)
+        self.assertListEqual(ak.BitVector(pda_concat).to_ndarray().tolist(), bitvector_akuconcat.to_ndarray().tolist())
+
     def testAllOperators(self):
         run_tests(verbose)
         
