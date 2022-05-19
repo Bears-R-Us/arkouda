@@ -93,7 +93,7 @@ Functions
              * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
-.. py:function:: lookup(keys, values, arguments, fillvalue=-1)
+.. py:function:: lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False)
 
    Apply the function defined by the mapping keys --> values to arguments.
 
@@ -107,6 +107,9 @@ Functions
    :type arguments: (sequence of) array-like
    :param fillvalue: The default value to return for arguments not in keys.
    :type fillvalue: scalar
+   :param keys_from_unique: If True, keys are assumed to be the output of ak.unique, e.g. the
+                            .unique_keys attribute of a GroupBy instance.
+   :type keys_from_unique: bool
 
    :returns: **evaluated** -- The result of evaluating the function over arguments.
    :rtype: pdarray
