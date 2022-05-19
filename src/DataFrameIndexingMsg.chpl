@@ -62,10 +62,14 @@
         var lens: [0..#idx.size] int;
         var orig_segs: [0..#idx.size] int = segments.a[idx.a];
 
-        const ref high = orig_segs.domain.high;
-        forall (i, os, l) in zip(orig_segs.domain, orig_segs, lens){
-            if(i == high) {
+        const high = orig_segs.domain.high;
+        const mid = high/2;
+        forall(i, os, l) in zip(orig_segs.domain, orig_segs, lens){
+            if (i == high){
                 l = values.size - os;
+            }
+            else if (i == mid) {
+                l = 0;
             } else {
                 l = orig_segs[i+1] - os;
             }
