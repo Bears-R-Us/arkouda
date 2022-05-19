@@ -140,7 +140,8 @@ setup(
         'versioneer',
         'matplotlib',
         'types-tabulate',
-        'tables'
+        'tables',
+        'pyarrow'
     ],
 
     # List additional groups of dependencies here (e.g. development
