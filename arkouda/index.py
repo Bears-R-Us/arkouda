@@ -30,7 +30,9 @@ class Index:
         return len(self.index)
 
     def __eq__(self,v):
-        return self.index == v.index
+        if isinstance(v, Index):
+            return self.index == v.index
+        return self.index == v
 
     @staticmethod
     def factory(index):
