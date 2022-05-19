@@ -14483,6 +14483,16 @@ Attributes
       :classmethod:
 
 
+   .. py:method:: is_registered(self) -> bool
+
+      Checks if all components of the SegArray object are registered
+
+      :returns: True if all components are registered, false if not
+      :rtype: bool
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
+
+
 
 .. py:class:: DataFrame(initialdata=None, index=None)
 
