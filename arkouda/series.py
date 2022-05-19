@@ -15,6 +15,7 @@ from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from pandas._config import get_option # type: ignore
 import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
+from warnings import warn
 
 __all__ = [
     "Series",
@@ -382,6 +383,28 @@ class Series:
             k = [attach_pdarray("{}_key_{}".format(label, i)) for i in range(nkeys)]
 
         return Series((k, v))
+
+    def is_registered(self):
+        """
+        Checks if all components of the Series object are registered
+
+        Returns
+        -------
+        bool
+            True if all components are registered, false if not
+
+        See Also
+        --------
+        register, unregister, attach
+        """
+
+        # Series contains 2 parts - index and values
+        regParts = [self.index.is_registered(), self.values.is_registered()]
+
+        if any(regParts) and not all(regParts):
+            warn(f"Series expected {len(regParts)} components to be registered, but only located {sum(regParts)}")
+
+        return all(regParts)
 
     @staticmethod
     def _all_aligned(array):
