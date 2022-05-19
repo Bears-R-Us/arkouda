@@ -154,7 +154,7 @@ module RadixSortLSD
             // copy back to temp for next iteration
             // Only do this if there are more digits left
             if !last {
-              temp = a;
+              temp <=> a;
             }
         } // for rshift
     }//proc radixSortLSDCore
