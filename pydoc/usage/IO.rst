@@ -98,3 +98,16 @@ Loading persisted DataFrame data from disk
 This functionality allows the columns be loaded as datasets, which creates a mapping of column names to column data. This structure is supported by the ``DataFrame`` constructor and is used to reconstruct the ``DataFrame``
 
 .. autofunction:: arkouda.DataFrame.load_table
+
+Import/Export
+=============
+Arkouda is able to import Pandas data from save files. Additionally, Arkouda is able to export data to pandas formatting. The file formats supported are:
+
+- HDF5
+- Parquet
+
+This functionality is currently performed on the client and is assuming that dataset sizes are able to be handled in the client due to being written by Pandas. Arkouda natively verifies the size of data before writing it to the client, so exports are limited.
+
+.. autofunction:: arkouda.import_data
+
+.. autofunction:: arkouda.export
