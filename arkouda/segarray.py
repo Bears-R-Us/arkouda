@@ -1,4 +1,5 @@
 from __future__ import annotations
+from warnings import warn
 
 from arkouda.pdarrayclass import pdarray, is_sorted, attach_pdarray, create_pdarray
 from arkouda.numeric import cumsum
@@ -1070,3 +1071,26 @@ class SegArray:
         # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
         return cls(attach_pdarray(name+segment_suffix), attach_pdarray(name+value_suffix),
                    lengths=attach_pdarray(name+length_suffix))
+
+    def is_registered(self) -> bool:
+        """
+        Checks if all components of the SegArray object are registered
+
+        Returns
+        -------
+        bool
+            True if all components are registered, false if not
+
+        See Also
+        --------
+        register, unregister, attach
+        """
+
+        # SegArray contains 3 parts - segments, values, and lengths
+        regParts = [self.segments.is_registered(), self.values.is_registered(), self.lengths.is_registered()]
+
+        if any(regParts) and not all(regParts):
+            warn(f"SegArray expected {len(regParts)} components to be registered, but only located {sum(regParts)}")
+
+        return all(regParts)
+        
