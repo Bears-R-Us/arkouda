@@ -22,7 +22,11 @@ class DataFrameTest(ArkoudaTest):
         pddf = self.build_pandas_dataframe()
         return ak.DataFrame(pddf)
 
+    def get_locale_count(self):
+        return ak.get_config()['numLocales']
+
     def test_import_hdf(self):
+        locales = self.get_locale_count()
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
         os.mkdir(f_base)
@@ -31,19 +35,19 @@ class DataFrameTest(ArkoudaTest):
         pddf.to_hdf(f"{f_base}/table.h5", "dataframe", format="Table", mode="w")
         akdf = ak.import_data(f"{f_base}/table.h5", write_file=f"{f_base}/ak_table.h5",
                               return_obj=True)
-        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_*.h5")) == 1)
+        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_*.h5")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
 
         pddf.to_hdf(f"{f_base}/table_columns.h5", "dataframe", format="Table", data_columns=True, mode="w")
         akdf = ak.import_data(f"{f_base}/table_columns.h5", write_file=f"{f_base}/ak_table_columns.h5",
                               return_obj=True)
-        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_columns_*.h5")) == 1)
+        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_columns_*.h5")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
 
         pddf.to_hdf(f"{f_base}/fixed.h5", "dataframe", format="fixed", data_columns=True, mode="w")
         akdf = ak.import_data(f"{f_base}/fixed.h5", write_file=f"{f_base}/ak_fixed.h5",
                               return_obj=True)
-        self.assertTrue(len(glob.glob(f"{f_base}/ak_fixed_*.h5")) == 1)
+        self.assertTrue(len(glob.glob(f"{f_base}/ak_fixed_*.h5")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
 
         with self.assertRaises(FileNotFoundError):
@@ -78,6 +82,7 @@ class DataFrameTest(ArkoudaTest):
 
     @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_import_parquet(self):
+        locales = self.get_locale_count()
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
         os.mkdir(f_base)
@@ -86,7 +91,8 @@ class DataFrameTest(ArkoudaTest):
         pddf.to_parquet(f"{f_base}/table.parquet")
         akdf = ak.import_data(f"{f_base}/table.parquet", write_file=f"{f_base}/ak_table.parquet",
                               return_obj=True)
-        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_LOCALE0000.parquet")) == 1)
+        ### TODO - fix locale crap
+        self.assertTrue(len(glob.glob(f"{f_base}/ak_table_*.parquet")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
 
         # clean up test files
