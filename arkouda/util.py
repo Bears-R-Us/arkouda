@@ -54,12 +54,7 @@ def register(a, name):
     Register an arkouda object with a user-specified name. Backwards compatible
     with earlier arkouda versions.
     """
-    if pd.to_datetime(__version__.lstrip('v')) >= pd.to_datetime('2021.04.14'):
-        # New versions register in-place and don't need callback
-        cb = identity
-    else:
-        # Older versions return a new object that loses higher-level dtypes and must be re-converted
-        cb = get_callback(a)
+    cb = identity
     if type(a) in {Datetime, Timedelta, BitVector, IPv4}:
         # These classes wrap a pdarray, so two names must be updated
         a = a.register(name)
