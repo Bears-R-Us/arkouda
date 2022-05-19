@@ -1091,7 +1091,6 @@ class SegArray:
 
         if any(regParts) and not all(regParts):
             warn(f"SegArray expected {len(regParts)} components to be registered, but only located {sum(regParts)}")
-            return False
-        else:
-            return all(regParts)
+
+        return all(regParts)
         
