@@ -1,5 +1,7 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+import os, glob
+from shutil import rmtree
 
 class IndexTest(ArkoudaTest):
 
@@ -84,3 +86,16 @@ class IndexTest(ArkoudaTest):
 
         result = idx.lookup([l, l])
         self.assertListEqual(result.to_ndarray().tolist(), [True, False, True, True, False])
+
+    def test_save(self):
+        locale_count = ak.get_config()['numLocales']
+        d = f"{os.getcwd()}/save_index_test"
+        # make directory to save to so pandas read works
+        os.mkdir(d)
+
+        idx = ak.Index(ak.arange(5))
+        idx.save(f"{d}/idx_file.h5")
+        self.assertTrue(len(glob.glob(f"{d}/idx_file_*.h5")) == locale_count)
+
+        # clean up test files
+        rmtree(d)
