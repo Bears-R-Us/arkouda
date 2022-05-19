@@ -1087,13 +1087,11 @@ class SegArray:
         """
 
         # SegArray contains 3 parts - segments, values, and lengths
-        regParts = sum([self.segments.is_registered(), self.values.is_registered(), self.lengths.is_registered()])
+        regParts = [self.segments.is_registered(), self.values.is_registered(), self.lengths.is_registered()]
 
-        if regParts == 3:
-            return True
-        elif regParts == 0:
+        if any(regParts) and not all(regParts):
+            warn(f"SegArray expected {len(regParts)} components to be registered, but only located {sum(regParts)}")
             return False
         else:
-            warn(f"SegArray expected 3 components to be registered, but only located {regParts}")
-            return False
+            return all(regParts)
         
