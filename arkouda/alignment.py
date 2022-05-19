@@ -171,7 +171,7 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
             return atruth
 
 
-def lookup(keys, values, arguments, fillvalue=-1):
+def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     """
     Apply the function defined by the mapping keys --> values to arguments.
 
@@ -187,6 +187,9 @@ def lookup(keys, values, arguments, fillvalue=-1):
         (or tuple of dtypes, for a sequence) as keys.
     fillvalue : scalar
         The default value to return for arguments not in keys.
+    keys_from_unique : bool
+        If True, keys are assumed to be the output of ak.unique, e.g. the
+        .unique_keys attribute of a GroupBy instance.
 
     Returns
     -------
@@ -219,6 +222,12 @@ def lookup(keys, values, arguments, fillvalue=-1):
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
     """
+    if not keys_from_unique:
+        keyg = GroupBy(keys)
+        if keyg.size != keyg.ngroups:
+            raise NonUniqueError("Function keys must be unique.")
+        keys = keyg.unique_keys
+        values = values[keyg.permutation]
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
