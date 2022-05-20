@@ -9,7 +9,8 @@ import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
 import random
 import json
-from typing import cast
+from typing import cast, Union, List
+from typeguard import typechecked
 
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
@@ -610,7 +611,8 @@ class DataFrame(UserDict):
             The labels to be dropped on the given axis
         """
         for key in keys:
-            del self[key]
+            self.pop(key, None)
+            # del self[key]
 
     def _drop_row(self, keys):
         """
@@ -638,7 +640,9 @@ class DataFrame(UserDict):
             UserDict.__setitem__(self, key, self[key][idx_to_keep])
         self._set_index(idx_to_keep)
 
-    def drop(self, keys, axis=0):
+    @typechecked
+    def drop(self, keys: Union[str, int, List[str], List[int]],
+             axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]:
         """
         Drop column/s or row/s from the dataframe, in-place.
 
@@ -648,6 +652,14 @@ class DataFrame(UserDict):
             The labels to be dropped on the given axis
         axis : int or str
             The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
+        inplace: bool
+            Default False. When True, perform the operation on the calling object.
+            When False, return a new object.
+
+        Returns
+        -------
+            DateFrame when `inplace=False`
+            None when `inplace=True`
 
         Examples
         ----------
@@ -663,20 +675,25 @@ class DataFrame(UserDict):
         if isinstance(keys, str) or isinstance(keys, int):
             keys = [keys]
 
+        obj = self if inplace else self.copy()
+
         if axis == 0 or axis == 'index':
             #drop a row
-            self._drop_row(keys)
+            obj._drop_row(keys)
         elif axis == 1 or axis == 'columns':
             #drop column
-            self._drop_column(keys)
+            obj._drop_column(keys)
         else:
             raise ValueError(f"No axis named {axis} for object type DataFrame")
 
         # If the dataframe just became empty...
-        if len(self._columns) == 0:
-            self._set_index(None)
-            self._empty = True
-        self.update_size()
+        if len(obj._columns) == 0:
+            obj._set_index(None)
+            obj._empty = True
+        obj.update_size()
+
+        if not inplace:
+            return obj
 
     def drop_duplicates(self, subset=None, keep='first'):
         """
@@ -780,7 +797,8 @@ class DataFrame(UserDict):
             raise TypeError(f"DataFrame Index can only be constructed from type ak.Index, pdarray or list."
                             f" {type(value)} provided.")
 
-    def reset_index(self, size=False):
+    @typechecked
+    def reset_index(self, size: bool = False, inplace: bool = False) -> Union[None, DataFrame]:
         """
         Set the index to an integer range.
 
@@ -793,6 +811,14 @@ class DataFrame(UserDict):
         size : int
             If size is passed, do not attempt to determine size based on
             existing column sizes. Assume caller handles consistency correctly.
+        inplace: bool
+            Default False. When True, perform the operation on the calling object.
+            When False, return a new object.
+
+        Returns
+        -------
+            DateFrame when `inplace=False`
+            None when `inplace=True`
 
         NOTE
         ----------
@@ -800,11 +826,16 @@ class DataFrame(UserDict):
         support this behavior.
         """
 
+        obj = self if inplace else self.copy()
+
         if not size:
-            self.update_size()
-            self._set_index(arange(self._size))
+            obj.update_size()
+            obj._set_index(arange(obj._size))
         else:
-            self._set_index(arange(size))
+            obj._set_index(arange(size))
+
+        if not inplace:
+            return obj
 
     @property
     def info(self):
@@ -854,7 +885,8 @@ class DataFrame(UserDict):
         else:
             self._size = sizes.pop()
 
-    def rename(self, mapper):
+    @typechecked
+    def rename(self, mapper: Union[callable, dict], inplace: bool = False) -> Union[None, DataFrame]:
         """
         Rename columns in-place according to a mapping.
 
@@ -864,38 +896,43 @@ class DataFrame(UserDict):
             Function or dictionary mapping existing column names to
             new column names. Nonexistent names will not raise an
             error.
+        inplace: bool
+            Default False. When True, perform the operation on the calling object.
+            When False, return a new object.
 
         Returns
         -------
-        self
-            Renaming occurs in-place, but result is also returned,
-            for compatibility.
+            DateFrame when `inplace=False`
+            None when `inplace=True`
         """
+
+        obj = self if inplace else self.copy()
 
         if callable(mapper):
             # Do not rename index, start at 1
-            for i in range(0, len(self._columns)):
-                oldname = self._columns[i]
+            for i in range(0, len(obj._columns)):
+                oldname = obj._columns[i]
                 newname = mapper(oldname)
                 # Only rename if name has changed
                 if newname != oldname:
-                    self._columns[i] = newname
-                    self.data[newname] = self.data[oldname]
-                    del self.data[oldname]
+                    obj._columns[i] = newname
+                    obj.data[newname] = obj.data[oldname]
+                    del obj.data[oldname]
         elif isinstance(mapper, dict):
             for oldname, newname in mapper.items():
                 # Only rename if name has changed
                 if newname != oldname:
                     try:
-                        i = self._columns.index(oldname)
-                        self._columns[i] = newname
-                        self.data[newname] = self.data[oldname]
-                        del self.data[oldname]
+                        i = obj._columns.index(oldname)
+                        obj._columns[i] = newname
+                        obj.data[newname] = obj.data[oldname]
+                        del obj.data[oldname]
                     except:
                         pass
         else:
             raise TypeError("Argument must be callable or dict-like")
-        return self
+        if not inplace:
+            return obj
 
     def append(self, other, ordered=True):
         """
@@ -1434,10 +1471,12 @@ class DataFrame(UserDict):
             res._size = self._size
             res._bytes = self._bytes
             res._empty = self._empty
-            res._columns = self._columns
+            res._columns = self._columns[:]  # if this is not a slice, droping columns modifies both
 
             for key, val in self.items():
                 res[key] = val[:]
+
+            res._set_index(Index(self.index.index))
 
             return res
         else:
