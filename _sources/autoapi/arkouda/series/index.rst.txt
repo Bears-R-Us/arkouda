@@ -177,6 +177,16 @@ Classes
       :type nkeys: number of keys, if a multi-index was registerd
 
 
+   .. py:method:: is_registered(self)
+
+      Checks if all components of the Series object are registered
+
+      :returns: True if all components are registered, false if not
+      :rtype: bool
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
+
+
    .. py:method:: _all_aligned(array)
       :staticmethod:
 

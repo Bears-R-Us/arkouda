@@ -236,6 +236,7 @@ Functions
    arkouda.get_callback
    arkouda.unique
    arkouda.in1dmulti
+   arkouda.list_registry
    arkouda.is_sorted
    arkouda.array
    arkouda.arange
@@ -16918,6 +16919,18 @@ Attributes
              * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
+.. py:function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
 .. py:class:: Index(index)
 
    .. py:method:: __getitem__(self, key)
@@ -16951,6 +16964,16 @@ Attributes
 
 
    .. py:method:: register(self, label)
+
+
+   .. py:method:: is_registered(self)
+
+      Return True if the object is contained in the registry
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
 
 
    .. py:method:: to_dict(self, label)
@@ -17183,6 +17206,16 @@ Attributes
       :type label: name used to register the series
       :param nkeys:
       :type nkeys: number of keys, if a multi-index was registerd
+
+
+   .. py:method:: is_registered(self)
+
+      Checks if all components of the Series object are registered
+
+      :returns: True if all components are registered, false if not
+      :rtype: bool
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
 
 
    .. py:method:: _all_aligned(array)

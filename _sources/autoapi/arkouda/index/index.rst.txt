@@ -53,6 +53,16 @@ Classes
    .. py:method:: register(self, label)
 
 
+   .. py:method:: is_registered(self)
+
+      Return True if the object is contained in the registry
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
    .. py:method:: to_dict(self, label)
 
 
