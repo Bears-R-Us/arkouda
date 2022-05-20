@@ -1,4 +1,5 @@
 import pandas as pd  # type: ignore
+from typing import Optional
 
 from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import arange, ones
@@ -8,11 +9,13 @@ from arkouda.dtypes import int64, float64, bool
 from arkouda.util import register, convert_if_categorical, concatenate, get_callback
 from arkouda.groupbyclass import unique, GroupBy
 from arkouda.alignment import in1dmulti
+from arkouda.infoclass import list_registry
 
 class Index:
     def __init__(self, index):
         self.index = index
         self.size = index.size
+        self.name: Optional[str] = None
 
     def __getitem__(self,key):
         from arkouda.series import Series
@@ -27,6 +30,8 @@ class Index:
         return len(self.index)
 
     def __eq__(self,v):
+        if isinstance(v, Index):
+            return self.index == v.index
         return self.index == v
 
     @staticmethod
@@ -54,7 +59,24 @@ class Index:
 
     def register(self, label):
         register(self.index, "{}_key".format(label))
+        self.name = label
         return 1
+
+    def is_registered(self):
+        """
+        Return True if the object is contained in the registry
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        return f"{self.name}_key" in list_registry()
 
     def to_dict(self, label):
         data = {}
