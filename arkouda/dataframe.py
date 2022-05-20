@@ -9,7 +9,7 @@ import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
 import random
 import json
-from typing import cast, Union, List
+from typing import cast, Union, List, Callable
 from typeguard import typechecked
 
 from arkouda.segarray import SegArray
@@ -641,7 +641,7 @@ class DataFrame(UserDict):
         self._set_index(idx_to_keep)
 
     @typechecked
-    def drop(self, keys: Union[str, int, List[str], List[int]],
+    def drop(self, keys: Union[str, int, List[Union[str, int]]],
              axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]:
         """
         Drop column/s or row/s from the dataframe, in-place.
@@ -694,6 +694,8 @@ class DataFrame(UserDict):
 
         if not inplace:
             return obj
+
+        return None
 
     def drop_duplicates(self, subset=None, keep='first'):
         """
@@ -836,6 +838,7 @@ class DataFrame(UserDict):
 
         if not inplace:
             return obj
+        return None
 
     @property
     def info(self):
@@ -886,7 +889,7 @@ class DataFrame(UserDict):
             self._size = sizes.pop()
 
     @typechecked
-    def rename(self, mapper: Union[callable, dict], inplace: bool = False) -> Union[None, DataFrame]:
+    def rename(self, mapper: Union[Callable, dict], inplace: bool = False) -> Union[None, DataFrame]:
         """
         Rename columns in-place according to a mapping.
 
@@ -933,6 +936,7 @@ class DataFrame(UserDict):
             raise TypeError("Argument must be callable or dict-like")
         if not inplace:
             return obj
+        return None
 
     def append(self, other, ordered=True):
         """
