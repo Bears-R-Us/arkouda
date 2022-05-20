@@ -52,6 +52,4 @@ lanl_options = {
 }
 
 
-OPTIONS = {
-    "lanl": lanl_options
-}
+OPTIONS = {"lanl": lanl_options}

@@ -8,11 +8,7 @@ import multiprocessing as mp
 
 
 def _normalize_dtype(col, dtype):
-    if (
-        dtype == np.str_
-        or dtype == str
-        or (isinstance(dtype, str) and dtype in "strings")
-    ):
+    if dtype == np.str_ or dtype == str or (isinstance(dtype, str) and dtype in "strings"):
         normdtype = np.dtype("str")
     elif dtype is not None:
         # data = col.astype(dtype).values
@@ -40,11 +36,7 @@ def pack_strings(column):
 
 
 def _cast_values(col, dtype):
-    if (
-        dtype == np.str_
-        or dtype == str
-        or (isinstance(dtype, str) and dtype in "strings")
-    ):
+    if dtype == np.str_ or dtype == str or (isinstance(dtype, str) and dtype in "strings"):
         data = pack_strings(col)
     elif dtype is not None:
         data = col.astype(dtype).values
@@ -148,9 +140,7 @@ def convert_files(filenames, outdir, extension, options, nprocs):
         _ = list(tqdm(map(convert_file, arglist), total=len(filenames)))
     else:
         with mp.Pool(nprocs) as pool:
-            _ = list(
-                tqdm(pool.imap_unordered(convert_file, arglist), total=len(filenames))
-            )
+            _ = list(tqdm(pool.imap_unordered(convert_file, arglist), total=len(filenames)))
 
 
 def read_hdf(filenames):
@@ -179,9 +169,7 @@ def _hdf_alloc(filenames):
     # Last entry is total length; remove it so it won't be used as offset
     total = offsets.pop()
     # Allocate uninitialized memory for concatenated columns
-    columns = {
-        col: pd.Series(np.empty(shape=(total,), dtype=dtypes[col])) for col in dtypes
-    }
+    columns = {col: pd.Series(np.empty(shape=(total,), dtype=dtypes[col])) for col in dtypes}
     return pd.DataFrame(columns), offsets, lengths
 
 
@@ -199,9 +187,7 @@ def _get_column_metadata(filename, dtype_attr="dtype"):
             if length == -1:
                 length = dset.shape[0]
             else:
-                assert (
-                    length == dset.shape[0]
-                ), f"Columns of unequal length in {filename}"
+                assert length == dset.shape[0], f"Columns of unequal length in {filename}"
     return dtypes, length
 
 

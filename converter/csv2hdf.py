@@ -34,9 +34,7 @@ if __name__ == "__main__":
         default=cpu_count(),
         help="Number of worker processes to use (Default: all available cores)",
     )
-    parser.add_argument(
-        "--extension", default=".hdf", help="Output file extension (Default: .hdf)"
-    )
+    parser.add_argument("--extension", default=".hdf", help="Output file extension (Default: .hdf)")
     parser.add_argument(
         "--format",
         required=True,
@@ -52,9 +50,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     exec(import_local(args.formats_file))
     if args.format not in CUSTOM:
-        raise ValueError(
-            f"Netflow format not found. Detected formats: {set(CUSTOM.keys())}"
-        )
-    hdflow.convert_files(
-        args.filenames, args.outdir, args.extension, CUSTOM[args.format], args.jobs
-    )
+        raise ValueError(f"Netflow format not found. Detected formats: {set(CUSTOM.keys())}")
+    hdflow.convert_files(args.filenames, args.outdir, args.extension, CUSTOM[args.format], args.jobs)
