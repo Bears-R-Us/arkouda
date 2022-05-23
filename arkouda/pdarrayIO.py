@@ -593,7 +593,8 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
 def import_data(read_path: str, write_file: str = None,
                 return_obj: bool = True, index: bool = False):
     """
-    Import data from Pandas to Arkouda readable format
+    Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
+    a file formatted to be read by Arkouda.
 
     Parameters
     __________
