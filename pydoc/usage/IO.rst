@@ -106,6 +106,16 @@ Arkouda is able to import Pandas data from save files. Additionally, Arkouda is 
 - HDF5
 - Parquet
 
+These save formats are customizable and allow for schemas to be created to fit specific needs. As a result, a file written by Arkouda is not always able to be read by other applications. The import/export features of Arkouda allow for files to be reformatted for reading by Pandas and vice versa.
+
+**Import**
+Importing data takes a file that was saved using Pandas and reads it into Arkouda. The user is able to specify if they would like to save the result to a file that can be read by Arkouda and/or return the resulting Arkouda object.
+
+**Export**
+Export takes a file taht was saved using Arkouda and reads it into Pandas. The user is able to specify if they would like to save the result to a file that can be read by Pandas and/or return the resulting Pandas object.
+
+Note: If the file being read in is Parquet, the resulting file that can be read by Arkouda will also be Parquet. This is also true for HDF5.
+
 This functionality is currently performed on the client and is assuming that dataset sizes are able to be handled in the client due to being written by Pandas. Arkouda natively verifies the size of data before writing it to the client, so exports are limited.
 
 .. autofunction:: arkouda.import_data
