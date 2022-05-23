@@ -591,7 +591,7 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
 
 
 def import_data(read_path: str, write_file: str = None,
-                return_obj: bool = False, index: bool = False):
+                return_obj: bool = True, index: bool = False):
     """
     Import data from Pandas to Arkouda readable format
 
@@ -602,7 +602,7 @@ def import_data(read_path: str, write_file: str = None,
     write_to: str, optional
         path to file to write arkouda formatted data to. Only write file if provided
     return_obj: bool, optional
-        Default False. When True return the Arkouda DataFrame object
+        Default True. When True return the Arkouda DataFrame object, otherwise return None
     index: bool, optional
         Default False. When True, maintain the indexes loaded from the pandas file
 
@@ -663,7 +663,7 @@ def import_data(read_path: str, write_file: str = None,
 
 
 def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None,
-           return_obj: bool = False, index: bool = False):
+           return_obj: bool = True, index: bool = False):
     """
     Export data from arkouda to Pandas readable format
 
@@ -678,7 +678,7 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
     write_file: str, optional
         path to file to write arkouda formatted data to. Only write the file if this is set
     return_obj: bool, optional
-        Default False. When True return the Arkouda DataFrame object
+        Default True. When True return the Pandas DataFrame object, otherwise return None
 
 
     Raises
