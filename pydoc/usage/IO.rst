@@ -101,7 +101,7 @@ This functionality allows the columns be loaded as datasets, which creates a map
 
 Import/Export
 =============
-Arkouda is able to import Pandas data from save files. Additionally, Arkouda is able to export data to pandas formatting. The file formats supported are:
+Import allows users to import data written by pandas into arkouda. Export allows users to write arkouda data into a format pandas can read. The file formats supported are:
 
 - HDF5
 - Parquet
