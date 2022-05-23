@@ -665,7 +665,8 @@ def import_data(read_path: str, write_file: str = None,
 def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None,
            return_obj: bool = True, index: bool = False):
     """
-    Export data from arkouda to Pandas readable format
+    Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
+    readable by Pandas
 
     Parameters
     __________
@@ -699,6 +700,8 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
 
     Notes
     _____
+    - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
+    will remain parquet and hdf5 will remain hdf5.
     - Import can only be performed from hdf5 or parquet files.
     - Import is only designed to import data from Pandas.
     - Arkouda formatted parquet files are readable by Pandas, but there can be issues with the multi-locale storage so
