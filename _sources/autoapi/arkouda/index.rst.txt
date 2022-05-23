@@ -84,9 +84,9 @@ Classes
    arkouda.pdarray
    arkouda.Categorical
    arkouda.GroupBy
-   arkouda.Datetime
    arkouda.Categorical
    arkouda.Strings
+   arkouda.Datetime
    arkouda.CachedAccessor
    arkouda.Properties
    arkouda.DatetimeAccessor
@@ -21243,99 +21243,6 @@ Attributes
    >>> plt.show()
 
 
-.. py:class:: Datetime(array, unit: str = _BASE_UNIT)
-
-   Bases: :py:obj:`_AbstractBaseTime`
-
-   Represents a date and/or time.
-
-   Datetime is the Arkouda analog to pandas DatetimeIndex and
-   other timeseries data types.
-
-   :param array:
-   :type array: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
-   :param uint: For int64 pdarray, denotes the unit of the input. Ignored for pandas
-                and numpy arrays, which carry their own unit. Not case-sensitive;
-                prefixes of full names (like 'sec') are accepted.
-
-                Possible values:
-
-                * 'weeks' or 'w'
-                * 'days' or 'd'
-                * 'hours' or 'h'
-                * 'minutes', 'm', or 't'
-                * 'seconds' or 's'
-                * 'milliseconds', 'ms', or 'l'
-                * 'microseconds', 'us', or 'u'
-                * 'nanoseconds', 'ns', or 'n'
-
-                Unlike in pandas, units cannot be combined or mixed with integers
-   :type uint: str, default 'ns'
-
-   .. rubric:: Notes
-
-   The ``.values`` attribute is always in nanoseconds with int64 dtype.
-
-   .. py:attribute:: supported_with_datetime
-      
-
-      
-
-   .. py:attribute:: supported_with_r_datetime
-      
-
-      
-
-   .. py:attribute:: supported_with_timedelta
-      
-
-      
-
-   .. py:attribute:: supported_with_r_timedelta
-      
-
-      
-
-   .. py:attribute:: supported_opeq
-      
-
-      
-
-   .. py:attribute:: supported_with_pdarray
-      
-
-      
-
-   .. py:attribute:: supported_with_r_pdarray
-      
-
-      
-
-   .. py:method:: _get_callback(cls, otherclass, op)
-      :classmethod:
-
-
-   .. py:method:: _scalar_callback(self, scalar)
-
-
-   .. py:method:: _is_supported_scalar(scalar)
-      :staticmethod:
-
-
-   .. py:method:: to_pandas(self)
-
-      Convert array to a pandas DatetimeIndex. Note: if the array size
-      exceeds client.maxTransferBytes, a RuntimeError is raised.
-
-      .. seealso:: :obj:`to_ndarray`
-
-
-   .. py:method:: sum(self)
-
-      Return the sum of all elements in the array.
-
-
-
 .. py:class:: Categorical(values, **kwargs)
 
    Represents an array of values belonging to named categories. Converting a
@@ -23057,6 +22964,99 @@ Attributes
       :type user_defined_name: str
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+
+.. py:class:: Datetime(array, unit: str = _BASE_UNIT)
+
+   Bases: :py:obj:`_AbstractBaseTime`
+
+   Represents a date and/or time.
+
+   Datetime is the Arkouda analog to pandas DatetimeIndex and
+   other timeseries data types.
+
+   :param array:
+   :type array: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
+   :param uint: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type uint: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
+
+   .. py:attribute:: supported_with_datetime
+      
+
+      
+
+   .. py:attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. py:attribute:: supported_with_timedelta
+      
+
+      
+
+   .. py:attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. py:attribute:: supported_opeq
+      
+
+      
+
+   .. py:attribute:: supported_with_pdarray
+      
+
+      
+
+   .. py:attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. py:method:: _get_callback(cls, otherclass, op)
+      :classmethod:
+
+
+   .. py:method:: _scalar_callback(self, scalar)
+
+
+   .. py:method:: _is_supported_scalar(scalar)
+      :staticmethod:
+
+
+   .. py:method:: to_pandas(self)
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. py:method:: sum(self)
+
+      Return the sum of all elements in the array.
 
 
 
