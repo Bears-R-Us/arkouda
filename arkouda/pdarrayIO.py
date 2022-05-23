@@ -669,8 +669,8 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
 
     Parameters
     __________
-    rd_filename: str
-        path to file where pandas data is stored.
+    read_path: str
+        path to file where arkouda data is stored.
     dataset_name: str
         name to store dataset under
     index: bool
