@@ -7,6 +7,7 @@ from typing import List
 from sphinx.application import Sphinx
 from sphinx.directives.code import CodeBlock
 
+
 class SubstitutionCodeBlock(CodeBlock):  # type: ignore
     """
     Similar to CodeBlock but replaces placeholders with variables.
@@ -36,5 +37,5 @@ def setup(app: Sphinx) -> None:
     """
     Add the custom directives to Sphinx.
     """
-    app.add_config_value('substitutions', [], 'html')
-    app.add_directive('substitution-code-block', SubstitutionCodeBlock)
+    app.add_config_value("substitutions", [], "html")
+    app.add_directive("substitution-code-block", SubstitutionCodeBlock)
