@@ -601,7 +601,7 @@ def import_data(read_path: str, write_file: str = None,
     __________
     read_path: str
         path to file where pandas data is stored. This can be glob expression for parquet formats.
-    write_to: str, optional
+    write_file: str, optional
         path to file to write arkouda formatted data to. Only write file if provided
     return_obj: bool, optional
         Default True. When True return the Arkouda DataFrame object, otherwise return None
@@ -701,10 +701,8 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
     _____
     - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
     will remain parquet and hdf5 will remain hdf5.
-    - Import can only be performed from hdf5 or parquet files.
-    - Import is only designed to import data from Pandas.
-    - Arkouda formatted parquet files are readable by Pandas, but there can be issues with the multi-locale storage so
-    we load them into Arkouda to ensure proper functionality.
+    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
+    the same file type, but formatted to be read by Pandas.
     """
     from arkouda.dataframe import DataFrame
 
