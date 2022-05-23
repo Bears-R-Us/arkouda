@@ -1,40 +1,46 @@
 import json
 from json import JSONEncoder
-from typing import cast, List, Union
+from typing import List, Union, cast
+
 from typeguard import typechecked
+
 from arkouda.client import generic_msg
 
-__all__ = ["AllSymbols", "RegisteredSymbols", "information", "list_registry", "list_symbol_table",
-           'pretty_print_information']
+__all__ = [
+    "AllSymbols",
+    "RegisteredSymbols",
+    "information",
+    "list_registry",
+    "list_symbol_table",
+    "pretty_print_information",
+]
 AllSymbols = "__AllSymbols__"
 RegisteredSymbols = "__RegisteredSymbols__"
 
 
 def auto_str(cls):
     def __str__(self):
-        return '%s(%s)' % (
-            type(self).__name__,
-            ', '.join('%s=%s' % item for item in vars(self).items())
-        )
+        return "%s(%s)" % (type(self).__name__, ", ".join("%s=%s" % item for item in vars(self).items()))
 
     cls.__str__ = __str__
     return cls
 
 
 class EntryDecoder(JSONEncoder):
-    def default(self, o): return o.__dict__
+    def default(self, o):
+        return o.__dict__
 
 
 @auto_str
 class InfoEntry:
     def __init__(self, **kwargs) -> None:
-        self.name = kwargs['name']
-        self.dtype = kwargs['dtype']
-        self.size = kwargs['size']
-        self.ndim = kwargs['ndim']
-        self.shape = kwargs['shape']
-        self.itemsize = kwargs['itemsize']
-        self.registered = kwargs['registered']
+        self.name = kwargs["name"]
+        self.dtype = kwargs["dtype"]
+        self.size = kwargs["size"]
+        self.ndim = kwargs["ndim"]
+        self.shape = kwargs["shape"]
+        self.itemsize = kwargs["itemsize"]
+        self.registered = kwargs["registered"]
 
 
 @typechecked
