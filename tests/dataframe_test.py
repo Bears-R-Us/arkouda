@@ -167,18 +167,24 @@ class DataFrameTest(ArkoudaTest):
         # create pandas df to validate functionality against
         pd_df = build_pd_df()
 
+        # test out of place drop
+        df_drop = df.drop([0, 1, 2])
+        pddf_drop = pd_df.drop(labels=[0, 1, 2])
+        pddf_drop.reset_index(drop=True, inplace=True)
+        self.assertTrue(pddf_drop.equals(df_drop.to_pandas()))
+
+        df_drop = df.drop('userName', axis=1)
+        pddf_drop = pd_df.drop(labels=['userName'], axis=1)
+        self.assertTrue(pddf_drop.equals(df_drop.to_pandas()))
+
         # Test dropping columns
-        df.drop('userName', axis=1)
+        df.drop('userName', axis=1, inplace=True)
         pd_df.drop(labels=['userName'], axis=1, inplace=True)
 
         self.assertTrue(((df.to_pandas() == pd_df).all()).all())
 
-        # verify that the index cannot be dropped from ak.DataFrame
-        with self.assertRaises(KeyError):
-            df.drop('index', axis=1)
-
         # Test dropping rows
-        df.drop([0, 2, 5])
+        df.drop([0, 2, 5], inplace=True)
         # pandas retains original indexes when dropping rows, need to reset to line up with arkouda
         pd_df.drop(labels=[0, 2, 5], inplace=True)
         pd_df.reset_index(drop=True, inplace=True)
@@ -219,14 +225,33 @@ class DataFrameTest(ArkoudaTest):
 
         slice_df = df[ak.array([1, 3, 5])]
         self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
-        slice_df.reset_index()
+
+        df_reset = slice_df.reset_index()
+        self.assertTrue((df_reset.index == ak.array([0, 1, 2])).all())
+        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+
+        slice_df.reset_index(inplace=True)
         self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
 
     def test_rename(self):
         df = build_ak_df()
 
         rename = {'userName': 'name_col', 'userID': 'user_id'}
-        df.rename(rename)
+
+        #Test out of Place
+        df_rename = df.rename(rename)
+        self.assertIn("user_id", df_rename.columns)
+        self.assertIn("name_col", df_rename.columns)
+        self.assertNotIn('userName', df_rename.columns)
+        self.assertNotIn('userID', df_rename.columns)
+        self.assertIn("userID", df.columns)
+        self.assertIn("userName", df.columns)
+        self.assertNotIn('user_id', df.columns)
+        self.assertNotIn('name_col', df.columns)
+
+
+        # Test in place
+        df.rename(rename, inplace=True)
         self.assertIn("user_id", df.columns)
         self.assertIn("name_col", df.columns)
         self.assertNotIn('userName', df.columns)
