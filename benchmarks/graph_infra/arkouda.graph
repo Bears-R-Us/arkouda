@@ -124,11 +124,11 @@ files: flatten.dat, flatten.dat, flatten.dat
 graphtitle: Flatten Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: _get_head_tail_server Average rate =, _get_head_tail Average rate =
-graphkeys: _get_head_tail_server Average rate GiB/s, _get_head_tail Average rate GiB/s
+perfkeys: _get_head_tail_server Average time =, _get_head_tail Average time =
+graphkeys: _get_head_tail_server Average time s, _get_head_tail Average time s
 files: dataframe.dat, dataframe.dat
 graphtitle: DataFrame Display Performance
-ylabel: Performance (GiB/s)
+ylabel: Time (Seconds)
 
 perfkeys: Average rate =
 graphkeys: Noop ops/s
