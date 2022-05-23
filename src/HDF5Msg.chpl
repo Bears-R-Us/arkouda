@@ -1714,7 +1714,7 @@ module HDF5Msg {
                             C_HDF5.H5P_DEFAULT);
 
         // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
-        var akVersion = c_calloc(c_char, arkoudaVersion.size);
+        var akVersion = c_calloc(c_char, arkoudaVersion.size+1);
         for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
             akVersion[i] = c:c_char;
         }
