@@ -2,7 +2,7 @@ import pandas as pd  # type: ignore
 import random
 import string
 
-import os
+import os, glob
 from shutil import rmtree
 import pytest
 
@@ -451,6 +451,7 @@ class DataFrameTest(ArkoudaTest):
 
     @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_save_table(self):
+        d = f"{os.getcwd()}/save_table_test"
         i = list(range(3))
         c1 = [9, 7, 17]
         c2 = [2, 4, 6]
@@ -469,11 +470,15 @@ class DataFrameTest(ArkoudaTest):
         })
 
         # make directory to save to so pandas read works
-        os.mkdir(f"{os.getcwd()}/save_table_test")
-        akdf.save_table(f"{os.getcwd()}/save_table_test/testName", file_format='Parquet')
+        os.mkdir(d)
+        akdf.save_table(f"{d}/testName", file_format='Parquet')
 
-        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName")
+        ak_loaded = ak.DataFrame.load_table(f"{d}/testName")
         self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+
+        # test save with index true
+        akdf.save_table(f"{d}/testName_with_index.pq", file_format='Parquet', index=True)
+        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()['numLocales'])
 
         # Commenting the read into pandas out because it requires optional libraries
         # pddf = pd.read_parquet("save_table_test", engine='pyarrow')

@@ -1,15 +1,19 @@
 import pandas as pd  # type: ignore
 from typing import Optional
+import json
+from typing import cast as typecast
 
 from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import arange, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
-from arkouda.dtypes import int64, float64, bool
+from arkouda.dtypes import int64 as akint64, float64 as akfloat64, bool as akbool
 from arkouda.util import register, convert_if_categorical, concatenate, get_callback
 from arkouda.groupbyclass import unique, GroupBy
 from arkouda.alignment import in1dmulti
 from arkouda.infoclass import list_registry
+from arkouda.client import generic_msg
+
 
 class Index:
     def __init__(self, index):
@@ -115,7 +119,7 @@ class Index:
 
     def argsort(self, ascending=True):
         if not ascending:
-            if isinstance(self.index, pdarray) and self.index.dtype in (int64, float64):
+            if isinstance(self.index, pdarray) and self.index.dtype in (akint64, akfloat64):
                 i = argsort(-self.index)
             else:
                 i = argsort(self.index)[arange(self.index.size - 1, -1, -1)]
@@ -134,6 +138,96 @@ class Index:
             raise TypeError("Lookup must be on an arkouda array")
 
         return in1d(self.index, key)
+
+    def save(self, prefix_path: str, dataset: str = 'index', mode: str = 'truncate',
+             compressed: bool = False, file_format: str = 'HDF5') -> str:
+        """
+        Save the index to HDF5 or Parquet. The result is a collection of files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', attempt to create new dataset in existing files.
+        compressed : bool
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing. This is currently only supported on Parquet files and will
+            not impact the generated files when writing HDF5 files.
+        file_format : str {'HDF5', 'Parquet'}
+            By default, saved files will be written to the HDF5 file format. If
+            'Parquet', the files will be written to the Parquet file format. This
+            is case insensitive.
+
+        Returns
+        -------
+        string message indicating result of save operation
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        ValueError
+            Raised if there is an error in parsing the prefix path pointing to
+            file write location or if the mode parameter is neither truncate
+            nor append
+        TypeError
+            Raised if any one of the prefix_path, dataset, or mode parameters
+            is not a string
+
+        See Also
+        --------
+        save_all, load, read
+
+        Notes
+        -----
+        The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+
+        Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales``. If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+
+        Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+        This will require you to use load as if you saved the file with the extension. Try this if
+        an older file is not being found.
+
+        Any file extension can be used. The file I/O does not rely on the extension to determine the file format.
+        """
+        if mode.lower() in ['a', 'app', 'append']:
+            m = 1
+        elif mode.lower() in ['t', 'trunc', 'truncate']:
+            m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        if file_format.lower() == 'hdf5':
+            cmd = "tohdf"
+        elif file_format.lower() == 'parquet':
+            cmd = "writeParquet"
+        else:
+            raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
+
+        """
+        If offsets are provided, add to the json_array as the offsets will be used to 
+        retrieve the array elements from the hdf5 files.
+        """
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+        strings_placeholder = False
+
+        return typecast(str, generic_msg(cmd=cmd, args=f"{self.index.name} {dataset} {m} {json_array} "
+                                                   f"{self.index.dtype} {strings_placeholder} {compressed}"))
 
 
 class MultiIndex(Index):
@@ -163,7 +257,7 @@ class MultiIndex(Index):
     def __eq__(self,v):
         if type(v) != list and type(v) != tuple:
             raise TypeError("Cannot compare MultiIndex to a scalar")
-        retval = ones(len(self), dtype=bool)
+        retval = ones(len(self), dtype=akbool)
         for a,b in zip(self.index, v):
             retval &= (a == b)
         return retval
