@@ -676,7 +676,7 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
     index: bool
         Default False. When True, maintain the indexes loaded from the pandas file
     write_file: str, optional
-        path to file to write arkouda formatted data to. Only write the file if this is set
+        path to file to write pandas formatted data to. Only write the file if this is set
     return_obj: bool, optional
         Default True. When True return the Pandas DataFrame object, otherwise return None
 
