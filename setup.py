@@ -153,7 +153,7 @@ setup(
     extras_require={  # Optional
         'dev': ['h5py','pexpect', 'pytest', 
                 'pytest-env','Sphinx', 'sphinx-argparse', 
-                'sphinx-autoapi', 'mypy>=0.931', 'typed-ast'],
+                'sphinx-autoapi', 'mypy==0.931', 'typed-ast'],
     },
     # replace original install command with version that also builds
     # chapel and the arkouda server.
