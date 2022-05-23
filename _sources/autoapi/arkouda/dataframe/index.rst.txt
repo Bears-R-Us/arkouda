@@ -158,7 +158,7 @@ Functions
           The indexes to be dropped on the given axis
 
 
-   .. py:method:: drop(self, keys, axis=0)
+   .. py:method:: drop(self, keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
 
       Drop column/s or row/s from the dataframe, in-place.
 
@@ -166,6 +166,12 @@ Functions
       :type keys: str, int or list
       :param axis: The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns
       :type axis: int or str
+      :param inplace: Default False. When True, perform the operation on the calling object.
+                      When False, return a new object.
+      :type inplace: bool
+
+      :returns: * DateFrame when `inplace=False`
+                * None when `inplace=True`
 
       .. rubric:: Examples
 
@@ -223,7 +229,7 @@ Functions
    .. py:method:: _set_index(self, value)
 
 
-   .. py:method:: reset_index(self, size=False)
+   .. py:method:: reset_index(self, size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
@@ -234,6 +240,12 @@ Functions
       :param size: If size is passed, do not attempt to determine size based on
                    existing column sizes. Assume caller handles consistency correctly.
       :type size: int
+      :param inplace: Default False. When True, perform the operation on the calling object.
+                      When False, return a new object.
+      :type inplace: bool
+
+      :returns: * DateFrame when `inplace=False`
+                * None when `inplace=True`
 
       .. note::
 
@@ -252,7 +264,7 @@ Functions
       Computes the number of bytes on the arkouda server.
 
 
-   .. py:method:: rename(self, mapper)
+   .. py:method:: rename(self, mapper: Union[Callable, dict], inplace: bool = False) -> Union[None, DataFrame]
 
       Rename columns in-place according to a mapping.
 
@@ -260,10 +272,12 @@ Functions
                      new column names. Nonexistent names will not raise an
                      error.
       :type mapper: callable or dict-like
+      :param inplace: Default False. When True, perform the operation on the calling object.
+                      When False, return a new object.
+      :type inplace: bool
 
-      :returns: Renaming occurs in-place, but result is also returned,
-                for compatibility.
-      :rtype: self
+      :returns: * DateFrame when `inplace=False`
+                * None when `inplace=True`
 
 
    .. py:method:: append(self, other, ordered=True)
