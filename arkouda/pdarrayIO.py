@@ -627,9 +627,7 @@ def import_data(read_path: str, write_file: str = None,
 
     Notes
     _____
-    - Import can only be performed from hdf5 or parquet files.
-    - Import is only designed to import data from Pandas. Additional format support will require attribute validation
-    to occur before parsing the file.
+    - Import can only be performed from hdf5 or parquet files written by pandas.
     """
     from arkouda.dataframe import DataFrame
     # verify file path
