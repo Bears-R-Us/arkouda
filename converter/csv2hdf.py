@@ -16,9 +16,10 @@ def import_local(path):
 
 
 if __name__ == "__main__":
-    import hdflow
-    from multiprocessing import cpu_count
     import argparse
+    from multiprocessing import cpu_count
+
+    import hdflow
 
     parser = argparse.ArgumentParser(
         description="Convert CSV files with numeric data to HDF5 files in parallel."

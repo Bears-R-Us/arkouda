@@ -1,10 +1,11 @@
-import pandas as pd
-import numpy as np
-import h5py
+import multiprocessing as mp
 import os
 from itertools import repeat
+
+import h5py
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
-import multiprocessing as mp
 
 
 def _normalize_dtype(col, dtype):
