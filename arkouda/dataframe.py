@@ -324,7 +324,7 @@ class DataFrame(UserDict):
         if key not in self.columns:
             raise AttributeError(f'Attribute {key} not found')
         # Should this be cached?
-        return Series(data=self[key], index=self.index)
+        return Series(data=self[key], index=self.index.index)
 
     def __dir__(self):
         return dir(DataFrame) + self.columns
