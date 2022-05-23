@@ -1,6 +1,6 @@
-from arkouda.timeclass import Datetime
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
+from arkouda.timeclass import Datetime
 
 
 class CachedAccessor:
