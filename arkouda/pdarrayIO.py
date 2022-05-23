@@ -683,8 +683,6 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
 
     Raises
     ______
-    RuntimeWarning
-        - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
     RuntimeError
         - Unsupported file type
 
