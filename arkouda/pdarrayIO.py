@@ -590,6 +590,7 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
             arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='append')
 
 
+@typechecked
 def import_data(read_path: str, write_file: str = None,
                 return_obj: bool = True, index: bool = False):
     """
@@ -632,7 +633,6 @@ def import_data(read_path: str, write_file: str = None,
     from arkouda.dataframe import DataFrame
     # verify file path
     is_glob = False if os.path.isfile(read_path) else True
-    print(is_glob)
     file_list = glob.glob(read_path)
     if len(file_list) == 0:
         raise FileNotFoundError(f"Invalid read_path, {read_path}. No files found.")
@@ -660,7 +660,7 @@ def import_data(read_path: str, write_file: str = None,
     if return_obj:
         return df
 
-
+@typechecked
 def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None,
            return_obj: bool = True, index: bool = False):
     """
