@@ -611,8 +611,8 @@ class DataFrame(UserDict):
             The labels to be dropped on the given axis
         """
         for key in keys:
-            self.pop(key, None)
-            # del self[key]
+            # This will raise an exception if key does not exist. Use self.pop(key, None) if we do not want to error
+            del self[key]
 
     def _drop_row(self, keys):
         """
