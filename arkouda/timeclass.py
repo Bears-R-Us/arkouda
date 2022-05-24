@@ -1,6 +1,6 @@
 from arkouda.pdarrayclass import pdarray
 from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_timedelta # type: ignore
-from arkouda.dtypes import int64, intTypes, isSupportedInt
+from arkouda.dtypes import int64, intTypes, isSupportedInt, int_scalars
 from arkouda.pdarraycreation import from_series, array as ak_array
 from arkouda.numeric import cast, abs as akabs
 import numpy as np # type: ignore
@@ -471,7 +471,7 @@ class Timedelta(_AbstractBaseTime):
         '''
         return to_timedelta(self.to_ndarray())
 
-    def std(self, ddof: Union[int, np.int64, np.uint64] = 0):
+    def std(self, ddof: int_scalars = 0):
         '''
         Returns the standard deviation as a pd.Timedelta object
         '''
