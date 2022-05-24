@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Data I/O &#8212; arkouda 0+untagged.1.g6e290ed documentation</title>
+    <title>Data I/O &#8212; arkouda 0+untagged.1.g47cdd63 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -582,6 +582,105 @@ Defaults to ‘HDF5’</p></li>
 <dd></dd></dl>
 
 </section>
+</section>
+<section id="import-export">
+<h2>Import/Export<a class="headerlink" href="#import-export" title="Permalink to this headline">¶</a></h2>
+<p>Import allows users to import data written by pandas into arkouda. Export allows users to write arkouda data into a format pandas can read. The file formats supported are:</p>
+<ul class="simple">
+<li><p>HDF5</p></li>
+<li><p>Parquet</p></li>
+</ul>
+<p>These save formats are customizable and allow for schemas to be created to fit specific needs. As a result, a file written by Arkouda is not always able to be read by other applications. The import/export features of Arkouda allow for files to be reformatted for reading by Pandas and vice versa.</p>
+<p><strong>Import</strong>
+Importing data takes a file that was saved using Pandas and reads it into Arkouda. The user is able to specify if they would like to save the result to a file that can be read by Arkouda and/or return the resulting Arkouda object.</p>
+<p><strong>Export</strong>
+Export takes a file taht was saved using Arkouda and reads it into Pandas. The user is able to specify if they would like to save the result to a file that can be read by Pandas and/or return the resulting Pandas object.</p>
+<p>Note: If the file being read in is Parquet, the resulting file that can be read by Arkouda will also be Parquet. This is also true for HDF5.</p>
+<p>This functionality is currently performed on the client and is assuming that dataset sizes are able to be handled in the client due to being written by Pandas. Arkouda natively verifies the size of data before writing it to the client, so exports are limited.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.import_data">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.import_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
+a file formatted to be read by Arkouda.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>read_path</strong> (<em>str</em>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
+<li><p><strong>write_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
+<li><p><strong>return_obj</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default True. When True return the Arkouda DataFrame object, otherwise return None</p></li>
+<li><p><strong>index</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeWarning</strong> – <ul>
+<li><p>Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.</p></li>
+</ul>
+</p></li>
+<li><p><strong>RuntimeError</strong> – <ul>
+<li><p>Unsupported file type</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>When <cite>return_obj=True</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.to_parquet</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.to_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.read_parquet</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.export</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Import can only be performed from hdf5 or parquet files written by pandas.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.export">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ak_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
+readable by Pandas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>read_path</strong> (<em>str</em>) – path to file where arkouda data is stored.</p></li>
+<li><p><strong>dataset_name</strong> (<em>str</em>) – name to store dataset under</p></li>
+<li><p><strong>index</strong> (<em>bool</em>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
+<li><p><strong>write_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to file to write pandas formatted data to. Only write the file if this is set</p></li>
+<li><p><strong>return_obj</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default True. When True return the Pandas DataFrame object, otherwise return None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – <ul class="simple">
+<li><p>Unsupported file type</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>When <cite>return_obj=True</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.to_parquet</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.to_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.read_parquet</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.import_data</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If Arkouda file is exported for pandas, the format will not change. This mean parquet files</p></li>
+</ul>
+<p>will remain parquet and hdf5 will remain hdf5.
+- Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
+the same file type, but formatted to be read by Pandas.</p>
+</dd></dl>
+
 </section>
 </section>
 

@@ -21,6 +21,8 @@ Functions
    arkouda.pdarrayIO.get_filetype
    arkouda.pdarrayIO.load_all
    arkouda.pdarrayIO.save_all
+   arkouda.pdarrayIO.import_data
+   arkouda.pdarrayIO.export
 
 
 
@@ -279,5 +281,63 @@ Functions
 
    >>> # Save using names instead of mapping
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
+
+
+.. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
+
+   Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
+   a file formatted to be read by Arkouda.
+
+   :param read_path: path to file where pandas data is stored. This can be glob expression for parquet formats.
+   :type read_path: str
+   :param write_file: path to file to write arkouda formatted data to. Only write file if provided
+   :type write_file: str, optional
+   :param return_obj: Default True. When True return the Arkouda DataFrame object, otherwise return None
+   :type return_obj: bool, optional
+   :param index: Default False. When True, maintain the indexes loaded from the pandas file
+   :type index: bool, optional
+
+   :raises RuntimeWarning: - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
+   :raises RuntimeError: - Unsupported file type
+
+   :returns: When `return_obj=True`
+   :rtype: pd.DataFrame
+
+   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.export`
+
+   .. rubric:: Notes
+
+   - Import can only be performed from hdf5 or parquet files written by pandas.
+
+
+.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: str = None, return_obj: bool = True, index: bool = False)
+
+   Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
+   readable by Pandas
+
+   :param read_path: path to file where arkouda data is stored.
+   :type read_path: str
+   :param dataset_name: name to store dataset under
+   :type dataset_name: str
+   :param index: Default False. When True, maintain the indexes loaded from the pandas file
+   :type index: bool
+   :param write_file: path to file to write pandas formatted data to. Only write the file if this is set
+   :type write_file: str, optional
+   :param return_obj: Default True. When True return the Pandas DataFrame object, otherwise return None
+   :type return_obj: bool, optional
+
+   :raises RuntimeError: - Unsupported file type
+
+   :returns: When `return_obj=True`
+   :rtype: pd.DataFrame
+
+   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.import_data`
+
+   .. rubric:: Notes
+
+   - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
+   will remain parquet and hdf5 will remain hdf5.
+   - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
+   the same file type, but formatted to be read by Pandas.
 
 
