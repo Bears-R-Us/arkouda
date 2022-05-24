@@ -60,6 +60,7 @@ def successful_completed_process(p: subprocess.CompletedProcess):
 def parallel_test(unit_tests):
     import queue
     import threading
+
     q = queue.Queue()
 
     results = {}  # used to store the results
@@ -89,16 +90,9 @@ def parallel_test(unit_tests):
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()
-    parser.add_option("-f", "--file",
-                      dest="filename",
-                      help="Run single test file",
-                      metavar="FILE")
-    parser.add_option("-d", "--dir",
-                      dest="dir",
-                      help="Directory to look for test files")
-    parser.add_option("-t", "--threads",
-                      dest="num_threads",
-                      help="Number of worker threads, default 4")
+    parser.add_option("-f", "--file", dest="filename", help="Run single test file", metavar="FILE")
+    parser.add_option("-d", "--dir", dest="dir", help="Directory to look for test files")
+    parser.add_option("-t", "--threads", dest="num_threads", help="Number of worker threads, default 4")
 
     (options, args) = parser.parse_args()
     if options.num_threads:
@@ -109,7 +103,8 @@ if __name__ == "__main__":
 
     if options.dir or options.filename:
         tests = process_dir(options.dir if options.dir else options.filename)
-        if options.dir: tests = [f"{options.dir}/{t}" for t in tests]  # Set up relative path to Unit tests
+        if options.dir:
+            tests = [f"{options.dir}/{t}" for t in tests]  # Set up relative path to Unit tests
         print(f"Number of unit tests: {len(tests)}")
         print(f"Number of threads: {SLOTS}")
         print("Starting...")
