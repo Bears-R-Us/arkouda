@@ -6,6 +6,7 @@ module MultiTypeSymbolTable
     use Reflection;
     use ServerErrors;
     use Logging;
+    use Regex;
     
     use MultiTypeSymEntry;
     use Map;
@@ -469,6 +470,27 @@ module MultiTypeSymbolTable
             } else {
                 return false;
             }
+        }
+
+        /*
+        Attempts to find all sym entries that match the provided regex string, then 
+        returns a string array of matching names
+
+        :arg pattern: regex string to search for
+        :type pattern: string
+
+        :returns: string array containing matching entry names
+        */
+        proc findAll(pattern: string): [] string throws {
+            var regex = compile(pattern);
+            var infoStr = "";
+            for name in tab {
+                if name.match(regex) {
+                    infoStr += name + "+";
+                }
+            }
+            infoStr = infoStr.strip("+");
+            return infoStr.split("+");
         }
     }
 

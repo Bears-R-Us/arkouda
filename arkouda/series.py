@@ -5,7 +5,6 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas._config import get_option  # type: ignore
 from typeguard import typechecked
-
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
@@ -14,7 +13,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import argmaxk, attach_pdarray, pdarray
+from arkouda.pdarrayclass import argmaxk, attach_pdarray, pdarray, create_pdarray
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
@@ -450,6 +449,42 @@ class Series:
             )
 
         return all(regParts)
+
+    @staticmethod
+    def from_return_msg(repMsg):
+        """
+        Return a Series instance pointing to components created by the arkouda server.
+        The user should not call this function directly.
+
+        Parameters
+        ----------
+        repMsg : str
+            + delimited string containing the values and indexes
+
+        Returns
+        -------
+        Series
+            A Series representing a set of pdarray components on the server
+
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown in the process of creating
+            the Series instance
+        """
+        # parts[0] will be "series"
+        parts = repMsg.split("+")
+        vals = create_pdarray(parts[1])
+
+        # if parts = ['series', vals, ind] -> Single Index
+        if len(parts) == 3:
+            ind = create_pdarray(parts[2])
+        else:  # if parts = ['series', vals, ind_0, ... ind_n] -> MultiIndex
+            ind = []
+            for i in range(2, len(parts)):
+                ind.append(create_pdarray(parts[i]))
+
+        return Series((ind, vals))
 
     @staticmethod
     def _all_aligned(array):
