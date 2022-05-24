@@ -629,14 +629,14 @@ module ReductionMsg
           if isnan(v) {
             m = 1.0;
           } else {
-            m = Math.abs(v) + z:real;
+            m = abs(v) + z:real;
           }
         }
       } else {
-        magnitudes = Math.abs(values) + isZero:real;
+        magnitudes = abs(values) + isZero:real;
       }
-      var logs = Math.log(magnitudes);
-      var negatives = (Math.sgn(values) == -1);
+      var logs = log(magnitudes);
+      var negatives = (sgn(values) == -1);
       forall (r, v, n, z) in zip(res,
                                  segSum(logs, segments),
                                  segSum(negatives, segments),
@@ -647,7 +647,7 @@ module ReductionMsg
           // if n is even, product is positive; if odd, negative
           var sign = -2*(n%2) + 1;
           // v = the sum of log-magnitudes; must be exponentiated and signed
-          r = sign * Math.exp(v);
+          r = sign * exp(v);
         }
       }
       return res;

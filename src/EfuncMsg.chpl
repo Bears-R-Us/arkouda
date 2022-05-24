@@ -55,15 +55,15 @@ module EfuncMsg
                 {
                     when "abs" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.abs(e.a);                      
+                        a.a = abs(e.a);
                     }
                     when "log" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.log(e.a);
+                        a.a = log(e.a);
                     }
                     when "exp" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.exp(e.a);
+                        a.a = exp(e.a);
                     }
                     when "cumsum" {
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -77,11 +77,11 @@ module EfuncMsg
                     }
                     when "sin" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.sin(e.a);
+                        a.a = sin(e.a);
                     }
                     when "cos" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.cos(e.a);
+                        a.a = cos(e.a);
                     }
                     when "hash64" {
                         overMemLimit(numBytes(int) * e.size);
@@ -131,15 +131,15 @@ module EfuncMsg
                 {
                     when "abs" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.abs(e.a);
+                        a.a = abs(e.a);
                     }
                     when "log" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.log(e.a);
+                        a.a = log(e.a);
                     }
                     when "exp" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.exp(e.a);
+                        a.a = exp(e.a);
                     }
                     when "cumsum" {
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -153,11 +153,11 @@ module EfuncMsg
                     }
                     when "sin" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.sin(e.a);
+                        a.a = sin(e.a);
                     }
                     when "cos" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.cos(e.a);
+                        a.a = cos(e.a);
                     }
                     when "isnan" {
                         var a = st.addEntry(rname, e.size, bool);
@@ -240,11 +240,11 @@ module EfuncMsg
                     }
                     when "sin" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.sin(e.a);
+                        a.a = sin(e.a);
                     }
                     when "cos" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.cos(e.a);
+                        a.a = cos(e.a);
                     }
                     when "parity" {
                         var a = st.addEntry(rname, e.size, uint);
@@ -271,11 +271,11 @@ module EfuncMsg
                     }
                     when "log" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.log(e.a);
+                        a.a = log(e.a);
                     }
                     when "exp" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.exp(e.a);
+                        a.a = exp(e.a);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);

@@ -11,7 +11,7 @@ public use MultiTypeSymbolTable;
 public use SymArrayDmap;
 public use SegmentedArray;
 public use RandArray;
-public use AryUtil;
+public use AryUtil as AryUtil;
 
 
 // Diag helpers (timers, comm diags, etc.)
