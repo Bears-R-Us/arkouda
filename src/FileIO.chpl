@@ -179,8 +179,12 @@ module FileIO {
             //TODO: change this to throw
             halt("At least one domain must have stride 1");
         }
-        var stride = max(d1.stride, d2.stride);
-        return {low..high by stride};
+        if !d1.stridable && !d2.stridable {
+            return {low..high};
+        } else {
+            var stride = max(d1.stride, d2.stride);
+            return {low..high by stride};
+        }
     }
 
     proc getFirstEightBytesFromFile(path:string):bytes throws {
