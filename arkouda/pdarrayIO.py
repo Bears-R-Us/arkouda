@@ -1,14 +1,19 @@
+import pandas as pd  # type: ignore
 from typeguard import typechecked
 import json, os, warnings
 from typing import cast, Dict, List, Mapping, Optional, Union
+import glob
+
 
 from arkouda.client import generic_msg
+from arkouda.pdarraycreation import array
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 from arkouda.categorical import Categorical
 
 __all__ = ["ls", "read", "load", "get_datasets", "load_all",
-           "save_all",  "get_filetype", "get_null_indices"]
+           "save_all",  "get_filetype", "get_null_indices",
+           "import_data", "export"]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
@@ -385,6 +390,8 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     """
     if isinstance(filenames, list):
         fname = filenames[0]
+    else:
+        fname = filenames
     if not (fname and fname.strip()):
         raise ValueError("filename cannot be an empty string")
 
@@ -581,3 +588,144 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
             first_iter = False
         else:
             arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='append')
+
+
+@typechecked
+def import_data(read_path: str, write_file: str = None,
+                return_obj: bool = True, index: bool = False):
+    """
+    Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
+    a file formatted to be read by Arkouda.
+
+    Parameters
+    __________
+    read_path: str
+        path to file where pandas data is stored. This can be glob expression for parquet formats.
+    write_file: str, optional
+        path to file to write arkouda formatted data to. Only write file if provided
+    return_obj: bool, optional
+        Default True. When True return the Arkouda DataFrame object, otherwise return None
+    index: bool, optional
+        Default False. When True, maintain the indexes loaded from the pandas file
+
+    Raises
+    ______
+    RuntimeWarning
+        - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
+    RuntimeError
+        - Unsupported file type
+
+    Returns
+    _______
+    pd.DataFrame
+        When `return_obj=True`
+
+    See Also
+    ________
+    pandas.DataFrame.to_parquet, pandas.DataFrame.to_hdf,
+    pandas.DataFrame.read_parquet, pandas.DataFrame.read_hdf,
+    ak.export
+
+    Notes
+    _____
+    - Import can only be performed from hdf5 or parquet files written by pandas.
+    """
+    from arkouda.dataframe import DataFrame
+    # verify file path
+    is_glob = False if os.path.isfile(read_path) else True
+    file_list = glob.glob(read_path)
+    if len(file_list) == 0:
+        raise FileNotFoundError(f"Invalid read_path, {read_path}. No files found.")
+
+    # access the file type - multiple files valid here because parquet supports glob. Check first listed.
+    file = read_path if not is_glob else glob.glob(read_path)[0]
+    filetype = get_filetype(file)
+    # Note - in the future if we support more than pandas here, we should verify attributes.
+    if filetype == "HDF5":
+        if is_glob:
+            raise RuntimeError("Pandas HDF5 import supports valid file path only. "
+                               "Only supports the local file system, "
+                               "remote URLs and file-like objects are not supported.")
+        df_def = pd.read_hdf(read_path)
+    elif filetype == "Parquet":
+        # parquet supports glob input in pandas
+        df_def = pd.read_parquet(read_path)
+    else:
+        raise RuntimeError("File type not supported. Import is only supported for HDF5 and Parquet file formats.")
+    df = DataFrame(df_def)
+
+    if write_file:
+        df.save_table(write_file, index=index, file_format=filetype)
+
+    if return_obj:
+        return df
+
+@typechecked
+def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None,
+           return_obj: bool = True, index: bool = False):
+    """
+    Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
+    readable by Pandas
+
+    Parameters
+    __________
+    read_path: str
+        path to file where arkouda data is stored.
+    dataset_name: str
+        name to store dataset under
+    index: bool
+        Default False. When True, maintain the indexes loaded from the pandas file
+    write_file: str, optional
+        path to file to write pandas formatted data to. Only write the file if this is set
+    return_obj: bool, optional
+        Default True. When True return the Pandas DataFrame object, otherwise return None
+
+
+    Raises
+    ______
+    RuntimeError
+        - Unsupported file type
+
+    Returns
+    _______
+    pd.DataFrame
+        When `return_obj=True`
+
+    See Also
+    ________
+    pandas.DataFrame.to_parquet, pandas.DataFrame.to_hdf,
+    pandas.DataFrame.read_parquet, pandas.DataFrame.read_hdf,
+    ak.import_data
+
+    Notes
+    _____
+    - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
+    will remain parquet and hdf5 will remain hdf5.
+    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
+    the same file type, but formatted to be read by Pandas.
+    """
+    from arkouda.dataframe import DataFrame
+
+    # get the filetype
+
+    prefix, extension = os.path.splitext(read_path)
+    first_file = "{}_LOCALE0000{}".format(prefix, extension)
+    filetype = get_filetype(first_file)
+
+    if filetype not in ["HDF5", "Parquet"]:
+        raise RuntimeError("File type not supported. Import is only supported for HDF5 and Parquet file formats.")
+
+    akdf = DataFrame.load_table(read_path, file_format=filetype)
+    df = akdf.to_pandas(retain_index=index)
+
+    if write_file:
+        if filetype == "HDF5":
+            # write to fixed format as this should be the most efficient
+            df.to_hdf(write_file, key=dataset_name, format="fixed", mode="w", index=index)
+        else:
+            # we know this is parquet because otherwise we would have errored at the type check
+            df.to_parquet(write_file, index=index)
+
+    if return_obj:
+        return df
+

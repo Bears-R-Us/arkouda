@@ -139,7 +139,9 @@ setup(
         'pyfiglet',
         'versioneer',
         'matplotlib',
-        'types-tabulate'
+        'types-tabulate',
+        'tables',
+        'pyarrow'
     ],
 
     # List additional groups of dependencies here (e.g. development

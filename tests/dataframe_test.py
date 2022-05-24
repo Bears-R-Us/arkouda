@@ -489,9 +489,9 @@ class DataFrameTest(ArkoudaTest):
         akdf = ak.DataFrame(df_dict)
 
         validation_df = pd.DataFrame({
-            "c_2": c2,
+            "i": i,
             "c_1": c1,
-            "i": i
+            "c_2": c2,
         })
 
         # make directory to save to so pandas read works
