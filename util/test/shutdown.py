@@ -1,4 +1,3 @@
-
 import sys
 
 from context import arkouda as ak
