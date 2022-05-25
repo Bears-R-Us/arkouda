@@ -484,13 +484,12 @@ module MultiTypeSymbolTable
         proc findAll(pattern: string): [] string throws {
             var regex = compile(pattern);
             var infoStr = "";
-            for name in tab {
+            forall name in tab.keysToArray() with (+ reduce infoStr) {
                 if name.match(regex) {
                     infoStr += name + "+";
                 }
             }
-            infoStr = infoStr.strip("+");
-            return infoStr.split("+");
+            return infoStr.strip("+").split("+");
         }
     }
 
