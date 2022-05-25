@@ -10,7 +10,7 @@ module SortMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use RadixSortLSD;
+    use RadixSortLSDClass;
     use AryUtil;
     use Logging;
     use Message;
@@ -30,7 +30,7 @@ module SortMsg
     proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var (algoName, name) = payload.splitMsgToTuple(2);
+      var (algoName, name, numTasksStr, bitsPerDigitStr) = payload.splitMsgToTuple(4);
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
@@ -45,13 +45,13 @@ module SortMsg
                                     );
         }
       }
+      var nt = try! numTasksStr:int;
+      var bpd = try! bitsPerDigitStr:int;
+
       // get next symbol name
       var sortedName = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-      // check and throw if over memory limit
-      overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
  
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "cmd: %s name: %s sortedName: %s dtype: %t".format(
@@ -65,7 +65,14 @@ module SortMsg
             return b;
           }
           when SortingAlgorithm.RadixSortLSD {
-            return radixSortLSD_keys(a);
+            var numTasks = if nt != -1 then nt else here.maxTaskPar;
+            var bitsPerDigit = if bpd != -1 then bpd else RSLSD_bitsPerDigit;
+
+            // check and throw if over memory limit
+            overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize, numTasks, bitsPerDigit));
+
+            var rs = new RadixSortLSDInstance(numTasks, bitsPerDigit);
+            return rs.radixSortLSD_keys(a);
           }
           otherwise {
             throw getErrorWithContext(
