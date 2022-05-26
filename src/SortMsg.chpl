@@ -68,10 +68,9 @@ module SortMsg
             var numTasks = if nt != -1 then nt else here.maxTaskPar;
             var bitsPerDigit = if bpd != -1 then bpd else RSLSD_bitsPerDigit;
 
-            // check and throw if over memory limit
-            overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize, numTasks, bitsPerDigit));
-
             var rs = new RadixSortLSDInstance(numTasks, bitsPerDigit);
+            // check and throw if over memory limit
+            overMemLimit(rs.radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
             return rs.radixSortLSD_keys(a);
           }
           otherwise {

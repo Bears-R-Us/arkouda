@@ -13,21 +13,6 @@ module RadixSortLSDClass {
     private config const logLevel = ServerConfig.logLevel;
     const rsLogger = new Logger(logLevel);
 
-    proc radixSortLSD_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit) {
-        // 2 temp key+ranks arrays + globalStarts/globalClounts
-        var numBuckets = 1 << bitsPerDigit;
-        return (2 * size * (itemsize + numBytes(int))) +
-            (2 * numLocales * numTasks * numBuckets * numBytes(int));
-    }
-
-    proc radixSortLSD_keys_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit) {
-        // 2 temp key arrays + globalStarts/globalClounts
-        var numBuckets = 1 << bitsPerDigit;
-        return (2 * size * itemsize) +
-            (2 * numLocales * numTasks * numBuckets * numBytes(int));
-
-    }
-
     // TODO if we wanna make this independent of arkouda modules, remove ServerConfig (RSLD_bitsPerDigit), Logging, and CommAggregation
     class RadixSortLSDInstance {
         const numTasks: int; // tasks per locale
@@ -43,11 +28,11 @@ module RadixSortLSDClass {
         }
 
         record KeysComparator {
-        inline proc key(k) { return k; }
+            inline proc key(k) { return k; }
         }
 
         record KeysRanksComparator {
-        inline proc key(kr) { const (k, _) = kr; return k; }
+            inline proc key(kr) { const (k, _) = kr; return k; }
         }
 
         // calculate sub-domain for task
@@ -174,7 +159,7 @@ module RadixSortLSDClass {
                 // copy back to temp for next iteration
                 // Only do this if there are more digits left
                 if !last {
-                temp = a;
+                    temp <=> a;
                 }
             } // for rshift
         }//proc radixSortLSDCore
@@ -220,6 +205,20 @@ module RadixSortLSDClass {
             var (nBits, negs) = getBitWidth(a);
             radixSortLSDCore(copy, nBits, negs, new KeysComparator());
             return copy;
+        }
+
+        proc radixSortLSD_memEst(size: int, itemsize: int) {
+            // 2 temp key+ranks arrays + globalStarts/globalClounts
+            var numBuckets = 1 << bitsPerDigit;
+            return (2 * size * (itemsize + numBytes(int))) +
+                (2 * numLocales * numTasks * numBuckets * numBytes(int));
+        }
+
+        proc radixSortLSD_keys_memEst(size: int, itemsize: int) {
+            // 2 temp key arrays + globalStarts/globalClounts
+            var numBuckets = 1 << bitsPerDigit;
+            return (2 * size * itemsize) +
+                (2 * numLocales * numTasks * numBuckets * numBytes(int));
         }
     }
 }
