@@ -6,10 +6,11 @@ import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
 import random
 import json
-from typing import cast, Union, List, Callable
+from typing import cast, Union, List, Callable, Iterable
 from typeguard import typechecked
 import os
 
+import arkouda.index
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
@@ -1508,6 +1509,109 @@ class DataFrame(UserDict):
         """
 
         return self.GroupBy(keys, use_series)
+
+    @typechecked
+    def isin(self, values: Union[pdarray, dict, Series, DataFrame]) -> DataFrame:
+        """
+        Determine whether each element in the DataFrame is contained in values.
+
+        Parameters
+        __________
+        values : pdarray, dict, Series, or DataFrame
+            The values to check for in DataFrame. Series can only have a single index.
+
+        Returns
+        _______
+        DataFrame
+            Arkouda DataFrame of booleans showing whether each element in the DataFrame is contained in values
+
+        See Also
+        ________
+        ak.Series.isin
+
+        Notes
+        _____
+        - Pandas supports values being an iterable type. In arkouda, we replace this with pdarray
+        - Pandas supports ~ operations. Currently, ak.DataFrame does not support this.
+
+        Examples
+        ________
+        >>> df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_B':ak.array([1, 9])})
+        >>> df
+            col_A  col_B
+        0      7      1
+        1      3      9 (2 rows x 2 columns)
+
+        When `values` is a pdarray, check every value in the DataFrame to determine if it exists in values
+        >>> df.isin(ak.array([0, 1]))
+           col_A  col_B
+        0  False   True
+        1  False  False (2 rows x 2 columns)
+
+        When `values` is a dict, the values in the dict are passed to check the column indicated by the key
+        >>> df.isin({'col_A': ak.array([0, 3])})
+            col_A  col_B
+        0  False  False
+        1   True  False (2 rows x 2 columns)
+
+        When `values` is a Series, each column is checked if values is present positionally. This means the value
+        must be at the same row index as it appears in the `values` Series.
+        >>> i = ak.Index(ak.arange(2))
+        >>> s = ak.Series(data={[3, 9]}, index=i)
+        >>> df.isin(s)
+            col_A  col_B
+        0  False  False
+        1  False   True (2 rows x 2 columns)
+
+        When `values` is a DataFrame, the index and column must match. Note that 9 is not found because the column
+        name does not match.
+        >>> other_df = ak.DataFrame({'col_A':ak.array([7, 3]), 'col_C':ak.array([0, 9])})
+        >>> df.isin(other_df)
+            col_A  col_B
+        0   True  False
+        1   True  False (2 rows x 2 columns)
+        """
+        df_def = {}
+        if isinstance(values, pdarray):
+            # flatten the DataFrame so single in1d can be used.
+            flat = concatenate(list(self.data.values()))
+            segs = [0]
+            for i, col in enumerate(self.columns):
+                if i == 0:
+                    continue
+                elif i == len(self.columns):
+                    segs.append(self.size*len(self.columns))
+                else:
+                    segs.append(segs[i-1]+self.data[col].size)
+            flat_res = in1d(flat, values)
+            for i, col in enumerate(self.columns):
+                if i < len(self.columns)-1:
+                    df_def[col] = flat_res[segs[i]:segs[i+1]]
+                else:
+                    df_def[col] = flat_res[segs[i]:flat.size]
+        elif isinstance(values, dict):
+            # key is column name, val is the list of values to check
+            for col in self.columns:
+                if col in values.keys():
+                    df_def[col] = in1d(self.data[col], values[col])
+                else:
+                    df_def[col] = zeros(self.size, dtype=akbool)
+        elif isinstance(values, DataFrame):
+            # Note - Probably want a positional in1d function in future
+            for col in self.columns:
+                if col in values.columns:
+                    df_def[col] = self.data[col] == values.data[col]
+                else:
+                    df_def[col] = zeros(self.size, dtype=akbool)
+        elif isinstance(values, Series) and isinstance(values.index, Index):
+            # single index check each column. Series index is the row to check each val
+            for col in self.columns:
+                df_def[col] = self.data[col] == values.values
+        else:
+            # pandas provides the same error in this case
+            raise ValueError("Cannot compute isin with duplicate axis.")
+
+        return DataFrame(df_def)
 
 
 def sorted(df, column=False):
