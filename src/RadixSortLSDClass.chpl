@@ -209,14 +209,12 @@ module RadixSortLSDClass {
 
         proc radixSortLSD_memEst(size: int, itemsize: int) {
             // 2 temp key+ranks arrays + globalStarts/globalClounts
-            var numBuckets = 1 << bitsPerDigit;
             return (2 * size * (itemsize + numBytes(int))) +
                 (2 * numLocales * numTasks * numBuckets * numBytes(int));
         }
 
         proc radixSortLSD_keys_memEst(size: int, itemsize: int) {
             // 2 temp key arrays + globalStarts/globalClounts
-            var numBuckets = 1 << bitsPerDigit;
             return (2 * size * itemsize) +
                 (2 * numLocales * numTasks * numBuckets * numBytes(int));
         }
