@@ -29,7 +29,8 @@ class DataFrameTest(ArkoudaTest):
         locales = self.get_locale_count()
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
-        os.mkdir(f_base)
+        if not os.path.exists(f_base):
+            os.mkdir(f_base)
 
         pddf = self.build_pandas_dataframe()
         pddf.to_hdf(f"{f_base}/table.h5", "dataframe", format="Table", mode="w")
@@ -58,7 +59,8 @@ class DataFrameTest(ArkoudaTest):
     def test_export_hdf(self):
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
-        os.mkdir(f_base)
+        if not os.path.exists(f_base):
+            os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
         akdf.save_table(f"{f_base}/ak_write")
@@ -78,7 +80,8 @@ class DataFrameTest(ArkoudaTest):
         locales = self.get_locale_count()
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
-        os.mkdir(f_base)
+        if not os.path.exists(f_base):
+            os.mkdir(f_base)
 
         pddf = self.build_pandas_dataframe()
         pddf.to_parquet(f"{f_base}/table.parquet")
@@ -93,7 +96,8 @@ class DataFrameTest(ArkoudaTest):
     def test_export_parquet(self):
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
-        os.mkdir(f_base)
+        if not os.path.exists(f_base):
+            os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
         akdf.save_table(f"{f_base}/ak_write", file_format="Parquet")
