@@ -6,11 +6,10 @@ import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
 import random
 import json
-from typing import cast, Union, List, Callable, Iterable
+from typing import cast, Union, List, Callable, Dict
 from typeguard import typechecked
 import os
 
-import arkouda.index
 from arkouda.segarray import SegArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.categorical import Categorical
@@ -23,7 +22,7 @@ from arkouda.pdarraysetops import concatenate, intersect1d, in1d
 from arkouda.pdarrayIO import save_all, load_all
 from arkouda.dtypes import int64 as akint64, float64 as akfloat64, bool as akbool
 from arkouda.sorting import argsort, coargsort
-from arkouda.numeric import where
+from arkouda.numeric import where, cumsum
 from arkouda.client import maxTransferBytes, generic_msg
 from arkouda.row import Row
 from arkouda.alignment import in1dmulti
@@ -1511,7 +1510,7 @@ class DataFrame(UserDict):
         return self.GroupBy(keys, use_series)
 
     @typechecked
-    def isin(self, values: Union[pdarray, dict, Series, DataFrame]) -> DataFrame:
+    def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
         """
         Determine whether each element in the DataFrame is contained in values.
 
@@ -1554,10 +1553,10 @@ class DataFrame(UserDict):
         0  False  False
         1   True  False (2 rows x 2 columns)
 
-        When `values` is a Series, each column is checked if values is present positionally. This means the value
-        must be at the same row index as it appears in the `values` Series.
+        When `values` is a Series, each column is checked if values is present positionally. This means that for `True`
+        to be returned, the indexes must be the same.
         >>> i = ak.Index(ak.arange(2))
-        >>> s = ak.Series(data={[3, 9]}, index=i)
+        >>> s = ak.Series(data=[3, 9], index=i)
         >>> df.isin(s)
             col_A  col_B
         0  False  False
@@ -1571,47 +1570,47 @@ class DataFrame(UserDict):
         0   True  False
         1   True  False (2 rows x 2 columns)
         """
-        df_def = {}
         if isinstance(values, pdarray):
             # flatten the DataFrame so single in1d can be used.
             flat = concatenate(list(self.data.values()))
-            segs = [0]
-            for i, col in enumerate(self.columns):
-                if i == 0:
-                    continue
-                elif i == len(self.columns):
-                    segs.append(self.size*len(self.columns))
-                else:
-                    segs.append(segs[i-1]+self.data[col].size)
-            flat_res = in1d(flat, values)
-            for i, col in enumerate(self.columns):
-                if i < len(self.columns)-1:
-                    df_def[col] = flat_res[segs[i]:segs[i+1]]
-                else:
-                    df_def[col] = flat_res[segs[i]:flat.size]
-        elif isinstance(values, dict):
+            lens = array([self.data[col].size for col in self.columns])
+            segs = concatenate([cumsum(lens) - lens, array([flat.size])])
+            df_def = {col: in1d(flat, values)[segs[i]:segs[i + 1]] for i, col in enumerate(self.columns)}
+        elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
-            for col in self.columns:
-                if col in values.keys():
-                    df_def[col] = in1d(self.data[col], values[col])
-                else:
-                    df_def[col] = zeros(self.size, dtype=akbool)
+            df_def = {col: (in1d(self.data[col], values[col]) if col in values.keys()
+                            else zeros(self.size, dtype=akbool)) for col in self.columns}
         elif isinstance(values, DataFrame):
-            # Note - Probably want a positional in1d function in future
+            # create the dataframe with all false
+            df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
+            # identify the indexes in both
+            rows_self = in1d(self.index.index, values.index.index)
+            rows_val = in1d(values.index.index, self.index.index)
+
+            # used to sort the rows with only the indexes in both
+            sort_self = self.index[rows_self].argsort()
+            sort_val = values.index[rows_val].argsort()
+            # update values in columns that exist in both. only update the rows whose indexes match
             for col in self.columns:
                 if col in values.columns:
-                    df_def[col] = self.data[col] == values.data[col]
-                else:
-                    df_def[col] = zeros(self.size, dtype=akbool)
+                    df_def[col][rows_self] = self.data[col][rows_self][sort_self] == \
+                                             values.data[col][rows_val][sort_val]
         elif isinstance(values, Series) and isinstance(values.index, Index):
-            # single index check each column. Series index is the row to check each val
+            df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
+            # identify the indexes in both
+            rows_self = in1d(self.index.index, values.index.index)
+            rows_val = in1d(values.index.index, self.index.index)
+            # used to sort the rows with only the indexes in both
+            sort_self = self.index[rows_self].argsort()
+            sort_val = values.index[rows_val].argsort()
             for col in self.columns:
-                df_def[col] = self.data[col] == values.values
+                df_def[col][rows_self] = self.data[col][rows_self][sort_self] == \
+                                         values.values[rows_val][sort_val]
         else:
             # pandas provides the same error in this case
             raise ValueError("Cannot compute isin with duplicate axis.")
 
-        return DataFrame(df_def)
+        return DataFrame(df_def, index=self.index)
 
 
 def sorted(df, column=False):
