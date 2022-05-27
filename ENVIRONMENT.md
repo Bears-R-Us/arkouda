@@ -36,7 +36,8 @@ Most folks install anaconda and link to these libraries through Makefile.paths i
 setup you can set them explicitly via:
   - ARKOUDA_ZMQ_PATH : Path to ZMQ library
   - ARKOUDA_HDF5_PATH : Path to HDF5 library
-  - ARKOUDA_ARROW_PATH : Path to Arrow library (needed only when building with Parquet support; see "Building with Parquet" below)
+  - ARKOUDA_ARROW_PATH : Path to Arrow library 
+  - LD_LIBRARY_PATH : Path to environment `lib` directory.
   - ARKOUDA_SKIP_CHECK_DEPS : Setting this will skip the automated checks for dependencies (i.e. ZMQ, HDF5). This is
     useful for developers doing repeated Arkouda builds since they should have already verified the deps have been set up.
 
@@ -64,6 +65,3 @@ Also see the python tests [README](tests/README.md) for more information on Pyth
   - ARKOUDA_KEY_FILE : Client env var for keyfile when using ssh tunnel
   - ARKOUDA_PASSWORD : Client env var for password when using ssh tunnel
   - ARKOUDA_LOG_LEVEL : Client env var to control client side Logging Level
-
-## Building with Parquet
-  - ARKOUDA_SERVER_PARQUET_SUPPORT : Env var to control if the server is built with Parquet support; if set, Parquet will be built, regardless of value

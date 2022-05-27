@@ -34,7 +34,6 @@ Supported File Formats
 * HDF5
     * Default File Format
 * Parquet
-    * Optional
     * Requires `pyarrow`
 
 Data Preprocessing
