@@ -536,7 +536,7 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, True])
 
         # test against another dataframe
-        other_df = ak.DataFrame({'col_A':ak.array([7, 3]), 'col_C':ak.array([0, 9])})
+        other_df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_C': ak.array([0, 9])})
         test_df = df.isin(other_df)
         self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [True, True])
         self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, False])
