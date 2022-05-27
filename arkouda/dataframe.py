@@ -1580,7 +1580,8 @@ class DataFrame(UserDict):
             # key is column name, val is the list of values to check
             df_def = {col: (in1d(self.data[col], values[col]) if col in values.keys()
                             else zeros(self.size, dtype=akbool)) for col in self.columns}
-        elif isinstance(values, DataFrame):
+        elif isinstance(values, DataFrame) or \
+                (isinstance(values, Series) and isinstance(values.index, Index)):
             # create the dataframe with all false
             df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
             # identify the indexes in both
@@ -1591,21 +1592,14 @@ class DataFrame(UserDict):
             sort_self = self.index[rows_self].argsort()
             sort_val = values.index[rows_val].argsort()
             # update values in columns that exist in both. only update the rows whose indexes match
+
             for col in self.columns:
-                if col in values.columns:
+                if isinstance(values, DataFrame) and col in values.columns:
                     df_def[col][rows_self] = self.data[col][rows_self][sort_self] == \
                                              values.data[col][rows_val][sort_val]
-        elif isinstance(values, Series) and isinstance(values.index, Index):
-            df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
-            # identify the indexes in both
-            rows_self = in1d(self.index.index, values.index.index)
-            rows_val = in1d(values.index.index, self.index.index)
-            # used to sort the rows with only the indexes in both
-            sort_self = self.index[rows_self].argsort()
-            sort_val = values.index[rows_val].argsort()
-            for col in self.columns:
-                df_def[col][rows_self] = self.data[col][rows_self][sort_self] == \
-                                         values.values[rows_val][sort_val]
+                elif isinstance(values, Series):
+                    df_def[col][rows_self] = self.data[col][rows_self][sort_self] == \
+                                             values.values[rows_val][sort_val]
         else:
             # pandas provides the same error in this case
             raise ValueError("Cannot compute isin with duplicate axis.")
