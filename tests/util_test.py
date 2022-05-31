@@ -1,10 +1,12 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 from arkouda.util import attach
+
 
 class utilTest(ArkoudaTest):
     def test_simple_attach(self):
-        a = ak.array(["abc","123","def"])
+        a = ak.array(["abc", "123", "def"])
         b = ak.arange(10)
 
         # Attach the Strings array and the pdarray to new objects
@@ -26,7 +28,9 @@ class utilTest(ArkoudaTest):
         self.assertIsInstance(b_typed_attach, ak.pdarray)
 
     def test_categorical_attach(self):
-        strings = ak.array(["hurrah", ",", "hurrah", ",", "one", "by", "one", "marching", "go", "ants", "the"])
+        strings = ak.array(
+            ["hurrah", ",", "hurrah", ",", "one", "by", "one", "marching", "go", "ants", "the"]
+        )
         cat = ak.Categorical(strings)
         cat.register("catTest")
 
