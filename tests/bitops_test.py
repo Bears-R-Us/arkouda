@@ -1,5 +1,6 @@
-from context import arkouda as ak
 from base_test import ArkoudaTest
+from context import arkouda as ak
+
 
 class BitOpsTest(ArkoudaTest):
     def setUp(self):
@@ -7,9 +8,8 @@ class BitOpsTest(ArkoudaTest):
         self.a = ak.arange(10)
         self.b = ak.cast(self.a, ak.uint64)
         self.edgeCases = ak.array([-(2**63), -1, 2**63 - 1])
-        self.edgeCasesUint = ak.cast(ak.array([-(2**63), -1, 2**63 - 1]), \
-                                     ak.uint64)
-    
+        self.edgeCasesUint = ak.cast(ak.array([-(2**63), -1, 2**63 - 1]), ak.uint64)
+
     def test_popcount(self):
         # Method invocation
         # Toy input
@@ -21,7 +21,7 @@ class BitOpsTest(ArkoudaTest):
         p = self.b.popcount()
         ans = ak.cast(ans, ak.uint64)
         self.assertTrue((p == ans).all())
-        
+
         # Function invocation
         # Edge case input
         p = ak.popcount(self.edgeCases)
@@ -92,10 +92,10 @@ class BitOpsTest(ArkoudaTest):
 
     def test_dtypes(self):
         f = ak.zeros(10, dtype=ak.float64)
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             f.popcount()
-        b = ak.zeros(10, dtype=ak.bool)
-        with self.assertRaises(TypeError) as cm:
+
+        with self.assertRaises(TypeError):
             ak.popcount(f)
 
     def test_rotl(self):
@@ -126,8 +126,8 @@ class BitOpsTest(ArkoudaTest):
 
     def test_rotr(self):
         # vector <<< scalar
-        rotated = (1024*self.a).rotr(5)
-        shifted = (1024*self.a) >> 5
+        rotated = (1024 * self.a).rotr(5)
+        shifted = (1024 * self.a) >> 5
         # No wraparound, so these should be equal
         self.assertTrue((rotated == shifted).all())
 
@@ -136,8 +136,8 @@ class BitOpsTest(ArkoudaTest):
         self.assertTrue((r == ans).all())
 
         # vector <<< vector
-        rotated = (1024*self.a).rotr(self.a)
-        shifted = (1024*self.a) >> self.a
+        rotated = (1024 * self.a).rotr(self.a)
+        shifted = (1024 * self.a) >> self.a
         # No wraparound, so these should be equal
         self.assertTrue((rotated == shifted).all())
 
@@ -147,7 +147,7 @@ class BitOpsTest(ArkoudaTest):
 
         # scalar <<< vector
         rotated = ak.rotr(1, self.a)
-        ans = ak.array([1, -(2**63), 2**62, 2**61, 2**60, 2**59, 2**58, 2**57, 2**56, 2**55])
+        ans = ak.array(
+            [1, -(2**63), 2**62, 2**61, 2**60, 2**59, 2**58, 2**57, 2**56, 2**55]
+        )
         self.assertTrue((rotated == ans).all())
-
-                    
