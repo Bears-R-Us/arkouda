@@ -111,7 +111,7 @@ class Series:
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type],
-        index: Optional[Union[pdarray, Strings]] = None,
+        index: Optional[Union[pdarray, Strings, Tuple, List]] = None,
     ):
         # TODO: Allow index to be an Index when index.py is updated
         if isinstance(data, (tuple, list)) and len(data) == 2:
@@ -484,7 +484,7 @@ class Series:
             for i in range(2, len(parts)):
                 ind.append(create_pdarray(parts[i]))
 
-        return Series((ind, vals))
+        return Series(data=vals, index=ind)
 
     @staticmethod
     def _all_aligned(array):

@@ -63,9 +63,8 @@ class utilTest(ArkoudaTest):
 
     def test_series_attach(self):
         index_tuple = (ak.arange(5), ak.arange(5, 10))
-        ar_tuple = (index_tuple, ak.arange(0, 10, 2))
-        s = ak.Series(ar_tuple=ar_tuple)  # MultiIndex Series
-        s2 = ak.Series(ar_tuple=(ak.arange(5), ak.arange(5)))  # Single Index Series
+        s = ak.Series(data=ak.arange(0, 10, 2), index=index_tuple)  # MultiIndex Series
+        s2 = ak.Series(data=ak.arange(5), index=ak.arange(5))  # Single Index Series
 
         s.register("series_test")
         s2.register("series_2_test")
