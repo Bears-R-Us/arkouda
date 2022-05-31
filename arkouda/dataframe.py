@@ -1584,8 +1584,6 @@ class DataFrame(UserDict):
             # create the dataframe with all false
             df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
             # identify the indexes in both
-            # rows_self = in1d(self.index.index, values.index.index)
-            # rows_val = in1d(values.index.index, self.index.index)
             rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
 
             # used to sort the rows with only the indexes in both
