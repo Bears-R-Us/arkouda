@@ -512,32 +512,3 @@ class DataFrameTest(ArkoudaTest):
         # clean up test files
         rmtree("save_table_test/")
 
-    def test_isin(self):
-        df = ak.DataFrame({
-            'col_A': ak.array([7, 3]),
-            'col_B': ak.array([1, 9])
-        })
-
-        # test against pdarray
-        test_df = df.isin(ak.array([0, 1]))
-        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, False])
-        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [True, False])
-
-        # Test against dict
-        test_df = df.isin({'col_A': ak.array([0, 3])})
-        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, True])
-        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, False])
-
-        # test against series
-        i = ak.Index(ak.arange(2))
-        s = ak.Series(data=[3, 9], index=i)
-        test_df = df.isin(s)
-        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, False])
-        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, True])
-
-        # test against another dataframe
-        other_df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_C': ak.array([0, 9])})
-        test_df = df.isin(other_df)
-        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [True, True])
-        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, False])
-
