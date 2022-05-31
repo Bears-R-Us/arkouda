@@ -1,11 +1,9 @@
+import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-import pandas as pd
-
 
 class SeriesTest(ArkoudaTest):
-
     def test_series_creation(self):
         # Use positional arguments
         ar_tuple = ak.arange(3), ak.arange(3)
@@ -54,24 +52,24 @@ class SeriesTest(ArkoudaTest):
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
-        l = s.locate(1)
-        self.assertIsInstance(l, ak.Series)
-        self.assertEqual(l.index[0], 1)
-        self.assertEqual(l.values[0], 'B')
+        lk = s.locate(1)
+        self.assertIsInstance(lk, ak.Series)
+        self.assertEqual(lk.index[0], 1)
+        self.assertEqual(lk.values[0], "B")
 
-        l = s.locate([0, 2])
-        self.assertIsInstance(l, ak.Series)
-        self.assertEqual(l.index[0], 0)
-        self.assertEqual(l.values[0], 'A')
-        self.assertEqual(l.index[1], 2)
-        self.assertEqual(l.values[1], 'C')
+        lk = s.locate([0, 2])
+        self.assertIsInstance(lk, ak.Series)
+        self.assertEqual(lk.index[0], 0)
+        self.assertEqual(lk.values[0], "A")
+        self.assertEqual(lk.index[1], 2)
+        self.assertEqual(lk.values[1], "C")
 
     def test_shape(self):
         v = ak.array(['A', 'B', 'C'])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
-        l, = s.shape
+        (l,) = s.shape
         self.assertEqual(l, 3)
 
     def test_add(self):
@@ -161,8 +159,13 @@ class SeriesTest(ArkoudaTest):
         df = ak.Series.concat([s, s2], axis=1)
         self.assertIsInstance(df, ak.DataFrame)
 
-        ref_df = pd.DataFrame({'idx': [i for i in range(11)], 'val_0': [0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0],
-                               'val_1': [0, 0, 0, 0, 0, 5, 6, 7, 8, 9, 10]})
+        ref_df = pd.DataFrame(
+            {
+                "idx": [i for i in range(11)],
+                "val_0": [0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0],
+                "val_1": [0, 0, 0, 0, 0, 5, 6, 7, 8, 9, 10],
+            }
+        )
         self.assertTrue(((ref_df == df.to_pandas()).all()).all())
 
     def test_pdconcat(self):
@@ -186,6 +189,5 @@ class SeriesTest(ArkoudaTest):
         df = ak.Series.pdconcat([s, s2], axis=1)
         self.assertIsInstance(df, pd.DataFrame)
 
-        ref_df = pd.DataFrame({0: [0, 1, 2, 3, 4],
-                               1: [5, 6, 7, 8, 9]})
+        ref_df = pd.DataFrame({0: [0, 1, 2, 3, 4], 1: [5, 6, 7, 8, 9]})
         self.assertTrue((ref_df == df).all().all())
