@@ -603,33 +603,6 @@ module HDF5Msg {
             }
     }
 
-    /* This function is called when A is a CyclicDist array. */
-    proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), 
-                                           filenames: [FD] string, dsetName: string)
-        where (MyDmap == Dmap.cyclicDist) 
-    {
-            use CyclicDist;
-            /*
-             * Distribute filenames across locales, and ensure single-threaded
-             * reads on each locale
-             */
-            var fileSpace: domain(1) dmapped Cyclic(startIdx=FD.low, dataParTasksPerLocale=1) = FD;
-            forall fileind in fileSpace with (ref A) {
-                var filedom: subdomain(A.domain) = filedomains[fileind];
-                var filename = filenames[fileind];
-                var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                                                       C_HDF5.H5P_DEFAULT);
-                // TODO: use select_hyperslab to read directly into a strided slice of A
-                // Read file into a temporary array and copy into the correct chunk of A
-                var AA: [1..filedom.size] A.eltType;
-                
-                // Retrieve the dsetName that accounts for enclosing group, if applicable
-                try! readHDF5Dataset(file_id, getReadDsetName(file_id, dsetName), AA);
-                A[filedom] = AA;
-                C_HDF5.H5Fclose(file_id);
-           }
-    }
-
     /*
      * Writes out the two pdarrays composing a Strings object to hdf5.
      * DEPRECATED see write1DDistStringsAggregators
