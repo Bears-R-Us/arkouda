@@ -17,12 +17,34 @@ Classes
 
 
 
-.. py:class:: Series(ar_tuple=None, data=None, index=None)
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]] = None)
 
    One-dimensional arkouda array with axis labels.
 
-   :param ar_tuple: second being the value. The grouping key(s) will be the index of the series.
-   :type ar_tuple: 2-tuple of arkouda arrays with the first being the grouping key(s) and the
+   :param index: an array of indices associated with the data array.
+                 If empty, it will default to a range of ints whose size match the size of the data.
+                 optional
+   :type index: pdarray, Strings
+   :param data: a 1D array. Must not be None if ar_tuple is not provided.
+   :type data: Tuple, List, groupable_element_type
+
+   :raises TypeError: Raised if index is not a pdarray or Strings object
+       Raised if data is not a pdarray, Strings, or Categorical object
+   :raises ValueError: Raised if the index size does not match data size
+
+   .. rubric:: Notes
+
+   The Series class accepts either positional arguments or keyword arguments.
+   If entering positional arguments,
+       2 arguments entered:
+           argument 1 - index
+           argument 2 - data
+       1 argument entered:
+           argument 1 - data
+   If entering 1 positional argument, it is assumed that this is the data argument.
+   If entering keywords,
+       'data' (see Parameters)
+       'index' (optional) must match size of 'data'
 
    .. py:attribute:: dt
       

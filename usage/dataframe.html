@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>DataFrames in Arkouda &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>DataFrames in Arkouda &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,7 +34,7 @@
           <div class="body" role="main">
             
   <section id="dataframes-in-arkouda">
-<h1>DataFrames in Arkouda<a class="headerlink" href="#dataframes-in-arkouda" title="Permalink to this headline">¶</a></h1>
+<h1>DataFrames in Arkouda<a class="headerlink" href="#dataframes-in-arkouda" title="Permalink to this heading">¶</a></h1>
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.DataFrame">
@@ -84,7 +85,7 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 </dd></dl>
 
 <section id="data-types">
-<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this heading">¶</a></h2>
 <p>Currently, <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code> support 4 Arkouda data types for supplying columns.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Arkouda.pdarray</span></code></p></li>
@@ -102,14 +103,14 @@ DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
 </ul>
 </section>
 <section id="iteration">
-<h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this headline">¶</a></h2>
+<h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this heading">¶</a></h2>
 <p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">df</span></code> is not recommended. Doing so is discouraged because it requires transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.to_pandas">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datalimit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.to_pandas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send this DataFrame to a pandas DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>datalimit</strong> (<em>int</em><em> (</em><em>default=arkouda.client.maxTransferBytes</em><em>)</em>) – The maximum number size, in megabytes to transfer. The requested
 DataFrame will be converted to a pandas DataFrame only if the
@@ -118,10 +119,10 @@ estimated size of the DataFrame does not exceed this value.</p></li>
 to keep the index column, set this to True.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The result of converting this DataFrame to a pandas DataFrame.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
@@ -129,16 +130,16 @@ to keep the index column, set this to True.</p></li>
 
 </section>
 <section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">DataFrames</span></code> support the majority of functionality offered by <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>.</p>
 <section id="drop">
-<h3>Drop<a class="headerlink" href="#drop" title="Permalink to this headline">¶</a></h3>
+<h3>Drop<a class="headerlink" href="#drop" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.drop">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.drop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.drop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Drop column/s or row/s from the dataframe, in-place.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>str</em><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns</p></li>
@@ -146,7 +147,7 @@ to keep the index column, set this to True.</p></li>
 When False, return a new object.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>DateFrame when <cite>inplace=False</cite></p></li>
 <li><p>None when <cite>inplace=True</cite></p></li>
@@ -165,19 +166,19 @@ or
 
 </section>
 <section id="groupby">
-<h3>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this headline">¶</a></h3>
+<h3>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.groupby">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Permalink to this definition">¶</a></dt>
 <dd><p>Group the dataframe by a column or a list of columns.  Alias for GroupBy</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list of column names</em>) – </p></li>
 <li><p><strong>use_series</strong> (<em>Change return type to Arkouda Groupby object.</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>An arkouda Groupby instance</p>
 </dd>
 </dl>
@@ -185,7 +186,7 @@ or
 
 </section>
 <section id="copy">
-<h3>Copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
+<h3>Copy<a class="headerlink" href="#copy" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.copy">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.copy" title="Permalink to this definition">¶</a></dt>
@@ -197,13 +198,13 @@ be reflected in the original object.</p>
 calling object’s data. Any changes to the data of the original object will
 be reflected in the shallow copy, and vice versa.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>deep</strong> (<em>bool</em><em> (</em><em>default=True</em><em>)</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A deep or shallow copy according to caller specification.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>aku.DataFrame</p>
 </dd>
 </dl>
@@ -211,10 +212,10 @@ be reflected in the shallow copy, and vice versa.</p>
 
 </section>
 <section id="filter">
-<h3>Filter<a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h3>
+<h3>Filter<a class="headerlink" href="#filter" title="Permalink to this heading">¶</a></h3>
 </section>
 <section id="permutations">
-<h3>Permutations<a class="headerlink" href="#permutations" title="Permalink to this headline">¶</a></h3>
+<h3>Permutations<a class="headerlink" href="#permutations" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.apply_permutation">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">apply_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.apply_permutation" title="Permalink to this definition">¶</a></dt>
@@ -223,7 +224,7 @@ be reflected in the shallow copy, and vice versa.</p>
 apply an arbitrary permutation such as the inverse of a sorting
 permutation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>perm</strong> (<em>ak.pdarray</em>) – A permutation array. Should be the same size as the data
 arrays, and should consist of the integers [0,size-1] in
 some order. Very minimal testing is done to ensure this
@@ -238,19 +239,19 @@ is a permutation.</p>
 
 </section>
 <section id="sorting">
-<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h3>
+<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.argsort">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.argsort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the permutation that sorts the dataframe by <cite>key</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to sort on.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The permutation array that sorts the data on <cite>key</cite>.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ak.pdarray</p>
 </dd>
 </dl>
@@ -262,13 +263,13 @@ is a permutation.</p>
 <dd><p>Return the permutation that sorts the dataframe by <cite>keys</cite>.</p>
 <p>Sorting using Strings may not yield correct results</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>keys</strong> (<em>list</em>) – The keys to sort on.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The permutation array that sorts the data on <cite>keys</cite>.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ak.pdarray</p>
 </dd>
 </dl>
@@ -281,7 +282,7 @@ is a permutation.</p>
 <p>If no column is specified, all columns are used.</p>
 <p>Note: Fails on sorting ak.Strings when multiple columns being sorted</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>by</strong> (<em>str</em><em> or </em><em>list/tuple of str</em>) – The name(s) of the column(s) to sort by.</p></li>
 <li><p><strong>ascending</strong> (<em>bool</em>) – Sort values in ascending (default) or descending order.</p></li>
@@ -296,7 +297,7 @@ is a permutation.</p>
 
 </section>
 <section id="tail-head-of-data">
-<h3>Tail/Head of Data<a class="headerlink" href="#tail-head-of-data" title="Permalink to this headline">¶</a></h3>
+<h3>Tail/Head of Data<a class="headerlink" href="#tail-head-of-data" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.tail">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.tail" title="Permalink to this definition">¶</a></dt>
@@ -305,13 +306,13 @@ is a permutation.</p>
 useful for quickly testing if your object has the right type of data in
 it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> (<em>int</em><em> (</em><em>default=5</em><em>)</em>) – Number of rows to select.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The last <cite>n</cite> rows of the DataFrame.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>akutil.DataFrame</p>
 </dd>
 </dl>
@@ -329,13 +330,13 @@ it.</p>
 useful for quickly verifying data, for example, after sorting or
 appending rows.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of rows to select.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The first <cite>n</cite> rows of the DataFrame.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>akutil.DataFrame</p>
 </dd>
 </dl>
@@ -347,13 +348,13 @@ appending rows.</p>
 
 </section>
 <section id="rename-columns">
-<h3>Rename Columns<a class="headerlink" href="#rename-columns" title="Permalink to this headline">¶</a></h3>
+<h3>Rename Columns<a class="headerlink" href="#rename-columns" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.rename">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.rename" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.rename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rename columns in-place according to a mapping.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mapper</strong> (<em>callable</em><em> or </em><em>dict-like</em>) – Function or dictionary mapping existing column names to
 new column names. Nonexistent names will not raise an
@@ -362,7 +363,7 @@ error.</p></li>
 When False, return a new object.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>DateFrame when <cite>inplace=False</cite></p></li>
 <li><p>None when <cite>inplace=True</cite></p></li>
@@ -374,10 +375,10 @@ When False, return a new object.</p></li>
 
 </section>
 <section id="append">
-<h3>Append<a class="headerlink" href="#append" title="Permalink to this headline">¶</a></h3>
+<h3>Append<a class="headerlink" href="#append" title="Permalink to this heading">¶</a></h3>
 </section>
 <section id="concatenate">
-<h3>Concatenate<a class="headerlink" href="#concatenate" title="Permalink to this headline">¶</a></h3>
+<h3>Concatenate<a class="headerlink" href="#concatenate" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.concat">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.concat" title="Permalink to this definition">¶</a></dt>
@@ -386,16 +387,16 @@ When False, return a new object.</p></li>
 
 </section>
 <section id="reset-indexes">
-<h3>Reset Indexes<a class="headerlink" href="#reset-indexes" title="Permalink to this headline">¶</a></h3>
+<h3>Reset Indexes<a class="headerlink" href="#reset-indexes" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.reset_index">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.reset_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.DataFrame.reset_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the index to an integer range.</p>
 <p>Useful if this dataframe is the result of a slice operation from
 another dataframe, or if you have permuted the rows and no longer need
 to keep that ordering on the rows.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<em>int</em>) – If size is passed, do not attempt to determine size based on
 existing column sizes. Assume caller handles consistency correctly.</p></li>
@@ -403,7 +404,7 @@ existing column sizes. Assume caller handles consistency correctly.</p></li>
 When False, return a new object.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>DateFrame when <cite>inplace=False</cite></p></li>
 <li><p>None when <cite>inplace=True</cite></p></li>
@@ -420,7 +421,7 @@ support this behavior.</p>
 
 </section>
 <section id="deduplication">
-<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this headline">¶</a></h3>
+<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.DataFrame.drop_duplicates">
 <span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.drop_duplicates" title="Permalink to this definition">¶</a></dt>
@@ -428,16 +429,16 @@ support this behavior.</p>
 <p>If a subset of the columns are provided then only one instance of each
 duplicated row will be returned (keep determines which row).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subset</strong> (<em>Iterable of column names to use to dedupe.</em>) – </p></li>
 <li><p><strong>keep</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>default 'first'</em>) – Determines which duplicates (if any) to keep.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>DataFrame with duplicates removed.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
@@ -493,7 +494,7 @@ duplicated row will be returned (keep determines which row).</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -510,7 +511,7 @@ duplicated row will be returned (keep determines which row).</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

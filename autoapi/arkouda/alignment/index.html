@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.alignment &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>arkouda.alignment &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -35,16 +36,12 @@
           <div class="body" role="main">
             
   <section id="module-arkouda.alignment">
-<span id="arkouda-alignment"></span><h1><a class="reference internal" href="#module-arkouda.alignment" title="arkouda.alignment"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a><a class="headerlink" href="#module-arkouda.alignment" title="Permalink to this headline">¶</a></h1>
+<span id="arkouda-alignment"></span><h1><a class="reference internal" href="#module-arkouda.alignment" title="arkouda.alignment"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a><a class="headerlink" href="#module-arkouda.alignment" title="Permalink to this heading">¶</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.unsqueeze" title="arkouda.alignment.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
 <td><p></p></td>
@@ -88,13 +85,13 @@
 <span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">zero_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.zero_up" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map an array of sparse values to 0-up indices.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Array to map to dense index</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>aligned</strong> – Array with values replaced by 0-up indices</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
@@ -105,13 +102,13 @@
 <span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.align" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map multiple arrays of sparse identifiers to a common 0-up index.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>*args</strong> (<em>pdarrays</em>) – Arrays to map to dense index</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>aligned</strong> – Arrays with values replaced by 0-up indices</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of pdarrays</p>
 </dd>
 </dl>
@@ -123,13 +120,13 @@
 <dd><p>Map two arrays of sparse values to the 0-up index set implied by the right array,
 discarding values from left that do not appear in right.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Left-hand identifiers</p></li>
 <li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Right-hand identifiers that define the index</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>keep</strong> (<em>pdarray, bool</em>) – Logical index of left-hand values that survived</p></li>
 <li><p><strong>aligned</strong> (<em>(pdarray, pdarray)</em>) – Left and right arrays with values replaced by 0-up indices</p></li>
@@ -158,14 +155,14 @@ discarding values from right that do not appear in left.</p>
 <span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">in1dmulti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.in1dmulti" title="Permalink to this definition">¶</a></dt>
 <dd><p>The multi-level analog of ak.in1d – test membership of rows of a in the set of rows of b.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>list of pdarrays</em>) – Rows are elements for which to test membership in b</p></li>
 <li><p><strong>b</strong> (<em>list of pdarrays</em>) – Rows are elements of the set in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted. By default, sort and unique them explicitly.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>pdarray, bool</em> – True for each row in a that is contained in b</p></li>
 <li><p><em>Notes</em> – Only works for pdarrays of int64 dtype, Strings, or Categorical</p></li>
@@ -180,7 +177,7 @@ discarding values from right that do not appear in left.</p>
 <span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_from_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.lookup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply the function defined by the mapping keys –&gt; values to arguments.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>(</em><em>sequence of</em><em>) </em><em>array-like</em>) – The domain of the function. Entries must be unique (if a sequence of
 arrays is given, each row is treated as a tuple-valued entry).</p></li>
@@ -192,10 +189,10 @@ arrays is given, each row is treated as a tuple-valued entry).</p></li>
 .unique_keys attribute of a GroupBy instance.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>evaluated</strong> – The result of evaluating the function over arguments.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
@@ -228,7 +225,7 @@ array([‘four’, ‘one’, ‘two’]))</p>
 <dd><p>Test each value for membership in <em>any</em> of a set of half-open (pythonic)
 intervals.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
@@ -237,7 +234,7 @@ intervals.</p>
 contained one or more query values.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>pdarray(bool)</em> – Array of same length as &lt;vals&gt;, True if corresponding value is
 included in any of the ranges defined by (low[i], high[i]) inclusive.</p></li>
@@ -273,7 +270,7 @@ interval contains any of the values in &lt;vals&gt;.</p></li>
 intervals, return the index of the interval containing each query value,
 or -1 if not present in any interval.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vals</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
@@ -281,10 +278,10 @@ or -1 if not present in any interval.</p>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, assume query vals are unique. Default: False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>idx</strong> – Index of interval containing each query value, or -1 if not found</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>(int64)</p>
 </dd>
 </dl>
@@ -302,7 +299,7 @@ or -1 if not present in any interval.</p>
 <dd><p>Apply a function defined over non-overlapping intervals to
 an array of arguments.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>keys</strong> (<em>2-tuple of pdarray</em>) – Tuple of non-overlapping, half-open intervals expressed
 as (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
@@ -311,12 +308,12 @@ as (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
 <li><p><strong>fillvalue</strong> (<em>scalar</em>) – Default value to return when argument is not in any interval.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Value of function corresponding to the keys interval
 containing each argument, or fillvalue if argument not
 in any interval.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
@@ -381,7 +378,7 @@ in any interval.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -398,7 +395,7 @@ in any interval.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

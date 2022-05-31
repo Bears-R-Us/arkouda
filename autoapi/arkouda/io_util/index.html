@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.io_util &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>arkouda.io_util &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -35,16 +36,12 @@
           <div class="body" role="main">
             
   <section id="module-arkouda.io_util">
-<span id="arkouda-io-util"></span><h1><a class="reference internal" href="#module-arkouda.io_util" title="arkouda.io_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a><a class="headerlink" href="#module-arkouda.io_util" title="Permalink to this headline">¶</a></h1>
+<span id="arkouda-io-util"></span><h1><a class="reference internal" href="#module-arkouda.io_util" title="arkouda.io_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a><a class="headerlink" href="#module-arkouda.io_util" title="Permalink to this heading">¶</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.get_directory" title="arkouda.io_util.get_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_directory</span></code></a>(path: str) → pathlib.Path</p></td>
 <td><p>Creates the directory if it does not exist and then</p></td>
@@ -66,16 +63,16 @@
 <dd><p>Creates the directory if it does not exist and then
 returns the corresponding Path object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the directory</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Path object corresponding to the directory</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if there’s an error in reading an
 existing directory or creating a new one</p>
 </dd>
@@ -89,16 +86,16 @@ existing directory or creating a new one</p>
 does not exist, the file is created first and then
 the specified line is written to it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – Path to the target file</p></li>
 <li><p><strong>line</strong> (<em>str</em>) – Line to be written to the file</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>UnsupportedOption</strong> – Raised if there’s an error in creating or
 writing to the file</p>
 </dd>
@@ -112,20 +109,20 @@ writing to the file</p>
 the first delimited element of each line is the key and
 the second delimited element is the value.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
 <li><p><strong>delimiter</strong> (<em>str</em>) – Delimiter separating key and value</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing key,value pairs derived from each
 line of delimited strings</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Mapping[str,str]</p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>UnsupportedOperation</strong> – Raised if there’s an error in reading the file</p>
 </dd>
 </dl>
@@ -139,16 +136,16 @@ the first delimited element of each line is the dict key
 and the second delimited element is the dict value. If the
 file does not exist, it is created and then written to.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
 <li><p><strong>delimiter</strong> – Delimiter separating key and value</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>OError</strong> – Raised if there’s an error opening or writing to the
 specified file</p></li>
@@ -217,7 +214,7 @@ specified file</p></li>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -234,7 +231,7 @@ specified file</p></li>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

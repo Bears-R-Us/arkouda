@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.join &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>arkouda.join &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -35,16 +36,12 @@
           <div class="body" role="main">
             
   <section id="module-arkouda.join">
-<span id="arkouda-join"></span><h1><a class="reference internal" href="#module-arkouda.join" title="arkouda.join"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a><a class="headerlink" href="#module-arkouda.join" title="Permalink to this headline">¶</a></h1>
+<span id="arkouda-join"></span><h1><a class="reference internal" href="#module-arkouda.join" title="arkouda.join"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a><a class="headerlink" href="#module-arkouda.join" title="Permalink to this heading">¶</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt" title="arkouda.join.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[int, numpy.int64], pred: str, result_limit: Union[int, numpy.int64] = 1000) → Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]</p></td>
 <td><p>Performs an inner-join on equality between two integer arrays where</p></td>
@@ -57,7 +54,7 @@
 <dd><p>Performs an inner-join on equality between two integer arrays where
 the time-window predicate is also true</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – pdarray to be joined</p></li>
 <li><p><strong>a2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – pdarray to be joined</p></li>
@@ -68,14 +65,14 @@ the time-window predicate is also true</p>
 <li><p><strong>result_limit</strong> (<em>Union</em><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – size limit for returned result</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>result_array_one</strong> (<em>pdarray, int64</em>) – a1 indices where a1 == a2</p></li>
 <li><p><strong>result_array_one</strong> (<em>pdarray, int64</em>) – a2 indices where a2 == a1</p></li>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or
 result_limit is not an int</p></li>
@@ -145,7 +142,7 @@ result_limit is not an int</p></li>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -162,7 +159,7 @@ result_limit is not an int</p></li>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

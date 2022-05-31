@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Performance Testing &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>Performance Testing &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,10 +36,10 @@
           <div class="body" role="main">
             
   <section id="performance-testing">
-<h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Permalink to this headline">¶</a></h1>
+<h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Permalink to this heading">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> directory contains scripts for measuring the performance of arkouda, optionally compared to the (single-node) performance of NumPy.</p>
 <section id="argsort">
-<h2>Argsort<a class="headerlink" href="#argsort" title="Permalink to this headline">¶</a></h2>
+<h2>Argsort<a class="headerlink" href="#argsort" title="Permalink to this heading">¶</a></h2>
 <p><p>Measure performance of sorting an array of random values.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">argsort</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -47,7 +48,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -58,7 +59,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array to argsort</p>
@@ -87,7 +88,7 @@
 </section>
 </section>
 <section id="gather">
-<h2>Gather<a class="headerlink" href="#gather" title="Permalink to this headline">¶</a></h2>
+<h2>Gather<a class="headerlink" href="#gather" title="Permalink to this heading">¶</a></h2>
 <p><p>Measure the performance of random gather: C = V[I]</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">gather</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
@@ -96,7 +97,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -107,7 +108,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of index and gather arrays</p>
@@ -146,7 +147,7 @@
 </section>
 </section>
 <section id="reduce">
-<h2>Reduce<a class="headerlink" href="#reduce" title="Permalink to this headline">¶</a></h2>
+<h2>Reduce<a class="headerlink" href="#reduce" title="Permalink to this heading">¶</a></h2>
 <p><p>Measure performance of reductions over arrays.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reduce</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -155,7 +156,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -166,7 +167,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array to reduce</p>
@@ -199,7 +200,7 @@
 </section>
 </section>
 <section id="scan">
-<h2>Scan<a class="headerlink" href="#scan" title="Permalink to this headline">¶</a></h2>
+<h2>Scan<a class="headerlink" href="#scan" title="Permalink to this heading">¶</a></h2>
 <p><p>Measure the performance of scans (cumulative reductions) over arrays.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
@@ -208,7 +209,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -219,7 +220,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of array</p>
@@ -252,7 +253,7 @@
 </section>
 </section>
 <section id="scatter">
-<h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this headline">¶</a></h2>
+<h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this heading">¶</a></h2>
 <p><p>Measure performance of random scatter: C[I] = V</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scatter</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
@@ -261,7 +262,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -272,7 +273,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of index and scatter arrays</p>
@@ -311,7 +312,7 @@
 </section>
 </section>
 <section id="stream">
-<h2>Stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h2>
+<h2>Stream<a class="headerlink" href="#stream" title="Permalink to this heading">¶</a></h2>
 <p><p>Run the stream benchmark: C = A + alpha*B</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ALPHA</span><span class="p">]</span>
@@ -320,7 +321,7 @@
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
 <dd><p>Hostname of arkouda server</p>
@@ -331,7 +332,7 @@
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
 <dd><p>Problem size: length of arrays A and B</p>
@@ -425,7 +426,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -442,7 +443,7 @@
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>Installation &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,14 +36,14 @@
           <div class="body" role="main">
             
   <section id="installation">
-<span id="installation-label"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<span id="installation-label"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>Before installing arkouda, make sure to satisfy all the <a class="reference internal" href="prerequisites.html#prerequisites-label"><span class="std std-ref">Prerequisites</span></a>, including setting up your environment for Chapel.</p>
 <section id="download">
-<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this heading">¶</a></h2>
 <p>The easiest way to get arkouda is to download, clone, or fork the <a class="reference external" href="https://github.com/mhmerrill/arkouda/">arkouda github repo</a>.</p>
 </section>
 <section id="environment-setup">
-<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline">¶</a></h2>
+<h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Ensure that <code class="docutils literal notranslate"><span class="pre">CHPL_HOME</span></code> is set and <code class="docutils literal notranslate"><span class="pre">$CHPL_HOME/bin</span></code> is in your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> (consider adding to your .*rc file).</p></li>
 <li><p>Tell arkouda where to find the HDF5 and ZMQ libraries. Do this by creating or modifying the <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> file in the arkouda root directory and adding one or more lines of the form</p></li>
@@ -58,13 +59,13 @@
 <p>Be sure to customize these paths appropriately for your system.</p>
 </section>
 <section id="build-the-server">
-<h2>Build the Server<a class="headerlink" href="#build-the-server" title="Permalink to this headline">¶</a></h2>
+<h2>Build the Server<a class="headerlink" href="#build-the-server" title="Permalink to this heading">¶</a></h2>
 <p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> in the arkouda root directory to build the arkouda server program.</p>
 <p>Note: this will take 10-20 minutes, depending on your processor.</p>
 <p>We recommend adding the arkouda root directory to your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.</p>
 </section>
 <section id="install-the-client">
-<h2>Install the Client<a class="headerlink" href="#install-the-client" title="Permalink to this headline">¶</a></h2>
+<h2>Install the Client<a class="headerlink" href="#install-the-client" title="Permalink to this heading">¶</a></h2>
 <p>You can install the client via</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install path/to/local/arkouda/repo
 </pre></div>
@@ -75,9 +76,9 @@
 </div>
 </section>
 <section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading">¶</a></h2>
 <section id="chapel-not-built-for-this-configuration">
-<h3>Chapel not built for this configuration<a class="headerlink" href="#chapel-not-built-for-this-configuration" title="Permalink to this headline">¶</a></h3>
+<h3>Chapel not built for this configuration<a class="headerlink" href="#chapel-not-built-for-this-configuration" title="Permalink to this heading">¶</a></h3>
 <p>Error: Build fails with a message stating Chapel was not built for this configuration</p>
 <p>Solution: While a full rebuild of Chapel is not required, some additional components must be built with the current environment settings. Do this by setting all your arkouda environment variables as above and running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $CHPL_HOME
@@ -87,7 +88,7 @@ make
 <p>This should build the extra components needed by Chapel to compile arkouda.</p>
 </section>
 <section id="unable-to-find-hdf5-or-zmq">
-<h3>Unable to find HDF5 or ZMQ<a class="headerlink" href="#unable-to-find-hdf5-or-zmq" title="Permalink to this headline">¶</a></h3>
+<h3>Unable to find HDF5 or ZMQ<a class="headerlink" href="#unable-to-find-hdf5-or-zmq" title="Permalink to this heading">¶</a></h3>
 <p>Error: Cannot find <code class="docutils literal notranslate"><span class="pre">-lzmq</span></code> or <code class="docutils literal notranslate"><span class="pre">-lhdf5</span></code></p>
 <p>Solution: Ensure the path(s) in the arkouda <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> file are valid, and that the files <code class="docutils literal notranslate"><span class="pre">lib/libzmq.so</span></code> and <code class="docutils literal notranslate"><span class="pre">lib/libhdf5.so</span></code> appear there. If not, try reinstalling HDF5 and/or ZMQ at those locations, or install the <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda</a> distribution and place the Anaconda root directory in <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code>.</p>
 </section>
@@ -149,7 +150,7 @@ make
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -166,7 +167,7 @@ make
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

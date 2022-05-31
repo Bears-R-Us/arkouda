@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Examples &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>Examples &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,9 +36,9 @@
           <div class="body" role="main">
             
   <section id="examples">
-<span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h1>
 <section id="dataframe-like-patterns">
-<h2>DataFrame-like Patterns<a class="headerlink" href="#dataframe-like-patterns" title="Permalink to this headline">¶</a></h2>
+<h2>DataFrame-like Patterns<a class="headerlink" href="#dataframe-like-patterns" title="Permalink to this heading">¶</a></h2>
 <p>DataFrames (e.g. from <code class="docutils literal notranslate"><span class="pre">pandas</span></code>) are a useful abstraction for working with tabular data. While arkouda does not yet have an actual <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, it is possible to do many of the same operations. Here, we will create and use a pseudo-DataFrame: a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of named <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, which are analogous to columns of a DataFrame. Let the following represent transactions in which a userID purchased an item on a particular day for a certain amount of money:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">userID</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">111</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">])</span>
@@ -49,7 +50,7 @@
 </pre></div>
 </div>
 <section id="selection">
-<h3>Selection<a class="headerlink" href="#selection" title="Permalink to this headline">¶</a></h3>
+<h3>Selection<a class="headerlink" href="#selection" title="Permalink to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">df.loc[condition]</span></code> syntax is useful for selecting subsets of data by value and can be emulated in arkouda. For example, here we select all transactions involving user <code class="docutils literal notranslate"><span class="pre">111</span></code> of an amount less than <code class="docutils literal notranslate"><span class="pre">1.0</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;userID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">111</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">u1</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -63,7 +64,7 @@
 </div>
 </section>
 <section id="description">
-<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">])</span>
 <span class="go">(array([5, 6]), array([3, 3]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
@@ -72,7 +73,7 @@
 </div>
 </section>
 <section id="grouping">
-<h3>Grouping<a class="headerlink" href="#grouping" title="Permalink to this headline">¶</a></h3>
+<h3>Grouping<a class="headerlink" href="#grouping" title="Permalink to this heading">¶</a></h3>
 <p>In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. Note that, because arkouda does not yet have a true <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, the arkouda <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> operation does not conform to the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> API.</p>
 <p>Here we group the data by item and get the number of unique users who bought the item, and the total revenue generated by the item.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">])</span>
@@ -85,7 +86,7 @@
 </div>
 </section>
 <section id="integration-with-pandas">
-<h3>Integration with Pandas<a class="headerlink" href="#integration-with-pandas" title="Permalink to this headline">¶</a></h3>
+<h3>Integration with Pandas<a class="headerlink" href="#integration-with-pandas" title="Permalink to this heading">¶</a></h3>
 <p>Often, it is useful to load data in arkouda and bring back a small subset of the data to explore further in Pandas. This can be done as long as each column is less than <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code> in size (default 1 GB).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume some filtering takes place here</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">subset</span> <span class="o">=</span> <span class="n">data</span>
@@ -103,7 +104,7 @@
 </section>
 </section>
 <section id="graphs">
-<h2>Graphs<a class="headerlink" href="#graphs" title="Permalink to this headline">¶</a></h2>
+<h2>Graphs<a class="headerlink" href="#graphs" title="Permalink to this heading">¶</a></h2>
 <p>Arkouda can be used for constructing and performing basic analysis of graphs.</p>
 <p>Consider the following arkouda code (from <code class="docutils literal notranslate"><span class="pre">toys/ak_rmat.py</span></code>), which generates an RMAT graph:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_rmat_edges</span><span class="p">(</span><span class="n">lgNv</span><span class="p">,</span> <span class="n">Ne_per_v</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -243,7 +244,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -260,7 +261,7 @@
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

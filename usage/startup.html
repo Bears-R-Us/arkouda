@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Startup &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>Startup &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,9 +36,9 @@
           <div class="body" role="main">
             
   <section id="startup">
-<h1>Startup<a class="headerlink" href="#startup" title="Permalink to this headline">¶</a></h1>
+<h1>Startup<a class="headerlink" href="#startup" title="Permalink to this heading">¶</a></h1>
 <section id="launch-arkouda-server">
-<h2>Launch arkouda server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this headline">¶</a></h2>
+<h2>Launch arkouda server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this heading">¶</a></h2>
 <p>Follow the <a class="reference internal" href="../setup/installation.html#installation-label"><span class="std std-ref">Installation</span></a> instructions to build the arkouda server program. In a terminal, launch it with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>arkouda_server -nl &lt;numLocales&gt;
 </pre></div>
@@ -50,7 +51,7 @@
 <p>Use this hostname and port in the next step to connect to the server.</p>
 </section>
 <section id="connect-a-python-3-client">
-<h2>Connect a Python 3 client<a class="headerlink" href="#connect-a-python-3-client" title="Permalink to this headline">¶</a></h2>
+<h2>Connect a Python 3 client<a class="headerlink" href="#connect-a-python-3-client" title="Permalink to this heading">¶</a></h2>
 <p>In Python 3, connect to the arkouda server using the hostname and port shown by the server program (example values shown here)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connect_url</span><span class="o">=</span><span class="s1">&#39;tcp://node01:5555&#39;</span><span class="p">)</span>
@@ -64,7 +65,7 @@
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5555</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.connect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connect to a running arkouda server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>server</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the server (must be visible to the current
 machine). Defaults to <cite>localhost</cite>.</p></li>
@@ -77,10 +78,10 @@ an Arkouda server where authentication is enabled. Defaults to None.</p></li>
 where the token is optional</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ConnectionError</strong> – Raised if there’s an error in connecting to the Arkouda server</p></li>
 <li><p><strong>ValueError</strong> – Raised if there’s an error in parsing the connect_url parameter</p></li>
@@ -162,7 +163,7 @@ with an existing connection, the socket will be re-initialized.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -179,7 +180,7 @@ with an existing connection, the socket will be re-initialized.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

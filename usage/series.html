@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Series in Arkouda &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>Series in Arkouda &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,24 +34,54 @@
           <div class="body" role="main">
             
   <section id="series-in-arkouda">
-<h1>Series in Arkouda<a class="headerlink" href="#series-in-arkouda" title="Permalink to this headline">¶</a></h1>
+<h1>Series in Arkouda<a class="headerlink" href="#series-in-arkouda" title="Permalink to this heading">¶</a></h1>
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">Series</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Series">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_tuple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series" title="Permalink to this definition">¶</a></dt>
 <dd><p>One-dimensional arkouda array with axis labels.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ar_tuple</strong> (<em>2-tuple of arkouda arrays with the first being the grouping key</em><em>(</em><em>s</em><em>) </em><em>and the</em>) – second being the value. The grouping key(s) will be the index of the series.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id1044" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+If empty, it will default to a range of ints whose size match the size of the data.
+optional</p></li>
+<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None if ar_tuple is not provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if index is not a pdarray or Strings object
+    Raised if data is not a pdarray, Strings, or Categorical object</p></li>
+<li><p><strong>ValueError</strong> – Raised if the index size does not match data size</p></li>
+</ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The Series class accepts either positional arguments or keyword arguments.
+If entering positional arguments,</p>
+<blockquote>
+<div><dl class="simple">
+<dt>2 arguments entered:</dt><dd><p>argument 1 - index
+argument 2 - data</p>
+</dd>
+<dt>1 argument entered:</dt><dd><p>argument 1 - data</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If entering 1 positional argument, it is assumed that this is the data argument.
+If entering keywords,</p>
+<blockquote>
+<div><p>‘data’ (see Parameters)
+‘index’ (optional) must match size of ‘data’</p>
+</div></blockquote>
 </dd></dl>
 
 <section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Series</span></code> support the majority of functionality offered by <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>.</p>
 <section id="lookup">
-<h3>Lookup<a class="headerlink" href="#lookup" title="Permalink to this headline">¶</a></h3>
+<h3>Lookup<a class="headerlink" href="#lookup" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.locate">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.locate" title="Permalink to this definition">¶</a></dt>
@@ -60,7 +91,7 @@ As a special case, if a Series is used as the key, the series labels are preserv
 use as the key.</p>
 <p>Keys will be turned into arkouda arrays as needed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Series containing the values corresponding to the key.</p>
 </dd>
 </dl>
@@ -68,7 +99,7 @@ use as the key.</p>
 
 </section>
 <section id="id1">
-<h3>Lookup<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3>Lookup<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="id0">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
@@ -78,7 +109,7 @@ As a special case, if a Series is used as the key, the series labels are preserv
 use as the key.</p>
 <p>Keys will be turned into arkouda arrays as needed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A Series containing the values corresponding to the key.</p>
 </dd>
 </dl>
@@ -86,13 +117,13 @@ use as the key.</p>
 
 </section>
 <section id="sorting">
-<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h3>
+<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.sort_index">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">sort_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.sort_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the series by its index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A new Series sorted.</p>
 </dd>
 </dl>
@@ -103,7 +134,7 @@ use as the key.</p>
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">sort_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.sort_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the series numerically</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A new Series sorted smallest to largest</p>
 </dd>
 </dl>
@@ -111,16 +142,16 @@ use as the key.</p>
 
 </section>
 <section id="head-tail">
-<h3>Head/Tail<a class="headerlink" href="#head-tail" title="Permalink to this headline">¶</a></h3>
+<h3>Head/Tail<a class="headerlink" href="#head-tail" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.topn">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">topn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.topn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the top values of the series</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> (<em>Number of values to return</em>) – </p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series with the top values</p>
 </dd>
 </dl>
@@ -140,7 +171,7 @@ use as the key.</p>
 
 </section>
 <section id="value-counts">
-<h3>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this headline">¶</a></h3>
+<h3>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.value_counts">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.value_counts" title="Permalink to this definition">¶</a></dt>
@@ -148,7 +179,7 @@ use as the key.</p>
 <p>The resulting object will be in descending order so that the
 first element is the most frequently-occurring element.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sort</strong> (<em>Boolean. Whether</em><em> or </em><em>not to sort the results.  Default is true.</em>) – </p>
 </dd>
 </dl>
@@ -156,7 +187,7 @@ first element is the most frequently-occurring element.</p>
 
 </section>
 <section id="pandas-integration">
-<h3>Pandas Integration<a class="headerlink" href="#pandas-integration" title="Permalink to this headline">¶</a></h3>
+<h3>Pandas Integration<a class="headerlink" href="#pandas-integration" title="Permalink to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Series.to_pandas">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.to_pandas" title="Permalink to this definition">¶</a></dt>
@@ -172,14 +203,14 @@ with the first item being the key(s) and the second being the value.</p>
 <p>If horizontal, each series or grouping must have the same length and the same index. The index of the series is
 converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>The list of series/groupings to concat.</em>) – </p></li>
 <li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>) – </p></li>
 <li><p><strong>labels</strong> (<em>names to give the columns of the data frame.</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>axis=0</strong> (<em>a local PANDAS series</em>)</p></li>
 <li><p><strong>axis=1</strong> (<em>a local PANDAS dataframe</em>)</p></li>
@@ -239,7 +270,7 @@ converted to a column in the dataframe.  If it is a multi-index,each level is co
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -256,7 +287,7 @@ converted to a column in the dataframe.  If it is a multi-index,each level is co
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

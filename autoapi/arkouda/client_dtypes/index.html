@@ -1,18 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.client_dtypes &#8212; arkouda 0+untagged.1.g6bf6b84 documentation</title>
+    <title>arkouda.client_dtypes &#8212; arkouda 0+untagged.1.gc0786e6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -35,16 +36,12 @@
           <div class="body" role="main">
             
   <section id="module-arkouda.client_dtypes">
-<span id="arkouda-client-dtypes"></span><h1><a class="reference internal" href="#module-arkouda.client_dtypes" title="arkouda.client_dtypes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a><a class="headerlink" href="#module-arkouda.client_dtypes" title="Permalink to this headline">¶</a></h1>
+<span id="arkouda-client-dtypes"></span><h1><a class="reference internal" href="#module-arkouda.client_dtypes" title="arkouda.client_dtypes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a><a class="headerlink" href="#module-arkouda.client_dtypes" title="Permalink to this heading">¶</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
 <section id="classes">
-<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitVector</span></code></a></p></td>
 <td><p>Represent integers as bit vectors, e.g. a set of flags.</p></td>
@@ -59,12 +56,8 @@
 </table>
 </section>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client_dtypes.BitVectorizer" title="arkouda.client_dtypes.BitVectorizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitVectorizer</span></code></a>(width=64, reverse=False)</p></td>
 <td><p>Make a callback (i.e. function) that can be called on an</p></td>
@@ -80,7 +73,7 @@
 <dd><p>Make a callback (i.e. function) that can be called on an
 array to create a BitVector.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
 <li><p><strong>reverse</strong> (<em>bool</em>) – If True, display bits from least significant (left) to most
@@ -88,10 +81,10 @@ significant (right). By default, the most significant bit
 is the left-most bit.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>bitvectorizer</strong> – A function that takes an array and returns a BitVector instance</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>callable</p>
 </dd>
 </dl>
@@ -103,7 +96,7 @@ is the left-most bit.</p></li>
 <dd><p>Bases: <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.pdarray</span></code></a></p>
 <p>Represent integers as bit vectors, e.g. a set of flags.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integers to represent as bit vectors</p></li>
 <li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
@@ -112,10 +105,10 @@ significant (right). By default, the most significant bit
 is the left-most bit.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>bitvectors</strong> – The array of binary vectors</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector">BitVector</a></p>
 </dd>
 </dl>
@@ -172,19 +165,19 @@ typically treat this class like a uint64 pdarray.</p>
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector._binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
 pdarray sizes don’t match</p></li>
@@ -200,19 +193,19 @@ a supported dtype</p></li>
 <span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector._r_binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes reverse binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
 <li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
@@ -235,9 +228,9 @@ a supported dtype</p></li>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitVector</span></code></a></p>
 <p>An integer-backed representation of a set of named binary fields, e.g. flags.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id1046" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id1044" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -255,10 +248,10 @@ and to display output.</p></li>
 <li><p><strong>show_int</strong> (<em>bool</em>) – If True (default), display the integer value of the binary fields in output.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>fields</strong> – The array of field values</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.Fields" title="arkouda.client_dtypes.Fields">Fields</a></p>
 </dd>
 </dl>
@@ -299,19 +292,19 @@ typically treat this class like an int64 pdarray.</p>
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
 pdarray sizes don’t match</p></li>
@@ -327,19 +320,19 @@ a supported dtype</p></li>
 <span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._r_binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes reverse binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
 <li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
@@ -361,13 +354,13 @@ a supported dtype</p></li>
 <span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">ip_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.ip_address" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert values to an Arkouda array of IP addresses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>values</strong> (<em>list-like</em><em>, </em><em>integer pdarray</em><em>, or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – The integer IP addresses or IPv4 object.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same IP addresses as an Arkouda array</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4">IPv4</a></p>
 </dd>
 </dl>
@@ -384,13 +377,13 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <dd><p>Bases: <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.pdarray</span></code></a></p>
 <p>Represent integers as IPv4 addresses.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The integer IP addresses</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same IP addresses</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4">IPv4</a></p>
 </dd>
 </dl>
@@ -449,19 +442,19 @@ and convert it to an integer.</p>
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4._binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
 pdarray sizes don’t match</p></li>
@@ -477,19 +470,19 @@ a supported dtype</p></li>
 <span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4._r_binop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes reverse binary operation specified by the op string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
 <li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
 <li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
@@ -565,7 +558,7 @@ a supported dtype</p></li>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -582,7 +575,7 @@ a supported dtype</p></li>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
