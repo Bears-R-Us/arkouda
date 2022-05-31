@@ -530,7 +530,7 @@ class DataFrameTest(ArkoudaTest):
 
         # test against series
         i = ak.Index(ak.arange(2))
-        s = ak.Series(data=[3, 9], index=i)
+        s = ak.Series(data=ak.array([3, 9]), index=i.index)
         test_df = df.isin(s)
         self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, False])
         self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, True])
