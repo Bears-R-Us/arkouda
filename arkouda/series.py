@@ -1,8 +1,10 @@
+from typeguard import typechecked
+from typing import List, Optional, Tuple, Union, Iterable
 from arkouda.pdarrayclass import pdarray, argmaxk, attach_pdarray
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.index import Index
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.dtypes import int64, float64
 from arkouda.numeric import value_counts, cast as akcast
 from arkouda.util import get_callback
@@ -75,28 +77,55 @@ class Series:
 
     Parameters
     ----------
-    ar_tuple : 2-tuple of arkouda arrays with the first being the grouping key(s) and the
-             second being the value. The grouping key(s) will be the index of the series.
+    index : pdarray, Strings
+        an array of indices associated with the data array.
+        If empty, it will default to a range of ints whose size match the size of the data.
+        optional
+    data : Tuple, List, groupable_element_type
+        a 1D array. Must not be None if ar_tuple is not provided.
 
+    Raises
+    ------
+    TypeError
+        Raised if index is not a pdarray or Strings object
+        Raised if data is not a pdarray, Strings, or Categorical object
+    ValueError
+        Raised if the index size does not match data size
+
+    Notes
+    -----
+    The Series class accepts either positional arguments or keyword arguments.
+    If entering positional arguments,
+        2 arguments entered:
+            argument 1 - index
+            argument 2 - data
+        1 argument entered:
+            argument 1 - data
+    If entering 1 positional argument, it is assumed that this is the data argument.
+    If entering keywords,
+        'data' (see Parameters)
+        'index' (optional) must match size of 'data'
     """
 
-    def __init__(self, ar_tuple=None, data=None, index=None):
-        if ar_tuple is not None:
-            self.index = Index.factory(ar_tuple[0])
-            self.values = ar_tuple[1]
-        elif data is None:
-            raise TypeError("ar_tuple and data cannot both be null")
-
+    @typechecked
+    def __init__(self, data: Union[Tuple, List, groupable_element_type],
+                 index: Optional[Union[pdarray, Strings]] = None):
+        # TODO: Allow index to be an Index when index.py is updated
+        if isinstance(data, (tuple, list)) and len(data) == 2:
+            # handles the previous `ar_tuple` case
+            if not isinstance(data[0], (pdarray, Strings)):
+                raise TypeError("indices must be a pdarray or Strings")
+            if not isinstance(data[1], (pdarray, Strings, Categorical)):
+                raise TypeError("values must be a pdarray, Strings, or Categorical")
+            self.values = data[1]
+            self.index = Index.factory(data[0])
         else:
-            if not isinstance(data, (pdarray, Strings, Categorical)):
-                data = array(data)
-            self.values = data
+            # When only 1 positional argument it will be treated as data and not index
+            self.values = array(data) if not isinstance(data, (Strings, Categorical)) else data
+            self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
 
-            if index is None:
-                index = arange(data.size)
-            self.index = Index.factory(index)
         if self.index.size != self.values.size:
-            raise ValueError("Index and data must have same length")
+            raise ValueError("Index size does not match data size")
         self.size = self.index.size
 
     def __len__(self):
@@ -196,7 +225,7 @@ class Series:
         else:
             # scalar value
             idx = self.index == key
-        return Series((self.index[idx], self.values[idx]))
+        return Series(index=self.index.index[idx], data=self.values[idx])
 
     @classmethod
     def _make_binop(cls, operator):
@@ -233,7 +262,9 @@ class Series:
         index = self.index.concat(b.index).index
 
         values = concatenate([self.values, b.values], ordered=False)
-        return Series(GroupBy(index).sum(values))
+
+        idx, vals = GroupBy(index).sum(values)
+        return Series(data=vals, index=idx)
 
     def topn(self, n=10):
         """ Return the top values of the series
@@ -252,7 +283,7 @@ class Series:
         idx = argmaxk(v, n)
         idx = idx[-1:-n - 1:-1]
 
-        return Series((k[idx], v[idx]))
+        return Series(index=k.index[idx], data=v[idx])
 
     def sort_index(self, ascending=True):
         """ Sort the series by its index
@@ -263,7 +294,7 @@ class Series:
         """
 
         idx = self.index.argsort(ascending=ascending)
-        return Series((self.index[idx], self.values[idx]))
+        return Series(index=self.index.index[idx], data=self.values[idx])
 
     def sort_values(self, ascending=True):
         """ Sort the series numerically
@@ -282,19 +313,19 @@ class Series:
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
-        return Series((self.index[idx], self.values[idx]))
+        return Series(index=self.index.index[idx], data=self.values[idx])
 
     def tail(self, n=10):
         """Return the last n values of the series"""
 
         idx_series = (self.index[-n:])
-        return Series((idx_series, self.values[-n:]))
+        return Series(index=idx_series.index, data=self.values[-n:])
 
     def head(self, n=10):
         """Return the first n values of the series"""
 
         idx_series = (self.index[0:n])
-        return Series((idx_series, self.values[0:n]))
+        return Series(index=idx_series.index, data=self.values[0:n])
 
     def to_pandas(self):
         """Convert the series to a local PANDAS series"""
@@ -316,7 +347,8 @@ class Series:
         """
 
         dtype = get_callback(self.values)
-        s = Series(value_counts(self.values))
+        idx, vals = value_counts(self.values)
+        s = Series(index=idx, data=vals)
         if sort:
             s = s.sort_values(ascending=False)
         s.index.set_dtype(dtype)
@@ -477,7 +509,7 @@ class Series:
             for other in arrays[1:]:
                 idx = idx.concat(other.index)
                 v = concatenate([v, other.values], ordered=True)
-            retval = Series((idx, v))
+            retval = Series(index=idx.index, data=v)
 
         return retval
 
@@ -513,7 +545,7 @@ class Series:
 
             cols = []
             for col in arrays:
-                cols.append(pd.Series(col.values.to_ndarray(), index=idx))
+                cols.append(pd.Series(data=col.values.to_ndarray(), index=idx))
             retval = pd.concat(cols, axis=1)
             if labels is not None:
                 retval.columns = labels

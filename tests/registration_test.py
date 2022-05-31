@@ -442,7 +442,7 @@ class RegistrationTest(ArkoudaTest):
 
     def test_series_register_attach(self):
         ar_tuple = (ak.arange(5), ak.arange(5))
-        s = ak.Series(ar_tuple=ar_tuple)
+        s = ak.Series(ar_tuple)
 
         # At this time, there is no unregister() in Series. Register one piece to check partial registration
         s.values.register("seriesTest_values")
