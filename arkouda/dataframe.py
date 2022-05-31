@@ -1572,10 +1572,9 @@ class DataFrame(UserDict):
         """
         if isinstance(values, pdarray):
             # flatten the DataFrame so single in1d can be used.
-            flat = concatenate(list(self.data.values()))
-            lens = array([self.data[col].size for col in self.columns])
-            segs = concatenate([cumsum(lens) - lens, array([flat.size])])
-            df_def = {col: in1d(flat, values)[segs[i]:segs[i + 1]] for i, col in enumerate(self.columns)}
+            flat_in1d = in1d(concatenate(list(self.data.values())), values)
+            segs = concatenate([array([0]), cumsum(array([self.data[col].size for col in self.columns]))])
+            df_def = {col: flat_in1d[segs[i]:segs[i + 1]] for i, col in enumerate(self.columns)}
         elif isinstance(values, Dict):
             # key is column name, val is the list of values to check
             df_def = {col: (in1d(self.data[col], values[col]) if col in values.keys()
@@ -1585,8 +1584,9 @@ class DataFrame(UserDict):
             # create the dataframe with all false
             df_def = {col: zeros(self.size, dtype=akbool) for col in self.columns}
             # identify the indexes in both
-            rows_self = in1d(self.index.index, values.index.index)
-            rows_val = in1d(values.index.index, self.index.index)
+            # rows_self = in1d(self.index.index, values.index.index)
+            # rows_val = in1d(values.index.index, self.index.index)
+            rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
 
             # used to sort the rows with only the indexes in both
             sort_self = self.index[rows_self].argsort()
