@@ -337,33 +337,17 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(c.values.to_ndarray().tolist(), [3, 1, 2])
 
     def test_to_pandas(self):
-        username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
-        userid = ak.array([111, 222, 111, 333, 222, 111])
-        item = ak.array([0, 0, 1, 1, 2, 0])
-        day = ak.array([5, 5, 6, 5, 6, 6])
-        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-        df = ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
-        )
+        df = build_ak_df()
+        pd_df = build_pd_df()
 
-        pddf = df.to_pandas()
-        data = [
-            ["Alice", 111, 0, 5, 0.5],
-            ["Bob", 222, 0, 5, 0.6],
-            ["Alice", 111, 1, 6, 1.1],
-            ["Carol", 333, 1, 5, 1.2],
-            ["Bob", 222, 2, 6, 4.3],
-            ["Alice", 111, 0, 6, 0.6],
-        ]
-        test_df = pd.DataFrame(data, columns=["userName", "userID", "item", "day", "amount"])
-        self.assertTrue(pddf.equals(test_df))
+        self.assertTrue(pd_df.equals(df.to_pandas()))
 
         slice_df = df[ak.array([1, 3, 5])]
-        pddf = slice_df.to_pandas(retain_index=True)
-        self.assertEqual(pddf.index.tolist(), [1, 3, 5])
+        pd_df = slice_df.to_pandas(retain_index=True)
+        self.assertEqual(pd_df.index.tolist(), [1, 3, 5])
 
-        pddf = slice_df.to_pandas()
-        self.assertEqual(pddf.index.tolist(), [0, 1, 2])
+        pd_df = slice_df.to_pandas()
+        self.assertEqual(pd_df.index.tolist(), [0, 1, 2])
 
     def test_argsort(self):
         df = build_ak_df()
