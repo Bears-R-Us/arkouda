@@ -1,11 +1,11 @@
+from itertools import product
+
 import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
-from itertools import product
 
 
 class ArrayViewTest(ArkoudaTest):
-
     def test_mulitdimensional_array_creation(self):
         n = np.array([[0, 0], [0, 1], [1, 1]])
         a = ak.array([[0, 0], [0, 1], [1, 1]])
@@ -110,9 +110,9 @@ class ArrayViewTest(ArkoudaTest):
     def test_reshape_order(self):
         # Keep 'C'/'F' (C/Fortran) order to be consistent with numpy
         # But also accept more descriptive 'row_major' and 'column_major'
-        nd = np.arange(30).reshape((5, 3, 2), order='C')
-        ak_C = ak.arange(30).reshape((5, 3, 2), order='C')
-        ak_row = ak.arange(30).reshape((5, 3, 2), order='row_major')
+        nd = np.arange(30).reshape((5, 3, 2), order="C")
+        ak_C = ak.arange(30).reshape((5, 3, 2), order="C")
+        ak_row = ak.arange(30).reshape((5, 3, 2), order="row_major")
 
         nd_ind = [nd[i, j, k] for (i, j, k) in product(range(5), range(3), range(2))]
         C_order = [ak_C[i, j, k] for (i, j, k) in product(range(5), range(3), range(2))]
@@ -120,9 +120,9 @@ class ArrayViewTest(ArkoudaTest):
         self.assertListEqual(nd_ind, C_order)
         self.assertListEqual(nd_ind, row_order)
 
-        nd = np.arange(30).reshape((5, 3, 2), order='F')
-        ak_F = ak.arange(30).reshape((5, 3, 2), order='F')
-        ak_column = ak.arange(30).reshape((5, 3, 2), order='column_major')
+        nd = np.arange(30).reshape((5, 3, 2), order="F")
+        ak_F = ak.arange(30).reshape((5, 3, 2), order="F")
+        ak_column = ak.arange(30).reshape((5, 3, 2), order="column_major")
 
         nd_ind = [nd[i, j, k] for (i, j, k) in product(range(5), range(3), range(2))]
         F_order = [ak_F[i, j, k] for (i, j, k) in product(range(5), range(3), range(2))]
@@ -158,8 +158,8 @@ class ArrayViewTest(ArkoudaTest):
         # n[0, 5:].tolist() = [5, 6, 7, 8, 9]
         self.assertListEqual(n[0, 5:].tolist(), a[0, 5:].to_ndarray().tolist())
 
-        n = np.array([[[1],[2],[3]], [[4],[5],[6]]])
-        a = ak.array([[[1],[2],[3]], [[4],[5],[6]]])
+        n = np.array([[[1], [2], [3]], [[4], [5], [6]]])
+        a = ak.array([[[1], [2], [3]], [[4], [5], [6]]])
         # list(n.shape) = [2, 3, 1]
         self.assertListEqual(list(n.shape), a.shape.to_ndarray().tolist())
         # n.tolist() = [[[1], [2], [3]], [[4], [5], [6]]]
@@ -182,10 +182,9 @@ class ArrayViewTest(ArkoudaTest):
         # n[:, 5:8, 1:5:2][1].tolist() = []
         self.assertListEqual(n[:, 5:8, 1:5:2][1].tolist(), a[:, 5:8, 1:5:2][1].to_ndarray().tolist())
 
-        a = ak.arange(30).reshape(2, 3, 5, order='F')
-        n = np.arange(30).reshape(2, 3, 5, order='F')
+        a = ak.arange(30).reshape(2, 3, 5, order="F")
+        n = np.arange(30).reshape(2, 3, 5, order="F")
         self.assertListEqual(n.tolist(), a.to_ndarray().tolist())
 
         # n[:, ::-1, 1:5:2].tolist() = [[10, 22], [8, 20], [6, 18]]
         self.assertListEqual(n[:, ::-1, 1:5:2].tolist(), a[:, ::-1, 1:5:2].to_ndarray().tolist())
-
