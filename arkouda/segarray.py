@@ -792,6 +792,7 @@ class SegArray:
         segment_suffix="_segments",
         value_suffix="_values",
         mode="truncate",
+        file_format="HDF5",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
@@ -810,6 +811,8 @@ class SegArray:
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
+        file_format : str {'HDF5' | 'Parquet'}
+            Defaults to `'HDF5'`. Indicates the file format to use to store data.
 
         Returns
         -------
@@ -822,8 +825,12 @@ class SegArray:
         """
         if segment_suffix == value_suffix:
             raise ValueError("Segment suffix and value suffix must be different")
-        self.segments.save(prefix_path, dataset=dataset + segment_suffix, mode=mode)
-        self.values.save(prefix_path, dataset=dataset + value_suffix, mode="append")
+        self.segments.save(
+            prefix_path, dataset=dataset + segment_suffix, mode=mode, file_format=file_format
+        )
+        self.values.save(
+            prefix_path, dataset=dataset + value_suffix, mode="append", file_format=file_format
+        )
 
     @classmethod
     def load(
