@@ -1290,7 +1290,8 @@ class DataFrame(UserDict):
     def load_table(cls, prefix_path, file_format='INFER'):
         prefix, extension = os.path.splitext(prefix_path)
         first_file = "{}_LOCALE0000{}".format(prefix, extension)
-        filetype = get_filetype(first_file)
+        filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
+
         # columns load backwards
         df = cls(load_all(prefix_path, file_format=filetype))
         if filetype == "HDF5":

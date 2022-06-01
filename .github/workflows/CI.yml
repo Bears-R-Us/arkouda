@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  ARKOUDA_SERVER_PARQUET_SUPPORT: true
 
 jobs:
   lint:

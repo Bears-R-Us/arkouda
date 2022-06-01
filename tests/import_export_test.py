@@ -75,7 +75,6 @@ class DataFrameTest(ArkoudaTest):
         # clean up test files
         rmtree(f_base)
 
-    @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_import_parquet(self):
         locales = self.get_locale_count()
         f_base = f"{os.getcwd()}/import_export_test"
@@ -92,7 +91,6 @@ class DataFrameTest(ArkoudaTest):
         # clean up test files
         rmtree(f_base)
 
-    @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_export_parquet(self):
         f_base = f"{os.getcwd()}/import_export_test"
         # make directory to save to so pandas read works
