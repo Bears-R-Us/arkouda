@@ -645,8 +645,7 @@ class GroupBy:
         >>> g.argmin(b)
         (array([2, 3, 4]), array([5, 4, 2]))
         """
-        if values.dtype == bool:
-            raise TypeError("argmin is only supported for pdarrays of dtype float64, uint64, and int64")
+
         return self.aggregate(values, "argmin")
 
     def argmax(self, values: pdarray) -> Tuple[groupable, pdarray]:
@@ -695,8 +694,7 @@ class GroupBy:
         >>> g.argmax(b)
         (array([2, 3, 4]), array([9, 3, 2]))
         """
-        if values.dtype == bool:
-            raise TypeError("argmax is only supported for pdarrays of dtype float64, uint64, and int64")
+        
         return self.aggregate(values, "argmax")
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:

@@ -166,6 +166,18 @@ class GroupByTest(ArkoudaTest):
         """
         self.assertEqual(0, run_test(2, verbose))
 
+    def test_argmax_argmin(self):
+        b = ak.array([True, False, True, True, False, True])
+        x = ak.array([True, True, False, True, False, False])
+        g = ak.GroupBy(x)
+        keys, locs = g.argmin(b)
+        self.assertListEqual(keys.to_ndarray().tolist(), [False, True])
+        self.assertListEqual(locs.to_ndarray().tolist(), [4, 1])
+
+        keys, locs = g.argmax(b)
+        self.assertListEqual(keys.to_ndarray().tolist(), [False, True])
+        self.assertListEqual(locs.to_ndarray().tolist(), [2, 0])
+
     def test_boolean_arrays(self):
         a = ak.array([True, False, True, True, False])
         true_ct = a.sum()
