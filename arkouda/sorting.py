@@ -1,23 +1,30 @@
 from __future__ import annotations
-from typing import cast, Sequence, Union
-from typeguard import typechecked, check_type
+
+from enum import Enum
+from typing import Sequence, Union, cast
+
+from typeguard import check_type, typechecked
+
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.dtypes import float64, int64, int_scalars, uint64
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import int64, uint64, float64, int_scalars, all_scalars
-from enum import Enum
 
-numeric_dtypes = {int64,uint64,float64}
+numeric_dtypes = {int64, uint64, float64}
 
 __all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
 
-SortingAlgorithm = Enum('SortingAlgorithm', ['RadixSortLSD', 'TwoArrayRadixSort'])
+SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"])
 
-def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray: # type: ignore
+
+def argsort(
+    pda: Union[pdarray, Strings, "Categorical"],  # type: ignore
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+) -> pdarray:  # type: ignore
     """
     Return the permutation that sorts the array.
-    
+
     Parameters
     ----------
     pda : pdarray or Strings or Categorical
@@ -27,7 +34,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
     -------
     pdarray, int64
         The indices such that ``pda[indices]`` is sorted
-        
+
     Raises
     ------
     TypeError
@@ -50,23 +57,26 @@ def argsort(pda : Union[pdarray,Strings,'Categorical'], algorithm : SortingAlgor
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
     from arkouda.categorical import Categorical
-    check_type(argname='argsort', value=pda, 
-                      expected_type=Union[pdarray,Strings,Categorical])
+
+    check_type(argname="argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
     if hasattr(pda, "argsort"):
-        return cast(Categorical,pda).argsort()
+        return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
     name = pda.entry.name if isinstance(pda, Strings) else pda.name
     repMsg = generic_msg(cmd="argsort", args="{} {} {}".format(algorithm.name, pda.objtype, name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(cast(str, repMsg))
 
 
-def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:  # type: ignore
+def coargsort(
+    arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+) -> pdarray:  # type: ignore
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
     columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
-    
+
     Parameters
     ----------
     arrays : Sequence[Union[Strings, pdarray, Categorical]]
@@ -76,7 +86,7 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     -------
     pdarray, int64
         The indices that permute the rows to grouped order
-        
+
     Raises
     ------
     ValueError
@@ -110,13 +120,16 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
     array([0, 1, 0, 1])
     """
     from arkouda.categorical import Categorical
-    check_type(argname='coargsort', value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
-    size:int_scalars = -1
+
+    check_type(
+        argname="coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]]
+    )
+    size: int_scalars = -1
     anames = []
     atypes = []
     for a in arrays:
         if isinstance(a, pdarray):
-            anames.append('+'.join(a._list_component_names()))
+            anames.append("+".join(a._list_component_names()))
             atypes.append(a.objtype)
         elif isinstance(a, Categorical):
             anames.append(a.codes.name)
@@ -132,18 +145,19 @@ def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']], algorith
             raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
     if size == 0:
         return zeros(0, dtype=arrays[0].dtype)
-    repMsg = generic_msg(cmd="coargsort", args="{} {:n} {} {}".format(algorithm.name,
-                                                                      len(arrays), 
-                                                                      ' '.join(anames),
-                                                                      ' '.join(atypes)))
+    repMsg = generic_msg(
+        cmd="coargsort",
+        args="{} {:n} {} {}".format(algorithm.name, len(arrays), " ".join(anames), " ".join(atypes)),
+    )
     return create_pdarray(cast(str, repMsg))
 
+
 @typechecked
-def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:
+def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:
     """
-    Return a sorted copy of the array. Only sorts numeric arrays; 
+    Return a sorted copy of the array. Only sorts numeric arrays;
     for Strings, use argsort.
-    
+
     Parameters
     ----------
     pda : pdarray or Categorical
@@ -179,8 +193,8 @@ def sort(pda : pdarray, algorithm : SortingAlgorithm = SortingAlgorithm.RadixSor
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
     if pda.dtype not in numeric_dtypes:
-        raise ValueError("ak.sort supports int64, uint64, or float64, not {}".format(pda.dtype))
+        raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
     repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(cast(str, repMsg))
