@@ -1,15 +1,14 @@
 import numpy as np  # type: ignore
 
-from arkouda.strings import Strings
-from arkouda.pdarrayclass import pdarray, is_sorted
-from arkouda.pdarraycreation import array, arange, ones, zeros
-from arkouda.pdarraysetops import concatenate, in1d, argsort
-from arkouda.numeric import cumsum
 from arkouda.categorical import Categorical
-from arkouda.groupbyclass import unique, GroupBy, broadcast
 from arkouda.dtypes import bool as akbool
-from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import float64 as akfloat64
+from arkouda.dtypes import int64 as akint64
+from arkouda.groupbyclass import GroupBy, broadcast, unique
+from arkouda.pdarrayclass import is_sorted, pdarray
+from arkouda.pdarraycreation import arange, ones, zeros
+from arkouda.pdarraysetops import argsort, concatenate, in1d
+from arkouda.strings import Strings
 
 
 def unsqueeze(p):
@@ -58,7 +57,7 @@ def align(*args):
     pos = 0
     ret = []
     for arg in args:
-        ret.append(inds[pos:pos + arg.size])
+        ret.append(inds[pos : pos + arg.size])
         pos += arg.size
     return ret
 
@@ -111,7 +110,8 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
     b : list of pdarrays
         Rows are elements of the set in which to test membership
     assume_unique : bool
-        If true, assume rows of a and b are each unique and sorted. By default, sort and unique them explicitly.
+        If true, assume rows of a and b are each unique and sorted.
+        By default, sort and unique them explicitly.
 
     Returns
     -------
@@ -237,7 +237,7 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     # gathermask = Elements of keys that are being asked for
     try:
         scattermask, gathermask = in1dmulti(g.unique_keys, keys, assume_unique=True, symmetric=True)
-    except NonUniqueError as e:
+    except NonUniqueError:
         raise NonUniqueError("Function keys must be unique.")
     # uvals = Retrieved values corresponding to unique args being queried
     if g.nkeys == 1:
@@ -329,8 +329,11 @@ def search_intervals(vals, intervals, assume_unique=False):
     -----
     The return idx satisfies the following condition:
         present = idx > -1
-        ((intervals[0][idx[present]] <= vals[present]) & (intervals[1][idx[present]] > vals[present])).all()
+        ((intervals[0][idx[present]] <= vals[present]) &
+         (intervals[1][idx[present]] > vals[present])).all()
     """
+    from arkouda.join import gen_ranges
+
     if len(intervals) != 2:
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_exclusive)")
 
@@ -365,11 +368,11 @@ def search_intervals(vals, intervals, assume_unique=False):
     iperm = argsort(perm)  # aku.invert_permutation(perm)
     boundary = uvals.size + low.size
     # indices of the lower bounds in the sorted array
-    starts = iperm[:low.size]
+    starts = iperm[: low.size]
     # indices of the upper bounds in the sorted array
     ends = iperm[boundary:]
     # which lower/upper bound pairs have any indices between them?
-    valid = (ends > starts + 1)
+    valid = ends > starts + 1
     if valid.sum() > 0:
         # pranges is all the indices in sorted array that fall between a lower and an uppper bound
         segs, pranges = gen_ranges(starts[valid] + 1, ends[valid])
