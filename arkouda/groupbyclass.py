@@ -1,36 +1,44 @@
 from __future__ import annotations
-import enum
 
-from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any, Optional, Dict
+import enum
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, cast
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
+
 import numpy as np  # type: ignore
-from typeguard import typechecked, check_type
+from typeguard import typechecked
+
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, RegistrationError, unregister_pdarray_by_name
-from arkouda.sorting import argsort, coargsort
-from arkouda.strings import Strings
-from arkouda.pdarraycreation import array, zeros, arange
-from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import list_registry
+from arkouda.logger import getArkoudaLogger
+from arkouda.pdarrayclass import (
+    RegistrationError,
+    create_pdarray,
+    pdarray,
+    unregister_pdarray_by_name,
+)
+from arkouda.pdarraycreation import arange
+from arkouda.strings import Strings
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
 
-groupable_element_type = Union[pdarray, Strings, 'Categorical']
+groupable_element_type = Union[pdarray, Strings, "Categorical"]
 groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 
-def unique(pda: groupable,  # type: ignore
-           return_groups: bool = False, assume_sorted: bool = False) -> Union[groupable,  # type: ignore
-                                                 Tuple[groupable, pdarray, pdarray, int]]:  # type: ignore
+def unique(
+    pda: groupable, return_groups: bool = False, assume_sorted: bool = False  # type: ignore
+) -> Union[
+    groupable, Tuple[groupable, pdarray, pdarray, int]  # type: ignore
+]:  # type: ignore
     """
     Find the unique elements of an array.
 
-    Returns the unique elements of an array, sorted if the values are integers. 
-    There is an optional output in addition to the unique elements: the number 
+    Returns the unique elements of an array, sorted if the values are integers.
+    There is an optional output in addition to the unique elements: the number
     of times each unique value comes up in the input array.
 
     Parameters
@@ -71,7 +79,8 @@ def unique(pda: groupable,  # type: ignore
     array([1, 2, 3])
     """
     from arkouda.categorical import Categorical as Categorical_
-    if not return_groups and hasattr(pda, 'unique'):
+
+    if not return_groups and hasattr(pda, "unique"):
         return cast(Categorical_, pda).unique()
 
     # Get all grouping keys
@@ -91,16 +100,17 @@ def unique(pda: groupable,  # type: ignore
             elif k.size != size:
                 raise ValueError("Key arrays must all be same size")
             if not hasattr(k, "_get_grouping_keys"):
-                raise TypeError("{} does not support grouping".format(type(k)))
+                raise TypeError(f"{type(k)} does not support grouping")
             grouping_keys.extend(cast(list, k._get_grouping_keys()))
     keynames = [k.name for k in grouping_keys]
     keytypes = [k.objtype for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
-    repMsg = generic_msg(cmd="unique", args="{} {} {:n} {} {}".format(return_groups,
-                                                                      assume_sorted,
-                                                                      effectiveKeys,
-                                                                      ' '.join(keynames),
-                                                                      ' '.join(keytypes)))
+    repMsg = generic_msg(
+        cmd="unique",
+        args="{} {} {:n} {} {}".format(
+            return_groups, assume_sorted, effectiveKeys, " ".join(keynames), " ".join(keytypes)
+        ),
+    )
     if return_groups:
         parts = cast(str, repMsg).split("+")
         permutation = create_pdarray(cast(str, parts[0]))
@@ -120,19 +130,19 @@ def unique(pda: groupable,  # type: ignore
 
 
 class GroupByReductionType(enum.Enum):
-    SUM = 'sum'
-    PROD = 'prod'
-    MEAN = 'mean'
-    MIN = 'min'
-    MAX = 'max'
-    ARGMIN = 'argmin'
-    ARGMAX = 'argmax'
-    NUNUNIQUE = 'nunique'
-    ANY = 'any'
-    ALL = 'all'
-    OR = 'or'
-    AND = 'and'
-    XOR = 'xor'
+    SUM = "sum"
+    PROD = "prod"
+    MEAN = "mean"
+    MIN = "min"
+    MAX = "max"
+    ARGMIN = "argmin"
+    ARGMAX = "argmax"
+    NUNUNIQUE = "nunique"
+    ANY = "any"
+    ALL = "all"
+    OR = "or"
+    AND = "and"
+    XOR = "xor"
 
     def __str__(self) -> str:
         """
@@ -149,8 +159,9 @@ class GroupByReductionType(enum.Enum):
         return self.value
 
 
-GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member
-                                     in GroupByReductionType.__members__.items()])
+GROUPBY_REDUCTION_TYPES = frozenset(
+    [member.value for _, member in GroupByReductionType.__members__.items()]
+)
 
 
 class GroupBy:
@@ -202,10 +213,12 @@ class GroupBy:
     will be used; otherwise, method 1 will be used.
 
     """
+
     Reductions = GROUPBY_REDUCTION_TYPES
 
-    def __init__(self, keys: Optional[groupable],
-                 assume_sorted: bool = False, hash_strings: bool = True, **kwargs) -> None:
+    def __init__(
+        self, keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs
+    ) -> None:
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
@@ -221,7 +234,12 @@ class GroupBy:
         self.permutation: pdarray
         self.name: Optional[str] = None
 
-        if "orig_keys" in kwargs and "permutation" in kwargs and "unique_keys" in kwargs and "segments" in kwargs:
+        if (
+            "orig_keys" in kwargs
+            and "permutation" in kwargs
+            and "unique_keys" in kwargs
+            and "segments" in kwargs
+        ):
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
             self.unique_keys = kwargs.get("unique_keys", None)
             self.permutation = kwargs.get("permutation", None)
@@ -231,14 +249,15 @@ class GroupBy:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
-            self.unique_keys, self.permutation, self.segments, self.nkeys = \
-                unique(self.keys, return_groups=True, assume_sorted=self.assume_sorted)  # type: ignore
+            self.unique_keys, self.permutation, self.segments, self.nkeys = unique(
+                self.keys, return_groups=True, assume_sorted=self.assume_sorted
+            )  # type: ignore
 
         self.size = self.permutation.size
         self.ngroups = self.segments.size
 
     def count(self) -> Tuple[groupable, pdarray]:
-        '''
+        """
         Count the number of elements in each group, i.e. the number of times
         each key appears.
 
@@ -264,16 +283,17 @@ class GroupBy:
         array([1, 2, 3, 4])
         >>> counts
         array([1, 2, 4, 3])
-        '''
+        """
         cmd = "countReduction"
         args = "{} {}".format(cast(pdarray, self.segments).name, self.size)
         repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
 
-    def aggregate(self, values: groupable, operator: str, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
-        '''
+    def aggregate(
+        self, values: groupable, operator: str, skipna: bool = True
+    ) -> Tuple[groupable, pdarray]:
+        """
         Using the permutation stored in the GroupBy instance, group another
         array of values and apply a reduction to each group's values.
 
@@ -316,21 +336,19 @@ class GroupBy:
         (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777779,
         -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,
         0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
-        '''
+        """
 
         operator = operator.lower()
         if operator not in self.Reductions:
-            raise ValueError(("Unsupported reduction: {}\nMust be one of {}") \
-                             .format(operator, self.Reductions))
+            raise ValueError(f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}")
 
         # TO DO: remove once logic is ported over to Chapel
-        if operator == 'nunique':
+        if operator == "nunique":
             return self.nunique(values)
 
         # All other aggregations operate on pdarray
         if cast(pdarray, values).size != self.size:
-            raise ValueError(("Attempt to group array using key array of " +
-                              "different length"))
+            raise ValueError("Attempt to group array using key array of different length")
 
         if self.assume_sorted:
             permuted_values = cast(pdarray, values)
@@ -338,20 +356,15 @@ class GroupBy:
             permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
 
         cmd = "segmentedReduction"
-        args = "{} {} {} {}".format(permuted_values.name,
-                                    self.segments.name,
-                                    operator,
-                                    skipna)
+        args = "{} {} {} {}".format(permuted_values.name, self.segments.name, operator, skipna)
         repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
-        if operator.startswith('arg'):
-            return (self.unique_keys,
-                    cast(pdarray, self.permutation[create_pdarray(repMsg)]))
+        if operator.startswith("arg"):
+            return (self.unique_keys, cast(pdarray, self.permutation[create_pdarray(repMsg)]))
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
-    def sum(self, values: pdarray, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
+    def sum(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and sum each group's values.
@@ -396,8 +409,7 @@ class GroupBy:
         """
         return self.aggregate(values, "sum", skipna)
 
-    def prod(self, values: pdarray, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
+    def prod(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the product of each group's
@@ -445,8 +457,7 @@ class GroupBy:
         """
         return self.aggregate(values, "prod", skipna)
 
-    def mean(self, values: pdarray, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
+    def mean(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the mean of each group's
@@ -492,8 +503,7 @@ class GroupBy:
         """
         return self.aggregate(values, "mean", skipna)
 
-    def min(self, values: pdarray, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
+    def min(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the minimum of each group's
@@ -537,11 +547,10 @@ class GroupBy:
         (array([2, 3, 4]), array([1, 1, 3]))
         """
         if values.dtype == bool:
-            raise TypeError('min is only supported for pdarrays of dtype float64, uint64, and int64')
+            raise TypeError("min is only supported for pdarrays of dtype float64, uint64, and int64")
         return self.aggregate(values, "min", skipna)
 
-    def max(self, values: pdarray, skipna: bool = True) \
-            -> Tuple[groupable, pdarray]:
+    def max(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the maximum of each
@@ -585,11 +594,10 @@ class GroupBy:
         (array([2, 3, 4]), array([4, 4, 3]))
         """
         if values.dtype == bool:
-            raise TypeError('max is only supported for pdarrays of dtype float64, uint64, and int64')
+            raise TypeError("max is only supported for pdarrays of dtype float64, uint64, and int64")
         return self.aggregate(values, "max", skipna)
 
-    def argmin(self, values: pdarray) \
-            -> Tuple[groupable, pdarray]:
+    def argmin(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the location of the first
@@ -638,11 +646,10 @@ class GroupBy:
         (array([2, 3, 4]), array([5, 4, 2]))
         """
         if values.dtype == bool:
-            raise TypeError('argmin is only supported for pdarrays of dtype float64, uint64, and int64')
+            raise TypeError("argmin is only supported for pdarrays of dtype float64, uint64, and int64")
         return self.aggregate(values, "argmin")
 
-    def argmax(self, values: pdarray) \
-            -> Tuple[groupable, pdarray]:
+    def argmax(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the location of the first
@@ -689,7 +696,7 @@ class GroupBy:
         (array([2, 3, 4]), array([9, 3, 2]))
         """
         if values.dtype == bool:
-            raise TypeError('argmax is only supported for pdarrays of dtype float64, uint64, and int64')
+            raise TypeError("argmax is only supported for pdarrays of dtype float64, uint64, and int64")
         return self.aggregate(values, "argmax")
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
@@ -753,8 +760,11 @@ class GroupBy:
             togroup = [ukidx, values]
         else:
             for v in values:
-                if isinstance(values, pdarray) and cast(pdarray, values).dtype != akint64 and cast(pdarray,
-                                                                                                   values).dtype != akuint64:
+                if (
+                    isinstance(values, pdarray)
+                    and cast(pdarray, values).dtype != akint64
+                    and cast(pdarray, values).dtype != akuint64
+                ):
                     raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx] + list(values)
         # Find unique pairs of (key, val)
@@ -766,8 +776,7 @@ class GroupBy:
         # Re-join unique counts with original keys (sorting guarantees same order)
         return self.unique_keys, nuniq
 
-    def any(self, values: pdarray) \
-            -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def any(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and perform an "or" reduction on each group.
@@ -794,11 +803,10 @@ class GroupBy:
             if the operator is not in the GroupBy.Reductions array
         """
         if values.dtype != bool:
-            raise TypeError('any is only supported for pdarrays of dtype bool')
+            raise TypeError("any is only supported for pdarrays of dtype bool")
         return self.aggregate(values, "any")  # type: ignore
 
-    def all(self, values: pdarray) \
-            -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def all(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and perform an "and" reduction on
@@ -828,12 +836,11 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != bool:
-            raise TypeError('all is only supported for pdarrays of dtype bool')
+            raise TypeError("all is only supported for pdarrays of dtype bool")
 
         return self.aggregate(values, "all")  # type: ignore
 
-    def OR(self, values: pdarray) \
-            -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def OR(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise OR of values in each segment.
 
@@ -865,12 +872,11 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError('OR is only supported for pdarrays of dtype int64 or uint64')
+            raise TypeError("OR is only supported for pdarrays of dtype int64 or uint64")
 
         return self.aggregate(values, "or")  # type: ignore
 
-    def AND(self, values: pdarray) \
-            -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def AND(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise AND of values in each segment.
 
@@ -902,12 +908,11 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError('AND is only supported for pdarrays of dtype int64 or uint64')
+            raise TypeError("AND is only supported for pdarrays of dtype int64 or uint64")
 
         return self.aggregate(values, "and")  # type: ignore
 
-    def XOR(self, values: pdarray) \
-            -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def XOR(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise XOR of values in each segment.
 
@@ -939,7 +944,7 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError('XOR is only supported for pdarrays of dtype int64 or uint64')
+            raise TypeError("XOR is only supported for pdarrays of dtype int64 or uint64")
 
         return self.aggregate(values, "xor")  # type: ignore
 
@@ -1005,11 +1010,9 @@ class GroupBy:
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
-        args = "{} {} {} {} {}".format(self.permutation.name,
-                                       self.segments.name,
-                                       values.name,
-                                       permute,
-                                       self.size)
+        args = "{} {} {} {} {}".format(
+            self.permutation.name, self.segments.name, values.name, permute, self.size
+        )
         repMsg = generic_msg(cmd=cmd, args=args)
         return create_pdarray(repMsg)
 
@@ -1031,7 +1034,12 @@ class GroupBy:
             The GroupBy object created by using the given components
 
         """
-        if "orig_keys" in kwargs and "permutation" in kwargs and "unique_keys" in kwargs and "segments" in kwargs:
+        if (
+            "orig_keys" in kwargs
+            and "permutation" in kwargs
+            and "unique_keys" in kwargs
+            and "segments" in kwargs
+        ):
             g = GroupBy(None, **kwargs)
             g.name = user_defined_name
 
@@ -1078,7 +1086,8 @@ class GroupBy:
         -------
         GroupBy
             The same GroupBy which is now registered with the arkouda server and has an updated name.
-            This is an in-place modification, the original is returned to support a fluid programming style.
+            This is an in-place modification, the original is returned to support a
+            fluid programming style.
             Please note you cannot register two different GroupBys with the same name.
 
         Raises
@@ -1099,9 +1108,9 @@ class GroupBy:
         """
         from arkouda import Categorical
 
-        # By registering unique properties first, we can ensure no overlap in naming between two registered
-        #   GroupBy's since this will throw a RegistrationError before any of the dynamically created
-        #   names are registered
+        # By registering unique properties first, we can ensure no overlap in naming between
+        #   two registered GroupBy's since this will throw a RegistrationError before any of
+        #   the dynamically created names are registered
         self.permutation.register(f"{user_defined_name}.permutation")
         self.segments.register(f"{user_defined_name}.segments")
 
@@ -1110,10 +1119,13 @@ class GroupBy:
             self.unique_keys.register(f"{user_defined_name}_{self.keys.objtype}.unique_keys")
         elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
-                # Possible for multiple types in a sequence, so we have to check each key's type individually
+                # Possible for multiple types in a sequence, so we have to check each key's
+                # type individually
                 if isinstance(self.keys[x], (Strings, pdarray, Categorical)):
                     self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objtype}.keys")
-                    self.unique_keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objtype}.unique_keys")
+                    self.unique_keys[x].register(
+                        f"{x}_{user_defined_name}_{self.keys[x].objtype}.unique_keys"
+                    )
 
         else:
             raise RegistrationError(f"Unsupported key type found: {type(self.keys)}")
@@ -1143,7 +1155,9 @@ class GroupBy:
         """
 
         if not self.name:
-            raise RegistrationError("This item does not have a name and does not appear to be registered.")
+            raise RegistrationError(
+                "This item does not have a name and does not appear to be registered."
+            )
 
         # Unregister all components in keys in the case of a Sequence
         if isinstance(self.keys, Sequence):
@@ -1182,19 +1196,23 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        from arkouda import Categorical
         import warnings
+
+        from arkouda import Categorical
 
         if self.name is None:
             return False  # unnamed GroupBy cannot be registered
 
         if isinstance(self.keys, Sequence):  # Sequence - Check for all components
-            from re import match, compile
+            from re import compile
+
             registry = list_registry()
 
             # Only check for a single component of Categorical to ensure correct count.
-            regEx = compile(f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
-                            f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)")
+            regEx = compile(
+                f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
+                f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)"
+            )
             cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objtype}\\.keys(?=\\.codes$)")
 
             simple_registered = list(filter(regEx.match, registry))
@@ -1210,8 +1228,10 @@ class GroupBy:
 
             registered = len(simple_registered) + len(cat_registered)
             if 0 < registered < total:
-                warnings.warn(f"WARNING: GroupBy {self.name} expected {total} components to be registered,"
-                              f" but only located {registered}.")
+                warnings.warn(
+                    f"WARNING: GroupBy {self.name} expected {total} components to be registered,"
+                    f" but only located {registered}."
+                )
                 return False
             else:
                 return registered == total
@@ -1223,8 +1243,10 @@ class GroupBy:
                     parts_registered.append(reg)
 
             if any(parts_registered) and not all(parts_registered):  # test for error
-                warnings.warn(f"WARNING: GroupBy {self.name} expected {len(parts_registered)} "
-                              f"components to be registered, but only located {sum(parts_registered)}.")
+                warnings.warn(
+                    f"WARNING: GroupBy {self.name} expected {len(parts_registered)} "
+                    f"components to be registered, but only located {sum(parts_registered)}."
+                )
                 return False
             else:
                 return any(parts_registered)
@@ -1255,16 +1277,20 @@ class GroupBy:
         register, is_registered, unregister, unregister_groupby_by_name
         """
 
-        from re import match, compile
+        from re import compile, match
+
         from arkouda.categorical import Categorical
 
         keys: List[groupable] = []
         unique_keys = []
         matches = []
-        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
-                        f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-                        f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)")
-        # Using the regex, cycle through the registered items and find all the pieces of the GroupBy's keys
+        regEx = compile(
+            f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
+            f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)"
+        )
+        # Using the regex, cycle through the registered items and find all the pieces of
+        # the GroupBy's keys
         for name in list_registry():
             x = match(regEx, name)
             if x is not None:
@@ -1291,15 +1317,15 @@ class GroupBy:
                         keys.append(create_pdarray(keys_resp))
 
             elif f"_{Categorical.objtype}.unique_keys" in name:
-                # Due to unique_keys overwriting keys.categories, we have to use unique_keys.categories to
-                # create the keys Categorical
+                # Due to unique_keys overwriting keys.categories, we have to use unique_keys.categories
+                # to create the keys Categorical
                 unique_key = Categorical.attach(name)
                 key_name = name.replace(".unique_keys", ".keys")
 
                 catParts = {
                     "categories": unique_key.categories,
                     "codes": pdarray.attach(f"{key_name}.codes"),
-                    "_akNAcode": pdarray.attach(f"{key_name}._akNAcode")
+                    "_akNAcode": pdarray.attach(f"{key_name}._akNAcode"),
                 }
 
                 # Grab optional components if they exist
@@ -1312,12 +1338,16 @@ class GroupBy:
                 keys.append(Categorical(None, **catParts))
 
             else:
-                raise RegistrationError(f"Unknown type associated with registered item: {user_defined_name}."
-                                        f" Supported types are: {groupable}")
+                raise RegistrationError(
+                    f"Unknown type associated with registered item: {user_defined_name}."
+                    f" Supported types are: {groupable}"
+                )
 
         if len(keys) == 0:
-            raise RegistrationError(f"Unable to attach to '{user_defined_name}' or '{user_defined_name}'"
-                                    f" is not registered")
+            raise RegistrationError(
+                f"Unable to attach to '{user_defined_name}' or '{user_defined_name}'"
+                f" is not registered"
+            )
 
         perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
         segments_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.segments")
@@ -1326,10 +1356,12 @@ class GroupBy:
             "orig_keys": keys if len(keys) > 1 else keys[0],
             "unique_keys": unique_keys if len(unique_keys) > 1 else unique_keys[0],
             "permutation": create_pdarray(perm_resp),
-            "segments": create_pdarray(segments_resp)
+            "segments": create_pdarray(segments_resp),
         }
 
-        g = GroupBy.build_from_components(user_defined_name, **parts)  # Call build_from_components method
+        g = GroupBy.build_from_components(
+            user_defined_name, **parts
+        )  # Call build_from_components method
         return g
 
     @staticmethod
@@ -1356,15 +1388,19 @@ class GroupBy:
         register, unregister, attach, is_registered
         """
         # We have 2 components, unregister both of them
+        from re import compile, match
+
         from arkouda.categorical import Categorical
-        from re import match, compile
+
         registry = list_registry()
 
         # keys, unique_keys, or categorical components
-        regEx = compile(f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
-                        f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
-                        f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)|"
-                        f"^(\\d+_)?{user_defined_name}_{Categorical.objtype}\\.keys\\.(_)?([A-Z,a-z])+$")
+        regEx = compile(
+            f"^{user_defined_name}_.+\\.keys$|^\\d+_{user_defined_name}_.+\\.keys$|"
+            f"^{user_defined_name}_.+\\.unique_keys$|^\\d+_{user_defined_name}_.+\\.unique_keys$|"
+            f"^(?:\\d+_)?{user_defined_name}_{Categorical.objtype}\\.unique_keys(?=\\.categories$)|"
+            f"^(\\d+_)?{user_defined_name}_{Categorical.objtype}\\.keys\\.(_)?([A-Z,a-z])+$"
+        )
 
         for name in registry:
             # Search through registered items and find matches to the given name
@@ -1384,9 +1420,13 @@ class GroupBy:
             unregister_pdarray_by_name(f"{user_defined_name}.segments")
 
 
-def broadcast(segments: pdarray, values: pdarray, size: Union[int, np.int64, np.uint64] = -1,
-              permutation: Union[pdarray, None] = None):
-    '''
+def broadcast(
+    segments: pdarray,
+    values: pdarray,
+    size: Union[int, np.int64, np.uint64] = -1,
+    permutation: Union[pdarray, None] = None,
+):
+    """
     Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
 
     Parameters
@@ -1433,7 +1473,7 @@ def broadcast(segments: pdarray, values: pdarray, size: Union[int, np.int64, np.
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
-    '''
+    """
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")
     if segments.size == 0:
@@ -1450,10 +1490,6 @@ def broadcast(segments: pdarray, values: pdarray, size: Union[int, np.int64, np.
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
-    args = "{} {} {} {} {}".format(pname,
-                                   segments.name,
-                                   values.name,
-                                   permute,
-                                   size)
+    args = "{} {} {} {} {}".format(pname, segments.name, values.name, permute, size)
     repMsg = generic_msg(cmd=cmd, args=args)
     return create_pdarray(repMsg)
