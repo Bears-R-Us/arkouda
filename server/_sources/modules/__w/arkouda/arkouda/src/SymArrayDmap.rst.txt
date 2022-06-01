@@ -17,10 +17,10 @@ or
 
    import SymArrayDmap;
 
-.. enum:: enum Dmap { defaultRectangular, blockDist, cyclicDist }
+.. enum:: enum Dmap { defaultRectangular, blockDist }
 
    
-   Available domain maps. Cyclic isn't regularly tested and may not work.
+   Available domain maps.
    
 
 
