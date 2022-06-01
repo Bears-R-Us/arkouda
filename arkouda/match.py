@@ -1,14 +1,24 @@
-from typing import cast
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray
 import json
 from enum import Enum
+from typing import cast
 
-MatchType = Enum('MatchType', ['SEARCH', 'MATCH', 'FULLMATCH'])
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import create_pdarray, pdarray
+
+MatchType = Enum("MatchType", ["SEARCH", "MATCH", "FULLMATCH"])
+
 
 class Match:
-    def __init__(self, matched: pdarray, starts: pdarray, lengths: pdarray, indices: pdarray,
-                 parent_entry_name: str, match_type: MatchType, pattern: str):
+    def __init__(
+        self,
+        matched: pdarray,
+        starts: pdarray,
+        lengths: pdarray,
+        indices: pdarray,
+        parent_entry_name: str,
+        match_type: MatchType,
+        pattern: str,
+    ):
         self._objtype = type(self).__name__
         self._parent_entry_name = parent_entry_name
         self._match_type = match_type
@@ -22,16 +32,22 @@ class Match:
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
+
         if self._matched.size <= pdarrayIterThresh:
             vals = [self.__getitem__(i) for i in range(self._matched.size)]
         else:
             vals = [self.__getitem__(i) for i in range(3)]
-            vals.append('... ')
+            vals.append("... ")
             vals.extend([self.__getitem__(i) for i in range(self._matched.size - 3, self._matched.size)])
         return f"<ak.{self._objtype} object: {'; '.join(vals)}>"
 
     def __getitem__(self, item):
-        return f"matched={self._matched[item]}, span=({self._starts[self._indices[item]]}, {self._ends[self._indices[item]]})" if self._matched[item] else f"matched={self._matched[item]}"
+        return (
+            f"matched={self._matched[item]}, span=({self._starts[self._indices[item]]}"
+            f", {self._ends[self._indices[item]]})"
+            if self._matched[item]
+            else f"matched={self._matched[item]}"
+        )
 
     def __repr__(self):
         return self.__str__()
@@ -111,7 +127,8 @@ class Match:
         Parameters
         ----------
         return_match_origins: bool
-            If True, return a pdarray containing the index of the original string each pattern match is from
+            If True, return a pdarray containing the index of the original string each pattern
+            match is from
 
         Returns
         -------
@@ -132,31 +149,36 @@ class Match:
         (array(['_', '____', '__']), array([0 1 3]))
         """
         from arkouda.strings import Strings
+
         cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(self._objtype,
-                                             self._parent_entry_name,
-                                             self._matched.name,
-                                             self._starts.name,
-                                             self._lengths.name,
-                                             self._indices.name,
-                                             return_match_origins)
+        args = "{} {} {} {} {} {} {}".format(
+            self._objtype,
+            self._parent_entry_name,
+            self._matched.name,
+            self._starts.name,
+            self._lengths.name,
+            self._indices.name,
+            return_match_origins,
+        )
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
-            arrays = repMsg.split('+', maxsplit=2)
+            arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
             return Strings.from_return_msg(repMsg)
 
     def group(self, group_num: int = 0, return_group_origins: bool = False):
         """
-        Returns a new Strings containing the capture group corresponding to group_num. For the default, group_num=0, return the full match
+        Returns a new Strings containing the capture group corresponding to group_num.
+        For the default, group_num=0, return the full match
 
         Parameters
         ----------
         group_num: int
             The index of the capture group to be returned
         return_group_origins: bool
-            If True, return a pdarray containing the index of the original string each capture group is from
+            If True, return a pdarray containing the index of the original string each
+            capture group is from
 
         Returns
         -------
@@ -167,7 +189,7 @@ class Match:
 
         Examples
         --------
-        >>> strings = ak.array(["Isaac Newton, physicist", '<--calculus-->', 'Gottfried Leibniz, mathematician'])
+        >>> strings = ak.array(["Isaac Newton, physics", '<-calculus->', 'Gottfried Leibniz, math'])
         >>> m = strings.search("(\\w+) (\\w+)")
         >>> m.group()
         array(['Isaac Newton', 'Gottfried Leibniz'])
@@ -176,21 +198,24 @@ class Match:
         >>> m.group(2, return_group_origins=True)
         (array(['Newton', 'Leibniz']), array([0 2]))
         """
-        from arkouda.strings import Strings
         from arkouda.client import regexMaxCaptures
+        from arkouda.strings import Strings
+
         if group_num < 0:
             raise ValueError("group_num cannot be negative")
         if group_num > regexMaxCaptures:
-            max_capture_flag = f'-e REGEX_MAX_CAPTURES={group_num}'
-            e = f"group_num={group_num} > regexMaxCaptures={regexMaxCaptures}. To run group({group_num}), recompile the server with flag '{max_capture_flag}'"
+            max_capture_flag = f"-e REGEX_MAX_CAPTURES={group_num}"
+            e = (
+                f"group_num={group_num} > regexMaxCaptures={regexMaxCaptures}."
+                f" To run group({group_num}), recompile the server with flag '{max_capture_flag}'"
+            )
             raise ValueError(e)
 
         # We don't cache the locations of groups, find the location info and call findAll
         cmd = "segmentedFindLoc"
-        args = "{} {} {} {}".format(self._objtype,
-                                    self._parent_entry_name,
-                                    group_num,
-                                    json.dumps([self.re]))
+        args = "{} {} {} {}".format(
+            self._objtype, self._parent_entry_name, group_num, json.dumps([self.re])
+        )
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         created_map = json.loads(repMsg)
         global_starts = create_pdarray(created_map["Starts"])
@@ -210,16 +235,18 @@ class Match:
         starts = global_starts[global_indices[matched]]
         lengths = global_lengths[global_indices[matched]]
         cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(self._objtype,
-                                             self._parent_entry_name,
-                                             matched.name,
-                                             starts.name,
-                                             lengths.name,
-                                             indices.name,
-                                             return_group_origins)
+        args = "{} {} {} {} {} {} {}".format(
+            self._objtype,
+            self._parent_entry_name,
+            matched.name,
+            starts.name,
+            lengths.name,
+            indices.name,
+            return_group_origins,
+        )
         repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_group_origins:
-            arrays = repMsg.split('+', maxsplit=2)
+            arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
             return Strings.from_return_msg(repMsg)
