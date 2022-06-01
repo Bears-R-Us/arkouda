@@ -68,7 +68,7 @@ class DataFrameTest(ArkoudaTest):
             os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
-        akdf.save_table(f"{f_base}/ak_write")
+        akdf.save(f"{f_base}/ak_write")
 
         pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.h5", index=True)
         self.assertTrue(len(glob.glob(f"{f_base}/pd_from_ak.h5")) == 1)
@@ -103,7 +103,7 @@ class DataFrameTest(ArkoudaTest):
             os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
-        akdf.save_table(f"{f_base}/ak_write", file_format="Parquet")
+        akdf.save(f"{f_base}/ak_write", file_format="Parquet")
         print(akdf.__repr__())
 
         pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.parquet", index=True)
