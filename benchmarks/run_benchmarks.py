@@ -12,12 +12,11 @@ import os
 import subprocess
 import sys
 
-from util import *
-
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))
 
+from util import *
 
 logging.basicConfig(level=logging.INFO)
 
