@@ -249,9 +249,9 @@ class GroupBy:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
-            self.unique_keys, self.permutation, self.segments, self.nkeys = unique(
+            self.unique_keys, self.permutation, self.segments, self.nkeys = unique(  # type: ignore
                 self.keys, return_groups=True, assume_sorted=self.assume_sorted
-            )  # type: ignore
+            )
 
         self.size = self.permutation.size
         self.ngroups = self.segments.size

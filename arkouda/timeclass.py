@@ -2,12 +2,12 @@ import datetime
 from typing import Union
 
 import numpy as np  # type: ignore
-from pandas import Series
+from pandas import Series  # type: ignore
 from pandas import Timedelta as pdTimedelta  # type: ignore
-from pandas import Timestamp
-from pandas import date_range as pd_date_range
-from pandas import timedelta_range as pd_timedelta_range
-from pandas import to_datetime, to_timedelta
+from pandas import Timestamp  # type: ignore
+from pandas import date_range as pd_date_range  # type: ignore
+from pandas import timedelta_range as pd_timedelta_range  # type: ignore
+from pandas import to_datetime, to_timedelta  # type: ignore
 
 from arkouda.dtypes import int64, intTypes, isSupportedInt
 from arkouda.numeric import abs as akabs

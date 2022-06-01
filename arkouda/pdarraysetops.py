@@ -24,10 +24,10 @@ logger = getArkoudaLogger(name="pdarraysetops")
 
 
 def in1d(
-    pda1: Union[pdarray, Strings, "Categorical"],
+    pda1: Union[pdarray, Strings, "Categorical"],  # type: ignore
     pda2: Union[pdarray, Strings, "Categorical"],  # type: ignore
     invert: bool = False,
-) -> pdarray:  # type: ignore
+) -> pdarray:
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -109,17 +109,13 @@ def in1d(
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
 
 
+# fmt: off
 @typechecked
 def concatenate(
-    arrays: Sequence[
-        Union[
-            pdarray,
-            Strings,
-            "Categorical",
-        ]
-    ],  # type: ignore
+    arrays: Sequence[Union[pdarray, Strings, "Categorical", ]],  # type: ignore
     ordered: bool = True,
 ) -> Union[pdarray, Strings, "Categorical"]:  # type: ignore
+    # fmt:on
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
     one ``pdarray`` or ``Strings`` object, respectively.
