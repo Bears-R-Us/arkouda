@@ -4,9 +4,9 @@ module SymArrayDmap
     use ChplConfig;
 
     /*
-     Available domain maps. Cyclic isn't regularly tested and may not work.
+     Available domain maps.
      */
-    enum Dmap {defaultRectangular, blockDist, cyclicDist};
+    enum Dmap {defaultRectangular, blockDist};
 
     private param defaultDmap = if CHPL_COMM == "none" then Dmap.defaultRectangular
                                                        else Dmap.blockDist;
@@ -16,7 +16,6 @@ module SymArrayDmap
     */
     config param MyDmap:Dmap = defaultDmap;
 
-    public use CyclicDist;
     public use BlockDist;
 
     /* 
@@ -37,9 +36,6 @@ module SymArrayDmap
                 }
                 // fix the annoyance about boundingBox being enpty
                 else {return {0..#0} dmapped Block(boundingBox={0..0});}
-            }
-            when Dmap.cyclicDist {
-                return {0..#size} dmapped Cyclic(startIdx=0);
             }
             otherwise {
                 halt("Unsupported distribution " + MyDmap:string);
