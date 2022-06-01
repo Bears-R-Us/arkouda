@@ -1,24 +1,35 @@
+import glob
+import json
+import os
+import warnings
+from typing import Dict, List, Mapping, Optional, Union, cast
+
 import pandas as pd  # type: ignore
 from typeguard import typechecked
-import json, os, warnings
-from typing import cast, Dict, List, Mapping, Optional, Union
-import glob
 
-
-from arkouda.client import generic_msg
-from arkouda.pdarraycreation import array
-from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.strings import Strings
 from arkouda.categorical import Categorical
+from arkouda.client import generic_msg
+from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.strings import Strings
 
-__all__ = ["ls", "read", "load", "get_datasets", "load_all",
-           "save_all",  "get_filetype", "get_null_indices",
-           "import_data", "export"]
+__all__ = [
+    "ls",
+    "read",
+    "load",
+    "get_datasets",
+    "load_all",
+    "save_all",
+    "get_filetype",
+    "get_null_indices",
+    "import_data",
+    "export",
+]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
+
 @typechecked
-def ls(filename : str) -> List[str]:
+def ls(filename: str) -> List[str]:
     """
     This function calls the h5ls utility on a HDF5 file visible to the
     arkouda server or calls a function that imitates the result of h5ls
@@ -46,17 +57,19 @@ def ls(filename : str) -> List[str]:
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    cmd = 'lsany'
-    return json.loads(cast(str,generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
+    cmd = "lsany"
+    return json.loads(cast(str, generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
 
-def read(filenames : Union[str, List[str]],
-         datasets: Optional[Union[str, List[str]]] = None,
-         iterative: bool = False,
-         strictTypes: bool = True,
-         allow_errors: bool = False,
-         calc_string_offsets = False,
-         file_format: str = 'infer')\
-         -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
+
+def read(
+    filenames: Union[str, List[str]],
+    datasets: Optional[Union[str, List[str]]] = None,
+    iterative: bool = False,
+    strictTypes: bool = True,
+    allow_errors: bool = False,
+    calc_string_offsets=False,
+    file_format: str = "infer",
+) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
     """
     Read datasets from HDF5 or Parquet files.
 
@@ -71,9 +84,9 @@ def read(filenames : Union[str, List[str]],
     strictTypes: bool
         If True (default), require all dtypes of a given dataset to have the
         same precision and sign. If False, allow dtypes of different
-        precision and sign across different files. For example, if one 
+        precision and sign across different files. For example, if one
         file contains a uint32 dataset and another contains an int64
-        dataset with the same name, the contents of both will be read 
+        dataset with the same name, the contents of both will be read
         into an int64 pdarray.
     allow_errors: bool
         Default False, if True will allow files with read errors to be skipped
@@ -98,7 +111,7 @@ def read(filenames : Union[str, List[str]],
 
     Raises
     ------
-    ValueError 
+    ValueError
         Raised if all datasets are not present in all hdf5/parquet files or if one or
         more of the specified files do not exist
     RuntimeError
@@ -145,41 +158,58 @@ def read(filenames : Union[str, List[str]],
     else:  # ensure dataset(s) exist
         if isinstance(datasets, str):
             datasets = [datasets]
-        nonexistent = set(datasets) - \
-            (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
+        nonexistent = set(datasets) - (
+            set(get_datasets_allow_errors(filenames))
+            if allow_errors
+            else set(get_datasets(filenames[0]))
+        )
         if len(nonexistent) > 0:
-            raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+            raise ValueError(f"Dataset(s) not found: {nonexistent}")
 
     file_format = file_format.lower()
-    if file_format == 'infer':
-        cmd = 'readany'
-    elif file_format == 'hdf5':
-        cmd = 'readAllHdf'
-    elif file_format == 'parquet':
-        cmd = 'readAllParquet'
+    if file_format == "infer":
+        cmd = "readany"
+    elif file_format == "hdf5":
+        cmd = "readAllHdf"
+    elif file_format == "parquet":
+        cmd = "readAllParquet"
     else:
         warnings.warn(f"Unrecognized file format string: {file_format}. Inferring file type")
-        cmd = 'readany'
-    if iterative == True: # iterative calls to server readhdf
-        return {dset: read(filenames, dset, strictTypes=strictTypes, allow_errors=allow_errors, iterative=False,
-                           calc_string_offsets=calc_string_offsets)[dset] for dset in datasets}
+        cmd = "readany"
+    if iterative:  # iterative calls to server readhdf
+        return {
+            dset: read(
+                filenames,
+                dset,
+                strictTypes=strictTypes,
+                allow_errors=allow_errors,
+                iterative=False,
+                calc_string_offsets=calc_string_offsets,
+            )[dset]
+            for dset in datasets
+        }
     else:
-        rep_msg = generic_msg(cmd=cmd, args=
-        f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} {json.dumps(datasets)} | {json.dumps(filenames)}"
-                          )
+        rep_msg = generic_msg(
+            cmd=cmd,
+            args=f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} "
+            f"{json.dumps(datasets)} | {json.dumps(filenames)}",
+        )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
         items = rep["items"] if "items" in rep else []
         file_errors = rep["file_errors"] if "file_errors" in rep else []
         if allow_errors and file_errors:
             file_error_count = rep["file_error_count"] if "file_error_count" in rep else -1
-            warnings.warn(f"There were {file_error_count} errors reading files on the server. " +
-                          f"Sample error messages {file_errors}", RuntimeWarning)
+            warnings.warn(
+                f"There were {file_error_count} errors reading files on the server. "
+                + f"Sample error messages {file_errors}",
+                RuntimeWarning,
+            )
 
         # We have a couple possible return conditions
         # 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays & strings
         # 2. We have a single pdarray
         # 3. We have a single strings object
-        if len(items) > 1: #  DataSets condition
+        if len(items) > 1:  # DataSets condition
             d: Dict[str, Union[pdarray, Strings]] = {}
             for item in items:
                 if "seg_string" == item["arkouda_type"]:
@@ -200,8 +230,9 @@ def read(filenames : Union[str, List[str]],
         else:
             raise RuntimeError("No items were returned")
 
+
 @typechecked
-def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]]:
+def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str, pdarray]]:
     """
     Get null indices of a string column in a Parquet file.
 
@@ -216,7 +247,7 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray and for multiple datasets 
+    For a single dataset returns an Arkouda pdarray and for multiple datasets
     returns a dictionary of Arkouda pdarrays
         Dictionary of {datasetName: pdarray}
 
@@ -235,16 +266,17 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]
         filenames = [filenames]
     if isinstance(datasets, str):
         datasets = [datasets]
-    rep_msg = generic_msg(cmd="getnullparquet", args=
-        f"{len(datasets)} {len(filenames)} {json.dumps(datasets)} | {json.dumps(filenames)}")
+    rep_msg = generic_msg(
+        cmd="getnullparquet",
+        args=f"{len(datasets)} {len(filenames)} {json.dumps(datasets)} | {json.dumps(filenames)}",
+    )
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
     items = rep["items"] if "items" in rep else []
-    file_errors = rep["file_errors"] if "file_errors" in rep else []
 
     # We have a couple possible return conditions
     # 1. We have multiple items returned i.e. multi pdarrays
     # 2. We have a single pdarray
-    if len(items) > 1: #  DataSets condition
+    if len(items) > 1:  # DataSets condition
         d: Dict[str, pdarray] = {}
         for item in items:
             if "pdarray" == item["arkouda_type"]:
@@ -260,9 +292,15 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str,pdarray]
             raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
     else:
         raise RuntimeError("No items were returned")
-        
+
+
 @typechecked
-def load(path_prefix : str, file_format: str="INFER", dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
+def load(
+    path_prefix: str,
+    file_format: str = "INFER",
+    dataset: str = "array",
+    calc_string_offsets: bool = False,
+) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -271,8 +309,8 @@ def load(path_prefix : str, file_format: str="INFER", dataset : str='array', cal
     path_prefix : str
         Filename prefix used to save the original pdarray
     file_format : str
-        'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded. If INFER, the
-        this will be detected during processing
+        'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded.
+        If INFER, this will be detected during processing
     dataset : str
         Dataset name where the pdarray was saved, defaults to 'array'
     calc_string_offsets : bool
@@ -286,9 +324,9 @@ def load(path_prefix : str, file_format: str="INFER", dataset : str='array', cal
 
     Raises
     ------
-    TypeError 
-        Raised if either path_prefix or dataset is not a str 
-    ValueError 
+    TypeError
+        Raised if either path_prefix or dataset is not a str
+    ValueError
         Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
         path_prefix does not correspond to files accessible to Arkouda
     RuntimeError
@@ -301,37 +339,40 @@ def load(path_prefix : str, file_format: str="INFER", dataset : str='array', cal
 
     Notes
     -----
-    If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it with a .parquet
-    appended to the prefix_path. Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+    If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
+    with a .parquet appended to the prefix_path.
+    Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
 
     Examples
     --------
     >>> # Loading from file without extension
     >>> obj = a.load('path/prefix')
-    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``. The file type is inferred
-    during processing.
+    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
+    The file type is inferred during processing.
 
     >>> # Loading with an extension (HDF5)
     >>> obj = a.load('path/prefix.test')
     Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
-    #### is replaced by each locale numbers. Because filetype is inferred during processing, the extension is not
-    required to be a specific format.
+    #### is replaced by each locale numbers. Because filetype is inferred during processing,
+    the extension is not required to be a specific format.
     """
     prefix, extension = os.path.splitext(path_prefix)
-    globstr = "{}_LOCALE*{}".format(prefix, extension)
+    globstr = f"{prefix}_LOCALE*{extension}"
 
     try:
         return read(globstr, dataset, calc_string_offsets=calc_string_offsets, file_format=file_format)
     except RuntimeError as re:
-        if 'does not exist' in str(re):
-            raise ValueError('There are no files corresponding to the ' +
-                                'path_prefix {} in location accessible to Arkouda'.format(path_prefix))
+        if "does not exist" in str(re):
+            raise ValueError(
+                f"There are no files corresponding to the path_prefix {path_prefix} in"
+                " location accessible to Arkouda"
+            )
         else:
             raise RuntimeError(re)
-            
+
 
 @typechecked
-def get_datasets(filename : str) -> List[str]:
+def get_datasets(filename: str) -> List[str]:
     """
     Get the names of datasets in an HDF5 file.
 
@@ -344,7 +385,7 @@ def get_datasets(filename : str) -> List[str]:
     -------
     List[str]
         Names of the datasets in the file
-        
+
     Raises
     ------
     TypeError
@@ -363,6 +404,7 @@ def get_datasets(filename : str) -> List[str]:
     if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
         datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
     return datasets
+
 
 def get_filetype(filenames: Union[str, List[str]]) -> str:
     """
@@ -396,6 +438,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
         raise ValueError("filename cannot be an empty string")
 
     return cast(str, generic_msg(cmd="getfiletype", args="{}".format(json.dumps([fname]))))
+
 
 @typechecked
 def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
@@ -437,7 +480,9 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
 
 
 @typechecked
-def load_all(path_prefix: str, file_format: str = "INFER") -> Mapping[str, Union[pdarray, Strings, Categorical]]:
+def load_all(
+    path_prefix: str, file_format: str = "INFER"
+) -> Mapping[str, Union[pdarray, Strings, Categorical]]:
     """
     Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
@@ -454,16 +499,16 @@ def load_all(path_prefix: str, file_format: str = "INFER") -> Mapping[str, Union
     -------
     Mapping[str,pdarray]
         Dictionary of {datsetName: pdarray} with the previously saved pdarrays
-        
-        
+
+
     Raises
     ------
     TypeError:
         Raised if path_prefix is not a str
-    ValueError 
+    ValueError
         Raised if file_format/extension is encountered that is not hdf5 or parquet or
         if all datasets are not present in all hdf5/parquet files or if the
-        path_prefix does not correspond to files accessible to Arkouda   
+        path_prefix does not correspond to files accessible to Arkouda
     RuntimeError
         Raised if the hdf5 files are present but there is an error in opening
         one or more of them
@@ -477,10 +522,12 @@ def load_all(path_prefix: str, file_format: str = "INFER") -> Mapping[str, Union
     This function has been updated to determine the file extension based on the file format variable
     """
     prefix, extension = os.path.splitext(path_prefix)
-    firstname = "{}_LOCALE0000{}".format(prefix, extension)
+    firstname = f"{prefix}_LOCALE0000{extension}"
     try:
-        result = {dataset: load(prefix, file_format=file_format, dataset=dataset)
-                  for dataset in get_datasets(firstname)}
+        result = {
+            dataset: load(prefix, file_format=file_format, dataset=dataset)
+            for dataset in get_datasets(firstname)
+        }
 
         # Check for Categoricals and remove if necessary
         removal_names, categoricals = Categorical.parse_hdf_categoricals(result)
@@ -493,25 +540,32 @@ def load_all(path_prefix: str, file_format: str = "INFER") -> Mapping[str, Union
 
     except RuntimeError as re:
         # enables backwards compatibility with previous naming convention
-        if 'does not exist' in str(re):
-            try: 
-                firstname = "{}_LOCALE0{}".format(prefix, extension)
-                return {dataset: load(prefix, dataset=dataset)
-                        for dataset in get_datasets(firstname)}
+        if "does not exist" in str(re):
+            try:
+                firstname = f"{prefix}_LOCALE0{extension}"
+                return {dataset: load(prefix, dataset=dataset) for dataset in get_datasets(firstname)}
             except RuntimeError as re:
-                if 'does not exist' in str(re):
-                    raise ValueError(f"There are no files corresponding to the "
-                                     f"path_prefix {prefix} and file_format {file_format} "
-                                     f"in location accessible to Arkouda")
+                if "does not exist" in str(re):
+                    raise ValueError(
+                        f"There are no files corresponding to the path_prefix {prefix} and "
+                        f"file_format {file_format} in location accessible to Arkouda"
+                    )
                 else:
                     raise RuntimeError(re)
         else:
-            raise RuntimeError("Could not open one or more files with "
-                               f"path_prefix {prefix} and file_format {file_format} "
-                               f"in location accessible to Arkouda")
+            raise RuntimeError(
+                f"Could not open one or more files with path_prefix {prefix} and "
+                f"file_format {file_format} in location accessible to Arkouda"
+            )
 
-def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
-             names : List[str]=None, file_format='HDF5', mode : str='truncate') -> None:
+
+def save_all(
+    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    prefix_path: str,
+    names: List[str] = None,
+    file_format="HDF5",
+    mode: str = "truncate",
+) -> None:
     """
     Save multiple named pdarrays to HDF5 files.
 
@@ -535,8 +589,8 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
 
     Raises
     ------
-    ValueError 
-        Raised if (1) the lengths of columns and values differ or (2) the mode 
+    ValueError
+        Raised if (1) the lengths of columns and values differ or (2) the mode
         is not 'truncate' or 'append'
 
     See Also
@@ -574,25 +628,24 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
         if names is None:
             datasetNames = list(columns.keys())
     elif isinstance(columns, list):
-        pdarrays = cast(List[pdarray],columns)
+        pdarrays = cast(List[pdarray], columns)
         if names is None:
             datasetNames = [str(column) for column in range(len(columns))]
-    if (mode.lower() not in 'append') and (mode.lower() not in 'truncate'):
+    if (mode.lower() not in "append") and (mode.lower() not in "truncate"):
         raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        '''Append all pdarrays to existing files as new datasets EXCEPT the first one, 
-           and only if user requests truncation'''
-        if mode.lower() != 'append' and first_iter:
-            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='truncate')
+        """Append all pdarrays to existing files as new datasets EXCEPT the first one,
+        and only if user requests truncation"""
+        if mode.lower() != "append" and first_iter:
+            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode="truncate")
             first_iter = False
         else:
-            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode='append')
+            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode="append")
 
 
 @typechecked
-def import_data(read_path: str, write_file: str = None,
-                return_obj: bool = True, index: bool = False):
+def import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False):
     """
     Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
     a file formatted to be read by Arkouda.
@@ -631,6 +684,7 @@ def import_data(read_path: str, write_file: str = None,
     - Import can only be performed from hdf5 or parquet files written by pandas.
     """
     from arkouda.dataframe import DataFrame
+
     # verify file path
     is_glob = False if os.path.isfile(read_path) else True
     file_list = glob.glob(read_path)
@@ -643,15 +697,18 @@ def import_data(read_path: str, write_file: str = None,
     # Note - in the future if we support more than pandas here, we should verify attributes.
     if filetype == "HDF5":
         if is_glob:
-            raise RuntimeError("Pandas HDF5 import supports valid file path only. "
-                               "Only supports the local file system, "
-                               "remote URLs and file-like objects are not supported.")
+            raise RuntimeError(
+                "Pandas HDF5 import supports valid file path only. Only supports the local file system,"
+                " remote URLs and file-like objects are not supported."
+            )
         df_def = pd.read_hdf(read_path)
     elif filetype == "Parquet":
         # parquet supports glob input in pandas
         df_def = pd.read_parquet(read_path)
     else:
-        raise RuntimeError("File type not supported. Import is only supported for HDF5 and Parquet file formats.")
+        raise RuntimeError(
+            "File type not supported. Import is only supported for HDF5 and Parquet file formats."
+        )
     df = DataFrame(df_def)
 
     if write_file:
@@ -660,9 +717,15 @@ def import_data(read_path: str, write_file: str = None,
     if return_obj:
         return df
 
+
 @typechecked
-def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None,
-           return_obj: bool = True, index: bool = False):
+def export(
+    read_path: str,
+    dataset_name: str = "ak_data",
+    write_file: str = None,
+    return_obj: bool = True,
+    index: bool = False,
+):
     """
     Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
     readable by Pandas
@@ -709,11 +772,13 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
     # get the filetype
 
     prefix, extension = os.path.splitext(read_path)
-    first_file = "{}_LOCALE0000{}".format(prefix, extension)
+    first_file = f"{prefix}_LOCALE0000{extension}"
     filetype = get_filetype(first_file)
 
     if filetype not in ["HDF5", "Parquet"]:
-        raise RuntimeError("File type not supported. Import is only supported for HDF5 and Parquet file formats.")
+        raise RuntimeError(
+            "File type not supported. Import is only supported for HDF5 and Parquet file formats."
+        )
 
     akdf = DataFrame.load_table(read_path, file_format=filetype)
     df = akdf.to_pandas(retain_index=index)
@@ -728,4 +793,3 @@ def export(read_path: str, dataset_name: str = "ak_data", write_file: str = None
 
     if return_obj:
         return df
-
