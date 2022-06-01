@@ -1323,7 +1323,21 @@ class DataFrame(UserDict):
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
 
         # columns load backwards
-        df = cls(load_all(prefix_path, file_format=filetype))
+        df_dict = load_all(prefix_path, file_format=filetype)
+
+        # this assumes segments will always have corresponding values. This should happen due to save config
+        seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith('_segments')]
+        df_dict_keys = [col.split("_")[0] if col.endswith('_segments') or col.endswith('_values') else col
+                        for col in df_dict.keys()]
+
+        # update dict to contain segarrays where applicable if any exist
+        if len(seg_cols) > 0:
+            df_dict = {
+                col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
+                if col in seg_cols else df_dict[col] for col in df_dict_keys
+            }
+
+        df = cls(df_dict)
         if filetype == "HDF5":
             return df
         else:

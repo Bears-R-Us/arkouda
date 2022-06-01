@@ -485,6 +485,8 @@ class DataFrameTest(ArkoudaTest):
         df = ak.DataFrame({'a': ak.arange(10), 'b': ak.SegArray(ak.arange(10), ak.arange(10))})
         df.save(f"{d}/seg_test.h5")
         self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()['numLocales'])
+        ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
+        self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
         # clean up test files
         rmtree(d)
