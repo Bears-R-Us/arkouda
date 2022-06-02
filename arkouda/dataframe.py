@@ -1306,12 +1306,10 @@ class DataFrame(UserDict):
 
         if index:
             data["Index"] = self.index
-
-        save_all(data, prefix_path=path,
-                 file_format=file_format)
+        save_all(data, prefix_path=path, file_format=file_format)
 
     @classmethod
-    def load(cls, prefix_path, file_format='INFER'):
+    def load(cls, prefix_path, file_format="INFER"):
         """
         Load dataframe from file
         file_format needed for consistency with other load functions
@@ -1324,15 +1322,19 @@ class DataFrame(UserDict):
         df_dict = load_all(prefix_path, file_format=filetype)
 
         # this assumes segments will always have corresponding values. This should happen due to save config
-        seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith('_segments')]
-        df_dict_keys = [col.split("_")[0] if col.endswith('_segments') or col.endswith('_values') else col
-                        for col in df_dict.keys()]
+        seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith("_segments")]
+        df_dict_keys = [
+            col.split("_")[0] if col.endswith("_segments") or col.endswith("_values") else col
+            for col in df_dict.keys()
+        ]
 
         # update dict to contain segarrays where applicable if any exist
         if len(seg_cols) > 0:
             df_dict = {
                 col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
-                if col in seg_cols else df_dict[col] for col in df_dict_keys
+                if col in seg_cols
+                else df_dict[col]
+                for col in df_dict_keys
             }
 
         df = cls(df_dict)

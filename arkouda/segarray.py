@@ -5,7 +5,7 @@ from warnings import warn
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
-from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros

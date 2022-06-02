@@ -472,19 +472,19 @@ class DataFrameTest(ArkoudaTest):
 
         # make directory to save to so pandas read works
         os.mkdir(d)
-        akdf.save(f"{d}/testName", file_format='Parquet')
+        akdf.save(f"{d}/testName", file_format="Parquet")
 
         ak_loaded = ak.DataFrame.load(f"{d}/testName")
         self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
 
         # test save with index true
-        akdf.save(f"{d}/testName_with_index.pq", file_format='Parquet', index=True)
-        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()['numLocales'])
+        akdf.save(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
+        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()["numLocales"])
 
         # Test for df having seg array col
-        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.SegArray(ak.arange(10), ak.arange(10))})
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
         df.save(f"{d}/seg_test.h5")
-        self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()['numLocales'])
+        self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()["numLocales"])
         ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
         self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
