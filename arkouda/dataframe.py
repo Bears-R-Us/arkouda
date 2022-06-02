@@ -969,7 +969,7 @@ class DataFrame(UserDict):
                         obj._columns[i] = newname
                         obj.data[newname] = obj.data[oldname]
                         del obj.data[oldname]
-                    except:  # bare except is bad practice
+                    except Exception:
                         pass
         else:
             raise TypeError("Argument must be callable or dict-like")

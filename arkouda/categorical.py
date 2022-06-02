@@ -432,29 +432,29 @@ class Categorical:
     @typechecked
     def _r_binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-            Executes the requested reverse binop on this Categorical instance and
-            returns the results within a pdarray object.
+        Executes the requested reverse binop on this Categorical instance and
+        returns the results within a pdarray object.
 
-            Parameters
-            ----------
-            other : Union[Categorical,str_scalars]
-                the other object is a Categorical object or string scalar
-            op : str_scalars
-                name of the binary operation to be performed
+        Parameters
+        ----------
+        other : Union[Categorical,str_scalars]
+            the other object is a Categorical object or string scalar
+        op : str_scalars
+            name of the binary operation to be performed
 
-            Returns
-            -------
-            pdarray
-                encapsulating the results of the requested binop
+        Returns
+        -------
+        pdarray
+            encapsulating the results of the requested binop
 
-            Raises
-        -   -----
-            ValueError
-                Raised if (1) the op is not in the self.BinOps set, or (2) if the
-                sizes of this and the other instance don't match
-            RuntimeError
-                Raised if a server-side error is thrown while executing the
-                binary operation
+        Raises
+        -----
+        ValueError
+            Raised if (1) the op is not in the self.BinOps set, or (2) if the
+            sizes of this and the other instance don't match
+        RuntimeError
+            Raised if a server-side error is thrown while executing the
+            binary operation
         """
         return self._binop(other, op)
 
@@ -1018,27 +1018,27 @@ class Categorical:
     @typechecked
     def attach(user_defined_name: str) -> Categorical:
         """
-         Function to return a Categorical object attached to the registered name in the
-         arkouda server which was registered using register()
+        Function to return a Categorical object attached to the registered name in the
+        arkouda server which was registered using register()
 
-         Parameters
-         ----------
-         user_defined_name : str
-             user defined name which Categorical object was registered under
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which Categorical object was registered under
 
-         Returns
-         -------
-         Categorical
-                The Categorical object created by re-attaching to the corresponding server components
+        Returns
+        -------
+        Categorical
+            The Categorical object created by re-attaching to the corresponding server components
 
         Raises
         ------
         TypeError
-             if user_defined_name is not a string
+            if user_defined_name is not a string
 
-         See Also
-         --------
-         register, is_registered, unregister, unregister_categorical_by_name
+        See Also
+        --------
+        register, is_registered, unregister, unregister_categorical_by_name
         """
         # Build dict of registered components by invoking their corresponding Class.attach functions
         parts = {
