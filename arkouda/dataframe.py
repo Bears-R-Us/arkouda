@@ -1298,8 +1298,6 @@ class DataFrame(UserDict):
         files are prefixed by the path argument and suffixed by their
         locale number.
         """
-        # tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
-        # save_all(tosave, path)
         # if no columns are stored, we will save all columns
         if columns is None:
             data = self.data
