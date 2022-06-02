@@ -694,7 +694,7 @@ class GroupBy:
         >>> g.argmax(b)
         (array([2, 3, 4]), array([9, 3, 2]))
         """
-        
+
         return self.aggregate(values, "argmax")
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
