@@ -1321,7 +1321,8 @@ class DataFrame(UserDict):
         # columns load backwards
         df_dict = load_all(prefix_path, file_format=filetype)
 
-        # this assumes segments will always have corresponding values. This should happen due to save config
+        # this assumes segments will always have corresponding values.
+        # This should happen due to save config
         seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith("_segments")]
         df_dict_keys = [
             col.split("_")[0] if col.endswith("_segments") or col.endswith("_values") else col
