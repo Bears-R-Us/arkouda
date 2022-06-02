@@ -103,7 +103,7 @@ def parse_single_value(msg: str) -> object:
             # String value will always be surrounded with double quotes, so remove them
             return mydtype.type(unescape(value[1:-1]))
         return mydtype.type(value)
-    except:  # bare except is bad practice
+    except Exception:
         raise ValueError(f"unsupported value from server {mydtype.name} {value}")
 
 
@@ -230,7 +230,7 @@ class pdarray:
         """
         try:
             other = self.dtype.type(other)
-        except:  # bare except is bad practice
+        except Exception:
             raise TypeError(f"Unable to convert {other} to {self.dtype.name}")
         if self.dtype == bool:
             return str(other)
@@ -471,7 +471,7 @@ class pdarray:
         # opeq requires scalar to be cast as pdarray dtype
         try:
             other = self.dtype.type(other)
-        except:  # bare except is bad practice
+        except Exception:
             # Can't cast other as dtype of pdarray
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
@@ -1551,28 +1551,28 @@ class pdarray:
 @typechecked
 def create_pdarray(repMsg: str) -> pdarray:
     """
-        Return a pdarray instance pointing to an array created by the arkouda server.
-        The user should not call this function directly.
+    Return a pdarray instance pointing to an array created by the arkouda server.
+    The user should not call this function directly.
 
-        Parameters
-        ----------
-        repMsg : str
-            space-delimited string containing the pdarray name, datatype, size
-            dimension, shape,and itemsize
+    Parameters
+    ----------
+    repMsg : str
+        space-delimited string containing the pdarray name, datatype, size
+        dimension, shape,and itemsize
 
-        Returns
-        -------
-        pdarray
-            A pdarray with the same attributes and data as the pdarray; on GPU
+    Returns
+    -------
+    pdarray
+        A pdarray with the same attributes and data as the pdarray; on GPU
 
-        Raises
-    -   -----
-        ValueError
-            If there's an error in parsing the repMsg parameter into the six
-            values needed to create the pdarray instance
-        RuntimeError
-            Raised if a server-side error is thrown in the process of creating
-            the pdarray instance
+    Raises
+    -----
+    ValueError
+        If there's an error in parsing the repMsg parameter into the six
+        values needed to create the pdarray instance
+    RuntimeError
+        Raised if a server-side error is thrown in the process of creating
+        the pdarray instance
     """
     try:
         fields = repMsg.split()
