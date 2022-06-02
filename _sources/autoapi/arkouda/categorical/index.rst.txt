@@ -237,30 +237,21 @@ Classes
 
    .. py:method:: _r_binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
-          Executes the requested reverse binop on this Categorical instance and
-          returns the results within a pdarray object.
+      Executes the requested reverse binop on this Categorical instance and
+      returns the results within a pdarray object.
 
-          Parameters
-          ----------
-          other : Union[Categorical,str_scalars]
-              the other object is a Categorical object or string scalar
-          op : str_scalars
-              name of the binary operation to be performed
+      :param other: the other object is a Categorical object or string scalar
+      :type other: Union[Categorical,str_scalars]
+      :param op: name of the binary operation to be performed
+      :type op: str_scalars
 
-          Returns
-          -------
-          pdarray
-              encapsulating the results of the requested binop
+      :returns: encapsulating the results of the requested binop
+      :rtype: pdarray
 
-          Raises
-      -   -----
-          ValueError
-              Raised if (1) the op is not in the self.BinOps set, or (2) if the
-              sizes of this and the other instance don't match
-          RuntimeError
-              Raised if a server-side error is thrown while executing the
-              binary operation
-
+      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
+          sizes of this and the other instance don't match
+      :raises RuntimeError: Raised if a server-side error is thrown while executing the
+          binary operation
 
 
    .. py:method:: __eq__(self, other)
@@ -383,11 +374,11 @@ Classes
 
       .. rubric:: Examples
 
-      >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
+      >>> strings = ak.array([f'String {i}' for i in range(0,5)])
       >>> cat = ak.Categorical(strings)
       >>> ak.in1d(cat,strings)
       array([True, True, True, True, True])
-      >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
+      >>> strings = ak.array([f'String {i}' for i in range(5,9)])
       >>> catTwo = ak.Categorical(strings)
       >>> ak.in1d(cat,catTwo)
       array([False, False, False, False, False])
@@ -495,7 +486,8 @@ Classes
       :type user_defined_name: str
 
       :returns: The same Categorical which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
                 Please note you cannot register two different Categoricals with the same name.
       :rtype: Categorical
 
@@ -547,8 +539,10 @@ Classes
 
       Internal function that returns a dictionary with all required or non-None components of self
 
-      Required Categorical components (Codes and Categories) are always included in returned components_dict
-      Optional Categorical components (Permutation and Segments) are only included if they've been set (are not None)
+      Required Categorical components (Codes and Categories) are always included in
+      returned components_dict
+      Optional Categorical components (Permutation and Segments) are only included if
+      they've been set (are not None)
 
       :returns:
 
@@ -590,22 +584,18 @@ Classes
    .. py:method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
 
-       Function to return a Categorical object attached to the registered name in the
-       arkouda server which was registered using register()
+      Function to return a Categorical object attached to the registered name in the
+      arkouda server which was registered using register()
 
-       Parameters
-       ----------
-       user_defined_name : str
-           user defined name which Categorical object was registered under
+      :param user_defined_name: user defined name which Categorical object was registered under
+      :type user_defined_name: str
 
-       Returns
-       -------
-       Categorical
-              The Categorical object created by re-attaching to the corresponding server components
+      :returns: The Categorical object created by re-attaching to the corresponding server components
+      :rtype: Categorical
 
-      :raises TypeError:     if user_defined_name is not a string
-          
-          .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
+      :raises TypeError: if user_defined_name is not a string
+
+      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
 
 
    .. py:method:: unregister_categorical_by_name(user_defined_name: str) -> None
@@ -626,17 +616,18 @@ Classes
    .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
       :staticmethod:
 
-      This function should be used in conjunction with the load_all function which reads hdf5 files and reconstitutes
-      Categorical objects.  Categorical objects use a naming convention and HDF5 structure so they can be identified
-      and constructed for the user.
+      This function should be used in conjunction with the load_all function which reads hdf5 files
+      and reconstitutes Categorical objects.
+      Categorical objects use a naming convention and HDF5 structure so they can be identified and
+      constructed for the user.
 
       In general you should not call this method directly
 
       :param d:
       :type d: Dictionary of String to either Pdarray or Strings object
 
-      :returns: * *2-Tuple of List of strings containing key names which should be removed and Dictionary of base name to*
-                * *Categorical object*
+      :returns: * *2-Tuple of List of strings containing key names which should be removed and Dictionary of*
+                * *base name to Categorical object*
 
       .. seealso:: :obj:`Categorical.save`, :obj:`load_all`
 

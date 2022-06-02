@@ -192,9 +192,11 @@ Classes
 
    .. py:method:: to_lower(self) -> Strings
 
-      Returns a new Strings with all uppercase characters from the original replaced with their lowercase equivalent
+      Returns a new Strings with all uppercase characters from the original replaced with
+      their lowercase equivalent
 
-      :returns: Strings with all uppercase characters from the original replaced with their lowercase equivalent
+      :returns: Strings with all uppercase characters from the original replaced with
+                their lowercase equivalent
       :rtype: Strings
 
       :raises RuntimeError: Raised if there is a server-side error thrown
@@ -212,9 +214,11 @@ Classes
 
    .. py:method:: to_upper(self) -> Strings
 
-      Returns a new Strings with all lowercase characters from the original replaced with their uppercase equivalent
+      Returns a new Strings with all lowercase characters from the original replaced with
+      their uppercase equivalent
 
-      :returns: Strings with all lowercase characters from the original replaced with their uppercase equivalent
+      :returns: Strings with all lowercase characters from the original replaced with
+                their uppercase equivalent
       :rtype: Strings
 
       :raises RuntimeError: Raised if there is a server-side error thrown
@@ -232,7 +236,8 @@ Classes
 
    .. py:method:: is_lower(self) -> arkouda.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely lowercase
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is entirely lowercase
 
       :returns: True for elements that are entirely lowercase, False otherwise
       :rtype: pdarray, bool
@@ -254,7 +259,8 @@ Classes
 
    .. py:method:: is_upper(self) -> arkouda.pdarrayclass.pdarray
 
-      Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely uppercase
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is entirely uppercase
 
       :returns: True for elements that are entirely uppercase, False otherwise
       :rtype: pdarray, bool
@@ -291,7 +297,8 @@ Classes
 
    .. py:method:: find_locations(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
-      Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
+      Finds pattern matches and returns pdarrays containing the number, start postitions,
+      and lengths of matches
 
       :param pattern: The regex pattern used to find matches
       :type pattern: str_scalars
@@ -308,7 +315,7 @@ Classes
 
       .. rubric:: Examples
 
-      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+      >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
       >>> num_matches, starts, lens = strings.find_locations('\d')
       >>> num_matches
       array([2, 2, 2, 2, 2])
@@ -326,53 +333,62 @@ Classes
       :param pattern: Regex used to find matches
       :type pattern: str
 
-      :returns: Match object where elements match if any part of the string matches the regular expression pattern
+      :returns: Match object where elements match if any part of the string matches the
+                regular expression pattern
       :rtype: Match
 
       .. rubric:: Examples
 
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.search('_+')
-      <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+      <ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);
+      matched=False; matched=True, span=(0, 2); matched=False>
 
 
    .. py:method:: match(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
 
-      Returns a match object where elements match only if the beginning of the string matches the regular expression pattern
+      Returns a match object where elements match only if the beginning of the string matches the
+      regular expression pattern
 
       :param pattern: Regex used to find matches
       :type pattern: str
 
-      :returns: Match object where elements match only if the beginning of the string matches the regular expression pattern
+      :returns: Match object where elements match only if the beginning of the string matches the
+                regular expression pattern
       :rtype: Match
 
       .. rubric:: Examples
 
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.match('_+')
-      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False>
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
+      matched=True, span=(0, 2); matched=False>
 
 
    .. py:method:: fullmatch(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.match.Match
 
-      Returns a match object where elements match only if the whole string matches the regular expression pattern
+      Returns a match object where elements match only if the whole string matches the
+      regular expression pattern
 
       :param pattern: Regex used to find matches
       :type pattern: str
 
-      :returns: Match object where elements match only if the whole string matches the regular expression pattern
+      :returns: Match object where elements match only if the whole string matches the
+                regular expression pattern
       :rtype: Match
 
       .. rubric:: Examples
 
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.fullmatch('_+')
-      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=False; matched=False>
+      <ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;
+      matched=False; matched=False>
 
 
    .. py:method:: split(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
 
-      Returns a new Strings split by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur
+      Returns a new Strings split by the occurrences of pattern.
+      If maxsplit is nonzero, at most maxsplit splits occur
 
       :param pattern: Regex used to split strings into substrings
       :type pattern: str
@@ -400,7 +416,8 @@ Classes
 
       :param pattern: Regex used to find matches
       :type pattern: str_scalars
-      :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern match is from
+      :param return_match_origins: If True, return a pdarray containing the index of the original string each
+                                   pattern match is from
       :type return_match_origins: bool
 
       :returns: * *Strings* -- Strings object containing only pattern matches
@@ -421,7 +438,8 @@ Classes
 
    .. py:method:: sub(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], repl: Union[bytes, arkouda.dtypes.str_scalars], count: int = 0) -> Strings
 
-      Return new Strings obtained by replacing non-overlapping occurrences of pattern with the replacement repl.
+      Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
+      replacement repl.
       If count is nonzero, at most count substitutions occur
 
       :param pattern: The regex to substitue
@@ -483,7 +501,8 @@ Classes
       :param substr: The substring in the form of string or byte array to search for
       :type substr: str_scalars
       :param regex: Indicates whether substr is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns: True for elements that contain substr, False otherwise
@@ -497,7 +516,7 @@ Classes
 
       .. rubric:: Examples
 
-      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+      >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
       >>> strings
       array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
       >>> strings.contains('string')
@@ -513,7 +532,8 @@ Classes
       :param substr: The prefix to search for
       :type substr: Union[bytes, str_scalars]
       :param regex: Indicates whether substr is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns: True for elements that start with substr, False otherwise
@@ -527,12 +547,12 @@ Classes
 
       .. rubric:: Examples
 
-      >>> strings_end = ak.array(['string {}'.format(i) for i in range(1, 6)])
+      >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
       >>> strings_end.startswith('string')
       array([True, True, True, True, True])
-      >>> strings_start = ak.array(['{} string'.format(i) for i in range(1,6)])
+      >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
       >>> strings_start.startswith('\d str', regex = True)
@@ -546,7 +566,8 @@ Classes
       :param substr: The suffix to search for
       :type substr: Union[bytes, str_scalars]
       :param regex: Indicates whether substr is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns: True for elements that end with substr, False otherwise
@@ -560,12 +581,12 @@ Classes
 
       .. rubric:: Examples
 
-      >>> strings_start = ak.array(['{} string'.format(i) for i in range(1,6)])
+      >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
       >>> strings_start.endswith('ing')
       array([True, True, True, True, True])
-      >>> strings_end = ak.array(['string {}'.format(i) for i in range(1, 6)])
+      >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
       >>> strings_end.endswith('ing \d', regex = True)
@@ -582,7 +603,8 @@ Classes
                               in return array.
       :type return_segments: bool
       :param regex: Indicates whether delimiter is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns: * *Strings* -- Flattened substrings with delimiters removed
@@ -629,7 +651,8 @@ Classes
       :param fromRight: If true, peel from the right instead of the left (see also rpeel)
       :type fromRight: bool
       :param regex: Indicates whether delimiter is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns:
@@ -683,7 +706,8 @@ Classes
                           such strings are returned in the first array.
       :type keepPartial: bool
       :param regex: Indicates whether delimiter is a regular expression
-                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+                    Note: only handles regular expressions supported by re2
+                    (does not support lookaheads/lookbehinds)
       :type regex: bool
 
       :returns:
@@ -1046,15 +1070,17 @@ Classes
       :param user_defined_name: user defined name which the Strings object is to be registered under
       :type user_defined_name: str
 
-      :returns: The same Strings object which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style.
+      :returns: The same Strings object which is now registered with the arkouda server and
+                has an updated name.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
                 Please note you cannot register two different objects with the same name.
       :rtype: Strings
 
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the Strings object with the user_defined_name
-          If the user is attempting to register more than one object with the same name, the former should be
-          unregistered first to free up the registration name.
+          If the user is attempting to register more than one object with the same name,
+          the former should be unregistered first to free up the registration name.
 
       .. seealso:: :obj:`attach`, :obj:`unregister`
 

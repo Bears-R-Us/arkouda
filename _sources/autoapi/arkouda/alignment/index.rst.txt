@@ -86,7 +86,8 @@ Functions
    :type a: list of pdarrays
    :param b: Rows are elements of the set in which to test membership
    :type b: list of pdarrays
-   :param assume_unique: If true, assume rows of a and b are each unique and sorted. By default, sort and unique them explicitly.
+   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
+                         By default, sort and unique them explicitly.
    :type assume_unique: bool
 
    :returns: * *pdarray, bool* -- True for each row in a that is contained in b
@@ -198,7 +199,8 @@ Functions
 
    The return idx satisfies the following condition:
        present = idx > -1
-       ((intervals[0][idx[present]] <= vals[present]) & (intervals[1][idx[present]] > vals[present])).all()
+       ((intervals[0][idx[present]] <= vals[present]) &
+        (intervals[1][idx[present]] > vals[present])).all()
 
 
 .. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1)

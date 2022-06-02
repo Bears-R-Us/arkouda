@@ -34,8 +34,9 @@ Functions
 
    .. rubric:: Notes
 
-   This function does not return or display the plot. A user must have matplotlib imported in addition to arkouda to
-   display plots. This could be updated to return the object or have a flag to show the resulting plots.
+   This function does not return or display the plot. A user must have matplotlib imported in
+   addition to arkouda to display plots. This could be updated to return the object or have a
+   flag to show the resulting plots.
    See Examples Below.
 
    .. rubric:: Examples

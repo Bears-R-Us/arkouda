@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Series in Arkouda &#8212; arkouda 0+untagged.1.g90e3336 documentation</title>
+    <title>Series in Arkouda &#8212; arkouda 0+untagged.1.g499ecb5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -43,10 +43,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id1044" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#id1039" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
-<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None if ar_tuple is not provided.</p></li>
+<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -62,8 +62,8 @@ optional</p></li>
 If entering positional arguments,</p>
 <blockquote>
 <div><dl class="simple">
-<dt>2 arguments entered:</dt><dd><p>argument 1 - index
-argument 2 - data</p>
+<dt>2 arguments entered:</dt><dd><p>argument 1 - data
+argument 2 - index</p>
 </dd>
 <dt>1 argument entered:</dt><dd><p>argument 1 - data</p>
 </dd>
@@ -86,9 +86,10 @@ If entering keywords,</p>
 <dt class="sig sig-object py" id="arkouda.Series.locate">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.locate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lookup values by index label</p>
-<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has a MultiIndex).
-As a special case, if a Series is used as the key, the series labels are preserved with its values
-use as the key.</p>
+<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has
+a MultiIndex).
+As a special case, if a Series is used as the key, the series labels are preserved
+with its values used as the key.</p>
 <p>Keys will be turned into arkouda arrays as needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -104,9 +105,10 @@ use as the key.</p>
 <dt class="sig sig-object py" id="id0">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lookup values by index label</p>
-<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has a MultiIndex).
-As a special case, if a Series is used as the key, the series labels are preserved with its values
-use as the key.</p>
+<p>The input can be a scalar, a list of scalers, or a list of lists (if the series has
+a MultiIndex).
+As a special case, if a Series is used as the key, the series labels are preserved
+with its values used as the key.</p>
 <p>Keys will be turned into arkouda arrays as needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -198,10 +200,11 @@ first element is the most frequently-occurring element.</p>
 <dt class="sig sig-object py" id="arkouda.Series.pdconcat">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Series.</span></span><span class="sig-name descname"><span class="pre">pdconcat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.pdconcat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.</p>
-<p>If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping is a 2-tuple
-with the first item being the key(s) and the second being the value.</p>
-<p>If horizontal, each series or grouping must have the same length and the same index. The index of the series is
-converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.</p>
+<p>If a list of grouped arkouda arrays is passed they are converted to a series.
+Each grouping is a 2-tuple with the first item being the key(s) and the second being the value.</p>
+<p>If horizontal, each series or grouping must have the same length and the same index.
+The index of the series is converted to a column in the dataframe.
+If it is a multi-index,each level is converted to a column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -287,7 +290,7 @@ converted to a column in the dataframe.  If it is a multi-index,each level is co
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

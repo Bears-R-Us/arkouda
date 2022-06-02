@@ -25,7 +25,7 @@ Classes
                  If empty, it will default to a range of ints whose size match the size of the data.
                  optional
    :type index: pdarray, Strings
-   :param data: a 1D array. Must not be None if ar_tuple is not provided.
+   :param data: a 1D array. Must not be None.
    :type data: Tuple, List, groupable_element_type
 
    :raises TypeError: Raised if index is not a pdarray or Strings object
@@ -37,8 +37,8 @@ Classes
    The Series class accepts either positional arguments or keyword arguments.
    If entering positional arguments,
        2 arguments entered:
-           argument 1 - index
-           argument 2 - data
+           argument 1 - data
+           argument 2 - index
        1 argument entered:
            argument 1 - data
    If entering 1 positional argument, it is assumed that this is the data argument.
@@ -86,9 +86,10 @@ Classes
 
       Lookup values by index label
 
-      The input can be a scalar, a list of scalers, or a list of lists (if the series has a MultiIndex).
-      As a special case, if a Series is used as the key, the series labels are preserved with its values
-      use as the key.
+      The input can be a scalar, a list of scalers, or a list of lists (if the series has
+      a MultiIndex).
+      As a special case, if a Series is used as the key, the series labels are preserved
+      with its values used as the key.
 
       Keys will be turned into arkouda arrays as needed.
 
@@ -220,11 +221,12 @@ Classes
 
       Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or vertically.
 
-      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping is a 2-tuple
-      with the first item being the key(s) and the second being the value.
+      If a list of grouped arkouda arrays is passed they are converted to a series.
+      Each grouping is a 2-tuple with the first item being the key(s) and the second being the value.
 
-      If horizontal, each series or grouping must have the same length and the same index. The index of the series is
-      converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.
+      If horizontal, each series or grouping must have the same length and the same index.
+      The index of the series is converted to a column in the dataframe.
+      If it is a multi-index,each level is converted to a column.
 
       :param arrays:
       :type arrays: The list of series/groupings to concat.
@@ -244,11 +246,12 @@ Classes
 
       Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
-      If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping is a 2-tuple
-      with the first item being the key(s) and the second being the value.
+      If a list of grouped arkouda arrays is passed they are converted to a series.
+      Each grouping is a 2-tuple with the first item being the key(s) and the second being the value.
 
-      If horizontal, each series or grouping must have the same length and the same index. The index of the series is
-      converted to a column in the dataframe.  If it is a multi-index,each level is converted to a column.
+      If horizontal, each series or grouping must have the same length and the same index.
+      The index of the series is converted to a column in the dataframe.
+      If it is a multi-index,each level is converted to a column.
 
       :param arrays:
       :type arrays: The list of series/groupings to concat.

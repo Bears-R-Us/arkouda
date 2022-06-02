@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.pdarrayIO &#8212; arkouda 0+untagged.1.g90e3336 documentation</title>
+    <title>arkouda.pdarrayIO &#8212; arkouda 0+untagged.1.g499ecb5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -213,8 +213,8 @@ read must be specified.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path_prefix</strong> (<em>str</em>) – Filename prefix used to save the original pdarray</p></li>
-<li><p><strong>file_format</strong> (<em>str</em>) – ‘INFER’, ‘HDF5’ or ‘Parquet’. Defaults to ‘INFER’. Used to indicate the file type being loaded. If INFER, the
-this will be detected during processing</p></li>
+<li><p><strong>file_format</strong> (<em>str</em>) – ‘INFER’, ‘HDF5’ or ‘Parquet’. Defaults to ‘INFER’. Used to indicate the file type being loaded.
+If INFER, this will be detected during processing</p></li>
 <li><p><strong>dataset</strong> (<em>str</em>) – Dataset name where the pdarray was saved, defaults to ‘array’</p></li>
 <li><p><strong>calc_string_offsets</strong> (<em>bool</em>) – If True the server will ignore Segmented Strings ‘offsets’ array and derive
 it from the null-byte terminators.  Defaults to False currently</p></li>
@@ -224,7 +224,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 <dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id1044" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id1039" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -241,20 +241,21 @@ one or more of them</p></li>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read" title="arkouda.pdarrayIO.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it with a .parquet
-appended to the prefix_path. Parquet files were previously ALWAYS stored with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> extension.</p>
+<p>If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
+with a .parquet appended to the prefix_path.
+Parquet files were previously ALWAYS stored with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> extension.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Loading from file without extension</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;path/prefix&#39;</span><span class="p">)</span>
-<span class="go">Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``. The file type is inferred</span>
-<span class="go">during processing.</span>
+<span class="go">Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.</span>
+<span class="go">The file type is inferred during processing.</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Loading with an extension (HDF5)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;path/prefix.test&#39;</span><span class="p">)</span>
 <span class="go">Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where</span>
-<span class="go">#### is replaced by each locale numbers. Because filetype is inferred during processing, the extension is not</span>
-<span class="go">required to be a specific format.</span>
+<span class="go">#### is replaced by each locale numbers. Because filetype is inferred during processing,</span>
+<span class="go">the extension is not required to be a specific format.</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -560,7 +561,7 @@ the same file type, but formatted to be read by Pandas.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

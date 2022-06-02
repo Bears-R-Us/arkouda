@@ -671,7 +671,8 @@ Attributes
       :type user_defined_name: str
 
       :returns: The same GroupBy which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
                 Please note you cannot register two different GroupBys with the same name.
       :rtype: GroupBy
 

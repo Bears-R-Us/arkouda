@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.g90e3336 documentation</title>
+    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.g499ecb5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -919,8 +919,10 @@ always a np.float64 or np.int64.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
-By default, read the elements in row_major or C-like order where the last index changes the fastest
-If ‘column_major’ or ‘F’, read the elements in column_major or Fortran-like order where the first index changes the fastest</p></li>
+By default, read the elements in row_major or C-like order where the last index
+changes the fastest
+If ‘column_major’ or ‘F’, read the elements in column_major or Fortran-like order where the
+first index changes the fastest</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1072,7 +1074,8 @@ dataset with the same name already exists, a <code class="docutils literal notra
 <p>Previously all files saved in Parquet format were saved with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> file extension.
 This will require you to use load as if you saved the file with the extension. Try this if
 an older file is not being found.</p>
-<p>Any file extension can be used. The file I/O does not rely on the extension to determine the file format.</p>
+<p>Any file extension can be used.The file I/O does not rely on the extension to
+determine the file format.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
@@ -1084,14 +1087,14 @@ an older file is not being found.</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Saving with an extension (HDF5)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;path/prefix.h5&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
-<span class="go">Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####.h5`` where</span>
-<span class="go">#### is replaced by each locale number</span>
+<span class="go">Saves the array to numLocales HDF5 files with the name</span>
+<span class="go">``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Saving with an extension (Parquet)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;path/prefix.parquet&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s1">&#39;Parquet&#39;</span><span class="p">)</span>
-<span class="go">Saves the array in numLocales Parquet files with the name ``cwd/path/name_prefix_LOCALE####.parquet`` where</span>
-<span class="go">#### is replaced by each locale number</span>
+<span class="go">Saves the array in numLocales Parquet files with the name</span>
+<span class="go">``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1222,7 +1225,8 @@ A name can only be registered to one pdarray at a time.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same pdarray which is now registered with the arkouda server and has an updated name.
-This is an in-place modification, the original is returned to support a fluid programming style.
+This is an in-place modification, the original is returned to support a
+fluid programming style.
 Please note you cannot register two different pdarrays with the same name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1232,8 +1236,8 @@ Please note you cannot register two different pdarrays with the same name.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
 <li><p><a class="reference internal" href="#arkouda.pdarrayclass.RegistrationError" title="arkouda.pdarrayclass.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the pdarray with the user_defined_name
-If the user is attempting to register more than one pdarray with the same name, the former should be
-unregistered first to free up the registration name.</p></li>
+If the user is attempting to register more than one pdarray with the same name,
+the former should be unregistered first to free up the registration name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1296,7 +1300,8 @@ server which was registered using register()</p>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray which is bound to corresponding server side component that was registered with user_defined_name</p>
+<dd class="field-even"><p>pdarray which is bound to the corresponding server side component which was registered
+with user_defined_name</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
@@ -2013,7 +2018,8 @@ server which was registered using register()</p>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray which is bound to corresponding server side component that was registered with user_defined_name</p>
+<dd class="field-even"><p>pdarray which is bound to the corresponding server side component which was registered
+with user_defined_name</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
@@ -2157,7 +2163,7 @@ they are unregistered.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

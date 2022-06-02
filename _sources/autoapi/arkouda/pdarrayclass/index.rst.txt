@@ -580,8 +580,10 @@ Functions
       :param shape: The new shape should be compatible with the original shape.
       :type shape: int, tuple of ints, or pdarray
       :param order: Read the elements of the pdarray in this index order
-                    By default, read the elements in row_major or C-like order where the last index changes the fastest
-                    If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the first index changes the fastest
+                    By default, read the elements in row_major or C-like order where the last index
+                    changes the fastest
+                    If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the
+                    first index changes the fastest
       :type order: str {'row_major' | 'C' | 'column_major' | 'F'}
 
       :returns: An arrayview object with the data from the array but with the new shape
@@ -708,7 +710,8 @@ Functions
       This will require you to use load as if you saved the file with the extension. Try this if
       an older file is not being found.
 
-      Any file extension can be used. The file I/O does not rely on the extension to determine the file format.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
 
       .. rubric:: Examples
 
@@ -720,13 +723,13 @@ Functions
 
       >>> # Saving with an extension (HDF5)
       >>> a.save('path/prefix.h5', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####.h5`` where
-      #### is replaced by each locale number
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
 
       >>> # Saving with an extension (Parquet)
       >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
-      Saves the array in numLocales Parquet files with the name ``cwd/path/name_prefix_LOCALE####.parquet`` where
-      #### is replaced by each locale number
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
    .. py:method:: save_parquet(self, prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
@@ -845,14 +848,15 @@ Functions
       :type user_defined_name: str
 
       :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
                 Please note you cannot register two different pdarrays with the same name.
       :rtype: pdarray
 
       :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
-          If the user is attempting to register more than one pdarray with the same name, the former should be
-          unregistered first to free up the registration name.
+          If the user is attempting to register more than one pdarray with the same name,
+          the former should be unregistered first to free up the registration name.
 
       .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
 
@@ -907,7 +911,8 @@ Functions
       :param user_defined_name: user defined name which array was registered under
       :type user_defined_name: str
 
-      :returns: pdarray which is bound to corresponding server side component that was registered with user_defined_name
+      :returns: pdarray which is bound to the corresponding server side component which was registered
+                with user_defined_name
       :rtype: pdarray
 
       :raises TypeError: Raised if user_defined_name is not a str
@@ -1434,7 +1439,8 @@ Functions
    :param user_defined_name: user defined name which array was registered under
    :type user_defined_name: str
 
-   :returns: pdarray which is bound to corresponding server side component that was registered with user_defined_name
+   :returns: pdarray which is bound to the corresponding server side component which was registered
+             with user_defined_name
    :rtype: pdarray
 
    :raises TypeError: Raised if user_defined_name is not a str

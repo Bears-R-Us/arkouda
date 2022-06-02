@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.strings &#8212; arkouda 0+untagged.1.g90e3336 documentation</title>
+    <title>arkouda.strings &#8212; arkouda 0+untagged.1.g499ecb5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -296,10 +296,12 @@ binary operation</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.to_lower">
 <span class="sig-name descname"><span class="pre">to_lower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.to_lower" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Strings with all uppercase characters from the original replaced with their lowercase equivalent</p>
+<dd><p>Returns a new Strings with all uppercase characters from the original replaced with
+their lowercase equivalent</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Strings with all uppercase characters from the original replaced with their lowercase equivalent</p>
+<dd class="field-odd"><p>Strings with all uppercase characters from the original replaced with
+their lowercase equivalent</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
@@ -325,10 +327,12 @@ binary operation</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.to_upper">
 <span class="sig-name descname"><span class="pre">to_upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.to_upper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Strings with all lowercase characters from the original replaced with their uppercase equivalent</p>
+<dd><p>Returns a new Strings with all lowercase characters from the original replaced with
+their uppercase equivalent</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Strings with all lowercase characters from the original replaced with their uppercase equivalent</p>
+<dd class="field-odd"><p>Strings with all lowercase characters from the original replaced with
+their uppercase equivalent</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
@@ -354,7 +358,8 @@ binary operation</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.is_lower">
 <span class="sig-name descname"><span class="pre">is_lower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_lower" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely lowercase</p>
+<dd><p>Returns a boolean pdarray where index i indicates whether string i of the
+Strings is entirely lowercase</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True for elements that are entirely lowercase, False otherwise</p>
@@ -385,7 +390,8 @@ binary operation</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.is_upper">
 <span class="sig-name descname"><span class="pre">is_upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.is_upper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean pdarray where index i indicates whether string i of the Strings is entirely uppercase</p>
+<dd><p>Returns a boolean pdarray where index i indicates whether string i of the
+Strings is entirely uppercase</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True for elements that are entirely uppercase, False otherwise</p>
@@ -434,7 +440,8 @@ binary operation</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.find_locations">
 <span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.strings.Strings.find_locations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches</p>
+<dd><p>Finds pattern matches and returns pdarrays containing the number, start postitions,
+and lengths of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>str_scalars</em>) – The regex pattern used to find matches</p>
@@ -460,7 +467,7 @@ binary operation</p></li>
 <p><a class="reference internal" href="#arkouda.strings.Strings.findall" title="arkouda.strings.Strings.findall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.findall</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.match" title="arkouda.strings.Strings.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.match</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">lens</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">find_locations</span><span class="p">(</span><span class="s1">&#39;\d&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span>
 <span class="go">array([2, 2, 2, 2, 2])</span>
@@ -482,7 +489,8 @@ Elements match if any part of the string matches the regular expression pattern<
 <dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Match object where elements match if any part of the string matches the regular expression pattern</p>
+<dd class="field-even"><p>Match object where elements match if any part of the string matches the
+regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
@@ -491,7 +499,8 @@ Elements match if any part of the string matches the regular expression pattern<
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span>
-<span class="go">&lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
+<span class="go">&lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);</span>
+<span class="go">matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -499,13 +508,15 @@ Elements match if any part of the string matches the regular expression pattern<
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.match">
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">arkouda.match.Match</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a match object where elements match only if the beginning of the string matches the regular expression pattern</p>
+<dd><p>Returns a match object where elements match only if the beginning of the string matches the
+regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Match object where elements match only if the beginning of the string matches the regular expression pattern</p>
+<dd class="field-even"><p>Match object where elements match only if the beginning of the string matches the
+regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
@@ -514,7 +525,8 @@ Elements match if any part of the string matches the regular expression pattern<
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span>
-<span class="go">&lt;ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
+<span class="go">&lt;ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;</span>
+<span class="go">matched=True, span=(0, 2); matched=False&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -522,13 +534,15 @@ Elements match if any part of the string matches the regular expression pattern<
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.fullmatch">
 <span class="sig-name descname"><span class="pre">fullmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">arkouda.match.Match</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.fullmatch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a match object where elements match only if the whole string matches the regular expression pattern</p>
+<dd><p>Returns a match object where elements match only if the whole string matches the
+regular expression pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Regex used to find matches</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Match object where elements match only if the whole string matches the regular expression pattern</p>
+<dd class="field-even"><p>Match object where elements match only if the whole string matches the
+regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
@@ -537,7 +551,8 @@ Elements match if any part of the string matches the regular expression pattern<
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span>
-<span class="go">&lt;ak.Match object: matched=False; matched=True, span=(0, 4); matched=False; matched=False; matched=False&gt;</span>
+<span class="go">&lt;ak.Match object: matched=False; matched=True, span=(0, 4); matched=False;</span>
+<span class="go">matched=False; matched=False&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -545,7 +560,8 @@ Elements match if any part of the string matches the regular expression pattern<
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.split">
 <span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsplit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.strings.Strings.split" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Strings split by the occurrences of pattern. If maxsplit is nonzero, at most maxsplit splits occur</p>
+<dd><p>Returns a new Strings split by the occurrences of pattern.
+If maxsplit is nonzero, at most maxsplit splits occur</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -581,7 +597,8 @@ in the return array</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pattern</strong> (<em>str_scalars</em>) – Regex used to find matches</p></li>
-<li><p><strong>return_match_origins</strong> (<em>bool</em>) – If True, return a pdarray containing the index of the original string each pattern match is from</p></li>
+<li><p><strong>return_match_origins</strong> (<em>bool</em>) – If True, return a pdarray containing the index of the original string each
+pattern match is from</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -614,7 +631,8 @@ in the return array</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.sub">
 <span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">arkouda.dtypes.str_scalars</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.strings.Strings.sub" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return new Strings obtained by replacing non-overlapping occurrences of pattern with the replacement repl.
+<dd><p>Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
+replacement repl.
 If count is nonzero, at most count substitutions occur</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -700,7 +718,8 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>substr</strong> (<em>str_scalars</em>) – The substring in the form of string or byte array to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -722,7 +741,7 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <p><a class="reference internal" href="#arkouda.strings.Strings.startswith" title="arkouda.strings.Strings.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.startswith</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.endswith" title="arkouda.strings.Strings.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.endswith</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
 <span class="go">array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
@@ -742,7 +761,8 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The prefix to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -764,12 +784,12 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <p><a class="reference internal" href="#arkouda.strings.Strings.contains" title="arkouda.strings.Strings.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.contains</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.endswith" title="arkouda.strings.Strings.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.endswith</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span>
 <span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
 <span class="go">array([True, True, True, True, True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span>
 <span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;\d str&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -787,7 +807,8 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>, </em><em>str_scalars</em><em>]</em>) – The suffix to search for</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether substr is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -809,12 +830,12 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <p><a class="reference internal" href="#arkouda.strings.Strings.contains" title="arkouda.strings.Strings.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.contains</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.startswith" title="arkouda.strings.Strings.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.startswith</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span>
 <span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing&#39;</span><span class="p">)</span>
 <span class="go">array([True, True, True, True, True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span>
 <span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing \d&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -834,7 +855,8 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 <li><p><strong>return_segments</strong> (<em>bool</em>) – If True, also return mapping of original strings to first substring
 in return array.</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -887,7 +909,8 @@ the delimiter will be returned in the first array. By default,
 such strings are returned in the second array.</p></li>
 <li><p><strong>fromRight</strong> (<em>bool</em>) – If true, peel from the right instead of the left (see also rpeel)</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -951,7 +974,8 @@ second return array.</p></li>
 the delimiter will be returned in the second array. By default,
 such strings are returned in the first array.</p></li>
 <li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
-Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
+Note: only handles regular expressions supported by re2
+(does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1429,8 +1453,10 @@ A name can only be registered to one object at a time.</p>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which the Strings object is to be registered under</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The same Strings object which is now registered with the arkouda server and has an updated name.
-This is an in-place modification, the original is returned to support a fluid programming style.
+<dd class="field-even"><p>The same Strings object which is now registered with the arkouda server and
+has an updated name.
+This is an in-place modification, the original is returned to support a
+fluid programming style.
 Please note you cannot register two different objects with the same name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1440,8 +1466,8 @@ Please note you cannot register two different objects with the same name.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
 <li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
-If the user is attempting to register more than one object with the same name, the former should be
-unregistered first to free up the registration name.</p></li>
+If the user is attempting to register more than one object with the same name,
+the former should be unregistered first to free up the registration name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1597,7 +1623,7 @@ until they are unregistered.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

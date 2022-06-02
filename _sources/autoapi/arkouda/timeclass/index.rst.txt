@@ -326,7 +326,7 @@ Attributes
    .. py:method:: _scalar_callback(self, scalar)
 
 
-   .. py:method:: _is_supported_scalar(scalar)
+   .. py:method:: _is_supported_scalar(self, scalar)
       :staticmethod:
 
 
@@ -418,7 +418,7 @@ Attributes
    .. py:method:: _scalar_callback(self, scalar)
 
 
-   .. py:method:: _is_supported_scalar(scalar)
+   .. py:method:: _is_supported_scalar(self, scalar)
       :staticmethod:
 
 
@@ -443,7 +443,6 @@ Attributes
    .. py:method:: abs(self)
 
       Absolute value of time interval.
-
 
 
 

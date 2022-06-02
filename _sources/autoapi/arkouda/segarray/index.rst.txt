@@ -28,7 +28,8 @@ Functions
 
 .. py:function:: gen_ranges(starts, ends, stride=1)
 
-   Generate a segmented array of variable-length, contiguous ranges between pairs of start- and end-points.
+   Generate a segmented array of variable-length, contiguous ranges between pairs of
+   start- and end-points.
 
    :param starts:
    :type starts: pdarray, int64

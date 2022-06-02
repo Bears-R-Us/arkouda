@@ -136,7 +136,8 @@ Classes
       This will require you to use load as if you saved the file with the extension. Try this if
       an older file is not being found.
 
-      Any file extension can be used. The file I/O does not rely on the extension to determine the file format.
+      Any file extension can be used. The file I/O does not rely on the extension to determine the
+      file format.
 
 
 

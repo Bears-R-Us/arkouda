@@ -105,7 +105,8 @@ Attributes
 
       Return all matches as a new Strings object
 
-      :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern match is from
+      :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern
+                                   match is from
       :type return_match_origins: bool
 
       :returns: * *Strings* -- Strings object containing only matches
@@ -122,11 +123,13 @@ Attributes
 
    .. py:method:: group(self, group_num: int = 0, return_group_origins: bool = False)
 
-      Returns a new Strings containing the capture group corresponding to group_num. For the default, group_num=0, return the full match
+      Returns a new Strings containing the capture group corresponding to group_num.
+      For the default, group_num=0, return the full match
 
       :param group_num: The index of the capture group to be returned
       :type group_num: int
-      :param return_group_origins: If True, return a pdarray containing the index of the original string each capture group is from
+      :param return_group_origins: If True, return a pdarray containing the index of the original string each
+                                   capture group is from
       :type return_group_origins: bool
 
       :returns: * *Strings* -- Strings object containing only the capture groups corresponding to group_num
@@ -134,7 +137,7 @@ Attributes
 
       .. rubric:: Examples
 
-      >>> strings = ak.array(["Isaac Newton, physicist", '<--calculus-->', 'Gottfried Leibniz, mathematician'])
+      >>> strings = ak.array(["Isaac Newton, physics", '<-calculus->', 'Gottfried Leibniz, math'])
       >>> m = strings.search("(\w+) (\w+)")
       >>> m.group()
       array(['Isaac Newton', 'Gottfried Leibniz'])

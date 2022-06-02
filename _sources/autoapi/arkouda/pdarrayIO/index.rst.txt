@@ -138,8 +138,8 @@ Functions
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
-   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded. If INFER, the
-                       this will be detected during processing
+   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded.
+                       If INFER, this will be detected during processing
    :type file_format: str
    :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
    :type dataset: str
@@ -160,21 +160,22 @@ Functions
 
    .. rubric:: Notes
 
-   If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it with a .parquet
-   appended to the prefix_path. Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+   If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
+   with a .parquet appended to the prefix_path.
+   Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
 
    .. rubric:: Examples
 
    >>> # Loading from file without extension
    >>> obj = a.load('path/prefix')
-   Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``. The file type is inferred
-   during processing.
+   Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
+   The file type is inferred during processing.
 
    >>> # Loading with an extension (HDF5)
    >>> obj = a.load('path/prefix.test')
    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
-   #### is replaced by each locale numbers. Because filetype is inferred during processing, the extension is not
-   required to be a specific format.
+   #### is replaced by each locale numbers. Because filetype is inferred during processing,
+   the extension is not required to be a specific format.
 
 
 .. py:function:: get_datasets(filename: str) -> List[str]
