@@ -183,7 +183,6 @@ This step only needs to be done once. Once dependencies are installed, you will 
 make install-zmq
 
 # Install HDF5 Only
-# Install HDF5 Only
 make install-hdf5
 
 # Install Arrow Only
@@ -204,6 +203,7 @@ pip install boost snappy thrift re2 utf8proc
 
 
 # Run make to build the arkouda_server executable
+```
 make
 ```
 
@@ -250,6 +250,8 @@ are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the
 "Settings" tab. Finally, scroll down to the Github Pages section and select the "master branch docs/ folder" source
 option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
 Arkouda documentation homepage will be displayed.
+
+</details>
 
 <a id="build-ak-mod"></a>
 ### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
