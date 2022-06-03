@@ -147,6 +147,7 @@ setup(
         'boost',
         'snappy',
         'thrift',
+        'pybind11',
         're2',
         'utf8proc',
         'cmake'
