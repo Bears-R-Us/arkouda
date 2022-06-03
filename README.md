@@ -175,6 +175,16 @@ This step only needs to be done once. Once dependencies are installed, you will 
 #### Arrow Dependencies
 The arrow install will fail unless supporting packages are installed. Please run the install below based on your package manager
 
+#### Arrow Dependencies
+
+```
+#using conda to install
+conda install boost-cpp snappy thrift-cpp re2 utf8proc
+
+#using pip
+pip install boost snappy thrift re2 utf8proc
+```
+
 ##### All Dependencies 
 
 `make install-deps`
@@ -191,18 +201,6 @@ make install-hdf5
 
 # Install Arrow Only
 make install-arrow
-```
-
-#### Trouble Installing Arrow?
-
-If arrow is not installing, trying installing the dependencies below. Use the command suited to the package manager that you are using.
-
-```
-#using conda to install
-conda install boost-cpp snappy thrift-cpp re2 utf8proc
-
-#using pip
-pip install boost snappy thrift re2 utf8proc
 ```
 
 
