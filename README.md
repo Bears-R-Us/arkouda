@@ -173,9 +173,7 @@ This step only needs to be done once. Once dependencies are installed, you will 
 - Arrow
 
 #### Arrow Dependencies
-The arrow install will fail unless supporting packages are installed. Please run the install below based on your package manager
-
-#### Arrow Dependencies
+The arrow install will fail unless supporting packages are installed. Please run the install below based on your package manager.
 
 ```
 #using conda to install
