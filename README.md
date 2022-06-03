@@ -163,8 +163,48 @@ sh /opt/cmake-$CM_VERSION-Linux-x86_64.sh --skip-license --include-subdir
 export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
 ```
 
-# If zmq and hdf5 have not been installed previously, execute make install-deps
-make install-deps
+### Install Dependencies
+This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can installl all dependencies with a single command or install individually for a customized build.
+
+#### Dependencies
+
+- ZMQ
+- HDF5
+- Arrow
+
+#### Arrow Dependencies
+The arrow install will fail unless supporting packages are installed. Please run the install below based on your package manager
+
+##### All Dependencies 
+
+`make install-deps`
+
+#### Individual Installs
+
+```
+# Install ZMQ Only
+make install-zmq
+
+# Install HDF5 Only
+# Install HDF5 Only
+make install-hdf5
+
+# Install Arrow Only
+make install-arrow
+```
+
+#### Trouble Installing Arrow?
+
+If arrow is not installing, trying installing the dependencies below. Use the command suited to the package manager that you are using.
+
+```
+#using conda to install
+conda install boost-cpp snappy thrift-cpp re2 utf8proc
+
+#using pip
+pip install boost snappy thrift re2 utf8proc
+```
+
 
 # Run make to build the arkouda_server executable
 make
@@ -213,8 +253,6 @@ are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the
 "Settings" tab. Finally, scroll down to the Github Pages section and select the "master branch docs/ folder" source
 option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
 Arkouda documentation homepage will be displayed.
-
-</details>
 
 <a id="build-ak-mod"></a>
 ### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

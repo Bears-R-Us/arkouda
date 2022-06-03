@@ -1,6 +1,7 @@
 name: arkouda-env
 channels:
   - conda-forge
+  - -defaults
 dependencies:
   - python>=3.7   # minimum 3.7
   - numpy>=1.16.5,<=1.21.5
@@ -16,3 +17,9 @@ dependencies:
   - types-tabulate
   - tables
   - pyarrow
+  - boost-cpp
+  - snappy
+  - thrift-cpp
+  - re2
+  - utf8proc
+  - cmake

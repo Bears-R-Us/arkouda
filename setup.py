@@ -143,7 +143,13 @@ setup(
         'pip',
         'types-tabulate',
         'tables',
-        'pyarrow'
+        'pyarrow',
+        'boost',
+        'snappy',
+        'thrift',
+        're2',
+        'utf8proc',
+        'cmake'
     ],
 
     # List additional groups of dependencies here (e.g. development
