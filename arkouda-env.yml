@@ -15,5 +15,8 @@ dependencies:
   - h5py
   - pip
   - types-tabulate
-  - tables
+  - pytables
   - pyarrow
+
+  - pip:
+      - typeguard==2.10.0
