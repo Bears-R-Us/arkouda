@@ -139,6 +139,8 @@ setup(
         'pyfiglet',
         'versioneer',
         'matplotlib',
+        'h5py',
+        'pip',
         'types-tabulate',
         'tables',
         'pyarrow'
@@ -153,9 +155,9 @@ setup(
     # Similar to `install_requires` above, these must be valid existing
     # projects.
     extras_require={  # Optional
-        'dev': ['h5py','pexpect', 'pytest', 
-                'pytest-env','Sphinx', 'sphinx-argparse', 
-                'sphinx-autoapi', 'mypy==0.931', 'typed-ast'],
+        'dev': ['pexpect', 'pytest', 'pytest-env',
+                'Sphinx', 'sphinx-argparse', 'sphinx-autoapi',
+                'mypy==0.931', 'typed-ast'],
     },
     # replace original install command with version that also builds
     # chapel and the arkouda server.

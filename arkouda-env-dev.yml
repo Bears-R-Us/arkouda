@@ -6,12 +6,17 @@ dependencies:
   - numpy>=1.16.5,<=1.21.5
   - pandas>=1.1.0
   - pyzmq>=20.0.0
+  - typeguard==2.10.0
   - tabulate
   - pyfiglet
   - versioneer
   - matplotlib
   - h5py
   - pip
+  - types-tabulate
+  - tables
+  - pyarrow
+
   # Developer dependencies
   - pexpect
   - pytest
@@ -22,7 +27,6 @@ dependencies:
   - typed-ast
   
   - pip:
-    - typeguard==2.10.0
     # Developer dependencies
     - mypy==0.931
   
