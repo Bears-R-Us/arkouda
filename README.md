@@ -172,17 +172,6 @@ This step only needs to be done once. Once dependencies are installed, you will 
 - HDF5
 - Arrow
 
-#### Arrow Dependencies
-The arrow install will fail unless supporting packages are installed. Please run the install below based on your package manager.
-
-```
-#using conda to install
-conda install boost-cpp snappy thrift-cpp re2 utf8proc
-
-#using pip
-pip install boost snappy thrift re2 utf8proc
-```
-
 ##### All Dependencies 
 
 `make install-deps`
@@ -199,6 +188,18 @@ make install-hdf5
 
 # Install Arrow Only
 make install-arrow
+```
+
+#### Arrow Install Troubleshooting
+
+Arrow should be installed without issue, but in some instances it is possible that the install will not all complete using the Chapel dependencies. If that occurs, install the following packages.
+
+```
+#using conda to install
+conda install boost-cpp snappy thrift-cpp re2 utf8proc
+
+#using pip
+pip install boost snappy thrift re2 utf8proc
 ```
 
 

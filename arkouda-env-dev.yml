@@ -17,12 +17,6 @@ dependencies:
   - types-tabulate
   - tables
   - pyarrow
-  - boost-cpp
-  - snappy
-  - thrift-cpp
-  - re2
-  - utf8proc
-  - cmake
 
   # Developer dependencies
   - pexpect
