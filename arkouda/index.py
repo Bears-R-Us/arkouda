@@ -1,6 +1,6 @@
+import pandas as pd  # type: ignore
 import json
-from typing import Optional
-from typing import cast as typecast
+from typing import cast as typecast, List, Union
 
 import pandas as pd  # type: ignore
 
@@ -12,27 +12,52 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import list_registry
 from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import arange, ones
+from arkouda.pdarraycreation import array, arange, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import concatenate, convert_if_categorical, get_callback, register
 
 
 class Index:
-    def __init__(self, index):
-        self.index = index
-        self.size = index.size
-        self.name: Optional[str] = None
+    def __init__(self, values: Union[List, pdarray, pd.Index, 'Index'], **kwargs):
+        if isinstance(values, Index):
+            self.values = values.values
+            self.size = values.size
+            self.dtype = values.dtype
+            self.name = values.name
+            return
+        elif isinstance(values, pd.Index):
+            self.values = array(values.values)
+            self.size = values.size
+            self.dtype = self.values.dtype
+            self.name = values.name
+            return
+        elif isinstance(values, List):
+            values = array(values)
+
+        self.values = values
+        self.size = values.size
+        self.dtype = values.dtype
+
+        if 'name' in kwargs:
+            self.name = kwargs['name']
+        else:
+            self.name = None
 
     def __getitem__(self, key):
         from arkouda.series import Series
 
-        if type(key) == Series:
+        if isinstance(key, Series):
             key = key.values
-        return Index(self.index[key])
+
+        if isinstance(key, int):
+            return self.values[key]
+
+        return Index(self.values[key])
 
     def __repr__(self):
-        return repr(self.index)
+        # Configured to match pandas
+        return f"Index({repr(self.index)}, dtype='{self.dtype}')"
 
     def __len__(self):
         return len(self.index)
@@ -41,6 +66,17 @@ class Index:
         if isinstance(v, Index):
             return self.index == v.index
         return self.index == v
+
+    @property
+    def index(self):
+        """
+        This is maintained to support older code
+        """
+        return self.values
+
+    @property
+    def shape(self):
+        return (self.size,)
 
     @staticmethod
     def factory(index):
@@ -53,7 +89,11 @@ class Index:
             return MultiIndex(index)
 
     def to_pandas(self):
-        val = convert_if_categorical(self.index)
+        val = convert_if_categorical(self.values)
+        return pd.Index(data=val.to_ndarray(), dtype=self.dtype, name=self.name)
+
+    def to_ndarray(self):
+        val = convert_if_categorical(self.values)
         return val.to_ndarray()
 
     def set_dtype(self, dtype):
@@ -61,12 +101,12 @@ class Index:
 
         Currently only aku.ip_address and ak.array are supported.
         """
-        new_idx = dtype(self.index)
-        self.index = new_idx
+        new_idx = dtype(self.values)
+        self.values = new_idx
         return self
 
     def register(self, label):
-        register(self.index, f"{label}_key")
+        register(self.values, f"{label}_key")
         self.name = label
         return 1
 
@@ -102,46 +142,46 @@ class Index:
     def _merge(self, other):
         self._check_types(other)
 
-        callback = get_callback(self.index)
-        idx = concatenate([self.index, other.index], ordered=False)
+        callback = get_callback(self.values)
+        idx = concatenate([self.values, other.values], ordered=False)
         return Index(callback(unique(idx)))
 
-    def _merge_all(self, array):
-        idx = self.index
+    def _merge_all(self, idx_list):
+        idx = self.values
         callback = get_callback(idx)
 
-        for other in array:
+        for other in idx_list:
             self._check_types(other)
-            idx = concatenate([idx, other.index], ordered=False)
+            idx = concatenate([idx, other.values], ordered=False)
 
         return Index(callback(unique(idx)))
 
     def _check_aligned(self, other):
         self._check_types(other)
         length = len(self)
-        return len(other) == length and (self == other.index).sum() == length
+        return len(other) == length and (self == other.values).sum() == length
 
     def argsort(self, ascending=True):
         if not ascending:
-            if isinstance(self.index, pdarray) and self.index.dtype in (akint64, akfloat64):
-                i = argsort(-self.index)
+            if isinstance(self.values, pdarray) and self.dtype in (akint64, akfloat64):
+                i = argsort(-self.values)
             else:
-                i = argsort(self.index)[arange(self.index.size - 1, -1, -1)]
+                i = argsort(self.values)[arange(self.size - 1, -1, -1)]
         else:
-            i = argsort(self.index)
+            i = argsort(self.values)
         return i
 
     def concat(self, other):
         self._check_types(other)
 
-        idx = concatenate([self.index, other.index], ordered=True)
+        idx = concatenate([self.values, other.values], ordered=True)
         return Index(idx)
 
     def lookup(self, key):
         if not isinstance(key, pdarray):
             raise TypeError("Lookup must be on an arkouda array")
 
-        return in1d(self.index, key)
+        return in1d(self.values, key)
 
     def save(
         self,
@@ -241,26 +281,26 @@ class Index:
             str,
             generic_msg(
                 cmd=cmd,
-                args=f"{self.index.name} {dataset} {m} {json_array} "
-                f"{self.index.dtype} {strings_placeholder} {compressed}",
+                args=f"{self.values.name} {dataset} {m} {json_array} "
+                f"{self.dtype} {strings_placeholder} {compressed}",
             ),
         )
 
 
 class MultiIndex(Index):
-    def __init__(self, index):
-        if not (isinstance(index, list) or isinstance(index, tuple)):
+    def __init__(self, values):
+        if not (isinstance(values, list) or isinstance(values, tuple)):
             raise TypeError("MultiIndex should be an iterable")
-        self.index = index
+        self.values = values
         first = True
-        for col in self.index:
+        for col in self.values:
             if first:
                 self.size = col.size
                 first = False
             else:
                 if col.size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
-        self.levels = len(self.index)
+        self.levels = len(self.values)
 
     def __getitem__(self, key):
         from arkouda.series import Series
@@ -282,6 +322,10 @@ class MultiIndex(Index):
             retval &= a == b
 
         return retval
+
+    @property
+    def index(self):
+        return self.values
 
     def to_pandas(self):
         idx = [convert_if_categorical(i) for i in self.index]
