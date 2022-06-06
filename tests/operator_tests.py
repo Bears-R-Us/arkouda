@@ -399,7 +399,7 @@ class OperatorsTest(ArkoudaTest):
         # Test ak,histogram against unsupported dtype
         # with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(RuntimeError) as cm:
             ak.concatenate([ak.array([True]),ak.array([True])]).is_sorted()
 
         with self.assertRaises(TypeError):
