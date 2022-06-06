@@ -344,12 +344,6 @@ class GroupByTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             self.igb.max(ak.randint(0, 1, 10, dtype=bool))
 
-        with self.assertRaises(TypeError):
-            self.igb.argmin(ak.randint(0, 1, 10, dtype=bool))
-
-        with self.assertRaises(TypeError):
-            self.igb.argmax(ak.randint(0, 1, 10, dtype=bool))
-
     def test_aggregate_strings(self):
         s = ak.array(["a", "b", "a", "b", "c"])
         i = ak.arange(s.size)
