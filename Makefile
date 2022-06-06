@@ -123,7 +123,7 @@ install-arrow:
 	rm -rf $(ARROW_BUILD_DIR) $(ARROW_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
 	cd $(DEP_BUILD_DIR) && curl -sL $(ARROW_LINK) | tar xz
-	cd $(ARROW_BUILD_DIR)/cpp && cmake -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON $(ARROW_OPTIONS) . && make && make install
+	cd $(ARROW_BUILD_DIR)/cpp && cmake -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON $(ARROW_OPTIONS) . && make && make install
 	rm -rf $(ARROW_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
 

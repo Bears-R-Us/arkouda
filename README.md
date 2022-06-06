@@ -163,10 +163,47 @@ sh /opt/cmake-$CM_VERSION-Linux-x86_64.sh --skip-license --include-subdir
 export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
 ```
 
-# If zmq and hdf5 have not been installed previously, execute make install-deps
-make install-deps
+### Install Dependencies
+This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can installl all dependencies with a single command or install individually for a customized build.
+
+#### Dependencies
+
+- ZMQ
+- HDF5
+- Arrow
+
+##### All Dependencies 
+
+`make install-deps`
+
+#### Individual Installs
+
+```
+# Install ZMQ Only
+make install-zmq
+
+# Install HDF5 Only
+make install-hdf5
+
+# Install Arrow Only
+make install-arrow
+```
+
+#### Arrow Install Troubleshooting
+
+Arrow should be installed without issue, but in some instances it is possible that the install will not all complete using the Chapel dependencies. If that occurs, install the following packages.
+
+```
+#using conda to install
+conda install boost-cpp snappy thrift-cpp re2 utf8proc
+
+#using pip
+pip install boost snappy thrift re2 utf8proc
+```
+
 
 # Run make to build the arkouda_server executable
+```
 make
 ```
 
