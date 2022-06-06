@@ -17306,7 +17306,7 @@ Attributes
 
 
 
-.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]] = None)
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List]] = None)
 
    One-dimensional arkouda array with axis labels.
 
@@ -17497,6 +17497,23 @@ Attributes
       :rtype: bool
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`
+
+
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Return a Series instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg:
+                     + delimited string containing the values and indexes
+      :type repMsg: str
+
+      :returns: A Series representing a set of pdarray components on the server
+      :rtype: Series
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the Series instance
 
 
    .. py:method:: _all_aligned(array)

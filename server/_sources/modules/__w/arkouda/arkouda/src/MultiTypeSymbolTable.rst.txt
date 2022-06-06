@@ -264,6 +264,18 @@ or
       :returns: bool signifying existance of the sym entry
       
 
+   .. method:: proc findAll(pattern: string): [] string throws
+
+      
+      Attempts to find all sym entries that match the provided regex string, then 
+      returns a string array of matching names
+      
+      :arg pattern: regex string to search for
+      :type pattern: string
+      
+      :returns: string array containing matching entry names
+      
+
 .. function:: proc getGenericTypedArrayEntry(name: string, st: borrowed SymTab): borrowed GenSymEntry throws
 
    *
