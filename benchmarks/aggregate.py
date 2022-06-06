@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
-import time, argparse
+import argparse
+import time
+
 import arkouda as ak
 
-BOOLOPS = ('any', 'all')
+BOOLOPS = ("any", "all")
+
 
 def generate_arrays(N, seed):
     # Sort keys so that aggregations will not have to permute values
     # We just want to measure aggregation time, not gather
     keys = ak.sort(ak.randint(0, 2**32, N, seed=seed))
-    if seed is not None: seed += 1
+    if seed is not None:
+        seed += 1
     intvals = ak.randint(0, 2**16, N, seed=seed)
     boolvals = (intvals % 2) == 0
     return keys, intvals, boolvals
+
 
 def time_ak_aggregate(N_per_locale, trials, seed):
     print(">>> arkouda aggregate")
@@ -36,7 +41,8 @@ def time_ak_aggregate(N_per_locale, trials, seed):
         tavg = sum(timings) / trials
         print("Aggregate {} Average time = {:.4f} sec".format(op, tavg))
         bytes_per_sec = totalbytes / tavg
-        print("Aggregate {} Average rate = {:.4f} GiB/sec".format(op, bytes_per_sec/2**30))
+        print("Aggregate {} Average rate = {:.4f} GiB/sec".format(op, bytes_per_sec / 2**30))
+
 
 def check_correctness():
     keys = ak.arange(1000) % 10
@@ -52,20 +58,40 @@ def check_correctness():
             res = g.aggregate((ones == 1), op)[1]
         else:
             res = g.aggregate(ones, op)[1]
-        assert (res.size == g.unique_keys.size)
+        assert res.size == g.unique_keys.size
+
 
 def create_parser():
-    parser = argparse.ArgumentParser(description="Measure performance of aggregations on grouped arrays.")
-    parser.add_argument('hostname', help='Hostname of arkouda server')
-    parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: total length of all arrays to group')
-    parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
-    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
-    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
+    parser = argparse.ArgumentParser(
+        description="Measure performance of aggregations on grouped arrays."
+    )
+    parser.add_argument("hostname", help="Hostname of arkouda server")
+    parser.add_argument("port", type=int, help="Port of arkouda server")
+    parser.add_argument(
+        "-n",
+        "--size",
+        type=int,
+        default=10**8,
+        help="Problem size: total length of all arrays to group",
+    )
+    parser.add_argument(
+        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+    )
+    parser.add_argument(
+        "--correctness-only",
+        default=False,
+        action="store_true",
+        help="Only check correctness, not performance.",
+    )
+    parser.add_argument(
+        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+    )
     return parser
+
 
 if __name__ == "__main__":
     import sys
+
     parser = create_parser()
     args = parser.parse_args()
     ak.verbose = False
