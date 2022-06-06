@@ -394,7 +394,7 @@ Functions
       :rtype: pandas.DataFrame
 
 
-   .. py:method:: save(self, path, index=False)
+   .. py:method:: save(self, path, index=False, columns=None, file_format='HDF5')
 
       Save DataFrame to disk, preserving column names.
 
@@ -402,6 +402,10 @@ Functions
       :type path: str
       :param index: If True, save the index column. By default, do not save the index.
       :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
+      :type file_format: str
 
       .. rubric:: Notes
 
@@ -410,26 +414,11 @@ Functions
       locale number.
 
 
-   .. py:method:: save_table(self, prefix_path, columns=None, index=False, file_format='HDF5')
-
-      Save a dataframe as a table in Parquet
-
-      :param prefix_path: Path and filename prefix to save to
-      :type prefix_path: str
-      :param columns: List of columns to include in the file. If None, writes out all columns
-      :type columns: List
-      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
-      :type file_format: str
-      :param index: If true, include the index values in the save file.
-      :type index: Bool
-
-      .. rubric:: Notes
-
-      This function currently uses 'truncate' mode to ensure the file exists before appending.
-
-
-   .. py:method:: load_table(cls, prefix_path, file_format='INFER')
+   .. py:method:: load(cls, prefix_path, file_format='INFER')
       :classmethod:
+
+      Load dataframe from file
+      file_format needed for consistency with other load functions
 
 
    .. py:method:: argsort(self, key, ascending=True)
