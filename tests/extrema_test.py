@@ -172,3 +172,15 @@ class ArgMaxKTest(ArkoudaTest):
 
         with self.assertRaises(ValueError):
             ak.argmaxk(ak.array([]), 1)
+
+class ArgMinTest(ArkoudaTest):
+    def test_argmin(self):
+        np_arr = np.array([False, False, True, True, False])
+        ak_arr = ak.array(np_arr)
+        self.assertTrue(np_arr.argmin() == ak_arr.argmin())
+
+class ArgMaxTest(ArkoudaTest):
+    def test_argmax(self):
+        np_arr = np.array([False, False, True, True, False])
+        ak_arr = ak.array(np_arr)
+        self.assertTrue(np_arr.argmax() == ak_arr.argmax())

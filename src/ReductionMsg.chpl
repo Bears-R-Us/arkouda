@@ -241,6 +241,14 @@ module ReductionMsg
                         if (| reduce e.a) { val = "True"; } else { val = "False"; }
                         repMsg = "bool %s".format(val);
                     }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        repMsg = "int64 %i".format(maxLoc);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        repMsg = "int64 %i".format(minLoc);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -485,6 +493,14 @@ module ReductionMsg
                       var res = segMean(values.a, segments.a);
                       st.addEntry(rname, new shared SymEntry(res));
                    }
+                   when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
                    otherwise {
                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
