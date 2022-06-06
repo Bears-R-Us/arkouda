@@ -1,9 +1,11 @@
-import pandas as pd  # type: ignore
 import json
-from typing import cast as typecast, List, Union
+from typing import List, Union, Optional, SupportsInt
+from typing import cast as typecast
 
+import numpy as np
 import pandas as pd  # type: ignore
 
+from arkouda import Strings
 from arkouda.alignment import in1dmulti
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
@@ -12,37 +14,34 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import list_registry
 from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import array, arange, ones
+from arkouda.pdarraycreation import arange, array, ones
 from arkouda.pdarraysetops import argsort, in1d
 from arkouda.sorting import coargsort
 from arkouda.util import concatenate, convert_if_categorical, get_callback, register
 
 
 class Index:
-    def __init__(self, values: Union[List, pdarray, pd.Index, 'Index'], **kwargs):
+    def __init__(self, values: Union[List, pdarray, Strings, pd.Index, "Index"], name: Optional[str] = None):
         if isinstance(values, Index):
-            self.values = values.values
-            self.size = values.size
-            self.dtype = values.dtype
-            self.name = values.name
+            # Typing added here for MyPy
+            self.values: Union[pdarray, Strings] = values.values
+            self.size: SupportsInt = values.size
+            self.dtype: np.dtype = values.dtype
+            self.name: Optional[str] = name if name else values.name
             return
         elif isinstance(values, pd.Index):
             self.values = array(values.values)
             self.size = values.size
             self.dtype = self.values.dtype
-            self.name = values.name
+            self.name = name if name else values.name
             return
         elif isinstance(values, List):
             values = array(values)
 
         self.values = values
-        self.size = values.size
-        self.dtype = values.dtype
-
-        if 'name' in kwargs:
-            self.name = kwargs['name']
-        else:
-            self.name = None
+        self.size = self.values.size
+        self.dtype = self.values.dtype
+        self.name = name
 
     def __getitem__(self, key):
         from arkouda.series import Series
