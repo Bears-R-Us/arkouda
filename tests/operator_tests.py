@@ -408,7 +408,7 @@ class OperatorsTest(ArkoudaTest):
         with self.assertRaises(AttributeError):
             ak.unique(list(range(0, 10)))
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             ak.concatenate([ak.ones(100), ak.array([True])])
 
     def test_str_repr(self):
