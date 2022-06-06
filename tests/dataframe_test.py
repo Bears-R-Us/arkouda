@@ -5,7 +5,6 @@ import string
 from shutil import rmtree
 
 import pandas as pd  # type: ignore
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
