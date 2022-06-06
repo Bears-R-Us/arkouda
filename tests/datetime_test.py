@@ -1,10 +1,9 @@
-import logging
-
-import pandas as pd
 from base_test import ArkoudaTest
 
 import arkouda as ak
 
+import pandas as pd
+import logging
 
 def build_op_table():
     ALL_OPS = ak.pdarray.BinOps - set(("<<<", ">>>"))
