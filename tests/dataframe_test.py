@@ -5,7 +5,6 @@ import string
 from shutil import rmtree
 
 import pandas as pd  # type: ignore
-import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -451,8 +450,10 @@ class DataFrameTest(ArkoudaTest):
         df_copy.__setitem__("userID", ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
 
-    def test_save_table(self):
+    def test_save(self):
         d = f"{os.getcwd()}/save_table_test"
+        if os.path.exists(d):
+            rmtree(d)
         i = list(range(3))
         c1 = [9, 7, 17]
         c2 = [2, 4, 6]
@@ -470,21 +471,24 @@ class DataFrameTest(ArkoudaTest):
 
         # make directory to save to so pandas read works
         os.mkdir(d)
-        akdf.save_table(f"{d}/testName", file_format="Parquet")
+        akdf.save(f"{d}/testName", file_format="Parquet")
 
-        ak_loaded = ak.DataFrame.load_table(f"{d}/testName")
+        ak_loaded = ak.DataFrame.load(f"{d}/testName")
         self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
 
         # test save with index true
-        akdf.save_table(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
+        akdf.save(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
         self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()["numLocales"])
 
-        # Commenting the read into pandas out because it requires optional libraries
-        # pddf = pd.read_parquet("save_table_test", engine='pyarrow')
-        # self.assertTrue(pddf.equals(validation_df))
+        # Test for df having seg array col
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
+        df.save(f"{d}/seg_test.h5")
+        self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()["numLocales"])
+        ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
+        self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
         # clean up test files
-        rmtree("save_table_test/")
+        rmtree(d)
 
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})

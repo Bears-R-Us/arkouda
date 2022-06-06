@@ -1277,7 +1277,7 @@ class DataFrame(UserDict):
         else:
             return pd.DataFrame(data=pandas_data)
 
-    def save(self, path, index=False):
+    def save(self, path, index=False, columns=None, file_format="HDF5"):
         """
         Save DataFrame to disk, preserving column names.
 
@@ -1287,34 +1287,16 @@ class DataFrame(UserDict):
             File path to save data
         index : bool
             If True, save the index column. By default, do not save the index.
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        file_format: str
+            'HDF5' or 'Parquet'. Defaults to 'HDF5'
 
         Notes
         -----
         This method saves one file per locale of the arkouda server. All
         files are prefixed by the path argument and suffixed by their
         locale number.
-        """
-        tosave = {k: v for k, v in self.data.items() if (index or k != "index")}
-        save_all(tosave, path)
-
-    def save_table(self, prefix_path, columns=None, index=False, file_format="HDF5"):
-        """
-        Save a dataframe as a table in Parquet
-
-        Parameters
-        __________
-        prefix_path: str
-            Path and filename prefix to save to
-        columns: List
-            List of columns to include in the file. If None, writes out all columns
-        file_format: str
-            'HDF5' or 'Parquet'. Defaults to 'HDF5'
-        index: Bool
-            If true, include the index values in the save file.
-
-        Notes
-        ______
-        This function currently uses 'truncate' mode to ensure the file exists before appending.
         """
         # if no columns are stored, we will save all columns
         if columns is None:
@@ -1324,16 +1306,39 @@ class DataFrame(UserDict):
 
         if index:
             data["Index"] = self.index
-        save_all(data, prefix_path=prefix_path, file_format=file_format)
+        save_all(data, prefix_path=path, file_format=file_format)
 
     @classmethod
-    def load_table(cls, prefix_path, file_format="INFER"):
+    def load(cls, prefix_path, file_format="INFER"):
+        """
+        Load dataframe from file
+        file_format needed for consistency with other load functions
+        """
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
 
         # columns load backwards
-        df = cls(load_all(prefix_path, file_format=filetype))
+        df_dict = load_all(prefix_path, file_format=filetype)
+
+        # this assumes segments will always have corresponding values.
+        # This should happen due to save config
+        seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith("_segments")]
+        df_dict_keys = [
+            col.split("_")[0] if col.endswith("_segments") or col.endswith("_values") else col
+            for col in df_dict.keys()
+        ]
+
+        # update dict to contain segarrays where applicable if any exist
+        if len(seg_cols) > 0:
+            df_dict = {
+                col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
+                if col in seg_cols
+                else df_dict[col]
+                for col in df_dict_keys
+            }
+
+        df = cls(df_dict)
         if filetype == "HDF5":
             return df
         else:
