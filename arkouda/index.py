@@ -273,7 +273,7 @@ class MultiIndex(Index):
         return len(self.index[0])
 
     def __eq__(self, v):
-        if type(v) != list and type(v) != tuple:
+        if not isinstance(v, (list, tuple, MultiIndex)):
             raise TypeError("Cannot compare MultiIndex to a scalar")
         retval = ones(len(self), dtype=akbool)
         if isinstance(v, MultiIndex):
