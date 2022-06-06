@@ -1,7 +1,6 @@
-import pandas
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 
 class SegArrayTest(ArkoudaTest):
     def test_creation(self):
@@ -11,23 +10,26 @@ class SegArrayTest(ArkoudaTest):
 
         flat = a + b + c
         akflat = ak.array(flat)
-        segments = ak.array([0, len(a), len(a)+len(b)])
+        segments = ak.array([0, len(a), len(a) + len(b)])
         segarr = ak.SegArray(segments, akflat)
 
         self.assertIsInstance(segarr, ak.SegArray)
         self.assertTrue((segarr._get_lengths() == ak.array([6, 2, 4])).all())
-        self.assertEqual(segarr.__str__(), f'SegArray([\n{a}\n{b}\n{c}\n])'.replace(',', ''))
-        self.assertEqual(segarr.__getitem__(1).__str__(), str(b).replace(',', ''))
-        self.assertEqual(segarr.__getitem__(ak.array([1, 2])).__str__(),
-                         f'SegArray([\n{b}\n{c}\n])'.replace(',', ''))
+        self.assertEqual(segarr.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
+        self.assertEqual(segarr.__getitem__(1).__str__(), str(b).replace(",", ""))
+        self.assertEqual(
+            segarr.__getitem__(ak.array([1, 2])).__str__(), f"SegArray([\n{b}\n{c}\n])".replace(",", "")
+        )
         self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
         self.assertTrue(segarr.__eq__(segarr).all())
 
-        multi_pd = ak.SegArray.from_multi_array([ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32])])
+        multi_pd = ak.SegArray.from_multi_array(
+            [ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32])]
+        )
         self.assertIsInstance(multi_pd, ak.SegArray)
-        self.assertEqual(multi_pd.__str__(), f'SegArray([\n[10 11 12]\n[20 21 22]\n[30 31 32]\n])')
+        self.assertEqual(multi_pd.__str__(), "SegArray([\n[10 11 12]\n[20 21 22]\n[30 31 32]\n])")
         with self.assertRaises(TypeError):
-            segarr.__getitem__('a')
+            segarr.__getitem__("a")
 
     def test_creation_empty_segment(self):
         a = [10, 11]
@@ -50,7 +52,7 @@ class SegArrayTest(ArkoudaTest):
 
         # test empty as last
         flat = ak.array(a + b + c)
-        segs = ak.array([0, len(a), len(a)+len(b), len(a)+len(b)+len(c)])
+        segs = ak.array([0, len(a), len(a) + len(b), len(a) + len(b) + len(c)])
         segarr = ak.SegArray(segs, flat)
         self.assertIsInstance(segarr, ak.SegArray)
         self.assertListEqual(segarr.lengths.to_ndarray().tolist(), [2, 3, 1, 0])
@@ -68,12 +70,12 @@ class SegArrayTest(ArkoudaTest):
         segarr_2 = ak.SegArray(ak.array([0]), ak.array(c))
 
         concated = ak.SegArray.concat([segarr, segarr_2])
-        self.assertEqual(concated.__str__(), f'SegArray([\n{a}\n{b}\n{c}\n])'.replace(',', ''))
+        self.assertEqual(concated.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
 
-        #test concat with empty segments
+        # test concat with empty segments
         empty_segs = ak.SegArray(ak.array([0, 2, 2]), ak.array(b + c))
         concated = ak.SegArray.concat([segarr, empty_segs])
-        self.assertEqual(concated.__str__(), f'SegArray([\n{a}\n{b}\n{b}\n[]\n{c}\n])'.replace(',', ''))
+        self.assertEqual(concated.__str__(), f"SegArray([\n{a}\n{b}\n{b}\n[]\n{c}\n])".replace(",", ""))
 
         flat = ak.array(a)
         segs = ak.array([0, len(a)])
@@ -101,13 +103,24 @@ class SegArrayTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             concated = ak.SegArray.concat([segarr, segarr_2], axis=5)
 
-        multi_pd = ak.SegArray.from_multi_array([ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32])])
-        multi_pd2 = ak.SegArray.from_multi_array([ak.array([13, 23, 33]), ak.array([14, 24, 34]), ak.array([15, 25, 35])])
+        multi_pd = ak.SegArray.from_multi_array(
+            [ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32])]
+        )
+        multi_pd2 = ak.SegArray.from_multi_array(
+            [ak.array([13, 23, 33]), ak.array([14, 24, 34]), ak.array([15, 25, 35])]
+        )
         concated = ak.SegArray.concat([multi_pd, multi_pd2], axis=1)
 
-        test = ak.SegArray.from_multi_array([ak.array([10, 20, 30]), ak.array([11, 21, 31]), ak.array([12, 22, 32]),
-                                             ak.array([13, 23, 33]), ak.array([14, 24, 34]), ak.array([15, 25, 35])
-                                             ])
+        test = ak.SegArray.from_multi_array(
+            [
+                ak.array([10, 20, 30]),
+                ak.array([11, 21, 31]),
+                ak.array([12, 22, 32]),
+                ak.array([13, 23, 33]),
+                ak.array([14, 24, 34]),
+                ak.array([15, 25, 35]),
+            ]
+        )
 
         self.assertEqual(concated.__str__(), test.__str__())
 
@@ -118,7 +131,7 @@ class SegArrayTest(ArkoudaTest):
 
         flat = a + b + c
         akflat = ak.array(flat)
-        segments = ak.array([0, len(a), len(a)+len(b)])
+        segments = ak.array([0, len(a), len(a) + len(b)])
 
         segarr = ak.SegArray(segments, akflat)
 
@@ -258,22 +271,24 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
 
         segarr.set_jth(0, 1, 99)
-        self.assertEqual(segarr[0].__str__(), f'{a}'.replace(',', '').replace('11', '99'))
+        self.assertEqual(segarr[0].__str__(), f"{a}".replace(",", "").replace("11", "99"))
 
         segarr.set_jth(ak.array([0, 1, 2]), 0, 99)
-        self.assertEqual(segarr[0].__str__(), f'{a}'.replace(',', '').replace('10', '99').replace('11', '99'))
-        self.assertEqual(segarr[1].__str__(), f'{b}'.replace(',', '').replace('20', '99'))
-        self.assertEqual(segarr[2].__str__(), f'{c}'.replace(',', '').replace('30', '99'))
+        self.assertEqual(
+            segarr[0].__str__(), f"{a}".replace(",", "").replace("10", "99").replace("11", "99")
+        )
+        self.assertEqual(segarr[1].__str__(), f"{b}".replace(",", "").replace("20", "99"))
+        self.assertEqual(segarr[2].__str__(), f"{c}".replace(",", "").replace("30", "99"))
 
         with self.assertRaises(ValueError):
             segarr.set_jth(1, 4, 999)
 
-        s = ak.array(['abc', '123'])
+        s = ak.array(["abc", "123"])
         s_segments = ak.array([0])
         segarr = ak.SegArray(s_segments, s)
 
         with self.assertRaises(TypeError):
-            segarr.set_jth(0, 0, 'test')
+            segarr.set_jth(0, 0, "test")
 
     def test_get_length_n(self):
         a = [10, 11, 12, 13, 14, 15]
@@ -359,7 +374,7 @@ class SegArrayTest(ArkoudaTest):
 
         # Test with empty segments
         flat = ak.array(a + b)
-        segs = ak.array([0, len(a), len(a)+len(b)])
+        segs = ak.array([0, len(a), len(a) + len(b)])
         segarr = ak.SegArray(segs, flat)
         appended = segarr.append(segarr2)
         self.assertEqual(appended.segments.size, 5)
@@ -412,7 +427,7 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(appended[1].tolist(), [99] + b)
         self.assertListEqual(appended[2].tolist(), [99] + c)
 
-        #test with empty segment
+        # test with empty segment
         flat = ak.array(a + b)
         segs = ak.array([0, len(a), len(a) + len(b)])
         segarr = ak.SegArray(segs, flat)
@@ -440,7 +455,7 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[1].tolist(), list(set(b)))
 
         # test with empty segments
-        segments = ak.array([0, len(a), len(a), len(a)+len(b)])
+        segments = ak.array([0, len(a), len(a), len(a) + len(b)])
         segarr = ak.SegArray(segments, flat)
         dedup = segarr.remove_repeats()
         print(dedup.lengths)
@@ -450,7 +465,7 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(dedup[2].tolist(), list(set(b)))
         self.assertListEqual(dedup[3].tolist(), [])
 
-        segments = ak.array([0, len(a), len(a), len(a), len(a)+len(b)])
+        segments = ak.array([0, len(a), len(a), len(a), len(a) + len(b)])
         segarr = ak.SegArray(segments, flat)
         dedup = segarr.remove_repeats()
         self.assertListEqual(dedup.lengths.to_ndarray().tolist(), [3, 0, 0, 3, 0])
@@ -481,8 +496,8 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(intx[0].tolist(), [1, 2, 4])
         self.assertListEqual(intx[1].tolist(), [])
 
-        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a+c))
-        segarr_2 = ak.SegArray(ak.array([0, len(d)]), ak.array(d+c))
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + c))
+        segarr_2 = ak.SegArray(ak.array([0, len(d)]), ak.array(d + c))
         intx = segarr.intersect(segarr_2)
         self.assertListEqual(intx.lengths.to_ndarray().tolist(), [0, 3])
         self.assertListEqual(intx[0].tolist(), [])
@@ -537,8 +552,8 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(diff[0].tolist(), [3, 5])
         self.assertListEqual(diff[1].tolist(), [])
 
-        segarr = ak.SegArray(ak.array([0, len(a), len(a)]), ak.array(a+a))
-        segarr_2 = ak.SegArray(ak.array([0, len(c), len(c+c)]), ak.array(c + c + c))
+        segarr = ak.SegArray(ak.array([0, len(a), len(a)]), ak.array(a + a))
+        segarr_2 = ak.SegArray(ak.array([0, len(c), len(c + c)]), ak.array(c + c + c))
         diff = segarr_2.setdiff(segarr)
         self.assertListEqual(diff.lengths.to_ndarray().tolist(), [0, 3, 0])
         self.assertListEqual(diff[0].tolist(), [])
@@ -566,8 +581,8 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor[0].tolist(), [3, 4])
         self.assertListEqual(xor[1].tolist(), [8, 12, 13])
 
-        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a+a))
-        segarr_2 = ak.SegArray(ak.array([0, len(a)]), ak.array(a+c))
+        segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + a))
+        segarr_2 = ak.SegArray(ak.array([0, len(a)]), ak.array(a + c))
         xor = segarr.setxor(segarr_2)
         self.assertListEqual(xor.lengths.to_ndarray().tolist(), [0, 2])
         self.assertListEqual(xor[0].tolist(), [])
@@ -578,14 +593,18 @@ class SegArrayTest(ArkoudaTest):
         b = [6, 7, 8]
 
         segarr = ak.SegArray(ak.array([0, len(a)]), ak.array(a + b))
-        #register the seg array
-        segarr.register('segarrtest')
+        # register the seg array
+        segarr.register("segarrtest")
 
-        segarr_2 = ak.SegArray.attach('segarrtest')
+        segarr_2 = ak.SegArray.attach("segarrtest")
 
         self.assertEqual(segarr.size, segarr_2.size)
-        self.assertListEqual(segarr.lengths.to_ndarray().tolist(), segarr_2.lengths.to_ndarray().tolist())
-        self.assertListEqual(segarr.segments.to_ndarray().tolist(), segarr_2.segments.to_ndarray().tolist())
+        self.assertListEqual(
+            segarr.lengths.to_ndarray().tolist(), segarr_2.lengths.to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            segarr.segments.to_ndarray().tolist(), segarr_2.segments.to_ndarray().tolist()
+        )
         self.assertListEqual(segarr.values.to_ndarray().tolist(), segarr_2.values.to_ndarray().tolist())
 
         # Verify is_registered
