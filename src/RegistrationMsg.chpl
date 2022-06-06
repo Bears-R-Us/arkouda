@@ -220,6 +220,64 @@ module RegistrationMsg
     }
 
     /* 
+    Compile the component parts of a Series attach message 
+
+    :arg cmd: calling command 
+    :type cmd: string 
+
+    :arg name: name of SymTab element
+    :type name: string
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: MsgTuple response message
+    */
+    proc attachSeriesMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                            "%s: Collecting Series components for '%s'".format(cmd, name));
+
+        var repMsg: string;
+
+        var ind = "";
+
+        // if Series matches MultiIndex format
+        if st.contains("%s_key_0".format(name)) {
+            var nameList = st.findAll("%s_key_\\d".format(name));
+            nameList = nameList.sorted();  // Sort the list to return the indexes in order from 0 to N
+            for regName in nameList {
+                var entry = st.attrib(regName);
+                if (regName.startsWith("Error:")) { 
+                    var errorMsg = regName;
+                    regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR); 
+                }
+                ind += "+created %s".format(entry);
+            }
+        }
+        else {  // Series only contains one key for index
+            ind = st.attrib("%s_key".format(name));
+            if (ind.startsWith("Error:")) { 
+                var errorMsg = ind;
+                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR); 
+            }
+            ind = "+created %s".format(ind);
+        }
+
+        var vals = st.attrib("%s_value".format(name));
+        if (vals.startsWith("Error:")) { 
+            var errorMsg = vals;
+            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }
+
+        repMsg = "series+created %s%s".format(vals, ind);
+
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    /* 
     Parse, execute, and respond to a generic attach message
 
     :arg cmd: calling command 
@@ -254,6 +312,8 @@ module RegistrationMsg
             } else if st.contains("%s_segments".format(name)) && st.contains("%s_values".format(name)) {
                 // Important to note that categorical has a .segments while segarray uses _segments
                 dtype = "segarray";
+            } else if st.contains("%s_value".format(name)) && (st.contains("%s_key".format(name)) || st.contains("%s_key_0".format(name))) {
+                dtype = "series";
             } else {
                 throw getErrorWithContext(
                                     msg="Unable to determine type for given name: %s".format(name),
@@ -281,6 +341,9 @@ module RegistrationMsg
             }
             when ("segarray") {
                 return attachSegArrayMsg(cmd, name, st);
+            }
+            when ("series") {
+                return attachSeriesMsg(cmd, name, st);
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 

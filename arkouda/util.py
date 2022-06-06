@@ -4,10 +4,10 @@ from typing import Mapping, Union, cast
 
 import h5py  # type: ignore
 import numpy as np  # type: ignore
-
 from arkouda import SegArray
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
+from arkouda import Strings, SegArray
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import AllSymbols, information
@@ -281,6 +281,10 @@ def attach(name: str, dtype: str = "infer"):
         return Categorical.from_return_msg(repMsg)
     elif repMsg.split("+")[0] == "segarray":
         return SegArray.from_return_msg(repMsg)
+    elif repMsg.split("+")[0] == "series":
+        from arkouda.series import Series
+
+        return Series.from_return_msg(repMsg)
     else:
         dtype = repMsg.split()[2]
 
