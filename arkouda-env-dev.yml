@@ -14,7 +14,7 @@ dependencies:
   - h5py
   - pip
   - types-tabulate
-  - pytables
+  - pytables>=3.7.0
   - pyarrow
 
   # Developer dependencies

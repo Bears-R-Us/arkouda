@@ -142,7 +142,7 @@ setup(
         'h5py',
         'pip',
         'types-tabulate',
-        'tables',
+        'tables>=3.7.0',
         'pyarrow'
     ],
 
