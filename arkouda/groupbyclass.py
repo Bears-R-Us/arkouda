@@ -1486,7 +1486,7 @@ def broadcast(
     else:
         pname = permutation.name
         permute = True
-        size = permutation.size
+        size = cast(permutation.size,Union[int, np.int64, np.uint64])
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
