@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Sequence, cast
+from typing import List, Sequence, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -1864,7 +1864,7 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return np.float64(pda.sum()) / pda.size
+    return np.float64(cast(Union[int, np.int64, np.uint64,np.float64],pda.sum())) / pda.size
 
 
 @typechecked
