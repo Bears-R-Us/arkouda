@@ -263,7 +263,7 @@ def numpy_to_arkouda(
     B = read(f"{tmp_dir}/{rng}.hdf5", "arr")
     os.remove(f"{tmp_dir}/{rng}.hdf5")
 
-    return array(B)
+    return B
 
 
 def convert_if_categorical(values):
