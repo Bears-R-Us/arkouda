@@ -1,10 +1,11 @@
 import datetime
 from typing import Union
+from warnings import warn
 
 import numpy as np  # type: ignore
 from pandas import Series  # type: ignore
-from pandas import Timedelta as pdTimedelta  # type: ignore
 from pandas import Timestamp  # type: ignore
+from pandas import Timedelta as pdTimedelta  # type: ignore
 from pandas import date_range as pd_date_range  # type: ignore
 from pandas import timedelta_range as pd_timedelta_range  # type: ignore
 from pandas import to_datetime, to_timedelta  # type: ignore
@@ -14,8 +15,6 @@ from arkouda.numeric import abs as akabs
 from arkouda.numeric import cast
 from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import from_series
-
-from warnings import warn
 
 _BASE_UNIT = "ns"
 
@@ -593,10 +592,14 @@ def date_range(
 
     """
     if closed is not None:
-        warn("closed has been deprecated. Please use the inclusive parameter instead.", DeprecationWarning)
+        warn(
+            "closed has been deprecated. Please use the inclusive parameter instead.", DeprecationWarning
+        )
         inclusive = closed
 
-    return Datetime(pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs))
+    return Datetime(
+        pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs)
+    )
 
 
 def timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs):
