@@ -367,4 +367,4 @@ git push --tags
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-If you'd like to contribute, please see [CONTRIBUTING.md](CONTRIBUTING.md).
+If you'd like to contribute, we'd love to have you! Before jumping in and adding issues or writing code, please see [CONTRIBUTING.md](CONTRIBUTING.md).
