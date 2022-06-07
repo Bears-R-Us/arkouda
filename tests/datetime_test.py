@@ -293,10 +293,10 @@ class DatetimeTest(ArkoudaTest):
             "W": ("weeks", "w", "week"),
             "D": ("days", "d", "day"),
             "h": ("hours", "H", "hr", "hrs"),
-            "T": ("minutes", "minute", "min", "m"),
-            "L": ("milliseconds", "millisecond", "milli", "ms", "l"),
-            "U": ("microseconds", "microsecond", "micro", "us", "u"),
-            "N": ("nanoseconds", "nanosecond", "nano", "ns", "n"),
+            "m": ("minutes", "minute", "min", "m"),
+            "ms": ("milliseconds", "millisecond", "milli", "ms", "l"),
+            "us": ("microseconds", "microsecond", "micro", "us", "u"),
+            "ns": ("nanoseconds", "nanosecond", "nano", "ns", "n"),
         }
         for pdunit, aliases in unitmap.items():
             # check_equal(pdunit, pdunit)

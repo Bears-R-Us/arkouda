@@ -15,6 +15,8 @@ from arkouda.numeric import cast
 from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import from_series
 
+from warnings import warn
+
 _BASE_UNIT = "ns"
 
 _unit2normunit = {
@@ -539,6 +541,7 @@ def date_range(
     normalize=False,
     name=None,
     closed=None,
+    inclusive="both",
     **kwargs,
 ):
     """Creates a fixed frequency Datetime range. Alias for
@@ -568,6 +571,9 @@ def date_range(
     closed : {None, 'left', 'right'}, optional
         Make the interval closed with respect to the given frequency to
         the 'left', 'right', or both sides (None, the default).
+        *Deprecated*
+    inclusive : {"both", "neither", "left", "right"}, default "both"
+        Include boundaries. Whether to set each bound as closed or open.
     **kwargs
         For compatibility. Has no effect on the result.
 
@@ -586,7 +592,11 @@ def date_range(
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
     """
-    return Datetime(pd_date_range(start, end, periods, freq, tz, normalize, name, closed, **kwargs))
+    if closed is not None:
+        warn("closed has been deprecated. Please use the inclusive parameter instead.", DeprecationWarning)
+        return Datetime(pd_date_range(start, end, periods, freq, tz, normalize, name, closed, **kwargs))
+
+    return Datetime(pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs))
 
 
 def timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs):
