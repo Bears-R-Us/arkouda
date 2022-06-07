@@ -33,15 +33,48 @@ module UniqueMsg
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
 
+    proc assumeSortedShortcut(n, fields, st) throws {
+      // very similar to uniqueAndCount but skips sort
+      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+      if (size == 0) {
+        return (new shared SymEntry(0, int), new shared SymEntry(0, int));
+      }
+      proc skipSortHelper(type t, keys: [?D] t) throws {
+        // skip sorting, set permutation to 0..#size and go directly to finding segment boundaries.
+        var permutation = new shared SymEntry(keys.size, int);
+        permutation.a = permutation.aD;
+        var (uniqueKeys, counts) = uniqueFromSorted(keys);
+        var segments = new shared SymEntry(counts.size, int);
+        segments.a = (+ scan counts) - counts;
+        return (permutation, segments);
+      }
+
+      // If no strings are present and row values can fit in 128 bits (8 digits),
+      // then pack into tuples of uint(16) for sorting keys.
+      if !hasStr {
+        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
+        if totalDigits <= 2 { return skipSortHelper(2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 4 { return skipSortHelper(4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 6 { return skipSortHelper(6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 8 { return skipSortHelper(8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
+      }
+
+      // If here, either the row values are too large to fit in 128 bits, or
+      // strings are present and must be hashed anyway, so hash all arrays
+      // and combine hashes of row values into sorting keys.
+      return skipSortHelper(2*uint(64), hashArrays(size, names, types, st));
+    }
+
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (returnGroupsStr, nstr, rest) = payload.splitMsgToTuple(3);
+        var (returnGroupsStr, assumeSortedStr, nstr, rest) = payload.splitMsgToTuple(4);
         // flag to return segments and permutation for GroupBy
         const returnGroups = if (returnGroupsStr == "True") then true else false;
+        const assumeSorted = if (assumeSortedStr == "True") then true else false;
         var repMsg: string = "";
         // number of arrays
         var n = nstr:int;
         var fields = rest.split();
-        var (permutation, segments) = uniqueAndCount(n, fields, st);
+        var (permutation, segments) = if assumeSorted then assumeSortedShortcut(n, fields, st) else uniqueAndCount(n, fields, st);
         
         // If returning grouping info, add to SymTab and prepend to repMsg
         if returnGroups {
@@ -139,8 +172,10 @@ module UniqueMsg
       if (size == 0) {
         return (new shared SymEntry(0, int), new shared SymEntry(0, int));
       }
-      proc helper(type t, keys: [?D] t) throws {
+      proc helper(itemsize, type t, keys: [?D] t) throws {
         // Sort the keys
+        var sortMem = radixSortLSD_memEst(keys.size, itemsize);
+        overMemLimit(sortMem);
         var kr = radixSortLSD(keys);
         // Unpack the permutation and sorted keys
         // var perm: [kr.domain] int;
@@ -162,16 +197,16 @@ module UniqueMsg
       // then pack into tuples of uint(16) for sorting keys.
       if !hasStr {
         var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
-        if totalDigits <= 2 { return helper(2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 4 { return helper(4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 6 { return helper(6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 8 { return helper(8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 2 { return helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 4 { return helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 6 { return helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
+        if totalDigits <= 8 { return helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
       }
 
       // If here, either the row values are too large to fit in 128 bits, or
       // strings are present and must be hashed anyway, so hash all arrays
       // and combine hashes of row values into sorting keys.
-      return helper(2*uint(64), hashArrays(size, names, types, st));
+      return helper(16, 2*uint(64), hashArrays(size, names, types, st));
     }
 
     proc hashArrays(size, names, types, st): [] 2*uint throws {

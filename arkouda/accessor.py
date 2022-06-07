@@ -1,6 +1,6 @@
-from arkouda.timeclass import Datetime
 from arkouda.categorical import Categorical
 from arkouda.strings import Strings
+from arkouda.timeclass import Datetime
 
 
 class CachedAccessor:
@@ -36,32 +36,34 @@ class CachedAccessor:
         object.__setattr__(obj, self._name, accessor_obj)
         return accessor_obj
 
+
 def string_operators(cls):
-        for name in ['contains', 'startswith', 'endswith' ] :
-            setattr(cls,name, cls._make_op(name))
-        return cls
+    for name in ["contains", "startswith", "endswith"]:
+        setattr(cls, name, cls._make_op(name))
+    return cls
 
 
 def date_operators(cls):
-        for name in ['floor', 'ceil', 'round' ] :
-            setattr(cls,name, cls._make_op(name))
-        return cls
+    for name in ["floor", "ceil", "round"]:
+        setattr(cls, name, cls._make_op(name))
+    return cls
 
 
 class Properties:
-
     @classmethod
     def _make_op(cls, name):
-        def accessop(self,*args,**kwargs):
-                from . import Series
-                results = getattr(self.series.values,name)(*args,**kwargs)
-                return Series( data=results, index=self.series.index)
+        def accessop(self, *args, **kwargs):
+            from . import Series
+
+            results = getattr(self.series.values, name)(*args, **kwargs)
+            return Series(data=results, index=self.series.index)
+
         return accessop
+
 
 @date_operators
 class DatetimeAccessor(Properties):
-
-    def __init__(self, series ):
+    def __init__(self, series):
 
         data = series.values
         if not isinstance(data, Datetime):
@@ -69,13 +71,13 @@ class DatetimeAccessor(Properties):
 
         self.series = series
 
+
 @string_operators
 class StringAccessor(Properties):
-
-    def __init__(self, series ):
+    def __init__(self, series):
 
         data = series.values
-        if not (isinstance(data, Categorical) or isinstance(data, Strings) ):
+        if not (isinstance(data, Categorical) or isinstance(data, Strings)):
             raise AttributeError("Can only use .str accessor with string like values")
 
         self.series = series

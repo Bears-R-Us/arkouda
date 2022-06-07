@@ -1,36 +1,55 @@
 from __future__ import annotations
-from typing import cast, List, Optional, Sequence, Union, Dict, Mapping, Tuple, DefaultDict
-import numpy as np  # type: ignore
+
 import itertools
 from collections import defaultdict
-from typeguard import typechecked
-from arkouda.client import generic_msg
-from arkouda.strings import Strings
-from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name, create_pdarray
-from arkouda.groupbyclass import unique, GroupBy, broadcast
-from arkouda.pdarraysetops import in1d, concatenate
-from arkouda.pdarraycreation import zeros_like, arange, array, zeros, ones
-from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
-from arkouda.dtypes import int64 as akint64, bool as akbool
-from arkouda.sorting import argsort
-from arkouda.logger import getArkoudaLogger
-from arkouda.infoclass import information, list_registry
-from arkouda.numeric import cast as akcast, where
+from typing import (
+    DefaultDict,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    cast,
+)
 
-__all__ = ['Categorical']
+import numpy as np  # type: ignore
+from typeguard import typechecked
+
+from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_scalars
+from arkouda.groupbyclass import GroupBy, unique
+from arkouda.infoclass import information, list_registry
+from arkouda.logger import getArkoudaLogger
+from arkouda.numeric import cast as akcast
+from arkouda.numeric import where
+from arkouda.pdarrayclass import (
+    RegistrationError,
+    create_pdarray,
+    pdarray,
+    unregister_pdarray_by_name,
+)
+from arkouda.pdarraycreation import arange, array, ones, zeros, zeros_like
+from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.sorting import argsort
+from arkouda.strings import Strings
+
+__all__ = ["Categorical"]
 
 
 class Categorical:
     """
     Represents an array of values belonging to named categories. Converting a
-    Strings object to Categorical often saves memory and speeds up operations, 
+    Strings object to Categorical often saves memory and speeds up operations,
     especially if there are many repeated values, at the cost of some one-time
     work in initialization.
 
     Parameters
     ----------
     values : Strings
-        String values to convert to categories 
+        String values to convert to categories
     NAvalue : str scalar
         The value to use to represent missing/null data
 
@@ -54,24 +73,28 @@ class Categorical:
         The sizes of each dimension of the array
 
     """
+
     BinOps = frozenset(["==", "!="])
     RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
     objtype = "category"
     permutation = None
     segments = None
-    
+
     def __init__(self, values, **kwargs) -> None:
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
-        if 'codes' in kwargs and 'categories' in kwargs:
+        if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
-            self.codes = kwargs['codes']
-            self.categories = kwargs['categories']
+            self.codes = kwargs["codes"]
+            self.categories = kwargs["categories"]
             if (self.codes.min() < 0) or (self.codes.max() >= self.categories.size):
-                raise ValueError("Codes out of bounds for categories: min = {}, max = {}, categories = {}".format(self.codes.min(), self.codes.max(), self.categories.size))
-            self.permutation = kwargs.get('permutation', None)
-            self.segments = kwargs.get('segments', None)
+                raise ValueError(
+                    f"Codes out of bounds for categories: min = {self.codes.min()},"
+                    f" max = {self.codes.max()}, categories = {self.categories.size}"
+                )
+            self.permutation = kwargs.get("permutation", None)
+            self.segments = kwargs.get("segments", None)
             if self.permutation is not None and self.segments is not None:
                 # Permutation and segments should only ever be supplied together from
                 # the .from_codes() method, not user input
@@ -84,8 +107,7 @@ class Categorical:
         else:
             # Typical initialization, called with values
             if not isinstance(values, Strings):
-                raise ValueError(("Categorical: inputs other than " +
-                                 "Strings not yet supported"))
+                raise ValueError(("Categorical: inputs other than " + "Strings not yet supported"))
             g = GroupBy(values)
             self.categories = g.unique_keys
             self.codes = g.broadcast(arange(self.categories.size), permute=True)
@@ -96,13 +118,13 @@ class Categorical:
 
         # When read from file or attached, NA code will be passed as a pdarray
         # Otherwise, the NA value is set to a string
-        if '_akNAcode' in kwargs:
-            self._akNAcode = kwargs['_akNAcode']
+        if "_akNAcode" in kwargs:
+            self._akNAcode = kwargs["_akNAcode"]
             self._NAcode = int(self._akNAcode[0])
             self.NAvalue = self.categories[self._NAcode]
         else:
-            self.NAvalue = kwargs.get('NAvalue', 'N/A')
-            findNA = (self.categories == self.NAvalue)
+            self.NAvalue = kwargs.get("NAvalue", "N/A")
+            findNA = self.categories == self.NAvalue
             if findNA.any():
                 self._NAcode = int(akcast(findNA, akint64).argmax())
             else:
@@ -115,15 +137,16 @@ class Categorical:
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
-        self.name : Optional[str] = None
+        self.name: Optional[str] = None
 
     @classmethod
     @typechecked
-    def from_codes(cls, codes: pdarray, categories: Strings,
-                   permutation=None, segments=None, **kwargs) -> Categorical:
+    def from_codes(
+        cls, codes: pdarray, categories: Strings, permutation=None, segments=None, **kwargs
+    ) -> Categorical:
         """
-        Make a Categorical from codes and categories arrays. If codes and 
-        categories have already been pre-computed, this constructor saves 
+        Make a Categorical from codes and categories arrays. If codes and
+        categories have already been pre-computed, this constructor saves
         time. If not, please use the normal constructor.
 
         Parameters
@@ -133,16 +156,16 @@ class Categorical:
         categories : Strings
             Unique category labels
         permutation : pdarray, int64
-            The permutation that groups the values in the same order 
+            The permutation that groups the values in the same order
             as categories
         segments : pdarray, int64
-            When values are grouped, the starting offset of each group  
-          
+            When values are grouped, the starting offset of each group
+
         Returns
         -------
         Categorical
            The Categorical object created from the input parameters
-           
+
         Raises
         ------
         TypeError
@@ -151,12 +174,18 @@ class Categorical:
         """
         if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
-        return cls(None, codes=codes, categories=categories, 
-                   permutation=permutation, segments=segments, **kwargs)
+        return cls(
+            None,
+            codes=codes,
+            categories=categories,
+            permutation=permutation,
+            segments=segments,
+            **kwargs,
+        )
 
     @classmethod
-    def standardize_categories(cls, arrays, NAvalue='N/A'):
-        '''
+    def standardize_categories(cls, arrays, NAvalue="N/A"):
+        """
         Standardize an array of Categoricals so that they share the same categories.
 
         Parameters
@@ -170,21 +199,21 @@ class Categorical:
         -------
         List of Categoricals
             A list of the original Categoricals remapped to the shared categories.
-        '''
+        """
         for arr in arrays:
             if not isinstance(arr, cls):
-                raise TypeError("All arguments must be {}".format(cls.__name__))
+                raise TypeError(f"All arguments must be {cls.__name__}")
         new_categories = unique(concatenate([arr.categories for arr in arrays], ordered=False))
-        findNA = (new_categories == NAvalue)
+        findNA = new_categories == NAvalue
         if not findNA.any():
             # Append NA value
             new_categories = concatenate((new_categories, array([NAvalue])))
         return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
 
     def set_categories(self, new_categories, NAvalue=None):
-        '''
+        """
         Set categories to user-defined values.
-        
+
         Parameters
         ----------
         new_categories : Strings
@@ -198,10 +227,10 @@ class Categorical:
             A new Categorical with the user-defined categories. Old values present
             in new categories will appear unchanged. Old values not present will
             be assigned the NA value.
-        '''
+        """
         if NAvalue is None:
             NAvalue = self.NAvalue
-        findNA = (new_categories == NAvalue)
+        findNA = new_categories == NAvalue
         if not findNA.any():
             # Append NA value
             new_categories = concatenate((new_categories, array([NAvalue])))
@@ -212,10 +241,13 @@ class Categorical:
         code_mapping.fill(NAcode)
         # Concatenate old and new categories and unique codes
         bothcats = concatenate((self.categories, new_categories), ordered=False)
-        bothcodes = concatenate((arange(self.categories.size), arange(new_categories.size)), ordered=False)
-        fromold = concatenate((ones(self.categories.size, dtype=akbool),
-                               zeros(new_categories.size, dtype=akbool)),
-                              ordered=False)
+        bothcodes = concatenate(
+            (arange(self.categories.size), arange(new_categories.size)), ordered=False
+        )
+        fromold = concatenate(
+            (ones(self.categories.size, dtype=akbool), zeros(new_categories.size, dtype=akbool)),
+            ordered=False,
+        )
         # Group combined categories to find matches
         g = GroupBy(bothcats)
         ct = g.count()[1]
@@ -226,9 +258,8 @@ class Categorical:
         firstinds = g.permutation[present]
         firstcodes = bothcodes[firstinds]
         firstisold = fromold[firstinds]
-        secondinds = g.permutation[present+1]
+        secondinds = g.permutation[present + 1]
         secondcodes = bothcodes[secondinds]
-        secondisold = fromold[secondinds]
         # Matching pairs define a mapping of old codes to new codes
         scatterinds = where(firstisold, firstcodes, secondcodes)
         gatherinds = where(firstisold, secondcodes, firstcodes)
@@ -269,7 +300,7 @@ class Categorical:
         parts = {
             "categories": Strings.from_return_msg(stringsMsg),
             "codes": create_pdarray(repParts[3]),
-            "_akNAcode": create_pdarray(repParts[4])
+            "_akNAcode": create_pdarray(repParts[4]),
         }
 
         if len(repParts) > 5:
@@ -294,15 +325,15 @@ class Categorical:
 
     def to_ndarray(self) -> np.ndarray:
         """
-        Convert the array to a np.ndarray, transferring array data from 
-        the arkouda server to Python. This conversion discards category 
-        information and produces an ndarray of strings. If the arrays 
+        Convert the array to a np.ndarray, transferring array data from
+        the arkouda server to Python. This conversion discards category
+        information and produces an ndarray of strings. If the arrays
         exceeds a built-in size limit, a RuntimeError is raised.
 
         Returns
         -------
         np.ndarray
-            A numpy ndarray of strings corresponding to the values in 
+            A numpy ndarray of strings corresponding to the values in
             this array
 
         Notes
@@ -325,29 +356,32 @@ class Categorical:
         return idx[valcodes]
 
     def __iter__(self):
-        raise NotImplementedError('Categorical does not support iteration. To force data transfer from server, use to_ndarray')
-        
+        raise NotImplementedError(
+            "Categorical does not support iteration. To force data transfer from server, use to_ndarray"
+        )
+
     def __len__(self):
         return self.shape[0]
 
     def __str__(self):
         # limit scope of import to pick up changes to global variable
         from arkouda.client import pdarrayIterThresh
+
         if self.size <= pdarrayIterThresh:
-            vals = ["'{}'".format(self[i]) for i in range(self.size)]
+            vals = [f"'{self[i]}'" for i in range(self.size)]
         else:
-            vals = ["'{}'".format(self[i]) for i in range(3)]
-            vals.append('... ')
-            vals.extend([self[i] for i in range(self.size-3, self.size)])
-        return "[{}]".format(', '.join(vals))
+            vals = [f"'{self[i]}'" for i in range(3)]
+            vals.append("... ")
+            vals.extend([self[i] for i in range(self.size - 3, self.size)])
+        return "[{}]".format(", ".join(vals))
 
     def __repr__(self):
-        return "array({})".format(self.__str__())
+        return f"array({self.__str__()})"
 
     @typechecked
-    def _binop(self, other : Union[Categorical,str_scalars], op : str_scalars) -> pdarray:
+    def _binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Executes the requested binop on this Categorical instance and returns 
+        Executes the requested binop on this Categorical instance and returns
         the results within a pdarray object.
 
         Parameters
@@ -355,12 +389,12 @@ class Categorical:
         other : Union[Categorical,str_scalars]
             the other object is a Categorical object or string scalar
         op : str_scalars
-            name of the binary operation to be performed 
-      
+            name of the binary operation to be performed
+
         Returns
         -------
         pdarray
-            encapsulating the results of the requested binop      
+            encapsulating the results of the requested binop
 
         Raises
         -----
@@ -372,31 +406,33 @@ class Categorical:
             binary operation
         """
         if op not in self.BinOps:
-            raise NotImplementedError("Categorical: unsupported operator: {}".\
-                                      format(op))
+            raise NotImplementedError(f"Categorical: unsupported operator: {op}")
         if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
             idxresult = self.categories._binop(other, op)
             return idxresult[self.codes]
-        if self.size != cast(Categorical,other).size:
-            raise ValueError("Categorical {}: size mismatch {} {}".\
-                             format(op, self.size, cast(Categorical,other).size))
+        if self.size != cast(Categorical, other).size:
+            raise ValueError(
+                f"Categorical {op}: size mismatch {self.size} {cast(Categorical, other).size}"
+            )
         if isinstance(other, Categorical):
-            if (self.categories.size == other.categories.size) and (self.categories == other.categories).all():
+            if (self.categories.size == other.categories.size) and (
+                self.categories == other.categories
+            ).all():
                 # Because categories are identical, codes can be compared directly
                 return self.codes._binop(other.codes, op)
             else:
                 tmpself, tmpother = self.standardize_categories((self, other))
                 return tmpself.codes._binop(tmpother.codes, op)
         else:
-            raise NotImplementedError(("Operations between Categorical and " +
-                                "non-Categorical not yet implemented. " +
-                                "Consider converting operands to Categorical."))
+            raise NotImplementedError(
+                "Operations between Categorical and non-Categorical not yet implemented."
+                "Consider converting operands to Categorical."
+            )
 
     @typechecked
-    def _r_binop(self, other : Union[Categorical,str_scalars], 
-                                              op : str_scalars) -> pdarray:
+    def _r_binop(self, other: Union[Categorical, str_scalars], op: str_scalars) -> pdarray:
         """
-        Executes the requested reverse binop on this Categorical instance and 
+        Executes the requested reverse binop on this Categorical instance and
         returns the results within a pdarray object.
 
         Parameters
@@ -404,15 +440,15 @@ class Categorical:
         other : Union[Categorical,str_scalars]
             the other object is a Categorical object or string scalar
         op : str_scalars
-            name of the binary operation to be performed 
-      
+            name of the binary operation to be performed
+
         Returns
         -------
         pdarray
-            encapsulating the results of the requested binop      
+            encapsulating the results of the requested binop
 
         Raises
-    -   -----
+        -----
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match
@@ -429,7 +465,7 @@ class Categorical:
         return self._binop(other, "!=")
 
     def __getitem__(self, key) -> Categorical:
-        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and resolve_scalar_dtype(key) == "int64":
             return self.categories[self.codes[key]]
         else:
             # Don't reset categories because they might have been user-defined
@@ -437,19 +473,19 @@ class Categorical:
             return Categorical.from_codes(self.codes[key], self.categories)
 
     def isna(self):
-        '''
+        """
         Find where values are missing or null (as defined by self.NAvalue)
-        '''
-        return (self.codes == self._NAcode)
+        """
+        return self.codes == self._NAcode
 
     def reset_categories(self) -> Categorical:
         """
         Recompute the category labels, discarding any unused labels. This
-        method is often useful after slicing or indexing a Categorical array, 
-        when the resulting array only contains a subset of the original 
-        categories. In this case, eliminating unused categories can speed up 
+        method is often useful after slicing or indexing a Categorical array,
+        when the resulting array only contains a subset of the original
+        categories. In this case, eliminating unused categories can speed up
         other operations.
-        
+
         Returns
         -------
         Categorical
@@ -458,11 +494,12 @@ class Categorical:
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
         newvals = g.broadcast(arange(idx.size), permute=True)
-        return Categorical.from_codes(newvals, idx, permutation=g.permutation,
-                                      segments=g.segments, NAvalue=self.NAvalue)
+        return Categorical.from_codes(
+            newvals, idx, permutation=g.permutation, segments=g.segments, NAvalue=self.NAvalue
+        )
 
     @typechecked
-    def contains(self, substr : str) -> pdarray:
+    def contains(self, substr: str) -> pdarray:
         """
         Check whether each element contains the given substring.
 
@@ -475,7 +512,7 @@ class Categorical:
         -------
         pdarray, bool
             True for elements that contain substr, False otherwise
-            
+
         Raises
         ------
         TypeError
@@ -495,7 +532,7 @@ class Categorical:
         return categoriescontains[self.codes]
 
     @typechecked
-    def startswith(self, substr : str) -> pdarray:
+    def startswith(self, substr: str) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
@@ -503,7 +540,7 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
-            
+
         Raises
         ------
         TypeError
@@ -516,7 +553,7 @@ class Categorical:
 
         Notes
         -----
-        This method can be significantly faster than the corresponding 
+        This method can be significantly faster than the corresponding
         method on Strings objects, because it searches the unique category
         labels instead of the full array.
 
@@ -528,7 +565,7 @@ class Categorical:
         return categoriesstartswith[self.codes]
 
     @typechecked
-    def endswith(self, substr : str) -> pdarray:
+    def endswith(self, substr: str) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
@@ -536,7 +573,7 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
-            
+
         Raises
         ------
         TypeError
@@ -561,9 +598,9 @@ class Categorical:
         return categoriesendswith[self.codes]
 
     @typechecked
-    def in1d(self, test : Union[Strings,Categorical]) -> pdarray:
+    def in1d(self, test: Union[Strings, Categorical]) -> pdarray:
         """
-        Test whether each element of the Categorical object is 
+        Test whether each element of the Categorical object is
         also present in the test Strings or Categorical object.
 
         Returns a boolean array the same length as `self` that is True
@@ -578,7 +615,7 @@ class Categorical:
         -------
         pdarray, bool
             The values `self[in1d]` are in the `test` Strings or Categorical object.
-        
+
         Raises
         ------
         TypeError
@@ -594,15 +631,15 @@ class Categorical:
         python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
         equivalent to ``ak.array([item in b for item in a])``, but is much
         faster and scales to arbitrarily large ``a``.
-    
+
 
         Examples
         --------
-        >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
+        >>> strings = ak.array([f'String {i}' for i in range(0,5)])
         >>> cat = ak.Categorical(strings)
         >>> ak.in1d(cat,strings)
         array([True, True, True, True, True])
-        >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
+        >>> strings = ak.array([f'String {i}' for i in range(5,9)])
         >>> catTwo = ak.Categorical(strings)
         >>> ak.in1d(cat,catTwo)
         array([False, False, False, False, False])
@@ -619,15 +656,16 @@ class Categorical:
         return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
-        #__doc__ = unique.__doc__
-        return Categorical.from_codes(arange(self._categories_used.size), self._categories_used,
-                                      NAvalue=self.NAvalue)
+        # __doc__ = unique.__doc__
+        return Categorical.from_codes(
+            arange(self._categories_used.size), self._categories_used, NAvalue=self.NAvalue
+        )
 
     def group(self) -> pdarray:
         """
         Return the permutation that groups the array, placing equivalent
-        categories together. All instances of the same category are guaranteed 
-        to lie in one contiguous block of the permuted array, but the blocks 
+        categories together. All instances of the same category are guaranteed
+        to lie in one contiguous block of the permuted array, but the blocks
         are not necessarily ordered.
 
         Returns
@@ -641,29 +679,29 @@ class Categorical:
 
         Notes
         -----
-        This method is faster than the corresponding Strings method. If the 
-        Categorical was created from a Strings object, then this function  
+        This method is faster than the corresponding Strings method. If the
+        Categorical was created from a Strings object, then this function
         simply returns the cached permutation. Even if the Categorical was
-        created using from_codes(), this function will be faster than 
-        Strings.group() because it sorts dense integer values, rather than 
+        created using from_codes(), this function will be faster than
+        Strings.group() because it sorts dense integer values, rather than
         128-bit hash values.
-        """        
+        """
         if self.permutation is None:
             return argsort(self.codes)
         else:
             return self.permutation
 
     def _get_grouping_keys(self):
-        ''' 
+        """
         Private method for generating grouping keys used by GroupBy.
 
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
-        '''
+        """
         return [self.codes]
 
     def argsort(self):
-        #__doc__ = argsort.__doc__
+        # __doc__ = argsort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -671,17 +709,17 @@ class Categorical:
         return argsort(newvals)
 
     def sort(self):
-        #__doc__ = sort.__doc__
+        # __doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
-    
+
     @typechecked
-    def concatenate(self, others : Sequence[Categorical], ordered : bool=True) -> Categorical:
+    def concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical:
         """
-        Merge this Categorical with other Categorical objects in the array, 
+        Merge this Categorical with other Categorical objects in the array,
         concatenating the arrays and synchronizing the categories.
 
         Parameters
@@ -696,9 +734,9 @@ class Categorical:
 
         Returns
         -------
-        Categorical 
+        Categorical
             The merged Categorical object
-            
+
         Raises
         ------
         TypeError
@@ -715,13 +753,15 @@ class Categorical:
         samecategories = True
         for c in others:
             if not isinstance(c, Categorical):
-                raise TypeError(("Categorical: can only merge/concatenate " +
-                                "with other Categoricals"))
-            if (self.categories.size != c.categories.size) or not \
-                                    (self.categories == c.categories).all():
+                raise TypeError("Categorical: can only merge/concatenate with other Categoricals")
+            if (self.categories.size != c.categories.size) or not (
+                self.categories == c.categories
+            ).all():
                 samecategories = False
         if samecategories:
-            newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others], ordered=ordered))
+            newvals = cast(
+                pdarray, concatenate([self.codes] + [o.codes for o in others], ordered=ordered)
+            )
             return Categorical.from_codes(newvals, self.categories)
         else:
             new_arrays = self.standardize_categories([self] + list(others), NAvalue=self.NAvalue)
@@ -730,7 +770,13 @@ class Categorical:
             return Categorical.from_codes(new_codes, new_categories, NAvalue=self.NAvalue)
 
     @typechecked
-    def save(self, prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5',  mode: str = 'truncate') -> str:
+    def save(
+        self,
+        prefix_path: str,
+        dataset: str = "categorical_array",
+        file_format: str = "HDF5",
+        mode: str = "truncate",
+    ) -> str:
         """
         Save the Categorical object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -777,13 +823,23 @@ class Categorical:
         comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
 
         if self.RequiredPieces.issubset(comp_dict.keys()):
-            # Honor the first mode but switch to append for all others since each following comp may wipe out the file
+            # Honor the first mode but switch to append for all others
+            # since each following comp may wipe out the file
             first = True
             for k, v in comp_dict.items():
-                result.append(v.save(prefix_path, dataset=f"{dataset}.{k}", file_format=file_format, mode=(mode if first else "append")))
+                result.append(
+                    v.save(
+                        prefix_path,
+                        dataset=f"{dataset}.{k}",
+                        file_format=file_format,
+                        mode=(mode if first else "append"),
+                    )
+                )
                 first = False
         else:
-            raise Exception("The required pieces of `categories` and `codes` were not populated on this Categorical")
+            raise Exception(
+                "The required pieces of `categories` and `codes` were not populated on this Categorical"
+            )
         return ";".join(result)
 
     @typechecked()
@@ -801,7 +857,8 @@ class Categorical:
         -------
         Categorical
             The same Categorical which is now registered with the arkouda server and has an updated name.
-            This is an in-place modification, the original is returned to support a fluid programming style.
+            This is an in-place modification, the original is returned to support
+            a fluid programming style.
             Please note you cannot register two different Categoricals with the same name.
 
         Raises
@@ -820,7 +877,10 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        [p.register(f"{user_defined_name}.{n}") for n, p in Categorical._get_components_dict(self).items()]
+        [
+            p.register(f"{user_defined_name}.{n}")
+            for n, p in Categorical._get_components_dict(self).items()
+        ]
         self.name = user_defined_name
         return self
 
@@ -845,7 +905,9 @@ class Categorical:
         they are unregistered.
         """
         if not self.name:
-            raise RegistrationError("This item does not have a name and does not appear to be registered.")
+            raise RegistrationError(
+                "This item does not have a name and does not appear to be registered."
+            )
         [p.unregister() for p in Categorical._get_components_dict(self).values()]
         self.name = None  # Clear our internal Categorical object name
 
@@ -872,9 +934,13 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        parts_registered: List[np.bool_] = [p.is_registered() for p in Categorical._get_components_dict(self).values()]
+        parts_registered: List[np.bool_] = [
+            p.is_registered() for p in Categorical._get_components_dict(self).values()
+        ]
         if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-            raise RegistrationError(f"Not all registerable components of Categorical {self.name} are registered.")
+            raise RegistrationError(
+                f"Not all registerable components of Categorical {self.name} are registered."
+            )
 
         return np.bool_(np.any(parts_registered))
 
@@ -882,8 +948,10 @@ class Categorical:
         """
         Internal function that returns a dictionary with all required or non-None components of self
 
-        Required Categorical components (Codes and Categories) are always included in returned components_dict
-        Optional Categorical components (Permutation and Segments) are only included if they've been set (are not None)
+        Required Categorical components (Codes and Categories) are always included in
+        returned components_dict
+        Optional Categorical components (Permutation and Segments) are only included if
+        they've been set (are not None)
 
         Returns
         -------
@@ -892,8 +960,11 @@ class Categorical:
                 Keys: component names (Codes, Categories, Permutation, Segments)
                 Values: components of self
         """
-        return {piece_name: getattr(self, piece_name) for piece_name in Categorical.RegisterablePieces
-                if piece_name in Categorical.RequiredPieces or getattr(self, piece_name) is not None}
+        return {
+            piece_name: getattr(self, piece_name)
+            for piece_name in Categorical.RegisterablePieces
+            if piece_name in Categorical.RequiredPieces or getattr(self, piece_name) is not None
+        }
 
     def _list_component_names(self) -> List[str]:
         """
@@ -908,8 +979,11 @@ class Categorical:
         List[str]
             List of all component names
         """
-        return list(itertools.chain.from_iterable(
-            [p._list_component_names() for p in Categorical._get_components_dict(self).values()]))
+        return list(
+            itertools.chain.from_iterable(
+                [p._list_component_names() for p in Categorical._get_components_dict(self).values()]
+            )
+        )
 
     def info(self) -> str:
         """
@@ -955,11 +1029,11 @@ class Categorical:
         Returns
         -------
         Categorical
-               The Categorical object created by re-attaching to the corresponding server components
+            The Categorical object created by re-attaching to the corresponding server components
 
-       Raises
-       ------
-       TypeError
+        Raises
+        ------
+        TypeError
             if user_defined_name is not a string
 
         See Also
@@ -970,7 +1044,7 @@ class Categorical:
         parts = {
             "categories": Strings.attach(f"{user_defined_name}.categories"),
             "codes": pdarray.attach(f"{user_defined_name}.codes"),
-            "_akNAcode": pdarray.attach(f"{user_defined_name}._akNAcode")
+            "_akNAcode": pdarray.attach(f"{user_defined_name}._akNAcode"),
         }
 
         # Add optional pieces only if they're contained in the registry
@@ -1021,11 +1095,14 @@ class Categorical:
 
     @staticmethod
     @typechecked
-    def parse_hdf_categoricals(d: Mapping[str, Union[pdarray, Strings]]) -> Tuple[List[str], Dict[str, Categorical]]:
+    def parse_hdf_categoricals(
+        d: Mapping[str, Union[pdarray, Strings]]
+    ) -> Tuple[List[str], Dict[str, Categorical]]:
         """
-        This function should be used in conjunction with the load_all function which reads hdf5 files and reconstitutes
-        Categorical objects.  Categorical objects use a naming convention and HDF5 structure so they can be identified
-        and constructed for the user.
+        This function should be used in conjunction with the load_all function which reads hdf5 files
+        and reconstitutes Categorical objects.
+        Categorical objects use a naming convention and HDF5 structure so they can be identified and
+        constructed for the user.
 
         In general you should not call this method directly
 
@@ -1035,8 +1112,8 @@ class Categorical:
 
         Returns
         -------
-        2-Tuple of List of strings containing key names which should be removed and Dictionary of base name to
-        Categorical object
+        2-Tuple of List of strings containing key names which should be removed and Dictionary of
+        base name to Categorical object
 
         See Also
         --------

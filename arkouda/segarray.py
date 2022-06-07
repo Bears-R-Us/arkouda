@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from arkouda.pdarrayclass import pdarray, is_sorted, attach_pdarray, create_pdarray
-from arkouda.numeric import cumsum
-from arkouda.dtypes import isSupportedInt
-from arkouda.dtypes import int64 as akint64
+from warnings import warn
+
 from arkouda.dtypes import bool as akbool
-from arkouda.dtypes import str_
-from arkouda.pdarraycreation import zeros, ones, array, arange
-from arkouda.pdarraysetops import concatenate
-from arkouda.groupbyclass import unique, GroupBy, broadcast
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import isSupportedInt, str_
+from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.numeric import cumsum
+from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdarray
+from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
+from arkouda.pdarraysetops import concatenate
 
 
 def gen_ranges(starts, ends, stride=1):
-    """ Generate a segmented array of variable-length, contiguous ranges between pairs of start- and end-points.
+    """
+    Generate a segmented array of variable-length, contiguous ranges between pairs of
+    start- and end-points.
 
     Parameters
     ----------
@@ -39,8 +42,7 @@ def gen_ranges(starts, ends, stride=1):
     segs = cumsum(lengths) - lengths
     totlen = lengths.sum()
     slices = ones(totlen, dtype=akint64)
-    diffs = concatenate((array([starts[0]]),
-                         starts[1:] - starts[:-1] - (lengths[:-1] - 1) * stride))
+    diffs = concatenate((array([starts[0]]), starts[1:] - starts[:-1] - (lengths[:-1] - 1) * stride))
     slices[segs] = diffs
     return segs, cumsum(slices)
 
@@ -52,7 +54,7 @@ def _aggregator(func):
         Parameters
         ----------
         x : pdarray
-        The values to aggregate. By default, the values of the sub-arrays 
+        The values to aggregate. By default, the values of the sub-arrays
         themselves are used, but the user may supply an array of values
         corresponding to the flattened values of all sub-arrays.
 
@@ -124,10 +126,13 @@ class SegArray:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
-                self.grouping = GroupBy(broadcast(self.segments[self._non_empty], arange(self._non_empty_count), self.valsize))
+                self.grouping = GroupBy(
+                    broadcast(
+                        self.segments[self._non_empty], arange(self._non_empty_count), self.valsize
+                    )
+                )
         else:
             self.grouping = grouping
-
 
     @classmethod
     def from_multi_array(cls, m):
@@ -162,7 +167,7 @@ class SegArray:
         newsegs = arange(size) * n
         newvals = zeros(size * n, dtype=dtype)
         for j in range(len(m)):
-            newvals[j::len(m)] = m[j]
+            newvals[j :: len(m)] = m[j]
         return cls(newsegs, newvals)
 
     @classmethod
@@ -226,12 +231,14 @@ class SegArray:
                 fromself[nzsegs] += 1
                 nzlens = xi.lengths[nonzero]
                 fromself[nzsegs + nzlens] -= 1
-                fromself = (cumsum(fromself[:-1]) == 1)
+                fromself = cumsum(fromself[:-1]) == 1
                 newvals[fromself] = xi.values
                 nzsegs += nzlens
             return cls(newsegs, newvals, copy=False)
         else:
-            raise ValueError("Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)")
+            raise ValueError(
+                "Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)"
+            )
 
     @staticmethod
     def from_return_msg(repMsg) -> SegArray:
@@ -283,13 +290,15 @@ class SegArray:
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end].to_ndarray()
-        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(i, slice):
+        elif (isinstance(i, pdarray) and (i.dtype == akint64 or i.dtype == akbool)) or isinstance(
+            i, slice
+        ):
             starts = self.segments[i]
             ends = starts + self.lengths[i]
             newsegs, inds = gen_ranges(starts, ends)
             return SegArray(newsegs, self.values[inds], copy=True)
         else:
-            raise TypeError(f'Invalid index type: {type(i)}')
+            raise TypeError(f"Invalid index type: {type(i)}")
 
     def __eq__(self, other):
         if not isinstance(other, SegArray):
@@ -308,14 +317,14 @@ class SegArray:
             rows = list(range(self.size))
         else:
             rows = [0, 1, 2, None, self.size - 3, self.size - 2, self.size - 1]
-        outlines = ['SegArray([']
+        outlines = ["SegArray(["]
         for r in rows:
             if r is None:
-                outlines.append('...')
+                outlines.append("...")
             else:
                 outlines.append(str(self[r]))
-        outlines.append('])')
-        return '\n'.join(outlines)
+        outlines.append("])")
+        return "\n".join(outlines)
 
     def __repr__(self):
         return self.__str__()
@@ -416,7 +425,7 @@ class SegArray:
             The index of the sub-array from which the corresponding n-gram originated
         """
         if n > self._get_lengths().max():
-            raise ValueError('n must be <= the maximum length of the sub-arrays')
+            raise ValueError("n must be <= the maximum length of the sub-arrays")
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
@@ -431,14 +440,14 @@ class SegArray:
         if return_origins:
             # set the proper indexes for broadcasting. Needed to alot for empty segments
             seg_idx = arange(self.size)[self._non_empty]
-            origin_indices = self.grouping.broadcast(seg_idx, permute=True)[:valid.size][valid]
+            origin_indices = self.grouping.broadcast(seg_idx, permute=True)[: valid.size][valid]
             return ngrams, origin_indices
         else:
             return ngrams
 
     def _normalize_index(self, j):
         if not isSupportedInt(j):
-            raise TypeError(f'index must be integer, not {type(j)}')
+            raise TypeError(f"index must be integer, not {type(j)}")
         if j >= 0:
             longenough = self.lengths > j
         else:
@@ -510,7 +519,7 @@ class SegArray:
             raise TypeError("String elements are immutable")
         longenough, newj = self._normalize_index(j)
         if not longenough[i].all():
-            raise ValueError(f'Not all (i, j) in bounds')
+            raise ValueError("Not all (i, j) in bounds")
         ind = (self.segments + newj)[i]
         self.values[ind] = v
 
@@ -572,7 +581,7 @@ class SegArray:
         return self.__class__.concat((self, other), axis=axis)
 
     def append_single(self, x, prepend=False):
-        '''
+        """
         Append a single value to each sub-array.
 
         Parameters
@@ -584,12 +593,12 @@ class SegArray:
         -------
         SegArray
             Copy of original SegArray with values from x appended to each sub-array
-        '''
-        if hasattr(x, 'size'):
+        """
+        if hasattr(x, "size"):
             if x.size != self.size:
-                raise ValueError('Argument must be scalar or same size as SegArray')
-            if type(x) != type(self.values) or x.dtype != self.dtype:
-                raise TypeError('Argument type must match value type of SegArray')
+                raise ValueError("Argument must be scalar or same size as SegArray")
+            if not isinstance(x, type(self.values)) or x.dtype != self.dtype:
+                raise TypeError("Argument type must match value type of SegArray")
         newlens = self.lengths + 1
         newsegs = cumsum(newlens) - newlens
         newvals = zeros(newlens.sum(), dtype=self.dtype)
@@ -598,7 +607,9 @@ class SegArray:
         else:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
-        origscatter = arange(self.valsize) + self.grouping.broadcast(arange(self._non_empty_count), permute=True)
+        origscatter = arange(self.valsize) + self.grouping.broadcast(
+            arange(self._non_empty_count), permute=True
+        )
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
@@ -635,10 +646,10 @@ class SegArray:
             truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
             len_diff = self.lengths[self._non_empty] - truelens
 
-            x = 0  # tracking which non-empty segment length we need 
+            x = 0  # tracking which non-empty segment length we need
             truesegs = zeros(self.size, dtype=akint64)
             for i in range(1, self.size):
-                truesegs[i] = (self.segments[i] - len_diff[:x+1].sum())
+                truesegs[i] = self.segments[i] - len_diff[: x + 1].sum()
                 if self._non_empty[i]:
                     x += 1
 
@@ -677,7 +688,7 @@ class SegArray:
         ndsegs = self.segments.to_ndarray()
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
-            arr.append(ndvals[ndsegs[-1]:])
+            arr.append(ndvals[ndsegs[-1] :])
         return arr
 
     def sum(self, x=None):
@@ -751,7 +762,7 @@ class SegArray:
         return self.grouping.aggregate(x, op)
 
     def unique(self, x=None):
-        '''
+        """
         Return sub-arrays of unique values.
 
         Parameters
@@ -765,7 +776,7 @@ class SegArray:
         SegArray
             Same number of sub-arrays as original SegArray, but elements in sub-array
             are unique and in sorted order.
-        '''
+        """
         if x is None:
             x = self.values
         keyidx = self.grouping.broadcast(arange(self.size), permute=True)
@@ -774,9 +785,15 @@ class SegArray:
         _, lengths = g.count()
         return SegArray(g.segments, uval, grouping=g, lengths=lengths)
 
-    def save(self, prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values',
-             mode='truncate'):
-        '''
+    def save(
+        self,
+        prefix_path,
+        dataset="segarray",
+        segment_suffix="_segments",
+        value_suffix="_values",
+        mode="truncate",
+    ):
+        """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
         per locale of the arkouda server, where each filename starts with prefix_path.
 
@@ -802,15 +819,22 @@ class SegArray:
         -----
         Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
         the HDF5 file, not nested under a group.
-        '''
+        """
         if segment_suffix == value_suffix:
             raise ValueError("Segment suffix and value suffix must be different")
         self.segments.save(prefix_path, dataset=dataset + segment_suffix, mode=mode)
-        self.values.save(prefix_path, dataset=dataset + value_suffix, mode='append')
+        self.values.save(prefix_path, dataset=dataset + value_suffix, mode="append")
 
     @classmethod
-    def load(cls, prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate'):
-        '''
+    def load(
+        cls,
+        prefix_path,
+        dataset="segarray",
+        segment_suffix="_segments",
+        value_suffix="_values",
+        mode="truncate",
+    ):
+        """
         Load a saved SegArray from HDF5. All arguments msut match what
         was supplied to SegArray.save()
 
@@ -828,7 +852,7 @@ class SegArray:
         Returns
         -------
         SegArray
-        '''
+        """
         if segment_suffix == value_suffix:
             raise ValueError("Segment suffix and value suffix must be different")
         segments = load(prefix_path, dataset=dataset + segment_suffix)
@@ -873,7 +897,8 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        # This method does not return any empty resulting segments
+        # We need to add these if they are missing
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -926,7 +951,8 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        # This method does not return any empty resulting segments
+        # We need to add these if they are missing
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -979,7 +1005,8 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        # This method does not return any empty resulting segments
+        # We need to add these if they are missing
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -1032,7 +1059,8 @@ class SegArray:
         b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
-        # This method does not return any empty resulting segments. We need to add these if they are missing.
+        # This method does not return any empty resulting segments
+        # We need to add these if they are missing
         if g.segments.size == self.size:
             return SegArray(g.segments, new_values[g.permutation])
         else:
@@ -1047,12 +1075,19 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray(segments, new_values[g.permutation])
 
-    def register(self, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping'):
+    def register(
+        self,
+        name,
+        segment_suffix="_segments",
+        value_suffix="_values",
+        length_suffix="_lengths",
+        grouping_suffix="_grouping",
+    ):
         if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
             raise ValueError("Suffixes must all be different")
-        self.segments.register(name+segment_suffix)
-        self.values.register(name+value_suffix)
-        self.lengths.register(name+length_suffix)
+        self.segments.register(name + segment_suffix)
+        self.values.register(name + value_suffix)
+        self.lengths.register(name + length_suffix)
         # TODO - groupby does not have register.
         # self.grouping.register(name+grouping_suffix)
 
@@ -1061,12 +1096,50 @@ class SegArray:
         self.values.unregister()
         self.lengths.unregister()
         # TODO - groupby does not have unregister.
-        #self.grouping.unregister()
+        # self.grouping.unregister()
 
     @classmethod
-    def attach(cls, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping'):
+    def attach(
+        cls,
+        name,
+        segment_suffix="_segments",
+        value_suffix="_values",
+        length_suffix="_lengths",
+        grouping_suffix="_grouping",
+    ):
         if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
             raise ValueError("Suffixes must all be different")
         # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
-        return cls(attach_pdarray(name+segment_suffix), attach_pdarray(name+value_suffix),
-                   lengths=attach_pdarray(name+length_suffix))
+        return cls(
+            attach_pdarray(name + segment_suffix),
+            attach_pdarray(name + value_suffix),
+            lengths=attach_pdarray(name + length_suffix),
+        )
+
+    def is_registered(self) -> bool:
+        """
+        Checks if all components of the SegArray object are registered
+
+        Returns
+        -------
+        bool
+            True if all components are registered, false if not
+
+        See Also
+        --------
+        register, unregister, attach
+        """
+
+        # SegArray contains 3 parts - segments, values, and lengths
+        regParts = [
+            self.segments.is_registered(),
+            self.values.is_registered(),
+            self.lengths.is_registered(),
+        ]
+
+        if any(regParts) and not all(regParts):
+            warn(
+                f"SegArray expected {len(regParts)} components to be registered,"
+                f" but only located {sum(regParts)}"
+            )
+        return all(regParts)

@@ -22,7 +22,7 @@ CONFIG_FILE="${SRC_DIR}/ServerConfig.chpl"
 CONFIG_OPTS="${CONFIG_FILE} -strace=false -sarkoudaVersion=\"\\\"TEST_VERSION_STRING\\\"\""
 TEST_OPTS="-sprintTimes=false -sprintDiags=false -sprintDiagsSum=false"
 
-if [[ $ARKOUDA_SERVER_PARQUET_SUPPORT && ! -f $SRC_DIR/ArrowFunctions.o ]]; then
+if [[ ! -f $SRC_DIR/ArrowFunctions.o ]]; then
   make -C ${ARKOUDA_HOME} compile-arrow-cpp > /dev/null 2> /dev/null
 fi
 

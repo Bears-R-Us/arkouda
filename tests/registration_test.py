@@ -1,5 +1,7 @@
 import pytest
 import json
+
+from arkouda import Series
 from context import arkouda as ak
 from base_test import ArkoudaTest
 from arkouda.pdarrayclass import RegistrationError, unregister_pdarray_by_name
@@ -437,6 +439,27 @@ class RegistrationTest(ArkoudaTest):
         b = None  # Force out of scope
         with self.assertRaises(RuntimeError):
             str(a)
+
+    def test_series_register_attach(self):
+        ar_tuple = (ak.arange(5), ak.arange(5))
+        s = ak.Series(ar_tuple)
+
+        # At this time, there is no unregister() in Series. Register one piece to check partial registration
+        s.values.register("seriesTest_values")
+        with self.assertWarns(UserWarning):
+            s.is_registered()
+        # Unregister values pdarray
+        s.values.unregister()
+
+        self.assertFalse(s.is_registered())
+
+        s.register("seriesTest")
+        self.assertTrue(s.is_registered())
+
+        s2 = Series.attach("seriesTest")
+        self.assertListEqual(s2.values.to_ndarray().tolist(), s.values.to_ndarray().tolist())
+        sEq = s2.index == s.index
+        self.assertTrue(all(sEq.to_ndarray()))
 
     def test_strings_groupby_attach(self):
         s = ak.array(["abc", "123", "abc"])

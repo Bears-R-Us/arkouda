@@ -105,6 +105,27 @@ class JoinTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=(ak.arange(10), ak.arange(5)))
 
+    def test_lookup(self):
+        keys = ak.arange(5)
+        values = 10*keys
+        args = ak.array([5, 3, 1, 4, 2, 3, 1, 0])
+        ans = np.array([-1, 30, 10, 40, 20, 30, 10, 0])
+        # Simple lookup with int keys
+        # Also test shortcut for unique-ordered keys
+        res = ak.lookup(keys, values, args, fillvalue=-1, keys_from_unique=True)
+        self.assertTrue((res.to_ndarray() == ans).all())
+        # Compound lookup with (str, int) keys
+        res2 = ak.lookup((ak.cast(keys, ak.str_), keys), values, (ak.cast(args, ak.str_), args), fillvalue=-1)
+        self.assertTrue((res2.to_ndarray() == ans).all())
+        # Keys not in uniqued order
+        res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
+        self.assertTrue((res3.to_ndarray() == ans).all())
+        # Non-unique keys should raise error
+        with self.assertRaises(ak.NonUniqueError):
+            keys = ak.arange(10) % 5
+            values = 10 * keys
+            ak.lookup(keys, values, args)
+
     def test_error_handling(self):
         """
         Tests error TypeError and ValueError handling

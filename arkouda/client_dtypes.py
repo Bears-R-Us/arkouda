@@ -1,15 +1,15 @@
-import numpy as np  # type: ignore
-from ipaddress import ip_address as _ip_address
 from functools import partial
+from ipaddress import ip_address as _ip_address
 
-from arkouda.pdarrayclass import pdarray
-from arkouda.dtypes import isSupportedInt, intTypes, bitType
-from arkouda.dtypes import int64 as akint64
-from arkouda.strings import Strings
-from arkouda.pdarraycreation import zeros, arange, array
+import numpy as np  # type: ignore
+
+from arkouda.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.numeric import where
 from arkouda.numeric import cast as akcast
+from arkouda.numeric import where
+from arkouda.pdarrayclass import pdarray
+from arkouda.pdarraycreation import arange, array, zeros
+from arkouda.strings import Strings
 
 
 def BitVectorizer(width=64, reverse=False):
@@ -62,7 +62,7 @@ class BitVector(pdarray):
     typically treat this class like a uint64 pdarray.
     """
 
-    conserves = frozenset(('+', '-', '|', '&', '^', '>>', '<<'))
+    conserves = frozenset(("+", "-", "|", "&", "^", ">>", "<<"))
 
     def __init__(self, values, width=64, reverse=False):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
@@ -73,8 +73,14 @@ class BitVector(pdarray):
         # A copy should be made in order to get a new server-side name,
         # to avoid undefinedSymbol errors if/when values gets deleted
         self.values = akcast(values, bitType)
-        super().__init__(self.values.name, self.values.dtype.name, self.values.size, self.values.ndim,
-                         self.values.shape, self.values.itemsize)
+        super().__init__(
+            self.values.name,
+            self.values.dtype.name,
+            self.values.size,
+            self.values.ndim,
+            self.values.shape,
+            self.values.itemsize,
+        )
 
     def format(self, x):
         """
@@ -82,7 +88,7 @@ class BitVector(pdarray):
         """
         # Start with a fixed-width, zero-padded binary value,
         # and replace 0/1 with ./| for better visibility
-        fmt = '{{:0{}b}}'.format(self.width).format(x).replace('0', '.').replace('1', '|')
+        fmt = "{{:0{}b}}".format(self.width).format(x).replace("0", ".").replace("1", "|")
         if self.reverse:
             return fmt[::-1]
         else:
@@ -90,28 +96,27 @@ class BitVector(pdarray):
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
+
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
         else:
             vals = [self.format(self.values[i]) for i in range(3)]
-            vals.append('...')
-            vals.extend([self.format(self.values[i]) for i in range(self.size-3, self.size)])
+            vals.append("...")
+            vals.extend([self.format(self.values[i]) for i in range(self.size - 3, self.size)])
         # Print values as a single, aligned column for easier viewing
         # Also show "width" and "reverse" parameters
-        spaces = ' '*(len(self.__class__.__name__)+1)
-        return "{}([{}],\n{}width={}, reverse={})".format(self.__class__.__name__,
-                                                          ',\n{} '.format(spaces).join(vals),
-                                                          spaces,
-                                                          self.width,
-                                                          self.reverse)
+        spaces = " " * (len(self.__class__.__name__) + 1)
+        return "{}([{}],\n{}width={}, reverse={})".format(
+            self.__class__.__name__, ",\n{} ".format(spaces).join(vals), spaces, self.width, self.reverse
+        )
 
     def __repr__(self):
         return self.__str__()
 
     def to_ndarray(self):
-        '''
+        """
         Export data to a numpy array of string-formatted bit vectors.
-        '''
+        """
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
     def _cast(self, values):
@@ -161,7 +166,7 @@ class BitVector(pdarray):
                 return self._cast(self.values._r_binop(other, op))
             else:
                 return self.values._r_binop(other, op)
-        elif (isinstance(other, pdarray) and other.dtype in intTypes):
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             # Some operators return a BitVector, but others don't
             if op in self.conserves:
                 return self._cast(other._binop(self.values, op))
@@ -224,8 +229,8 @@ class Fields(BitVector):
     typically treat this class like an int64 pdarray.
     """
 
-    def __init__(self, values, names, MSB_left=True, pad='-', separator='', show_int=True):
-        ### Argument validation
+    def __init__(self, values, names, MSB_left=True, pad="-", separator="", show_int=True):
+        # Argument validation
         # Normalize names, which can be string or sequence
         self.names = tuple(names)
         if len(self.names) > 63:
@@ -234,17 +239,19 @@ class Fields(BitVector):
         if len(self.names) != len(set(self.names)):
             raise ValueError("Field names must be unique")
         # Ensure no empty names
-        if any(name == '' for name in self.names):
+        if any(name == "" for name in self.names):
             raise ValueError("Names cannot be empty strings")
         # If separator is non-empty, it cannot be a field name
-        if (separator != '') and (separator in self.names):
+        if (separator != "") and (separator in self.names):
             raise ValueError("Separator cannot be a field name")
         # Field names can have multiple characters, but if so, there must be a separator
         self.namewidth = max(len(n) for n in self.names)
-        if (self.namewidth > 1) and (separator == ''):
-            raise ValueError(f"A non-empty separator must be specified when field names have more than one character")
+        if (self.namewidth > 1) and (separator == ""):
+            raise ValueError(
+                "A non-empty separator must be specified when field names have more than one character"
+            )
         if len(pad) > 1:
-            raise ValueError(f"Pad must be single character or empty string")
+            raise ValueError("Pad must be single character or empty string")
 
         self.padchar = pad
         # string to display when a field is not set
@@ -267,12 +274,12 @@ class Fields(BitVector):
         super().__init__(values, width=width, reverse=not MSB_left)
 
     def _convert_strings(self, s):
-        '''
+        """
         Convert string field names to binary vectors.
-        '''
+        """
         # Initialize to zero
         values = zeros(s.size, dtype=bitType)
-        if self.separator == '':
+        if self.separator == "":
             # When separator is empty, field names are guaranteed to be single characters
             for name, shift in zip(self.names, self.shifts):
                 # Check if name exists in each string
@@ -291,38 +298,38 @@ class Fields(BitVector):
         return values
 
     def _parse_scalar(self, s):
-        '''
+        """
         Convert a string of named fields to a binary value.
-        '''
+        """
         val = 0
-        if self.separator == '':
+        if self.separator == "":
             # Arg validation guarantees single-character field names if here
             for name, shift in zip(self.names, self.shifts):
                 if name in s:
-                    val |= (1 << shift)
+                    val |= 1 << shift
         else:
             fields = s.split(self.separator)
             for name, shift in zip(self.names, self.shifts):
                 if name in fields:
-                    val |= (1 << shift)
+                    val |= 1 << shift
         return val
 
     def format(self, x):
-        '''
+        """
         Format a single binary value as a string of named fields.
-        '''
+        """
         # Start with a fixed-width, zero-padded binary value,
         # and replace 0/1 with ./| for better visibility
-        s = ''
+        s = ""
         for i, shift in enumerate(self.shifts):
             bitset = ((int(x) >> shift) & 1) == 1
             if bitset:
-                s += '{{:^{}s}}'.format(self.namewidth).format(self.names[i])
+                s += "{{:^{}s}}".format(self.namewidth).format(self.names[i])
             else:
                 s += self.pad
             s += self.separator
         if self.show_int:
-            s += ' ({:n})'.format(x)
+            s += " ({:n})".format(x)
         return s
 
     def __setitem__(self, key, value):
@@ -333,8 +340,14 @@ class Fields(BitVector):
             return super().__setitem__(key, value)
 
     def _cast(self, values):
-        return self.__class__(values, self.names, MSB_left=self.MSB_left, pad=self.padchar, separator=self.separator,
-                              show_int=self.show_int)
+        return self.__class__(
+            values,
+            self.names,
+            MSB_left=self.MSB_left,
+            pad=self.padchar,
+            separator=self.separator,
+            show_int=self.show_int,
+        )
 
     def _binop(self, other, op):
         if isinstance(other, str):
@@ -359,7 +372,7 @@ class Fields(BitVector):
 
 
 def ip_address(values):
-    '''
+    """
     Convert values to an Arkouda array of IP addresses.
 
     Parameters
@@ -378,7 +391,7 @@ def ip_address(values):
     accomodate IPv6 and to prevent errors if a user inadvertently
     casts a IPv4 instead of a int64 pdarray. It can also be used
     for importing Python lists of IP addresses into Arkouda.
-    '''
+    """
 
     if type(values) == IPv4:
         return values
@@ -388,7 +401,7 @@ def ip_address(values):
 
     if isinstance(values, Strings):
         raise NotImplementedError("Strings to IP address not yet implemented")
-    
+
     # Assume values is a python sequence of IP addresses in some format
     try:
         return IPv4(array([int(_ip_address(x)) for x in values]))
@@ -397,7 +410,7 @@ def ip_address(values):
 
 
 class IPv4(pdarray):
-    '''
+    """
     Represent integers as IPv4 addresses.
 
     Parameters
@@ -415,7 +428,7 @@ class IPv4(pdarray):
     This class is a thin wrapper around pdarray that mostly affects
     how values are displayed to the user. Operators and methods will
     typically treat this class like an int64 pdarray.
-    '''
+    """
 
     def __init__(self, values):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
@@ -423,54 +436,62 @@ class IPv4(pdarray):
         # Casting always creates a copy with new server-side name,
         # which will avoid unknown symbol errors
         self.values = akcast(values, bitType)
-        super().__init__(self.values.name, self.values.dtype.name, self.values.size, self.values.ndim, self.values.shape, self.values.itemsize)
+        super().__init__(
+            self.values.name,
+            self.values.dtype.name,
+            self.values.size,
+            self.values.ndim,
+            self.values.shape,
+            self.values.itemsize,
+        )
 
     def format(self, x):
-        '''
+        """
         Format a single integer IP address as a string.
-        '''
+        """
         if not isSupportedInt(x):
             raise TypeError("Argument must be an integer scalar")
         return str(_ip_address(int(x)))
 
     def normalize(self, x):
-        '''
+        """
         Take in an IP address as a string, integer, or IPAddress object,
         and convert it to an integer.
-        '''
+        """
         if not isSupportedInt(x):
             x = int(_ip_address(x))
         if x < 0:
-            raise ValueError("Not an IP address: {}".format(_ip_address(x)))
+            raise ValueError(f"Not an IP address: {_ip_address(x)}")
         return x
 
     def _is_supported_scalar(self, x):
         try:
             return True, self.normalize(x)
-        except:
+        except ValueError:
             return False, None
 
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
+
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
         else:
             vals = [self.format(self.values[i]) for i in range(3)]
-            vals.append('...')
-            vals.extend([self.format(self.values[i]) for i in range(self.size-3, self.size)])
+            vals.append("...")
+            vals.extend([self.format(self.values[i]) for i in range(self.size - 3, self.size)])
         # Display values as single, aligned column for ease of viewing
-        spaces = ' '*(len(self.__class__.__name__)+1)
-        return "{}([{}],\n{})".format(self.__class__.__name__,
-                                                          ',\n{} '.format(spaces).join(vals),
-                                                          spaces)
+        spaces = " " * (len(self.__class__.__name__) + 1)
+        return "{}([{}],\n{})".format(
+            self.__class__.__name__, ",\n{} ".format(spaces).join(vals), spaces
+        )
 
     def __repr__(self):
         return self.__str__()
 
     def to_ndarray(self):
-        '''
+        """
         Export array as a numpy array of integers.
-        '''
+        """
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
     def __getitem__(self, key):
@@ -509,7 +530,7 @@ class IPv4(pdarray):
         isscalar, scalarval = self._is_supported_scalar(other)
         if isscalar:
             return self.values._r_binop(scalarval, op)
-        elif (isinstance(other, pdarray) and other.dtype in intTypes):
+        elif isinstance(other, pdarray) and other.dtype in intTypes:
             return other._binop(self.values, op)
         else:
             return NotImplemented

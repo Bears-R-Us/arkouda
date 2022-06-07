@@ -1,7 +1,10 @@
 from collections import UserDict
+
 from tabulate import tabulate  # type: ignore
 
-__all__ = ["Row", ]
+__all__ = [
+    "Row",
+]
 
 """
 Row structure based on UserDict.
@@ -19,7 +22,7 @@ class Row(UserDict):
         Return ascii-formatted version of the dataframe.
         """
 
-        return tabulate(self.items(), headers=['keys', 'values'], showindex=False)
+        return tabulate(self.items(), headers=["keys", "values"], showindex=False)
 
     def __repr__(self):
         return dict(self).__repr__()
@@ -29,5 +32,5 @@ class Row(UserDict):
         Return html-formatted version of the dataframe.
         """
 
-        headers = ['keys', 'values']
-        return tabulate(self.items(), headers=headers, tablefmt='html', showindex=False)
+        headers = ["keys", "values"]
+        return tabulate(self.items(), headers=headers, tablefmt="html", showindex=False)

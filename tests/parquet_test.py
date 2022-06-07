@@ -120,7 +120,6 @@ def empty_append_test(dtype):
 
     return ak_arr, pq_arr
 
-@pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
 class ParquetTest(ArkoudaTest):
     def test_parquet(self):
         for dtype in TYPES:
@@ -203,7 +202,7 @@ class ParquetTest(ArkoudaTest):
         for dtype in TYPES:
             (ak_arr, pq_arr) = empty_append_test(dtype)
             self.assertTrue((ak_arr ==  pq_arr).all())
-            
+
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
         datadir = 'resources/parquet-testing'

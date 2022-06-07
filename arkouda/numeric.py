@@ -1,29 +1,53 @@
-import numpy as np # type: ignore
-from typeguard import typechecked
-from typing import cast as type_cast
-from typing import Optional, Tuple, Union, ForwardRef
-from arkouda.client import generic_msg
-from arkouda.dtypes import resolve_scalar_dtype, DTypes, isSupportedNumber, \
-     int_scalars, numeric_scalars
-from arkouda.dtypes import _as_dtype
-from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.groupbyclass import GroupBy
-from arkouda.strings import Strings
 from enum import Enum
+from typing import ForwardRef, Optional, Tuple, Union
+from typing import cast as type_cast
 
-Categorical = ForwardRef('Categorical')
+import numpy as np  # type: ignore
+from typeguard import typechecked
 
-__all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "hash", "where", "histogram", "value_counts", "isnan", "ErrorMode"]
+from arkouda.client import generic_msg
+from arkouda.dtypes import (
+    DTypes,
+    _as_dtype,
+    int_scalars,
+    isSupportedNumber,
+    numeric_scalars,
+    resolve_scalar_dtype,
+)
+from arkouda.groupbyclass import GroupBy
+from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.strings import Strings
+
+Categorical = ForwardRef("Categorical")
+
+__all__ = [
+    "cast",
+    "abs",
+    "log",
+    "exp",
+    "cumsum",
+    "cumprod",
+    "sin",
+    "cos",
+    "hash",
+    "where",
+    "histogram",
+    "value_counts",
+    "isnan",
+    "ErrorMode",
+]
+
 
 class ErrorMode(Enum):
-    strict = 'strict'
-    ignore = 'ignore'
-    return_validity = 'return_validity'
+    strict = "strict"
+    ignore = "ignore"
+    return_validity = "return_validity"
 
 
 @typechecked
-def cast(pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[pdarray, Strings], Tuple[pdarray, pdarray]]:
+def cast(
+    pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: ErrorMode = ErrorMode.strict
+) -> Union[Union[pdarray, Strings], Tuple[pdarray, pdarray]]:
     """
     Cast an array to another dtype.
 
@@ -54,21 +78,21 @@ def cast(pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: E
 
     Notes
     -----
-    The cast is performed according to Chapel's casting rules and is NOT safe 
-    from overflows or underflows. The user must ensure that the target dtype 
+    The cast is performed according to Chapel's casting rules and is NOT safe
+    from overflows or underflows. The user must ensure that the target dtype
     has the precision and capacity to hold the desired result.
-    
+
     Examples
     --------
     >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
-    array([1, 2, 3, 4, 5])    
-    
+    array([1, 2, 3, 4, 5])
+
     >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
     dtype('float64')
-    
+
     >>> ak.cast(ak.arange(0,5), dt=ak.bool)
     array([False, True, True, True, True])
-    
+
     >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
     array([False, True, True, True, True])
     """
@@ -83,51 +107,53 @@ def cast(pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: E
 
     dt = _as_dtype(dt)
     cmd = "cast"
-    args= "{} {} {} {}".format(name, objtype, dt.name, errors.name)
-    repMsg = generic_msg(cmd=cmd,args=args)
+    args = "{} {} {} {}".format(name, objtype, dt.name, errors.name)
+    repMsg = generic_msg(cmd=cmd, args=args)
     if dt.name.startswith("str"):
-        return Strings.from_parts(*(type_cast(str,repMsg).split("+")))
+        return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
     else:
         if errors == ErrorMode.return_validity:
             a, b = type_cast(str, repMsg).split("+")
             return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
         else:
-            return create_pdarray(type_cast(str,repMsg))
+            return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def abs(pda : pdarray) -> pdarray:
+def abs(pda: pdarray) -> pdarray:
     """
     Return the element-wise absolute value of the array.
 
     Parameters
     ----------
     pda : pdarray
-    
+
     Returns
     -------
     pdarray
         A pdarray containing absolute values of the input array elements
-   
+
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
-        
+
     Examples
     --------
     >>> ak.abs(ak.arange(-5,-1))
     array([5, 4, 3, 2])
-    
+
     >>> ak.abs(ak.linspace(-5,-1,5))
-    array([5, 4, 3, 2, 1])    
+    array([5, 4, 3, 2, 1])
     """
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("abs", pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def log(pda : pdarray) -> pdarray:
+def log(pda: pdarray) -> pdarray:
     """
-    Return the element-wise natural log of the array. 
+    Return the element-wise natural log of the array.
 
     Parameters
     ----------
@@ -136,7 +162,7 @@ def log(pda : pdarray) -> pdarray:
     Returns
     -------
     pdarray
-        A pdarray containing natural log values of the input 
+        A pdarray containing natural log values of the input
         array elements
 
     Raises
@@ -162,7 +188,8 @@ def log(pda : pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("log", pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
 def log10(x: pdarray) -> pdarray:
@@ -179,13 +206,14 @@ def log10(x: pdarray) -> pdarray:
     pdarray contain values of the base 10 log
     """
     basechange = float(np.log10(np.exp(1)))
-    return basechange*log(x)
+    return basechange * log(x)
+
 
 @typechecked
-def exp(pda : pdarray) -> pdarray:
+def exp(pda: pdarray) -> pdarray:
     """
     Return the element-wise exponential of the array.
-    
+
     Parameters
     ----------
     pda : pdarray
@@ -193,76 +221,78 @@ def exp(pda : pdarray) -> pdarray:
     Returns
     -------
     pdarray
-        A pdarray containing exponential values of the input 
+        A pdarray containing exponential values of the input
         array elements
 
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
-        
+
     Examples
     --------
     >>> ak.exp(ak.arange(1,5))
     array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
-    
+
     >>> ak.exp(ak.uniform(5,1.0,5.0))
-    array([11.84010843172504, 46.454368507659211, 5.5571769623557188, 
+    array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
            33.494295836924771, 13.478894913238722])
     """
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("exp", pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def cumsum(pda : pdarray) -> pdarray:
+def cumsum(pda: pdarray) -> pdarray:
     """
-    Return the cumulative sum over the array. 
+    Return the cumulative sum over the array.
 
-    The sum is inclusive, such that the ``i`` th element of the 
+    The sum is inclusive, such that the ``i`` th element of the
     result is the sum of elements up to and including ``i``.
-    
+
     Parameters
     ----------
     pda : pdarray
-    
+
     Returns
     -------
     pdarray
         A pdarray containing cumulative sums for each element
         of the original pdarray
-    
+
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
-        
+
     Examples
     --------
     >>> ak.cumsum(ak.arange([1,5]))
     array([1, 3, 6])
 
     >>> ak.cumsum(ak.uniform(5,1.0,5.0))
-    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748, 
+    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
            12.710615785506533, 13.945880905466208])
-    
+
     >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
     array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("cumsum", pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def cumprod(pda : pdarray) -> pdarray:
+def cumprod(pda: pdarray) -> pdarray:
     """
-    Return the cumulative product over the array. 
+    Return the cumulative product over the array.
 
-    The product is inclusive, such that the ``i`` th element of the 
+    The product is inclusive, such that the ``i`` th element of the
     result is the product of elements up to and including ``i``.
 
     Parameters
     ----------
     pda : pdarray
-    
+
     Returns
     -------
     pdarray
@@ -273,67 +303,70 @@ def cumprod(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
-        
+
     Examples
     --------
     >>> ak.cumprod(ak.arange(1,5))
     array([1, 2, 6, 24]))
 
     >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553, 
+    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
            134.05309592737584, 450.21589865655358])
     """
     repMsg = generic_msg(cmd="efunc", args="{} {}".format("cumprod", pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def sin(pda : pdarray) -> pdarray:
+def sin(pda: pdarray) -> pdarray:
     """
     Return the element-wise sine of the array.
 
     Parameters
     ----------
     pda : pdarray
-    
+
     Returns
     -------
     pdarray
         A pdarray containing sin for each element
         of the original pdarray
-    
+
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg(cmd="efunc", args="{} {}".format("sin",pda.name))
-    return create_pdarray(type_cast(str,repMsg))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("sin", pda.name))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def cos(pda : pdarray) -> pdarray:
+def cos(pda: pdarray) -> pdarray:
     """
     Return the element-wise cosine of the array.
 
     Parameters
     ----------
     pda : pdarray
-    
+
     Returns
     -------
     pdarray
         A pdarray containing cosine for each element
         of the original pdarray
-    
+
     Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format("cos",pda.name)))
-    return create_pdarray(type_cast(str,repMsg))
+    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format("cos", pda.name)))
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def hash(pda : pdarray, full : bool = True) -> Union[Tuple[pdarray,pdarray],pdarray]:
+def hash(pda: pdarray, full: bool = True) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
 
@@ -345,14 +378,14 @@ def hash(pda : pdarray, full : bool = True) -> Union[Tuple[pdarray,pdarray],pdar
         By default, a 128-bit hash is computed and returned as
         two int64 arrays. If full=False, then a 64-bit hash
         is computed and returned as a single int64 array.
-    
+
     Returns
     -------
     hashes
-        If full=True, a 2-tuple of pdarrays containing the high 
+        If full=True, a 2-tuple of pdarrays containing the high
         and low 64 bits of each hash, respectively.
         If full=False, a single pdarray containing a 64-bit hash
-    
+
     Raises
     ------
     TypeError
@@ -362,7 +395,7 @@ def hash(pda : pdarray, full : bool = True) -> Union[Tuple[pdarray,pdarray],pdar
     -----
     This function uses the SIPhash algorithm, which can output
     either a 64-bit or 128-bit hash. However, the 64-bit hash
-    runs a significant risk of collisions when applied to more 
+    runs a significant risk of collisions when applied to more
     than a few million unique values. Unless the number of unique
     values is known to be small, the 128-bit hash is strongly
     recommended.
@@ -377,23 +410,25 @@ def hash(pda : pdarray, full : bool = True) -> Union[Tuple[pdarray,pdarray],pdar
         subcmd = "hash128"
     else:
         subcmd = "hash64"
-    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format(subcmd,pda.name)))
+    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format(subcmd, pda.name)))
     if full:
-        a, b = type_cast(str, repMsg).split('+')
+        a, b = type_cast(str, repMsg).split("+")
         return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
     else:
-        return create_pdarray(type_cast(str,repMsg))
+        return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def where(condition : pdarray, A : Union[numeric_scalars, pdarray], 
-                        B : Union[numeric_scalars, pdarray]) -> pdarray:
+def where(
+    condition: pdarray, A: Union[numeric_scalars, pdarray], B: Union[numeric_scalars, pdarray]
+) -> pdarray:
     """
-    Returns an array with elements chosen from A and B based upon a 
+    Returns an array with elements chosen from A and B based upon a
     conditioning array. As is the case with numpy.where, the return array
-    consists of values from the first array (A) where the conditioning array 
+    consists of values from the first array (A) where the conditioning array
     elements are True and from the second array (B) where the conditioning
     array elements are False.
-    
+
     Parameters
     ----------
     condition : pdarray
@@ -408,17 +443,17 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
     pdarray
         Values chosen from A where the condition is True and B where
         the condition is False
-        
-    Raises 
+
+    Raises
     ------
     TypeError
         Raised if the condition object is not a pdarray, if A or B is not
-        an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes 
-        are not supported or do not match, or multiple condition clauses (see 
+        an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes
+        are not supported or do not match, or multiple condition clauses (see
         Notes section) are applied
     ValueError
         Raised if the shapes of the condition, A, and B pdarrays are unequal
-        
+
     Examples
     --------
     >>> a1 = ak.arange(1,10)
@@ -426,7 +461,7 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
     >>> cond = a1 < 5
     >>> ak.where(cond,a1,a2)
     array([1, 2, 3, 4, 1, 1, 1, 1, 1])
-    
+
     >>> a1 = ak.arange(1,10)
     >>> a2 = ak.ones(9, dtype=np.int64)
     >>> cond = a1 == 5
@@ -441,44 +476,42 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
 
     Notes
     -----
-    A and B must have the same dtype and only one conditional clause 
+    A and B must have the same dtype and only one conditional clause
     is supported e.g., n < 5, n > 1, which is supported in numpy
     is not currently supported in Arkouda
     """
-    if (not isSupportedNumber(A) and not isinstance(A,pdarray)) or \
-                                      (not isSupportedNumber(B) and not isinstance(B,pdarray)):
-        raise TypeError('both A and B must be an int, np.int64, float, np.float64, or pdarray')
+    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
+        not isSupportedNumber(B) and not isinstance(B, pdarray)
+    ):
+        raise TypeError("both A and B must be an int, np.int64, float, np.float64, or pdarray")
     if isinstance(A, pdarray) and isinstance(B, pdarray):
-        repMsg = generic_msg(cmd="efunc3vv", args="{} {} {} {}".\
-                             format("where",
-                                    condition.name,
-                                    A.name,
-                                    B.name))
+        repMsg = generic_msg(
+            cmd="efunc3vv", args="{} {} {} {}".format("where", condition.name, A.name, B.name)
+        )
     # For scalars, try to convert it to the array's dtype
     elif isinstance(A, pdarray) and np.isscalar(B):
-        repMsg = generic_msg(cmd="efunc3vs", args="{} {} {} {} {}".\
-                             format("where",
-                                    condition.name,
-                                    A.name,
-                                    A.dtype.name,
-                                    A.format_other(B)))
+        repMsg = generic_msg(
+            cmd="efunc3vs",
+            args="{} {} {} {} {}".format(
+                "where", condition.name, A.name, A.dtype.name, A.format_other(B)
+            ),
+        )
     elif isinstance(B, pdarray) and np.isscalar(A):
-        repMsg = generic_msg(cmd="efunc3sv", args="{} {} {} {} {}".\
-                             format("where",
-                                    condition.name,
-                                    B.dtype.name,
-                                    B.format_other(A),
-                                    B.name))
+        repMsg = generic_msg(
+            cmd="efunc3sv",
+            args="{} {} {} {} {}".format(
+                "where", condition.name, B.dtype.name, B.format_other(A), B.name
+            ),
+        )
     elif np.isscalar(A) and np.isscalar(B):
         # Scalars must share a common dtype (or be cast)
         dtA = resolve_scalar_dtype(A)
         dtB = resolve_scalar_dtype(B)
         # Make sure at least one of the dtypes is supported
         if not (dtA in DTypes or dtB in DTypes):
-            raise TypeError(("Not implemented for scalar types {} " +
-                            "and {}").format(dtA, dtB))
+            raise TypeError(f"Not implemented for scalar types {dtA} and {dtB}")
         # If the dtypes are the same, do not cast
-        if dtA == dtB: # type: ignore
+        if dtA == dtB:  # type: ignore
             dt = dtA
         # If the dtypes are different, try casting one direction then the other
         elif dtB in DTypes and np.can_cast(A, dtB):
@@ -489,22 +522,18 @@ def where(condition : pdarray, A : Union[numeric_scalars, pdarray],
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError(("Cannot cast between scalars {} and {} to " +
-                            "supported dtype").format(A, B))
-        repMsg = generic_msg(cmd="efunc3ss", args="{} {} {} {} {} {}".\
-                             format("where",
-                                    condition.name,
-                                    dt,
-                                    A,
-                                    dt,
-                                    B))
-    return create_pdarray(type_cast(str,repMsg))
+            raise TypeError(f"Cannot cast between scalars {A} and {B} to supported dtype")
+        repMsg = generic_msg(
+            cmd="efunc3ss", args="{} {} {} {} {} {}".format("where", condition.name, dt, A, dt, B)
+        )
+    return create_pdarray(type_cast(str, repMsg))
+
 
 @typechecked
-def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray]:
+def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray]:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
-    
+
     Parameters
     ----------
     pda : pdarray
@@ -517,7 +546,7 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray
     -------
     (np.ndarray, Union[pdarray, int64 or float64])
         Bin edges and The number of values present in each bin
-        
+
     Raises
     ------
     TypeError
@@ -551,14 +580,16 @@ def histogram(pda : pdarray, bins : int_scalars=10) -> Tuple[np.ndarray, pdarray
     >>> plt.plot(b, h.to_ndarray())
     """
     if bins < 1:
-        raise ValueError('bins must be 1 or greater')
+        raise ValueError("bins must be 1 or greater")
     b = np.linspace(pda.min(), pda.max(), bins + 1)[:-1]
     repMsg = generic_msg(cmd="histogram", args="{} {}".format(pda.name, bins))
     return b, create_pdarray(type_cast(str, repMsg))
 
+
 @typechecked
-def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
-                        Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
+def value_counts(
+    pda: pdarray,
+) -> Union[Categorical, Tuple[Union[pdarray, Strings], Optional[pdarray]]]:  # type: ignore
     """
     Count the occurrences of the unique values of an array.
 
@@ -574,7 +605,7 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
 
     counts : pdarray, int64
         The number of times the corresponding unique value occurs
-        
+
     Raises
     ------
     TypeError
@@ -588,7 +619,7 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     -----
     This function differs from ``histogram()`` in that it only returns
     counts for values that are present, leaving out empty "bins". This
-    function delegates all logic to the unique() method where the 
+    function delegates all logic to the unique() method where the
     return_counts parameter is set to True.
 
     Examples
@@ -601,7 +632,7 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
 
 
 @typechecked
-def isnan(pda : pdarray) -> pdarray:
+def isnan(pda: pdarray) -> pdarray:
     """
     Test a pdarray for Not a number / NaN values
     Currently only supports float-value-based arrays

@@ -2,7 +2,7 @@ import pandas as pd  # type: ignore
 import random
 import string
 
-import os
+import os, glob
 from shutil import rmtree
 import pytest
 
@@ -167,18 +167,24 @@ class DataFrameTest(ArkoudaTest):
         # create pandas df to validate functionality against
         pd_df = build_pd_df()
 
+        # test out of place drop
+        df_drop = df.drop([0, 1, 2])
+        pddf_drop = pd_df.drop(labels=[0, 1, 2])
+        pddf_drop.reset_index(drop=True, inplace=True)
+        self.assertTrue(pddf_drop.equals(df_drop.to_pandas()))
+
+        df_drop = df.drop('userName', axis=1)
+        pddf_drop = pd_df.drop(labels=['userName'], axis=1)
+        self.assertTrue(pddf_drop.equals(df_drop.to_pandas()))
+
         # Test dropping columns
-        df.drop('userName', axis=1)
+        df.drop('userName', axis=1, inplace=True)
         pd_df.drop(labels=['userName'], axis=1, inplace=True)
 
         self.assertTrue(((df.to_pandas() == pd_df).all()).all())
 
-        # verify that the index cannot be dropped from ak.DataFrame
-        with self.assertRaises(KeyError):
-            df.drop('index', axis=1)
-
         # Test dropping rows
-        df.drop([0, 2, 5])
+        df.drop([0, 2, 5], inplace=True)
         # pandas retains original indexes when dropping rows, need to reset to line up with arkouda
         pd_df.drop(labels=[0, 2, 5], inplace=True)
         pd_df.reset_index(drop=True, inplace=True)
@@ -219,14 +225,33 @@ class DataFrameTest(ArkoudaTest):
 
         slice_df = df[ak.array([1, 3, 5])]
         self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
-        slice_df.reset_index()
+
+        df_reset = slice_df.reset_index()
+        self.assertTrue((df_reset.index == ak.array([0, 1, 2])).all())
+        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+
+        slice_df.reset_index(inplace=True)
         self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
 
     def test_rename(self):
         df = build_ak_df()
 
         rename = {'userName': 'name_col', 'userID': 'user_id'}
-        df.rename(rename)
+
+        #Test out of Place
+        df_rename = df.rename(rename)
+        self.assertIn("user_id", df_rename.columns)
+        self.assertIn("name_col", df_rename.columns)
+        self.assertNotIn('userName', df_rename.columns)
+        self.assertNotIn('userID', df_rename.columns)
+        self.assertIn("userID", df.columns)
+        self.assertIn("userName", df.columns)
+        self.assertNotIn('user_id', df.columns)
+        self.assertNotIn('name_col', df.columns)
+
+
+        # Test in place
+        df.rename(rename, inplace=True)
         self.assertIn("user_id", df.columns)
         self.assertIn("name_col", df.columns)
         self.assertNotIn('userName', df.columns)
@@ -449,8 +474,8 @@ class DataFrameTest(ArkoudaTest):
         df_copy.__setitem__('userID', ak.array([1, 2, 1, 3, 2, 1]))
         self.assertEqual(df.__repr__(), df_copy.__repr__())
 
-    @pytest.mark.skipif(not os.getenv('ARKOUDA_SERVER_PARQUET_SUPPORT'), reason="No parquet support")
     def test_save_table(self):
+        d = f"{os.getcwd()}/save_table_test"
         i = list(range(3))
         c1 = [9, 7, 17]
         c2 = [2, 4, 6]
@@ -463,17 +488,21 @@ class DataFrameTest(ArkoudaTest):
         akdf = ak.DataFrame(df_dict)
 
         validation_df = pd.DataFrame({
-            "c_2": c2,
+            "i": i,
             "c_1": c1,
-            "i": i
+            "c_2": c2,
         })
 
         # make directory to save to so pandas read works
-        os.mkdir(f"{os.getcwd()}/save_table_test")
-        akdf.save_table(f"{os.getcwd()}/save_table_test/testName", file_format='Parquet')
+        os.mkdir(d)
+        akdf.save_table(f"{d}/testName", file_format='Parquet')
 
-        ak_loaded = ak.DataFrame.load_table(f"{os.getcwd()}/save_table_test/testName")
+        ak_loaded = ak.DataFrame.load_table(f"{d}/testName")
         self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+
+        # test save with index true
+        akdf.save_table(f"{d}/testName_with_index.pq", file_format='Parquet', index=True)
+        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()['numLocales'])
 
         # Commenting the read into pandas out because it requires optional libraries
         # pddf = pd.read_parquet("save_table_test", engine='pyarrow')
@@ -481,4 +510,33 @@ class DataFrameTest(ArkoudaTest):
 
         # clean up test files
         rmtree("save_table_test/")
+
+    def test_isin(self):
+        df = ak.DataFrame({
+            'col_A': ak.array([7, 3]),
+            'col_B': ak.array([1, 9])
+        })
+
+        # test against pdarray
+        test_df = df.isin(ak.array([0, 1]))
+        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, False])
+        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [True, False])
+
+        # Test against dict
+        test_df = df.isin({'col_A': ak.array([0, 3])})
+        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, True])
+        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, False])
+
+        # test against series
+        i = ak.Index(ak.arange(2))
+        s = ak.Series(data=ak.array([3, 9]), index=i.index)
+        test_df = df.isin(s)
+        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [False, False])
+        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, True])
+
+        # test against another dataframe
+        other_df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_C': ak.array([0, 9])})
+        test_df = df.isin(other_df)
+        self.assertListEqual(test_df['col_A'].to_ndarray().tolist(), [True, True])
+        self.assertListEqual(test_df['col_B'].to_ndarray().tolist(), [False, False])
 

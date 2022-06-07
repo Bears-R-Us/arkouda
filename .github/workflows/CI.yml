@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  ARKOUDA_SERVER_PARQUET_SUPPORT: true
 
 jobs:
   lint:
@@ -109,30 +108,21 @@ jobs:
       run: |
         make check
     - name: Arkouda unit tests
+      if: matrix.image != 'chapel-gasnet-smp'
       env:
         ARKOUDA_PYTEST_OPTIONS: "--durations=0 --durations-min=5.0"
       run: |
         make test-python
     - name: Arkouda benchmark --correctness-only
+      if: matrix.image != 'chapel-gasnet-smp'
       run: |
         ./benchmarks/run_benchmarks.py --correctness-only
-        if [ "${{matrix.image}}" != "chapel-gasnet-smp" ]; then
-          ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
-        fi
+        ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
 
   chapel_unit_tests_linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - image: chapel
-            threads: 2
-          - image: chapel-gasnet-smp
-            threads: 1
-    env:
-      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.25.1
+      image: chapel/chapel:1.25.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies

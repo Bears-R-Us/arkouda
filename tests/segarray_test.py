@@ -587,6 +587,15 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(segarr.lengths.to_ndarray().tolist(), segarr_2.lengths.to_ndarray().tolist())
         self.assertListEqual(segarr.segments.to_ndarray().tolist(), segarr_2.segments.to_ndarray().tolist())
         self.assertListEqual(segarr.values.to_ndarray().tolist(), segarr_2.values.to_ndarray().tolist())
-        
+
+        # Verify is_registered
+        self.assertTrue(segarr.is_registered())
+        # Unregister one component
+        segarr.values.unregister()
+        with self.assertWarns(UserWarning):
+            segarr.is_registered()
+        # Unregister all components
         segarr.unregister()
+        self.assertFalse(segarr.is_registered())
+
         self.assertEqual(len(ak.list_registry()), 0)

@@ -18,6 +18,11 @@ prototype module UnitTestSort
   const numElems = numLocales * elemsPerLocale;
   config const printArrays = false;
 
+  config const useRandomSeed = true,
+               seed = if useRandomSeed then SeedGenerator.oddCurrentTime else 314159265;
+
+  config param testKeys = true,
+               testRanks = true;
   config param verify = true;
 
   /* Timing and Comm diagnostic reporting helpers */
@@ -49,15 +54,14 @@ prototype module UnitTestSort
   /* Main sort testing routine */
 
   proc testSort(A:[?D], type elemType, nElems, sortDesc) {
-    {
+    if testKeys {
       startDiag();
       var sortedA = radixSortLSD_keys(A, checkSorted=false);
       endDiag("radixSortLSD_keys", elemType, nElems, sortDesc);
       if printArrays { writeln(A); writeln(sortedA); }
       if verify { assert(AryUtil.isSorted(sortedA)); }
     }
-
-    {
+    if testRanks {
       startDiag();
       var rankSortedA = radixSortLSD_ranks(A, checkSorted=false);
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
@@ -107,7 +111,7 @@ prototype module UnitTestSort
     type elemType = A.eltType;
 
     var B: [D] T;
-    fillRandom(B);
+    fillRandom(B, seed=seed);
     A = B:A.eltType;
 
     testSort(A, elemType, nElems, "rand "+T:string+" vals");
@@ -137,7 +141,7 @@ prototype module UnitTestSort
       if bit < numBits(int) then mask |= (1:uint<<bit):int;
     }
 
-    fillRandom(A);
+    fillRandom(A, seed=seed);
     A &= mask;
 
     testSort(A, elemType, nElems, "activeBits="+activeBits:string);
@@ -180,6 +184,8 @@ prototype module UnitTestSort
   config type perfElemType = int,
               perfValRange = uint(16);
   config const perfMemFraction = 50;
+  config const perfWarmup = true;
+  config const perfTrials = 1;
 
   proc testPerformance() {
     param elemSize = numBytes(perfElemType);
@@ -190,14 +196,17 @@ prototype module UnitTestSort
     const D = makeDistDom(nElems);
     var A: [D] perfElemType;
     var B: [D] perfValRange;
-    fillRandom(B);
+    fillRandom(B, seed=seed);
     A = B:perfElemType;
 
-    // Warmup
-    radixSortLSD_keys(A, checkSorted=false);
-    radixSortLSD_ranks(A, checkSorted=false);
+    if perfWarmup {
+      if testKeys then radixSortLSD_keys(A, checkSorted=false);
+      if testRanks then radixSortLSD_ranks(A, checkSorted=false);
+    }
 
-    testSort(A, perfElemType, nElems, "rand "+perfValRange:string+" vals");
+    for 1..perfTrials {
+      testSort(A, perfElemType, nElems, "rand "+perfValRange:string+" vals");
+    }
   }
  
   proc main() {
