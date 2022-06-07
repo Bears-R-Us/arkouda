@@ -29,7 +29,7 @@ This guide will walk you through the environment configuration for Arkouda to op
  * cmake >= 3.11.0
  * zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * hdf5 
- * python 3.7 or greater
+ * python 3.8 or greater
  * numpy
  * typeguard for runtime type checking
  * pandas for testing and conversion utils
