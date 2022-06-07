@@ -1,8 +1,8 @@
 import json
-from typing import List, Union, Optional, SupportsInt
+from typeguard import typechecked
+from typing import List, Union, Optional
 from typing import cast as typecast
 
-import numpy as np
 import pandas as pd  # type: ignore
 
 from arkouda import Strings
@@ -21,13 +21,13 @@ from arkouda.util import concatenate, convert_if_categorical, get_callback, regi
 
 
 class Index:
+    @typechecked
     def __init__(self, values: Union[List, pdarray, Strings, pd.Index, "Index"], name: Optional[str] = None):
         if isinstance(values, Index):
-            # Typing added here for MyPy
-            self.values: Union[pdarray, Strings] = values.values
-            self.size: SupportsInt = values.size
-            self.dtype: np.dtype = values.dtype
-            self.name: Optional[str] = name if name else values.name
+            self.values = values.values
+            self.size = values.size
+            self.dtype = values.dtype
+            self.name = name if name else values.name
             return
         elif isinstance(values, pd.Index):
             self.values = array(values.values)
