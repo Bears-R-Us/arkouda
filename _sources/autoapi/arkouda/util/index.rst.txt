@@ -13,6 +13,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.util.identity
    arkouda.util.get_callback
    arkouda.util.concatenate
    arkouda.util.report_mem
@@ -31,18 +32,8 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
+.. py:function:: identity(x)
 
-.. autoapisummary::
-
-   arkouda.util.identity
-
-
-.. py:data:: identity
-   
-
-   
 
 .. py:function:: get_callback(x)
 
