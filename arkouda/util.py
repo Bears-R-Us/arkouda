@@ -12,7 +12,7 @@ from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_symbol_table
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, array
+from arkouda.pdarraycreation import arange
 from arkouda.pdarrayIO import read
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
@@ -208,7 +208,7 @@ def invert_permutation(perm):
 def most_common(g, values):
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use <GroupBy>.most_common(values) instead.",
+        " Use ak.GroupBy.most_common(values) instead.",
         DeprecationWarning,
     )
 
@@ -221,7 +221,7 @@ def arkouda_to_numpy(A: pdarray, tmp_dir: str = "") -> np.ndarray:
     """
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use x.to_ndarray() instead.",
+        " Use ak.pdarray.to_ndarray instead.",
         DeprecationWarning,
     )
 
