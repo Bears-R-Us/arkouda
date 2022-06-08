@@ -19,7 +19,7 @@ SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"
 
 
 def argsort(
-    pda: Union[pdarray, Strings, "Categorical"],  # type: ignore
+    pda: Union[pdarray, Strings, "Categorical"],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
 ) -> pdarray:  # type: ignore
     """
@@ -69,7 +69,7 @@ def argsort(
 
 
 def coargsort(
-    arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore
+    arrays: Sequence[Union[Strings, pdarray, "Categorical"]],  # type: ignore # noqa
     algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
 ) -> pdarray:  # type: ignore
     """

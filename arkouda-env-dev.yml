@@ -25,6 +25,7 @@ dependencies:
   - sphinx-argparse
   - sphinx-autoapi
   - typed-ast
+  - flake8
   
   - pip:
     # Developer dependencies

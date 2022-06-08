@@ -4,10 +4,9 @@ from typing import Mapping, Union, cast
 
 import h5py  # type: ignore
 import numpy as np  # type: ignore
-from arkouda import SegArray
+
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
-from arkouda import Strings, SegArray
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import AllSymbols, information
@@ -15,11 +14,14 @@ from arkouda.pdarrayclass import attach_pdarray, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarrayIO import read
 from arkouda.pdarraysetops import unique
+from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
 
-identity = lambda x: x
+
+def identity(x):
+    return x
 
 
 def get_callback(x):
