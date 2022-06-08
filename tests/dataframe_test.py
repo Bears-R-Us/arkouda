@@ -332,7 +332,7 @@ class DataFrameTest(ArkoudaTest):
 
         c = gb.count()
         self.assertIsInstance(c, ak.Series)
-        self.assertListEqual(c.index.to_pandas().tolist(), ["Alice", "Carol", "Bob"])
+        self.assertListEqual(c.index.to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
         self.assertListEqual(c.values.to_ndarray().tolist(), [3, 1, 2])
 
     def test_to_pandas(self):

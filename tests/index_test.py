@@ -12,7 +12,7 @@ class IndexTest(ArkoudaTest):
 
         self.assertIsInstance(idx, ak.Index)
         self.assertEqual(idx.size, 5)
-        self.assertListEqual(idx.to_pandas().tolist(), [i for i in range(5)])
+        self.assertListEqual(idx.to_ndarray().tolist(), [i for i in range(5)])
 
     def test_multiindex_creation(self):
         # test list generation
@@ -56,7 +56,7 @@ class IndexTest(ArkoudaTest):
         idx_2 = ak.Index(ak.array([2, 4, 1, 3, 0]))
 
         idx_full = idx_1.concat(idx_2)
-        self.assertListEqual(idx_full.to_pandas().tolist(), [0, 1, 2, 3, 4, 2, 4, 1, 3, 0])
+        self.assertListEqual(idx_full.to_ndarray().tolist(), [0, 1, 2, 3, 4, 2, 4, 1, 3, 0])
 
     def test_lookup(self):
         idx = ak.Index.factory(ak.arange(5))
