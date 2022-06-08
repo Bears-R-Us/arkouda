@@ -97,6 +97,9 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertListEqual(expected.to_ndarray().tolist(), uint_input.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_input.dtype)
 
+        # test int_scalars covers uint8, uint16, uint32
+        ak.arange(np.uint8(1), np.uint16(1000), np.uint32(1))
+
     def test_randint(self):
         testArray = ak.randint(0, 10, 5)
         self.assertIsInstance(testArray, ak.pdarray)
@@ -170,6 +173,9 @@ class PdarrayCreationTest(ArkoudaTest):
                          'uint8, uint16, uint32, uint64); got str instead'), 
                          cm.exception.args[0])
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
+
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
 
@@ -188,6 +194,9 @@ class PdarrayCreationTest(ArkoudaTest):
         values = ak.randint(1, 5, 10, dtype=bool, seed=2)
         self.assertTrue((ak.array([False, True, True, True, True, False, True, True, 
                                    True, True]) == values).all())
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
 
     def test_uniform(self):
         testArray = ak.uniform(3)
@@ -217,7 +226,10 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError):
             ak.uniform(low=0, high=5, size='100')
- 
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.uniform(low=np.uint8(0), high=5, size=np.uint32(100))
+
     def test_zeros(self):
         intZeros = ak.zeros(5, dtype=ak.int64)
         self.assertIsInstance(intZeros, ak.pdarray)
@@ -242,7 +254,12 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.zeros(5, dtype=ak.uint8)
             
         with self.assertRaises(TypeError):
-            ak.zeros(5, dtype=str)        
+            ak.zeros(5, dtype=str)      
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.zeros(np.uint8(5), dtype=ak.int64)
+        ak.zeros(np.uint16(5), dtype=ak.int64)
+        ak.zeros(np.uint32(5), dtype=ak.int64)
             
     def test_ones(self):   
         intOnes = ak.ones(5, dtype=int)
@@ -272,6 +289,11 @@ class PdarrayCreationTest(ArkoudaTest):
                     
         with self.assertRaises(TypeError) as cm:
             ak.ones(5, dtype=str)
+
+       # Test that int_scalars covers uint8, uint16, uint32
+        ak.ones(np.uint8(5), dtype=ak.int64)
+        ak.ones(np.uint16(5), dtype=ak.int64)
+        ak.ones(np.uint32(5), dtype=ak.int64)
         
     def test_ones_like(self):      
         intOnes = ak.ones(5, dtype=ak.int64)
@@ -327,6 +349,11 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.full(5, 8, dtype=str)
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.full(np.uint8(5), np.uint16(5), dtype=int)
+        ak.full(np.uint8(5), np.uint32(5), dtype=int)
+        ak.full(np.uint16(5), np.uint32(5), dtype=int)
 
     def test_full_like(self):
         int_full = ak.full(5, 6, dtype=ak.int64)
@@ -398,6 +425,11 @@ class PdarrayCreationTest(ArkoudaTest):
                          'uint8, uint16, uint32, uint64); got str instead'), 
                          cm.exception.args[0])
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.linspace(np.uint8(0),np.uint16(100),np.uint32(1000))
+        ak.linspace(np.uint32(0),np.uint16(100),np.uint8(1000))
+        ak.linspace(np.uint16(0),np.uint8(100),np.uint8(1000))
+
     def test_standard_normal(self):
         pda = ak.standard_normal(100)
         self.assertIsInstance(pda, ak.pdarray)
@@ -418,7 +450,6 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.standard_normal(np.int64(100), np.int64(1))
         
         self.assertTrue((npda ==  pda.to_ndarray()).all())
-        
 
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal('100')          
@@ -434,6 +465,11 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(ValueError) as cm:          
             ak.standard_normal(-1)
+
+        # Test that int_scalars covers uint8, uint16, uint32 
+        ak.standard_normal(np.uint8(100))
+        ak.standard_normal(np.uint16(100))
+        ak.standard_normal(np.uint32(100))
 
     def test_random_strings_uniform(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, size=100)
@@ -497,6 +533,9 @@ class PdarrayCreationTest(ArkoudaTest):
                                         characters='printable')
         self.assertTrue((ak.array(['+5', 'fp-P', '3Q4k', '~H', 'F', 'F=`,', 'E', 'YD', 'kBa\'', '(t5']) == pda).all())
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        pda = ak.random_strings_uniform(minlen=np.uint8(1), maxlen=np.uint32(5), seed=np.uint16(1), size=np.uint8(10), characters='printable')
+
     def test_random_strings_lognormal(self):
         pda = ak.random_strings_lognormal(2, 0.25, 100, characters='printable')
         self.assertIsInstance(pda,ak.Strings)
@@ -546,6 +585,9 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
         self.assertEqual(('type of argument "characters" must be str; got int instead'), 
                          cm.exception.args[0])  
+
+        # Test that int_scalars covers uint8, uint16, uint32 
+        ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100))
         
     def test_random_strings_lognormal_with_seed(self):
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
@@ -662,7 +704,12 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertTrue((float(2) == ones.to_ndarray()).all())  
         
         ones.fill(np.float64(2))  
-        self.assertTrue((np.float64(2) == ones.to_ndarray()).all())  
+        self.assertTrue((np.float64(2) == ones.to_ndarray()).all()) 
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ones.fill(np.uint8(2))
+        ones.fill(np.uint16(2))
+        ones.fill(np.uint32(2))
 
     def test_endian(self):
         N = 100
