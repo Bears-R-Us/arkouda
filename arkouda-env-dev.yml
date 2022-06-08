@@ -29,6 +29,6 @@ dependencies:
   
   - pip:
     # Developer dependencies
-    - mypy==0.931
+    - mypy>=0.931
     - typeguard==2.10.0
   

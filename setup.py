@@ -157,7 +157,7 @@ setup(
     extras_require={  # Optional
         'dev': ['pexpect', 'pytest', 'pytest-env',
                 'Sphinx', 'sphinx-argparse', 'sphinx-autoapi',
-                'mypy==0.931', 'typed-ast', 'flake8'],
+                'mypy>=0.931', 'typed-ast', 'flake8'],
     },
     # replace original install command with version that also builds
     # chapel and the arkouda server.
