@@ -22,7 +22,9 @@ from arkouda.util import concatenate, convert_if_categorical, get_callback, regi
 
 class Index:
     @typechecked
-    def __init__(self, values: Union[List, pdarray, Strings, pd.Index, "Index"], name: Optional[str] = None):
+    def __init__(
+        self, values: Union[List, pdarray, Strings, pd.Index, "Index"], name: Optional[str] = None
+    ):
         if isinstance(values, Index):
             self.values = values.values
             self.size = values.size
