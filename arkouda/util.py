@@ -39,7 +39,7 @@ def get_callback(x):
 def concatenate(items, ordered=True):
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use ak.util.generic_concat(items, ordered) instead.",
+        " Use arkouda.util.generic_concat(items, ordered) instead.",
         DeprecationWarning,
     )
 
