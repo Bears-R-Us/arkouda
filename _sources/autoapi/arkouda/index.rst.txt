@@ -234,6 +234,7 @@ Functions
    arkouda.unique
    arkouda.list_registry
    arkouda.arange
+   arkouda.array
    arkouda.ones
    arkouda.in1d
    arkouda.concatenate
@@ -17036,6 +17037,56 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+
+   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
+   the corresponding data to the arkouda server.
+
+   :param a: Rank-1 array of a supported dtype
+   :type a: Union[pdarray, np.ndarray]
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype, type, or str
+
+   :returns: A pdarray instance stored on arkouda server or Strings instance, which
+             is composed of two pdarrays stored on arkouda server
+   :rtype: pdarray or Strings
+
+   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+       list, array, tuple, or deque
+   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+       not supported (not in DTypes), or if the product of a size and
+       a.itemsize > maxTransferBytes
+   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
+       required to generate the array.
+
+   .. seealso:: :obj:`pdarray.to_ndarray`
+
+   .. rubric:: Notes
+
+   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   otherwise a RuntimeError will be raised. This is to protect the user
+   from overwhelming the connection between the Python client and the arkouda
+   server, under the assumption that it is a low-bandwidth connection. The user
+   may override this limit by setting ak.maxTransferBytes to a larger value,
+   but should proceed with caution.
+
+   If the pdrray or ndarray is of type U, this method is called twice recursively
+   to create the Strings object and the two corresponding pdarrays for string
+   bytes and offsets, respectively.
+
+   .. rubric:: Examples
+
+   >>> ak.array(np.arange(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> ak.array(range(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
+   >>> type(strings)
+   <class 'arkouda.strings.Strings'>
+
+
 .. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
@@ -17127,7 +17178,7 @@ Attributes
    with earlier arkouda versions.
 
 
-.. py:class:: Index(index)
+.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
 
    .. py:method:: __getitem__(self, key)
 
@@ -17145,11 +17196,24 @@ Attributes
       Return self==value.
 
 
+   .. py:method:: index(self)
+      :property:
+
+      This is maintained to support older code
+
+
+   .. py:method:: shape(self)
+      :property:
+
+
    .. py:method:: factory(index)
       :staticmethod:
 
 
    .. py:method:: to_pandas(self)
+
+
+   .. py:method:: to_ndarray(self)
 
 
    .. py:method:: set_dtype(self, dtype)
@@ -17181,7 +17245,7 @@ Attributes
    .. py:method:: _merge(self, other)
 
 
-   .. py:method:: _merge_all(self, array)
+   .. py:method:: _merge_all(self, idx_list)
 
 
    .. py:method:: _check_aligned(self, other)
@@ -17250,7 +17314,7 @@ Attributes
 
 
 
-.. py:class:: MultiIndex(index)
+.. py:class:: MultiIndex(values)
 
    Bases: :py:obj:`Index`
 
@@ -17263,6 +17327,12 @@ Attributes
    .. py:method:: __eq__(self, v)
 
       Return self==value.
+
+
+   .. py:method:: index(self)
+      :property:
+
+      This is maintained to support older code
 
 
    .. py:method:: to_pandas(self)

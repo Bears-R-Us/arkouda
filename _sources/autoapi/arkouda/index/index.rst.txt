@@ -18,7 +18,7 @@ Classes
 
 
 
-.. py:class:: Index(index)
+.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
 
    .. py:method:: __getitem__(self, key)
 
@@ -36,11 +36,24 @@ Classes
       Return self==value.
 
 
+   .. py:method:: index(self)
+      :property:
+
+      This is maintained to support older code
+
+
+   .. py:method:: shape(self)
+      :property:
+
+
    .. py:method:: factory(index)
       :staticmethod:
 
 
    .. py:method:: to_pandas(self)
+
+
+   .. py:method:: to_ndarray(self)
 
 
    .. py:method:: set_dtype(self, dtype)
@@ -72,7 +85,7 @@ Classes
    .. py:method:: _merge(self, other)
 
 
-   .. py:method:: _merge_all(self, array)
+   .. py:method:: _merge_all(self, idx_list)
 
 
    .. py:method:: _check_aligned(self, other)
@@ -141,7 +154,7 @@ Classes
 
 
 
-.. py:class:: MultiIndex(index)
+.. py:class:: MultiIndex(values)
 
    Bases: :py:obj:`Index`
 
@@ -154,6 +167,12 @@ Classes
    .. py:method:: __eq__(self, v)
 
       Return self==value.
+
+
+   .. py:method:: index(self)
+      :property:
+
+      This is maintained to support older code
 
 
    .. py:method:: to_pandas(self)
