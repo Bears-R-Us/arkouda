@@ -208,7 +208,7 @@ def invert_permutation(perm):
 def most_common(g, values):
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use ak.GroupBy.most_common(values) instead.",
+        " Use arkouda.GroupBy.most_common(values) instead.",
         DeprecationWarning,
     )
 
@@ -221,7 +221,7 @@ def arkouda_to_numpy(A: pdarray, tmp_dir: str = "") -> np.ndarray:
     """
     warn(
         "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use ak.pdarray.to_ndarray instead.",
+        " Use arkouda.pdarray.to_ndarray instead.",
         DeprecationWarning,
     )
 
