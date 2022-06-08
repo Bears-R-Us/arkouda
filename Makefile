@@ -174,14 +174,14 @@ endif
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
 	@echo "Checking for ZMQ"
-	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
 HDF5_CHECK = $(DEP_INSTALL_DIR)/checkHDF5.chpl
 check-hdf5: $(HDF5_CHECK)
 	@echo "Checking for HDF5"
-	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
@@ -198,7 +198,7 @@ check-re2: $(RE2_CHECK)
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
 check-arrow: $(ARROW_CHECK) $(ARROW_O)
 	@echo "Checking for Arrow"
-	$(CHPL) $(CHPL_FLAGS) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 

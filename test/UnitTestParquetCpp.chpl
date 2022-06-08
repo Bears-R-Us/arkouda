@@ -1,4 +1,4 @@
-use ParquetMsg, SysCTypes, CPtr, FileSystem;
+use ParquetMsg, CTypes, FileSystem;
 use UnitTest;
 use TestBase;
 
