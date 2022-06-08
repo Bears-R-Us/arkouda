@@ -1,6 +1,4 @@
 import datetime
-from typing import Union
-
 import numpy as np  # type: ignore
 from pandas import Series  # type: ignore
 from pandas import Timedelta as pdTimedelta  # type: ignore
