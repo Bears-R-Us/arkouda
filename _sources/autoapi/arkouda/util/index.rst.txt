@@ -16,6 +16,7 @@ Functions
    arkouda.util.identity
    arkouda.util.get_callback
    arkouda.util.concatenate
+   arkouda.util.generic_concat
    arkouda.util.report_mem
    arkouda.util.register
    arkouda.util.register_all
@@ -39,6 +40,9 @@ Functions
 
 
 .. py:function:: concatenate(items, ordered=True)
+
+
+.. py:function:: generic_concat(items, ordered=True)
 
 
 .. py:function:: report_mem(pre='')
@@ -95,16 +99,6 @@ Functions
 
 .. py:function:: most_common(g, values)
 
-   Find the most common value for each key in a GroupBy object.
-
-   :param g: Grouping of keys
-   :type g: ak.GroupBy
-   :param values: Values in which to find most common
-   :type values: array-like
-
-   :returns: * **unique_keys** (*(list of) arrays*) -- Unique key of each group
-             * **most_common_values** (*array-like*) -- The most common value for each key
-
 
 .. py:function:: arkouda_to_numpy(A: arkouda.pdarrayclass.pdarray, tmp_dir: str = '') -> numpy.ndarray
 
@@ -118,7 +112,7 @@ Functions
 
 .. py:function:: convert_if_categorical(values)
 
-   Convert a cetegorical array to strings for display
+   Convert a Categorical array to Strings for display
 
 
 .. py:function:: attach(name: str, dtype: str = 'infer')

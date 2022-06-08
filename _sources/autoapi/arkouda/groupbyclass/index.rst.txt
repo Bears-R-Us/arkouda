@@ -752,6 +752,19 @@ Attributes
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
+   .. py:method:: most_common(self, values)
+
+      Find the most common value for each segment of a GroupBy object. This method only supports
+      array-like GroupBy key types.
+
+      :param values: Values in which to find most common based on the GroupBy's segment indexes.
+                     values.size must equal GroupBy.keys[0].size
+      :type values: array-like
+
+      :returns: **most_common_values** -- The most common value for each segment of the GroupBy
+      :rtype: array-like
+
+
 
 .. py:function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64, numpy.uint64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
