@@ -43,7 +43,7 @@ def concatenate(items, ordered=True):
         DeprecationWarning,
     )
 
-    return generic_concat(items, ordered=True)
+    return generic_concat(items, ordered=ordered)
 
 
 def generic_concat(items, ordered=True):
