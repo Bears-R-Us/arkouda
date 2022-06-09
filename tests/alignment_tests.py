@@ -22,10 +22,3 @@ class DataFrameTest(ArkoudaTest):
         vals = ak.array(v, dtype=ak.uint64)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
         self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
-
-        # test float64
-        # lower_bound = ak.array(lb, dtype=ak.float64)
-        # upper_bound = ak.array(ub, dtype=ak.float64)
-        # vals = ak.array(v, dtype=ak.float64)
-        # interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        # self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
