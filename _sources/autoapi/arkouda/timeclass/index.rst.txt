@@ -446,7 +446,7 @@ Attributes
 
 
 
-.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
+.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, inclusive='both', **kwargs)
 
    Creates a fixed frequency Datetime range. Alias for
    ``ak.Datetime(pd.date_range(args))``. Subject to size limit
@@ -472,7 +472,10 @@ Attributes
    :type name: str, default None
    :param closed: Make the interval closed with respect to the given frequency to
                   the 'left', 'right', or both sides (None, the default).
+                  *Deprecated*
    :type closed: {None, 'left', 'right'}, optional
+   :param inclusive: Include boundaries. Whether to set each bound as closed or open.
+   :type inclusive: {"both", "neither", "left", "right"}, default "both"
    :param \*\*kwargs: For compatibility. Has no effect on the result.
 
    :returns: **rng**
