@@ -22,5 +22,5 @@ Sphinx
 sphinx-argparse
 sphinx-autoapi
 typed-ast
-mypy==0.931
+mypy>=0.931
 flake8
