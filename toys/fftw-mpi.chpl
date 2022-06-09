@@ -56,7 +56,7 @@
 // require MPI here. 
 use MPI;
 use FFTW;
-use SysCTypes;
+use CTypes;
 require "fftw3-mpi.h";
 
 // Allow the user to define the number of threads used by FFTW.

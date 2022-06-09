@@ -1,4 +1,4 @@
-use HDF5, SysCTypes;
+use HDF5, CTypes;
 
 proc main() {
   var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
