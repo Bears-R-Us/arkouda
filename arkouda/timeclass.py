@@ -197,7 +197,7 @@ class _AbstractBaseTime(pdarray):
         return self.__class__(rounded, unit=freq)
 
     def to_ndarray(self):
-        __doc__ = super().to_ndarray.__doc__
+        __doc__ = super().to_ndarray.__doc__  # noqa
         return np.array(
             self.values.to_ndarray(), dtype="{}64[ns]".format(self.__class__.__name__.lower())
         )
@@ -348,22 +348,22 @@ class _AbstractBaseTime(pdarray):
             return NotImplemented
 
     def min(self):
-        __doc__ = super().min.__doc__
+        __doc__ = super().min.__doc__  # noqa
         # Return type is pandas scalar
         return self._scalar_callback(self.values.min())
 
     def max(self):
-        __doc__ = super().max.__doc__
+        __doc__ = super().max.__doc__  # noqa
         # Return type is pandas scalar
         return self._scalar_callback(self.values.max())
 
     def mink(self, k):
-        __doc__ = super().mink.__doc__
+        __doc__ = super().mink.__doc__  # noqa
         # Return type is same class
         return self.__class__(self.values.mink(k))
 
     def maxk(self, k):
-        __doc__ = super().maxk.__doc__
+        __doc__ = super().maxk.__doc__  # noqa
         # Return type is same class
         return self.__class__(self.values.maxk(k))
 

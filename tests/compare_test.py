@@ -1,16 +1,17 @@
 import numpy as np
-from context import arkouda as ak
 from base_test import ArkoudaTest
+from context import arkouda as ak
 
 N = 1_000_000
 
-'''
-The CompareTest class encapsulates unit tests that compare the results of analogous  
-method invocations against Numpy ndarrays and Arkouda pdarrays to ensure equivalent 
+"""
+The CompareTest class encapsulates unit tests that compare the results of analogous
+method invocations against Numpy ndarrays and Arkouda pdarrays to ensure equivalent
 results are generated.
-'''
-class CompareTest(ArkoudaTest):
+"""
 
+
+class CompareTest(ArkoudaTest):
     def test_compare_arange(self):
         # create np version
         nArange = np.arange(N)
@@ -93,83 +94,83 @@ class CompareTest(ArkoudaTest):
     def test_compare_get_bool_iv(self):
         # create np version
         a = np.arange(N)
-        a = a[a < N//2]
+        a = a[a < N // 2]
         # create ak version
         b = ak.arange(N)
-        b = b[b < N//2]
+        b = b[b < N // 2]
         self.assertEqual(a.all(), b.to_ndarray().all())
 
     def test_compare_set_bool_iv_value(self):
         # create np version
         a = np.arange(N)
-        a[a < N//2] = -1
+        a[a < N // 2] = -1
         # create ak version
         b = ak.arange(N)
-        b[b < N//2] = -1
+        b[b < N // 2] = -1
         self.assertEqual(a.all(), b.to_ndarray().all())
 
     def check_set_bool_iv(self):
         # create np version
         a = np.arange(N)
-        a[a < N//2] = a[:N//2] * -1
+        a[a < N // 2] = a[: N // 2] * -1
         # create ak version
         b = ak.arange(N)
-        b[b < N//2] = b[:N//2] * -1
+        b[b < N // 2] = b[: N // 2] * -1
         self.assertEqual(a.all(), b.to_ndarray().all())
-       
+
     def check_get_integer_iv(self):
         # create np version
         a = np.arange(N)
-        iv = np.arange(N//2)
+        iv = np.arange(N // 2)
         a = a[iv]
         # create ak version
         b = ak.arange(N)
-        iv = ak.arange(N//2)
+        iv = ak.arange(N // 2)
         b = b[iv]
         self.assertEqual(a.all(), b.to_ndarray().all())
 
     def test_compare_set_integer_iv_val(self):
         # create np version
         a = np.arange(N)
-        iv = np.arange(N//2)
+        iv = np.arange(N // 2)
         a[iv] = -1
         # create ak version
         b = ak.arange(N)
-        iv = ak.arange(N//2)
+        iv = ak.arange(N // 2)
         b[iv] = -1
         self.assertEqual(a.all(), b.to_ndarray().all())
 
     def test_compare_set_integer_iv(self):
         # create np version
         a = np.arange(N)
-        iv = np.arange(N//2)
-        a[iv] = iv*10
+        iv = np.arange(N // 2)
+        a[iv] = iv * 10
         # create ak version
         b = ak.arange(N)
-        iv = ak.arange(N//2)
-        b[iv] = iv*10
+        iv = ak.arange(N // 2)
+        b[iv] = iv * 10
         self.assertEqual(a.all(), b.to_ndarray().all())
 
     def test_compare_get_integer_idx(self):
         # create np version
         a = np.arange(N)
-        v1 = a[N//2]
+        v1 = a[N // 2]
         # create ak version
         b = ak.arange(N)
-        v2 = b[N//2]
+        v2 = b[N // 2]
         self.assertEqual(v1, v2)
         self.assertEqual(a[-1], b[-1])
 
     def test_compare_set_integer_idx(self):
         # create np version
         a = np.arange(N)
-        a[N//2] = -1
+        a[N // 2] = -1
         a[-1] = -1
-        v1 = a[N//2]
+        v1 = a[N // 2]
         # create ak version
         b = ak.arange(N)
-        b[N//2] = -1
+        b[N // 2] = -1
         b[-1] = -1
-        v2 = b[N//2]
+        v2 = b[N // 2]
         self.assertEqual(v1, v2)
         self.assertEqual(a[-1], b[-1])

@@ -712,7 +712,7 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
     df = DataFrame(df_def)
 
     if write_file:
-        df.save_table(write_file, index=index, file_format=filetype)
+        df.save(write_file, index=index, file_format=filetype)
 
     if return_obj:
         return df
@@ -780,7 +780,7 @@ def export(
             "File type not supported. Import is only supported for HDF5 and Parquet file formats."
         )
 
-    akdf = DataFrame.load_table(read_path, file_format=filetype)
+    akdf = DataFrame.load(read_path, file_format=filetype)
     df = akdf.to_pandas(retain_index=index)
 
     if write_file:

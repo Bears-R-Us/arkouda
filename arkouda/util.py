@@ -1,25 +1,28 @@
 import os
 import re
 from typing import Mapping, Union, cast
+from warnings import warn
 
 import h5py  # type: ignore
 import numpy as np  # type: ignore
 
-from arkouda import SegArray
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.infoclass import AllSymbols, information
-from arkouda.pdarrayclass import attach_pdarray, create_pdarray, pdarray
+from arkouda.infoclass import list_symbol_table
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
 from arkouda.pdarrayIO import read
 from arkouda.pdarraysetops import unique
+from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
 from arkouda.strings import Strings
 from arkouda.timeclass import Datetime, Timedelta
 
-identity = lambda x: x
+
+def identity(x):
+    return x
 
 
 def get_callback(x):
@@ -33,8 +36,17 @@ def get_callback(x):
         return identity
 
 
-# TODO - moving this into arkouda, function name should probably be changed.
 def concatenate(items, ordered=True):
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda."
+        " Use arkouda.util.generic_concat(items, ordered) instead.",
+        DeprecationWarning,
+    )
+
+    return generic_concat(items, ordered=ordered)
+
+
+def generic_concat(items, ordered=True):
     # this version can be called with Dataframe and Series (which have Class.concat methods)
     from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 
@@ -98,19 +110,17 @@ def register_all(data, prefix, overwrite=True):
         return [register(v, f"{prefix}{i}") for i, v in enumerate(data)]
     elif isinstance(data, tuple):
         return tuple([register(v, f"{prefix}{i}") for i, v in enumerate(data)])
-    elif isinstance(data, GroupBy):
-        data.permutation = register(data.permutation, f"{prefix}permutation")
-        data.segments = register(data.segments, f"{prefix}segments")
-        data.unique_keys = register_all(data.unique_keys, f"{prefix}unique_keys_")
-        return data
     else:
-        raise TypeError(f"Cannot register objects of type {type(data)}")
+        try:
+            return data.register(prefix)
+        except Exception:
+            raise RegistrationError(f"Failed to register object of type '{type(data)}'")
 
 
 def attach_all(prefix):
-    pat = re.compile(prefix + "\\w+")
-    res = pat.findall(information(AllSymbols))
-    return {k[len(prefix) :]: attach_pdarray(k) for k in res}
+    pat = re.compile(f"(?:\\d+_)?{prefix}[\\w.]+")
+    res = pat.findall(str(list_symbol_table()))
+    return {k[len(prefix) :]: attach(k) for k in res}
 
 
 def unregister_all(prefix):
@@ -120,6 +130,11 @@ def unregister_all(prefix):
 
 
 def enrich_inplace(data, keynames, aggregations, **kwargs):
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda.",
+        DeprecationWarning,
+    )
+
     # TO DO: validate reductions and values
     try:
         keys = data[keynames]
@@ -162,6 +177,11 @@ def expand(size, segs, vals):
     proper as ak.broadcast. It is retained here for backwards compatibility.
 
     """
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda."
+        " Use arkouda.broadcast(segments, values, size) instead.",
+        DeprecationWarning,
+    )
     return broadcast(segs, vals, size=size)
 
 
@@ -180,51 +200,31 @@ def invert_permutation(perm):
         The inverse of the permutation array.
 
     """
-    # TODO - look into the comment below
-    # I think this suffers from overflow errors on large arrays.
-    # if perm.sum() != (perm.size * (perm.size -1)) / 2:
-    #    raise ValueError("The indicated permutation is invalid.")
     if unique(perm).size != perm.size:
         raise ValueError("The array is not a permutation.")
     return coargsort([perm, arange(0, perm.size)])
 
 
 def most_common(g, values):
-    """
-    Find the most common value for each key in a GroupBy object.
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda."
+        " Use arkouda.GroupBy.most_common(values) instead.",
+        DeprecationWarning,
+    )
 
-    Parameters
-    ----------
-    g : ak.GroupBy
-        Grouping of keys
-    values : array-like
-        Values in which to find most common
-
-    Returns
-    -------
-    unique_keys : (list of) arrays
-        Unique key of each group
-    most_common_values : array-like
-        The most common value for each key
-    """
-    # Give each key an integer index
-    keyidx = g.broadcast(arange(g.unique_keys[0].size), permute=True)
-    # Annex values and group by (key, val)
-    bykeyval = GroupBy([keyidx, values])
-    # Count number of records for each (key, val)
-    (ki, uval), count = bykeyval.count()
-    # Group out value
-    bykey = GroupBy(ki, assume_sorted=True)
-    # Find the index of the most frequent value for each key
-    _, topidx = bykey.argmax(count)
-    # Gather the most frequent values
-    return uval[topidx]
+    return g.most_common(values)
 
 
 def arkouda_to_numpy(A: pdarray, tmp_dir: str = "") -> np.ndarray:
     """
     Convert from arkouda to numpy using disk rather than sockets.
     """
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda."
+        " Use arkouda.pdarray.to_ndarray instead.",
+        DeprecationWarning,
+    )
+
     rng = np.random.randint(2**64, dtype=np.uint64)
     tmp_dir = os.getcwd() if not tmp_dir else tmp_dir
     A.save(f"{tmp_dir}/{rng}")
@@ -248,6 +248,12 @@ def numpy_to_arkouda(
     """
     Convert from numpy to arkouda using disk rather than sockets.
     """
+    warn(
+        "This function is deprecated and will be removed in a later version of Arkouda."
+        " Use arkouda.array(x) instead.",
+        DeprecationWarning,
+    )
+
     rng = np.random.randint(2**64, dtype=np.uint64)
     tmp_dir = os.getcwd() if not tmp_dir else tmp_dir
     with h5py.File(f"{tmp_dir}/{rng}.hdf5", "w") as f:
@@ -262,7 +268,7 @@ def numpy_to_arkouda(
 
 def convert_if_categorical(values):
     """
-    Convert a cetegorical array to strings for display
+    Convert a Categorical array to Strings for display
     """
 
     if isinstance(values, Categorical):
@@ -281,6 +287,10 @@ def attach(name: str, dtype: str = "infer"):
         return Categorical.from_return_msg(repMsg)
     elif repMsg.split("+")[0] == "segarray":
         return SegArray.from_return_msg(repMsg)
+    elif repMsg.split("+")[0] == "series":
+        from arkouda.series import Series
+
+        return Series.from_return_msg(repMsg)
     else:
         dtype = repMsg.split()[2]
 

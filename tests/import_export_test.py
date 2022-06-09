@@ -1,21 +1,24 @@
-import numpy as np
-import pandas as pd
+import glob
 import os
 from shutil import rmtree
-import glob
 
+import numpy as np
+import pandas as pd
 import pytest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+
 class DataFrameTest(ArkoudaTest):
     def build_pandas_dataframe(self):
-        df = pd.DataFrame(data={
-            'Random_A': np.random.randint(0, 5, 5),
-            'Random_B': np.random.randint(0, 5, 5),
-            'Random_C': np.random.randint(0, 5, 5)
-        }, index=np.arange(5))
+        df = pd.DataFrame(
+            data={
+                "Random_A": np.random.randint(0, 5, 5),
+                "Random_B": np.random.randint(0, 5, 5),
+                "Random_C": np.random.randint(0, 5, 5),
+            },
+            index=np.arange(5),
+        )
         return df
 
     def build_arkouda_dataframe(self):
@@ -23,7 +26,7 @@ class DataFrameTest(ArkoudaTest):
         return ak.DataFrame(pddf)
 
     def get_locale_count(self):
-        return ak.get_config()['numLocales']
+        return ak.get_config()["numLocales"]
 
     def test_import_hdf(self):
         locales = self.get_locale_count()
@@ -38,7 +41,9 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue(len(glob.glob(f"{f_base}/ak_table_*.h5")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
 
-        pddf.to_hdf(f"{f_base}/table_columns.h5", "dataframe", format="Table", data_columns=True, mode="w")
+        pddf.to_hdf(
+            f"{f_base}/table_columns.h5", "dataframe", format="Table", data_columns=True, mode="w"
+        )
         akdf = ak.import_data(f"{f_base}/table_columns.h5", write_file=f"{f_base}/ak_table_columns.h5")
         self.assertTrue(len(glob.glob(f"{f_base}/ak_table_columns_*.h5")) == locales)
         self.assertTrue(pddf.equals(akdf.to_pandas()))
@@ -63,7 +68,7 @@ class DataFrameTest(ArkoudaTest):
             os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
-        akdf.save_table(f"{f_base}/ak_write")
+        akdf.save(f"{f_base}/ak_write")
 
         pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.h5", index=True)
         self.assertTrue(len(glob.glob(f"{f_base}/pd_from_ak.h5")) == 1)
@@ -98,7 +103,7 @@ class DataFrameTest(ArkoudaTest):
             os.mkdir(f_base)
 
         akdf = self.build_arkouda_dataframe()
-        akdf.save_table(f"{f_base}/ak_write", file_format="Parquet")
+        akdf.save(f"{f_base}/ak_write", file_format="Parquet")
         print(akdf.__repr__())
 
         pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.parquet", index=True)

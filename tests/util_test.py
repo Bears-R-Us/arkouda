@@ -1,10 +1,12 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
 from arkouda.util import attach
+
 
 class utilTest(ArkoudaTest):
     def test_simple_attach(self):
-        a = ak.array(["abc","123","def"])
+        a = ak.array(["abc", "123", "def"])
         b = ak.arange(10)
 
         # Attach the Strings array and the pdarray to new objects
@@ -26,7 +28,9 @@ class utilTest(ArkoudaTest):
         self.assertIsInstance(b_typed_attach, ak.pdarray)
 
     def test_categorical_attach(self):
-        strings = ak.array(["hurrah", ",", "hurrah", ",", "one", "by", "one", "marching", "go", "ants", "the"])
+        strings = ak.array(
+            ["hurrah", ",", "hurrah", ",", "one", "by", "one", "marching", "go", "ants", "the"]
+        )
         cat = ak.Categorical(strings)
         cat.register("catTest")
 
@@ -56,3 +60,22 @@ class utilTest(ArkoudaTest):
         attached_typed = attach("segTest", "SegArray")
         self.assertTrue((segarr == attached_typed).all())
         self.assertIsInstance(attached_typed, ak.SegArray)
+
+    def test_series_attach(self):
+        index_tuple = (ak.arange(5), ak.arange(5, 10))
+        s = ak.Series(data=ak.arange(0, 10, 2), index=index_tuple)  # MultiIndex Series
+        s2 = ak.Series(data=ak.arange(5), index=ak.arange(5))  # Single Index Series
+
+        s.register("series_test")
+        s2.register("series_2_test")
+
+        s_attach = ak.util.attach("series_test")
+        s2_attach = ak.util.attach("series_2_test")
+
+        self.assertListEqual(s_attach.values.to_ndarray().tolist(), s.values.to_ndarray().tolist())
+        sEq = s_attach.index == s.index
+        self.assertTrue(all(sEq.to_ndarray()))
+
+        self.assertListEqual(s2_attach.values.to_ndarray().tolist(), s2.values.to_ndarray().tolist())
+        s2Eq = s2_attach.index == s2.index
+        self.assertTrue(all(s2Eq.to_ndarray()))

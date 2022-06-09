@@ -645,8 +645,7 @@ class GroupBy:
         >>> g.argmin(b)
         (array([2, 3, 4]), array([5, 4, 2]))
         """
-        if values.dtype == bool:
-            raise TypeError("argmin is only supported for pdarrays of dtype float64, uint64, and int64")
+
         return self.aggregate(values, "argmin")
 
     def argmax(self, values: pdarray) -> Tuple[groupable, pdarray]:
@@ -695,8 +694,7 @@ class GroupBy:
         >>> g.argmax(b)
         (array([2, 3, 4]), array([9, 3, 2]))
         """
-        if values.dtype == bool:
-            raise TypeError("argmax is only supported for pdarrays of dtype float64, uint64, and int64")
+
         return self.aggregate(values, "argmax")
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
@@ -1418,6 +1416,35 @@ class GroupBy:
 
         if f"{user_defined_name}.segments" in registry:
             unregister_pdarray_by_name(f"{user_defined_name}.segments")
+
+    def most_common(self, values):
+        """
+        Find the most common value for each segment of a GroupBy object. This method only supports
+        array-like GroupBy key types.
+
+        Parameters
+        ----------
+        values : array-like
+            Values in which to find most common based on the GroupBy's segment indexes.
+            values.size must equal GroupBy.keys[0].size
+
+        Returns
+        -------
+        most_common_values : array-like
+            The most common value for each segment of the GroupBy
+        """
+        # Give each key an integer index
+        keyidx = self.broadcast(arange(self.unique_keys[0].size), permute=True)
+        # Annex values and group by (key, val)
+        bykeyval = GroupBy([keyidx, values])
+        # Count number of records for each (key, val)
+        (ki, uval), count = bykeyval.count()
+        # Group out value
+        bykey = GroupBy(ki, assume_sorted=True)
+        # Find the index of the most frequent value for each key
+        _, topidx = bykey.argmax(count)
+        # Gather the most frequent values
+        return uval[topidx]
 
 
 def broadcast(
