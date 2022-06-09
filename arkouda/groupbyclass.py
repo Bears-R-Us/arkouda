@@ -87,7 +87,9 @@ def unique(
     if hasattr(pda, "_get_grouping_keys"):
         # Single groupable array
         nkeys = 1
-        grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
+        grouping_keys = cast(
+            list, cast(groupable_element_type, pda)._get_grouping_keys()
+        )
     else:
         # Sequence of groupable arrays
         nkeys = len(pda)
@@ -108,7 +110,11 @@ def unique(
     repMsg = generic_msg(
         cmd="unique",
         args="{} {} {:n} {} {}".format(
-            return_groups, assume_sorted, effectiveKeys, " ".join(keynames), " ".join(keytypes)
+            return_groups,
+            assume_sorted,
+            effectiveKeys,
+            " ".join(keynames),
+            " ".join(keytypes),
         ),
     )
     if return_groups:
@@ -217,7 +223,11 @@ class GroupBy:
     Reductions = GROUPBY_REDUCTION_TYPES
 
     def __init__(
-        self, keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs
+        self,
+        keys: Optional[groupable],
+        assume_sorted: bool = False,
+        hash_strings: bool = True,
+        **kwargs,
     ) -> None:
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
@@ -340,7 +350,9 @@ class GroupBy:
 
         operator = operator.lower()
         if operator not in self.Reductions:
-            raise ValueError(f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}")
+            raise ValueError(
+                f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}"
+            )
 
         # TO DO: remove once logic is ported over to Chapel
         if operator == "nunique":
@@ -348,7 +360,9 @@ class GroupBy:
 
         # All other aggregations operate on pdarray
         if cast(pdarray, values).size != self.size:
-            raise ValueError("Attempt to group array using key array of different length")
+            raise ValueError(
+                "Attempt to group array using key array of different length"
+            )
 
         if self.assume_sorted:
             permuted_values = cast(pdarray, values)
@@ -356,11 +370,16 @@ class GroupBy:
             permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
 
         cmd = "segmentedReduction"
-        args = "{} {} {} {}".format(permuted_values.name, self.segments.name, operator, skipna)
+        args = "{} {} {} {}".format(
+            permuted_values.name, self.segments.name, operator, skipna
+        )
         repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
         if operator.startswith("arg"):
-            return (self.unique_keys, cast(pdarray, self.permutation[create_pdarray(repMsg)]))
+            return (
+                self.unique_keys,
+                cast(pdarray, self.permutation[create_pdarray(repMsg)]),
+            )
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
@@ -547,7 +566,9 @@ class GroupBy:
         (array([2, 3, 4]), array([1, 1, 3]))
         """
         if values.dtype == bool:
-            raise TypeError("min is only supported for pdarrays of dtype float64, uint64, and int64")
+            raise TypeError(
+                "min is only supported for pdarrays of dtype float64, uint64, and int64"
+            )
         return self.aggregate(values, "min", skipna)
 
     def max(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
@@ -594,7 +615,9 @@ class GroupBy:
         (array([2, 3, 4]), array([4, 4, 3]))
         """
         if values.dtype == bool:
-            raise TypeError("max is only supported for pdarrays of dtype float64, uint64, and int64")
+            raise TypeError(
+                "max is only supported for pdarrays of dtype float64, uint64, and int64"
+            )
         return self.aggregate(values, "max", skipna)
 
     def argmin(self, values: pdarray) -> Tuple[groupable, pdarray]:
@@ -751,7 +774,10 @@ class GroupBy:
         # or Categorical (the last two have a .group() method).
         # Can't directly test Categorical due to circular import.
         if isinstance(values, pdarray):
-            if cast(pdarray, values).dtype != akint64 and cast(pdarray, values).dtype != akuint64:
+            if (
+                cast(pdarray, values).dtype != akint64
+                and cast(pdarray, values).dtype != akuint64
+            ):
                 raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx, values]
         elif hasattr(values, "group"):
@@ -774,7 +800,9 @@ class GroupBy:
         # Re-join unique counts with original keys (sorting guarantees same order)
         return self.unique_keys, nuniq
 
-    def any(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def any(
+        self, values: pdarray
+    ) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and perform an "or" reduction on each group.
@@ -804,7 +832,9 @@ class GroupBy:
             raise TypeError("any is only supported for pdarrays of dtype bool")
         return self.aggregate(values, "any")  # type: ignore
 
-    def all(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def all(
+        self, values: pdarray
+    ) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and perform an "and" reduction on
@@ -838,7 +868,9 @@ class GroupBy:
 
         return self.aggregate(values, "all")  # type: ignore
 
-    def OR(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def OR(
+        self, values: pdarray
+    ) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise OR of values in each segment.
 
@@ -870,11 +902,15 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError("OR is only supported for pdarrays of dtype int64 or uint64")
+            raise TypeError(
+                "OR is only supported for pdarrays of dtype int64 or uint64"
+            )
 
         return self.aggregate(values, "or")  # type: ignore
 
-    def AND(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def AND(
+        self, values: pdarray
+    ) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise AND of values in each segment.
 
@@ -906,11 +942,15 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError("AND is only supported for pdarrays of dtype int64 or uint64")
+            raise TypeError(
+                "AND is only supported for pdarrays of dtype int64 or uint64"
+            )
 
         return self.aggregate(values, "and")  # type: ignore
 
-    def XOR(self, values: pdarray) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
+    def XOR(
+        self, values: pdarray
+    ) -> Tuple[Union[pdarray, List[Union[pdarray, Strings]]], pdarray]:
         """
         Bitwise XOR of values in each segment.
 
@@ -942,7 +982,9 @@ class GroupBy:
             Raised if all is not supported for the values dtype
         """
         if values.dtype != akint64 and values.dtype != akuint64:
-            raise TypeError("XOR is only supported for pdarrays of dtype int64 or uint64")
+            raise TypeError(
+                "XOR is only supported for pdarrays of dtype int64 or uint64"
+            )
 
         return self.aggregate(values, "xor")  # type: ignore
 
@@ -1053,7 +1095,9 @@ class GroupBy:
             if "segments" not in kwargs:
                 missingKeys.append("segments")
 
-            raise ValueError(f"Can't build GroupBy. kwargs is missing required keys: {missingKeys}.")
+            raise ValueError(
+                f"Can't build GroupBy. kwargs is missing required keys: {missingKeys}."
+            )
 
     def _get_groupby_required_pieces(self) -> Dict:
         """
@@ -1114,13 +1158,17 @@ class GroupBy:
 
         if isinstance(self.keys, (Strings, pdarray, Categorical)):
             self.keys.register(f"{user_defined_name}_{self.keys.objtype}.keys")
-            self.unique_keys.register(f"{user_defined_name}_{self.keys.objtype}.unique_keys")
+            self.unique_keys.register(
+                f"{user_defined_name}_{self.keys.objtype}.unique_keys"
+            )
         elif isinstance(self.keys, Sequence):
             for x in range(len(self.keys)):
                 # Possible for multiple types in a sequence, so we have to check each key's
                 # type individually
                 if isinstance(self.keys[x], (Strings, pdarray, Categorical)):
-                    self.keys[x].register(f"{x}_{user_defined_name}_{self.keys[x].objtype}.keys")
+                    self.keys[x].register(
+                        f"{x}_{user_defined_name}_{self.keys[x].objtype}.keys"
+                    )
                     self.unique_keys[x].register(
                         f"{x}_{user_defined_name}_{self.keys[x].objtype}.unique_keys"
                     )
@@ -1211,7 +1259,9 @@ class GroupBy:
                 f"^\\d+_{self.name}_.+\\.keys$|^\\d+_{self.name}_.+\\.unique_keys$|"
                 f"^\\d+_{self.name}_.+\\.unique_keys(?=\\.categories$)"
             )
-            cat_regEx = compile(f"^\\d+_{self.name}_{Categorical.objtype}\\.keys(?=\\.codes$)")
+            cat_regEx = compile(
+                f"^\\d+_{self.name}_{Categorical.objtype}\\.keys(?=\\.codes$)"
+            )
 
             simple_registered = list(filter(regEx.match, registry))
             cat_registered = list(filter(cat_regEx.match, registry))
@@ -1296,7 +1346,9 @@ class GroupBy:
         matches.sort()
 
         if len(matches) == 0:
-            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
+            raise RegistrationError(
+                f"No registered elements with name '{user_defined_name}'"
+            )
 
         for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
