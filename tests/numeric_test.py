@@ -127,41 +127,30 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(20, len(result))
         self.assertEqual(int, result.dtype)
 
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
-                        cm.exception.args[0])  
         
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.histogram(pda, bins='1')
-        self.assertEqual(('type of argument "bins" must be one of (int, int8, int16, int32, ' +
-                        'int64, uint8, uint16, uint32, uint64); got str instead'), 
-                        cm.exception.args[0])  
         
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.histogram([range(0,10)], bins='1')
-        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
-                        cm.exception.args[0])  
 
     def testLog(self):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
         self.assertTrue((np.log(na) == ak.log(pda).to_ndarray()).all())
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.log([range(0,10)])
-        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
-                        cm.exception.args[0])  
 
     def testExp(self):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
         self.assertTrue((np.exp(na) == ak.exp(pda).to_ndarray()).all())
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.exp([range(0,10)])
-        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
-                        cm.exception.args[0])  
 
     def testAbs(self):
         na = np.linspace(1, 10, 10)
@@ -234,15 +223,11 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(ak.array([100]), result[1])
 
         pda = ak.linspace(1, 10, 10)
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.value_counts(pda)
-        self.assertEqual(('Grouping is only supported on numeric data (integral types) and bools.'), 
-                        cm.exception.args[0])  
 
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError):
             ak.value_counts([0])
-        self.assertEqual(('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead'), 
-                        cm.exception.args[0])  
 
     def test_isnan(self):
         """

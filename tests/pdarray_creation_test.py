@@ -162,20 +162,14 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.randint(low=1, high=0, size=1, dtype=ak.float64)
 
-        with self.assertRaises(TypeError) as cm:              
+        with self.assertRaises(TypeError):              
             ak.randint(0,1,'1000')
-        self.assertEqual('type of argument "size" must be one of (int, int8, int16, int32, int64, uint8, uint16, uint32, uint64); got str instead', 
-                         cm.exception.args[0])    
 
-        with self.assertRaises(TypeError) as cm:              
+        with self.assertRaises(TypeError):              
             ak.randint('0',1,1000)
-        self.assertEqual("'<' not supported between instances of 'int' and 'str'", 
-                         cm.exception.args[0])
         
-        with self.assertRaises(TypeError) as cm:              
+        with self.assertRaises(TypeError):              
             ak.randint(0,'1',1000)
-        self.assertEqual("'<' not supported between instances of 'str' and 'int'", 
-                         cm.exception.args[0])
 
         # Test that int_scalars covers uint8, uint16, uint32
         ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
@@ -431,21 +425,14 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(5.0000, pda[0])
         self.assertEqual(0.0000, pda[5])
         
-        with self.assertRaises(TypeError) as cm:        
+        with self.assertRaises(TypeError):        
             ak.linspace(0,'100', 1000)
-        self.assertEqual(('both start and stop must be an int, np.int64, float, or np.float64'), 
-                         cm.exception.args[0])
-        
-        with self.assertRaises(TypeError) as cm:        
-            ak.linspace('0',100, 1000)
-        self.assertEqual(('both start and stop must be an int, np.int64, float, or np.float64'), 
-                         cm.exception.args[0])
 
-        with self.assertRaises(TypeError) as cm:          
+        with self.assertRaises(TypeError):        
+            ak.linspace('0',100, 1000)
+
+        with self.assertRaises(TypeError):          
             ak.linspace(0,100,'1000')           
-        self.assertEqual(('type of argument "length" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0])
 
         # Test that int_scalars covers uint8, uint16, uint32
         ak.linspace(np.uint8(0),np.uint16(100),np.uint32(1000))
@@ -473,19 +460,13 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertTrue((npda ==  pda.to_ndarray()).all())
 
-        with self.assertRaises(TypeError) as cm:          
+        with self.assertRaises(TypeError):          
             ak.standard_normal('100')          
-        self.assertEqual(('type of argument "size" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0]) 
    
-        with self.assertRaises(TypeError) as cm:          
+        with self.assertRaises(TypeError):          
             ak.standard_normal(100.0)          
-        self.assertEqual(('type of argument "size" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got float instead'), 
-                         cm.exception.args[0])
 
-        with self.assertRaises(ValueError) as cm:          
+        with self.assertRaises(ValueError):          
             ak.standard_normal(-1)
 
         # Test that int_scalars covers uint8, uint16, uint32 
@@ -523,23 +504,15 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.random_strings_uniform(maxlen=5, minlen=5, size=10)
         
-        with self.assertRaises(TypeError) as cm:          
+        with self.assertRaises(TypeError):          
             ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
-        self.assertEqual(('type of argument "minlen" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0])  
-        
-        with self.assertRaises(TypeError) as cm:          
-            ak.random_strings_uniform( minlen=1, maxlen='5', size=10)          
-        self.assertEqual(('type of argument "maxlen" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0])     
-        
-        with self.assertRaises(TypeError) as cm:          
+
+        with self.assertRaises(TypeError):          
+            ak.random_strings_uniform( minlen=1, maxlen='5', size=10)
+
+        with self.assertRaises(TypeError):          
             ak.random_strings_uniform(minlen=1, maxlen=5, size='10')          
-        self.assertEqual(('type of argument "size" must be one of (int, int8, int16, int32, int64, ' +
-                         'uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0])
+
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
@@ -611,21 +584,14 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
         
-        with self.assertRaises(TypeError) as cm:          
+        with self.assertRaises(TypeError):          
             ak.random_strings_lognormal('2', 0.25, 100)
-        self.assertEqual(('both logmean and logstd must be an int, np.int64, float, or np.float64'), 
-                         cm.exception.args[0])    
-                
-        with self.assertRaises(TypeError) as cm:          
+      
+        with self.assertRaises(TypeError):          
             ak.random_strings_lognormal(2, 0.25, '100')          
-        self.assertEqual(('type of argument "size" must be one of (int, int8, int16, int32, ' +
-                          'int64, uint8, uint16, uint32, uint64); got str instead'), 
-                         cm.exception.args[0])       
-        
-        with self.assertRaises(TypeError) as cm:          
+
+        with self.assertRaises(TypeError):          
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
-        self.assertEqual(('type of argument "characters" must be str; got int instead'), 
-                         cm.exception.args[0])  
 
         # Test that int_scalars covers uint8, uint16, uint32 
         ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100))
