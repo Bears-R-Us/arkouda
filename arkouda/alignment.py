@@ -2,8 +2,8 @@ import numpy as np  # type: ignore
 
 from arkouda.categorical import Categorical
 from arkouda.dtypes import bool as akbool
-from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.pdarrayclass import is_sorted, pdarray
 from arkouda.pdarraycreation import arange, ones, zeros
@@ -338,7 +338,7 @@ def search_intervals(vals, intervals, assume_unique=False):
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_exclusive)")
 
     def check_numeric(x):
-        if not (isinstance(x, pdarray) and x.dtype in (akint64, akfloat64)):
+        if not (isinstance(x, pdarray) and x.dtype in (akint64, akuint64)):
             raise TypeError("arguments must be numeric arrays")
 
     check_numeric(vals)
