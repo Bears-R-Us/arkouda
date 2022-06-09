@@ -28,8 +28,8 @@ def time_ak_array_transfer(N, trials, dtype, seed):
         end = time.time()
         to_ndarray_times.append(end - start)
         start = time.time()
-        end = time.time()
         aka = ak.array(npa)
+        end = time.time()
         to_pdarray_times.append(end - start)
         gc.collect()
     avgnd = sum(to_ndarray_times) / trials
