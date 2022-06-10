@@ -131,19 +131,19 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'numpy>=1.16.5,<=1.21.5',
-        'pandas>=1.1.0',
+        'numpy>=1.18.5,<=1.21.5',
+        'pandas>=1.4.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
         'tabulate',
         'pyfiglet',
         'versioneer',
-        'matplotlib',
+        'matplotlib>=3.3.2',
         'h5py',
         'pip',
         'types-tabulate',
         'tables>=3.7.0',
-        'pyarrow'
+        'pyarrow>=1.0.1'
     ],
 
     # List additional groups of dependencies here (e.g. development
@@ -155,7 +155,7 @@ setup(
     # Similar to `install_requires` above, these must be valid existing
     # projects.
     extras_require={  # Optional
-        'dev': ['pexpect', 'pytest', 'pytest-env',
+        'dev': ['pexpect', 'pytest>=6.0', 'pytest-env',
                 'Sphinx', 'sphinx-argparse', 'sphinx-autoapi',
                 'mypy>=0.931', 'typed-ast', 'flake8'],
     },
