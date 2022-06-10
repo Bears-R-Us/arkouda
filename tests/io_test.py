@@ -769,6 +769,14 @@ class IOTest(ArkoudaTest):
         self.assertEqual(50, v0.size)
         self.assertEqual(50, v1.size)
 
+    def test_multi_dim_rdwr(self):
+        arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ak.write_hdf5_multi_dim(arr, tmp_dirname+"/multi_dim_test", 'MultiDimObj', mode="append", storage="flat")
+            # load data back
+            read_arr = ak.read_hdf5_multi_dim(tmp_dirname+"/multi_dim_test", "MultiDimObj")
+            self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):
