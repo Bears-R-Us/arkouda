@@ -27,15 +27,15 @@
 
 # Installing Dependencies
 
-Dependencies can be install using `Anaconda` (Recommended) or `pip`. 
+Dependencies can be installed using `Anaconda` (Recommended) or `pip`. 
 
 ## Using Anaconda
 Arkouda provides 2 files for installing dependencies, one for users and one for developers. 
 
-- Users Enviorment YAML: `arkouda-env.yml`
-- Developer Enviornment YAML: `arkouda-env-dev.yml`
+- Users Environment YAML: `arkouda-env.yml`
+- Developer Environment YAML: `arkouda-env-dev.yml`
 
-**When running the commands below, replace `<env_name>` with the name you want to give/have given your conda enviroment. Replace `<yaml_file>` with the file appropriate to your interaction with Arkouda.**
+**When running the commands below, replace `<env_name>` with the name you want to give/have given your conda environment. Replace `<yaml_file>` with the file appropriate to your interaction with Arkouda.**
 ```commandline
 # Creating a new environment with dependencies installed
 conda env create -n <env_name> -f <yaml_file>
