@@ -17422,7 +17422,7 @@ Attributes
 
 
 
-.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List]] = None)
+.. py:class:: Series(data: Union[Tuple, List, arkouda.groupbyclass.groupable_element_type], index: Optional[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Tuple, List, arkouda.index.Index]] = None)
 
    One-dimensional arkouda array with axis labels.
 
