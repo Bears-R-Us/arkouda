@@ -116,7 +116,7 @@ class Series:
         if isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Strings, list, tuple)):
-                raise TypeError("indices must be a pdarray or Strings")
+                raise TypeError("indices must be a pdarray, Strings, List, or Tuple")
             if not isinstance(data[1], (pdarray, Strings, Categorical)):
                 raise TypeError("values must be a pdarray, Strings, or Categorical")
             self.values = data[1]
