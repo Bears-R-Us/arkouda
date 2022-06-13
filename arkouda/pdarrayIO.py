@@ -631,17 +631,13 @@ def save_all(
         pdarrays = cast(List[pdarray], columns)
         if names is None:
             datasetNames = [str(column) for column in range(len(columns))]
-    if (mode.lower() not in "append") and (mode.lower() not in "truncate"):
+    if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
-    first_iter = True
+
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        """Append all pdarrays to existing files as new datasets EXCEPT the first one,
-        and only if user requests truncation"""
-        if mode.lower() != "append" and first_iter:
-            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode="truncate")
-            first_iter = False
-        else:
-            arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode="append")
+        arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode=mode)
+        if mode.lower() == "truncate":
+            mode = "append"
 
 
 @typechecked
