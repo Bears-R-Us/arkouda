@@ -298,3 +298,9 @@ def attach(name: str, dtype: str = "infer"):
             return Strings.from_return_msg(repMsg)
         else:
             return create_pdarray(repMsg)
+
+
+def unregister_by_name(name: str, dtype: str = "infer"):
+    repMsg = cast(str, generic_msg(cmd="genericUnregisterByName", args=f"{dtype}+{name}"))
+
+    return repMsg
