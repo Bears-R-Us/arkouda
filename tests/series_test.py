@@ -191,3 +191,9 @@ class SeriesTest(ArkoudaTest):
 
         ref_df = pd.DataFrame({0: [0, 1, 2, 3, 4], 1: [5, 6, 7, 8, 9]})
         self.assertTrue((ref_df == df).all().all())
+
+    def test_index_as_index_compat(self):
+        # added to validate functionality for issue #1506
+        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
+        g = df.groupby(['a', 'b'])
+        g.broadcast(g.sum('c'))

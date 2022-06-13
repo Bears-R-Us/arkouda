@@ -515,3 +515,8 @@ class DataFrameTest(ArkoudaTest):
         test_df = df.isin(other_df)
         self.assertListEqual(test_df["col_A"].to_ndarray().tolist(), [True, True])
         self.assertListEqual(test_df["col_B"].to_ndarray().tolist(), [False, False])
+
+    def test_multiindex_compat(self):
+        # Added for testing Issue #1505
+        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
+        df.groupby(['a', 'b']).sum('c')
