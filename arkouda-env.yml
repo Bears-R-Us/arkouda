@@ -1,7 +1,7 @@
 name: arkouda-env
 channels:
+  - defaults
   - conda-forge
-  - -defaults
 dependencies:
   - python>=3.8   # minimum 3.8
   - numpy>=1.16.5,<=1.21.5
