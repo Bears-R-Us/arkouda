@@ -56,12 +56,34 @@ bitType = uint64
 # Union aliases used for static and runtime type checking
 bool_scalars = Union[builtins.bool, np.bool_]
 float_scalars = Union[float, np.float64]
-int_scalars = Union[int, np.int64, np.uint64]
-numeric_scalars = Union[float, np.float64, int, np.int64, np.uint8, np.uint64]
+int_scalars = Union[
+    int,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+]
+numeric_scalars = Union[float_scalars, int_scalars]
 numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]
-numpy_scalars = Union[np.float64, np.int64, np.bool_, np.uint8, np.str_, np.uint64]
+numpy_scalars = Union[
+    np.float64,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    np.bool_,
+    np.str_,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+]
 str_scalars = Union[str, np.str_]
-all_scalars = Union[float, np.float64, int, np.int64, np.uint64, builtins.bool, np.bool_, str, np.str_]
+all_scalars = Union[bool_scalars, numeric_scalars, numpy_scalars, str_scalars]
 
 """
 The DType enum defines the supported Arkouda data types in string form.
@@ -94,10 +116,34 @@ class DType(Enum):
         return self.value
 
 
-ARKOUDA_SUPPORTED_INTS = (int, np.int64, np.uint64)
+ARKOUDA_SUPPORTED_INTS = (
+    int,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+)
 ARKOUDA_SUPPORTED_FLOATS = (float, np.float64)
-ARKOUDA_SUPPORTED_NUMBERS = (int, np.int64, float, np.float64, np.uint64)
-ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
+ARKOUDA_SUPPORTED_NUMBERS = (
+    int,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    float,
+    np.float64,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+)
+ARKOUDA_SUPPORTED_DTYPES = frozenset(
+    [member.value for _, member in DType.__members__.items()]
+)
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
@@ -182,13 +228,17 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
     ):
         return "bool"
     # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
+    elif isinstance(val, int) or (
+        hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"
+    ):
         if isinstance(val, np.uint64):
             return "uint64"
         else:
             return "int64"
     # Python float or np.float*
-    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
+    elif isinstance(val, float) or (
+        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"
+    ):
         return "float64"
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"

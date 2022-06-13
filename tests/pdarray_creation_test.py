@@ -104,6 +104,9 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertListEqual(expected.to_ndarray().tolist(), uint_input.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_input.dtype)
 
+        # test int_scalars covers uint8, uint16, uint32
+        ak.arange(np.uint8(1), np.uint16(1000), np.uint32(1))
+
     def test_randint(self):
         testArray = ak.randint(0, 10, 5)
         self.assertIsInstance(testArray, ak.pdarray)
@@ -159,14 +162,17 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.randint(low=1, high=0, size=1, dtype=ak.float64)
 
-        with self.assertRaises(TypeError):
-            ak.randint(0, 1, "1000")
+        with self.assertRaises(TypeError):              
+            ak.randint(0,1,'1000')
 
-        with self.assertRaises(TypeError):
-            ak.randint("0", 1, 1000)
+        with self.assertRaises(TypeError):              
+            ak.randint('0',1,1000)
+        
+        with self.assertRaises(TypeError):              
+            ak.randint(0,'1',1000)
 
-        with self.assertRaises(TypeError):
-            ak.randint(0, "1", 1000)
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.randint(low=np.uint8(1), high=np.uint16(100), size=np.uint32(100))
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
@@ -204,6 +210,9 @@ class PdarrayCreationTest(ArkoudaTest):
             (ak.array([False, True, True, True, True, False, True, True, True, True]) == values).all()
         )
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
+
     def test_uniform(self):
         testArray = ak.uniform(3)
         self.assertIsInstance(testArray, ak.pdarray)
@@ -232,7 +241,10 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.uniform(low=0, high="5", size=100)
 
         with self.assertRaises(TypeError):
-            ak.uniform(low=0, high=5, size="100")
+            ak.uniform(low=0, high=5, size='100')
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.uniform(low=np.uint8(0), high=5, size=np.uint32(100))
 
     def test_zeros(self):
         intZeros = ak.zeros(5, dtype=ak.int64)
@@ -258,9 +270,14 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.zeros(5, dtype=ak.uint8)
 
         with self.assertRaises(TypeError):
-            ak.zeros(5, dtype=str)
+            ak.zeros(5, dtype=str)      
 
-    def test_ones(self):
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.zeros(np.uint8(5), dtype=ak.int64)
+        ak.zeros(np.uint16(5), dtype=ak.int64)
+        ak.zeros(np.uint32(5), dtype=ak.int64)
+            
+    def test_ones(self):   
         intOnes = ak.ones(5, dtype=int)
         self.assertIsInstance(intOnes, ak.pdarray)
         self.assertEqual(int, intOnes.dtype)
@@ -289,7 +306,12 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.ones(5, dtype=str)
 
-    def test_ones_like(self):
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.ones(np.uint8(5), dtype=ak.int64)
+        ak.ones(np.uint16(5), dtype=ak.int64)
+        ak.ones(np.uint32(5), dtype=ak.int64)
+        
+    def test_ones_like(self):      
         intOnes = ak.ones(5, dtype=ak.int64)
         intOnesLike = ak.ones_like(intOnes)
 
@@ -344,6 +366,11 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.full(5, 8, dtype=str)
 
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.full(np.uint8(5), np.uint16(5), dtype=int)
+        ak.full(np.uint8(5), np.uint32(5), dtype=int)
+        ak.full(np.uint16(5), np.uint32(5), dtype=int)
+
     def test_full_like(self):
         int_full = ak.full(5, 6, dtype=ak.int64)
         int_full_like = ak.full_like(int_full, 6)
@@ -397,15 +424,20 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.linspace(start=float(5.0), stop=float(0.0), length=np.int64(6))
         self.assertEqual(5.0000, pda[0])
         self.assertEqual(0.0000, pda[5])
+        
+        with self.assertRaises(TypeError):        
+            ak.linspace(0,'100', 1000)
 
-        with self.assertRaises(TypeError):
-            ak.linspace(0, "100", 1000)
+        with self.assertRaises(TypeError):        
+            ak.linspace('0',100, 1000)
 
-        with self.assertRaises(TypeError):
-            ak.linspace("0", 100, 1000)
+        with self.assertRaises(TypeError):          
+            ak.linspace(0,100,'1000')           
 
-        with self.assertRaises(TypeError):
-            ak.linspace(0, 100, "1000")
+        # Test that int_scalars covers uint8, uint16, uint32
+        ak.linspace(np.uint8(0),np.uint16(100),np.uint32(1000))
+        ak.linspace(np.uint32(0),np.uint16(100),np.uint8(1000))
+        ak.linspace(np.uint16(0),np.uint8(100),np.uint8(1000))
 
     def test_standard_normal(self):
         pda = ak.standard_normal(100)
@@ -425,17 +457,22 @@ class PdarrayCreationTest(ArkoudaTest):
 
         npda = pda.to_ndarray()
         pda = ak.standard_normal(np.int64(100), np.int64(1))
+        
+        self.assertTrue((npda ==  pda.to_ndarray()).all())
 
-        self.assertTrue((npda == pda.to_ndarray()).all())
+        with self.assertRaises(TypeError):          
+            ak.standard_normal('100')          
+   
+        with self.assertRaises(TypeError):          
+            ak.standard_normal(100.0)          
 
-        with self.assertRaises(TypeError):
-            ak.standard_normal("100")
-
-        with self.assertRaises(TypeError):
-            ak.standard_normal(100.0)
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError):          
             ak.standard_normal(-1)
+
+        # Test that int_scalars covers uint8, uint16, uint32 
+        ak.standard_normal(np.uint8(100))
+        ak.standard_normal(np.uint16(100))
+        ak.standard_normal(np.uint32(100))
 
     def test_random_strings_uniform(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, size=100)
@@ -466,15 +503,16 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(ValueError):
             ak.random_strings_uniform(maxlen=5, minlen=5, size=10)
+        
+        with self.assertRaises(TypeError):          
+            ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
 
-        with self.assertRaises(TypeError):
-            ak.random_strings_uniform(minlen="1", maxlen=5, size=10)
+        with self.assertRaises(TypeError):          
+            ak.random_strings_uniform( minlen=1, maxlen='5', size=10)
 
-        with self.assertRaises(TypeError):
-            ak.random_strings_uniform(minlen=1, maxlen="5", size=10)
+        with self.assertRaises(TypeError):          
+            ak.random_strings_uniform(minlen=1, maxlen=5, size='10')          
 
-        with self.assertRaises(TypeError):
-            ak.random_strings_uniform(minlen=1, maxlen=5, size="10")
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
@@ -495,6 +533,9 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertTrue(
             (ak.array(["+5", "fp-P", "3Q4k", "~H", "F", "F=`,", "E", "YD", "kBa'", "(t5"]) == pda).all()
         )
+
+        # Test that int_scalars covers uint8, uint16, uint32
+        pda = ak.random_strings_uniform(minlen=np.uint8(1), maxlen=np.uint32(5), seed=np.uint16(1), size=np.uint8(10), characters='printable')
 
     def test_random_strings_lognormal(self):
         pda = ak.random_strings_lognormal(2, 0.25, 100, characters="printable")
@@ -542,15 +583,18 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertIsInstance(pda, ak.Strings)
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
+        
+        with self.assertRaises(TypeError):          
+            ak.random_strings_lognormal('2', 0.25, 100)
+      
+        with self.assertRaises(TypeError):          
+            ak.random_strings_lognormal(2, 0.25, '100')          
 
-        with self.assertRaises(TypeError):
-            ak.random_strings_lognormal("2", 0.25, 100)
-
-        with self.assertRaises(TypeError):
-            ak.random_strings_lognormal(2, 0.25, "100")
-
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TypeError):          
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
+
+        # Test that int_scalars covers uint8, uint16, uint32 
+        ak.random_strings_lognormal(np.uint8(2), 0.25, np.uint16(100))
 
     def test_random_strings_lognormal_with_seed(self):
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
@@ -727,15 +771,20 @@ class PdarrayCreationTest(ArkoudaTest):
 
         ones.fill(2)
         self.assertTrue((2 == ones.to_ndarray()).all())
+        
+        ones.fill(np.int64(2))  
+        self.assertTrue((np.int64(2) == ones.to_ndarray()).all())     
+        
+        ones.fill(float(2))  
+        self.assertTrue((float(2) == ones.to_ndarray()).all())  
+        
+        ones.fill(np.float64(2))  
+        self.assertTrue((np.float64(2) == ones.to_ndarray()).all()) 
 
-        ones.fill(np.int64(2))
-        self.assertTrue((np.int64(2) == ones.to_ndarray()).all())
-
-        ones.fill(float(2))
-        self.assertTrue((float(2) == ones.to_ndarray()).all())
-
-        ones.fill(np.float64(2))
-        self.assertTrue((np.float64(2) == ones.to_ndarray()).all())
+        # Test that int_scalars covers uint8, uint16, uint32
+        ones.fill(np.uint8(2))
+        ones.fill(np.uint16(2))
+        ones.fill(np.uint32(2))
 
     def test_endian(self):
         N = 100

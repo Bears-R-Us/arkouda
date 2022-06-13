@@ -87,7 +87,7 @@ class MinKTest(ArkoudaTest):
             ak.mink(list(range(0, 10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.mink(testArray, "1")
+            ak.mink(testArray, '1')
 
         with self.assertRaises(ValueError):
             ak.mink(testArray, -1)
@@ -110,11 +110,11 @@ class MaxKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.maxk(list(range(0, 10)), 1)
+            ak.maxk(list(range(0,10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.maxk(testArray, "1")
-
+            ak.maxk(testArray, '1')
+            
         with self.assertRaises(ValueError):
             ak.maxk(testArray, -1)
 
@@ -136,10 +136,10 @@ class ArgMinKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.argmink(list(range(0, 10)), 1)
+            ak.argmink(list(range(0,10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.argmink(testArray, "1")
+            ak.argmink(testArray, '1')
 
         with self.assertRaises(ValueError):
             ak.argmink(testArray, -1)
@@ -162,10 +162,10 @@ class ArgMaxKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.argmaxk(list(range(0, 10)), 1)
+            ak.argmaxk(list(range(0,10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.argmaxk(testArray, "1")
+            ak.argmaxk(testArray, '1')
 
         with self.assertRaises(ValueError):
             ak.argmaxk(testArray, -1)

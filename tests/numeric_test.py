@@ -128,13 +128,13 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(int, result.dtype)
 
         with self.assertRaises(TypeError):
-            ak.histogram([range(0, 10)], bins=1)
-
+            ak.histogram([range(0,10)], bins=1)
+        
         with self.assertRaises(TypeError):
-            ak.histogram(pda, bins="1")
-
+            ak.histogram(pda, bins='1')
+        
         with self.assertRaises(TypeError):
-            ak.histogram([range(0, 10)], bins="1")
+            ak.histogram([range(0,10)], bins='1')
 
     def testLog(self):
         na = np.linspace(1, 10, 10)
@@ -142,7 +142,7 @@ class NumericTest(ArkoudaTest):
 
         self.assertTrue((np.log(na) == ak.log(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
-            ak.log([range(0, 10)])
+            ak.log([range(0,10)])
 
     def testExp(self):
         na = np.linspace(1, 10, 10)
@@ -150,7 +150,7 @@ class NumericTest(ArkoudaTest):
 
         self.assertTrue((np.exp(na) == ak.exp(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
-            ak.exp([range(0, 10)])
+            ak.exp([range(0,10)])
 
     def testAbs(self):
         na = np.linspace(1, 10, 10)

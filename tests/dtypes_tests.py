@@ -150,23 +150,20 @@ class DtypesTest(ArkoudaTest):
 
     def test_scalars(self):
         self.assertEqual("typing.Union[bool, numpy.bool_]", str(ak.bool_scalars))
-        self.assertEqual("typing.Union[float, numpy.float64]", str(ak.float_scalars))
-        self.assertEqual("typing.Union[int, numpy.int64, numpy.uint64]", str(ak.int_scalars))
-        self.assertEqual(
-            "typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint8, numpy.uint64]",
-            str(ak.numeric_scalars),
-        )
-        self.assertEqual("typing.Union[str, numpy.str_]", str(ak.str_scalars))
-        self.assertEqual(
-            "typing.Union[numpy.float64, numpy.int64, numpy.bool_, numpy.uint8, "
-            "numpy.str_, numpy.uint64]",
-            str(ak.numpy_scalars),
-        )
-        self.assertEqual(
-            "typing.Union[float, numpy.float64, int, numpy.int64, numpy.uint64, bool, "
-            "numpy.bool_, str, numpy.str_]",
-            str(ak.all_scalars),
-        )
+        self.assertEqual('typing.Union[float, numpy.float64]', str(ak.float_scalars))
+        self.assertEqual(('typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, ' +
+                         'numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]'), str(ak.int_scalars))
+        self.assertEqual(('typing.Union[float, numpy.float64, int, numpy.int8, numpy.int16, numpy.int32, ' +
+                         'numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32, numpy.uint64]'), 
+                         str(ak.numeric_scalars))
+        self.assertEqual('typing.Union[str, numpy.str_]', str(ak.str_scalars))
+        self.assertEqual(('typing.Union[numpy.float64, numpy.int8, numpy.int16, numpy.int32, ' +
+                         'numpy.int64, numpy.bool_, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, ' +
+                         'numpy.uint64]'), 
+                         str(ak.numpy_scalars))
+        self.assertEqual(('typing.Union[bool, numpy.bool_, float, numpy.float64, int, numpy.int8, ' +
+                         'numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,' +
+                         ' numpy.uint64, numpy.str_, str]'),str(ak.all_scalars))
 
     def test_number_format_strings(self):
         self.assertEqual("{}", dtypes.NUMBER_FORMAT_STRINGS["bool"])

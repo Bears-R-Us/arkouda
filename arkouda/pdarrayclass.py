@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Sequence, cast
+from typing import List, Sequence, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -157,7 +157,9 @@ class pdarray:
             "**",
         ]
     )
-    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="])
+    OpEqOps = frozenset(
+        ["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="]
+    )
     objtype = "pdarray"
 
     __array_priority__ = 1000
@@ -204,7 +206,9 @@ class pdarray:
     def __repr__(self):
         from arkouda.client import pdarrayIterThresh
 
-        return generic_msg(cmd="repr", args="{} {}".format(self.name, pdarrayIterThresh))
+        return generic_msg(
+            cmd="repr", args="{} {}".format(self.name, pdarrayIterThresh)
+        )
 
     def format_other(self, other: object) -> str:
         """
@@ -289,7 +293,9 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         cmd = "binopvs"
-        args = "{} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
+        args = "{} {} {} {}".format(
+            op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other)
+        )
         repMsg = generic_msg(cmd=cmd, args=args)
         return create_pdarray(repMsg)
 
@@ -334,7 +340,9 @@ class pdarray:
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         cmd = "binopsv"
-        args = "{} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
+        args = "{} {} {} {}".format(
+            op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name
+        )
         repMsg = generic_msg(cmd=cmd, args=args)
         return create_pdarray(repMsg)
 
@@ -434,13 +442,17 @@ class pdarray:
         return self._binop(other, ">=")
 
     def __eq__(self, other):
-        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+        if (self.dtype == bool) and (
+            isinstance(other, pdarray) and (other.dtype == bool)
+        ):
             return ~(self ^ other)
         else:
             return self._binop(other, "==")
 
     def __ne__(self, other):
-        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+        if (self.dtype == bool) and (
+            isinstance(other, pdarray) and (other.dtype == bool)
+        ):
             return self ^ other
         else:
             return self._binop(other, "!=")
@@ -476,7 +488,9 @@ class pdarray:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
         cmd = "opeqvs"
-        args = "{} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        args = "{} {} {} {}".format(
+            op, self.name, self.dtype.name, self.format_other(other)
+        )
         generic_msg(cmd=cmd, args=args)
         return self
 
@@ -541,7 +555,9 @@ class pdarray:
                 # value = fields[2]
                 return parse_single_value(" ".join(fields[1:]))
             else:
-                raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
+                raise IndexError(
+                    f"[int] {orig_key} is out of bounds with size {self.size}"
+                )
         if isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
             logger.debug("start: {} stop: {} stride: {}".format(start, stop, stride))
@@ -555,7 +571,9 @@ class pdarray:
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if kind == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(cmd="[pdarray]", args="{} {}".format(self.name, key.name))
+            repMsg = generic_msg(
+                cmd="[pdarray]", args="{} {}".format(self.name, key.name)
+            )
             return create_pdarray(repMsg)
         else:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
@@ -569,14 +587,19 @@ class pdarray:
             if key >= 0 and key < self.size:
                 generic_msg(
                     cmd="[int]=val",
-                    args="{} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)),
+                    args="{} {} {} {}".format(
+                        self.name, key, self.dtype.name, self.format_other(value)
+                    ),
                 )
             else:
-                raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
+                raise IndexError(
+                    f"index {orig_key} is out of bounds with size {self.size}"
+                )
         elif isinstance(key, pdarray):
             if isinstance(value, pdarray):
                 generic_msg(
-                    cmd="[pdarray]=pdarray", args="{} {} {}".format(self.name, key.name, value.name)
+                    cmd="[pdarray]=pdarray",
+                    args="{} {} {}".format(self.name, key.name, value.name),
                 )
             else:
                 generic_msg(
@@ -591,13 +614,20 @@ class pdarray:
             if isinstance(value, pdarray):
                 generic_msg(
                     cmd="[slice]=pdarray",
-                    args="{} {} {} {} {}".format(self.name, start, stop, stride, value.name),
+                    args="{} {} {} {} {}".format(
+                        self.name, start, stop, stride, value.name
+                    ),
                 )
             else:
                 generic_msg(
                     cmd="[slice]=val",
                     args="{} {} {} {} {} {}".format(
-                        self.name, start, stop, stride, self.dtype.name, self.format_other(value)
+                        self.name,
+                        start,
+                        stop,
+                        stride,
+                        self.dtype.name,
+                        self.format_other(value),
                     ),
                 )
         else:
@@ -618,7 +648,10 @@ class pdarray:
             Raised if value is not an int, int64, float, or float64
         """
         generic_msg(
-            cmd="set", args="{} {} {}".format(self.name, self.dtype.name, self.format_other(value))
+            cmd="set",
+            args="{} {} {}".format(
+                self.name, self.dtype.name, self.format_other(value)
+            ),
         )
 
     def any(self) -> np.bool_:
@@ -1035,7 +1068,8 @@ class pdarray:
             )
         # The reply from the server will be binary data
         data = cast(
-            memoryview, generic_msg(cmd="tondarray", args="{}".format(self.name), recv_binary=True)
+            memoryview,
+            generic_msg(cmd="tondarray", args="{}".format(self.name), recv_binary=True),
         )
         # Make sure the received data has the expected length
         if len(data) != self.size * self.dtype.itemsize:
@@ -1232,14 +1266,24 @@ class pdarray:
             generic_msg(
                 cmd=cmd,
                 args="{} {} {} {} {} {} {}".format(
-                    self.name, dataset, m, json_array, self.dtype, strings_placeholder, compressed
+                    self.name,
+                    dataset,
+                    m,
+                    json_array,
+                    self.dtype,
+                    strings_placeholder,
+                    compressed,
                 ),
             ),
         )
 
     @typechecked
     def save_parquet(
-        self, prefix_path: str, dataset: str = "array", mode: str = "truncate", compressed: bool = False
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        compressed: bool = False,
     ) -> str:
         """
         Save the pdarray to Parquet. The result is a collection of Parquet files,
@@ -1311,7 +1355,9 @@ class pdarray:
         )
 
     @typechecked
-    def save_hdf(self, prefix_path: str, dataset: str = "array", mode: str = "truncate") -> str:
+    def save_hdf(
+        self, prefix_path: str, dataset: str = "array", mode: str = "truncate"
+    ) -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -1374,7 +1420,11 @@ class pdarray:
         True
         """
         return self.save(
-            prefix_path=prefix_path, dataset=dataset, mode=mode, compressed=False, file_format="HDF5"
+            prefix_path=prefix_path,
+            dataset=dataset,
+            mode=mode,
+            compressed=False,
+            file_format="HDF5",
         )
 
     @typechecked
@@ -1427,7 +1477,9 @@ class pdarray:
         >>> b.unregister()
         """
         try:
-            rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+            rep_msg = generic_msg(
+                cmd="register", args=f"{self.name} {user_defined_name}"
+            )
             if isinstance(rep_msg, bytes):
                 rep_msg = str(rep_msg, "UTF-8")
             if rep_msg != "success":
@@ -1436,7 +1488,9 @@ class pdarray:
             RuntimeError,
             RegistrationError,
         ):  # Registering two objects with the same name is not allowed
-            raise RegistrationError(f"Server was unable to register {user_defined_name}")
+            raise RegistrationError(
+                f"Server was unable to register {user_defined_name}"
+            )
 
         self.name = user_defined_name
         return self
@@ -1538,7 +1592,9 @@ class pdarray:
             # Integral pdarrays are their own grouping keys
             return [self]
         else:
-            raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
+            raise TypeError(
+                "Grouping is only supported on numeric data (integral types) and bools."
+            )
 
 
 # end pdarray class def
@@ -1864,7 +1920,9 @@ def mean(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    return np.float64(pda.sum()) / pda.size
+    return np.float64(cast(Union[int, np.int64, np.float64], pda.sum())) / cast(
+        Union[int, np.int64], pda.size
+    )
 
 
 @typechecked
