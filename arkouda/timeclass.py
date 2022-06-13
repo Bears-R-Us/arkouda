@@ -1,4 +1,6 @@
 import datetime
+from typing import Union
+from warnings import warn
 
 import numpy as np  # type: ignore
 from pandas import Series  # type: ignore
@@ -563,6 +565,7 @@ def date_range(
     normalize=False,
     name=None,
     closed=None,
+    inclusive="both",
     **kwargs,
 ):
     """Creates a fixed frequency Datetime range. Alias for
@@ -592,6 +595,9 @@ def date_range(
     closed : {None, 'left', 'right'}, optional
         Make the interval closed with respect to the given frequency to
         the 'left', 'right', or both sides (None, the default).
+        *Deprecated*
+    inclusive : {"both", "neither", "left", "right"}, default "both"
+        Include boundaries. Whether to set each bound as closed or open.
     **kwargs
         For compatibility. Has no effect on the result.
 
@@ -610,8 +616,14 @@ def date_range(
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
     """
+    if closed is not None:
+        warn(
+            "closed has been deprecated. Please use the inclusive parameter instead.", DeprecationWarning
+        )
+        inclusive = closed
+
     return Datetime(
-        pd_date_range(start, end, periods, freq, tz, normalize, name, closed, **kwargs)
+        pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs)
     )
 
 

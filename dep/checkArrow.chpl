@@ -1,4 +1,4 @@
-use SysCTypes, CPtr, IO;
+use CTypes, IO;
 
 require "../src/ArrowFunctions.h";
 require "../src/ArrowFunctions.o";

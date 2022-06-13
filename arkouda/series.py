@@ -111,13 +111,12 @@ class Series:
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type],
-        index: Optional[Union[pdarray, Strings, Tuple, List]] = None,
+        index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
-        # TODO: Allow index to be an Index when index.py is updated
         if isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
-            if not isinstance(data[0], (pdarray, Strings)):
-                raise TypeError("indices must be a pdarray or Strings")
+            if not isinstance(data[0], (pdarray, Strings, list, tuple)):
+                raise TypeError("indices must be a pdarray, Strings, List, or Tuple")
             if not isinstance(data[1], (pdarray, Strings, Categorical)):
                 raise TypeError("values must be a pdarray, Strings, or Categorical")
             self.values = data[1]
