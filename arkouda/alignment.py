@@ -4,6 +4,7 @@ from arkouda.categorical import Categorical
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.pdarrayclass import is_sorted, pdarray
 from arkouda.pdarraycreation import arange, ones, zeros
@@ -304,7 +305,7 @@ def in1d_intervals(vals, intervals, symmetric=False, assume_unique=False):
         return found
 
 
-def search_intervals(vals, intervals, assume_unique=False):
+def search_intervals(vals, intervals):
     """
     Given an array of query vals and non-overlapping, half-open (pythonic)
     intervals, return the index of the interval containing each query value,
@@ -317,8 +318,6 @@ def search_intervals(vals, intervals, assume_unique=False):
     intervals : 2-tuple of pdarrays
         Non-overlapping, half-open intervals, as a tuple of
         (lower_bounds_inclusive, upper_bounds_exclusive)
-    assume_unique : bool
-        If True, assume query vals are unique. Default: False.
 
     Returns
     -------
@@ -338,12 +337,19 @@ def search_intervals(vals, intervals, assume_unique=False):
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_exclusive)")
 
     def check_numeric(x):
-        if not (isinstance(x, pdarray) and x.dtype in (akint64, akuint64)):
+        if not (isinstance(x, pdarray) and x.dtype in (akint64, akuint64, akfloat64)):
             raise TypeError("arguments must be numeric arrays")
 
     check_numeric(vals)
     check_numeric(intervals[0])
     check_numeric(intervals[1])
+    # validate the dtypes of intervals and values
+    if not intervals[0].dtype == intervals[1].dtype and intervals[0].dtype == vals.dtype:
+        raise TypeError(
+            f"vals and intervals must all have the same type. "
+            f"Found {intervals[0].dtype}, {intervals[1].dtype}, and {vals.dtype}"
+        )
+
     low = intervals[0]
     # Convert to closed (inclusive) intervals
     high = intervals[1] - 1
@@ -355,18 +361,14 @@ def search_intervals(vals, intervals, assume_unique=False):
         raise ValueError("Intervals must be sorted in ascending order")
     if not (low[1:] > high[:-1]).all():
         raise ValueError("Intervals must be non-overlapping")
-    if assume_unique:
-        uvals = vals
-    else:
-        g = GroupBy(vals)
-        uvals = g.unique_keys
+
     # Index of interval containing each unique value (initialized to -1: not found)
-    containinginterval = -ones(uvals.size, dtype=akint64)
-    concat = concatenate((low, uvals, high))
+    containinginterval = -ones(vals.size, dtype=akint64)
+    concat = concatenate((low, vals, high))
     perm = argsort(concat)
     # iperm is the indices of the original values in the sorted array
     iperm = argsort(perm)  # aku.invert_permutation(perm)
-    boundary = uvals.size + low.size
+    boundary = vals.size + low.size
     # indices of the lower bounds in the sorted array
     starts = iperm[: low.size]
     # indices of the upper bounds in the sorted array
@@ -388,11 +390,7 @@ def search_intervals(vals, intervals, assume_unique=False):
         uvalidx = matches[validmatch] - low.size
         # set index of containing interval for uvals that were found
         containinginterval[uvalidx] = matchintervalidx[validmatch]
-    if assume_unique:
-        res = containinginterval
-    else:
-        res = g.broadcast(containinginterval, permute=True)
-    return res
+    return containinginterval
 
 
 def interval_lookup(keys, values, arguments, fillvalue=-1):
