@@ -308,8 +308,9 @@ Attributes
    arkouda.akfloat64
    arkouda.akint64
    arkouda.akbool
-   arkouda.akfloat64
    arkouda.akint64
+   arkouda.akuint64
+   arkouda.akfloat64
 
 
 .. py:function:: get_versions()
@@ -18308,12 +18309,17 @@ Attributes
 
    
 
-.. py:data:: akfloat64
-   
-
-   
-
 .. py:data:: akint64
+   
+
+   
+
+.. py:data:: akuint64
+   
+
+   
+
+.. py:data:: akfloat64
    
 
    
@@ -21462,7 +21468,7 @@ Attributes
    But much faster when vals is non-trivial size.
 
 
-.. py:function:: search_intervals(vals, intervals, assume_unique=False)
+.. py:function:: search_intervals(vals, intervals)
 
    Given an array of query vals and non-overlapping, half-open (pythonic)
    intervals, return the index of the interval containing each query value,
@@ -21473,8 +21479,6 @@ Attributes
    :param intervals: Non-overlapping, half-open intervals, as a tuple of
                      (lower_bounds_inclusive, upper_bounds_exclusive)
    :type intervals: 2-tuple of pdarrays
-   :param assume_unique: If True, assume query vals are unique. Default: False.
-   :type assume_unique: bool
 
    :returns: **idx** -- Index of interval containing each query value, or -1 if not found
    :rtype: pdarray(int64)

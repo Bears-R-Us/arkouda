@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda &#8212; arkouda 0+untagged.1.gfc345b2 documentation</title>
+    <title>arkouda &#8212; arkouda 0+untagged.1.g51f3940 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -681,7 +681,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.in1d_intervals" title="arkouda.in1d_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1d_intervals</span></code></a>(vals, intervals, symmetric=False, assume_unique=False)</p></td>
 <td><p>Test each value for membership in <em>any</em> of a set of half-open (pythonic)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals, assume_unique=False)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals)</p></td>
 <td><p>Given an array of query vals and non-overlapping, half-open (pythonic)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.interval_lookup" title="arkouda.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments, fillvalue=-1)</p></td>
@@ -799,7 +799,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#id780" title="arkouda.akbool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akbool</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#id782" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id781" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#id433" title="arkouda.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
@@ -808,19 +808,22 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#id780" title="arkouda.akbool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akbool</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#id781" title="arkouda.akfloat64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akfloat64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#id782" title="arkouda.akfloat64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akfloat64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#id782" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id781" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#id780" title="arkouda.akbool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akbool</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#id781" title="arkouda.akfloat64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akfloat64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id781" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#id782" title="arkouda.akint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akint64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.akuint64" title="arkouda.akuint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akuint64</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id782" title="arkouda.akfloat64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">akfloat64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -24664,12 +24667,17 @@ constructed for the user.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="id781">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">akfloat64</span></span><a class="headerlink" href="#id781" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">akint64</span></span><a class="headerlink" href="#id781" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda.akuint64">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">akuint64</span></span><a class="headerlink" href="#arkouda.akuint64" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="id782">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">akint64</span></span><a class="headerlink" href="#id782" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">akfloat64</span></span><a class="headerlink" href="#id782" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -28861,7 +28869,7 @@ interval contains any of the values in &lt;vals&gt;.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.search_intervals">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.search_intervals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.search_intervals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an array of query vals and non-overlapping, half-open (pythonic)
 intervals, return the index of the interval containing each query value,
 or -1 if not present in any interval.</p>
@@ -28871,7 +28879,6 @@ or -1 if not present in any interval.</p>
 <li><p><strong>vals</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals</p></li>
 <li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
-<li><p><strong>assume_unique</strong> (<em>bool</em>) – If True, assume query vals are unique. Default: False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
