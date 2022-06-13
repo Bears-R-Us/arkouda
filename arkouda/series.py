@@ -111,7 +111,7 @@ class Series:
     def __init__(
         self,
         data: Union[Tuple, List, groupable_element_type],
-        index: Optional[Union[pdarray, Strings, Tuple, List]] = None,
+        index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
         # TODO: Allow index to be an Index when index.py is updated
         if isinstance(data, (tuple, list)) and len(data) == 2:
