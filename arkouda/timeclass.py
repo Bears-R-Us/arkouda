@@ -1,5 +1,4 @@
 import datetime
-from typing import Union
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -618,12 +617,23 @@ def date_range(
     """
     if closed is not None:
         warn(
-            "closed has been deprecated. Please use the inclusive parameter instead.", DeprecationWarning
+            "closed has been deprecated. Please use the inclusive parameter instead.",
+            DeprecationWarning,
         )
         inclusive = closed
 
     return Datetime(
-        pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs)
+        pd_date_range(
+            start,
+            end,
+            periods,
+            freq,
+            tz,
+            normalize,
+            name,
+            inclusive=inclusive,
+            **kwargs,
+        )
     )
 
 
