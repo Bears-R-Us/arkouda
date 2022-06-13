@@ -113,7 +113,6 @@ class Series:
         data: Union[Tuple, List, groupable_element_type],
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
-        # TODO: Allow index to be an Index when index.py is updated
         if isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
             if not isinstance(data[0], (pdarray, Strings, list, tuple)):
