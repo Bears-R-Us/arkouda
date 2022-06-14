@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Optional, Tuple, Union
 from warnings import warn
 
@@ -5,6 +7,8 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas._config import get_option  # type: ignore
 from typeguard import typechecked
+
+import arkouda.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
@@ -13,7 +17,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import argmaxk, attach_pdarray, pdarray, create_pdarray
+from arkouda.pdarrayclass import argmaxk, attach_pdarray, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
@@ -102,6 +106,7 @@ class Series:
         1 argument entered:
             argument 1 - data
     If entering 1 positional argument, it is assumed that this is the data argument.
+    If only 'data' argument is passed in, Index will automatically be generated.
     If entering keywords,
         'data' (see Parameters)
         'index' (optional) must match size of 'data'
@@ -149,33 +154,30 @@ class Series:
             prt = pd.concat(
                 [self.head(maxrows // 2 + 2).to_pandas(), self.tail(maxrows // 2).to_pandas()]
             )
-            length_str = "\nLength {len(self)}"
+            length_str = f"\nLength {len(self)}"
         return (
             prt.to_string(
-                dtype=prt.dtype,
-                min_rows=get_option("display.min_rows"),
-                max_rows=maxrows,
-                length=False,
+                dtype=prt.dtype, min_rows=get_option("display.min_rows"), max_rows=maxrows, length=False,
             )
             + length_str
         )
 
     def __getitem__(self, key):
-        if type(key) == Series:
+        if isinstance(key, Series):
             # @TODO align the series indexes
             key = key.values
         return Series((self.index[key], self.values[key]))
 
     dt = CachedAccessor("dt", DatetimeAccessor)
-    str = CachedAccessor("str", StringAccessor)
-    # cat = CachedAccessor("cat", CategoricalAccessor)
+    str_acc = CachedAccessor("str", StringAccessor)
 
     @property
     def shape(self):
         # mimic the pandas return of series shape property
         return (self.values.size,)
 
-    def isin(self, lst):
+    @typechecked
+    def isin(self, lst: Union[pdarray, Strings, List]) -> Series:
         """Find series elements whose values are in the specified list
 
         Input
@@ -192,31 +194,26 @@ class Series:
         boolean = in1d(self.values, lst)
         return Series(data=boolean, index=self.index)
 
-    def locate(self, key):
+    @typechecked
+    def locate(self, key: Union[int, pdarray, Series, List, Tuple]) -> Series:
         """Lookup values by index label
 
-        The input can be a scalar, a list of scalers, or a list of lists (if the series has
-        a MultiIndex).
-        As a special case, if a Series is used as the key, the series labels are preserved
-        with its values used as the key.
+        The input can be a scalar, a list of scalers, or a list of lists (if the series has a
+        MultiIndex). As a special case, if a Series is used as the key, the series labels are
+        preserved with its values use as the key.
 
         Keys will be turned into arkouda arrays as needed.
 
         Returns
         -------
-
         A Series containing the values corresponding to the key.
         """
-        t = type(key)
         if isinstance(key, Series):
             # special case, keep the index values of the Series, and lookup the values
-            labels = key.index
-            key = key.values
-            v = lookup(self.index.index, self.values, key)
-            return Series((labels, v))
+            return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
         elif isinstance(key, pdarray):
             idx = self.index.lookup(key)
-        elif t == list or t == tuple:
+        elif isinstance(key, (list, tuple)):
             key0 = key[0]
             if isinstance(key0, list) or isinstance(key0, tuple):
                 # nested list. check if already arkouda arrays
@@ -226,7 +223,13 @@ class Series:
 
             elif not isinstance(key0, pdarray):
                 # a list of scalers, convert into arkouda array
-                key = array(key)
+                try:
+                    val = array(key)
+                    if isinstance(val, pdarray):
+                        key = val
+                except Exception:
+                    raise TypeError("'key' parameter must be convertible to pdarray")
+
             # else already list if arkouda array, use as is
             idx = self.index.lookup(key)
         else:
@@ -237,7 +240,7 @@ class Series:
     @classmethod
     def _make_binop(cls, operator):
         def binop(self, other):
-            if type(other) == Series:
+            if isinstance(other, Series):
                 if self.index._check_aligned(other.index):
                     return cls((self.index, operator(self.values, other.values)))
                 else:
@@ -264,7 +267,8 @@ class Series:
 
         return aggop
 
-    def add(self, b):
+    @typechecked
+    def add(self, b: Series) -> Series:
 
         index = self.index.concat(b.index).index
 
@@ -273,7 +277,8 @@ class Series:
         idx, vals = GroupBy(index).sum(values)
         return Series(data=vals, index=idx)
 
-    def topn(self, n=10):
+    @typechecked
+    def topn(self, n: int = 10) -> Series:
         """Return the top values of the series
 
         Parameters
@@ -292,7 +297,8 @@ class Series:
 
         return Series(index=k.index[idx], data=v[idx])
 
-    def sort_index(self, ascending=True):
+    @typechecked
+    def sort_index(self, ascending: bool = True) -> Series:
         """Sort the series by its index
 
         Returns
@@ -303,7 +309,8 @@ class Series:
         idx = self.index.argsort(ascending=ascending)
         return Series(index=self.index.index[idx], data=self.values[idx])
 
-    def sort_values(self, ascending=True):
+    @typechecked
+    def sort_values(self, ascending: bool = True) -> Series:
         """Sort the series numerically
 
         Returns
@@ -316,33 +323,37 @@ class Series:
                 # For numeric values, negation reverses sort order
                 idx = argsort(-self.values)
             else:
-                # For non-numeric values, need the descending arange because
-                # reverse slicing not supported
+                # For non-numeric values, need the descending arange because reverse slicing
+                # is not supported
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
         return Series(index=self.index.index[idx], data=self.values[idx])
 
-    def tail(self, n=10):
+    @typechecked
+    def tail(self, n: int = 10) -> Series:
         """Return the last n values of the series"""
 
         idx_series = self.index[-n:]
         return Series(index=idx_series.index, data=self.values[-n:])
 
-    def head(self, n=10):
+    @typechecked
+    def head(self, n: int = 10) -> Series:
         """Return the first n values of the series"""
 
         idx_series = self.index[0:n]
         return Series(index=idx_series.index, data=self.values[0:n])
 
-    def to_pandas(self):
+    @typechecked
+    def to_pandas(self) -> pd.Series:
         """Convert the series to a local PANDAS series"""
 
         idx = self.index.to_pandas()
         val = convert_if_categorical(self.values)
         return pd.Series(val.to_ndarray(), index=idx)
 
-    def value_counts(self, sort=True):
+    @typechecked
+    def value_counts(self, sort: bool = True) -> Series:
         """Return a Series containing counts of unique values.
 
         The resulting object will be in descending order so that the
@@ -350,7 +361,6 @@ class Series:
 
         Parameters
         ----------
-
         sort : Boolean. Whether or not to sort the results.  Default is true.
         """
 
@@ -362,35 +372,43 @@ class Series:
         s.index.set_dtype(dtype)
         return s
 
-    def diff(self):
+    @typechecked
+    def diff(self) -> Series:
         """Diffs consecutive values of the series.
 
         Returns a new series with the same index and length.  First value is set to NaN.
         """
 
         values = zeros(len(self), "float64")
-        values[1:] = akcast(self.values[1:] - self.values[:-1], "float64")
-        values[0] = np.nan
+        if not isinstance(self.values, Categorical):
+            values[1:] = akcast(self.values[1:] - self.values[:-1], "float64")
+            values[0] = np.nan
+        else:
+            raise TypeError("Diff not supported on Series built from Categorical.")
 
         return Series(data=values, index=self.index)
 
-    def to_dataframe(self, index_labels=None, value_label=None):
+    @typechecked
+    def to_dataframe(
+        self, index_labels: List[str] = None, value_label: str = None
+    ) -> arkouda.dataframe.DataFrame:
         """Converts series to an arkouda data frame
 
-               Parameters
+        Parameters
         ----------
         index_labels:  column names(s) to label the index.
         value_label:  column name to label values.
+
         Returns
         -------
         An arkouda dataframe.
         """
-        if value_label is not None:
-            value_label = [value_label]
+        list_value_label = [value_label] if isinstance(value_label, str) else value_label
 
-        return Series.concat([self], axis=1, index_labels=index_labels, value_labels=value_label)
+        return Series.concat([self], axis=1, index_labels=index_labels, value_labels=list_value_label)
 
-    def register(self, label):
+    @typechecked
+    def register(self, label: str) -> int:
         """Register the series with arkouda
 
         Parameters
@@ -407,7 +425,8 @@ class Series:
         return retval
 
     @staticmethod
-    def attach(label, nkeys=1):
+    @typechecked
+    def attach(label: str, nkeys: int = 1) -> Series:
         """Retrieve a series registered with arkouda
 
         Parameters
@@ -424,7 +443,8 @@ class Series:
 
         return Series((k, v))
 
-    def is_registered(self):
+    @typechecked
+    def is_registered(self) -> bool:
         """
         Checks if all components of the Series object are registered
 
@@ -443,14 +463,15 @@ class Series:
 
         if any(regParts) and not all(regParts):
             warn(
-                f"Series expected {len(regParts)} components to be registered, "
-                f"but only located {sum(regParts)}"
+                f"Series expected {len(regParts)} components to be registered, but only located"
+                f" {sum(regParts)}"
             )
 
         return all(regParts)
 
     @staticmethod
-    def from_return_msg(repMsg):
+    @typechecked
+    def from_return_msg(repMsg: str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
         The user should not call this function directly.
@@ -486,26 +507,28 @@ class Series:
         return Series(data=vals, index=ind)
 
     @staticmethod
-    def _all_aligned(array):
+    @typechecked
+    def _all_aligned(array: List) -> bool:
         """Is an array of Series indexed aligned?"""
 
         itor = iter(array)
         a1 = next(itor).index
         for a2 in itor:
-            if not a1._check_aligned(a2.index):
+            if a1._check_aligned(a2.index) is False:
                 return False
         return True
 
     @staticmethod
-    def concat(arrays, axis=0, index_labels=None, value_labels=None):
-        """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or vertically.
-
-        If a list of grouped arkouda arrays is passed they are converted to a series.
-        Each grouping is a 2-tuple with the first item being the key(s) and the second being the value.
-
-        If horizontal, each series or grouping must have the same length and the same index.
-        The index of the series is converted to a column in the dataframe.
-        If it is a multi-index,each level is converted to a column.
+    @typechecked
+    def concat(
+        arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None
+    ) -> Union[arkouda.dataframe.DataFrame, Series]:
+        """Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
+        vertically. If a list of grouped arkouda arrays is passed they are converted to a series. Each
+        grouping is a 2-tuple with the first item being the key(s) and the second being the value.
+        If horizontal, each series or grouping must have the same length and the same index. The index
+        of the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+        converted to a column.
 
         Parameters
         ----------
@@ -519,12 +542,15 @@ class Series:
         axis=0: an arkouda series.
         axis=1: an arkouda dataframe.
         """
-        from arkouda.dataframe import DataFrame
 
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
-        if type(next(iter(arrays))) == tuple:
+        types = set([type(x) for x in arrays])
+        if len(types) != 1:
+            raise TypeError(f"Items must all have same type: {types}")
+
+        if isinstance(arrays[0], tuple):
             arrays = [Series(i) for i in arrays]
 
         if axis == 1:
@@ -536,8 +562,10 @@ class Series:
 
                 data = next(iter(arrays)).index.to_dict(index_labels)
 
-                for col, label in zip(arrays, value_labels):
-                    data[str(label)] = col.values
+                if value_labels is not None:
+                    # Expect value_labels to always be not None; were doing the check for mypy
+                    for col, label in zip(arrays, value_labels):
+                        data[str(label)] = col.values
 
             else:
                 aitor = iter(arrays)
@@ -546,10 +574,12 @@ class Series:
 
                 data = idx.to_dict(index_labels)
 
-                for col, label in zip(arrays, value_labels):
-                    data[str(label)] = lookup(col.index.index, col.values, idx.index, fillvalue=0)
+                if value_labels is not None:
+                    # Expect value_labels to always be not None; were doing the check for mypy
+                    for col, label in zip(arrays, value_labels):
+                        data[str(label)] = lookup(col.index.index, col.values, idx.index, fillvalue=0)
 
-            retval = DataFrame(data)
+            return arkouda.dataframe.DataFrame(data)
         else:
             # Verticle concat
             idx = arrays[0].index
@@ -557,20 +587,21 @@ class Series:
             for other in arrays[1:]:
                 idx = idx.concat(other.index)
                 v = concatenate([v, other.values], ordered=True)
-            retval = Series(index=idx.index, data=v)
-
-        return retval
+            return Series(index=idx.index, data=v)
 
     @staticmethod
-    def pdconcat(arrays, axis=0, labels=None):
+    @typechecked
+    def pdconcat(
+        arrays: List, axis: int = 0, labels: Strings = None
+    ) -> Union[pd.Series, pd.DataFrame]:
         """Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
-        If a list of grouped arkouda arrays is passed they are converted to a series.
-        Each grouping is a 2-tuple with the first item being the key(s) and the second being the value.
+        If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
+        is a 2-tuple with the first item being the key(s) and the second being the value.
 
-        If horizontal, each series or grouping must have the same length and the same index.
-        The index of the series is converted to a column in the dataframe.
-        If it is a multi-index,each level is converted to a column.
+        If horizontal, each series or grouping must have the same length and the same index. The index of
+        the series is converted to a column in the dataframe.  If it is a multi-index,each level is
+        converted to a column.
 
         Parameters
         ----------
@@ -586,7 +617,11 @@ class Series:
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
-        if type(arrays[0]) == tuple:
+        types = set([type(x) for x in arrays])
+        if len(types) != 1:
+            raise TypeError(f"Items must all have same type: {types}")
+
+        if isinstance(arrays[0], tuple):
             arrays = [Series(i) for i in arrays]
 
         if axis == 1:
