@@ -30,6 +30,7 @@ Functions
    arkouda.util.numpy_to_arkouda
    arkouda.util.convert_if_categorical
    arkouda.util.attach
+   arkouda.util.unregister_by_name
 
 
 
@@ -119,5 +120,17 @@ Functions
 
    Attaches to a known element name. If a type is passed, the server will use that type
    to pull the corresponding parts, otherwise the server will try to infer the type
+
+
+.. py:function:: unregister_by_name(name: str, dtype: str = 'infer')
+
+   Unregisters all components of a given registered object's name
+
+   :param name: Name of the object to be unregistered
+   :type name: str
+   :param dtype: Name of the type of object being unregistered. If no type is given, we will attempt
+                 to identify the type based on registered symbols
+                 Supported types are: pdarray, strings, categorical, segarray, and series
+   :type dtype: str
 
 
