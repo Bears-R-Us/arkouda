@@ -263,10 +263,18 @@ class GroupBy:
                 self.keys, return_groups=True, assume_sorted=self.assume_sorted
             )
 
-        self.size = self.permutation.size
+        self.length = self.permutation.size
         self.ngroups = self.segments.size
 
-    def count(self) -> Tuple[groupable, pdarray]:
+    @typechecked
+    def size(self) -> Tuple[Union[Tuple, pdarray], pdarray]:
+        """
+        This alias for "count" was added to conform with Pandas API
+        """
+        return self.count()
+
+    @typechecked
+    def count(self) -> Tuple[Union[Tuple, pdarray], pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times
         each key appears.
@@ -295,7 +303,7 @@ class GroupBy:
         array([1, 2, 4, 3])
         """
         cmd = "countReduction"
-        args = "{} {}".format(cast(pdarray, self.segments).name, self.size)
+        args = "{} {}".format(cast(pdarray, self.segments).name, self.length)
         repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
@@ -359,7 +367,7 @@ class GroupBy:
             return self.nunique(values)
 
         # All other aggregations operate on pdarray
-        if cast(pdarray, values).size != self.size:
+        if cast(pdarray, values).size != self.length:
             raise ValueError(
                 "Attempt to group array using key array of different length"
             )
@@ -1051,7 +1059,7 @@ class GroupBy:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
         args = "{} {} {} {} {}".format(
-            self.permutation.name, self.segments.name, values.name, permute, self.size
+            self.permutation.name, self.segments.name, values.name, permute, self.length
         )
         repMsg = generic_msg(cmd=cmd, args=args)
         return create_pdarray(repMsg)

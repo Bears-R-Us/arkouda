@@ -117,7 +117,7 @@ def run_test_groupby(strings, cat, akset):
     assert (gc.permutation == g.permutation).all()
     permStrings = strings[g.permutation].to_ndarray()
     # Check each group individually
-    lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.size]))))
+    lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.length]))))
     for uk, s, l in zip(g.unique_keys.to_ndarray(), g.segments.to_ndarray(), lengths):
         # All values in group should equal key
         assert (permStrings[s : s + l] == uk).all()
