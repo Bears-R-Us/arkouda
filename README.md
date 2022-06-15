@@ -92,9 +92,6 @@ This yielded a >20TB dataframe in Arkouda.
 
 1. [Prerequisites](#prereqs)
 2. [Building Arkouda](#build-ak)
-   - [Building the source](#build-ak-source)
-   - [Building the docs](#build-ak-docs)
-   - [Modular building](#build-ak-mod)
 3. [Testing Arkouda](#test-ak)
 4. [Installing Arkouda Python libs and deps](#install-ak)
 5. [Running arkouda_server](#run-ak)
@@ -111,151 +108,13 @@ This yielded a >20TB dataframe in Arkouda.
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-For detailed prerequisite information and installation guides, please review [INSTALL.md](INSTALL.md).
+For a complete list of requirements for Arkouda, please review [REQUIREMENTS.md](REQUIREMENTS.md).
 
-**Requirements List**
-* chapel 1.25.1
-* cmake >= 3.11.0
-* zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
-* hdf5 
-* python 3.8 or greater
-* numpy
-* typeguard for runtime type checking
-* pandas for testing and conversion utils
-* pytest, pytest-env, and h5py to execute the Python test harness
-* sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
-* versioneer for versioning
+For detailed prerequisite information and installation guides, please review [INSTALL.md](INSTALL.md).
 
 <a id="build-ak"></a>
 ## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume 
-that the current directory is the top-level directory of the repo.
-
-<a id="build-ak-source"></a>
-### Build the source <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-If your environment requires non-system paths to find dependencies (e.g., if using the ZMQ and HDF5 bundled 
-with [Anaconda]), append each path to a new file `Makefile.paths` like so:
-
-```make
-# Makefile.paths
-
-# Custom Anaconda environment for Arkouda
-$(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
-#                      ^ Note: No space after comma.
-```
-
-The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
-
-The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows. Note: while any version of cmake >= 3.11.0 should work, we tested exclusively with 3.11.0:
-
-```
-# Export version number of cmake binary to be installed
-export CM_VERSION=3.11.0
-
-# Download cmake
-wget https://github.com/Kitware/CMake/releases/download/v$CM_VERSION/cmake-$CM_VERSION-Linux-x86_64.sh
-
-# Install cmake
-sh /opt/cmake-$CM_VERSION-Linux-x86_64.sh --skip-license --include-subdir
-
-# Link cmake version
-
-export PATH=./cmake-$CM_VERSION-Linux-x86_64/bin:$PATH
-```
-
-### Install Dependencies
-This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can installl all dependencies with a single command or install individually for a customized build.
-
-#### Dependencies
-
-- ZMQ
-- HDF5
-- Arrow
-
-##### All Dependencies 
-
-`make install-deps`
-
-#### Individual Installs
-
-```
-# Install ZMQ Only
-make install-zmq
-
-# Install HDF5 Only
-make install-hdf5
-
-# Install Arrow Only
-make install-arrow
-```
-
-#### Arrow Install Troubleshooting
-
-Arrow should be installed without issue, but in some instances it is possible that the install will not all complete using the Chapel dependencies. If that occurs, install the following packages.
-
-```
-#using conda to install
-conda install boost-cpp snappy thrift-cpp re2 utf8proc
-
-#using pip
-pip install boost snappy thrift re2 utf8proc
-```
-
-
-# Run make to build the arkouda_server executable
-```
-make
-```
-
-<a id="build-ak-docs"></a>
-### Building the Arkouda documentation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/).
-
-<details>
-<summary><b>(click to see more)</b></summary>
-
-First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
-above. _Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
-generation of the Chapel docs via the chpldoc executable._
-
-Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for 
-generating docs:
-
-```bash
-# make doc-python generates the Python docs only
-make doc-python
-
-# make doc-server generates the Chapel docs only
-make doc-server
-
-# make doc generates both Python and Chapel documentation
-make doc
-```
-
-The Python docs are written out to the arkouda/docs directory while the Chapel docs are exported to the 
-arkouda/docs/server directory.
-
-```
-arkouda/docs/ # Python frontend documentation
-arkouda/docs/server # Chapel backend server documentation 
-```
-
-To view the Arkouda documentation locally, type the following url into the browser of choice:
- `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
-
-The `make doc` target detailed above prepares the Arkouda Python and Chapel docs for hosting both locally and on ghpages.
-
-There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
-are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
-"Settings" tab. Finally, scroll down to the Github Pages section and select the "master branch docs/ folder" source
-option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
-Arkouda documentation homepage will be displayed.
-
-</details>
-
-<a id="build-ak-mod"></a>
-### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-For information on Arkouda's modular building feature, see [MODULAR.md](MODULAR.md).
+In order to run the Arkouda server, it must first be compiled. Detailed instructions on the build process can be found at [BUILD.md](BUILD.md).
 
 <a id="test-ak"></a>
 ## Testing Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
