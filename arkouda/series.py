@@ -5,6 +5,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from pandas._config import get_option  # type: ignore
 from typeguard import typechecked
+
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
@@ -13,7 +14,7 @@ from arkouda.groupbyclass import GroupBy, groupable_element_type
 from arkouda.index import Index
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
-from arkouda.pdarrayclass import argmaxk, attach_pdarray, pdarray, create_pdarray
+from arkouda.pdarrayclass import argmaxk, attach_pdarray, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
@@ -232,7 +233,7 @@ class Series:
         else:
             # scalar value
             idx = self.index == key
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     @classmethod
     def _make_binop(cls, operator):
@@ -301,7 +302,7 @@ class Series:
         """
 
         idx = self.index.argsort(ascending=ascending)
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     def sort_values(self, ascending=True):
         """Sort the series numerically
@@ -321,7 +322,7 @@ class Series:
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     def tail(self, n=10):
         """Return the last n values of the series"""
