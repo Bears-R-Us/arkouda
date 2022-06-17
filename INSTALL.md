@@ -27,7 +27,7 @@ This guide will walk you through the environment configuration for Arkouda to op
 
 <a id="overview"></a>
 ## Overview: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-Dependency installation can will vary based on a user's operating system and preferred Python package manager. This serves as a top level view of the steps involved for installing Arkouda.
+Dependency installation will vary based on a user's operating system and preferred Python package manager. This serves as a top level view of the steps involved for installing Arkouda.
 
 1. Install Chapel
 2. Package Manager Installation *(Anaconda Recommended)*

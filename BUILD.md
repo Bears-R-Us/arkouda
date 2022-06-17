@@ -111,7 +111,7 @@ make install-arrow
 
 #### Arrow Install Troubleshooting
 
-Arrow should be installed without issue, but in some instances it is possible that the install will not all complete using the Chapel dependencies. If that occurs, install the following packages.
+Arrow should be installed without issue, but in some instances it is possible that the install will not always complete using the Chapel dependencies. If that occurs, install the following packages.
 
 ```
 #using conda to install
