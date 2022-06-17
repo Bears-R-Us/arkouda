@@ -38,7 +38,7 @@ Dependency installation can will vary based on a user's operating system and pre
 ## Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 For a full list of requirements, please view [REQUIREMENTS.md](REQUIREMENTS.md).
 
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
+Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
 <a id="linux"></a>
 ## Linux<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

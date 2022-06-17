@@ -3,27 +3,31 @@
 ## Table of Contents
 1. [Getting Started](#start)
 2. [Environment Variables](#env-vars)
-3. [Building the Source](#build-ak-source)
-   1. [Using Environment Installed Dependencies](#env_deps)
+3. [Dependency Configuration](#dep-config)
+   1. [Using Environment Installed Dependencies *(Recommended)*](#env_deps)
    2. [Installing Dependencies](#install-deps)
+   3. [Distributable Package](#build-distrib)
+4. [Building the Server](#build-server)
+5. [Building Documentation](#build-ak-doc)
+6. [Modular Builds](#build-ak-mod)
 
 <a id="start"></a>
 ## Getting Started <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
  
 If you have not installed the Arkouda Client and prerequisites, please follow the directions in [INSTALL.md](INSTALL.md) before proceeding with this build.
 
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
+Download, clone, or fork the [arkouda repo](https://github.com/Bears-R-Us/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
 <a id="env-vars"></a>
 ## Environment Variables <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 In order to build the server executable, some environment variables need to be configured. For a full list, please refer to [ENVIRONMENT.md](ENVIRONMENT.md).
 
-<a id="build-ak-source"></a>
-## Build the Source <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+<a id="dep-config"></a>
+## Dependency Configuration <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 <a id="env-deps"></a>
-### Using Environment Installed Dependencies <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-If your environment requires non-system paths to find dependencies (e.g., if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
+### Using Environment Installed Dependencies *(Recommended)* <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)) you will need to provide the path to the location of your installed pacakges. This is achieved by adding the path to your package install location to `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
 
 ```make
 # Makefile.paths
@@ -33,7 +37,7 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                      ^ Note: No space after comma.
 ```
 
-It is important to note that the path may vary based on the installation location of Anaconda (or pip if not using Anaconda). Here are some tips to locate the path
+It is important to note that the path may vary based on the installation location of Anaconda (or pip if not using Anaconda) and your environment name. Here are some tips to locate the path.
 
 ```commandline
 # when installing via pip
@@ -78,7 +82,7 @@ pip install cmake>=3.11.0
 ### Installing Dependencies<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 *Please Note: This step is to only be performed if you are NOT using dependencies from your env. If you attempt to use both there is a potential that version mismatches with cause build failures*. 
 
-This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can installl all dependencies with a single command or install individually for a customized build.
+This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can install all dependencies with a single command or install individually for a customized build.
 
 Before installing, ensure the `Makefile.paths` is empty.
 
@@ -117,13 +121,39 @@ conda install boost-cpp snappy thrift-cpp re2 utf8proc
 pip install boost snappy thrift re2 utf8proc
 ```
 
+<a id="build-distrib"></a>
+#### Distributable Package <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+Alternatively you can build a distributable package via
+
+```bash
+# We'll use a virtual environment to build
+python -m venv build-client-env
+source build-client-env/bin/activate
+python -m pip install --upgrade pip build wheel versioneer
+python setup.py clean --all
+python -m build
+
+# Clean up our virtual env
+deactivate
+rm -rf build-client-env
+
+# You should now have 2 files in the dist/ directory which can be installed via pip
+pip install dist/arkouda*.whl
+# or
+pip install dist/arkouda*.tar.gz
+```
+
+<a id="build-server"></a>
+### Build the Server <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
 Run the `make` command to build the `arkouda_server` executable.
 ```
 make
 ```
 
 <a id="build-ak-docs"></a>
-### Building the Arkouda documentation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### Building the Arkouda Documentation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/).
 
 <details>
@@ -169,5 +199,5 @@ Arkouda documentation homepage will be displayed.
 </details>
 
 <a id="build-ak-mod"></a>
-### Modular building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### Modular Building <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 For information on Arkouda's modular building feature, see [MODULAR.md](MODULAR.md).

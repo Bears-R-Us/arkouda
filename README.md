@@ -150,45 +150,6 @@ make test-all
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
-
-<a id="install-ak"></a>
-## Installing the Arkouda Python Library and Dependencies <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-Now that the arkouda_server is built and tested, install the Python library.
-
-The Arkouda Python library along with its dependent libraries are installed with pip. There are four types of 
-Python dependencies for the Arkouda developer to install: requires, dev, test, and doc. The required libraries, 
-which are the runtime dependencies of the Arkouda python library, are installed as follows:
-
-```bash
- pip3 install -e .
-```
-
-Arkouda and the Python libraries required for development, test, and doc generation activities are installed
-as follows:
-
-```bash
-pip3 install -e .[dev]
-```
-
-Alternatively you can build a distributable package via
-```bash
-# We'll use a virtual environment to build
-python -m venv build-client-env
-source build-client-env/bin/activate
-python -m pip install --upgrade pip build wheel versioneer
-python setup.py clean --all
-python -m build
-
-# Clean up our virtual env
-deactivate
-rm -rf build-client-env
-
-# You should now have 2 files in the dist/ directory which can be installed via pip
-pip install dist/arkouda*.whl
-# or
-pip install dist/arkouda*.tar.gz
-```
-
 <a id="run-ak"></a>
 ## Running arkouda\_server <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
