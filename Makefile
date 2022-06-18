@@ -153,7 +153,7 @@ ARROW_SANITIZE=-fsanitize=$(SANITIZER)
 endif
 
 .PHONY: compile-arrow-cpp
-compile-arrow-cpp: $(ARROW_CPP) $(ARROW_H)
+compile-arrow-cpp:
 	$(CXX) -O3 -std=c++11 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
@@ -198,6 +198,7 @@ check-re2: $(RE2_CHECK)
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
 check-arrow: $(ARROW_CHECK) $(ARROW_O)
 	@echo "Checking for Arrow"
+	make compile-arrow-cpp
 	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
@@ -288,7 +289,7 @@ $(ARKOUDA_MAIN_MODULE): check-deps $(ARROW_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEF
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
 arkouda-clean:
-	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARKOUDA_SOURCE_DIR)/ServerRegistration.chpl
+	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real $(ARKOUDA_SOURCE_DIR)/ServerRegistration.chpl $(ARROW_O)
 
 .PHONY: tags
 tags:
