@@ -27,7 +27,7 @@ In order to build the server executable, some environment variables need to be c
 
 <a id="env-deps"></a>
 ### Using Environment Installed Dependencies *(Recommended)* <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)) you will need to provide the path to the location of your installed pacakges. This is achieved by adding the path to your package install location to `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
+When utilizing a package manager, such as `Anaconda`, to install dependencies (see [INSTALL.md](INSTALL.md)) you will need to provide the path to the location of your installed packages. This is achieved by adding the path to your package install location to `Makefile.paths` (Example Below). It is important to note that in most cases you will only provide a single path for your environment. However, if you have manually installed dependencies (such as ZeroMQ or HDF5), you will need to provide each install location.
 
 ```make
 # Makefile.paths
@@ -80,7 +80,7 @@ pip install cmake>=3.11.0
 
 <a id="install-deps"></a>
 ### Installing Dependencies<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-*Please Note: This step is to only be performed if you are NOT using dependencies from your env. If you attempt to use both there is a potential that version mismatches with cause build failures*. 
+*Please Note: This step is to only be performed if you are NOT using dependencies from your env. If you attempt to use both, it is possible that version mismatches will cause build failures*. 
 
 This step only needs to be done once. Once dependencies are installed, you will not need to run again. You can install all dependencies with a single command or install individually for a customized build.
 
