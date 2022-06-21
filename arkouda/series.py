@@ -235,7 +235,7 @@ class Series:
         else:
             # scalar value
             idx = self.index == key
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     @classmethod
     def _make_binop(cls, operator):
@@ -307,7 +307,7 @@ class Series:
         """
 
         idx = self.index.argsort(ascending=ascending)
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     @typechecked
     def sort_values(self, ascending: bool = True) -> Series:
@@ -328,7 +328,7 @@ class Series:
                 idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
         else:
             idx = argsort(self.values)
-        return Series(index=self.index.index[idx], data=self.values[idx])
+        return Series(index=self.index[idx], data=self.values[idx])
 
     @typechecked
     def tail(self, n: int = 10) -> Series:

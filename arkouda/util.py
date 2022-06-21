@@ -298,3 +298,21 @@ def attach(name: str, dtype: str = "infer"):
             return Strings.from_return_msg(repMsg)
         else:
             return create_pdarray(repMsg)
+
+
+def unregister_by_name(name: str, dtype: str = "infer"):
+    """
+    Unregisters all components of a given registered object's name
+
+    Parameters
+    ----------
+    name : str
+        Name of the object to be unregistered
+    dtype : str
+        Name of the type of object being unregistered. If no type is given, we will attempt
+        to identify the type based on registered symbols
+        Supported types are: pdarray, strings, categorical, segarray, and series
+    """
+    repMsg = cast(str, generic_msg(cmd="genericUnregisterByName", args=f"{dtype}+{name}"))
+
+    return repMsg

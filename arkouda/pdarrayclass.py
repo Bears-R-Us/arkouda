@@ -1636,6 +1636,10 @@ def create_pdarray(repMsg: str) -> pdarray:
         mydtype = fields[2]
         size = int(fields[3])
         ndim = int(fields[4])
+
+        # remove comma from 1 tuple with trailing comma
+        if fields[5][len(fields[5])-2] == ',':
+            fields[5] = fields[5].replace(',', '')
         shape = [int(el) for el in fields[5][1:-1].split(",")]
         itemsize = int(fields[6])
     except Exception as e:
