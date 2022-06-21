@@ -225,8 +225,8 @@ Functions
    arkouda.argsort
    arkouda.in1d
    arkouda.coargsort
-   arkouda.concatenate
    arkouda.convert_if_categorical
+   arkouda.generic_concat
    arkouda.get_callback
    arkouda.register
    arkouda.plot_dist
@@ -13725,12 +13725,12 @@ Attributes
    array([0, 1, 0, 1])
 
 
-.. py:function:: concatenate(items, ordered=True)
-
-
 .. py:function:: convert_if_categorical(values)
 
    Convert a Categorical array to Strings for display
+
+
+.. py:function:: generic_concat(items, ordered=True)
 
 
 .. py:function:: get_callback(x)
