@@ -1,7 +1,7 @@
-name: arkouda-env-dev
+name: arkouda-dev
 channels:
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
   - python>=3.8   # minimum 3.8
   - numpy>=1.18.5,<=1.21.5
@@ -15,7 +15,7 @@ dependencies:
   - pip
   - types-tabulate
   - pytables>=3.7.0
-  - pyarrow>=1.0.1
+  - pyarrow==7.0.0
 
   # Developer dependencies
   - pexpect
@@ -27,6 +27,8 @@ dependencies:
   - typed-ast
   - flake8
   - mypy>=0.931
+  - black
+  - isort
   
   - pip:
     # Developer dependencies
