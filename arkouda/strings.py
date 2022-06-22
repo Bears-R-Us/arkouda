@@ -1488,8 +1488,11 @@ class Strings:
             dt = dt.newbyteorder(">")
         else:
             dt = dt.newbyteorder("<")
-        return np.frombuffer(rep_msg.encode('utf_8'), dt).copy() if isinstance(rep_msg, str) \
+        return (
+            np.frombuffer(rep_msg.encode("utf_8"), dt).copy()
+            if isinstance(rep_msg, str)
             else np.frombuffer(rep_msg, dt).copy()
+        )
 
     def astype(self, dtype) -> pdarray:
         """
@@ -1498,7 +1501,7 @@ class Strings:
         Parameters
         __________
         dtype: np.dtype or str
-            Dtype to cast tdo
+            Dtype to cast to
 
         Returns
         _______
