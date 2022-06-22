@@ -23,6 +23,9 @@ from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
 from arkouda.util import convert_if_categorical, get_callback, register
 
+# pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
+# truncation issues. If issues arise, that's where to look for it.
+
 __all__ = [
     "Series",
 ]
