@@ -177,7 +177,7 @@ class Series:
     @property
     def shape(self):
         # mimic the pandas return of series shape property
-        return self.values.size
+        return (self.values.size,)
 
     def isin(self, lst):
         """Find series elements whose values are in the specified list
