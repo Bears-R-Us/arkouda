@@ -36,7 +36,7 @@ from arkouda.strings import Strings
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
-pd.set_option("display.max_colwidth", 64)
+pd.set_option("display.max_colwidth", 65)
 
 __all__ = [
     "DataFrame",
