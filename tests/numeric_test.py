@@ -182,7 +182,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertListEqual(np.cumprod(na).tolist(), ak.cumprod(pda).to_ndarray().tolist())
+        self.assertTrue(np.isclose(np.cumprod(na), ak.cumprod(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
             ak.cumprod([range(0, 10)])
 
@@ -190,7 +190,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertListEqual(np.sin(na).tolist(), ak.sin(pda).to_ndarray().tolist())
+        self.assertListEqual(np.isclose(np.sin(na).tolist(), ak.sin(pda).to_ndarray().tolist()).all())
         with self.assertRaises(TypeError):
             ak.cos([range(0, 10)])
 
