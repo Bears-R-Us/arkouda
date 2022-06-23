@@ -187,6 +187,12 @@ class GroupByTest(ArkoudaTest):
         self.assertEqual(ct[1], true_ct)
         self.assertListEqual(k.to_ndarray().tolist(), [False, True])
 
+        # This test was added since we added the size method for issue #1353
+        k, ct = g.size()
+
+        self.assertEqual(ct[1], true_ct)
+        self.assertListEqual(k.to_ndarray().tolist(), [False, True])
+
         b = ak.array([False, False, True, False, False])
         g = ak.GroupBy([a, b])
         k, ct = g.count()
@@ -195,7 +201,7 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(k[1].to_ndarray().tolist(), [False, False, True])
 
     def test_bitwise_aggregations(self):
-        revs = ak.arange(self.igb.size) % 2
+        revs = ak.arange(self.igb.length) % 2
         self.assertTrue((self.igb.OR(revs)[1] == self.igb.max(revs)[1]).all())
         self.assertTrue((self.igb.AND(revs)[1] == self.igb.min(revs)[1]).all())
         self.assertTrue((self.igb.XOR(revs)[1] == (self.igb.sum(revs)[1] % 2)).all())

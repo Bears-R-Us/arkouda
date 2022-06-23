@@ -225,7 +225,7 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     """
     if not keys_from_unique:
         keyg = GroupBy(keys)
-        if keyg.size != keyg.ngroups:
+        if keyg.length != keyg.ngroups:
             raise NonUniqueError("Function keys must be unique.")
         keys = keyg.unique_keys
         values = values[keyg.permutation]
