@@ -166,8 +166,9 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
 
 
 @typechecked
-def inner_join(left: pdarray, right: pdarray, wherefunc: Callable = None,
-               whereargs: Tuple[pdarray, pdarray] = None) -> Tuple[pdarray, pdarray]:
+def inner_join(
+    left: pdarray, right: pdarray, wherefunc: Callable = None, whereargs: Tuple[pdarray, pdarray] = None
+) -> Tuple[pdarray, pdarray]:
     """Perform inner join on values in <left> and <right>,
     using conditions defined by <wherefunc> evaluated on
     <whereargs>, returning indices of left-right pairs.
@@ -202,7 +203,7 @@ def inner_join(left: pdarray, right: pdarray, wherefunc: Callable = None,
     """
     from inspect import signature
 
-    sample = np.min((left.size, right.size, 5))
+    sample = np.min((left.size, right.size, 5))  # type: ignore
     if wherefunc is not None:
         if len(signature(wherefunc).parameters) != 2:
             raise ValueError("wherefunc must be a function that accepts exactly two arguments")

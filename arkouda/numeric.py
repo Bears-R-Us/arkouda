@@ -522,7 +522,7 @@ def where(
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError(f"Cannot cast between scalars {A} and {B} to supported dtype")
+            raise TypeError(f"Cannot cast between scalars {str(A)} and {str(B)} to supported dtype")
         repMsg = generic_msg(
             cmd="efunc3ss", args="{} {} {} {} {} {}".format("where", condition.name, dt, A, dt, B)
         )
