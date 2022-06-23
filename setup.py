@@ -131,7 +131,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'numpy>=1.22.2',
+        'numpy>=1.18.5,<=1.21.5',
         'pandas>=1.4.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
