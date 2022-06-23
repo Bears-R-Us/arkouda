@@ -1,17 +1,5 @@
 /* Radix Sort Least Significant Digit */
-module RadixSortLSD
-{
-    config const RSLSD_vv = false;
-    const vv = RSLSD_vv; // these need to be const for comms/performance reasons
-    
-    config const RSLSD_numTasks = here.maxTaskPar; // tasks per locale based on locale0
-    const numTasks = RSLSD_numTasks; // tasks per locale
-    const Tasks = {0..#numTasks}; // these need to be const for comms/performance reasons
-    
-    private param bitsPerDigit = RSLSD_bitsPerDigit; // these need to be const for comms/performance reasons
-    private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
-    
-
+module RadixSortLSD {
     use BlockDist;
     use BitOps;
     use AryUtil;
@@ -25,6 +13,20 @@ module RadixSortLSD
     private config const logLevel = ServerConfig.logLevel;
     const rsLogger = new Logger(logLevel);
 
+    record RadixSortLSDPlan {
+        const numTasks: int; // tasks per locale
+        const Tasks: domain;
+        const bitsPerDigit: int;
+        const numBuckets;
+
+        proc init(numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit) {
+            this.numTasks = numTasks;
+            this.Tasks = {0..#numTasks};
+            this.bitsPerDigit = bitsPerDigit;
+            this.numBuckets = 1 << bitsPerDigit;
+        }
+    }
+
     record KeysComparator {
       inline proc key(k) { return k; }
     }
@@ -34,7 +36,7 @@ module RadixSortLSD
     }
 
     // calculate sub-domain for task
-    inline proc calcBlock(task: int, low: int, high: int) {
+    inline proc calcBlock(task: int, low: int, high: int, numTasks: int) {
         var totalsize = high - low + 1;
         var div = totalsize / numTasks;
         var rem = totalsize % numTasks;
@@ -53,7 +55,7 @@ module RadixSortLSD
 
     // calc global transposed index
     // (bucket,loc,task) = (bucket * numLocales * numTasks) + (loc * numTasks) + task;
-    inline proc calcGlobalIndex(bucket: int, loc: int, task: int): int {
+    inline proc calcGlobalIndex(bucket: int, loc: int, task: int, numTasks: int): int {
         return ((bucket * numLocales * numTasks) + (loc * numTasks) + task);
     }
 
@@ -61,32 +63,32 @@ module RadixSortLSD
        In-place radix sort a block distributed array
        comparator is used to extract the key from array elements
      */
-    private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator) {
+    private proc radixSortLSDCore(a:[?aD] ?t, nBits, negs, comparator, const plan: RadixSortLSDPlan) {
         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "type = %s nBits = %t".format(t:string,nBits));
         var temp = a;
         
         // create a global count array to scan
-        var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
+        var gD = newBlockDom({0..#(numLocales * plan.numTasks * plan.numBuckets)});
         var globalCounts: [gD] int;
         
         // loop over digits
-        for rshift in {0..#nBits by bitsPerDigit} {
-            const last = (rshift + bitsPerDigit) >= nBits;
+        for rshift in {0..#nBits by plan.bitsPerDigit} {
+            const last = (rshift + plan.bitsPerDigit) >= nBits;
             try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "rshift = %t".format(rshift));
             // count digits
             coforall loc in Locales {
                 on loc {
-                    coforall task in Tasks {
+                    coforall task in plan.Tasks {
                         // bucket domain
-                        var bD = {0..#numBuckets};
+                        var bD = {0..#plan.numBuckets};
                         // allocate counts
                         var taskBucketCounts: [bD] int;
                         // get local domain's indices
                         var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
-                        var tD = calcBlock(task, lD.low, lD.high);
+                        var tD = calcBlock(task, lD.low, lD.high, plan.numTasks);
                         try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
@@ -98,7 +100,7 @@ module RadixSortLSD
                         // write counts in to global counts in transposed order
                         var aggregator = newDstAggregator(int);
                         for bucket in bD {
-                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], 
+                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task, plan.numTasks)],
                                                          taskBucketCounts[bucket]);
                         }
                         aggregator.flush();
@@ -109,28 +111,30 @@ module RadixSortLSD
             // scan globalCounts to get bucket ends on each locale/task
             var globalStarts = + scan globalCounts;
             globalStarts -= globalCounts;
-            
-            if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
-            if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
+
+            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "globalCounts = %t".format(globalCounts));
+            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "globalStarts = %t".format(globalStarts));
             
             // calc new positions and permute
             coforall loc in Locales {
                 on loc {
-                    coforall task in Tasks {
+                    coforall task in plan.Tasks {
                         // bucket domain
-                        var bD = {0..#numBuckets};
+                        var bD = {0..#plan.numBuckets};
                         // allocate counts
                         var taskBucketPos: [bD] int;
                         // get local domain's indices
                         var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
-                        var tD = calcBlock(task, lD.low, lD.high);
+                        var tD = calcBlock(task, lD.low, lD.high, plan.numTasks);
                         // read start pos in to globalStarts back from transposed order
                         {
                             var aggregator = newSrcAggregator(int);
                             for bucket in bD {
                                 aggregator.copy(taskBucketPos[bucket], 
-                                           globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+                                           globalStarts[calcGlobalIndex(bucket, loc.id, task, plan.numTasks)]);
                             }
                             aggregator.flush();
                         }
@@ -159,20 +163,21 @@ module RadixSortLSD
         } // for rshift
     }//proc radixSortLSDCore
 
-    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true): [aD] (t, int) {
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] (t, int) {
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
         if (checkSorted && isSorted(a)) {
             return kr;
         }
         var (nBits, negs) = getBitWidth(a);
-        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator());
+        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
+        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan);
         return kr;
     }
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] int {
         if (checkSorted && isSorted(a)) {
             var ranks: [aD] int = [i in aD] i;
             return ranks;
@@ -180,7 +185,8 @@ module RadixSortLSD
 
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
         var (nBits, negs) = getBitWidth(a);
-        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator());
+        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
+        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan);
         var ranks: [aD] int = [(_, rank) in kr] rank;
         return ranks;
     }
@@ -188,23 +194,24 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] t {
         var copy = a;
         if (checkSorted && isSorted(a)) {
             return copy;
         }
         var (nBits, negs) = getBitWidth(a);
-        radixSortLSDCore(copy, nBits, negs, new KeysComparator());
+        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
+        radixSortLSDCore(copy, nBits, negs, new KeysComparator(), plan);
         return copy;
     }
 
-    proc radixSortLSD_memEst(size: int, itemsize: int) {
+    proc radixSortLSD_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, numBuckets: int = 1 << RSLSD_bitsPerDigit) {
         // 2 temp key+ranks arrays + globalStarts/globalClounts
         return (2 * size * (itemsize + numBytes(int))) +
                (2 * numLocales * numTasks * numBuckets * numBytes(int));
     }
 
-    proc radixSortLSD_keys_memEst(size: int, itemsize: int) {
+    proc radixSortLSD_keys_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, numBuckets: int = 1 << RSLSD_bitsPerDigit) {
         // 2 temp key arrays + globalStarts/globalClounts
         return (2 * size * itemsize) +
                (2 * numLocales * numTasks * numBuckets * numBytes(int));

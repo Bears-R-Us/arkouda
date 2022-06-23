@@ -153,7 +153,12 @@ def coargsort(
 
 
 @typechecked
-def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> pdarray:
+def sort(
+    pda: pdarray,
+    algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,
+    num_tasks: int = -1,
+    bits_per_digit: int = -1,
+) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays;
     for Strings, use argsort.
@@ -196,5 +201,7 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
+    repMsg = generic_msg(
+        cmd="sort", args="{} {} {} {}".format(algorithm.name, pda.name, num_tasks, bits_per_digit)
+    )
     return create_pdarray(cast(str, repMsg))
