@@ -147,6 +147,35 @@ Attributes
 
       
 
+   .. py:method:: size(self) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+
+      Count the number of elements in each group, i.e. the number of times
+      each key appears.
+
+      :param none:
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
+
+      .. seealso:: :obj:`count`
+
+      .. rubric:: Notes
+
+      This alias for "count" was added to conform with Pandas API
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      >>> g = ak.GroupBy(a)
+      >>> keys,counts = g.size()
+      >>> keys
+      array([1, 2, 3, 4])
+      >>> counts
+      array([1, 2, 4, 3])
+
+
    .. py:method:: count(self) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Count the number of elements in each group, i.e. the number of times
