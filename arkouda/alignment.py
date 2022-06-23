@@ -10,6 +10,7 @@ from arkouda.pdarrayclass import is_sorted, pdarray
 from arkouda.pdarraycreation import arange, ones, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
+from arkouda.numeric import where
 
 
 def unsqueeze(p):
@@ -171,6 +172,57 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
         else:
             return atruth
 
+def find(query, space):
+    """
+    Return indices of query items in a search list of items (-1 if not found).
+    
+    Parameters
+    ----------
+    query : (sequence of) array-like
+        The items to search for. If multiple arrays, each "row" is an item.
+    space : (sequence of) array-like
+        The set of items in which to search. Must have same shape/dtype as query.
+        
+    Returns
+    -------
+    indices : pdarray, int64
+        For each item in query, its index in space or -1 if not found.
+    """
+    
+    # Concatenate the space and query in fast (block interleaved) mode
+    if isinstance(query, (pdarray, Strings, Categorical)):
+        if type(query) != type(space):
+            raise TypeError("Arguments must have same type")
+        c = concatenate((space, query), ordered=False)
+        spacesize = space.size
+        querysize = query.size
+    else:
+        atypes = np.array([ai.dtype for ai in query])
+        btypes = np.array([bi.dtype for bi in space])
+        if not (atypes == btypes).all():
+            raise TypeError("Array dtypes of arguments must match")
+        c = [concatenate((si, qi), ordered=False) for si, qi in zip(space, query)]
+        spacesize = space[0].size
+        querysize = query[0].size
+    # Combined index of space and query elements, in block interleaved order
+    # All space indices are less than all query indices
+    i = concatenate((arange(spacesize), arange(spacesize, spacesize+querysize)), ordered=False)
+    # Group on terms
+    g = GroupBy(c)
+    # For each term, count how many times it appears in the search space
+    space_multiplicity = g.sum(i < spacesize)[1]
+    # Warn of any duplicate terms in space
+    if (space_multiplicity > 1).any():
+        warnings.warn("Duplicate terms present in search space. Only first instance of each query term will be reported.")
+    # For query terms in the space, the min combined index will be the first index of that term in the space
+    uspaceidx = g.min(i)[1]
+    # For query terms not in the space, the min combined index will exceed the space size and should be set to -1
+    uspaceidx = where(uspaceidx >= spacesize, -1, uspaceidx)
+    # Broadcast unique term indices to combined list of space and query terms
+    spaceidx = g.broadcast(uspaceidx)
+    # Return only the indices of the query terms (remove the search space)
+    return spaceidx[i >= spacesize]
+
 
 def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     """
@@ -223,36 +275,18 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
     """
-    if not keys_from_unique:
-        keyg = GroupBy(keys)
-        if keyg.length != keyg.ngroups:
-            raise NonUniqueError("Function keys must be unique.")
-        keys = keyg.unique_keys
-        values = values[keyg.permutation]
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
-    # Condense down to unique arguments to query
-    g = GroupBy(arguments)
-    # scattermask = Args that exist in table
-    # gathermask = Elements of keys that are being asked for
-    try:
-        scattermask, gathermask = in1dmulti(g.unique_keys, keys, assume_unique=True, symmetric=True)
-    except NonUniqueError:
-        raise NonUniqueError("Function keys must be unique.")
-    # uvals = Retrieved values corresponding to unique args being queried
-    if g.nkeys == 1:
-        uvals = zeros(g.unique_keys.size, dtype=values.dtype)
-    else:
-        uvals = zeros(g.unique_keys[0].size, dtype=values.dtype)
-    # Use default value for arguments not present in keys
-    if fillvalue is not None:
-        uvals.fill(fillvalue)
-    # Set values for arguments present in keys
-    # Set them to the values corresponding to elements queried
-    uvals[scattermask] = values[gathermask]
-    # Broadcast return values back to non-unique arguments
-    return g.broadcast(uvals, permute=True)
+    # Find arguments in keys array
+    idx = find(arguments, keys)
+    # Initialize return values with fillvalue for missing values
+    retvals = ak.zeros(idx.size, dtype=values.dtype)
+    retvals.fill(fillvalue)
+    # Where arguments were found in keys, put corresponding fuction values
+    found = idx >= 0
+    retvals[found] = values[idx[found]]
+    return retvals
 
 
 def in1d_intervals(vals, intervals, symmetric=False, assume_unique=False):
