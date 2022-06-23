@@ -140,7 +140,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertTrue((np.log(na) == ak.log(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.log(na), ak.log(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
             ak.log([range(0, 10)])
 
@@ -148,7 +148,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertTrue((np.exp(na) == ak.exp(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.exp(na), ak.exp(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
             ak.exp([range(0, 10)])
 
@@ -156,7 +156,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertTrue((np.abs(na) == ak.abs(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.abs(na), ak.abs(pda).to_ndarray()).all())
         self.assertTrue((ak.arange(5, 1, -1) == ak.abs(ak.arange(-5, -1))).all())
         self.assertTrue((ak.array([5, 4, 3, 2, 1]) == ak.abs(ak.linspace(-5, -1, 5))).all())
 
@@ -167,13 +167,13 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertTrue((np.cumsum(na) == ak.cumsum(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.cumsum(na), ak.cumsum(pda).to_ndarray()).all())
 
         # Test uint case
         na = np.linspace(1, 10, 10, "uint64")
         pda = ak.cast(pda, ak.uint64)
 
-        self.assertTrue((np.cumsum(na) == ak.cumsum(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.cumsum(na), ak.cumsum(pda).to_ndarray()).all())
 
         with self.assertRaises(TypeError):
             ak.cumsum([range(0, 10)])
@@ -182,7 +182,7 @@ class NumericTest(ArkoudaTest):
         na = np.linspace(1, 10, 10)
         pda = ak.array(na)
 
-        self.assertTrue((np.cumprod(na) == ak.cumprod(pda).to_ndarray()).all())
+        self.assertTrue(np.isclose(np.cumprod(na), ak.cumprod(pda).to_ndarray()).all())
         with self.assertRaises(TypeError):
             ak.cumprod([range(0, 10)])
 
