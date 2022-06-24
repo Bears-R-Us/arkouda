@@ -7,7 +7,7 @@ from arkouda.dtypes import uint64 as akuint64
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.pdarrayclass import is_sorted, pdarray
-from arkouda.pdarraycreation import arange, ones, zeros
+from arkouda.pdarraycreation import arange, ones, zeros, full
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
 from arkouda.numeric import where
@@ -281,8 +281,7 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     # Find arguments in keys array
     idx = find(arguments, keys)
     # Initialize return values with fillvalue for missing values
-    retvals = ak.zeros(idx.size, dtype=values.dtype)
-    retvals.fill(fillvalue)
+    retvals = full(idx.size, fillvalue, dtype=values.dtype)
     # Where arguments were found in keys, put corresponding fuction values
     found = idx >= 0
     retvals[found] = values[idx[found]]
