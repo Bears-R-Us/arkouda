@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -129,7 +130,7 @@ class JoinTest(ArkoudaTest):
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
         self.assertTrue((res3.to_ndarray() == ans).all())
         # Non-unique keys should raise error
-        with self.assertRaises(ak.NonUniqueError):
+        with pytest.warns(UserWarning):
             keys = ak.arange(10) % 5
             values = 10 * keys
             ak.lookup(keys, values, args)
