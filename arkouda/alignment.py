@@ -200,13 +200,19 @@ def find(query, space):
         spacesize = space.size
         querysize = query.size
     else:
+        if len(query) != len(space):
+            raise TypeError("Multi-array arguments must have same number of arrays")
+        spacesize = set(s.size for s in space)
+        querysize = set(q.size for q in query)
+        if len(spacesize) != 1 or len(querysize) != 1:
+            raise TypeError("Multi-array arguments must be non-empty and have equal-length arrays")
+        spacesize = spacesize.pop()
+        querysize = querysize.pop()
         atypes = np.array([ai.dtype for ai in query])
         btypes = np.array([bi.dtype for bi in space])
         if not (atypes == btypes).all():
             raise TypeError("Array dtypes of arguments must match")
         c = [concatenate((si, qi), ordered=False) for si, qi in zip(space, query)]
-        spacesize = space[0].size
-        querysize = query[0].size
     # Combined index of space and query elements, in block interleaved order
     # All space indices are less than all query indices
     i = concatenate((arange(spacesize), arange(spacesize, spacesize + querysize)), ordered=False)
