@@ -216,11 +216,14 @@ def find(query, space):
     # Warn of any duplicate terms in space
     if (space_multiplicity > 1).any():
         warn(
-            "Duplicate terms present in search space. Only first instance of each query term will be reported."
+            "Duplicate terms present in search space. Only first instance of each query term\
+            will be reported."
         )
-    # For query terms in the space, the min combined index will be the first index of that term in the space
+    # For query terms in the space, the min combined index will be the first index of that
+    # term in the space
     uspaceidx = g.min(i)[1]
-    # For query terms not in the space, the min combined index will exceed the space size and should be set to -1
+    # For query terms not in the space, the min combined index will exceed the space size
+    # and should be set to -1
     uspaceidx = where(uspaceidx >= spacesize, -1, uspaceidx)
     # Broadcast unique term indices to combined list of space and query terms
     spaceidx = g.broadcast(uspaceidx)
