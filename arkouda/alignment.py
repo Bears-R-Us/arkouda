@@ -1,17 +1,18 @@
+from warnings import warn
+
 import numpy as np  # type: ignore
 
 from arkouda.categorical import Categorical
 from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import float64 as akfloat64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
+from arkouda.numeric import where
 from arkouda.pdarrayclass import is_sorted, pdarray
-from arkouda.pdarraycreation import arange, ones, zeros, full
+from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
-from arkouda.numeric import where
-from warnings import warn
 
 
 def unsqueeze(p):
