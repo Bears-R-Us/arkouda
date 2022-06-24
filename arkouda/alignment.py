@@ -11,6 +11,7 @@ from arkouda.pdarraycreation import arange, ones, zeros, full
 from arkouda.pdarraysetops import argsort, concatenate, in1d
 from arkouda.strings import Strings
 from arkouda.numeric import where
+from warnings import warn
 
 
 def unsqueeze(p):
@@ -172,23 +173,24 @@ def in1dmulti(a, b, assume_unique=False, symmetric=False):
         else:
             return atruth
 
+
 def find(query, space):
     """
     Return indices of query items in a search list of items (-1 if not found).
-    
+
     Parameters
     ----------
     query : (sequence of) array-like
         The items to search for. If multiple arrays, each "row" is an item.
     space : (sequence of) array-like
         The set of items in which to search. Must have same shape/dtype as query.
-        
+
     Returns
     -------
     indices : pdarray, int64
         For each item in query, its index in space or -1 if not found.
     """
-    
+
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) != type(space):
@@ -206,14 +208,16 @@ def find(query, space):
         querysize = query[0].size
     # Combined index of space and query elements, in block interleaved order
     # All space indices are less than all query indices
-    i = concatenate((arange(spacesize), arange(spacesize, spacesize+querysize)), ordered=False)
+    i = concatenate((arange(spacesize), arange(spacesize, spacesize + querysize)), ordered=False)
     # Group on terms
     g = GroupBy(c)
     # For each term, count how many times it appears in the search space
     space_multiplicity = g.sum(i < spacesize)[1]
     # Warn of any duplicate terms in space
     if (space_multiplicity > 1).any():
-        warnings.warn("Duplicate terms present in search space. Only first instance of each query term will be reported.")
+        warn(
+            "Duplicate terms present in search space. Only first instance of each query term will be reported."
+        )
     # For query terms in the space, the min combined index will be the first index of that term in the space
     uspaceidx = g.min(i)[1]
     # For query terms not in the space, the min combined index will exceed the space size and should be set to -1
