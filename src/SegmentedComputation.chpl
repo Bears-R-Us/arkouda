@@ -47,6 +47,7 @@ module SegmentedComputation {
     StringSearch,
     StringIsLower,
     StringIsUpper,
+    StringIsTitle,
   }
   
   proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -103,6 +104,9 @@ module SegmentedComputation {
                 }
                 when SegFunction.StringIsUpper {
                   agg.copy(res[i], stringIsUpper(values, start..#len));
+                }
+                when SegFunction.StringIsTitle {
+                  agg.copy(res[i], stringIsTitle(values, start..#len));
                 }
                 otherwise {
                   compilerError("Unrecognized segmented function");

@@ -392,6 +392,37 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
+    def to_title(self) -> Strings:
+        """
+        Returns a new Strings from the original replaced with their titlecase equivalent
+
+        Returns
+        -------
+        Strings
+            Strings from the original replaced with their titlecase equivalent
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.to_lower
+        String.to_upper
+
+        Examples
+        --------
+        >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+        >>> strings
+        array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+        >>> strings.to_title()
+        array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+        """
+        rep_msg = generic_msg(cmd="caseChange", args=f"toTitle {self.objtype} {self.entry.name}")
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
     def is_lower(self) -> pdarray:
         """
         Returns a boolean pdarray where index i indicates whether string i of the
@@ -457,6 +488,41 @@ class Strings:
         """
         return create_pdarray(
             generic_msg(cmd="checkChars", args=f"isUpper {self.objtype} {self.entry.name}")
+        )
+
+    @typechecked
+    def is_title(self) -> pdarray:
+        """
+        Returns a boolean pdarray where index i indicates whether string i of the
+        Strings is titlecase
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that are titlecase, False otherwise
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.is_lower
+        Strings.is_upper
+
+        Examples
+        --------
+        >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+        >>> title = ak.array([f'Strings {i}' for i in range(3)])
+        >>> strings = ak.concatenate([mixed, title])
+        >>> strings
+        array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+        >>> strings.is_title()
+        array([False False False True True True])
+        """
+        return create_pdarray(
+            generic_msg(cmd="checkChars", args=f"isTitle {self.objtype} {self.entry.name}")
         )
 
     @typechecked

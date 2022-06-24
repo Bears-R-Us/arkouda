@@ -184,6 +184,11 @@ module SegmentedMsg {
             var retString = getSegString(off, val, st);
             repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
           }
+          when "toTitle" {
+            var (off, val) = strings.title();
+            var retString = getSegString(off, val, st);
+            repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn, "%s".format(subcmd));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -223,6 +228,10 @@ module SegmentedMsg {
           }
           when "isUpper" {
             truth.a = strings.isUpper();
+            repMsg = "created "+st.attrib(rname);
+          }
+          when "isTitle" {
+            truth.a = strings.isTitle();
             repMsg = "created "+st.attrib(rname);
           }
           otherwise {
