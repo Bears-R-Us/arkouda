@@ -1,7 +1,9 @@
 from functools import partial
 from ipaddress import ip_address as _ip_address
+from typing import Optional, Union
 
 import numpy as np  # type: ignore
+from typeguard import typechecked
 
 from arkouda.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.groupbyclass import GroupBy, broadcast
@@ -547,3 +549,77 @@ class IPv4(pdarray):
         else:
             return NotImplemented
         self.values.opeq(otherdata, op)
+
+
+@typechecked
+def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
+    """
+    Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.
+
+    Parameters
+    ----------
+    ip: pdarray (int64) or ak.IPv4
+    IPv4 value. High Bits of IPv6 if IPv6 is passed in.
+    ip2: pdarray (int64), Optional
+    Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
+
+    Returns
+    -------
+    pdarray of bools indicating which indexes are IPv4.
+
+    See Also
+    --------
+    ak.is_ipv6
+    """
+    # grab the ipv4 pdarray of values
+    if isinstance(ip, IPv4):
+        ip = ip.values
+
+    if ip.dtype not in intTypes or (ip2 is not None and ip2.dtype not in intTypes):
+        raise TypeError("ip and ip2 must be int64 pdarrays. ip2 is Optional.")
+
+    if ip2 is not None and ip.size != ip2.size:
+        raise RuntimeError("When supplying a value for ip2, ip and ip2 must be the same size.")
+
+    if ip2 is not None:
+        ans = ip < 2 ** 32
+        ans2 = ip2 == 0
+        return ans & ans2
+    else:
+        return ip < 2 ** 32
+
+
+@typechecked
+def is_ipv6(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
+    """
+    Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.
+
+    Parameters
+    ----------
+    ip: pdarray (int64) or ak.IPv4
+    High Bits of IPv6.
+    ip2: pdarray (int64), Optional
+    Low Bits of IPv6
+
+    Returns
+    -------
+    pdarray of bools indicating which indexes are IPv6.
+
+    See Also
+    --------
+    ak.is_ipv4
+    """
+    # grab the ipv4 pdarray of values
+    if isinstance(ip, IPv4):
+        ip = ip.values
+    if ip.dtype not in intTypes or (ip2 is not None and ip2.dtype not in intTypes):
+        raise TypeError("ip and ip2 must be int64 pdarrays. ip2 is Optional.")
+    if ip2 is not None and ip.size != ip2.size:
+        raise RuntimeError("When supplying a value for ip2, ip and ip2 must be the same size.")
+
+    if ip2 is not None:
+        ans = ip >= 2 ** 32
+        ans2 = ip2 != 0
+        return ans | ans2
+    else:
+        return ip >= 2 ** 32

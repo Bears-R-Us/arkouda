@@ -1,3 +1,5 @@
+import random
+
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -119,3 +121,41 @@ class ClientDTypeTests(ArkoudaTest):
         ipv4 = ak.IPv4(ip_list)
         ip_as_int = ipv4.normalize("192.168.1.1")
         self.assertEqual(3232235777, ip_as_int)
+
+    def test_is_ipv4(self):
+        x = [random.getrandbits(32) for i in range(100)]
+
+        ans = ak.is_ipv4(ak.cast(ak.array(x), ak.int64))
+        self.assertListEqual(ans.to_ndarray().tolist(), [True for i in range(100)])
+
+        ipv4 = ak.IPv4(ak.array(x))
+        ans = ak.is_ipv4(ipv4)
+        self.assertListEqual(ans.to_ndarray().tolist(), [True for i in range(100)])
+
+        x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
+        ans = ak.is_ipv4(ak.cast(ak.array(x), ak.int64))
+        self.assertListEqual(ans.to_ndarray().tolist(), [False if i < 5 else True for i in range(10)])
+
+        with self.assertRaises(TypeError):
+            ak.is_ipv4(ak.array(x))
+
+        with self.assertRaises(RuntimeError):
+            ak.is_ipv4(ak.cast(ak.array(x), ak.int64), ak.cast(ak.arange(2), ak.int64))
+
+    def test_is_ipv6(self):
+        x = [random.getrandbits(128) for i in range(100)]
+        low = ak.cast(ak.array([i & (2 ** 64 - 1) for i in x]), ak.int64)
+        high = ak.cast(ak.array([i >> 64 for i in x]), ak.int64)
+
+        ans = ak.is_ipv6(high, low)
+        self.assertListEqual(ans.to_ndarray().tolist(), [True for i in range(100)])
+
+        x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
+        ans = ak.is_ipv6(ak.cast(ak.array(x), ak.int64))
+        self.assertListEqual(ans.to_ndarray().tolist(), [True if i < 5 else False for i in range(10)])
+
+        with self.assertRaises(TypeError):
+            ak.is_ipv6(ak.array(x))
+
+        with self.assertRaises(RuntimeError):
+            ak.is_ipv6(ak.cast(ak.array(x), ak.int64), ak.cast(ak.arange(2), ak.int64))
