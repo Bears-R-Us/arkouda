@@ -140,6 +140,7 @@ class Categorical:
         self.shape = self.codes.shape
         self.dtype = str_
         self.name: Optional[str] = None
+        self.dtype = "Categorical"
 
     @property
     def objtype(self):

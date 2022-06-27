@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda.alignment import in1dmulti
+# from arkouda.alignment import in1dmulti
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import bool as akbool
@@ -1713,7 +1713,8 @@ def intx(a, b):
         for key, val in b.items():
             if key != "index":
                 b_cols.append(val)
-        return in1dmulti(a_cols, b_cols)
+        #return in1dmulti(a_cols, b_cols)
+        return in1d(a_cols, b_cols)
 
     else:
         raise ValueError("Column mismatch.")
