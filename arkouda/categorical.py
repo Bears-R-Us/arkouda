@@ -19,7 +19,7 @@ from typeguard import typechecked
 
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_scalars
+from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_scalars, str_
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information, list_registry
 from arkouda.logger import getArkoudaLogger
@@ -137,8 +137,8 @@ class Categorical:
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
-        self.dtype = np.str_
-        self.objType = "Categorical"
+        self.dtype = str_
+        self.objType = self.__class__.__name__
         self.name: Optional[str] = None
 
     @classmethod
