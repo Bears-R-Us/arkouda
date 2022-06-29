@@ -440,6 +440,27 @@ module SegmentedArray {
     }
 
     /*
+      Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
+      and the remaining characters replaced with their lowercase equivalent
+      :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
+      their lowercase equivalent
+    */
+    proc title() throws {
+      ref origVals = this.values.a;
+      ref offs = this.offsets.a;
+      var titleVals: [this.values.aD] uint(8);
+      const lengths = this.getLengths();
+      forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
+        var i = 0;
+        for b in interpretAsBytes(origVals, off..#len, borrow=true).toTitle() {
+          valAgg.copy(titleVals[off+i], b:uint(8));
+          i += 1;
+        }
+      }
+      return (offs, titleVals);
+    }
+
+    /*
       Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
       :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase
     */
@@ -453,6 +474,14 @@ module SegmentedArray {
     */
     proc isUpper() throws {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsUpper, bool);
+    }
+
+    /*
+      Returns list of bools where index i indicates whether the string i of the SegString is titlecase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
+    */
+    proc isTitle() throws {
+      return computeOnSegments(offsets.a, values.a, SegFunction.StringIsTitle, bool);
     }
 
     proc findSubstringInBytes(const substr: string) {
@@ -1216,6 +1245,13 @@ module SegmentedArray {
   */
   inline proc stringIsUpper(values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isUpper();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for isTitle
+  */
+  inline proc stringIsTitle(values, rng) throws {
+    return interpretAsString(values, rng, borrow=true).isTitle();
   }
 
   /* Test array of strings for membership in another array (set) of strings. Returns

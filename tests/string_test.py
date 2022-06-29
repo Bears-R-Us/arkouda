@@ -541,27 +541,36 @@ class StringTest(ArkoudaTest):
         self.assertTrue((ak.array([3, 3, 5, 4, 4]) == lengths).all())
 
     def test_case_change(self):
-        s = ak.array([f"StrINgS {i}" for i in range(10)])
+        mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
-        lower = s.to_lower()
+        lower = mixed.to_lower()
         expected = ak.array([f"strings {i}" for i in range(10)])
         self.assertListEqual(lower.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
-        upper = s.to_upper()
+        upper = mixed.to_upper()
         expected = ak.array([f"STRINGS {i}" for i in range(10)])
         self.assertListEqual(upper.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
-        # first 10 all lower, middle 10 mixed case (not lower or upper), last 10 all upper
-        lu = ak.concatenate([lower, s, upper])
+        title = mixed.to_title()
+        expected = ak.array([f"Strings {i}" for i in range(10)])
+        self.assertListEqual(title.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
-        islower = lu.is_lower()
-        expected = ak.arange(30) < 10
+        # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
+        # last 10 all title
+        lmut = ak.concatenate([lower, mixed, upper, title])
+
+        islower = lmut.is_lower()
+        expected = 10 > ak.arange(40)
         self.assertListEqual(islower.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
-        isupper = lu.is_upper()
-        expected = ak.arange(30) >= 20
+        isupper = lmut.is_upper()
+        expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
         self.assertListEqual(isupper.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
+        istitle = lmut.is_title()
+        expected = ak.arange(40) >= 30
+        self.assertListEqual(istitle.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        
     def test_concatenate(self):
         s1 = self._get_strings("string", 51)
         s2 = self._get_strings("string-two", 51)
