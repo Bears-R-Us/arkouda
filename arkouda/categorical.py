@@ -138,7 +138,7 @@ class Categorical:
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.dtype = str_
-        self.objType = self.__class__.__name__
+        self.objtype = self.__class__.__name__
         self.name: Optional[str] = None
 
     @classmethod
