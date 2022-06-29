@@ -377,6 +377,15 @@ will fall in one contiguous block.</p>
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.title">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
+and the remaining characters replaced with their lowercase equivalent
+:returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
+their lowercase equivalent</p>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedArray.SegString.isLower">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isLower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.isLower" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
@@ -388,6 +397,13 @@ will fall in one contiguous block.</p>
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isUpper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.isUpper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
 :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedArray.SegString.isTitle">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isTitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.SegString.isTitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the string i of the SegString is titlecase
+:returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase</p>
 </dd></dl>
 
 <dl class="chpl method">
@@ -589,6 +605,12 @@ target).</p>
 <dt class="sig sig-object chpl" id="SegmentedArray.stringIsUpper">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsUpper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.stringIsUpper" title="Permalink to this definition">¶</a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isUpper</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="SegmentedArray.stringIsTitle">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsTitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedArray.stringIsTitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SegFunction called by computeOnSegments for isTitle</p>
 </dd></dl>
 
 <dl class="chpl function">

@@ -138,6 +138,15 @@ or
       :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
       
 
+   .. method:: proc title() throws
+
+      
+      Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
+      and the remaining characters replaced with their lowercase equivalent
+      :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
+      their lowercase equivalent
+      
+
    .. method:: proc isLower() throws
 
       
@@ -150,6 +159,13 @@ or
       
       Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
       :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase
+      
+
+   .. method:: proc isTitle() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is titlecase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
       
 
    .. method:: proc findSubstringInBytes(const substr: string)
@@ -309,6 +325,12 @@ or
 
    
    The SegFunction called by computeOnSegments for isUpper
+   
+
+.. function:: proc stringIsTitle(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isTitle
    
 
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws

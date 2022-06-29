@@ -3015,6 +3015,26 @@ Attributes
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
+   .. py:method:: to_title(self) -> Strings
+
+      Returns a new Strings from the original replaced with their titlecase equivalent
+
+      :returns: Strings from the original replaced with their titlecase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.to_title()
+      array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
+
    .. py:method:: is_lower(self) -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -3058,6 +3078,29 @@ Attributes
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
       >>> strings.is_upper()
+      array([False False False True True True])
+
+
+   .. py:method:: is_title(self) -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is titlecase
+
+      :returns: True for elements that are titlecase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+
+      .. rubric:: Examples
+
+      >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+      >>> title = ak.array([f'Strings {i}' for i in range(3)])
+      >>> strings = ak.concatenate([mixed, title])
+      >>> strings
+      array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+      >>> strings.is_title()
       array([False False False True True True])
 
 
@@ -7676,6 +7719,26 @@ Attributes
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
+   .. py:method:: to_title(self) -> Strings
+
+      Returns a new Strings from the original replaced with their titlecase equivalent
+
+      :returns: Strings from the original replaced with their titlecase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.to_title()
+      array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
+
    .. py:method:: is_lower(self) -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -7719,6 +7782,29 @@ Attributes
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
       >>> strings.is_upper()
+      array([False False False True True True])
+
+
+   .. py:method:: is_title(self) -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is titlecase
+
+      :returns: True for elements that are titlecase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+
+      .. rubric:: Examples
+
+      >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+      >>> title = ak.array([f'Strings {i}' for i in range(3)])
+      >>> strings = ak.concatenate([mixed, title])
+      >>> strings
+      array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+      >>> strings.is_title()
       array([False False False True True True])
 
 
@@ -15184,6 +15270,26 @@ Attributes
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
+   .. py:method:: to_title(self) -> Strings
+
+      Returns a new Strings from the original replaced with their titlecase equivalent
+
+      :returns: Strings from the original replaced with their titlecase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.to_title()
+      array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
+
    .. py:method:: is_lower(self) -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -15227,6 +15333,29 @@ Attributes
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
       >>> strings.is_upper()
+      array([False False False True True True])
+
+
+   .. py:method:: is_title(self) -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is titlecase
+
+      :returns: True for elements that are titlecase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+
+      .. rubric:: Examples
+
+      >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+      >>> title = ak.array([f'Strings {i}' for i in range(3)])
+      >>> strings = ak.concatenate([mixed, title])
+      >>> strings
+      array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+      >>> strings.is_title()
       array([False False False True True True])
 
 
@@ -17166,6 +17295,26 @@ Attributes
       array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
 
 
+   .. py:method:: to_title(self) -> Strings
+
+      Returns a new Strings from the original replaced with their titlecase equivalent
+
+      :returns: Strings from the original replaced with their titlecase equivalent
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.to_lower`, :obj:`String.to_upper`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array([f'StrINgS {i}' for i in range(5)])
+      >>> strings
+      array(['StrINgS 0', 'StrINgS 1', 'StrINgS 2', 'StrINgS 3', 'StrINgS 4'])
+      >>> strings.to_title()
+      array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
+
+
    .. py:method:: is_lower(self) -> arkouda.pdarrayclass.pdarray
 
       Returns a boolean pdarray where index i indicates whether string i of the
@@ -17209,6 +17358,29 @@ Attributes
       >>> strings
       array(['strings 0', 'strings 1', 'strings 2', 'STRINGS 0', 'STRINGS 1', 'STRINGS 2'])
       >>> strings.is_upper()
+      array([False False False True True True])
+
+
+   .. py:method:: is_title(self) -> arkouda.pdarrayclass.pdarray
+
+      Returns a boolean pdarray where index i indicates whether string i of the
+      Strings is titlecase
+
+      :returns: True for elements that are titlecase, False otherwise
+      :rtype: pdarray, bool
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.is_lower`, :obj:`Strings.is_upper`
+
+      .. rubric:: Examples
+
+      >>> mixed = ak.array([f'sTrINgs {i}' for i in range(3)])
+      >>> title = ak.array([f'Strings {i}' for i in range(3)])
+      >>> strings = ak.concatenate([mixed, title])
+      >>> strings
+      array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
+      >>> strings.is_title()
       array([False False False True True True])
 
 
