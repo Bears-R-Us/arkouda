@@ -129,7 +129,7 @@ class JoinTest(ArkoudaTest):
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
         self.assertTrue((res3.to_ndarray() == ans).all())
         # Non-unique keys should raise error
-        with self.assertRaises(ak.NonUniqueError):
+        with self.assertWarns(UserWarning):
             keys = ak.arange(10) % 5
             values = 10 * keys
             ak.lookup(keys, values, args)
