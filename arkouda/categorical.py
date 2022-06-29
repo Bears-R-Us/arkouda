@@ -16,6 +16,7 @@ from typing import (
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
+from arkouda.decorators import objtypedec
 
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
@@ -39,6 +40,7 @@ from arkouda.strings import Strings
 __all__ = ["Categorical"]
 
 
+@objtypedec
 class Categorical:
     """
     Represents an array of values belonging to named categories. Converting a
@@ -77,7 +79,6 @@ class Categorical:
     BinOps = frozenset(["==", "!="])
     RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments", "_akNAcode"])
     RequiredPieces = frozenset(["categories", "codes", "_akNAcode"])
-    objtype = "category"
     permutation = None
     segments = None
 
@@ -138,7 +139,6 @@ class Categorical:
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
         self.dtype = str_
-        self.objtype = self.__class__.__name__
         self.name: Optional[str] = None
 
     @classmethod

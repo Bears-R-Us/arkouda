@@ -118,7 +118,7 @@ module UniqueMsg
       for (name, objtype, i) in zip(names, types, 0..) {
         var newName = st.nextName();
         select objtype {
-          when "pdarray", "category" {
+          when "pdarray", "Categorical" {
             var g = getGenericTypedArrayEntry(name, st);
             // Gathers unique values, stores in SymTab, and returns repMsg chunk
             proc gatherHelper(type t) throws {
@@ -239,7 +239,7 @@ module UniqueMsg
       }
       for (name, objtype, i) in zip(names, types, 0..) {
         select objtype {
-          when "pdarray", "category" {
+          when "pdarray", "Categorical" {
             var g = getGenericTypedArrayEntry(name, st);
             select g.dtype {
               when DType.Int64 {

@@ -170,7 +170,7 @@ module AryUtil
             thisSize = g.size;
             hasStr = true;
           }
-          when "category" {
+          when "Categorical" {
             // passed only Categorical.codes.name to be sorted on
             var g = getGenericTypedArrayEntry(name, st);
             thisSize = g.size;
