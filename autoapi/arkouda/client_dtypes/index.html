@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.client_dtypes &#8212; arkouda 0+untagged.1.g059c85b documentation</title>
+    <title>arkouda.client_dtypes &#8212; arkouda 0+untagged.1.g9d4489a documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -64,6 +64,12 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client_dtypes.ip_address" title="arkouda.client_dtypes.ip_address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ip_address</span></code></a>(values)</p></td>
 <td><p>Convert values to an Arkouda array of IP addresses.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client_dtypes.is_ipv4" title="arkouda.client_dtypes.is_ipv4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_ipv4</span></code></a>(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) → arkouda.pdarrayclass.pdarray</p></td>
+<td><p>Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client_dtypes.is_ipv6" title="arkouda.client_dtypes.is_ipv6"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_ipv6</span></code></a>(ip: Union[arkouda.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.pdarrayclass.pdarray] = None) → arkouda.pdarrayclass.pdarray</p></td>
+<td><p>Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.</p></td>
 </tr>
 </tbody>
 </table>
@@ -497,6 +503,52 @@ a supported dtype</p></li>
 <span class="sig-name descname"><span class="pre">opeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.opeq" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.is_ipv4">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">is_ipv4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">IPv4</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.client_dtypes.is_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
+<li><p><strong>in.</strong> (<em>IPv4 value. High Bits of IPv6 if IPv6 is passed</em>) – </p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
+<li><p><strong>well.</strong> (<em>Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray of bools indicating which indexes are IPv4.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.is_ipv6</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.is_ipv6">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">is_ipv6</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><span class="pre">IPv4</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.client_dtypes.is_ipv6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
+<li><p><strong>IPv6.</strong> (<em>High Bits of</em>) – </p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
+<li><p><strong>IPv6</strong> (<em>Low Bits of</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pdarray of bools indicating which indexes are IPv6.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.is_ipv4</span></code></p>
+</div>
 </dd></dl>
 
 </section>
