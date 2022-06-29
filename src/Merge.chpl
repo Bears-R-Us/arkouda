@@ -1,7 +1,7 @@
 module Merge {
   use IO;
   use SegmentedArray;
-  use RadixSortLSD only numTasks, calcBlock;
+  use RadixSortLSD only numTasks, calcBlock, RadixSortLSDPlan;
   use Reflection;
   use ServerConfig;
   use Logging;
@@ -33,10 +33,12 @@ module Merge {
   }
 
   //const numTasks = RadixSortLSD.numTasks;
-  inline proc findStart(loc, task, s: SegString) throws {
+  inline proc findStart(loc, task, s: SegString, const plan: RadixSortLSDPlan) throws {
       ref va = s.values.a;
       const lD = va.localSubdomain();
-      const tD = RadixSortLSD.calcBlock(task, lD.low, lD.high);
+      // check and throw if over memory limit
+      overMemLimit(radixSortLSD_memEst(lD.size, s.values.itemsize, plan = plan));
+      const tD = RadixSortLSD.calcBlock(task, lD.low, lD.high, plan = plan);
       const i = tD.low;
       ref oa = s.offsets.a;
       if && reduce (oa < i) {

@@ -42,7 +42,7 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) throws {
+    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true, const plan: RadixSortLSDPlan) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
@@ -54,11 +54,11 @@ module Unique
             }
         } 
 
-        var sorted = radixSortLSD_keys(a);
+        var sorted = radixSortLSD_keys(a, plan = plan);
         return uniqueFromSorted(sorted, needCounts);
     }
 
-    proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
+    proc uniqueSortWithInverse(a: [?aD] ?eltType, const plan: RadixSortLSDPlan) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
@@ -68,7 +68,7 @@ module Unique
         }
         var sorted: [aD] eltType;
         var perm: [aD] int;
-        forall (s, p, sp) in zip(sorted, perm, radixSortLSD(a)) {
+        forall (s, p, sp) in zip(sorted, perm, radixSortLSD(a, plan = plan)) {
           (s, p) = sp;
         }
         var (u, c) = uniqueFromSorted(sorted);
@@ -152,7 +152,7 @@ module Unique
         }
     }
 
-    proc uniqueGroup(str: SegString, returnInverse = false) throws {
+    proc uniqueGroup(str: SegString, returnInverse = false, const plan: RadixSortLSDPlan) throws {
         if (str.size == 0) {
             uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var uo = makeDistArray(0, int);
@@ -174,7 +174,7 @@ module Unique
         if SegmentedArrayUseHash {
           var hashes = str.siphash();
           var sorted: [aD] 2*uint;
-          forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes)) {
+          forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes, plan = plan)) {
             (s, p) = sp;
           }
           truth[0] = true;

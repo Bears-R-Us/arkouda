@@ -9,6 +9,7 @@ module ReductionMsg
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
+    use NumPyDType;
     use ServerErrorStrings;
     use Reflection;
     use ServerErrors;
@@ -1053,12 +1054,18 @@ module ReductionMsg
                                                          "Sorting keys and values...");
       /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
       /* Sort.TwoArrayRadixSort.twoArrayRadixSort(toSort); */
-      var firstIV = radixSortLSD_ranks(values);
+      const plan = makeRadixSortLSDPlan();
+      // check and throw if over memory limit
+      overMemLimit(radixSortLSD_memEst(values.size, dtypeSize(whichDtype(t)), plan = plan));
+      var firstIV = radixSortLSD_ranks(values, plan = plan);
       var intermediate: [kD] int;
       forall (ii, idx) in zip(intermediate, firstIV) with (var agg = newSrcAggregator(int)) {
           agg.copy(ii, keys[idx]);
       }
-      var deltaIV = radixSortLSD_ranks(intermediate);
+      const plan2 = makeRadixSortLSDPlan();
+      // check and throw if over memory limit
+      overMemLimit(radixSortLSD_memEst(intermediate.size, dtypeSize(whichDtype(int)), plan = plan2));
+      var deltaIV = radixSortLSD_ranks(intermediate, plan = plan2);
       var IV: [kD] int;
       forall (IVi, idx) in zip(IV, deltaIV) with (var agg = newSrcAggregator(int)) {
           agg.copy(IVi, firstIV[idx]);

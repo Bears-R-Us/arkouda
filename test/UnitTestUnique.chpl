@@ -1,9 +1,8 @@
 prototype module UnitTestUnique
 {
     use TestBase;
-
+    use RadixSortLSD;
     use Unique;
-    
     use Random;
 
 
@@ -88,8 +87,9 @@ prototype module UnitTestUnique
         writeln(">>> uniqueSort");
         var d: Diags;
 
+        const plan = makeRadixSortLSDPlan();
         d.start();
-        var (aV1,aC1) = uniqueSort(a);
+        var (aV1,aC1) = uniqueSort(a, plan = plan);
         d.stop("uniqueSort");
 
         //printAry("aV1 = ",aV1);
@@ -108,7 +108,7 @@ prototype module UnitTestUnique
         }
         writeln("all values present? >>> ", && reduce present, " <<<"); try! stdout.flush();
         writeln("testing return_inverse...");
-        var (aV2, aC2, inv) = uniqueSortWithInverse(a);
+        var (aV2, aC2, inv) = uniqueSortWithInverse(a, plan = plan);
         writeln("values and counts match? >>> ", (&& reduce (aV2 == aV1)) && (&& reduce (aC2 == aC1)), " <<<" );
         var a2: [aDom] int;
         forall (x, idx) in zip(a2, inv) {
@@ -123,8 +123,9 @@ prototype module UnitTestUnique
         
         writeln(">>> uniqueGroup");
         var d: Diags;
+        const plan = makeRadixSortLSDPlan();
         d.start();
-        var (uo1, uv1, c1, inv1) = uniqueGroup(str);
+        var (uo1, uv1, c1, inv1) = uniqueGroup(str, plan = plan);
         d.stop("uniqueGroup");
 
         // var uStr1 = strFromArrays(uo1, uv1, st);
@@ -134,7 +135,7 @@ prototype module UnitTestUnique
         //writeln("uStr1.size = ",uStr1.size);
         //writeln("totalCounts = ",+ reduce c1); try! stdout.flush();
         writeln("testing return_inverse...");
-        var (uo2, uv2, c2, inv2) = uniqueGroup(str, returnInverse=true);
+        var (uo2, uv2, c2, inv2) = uniqueGroup(str, returnInverse=true, plan = plan);
         // var uStr2 = strFromArrays(uo2, uv2, st);
         var uStr2 = getSegString(uo2, uv2, st);
         writeln("offsets, values, and counts match? >>> ", (&& reduce (uo2 == uo1)) && (&& reduce (uv2 == uv1)) && (&& reduce (c2 == c1)), " <<<" );

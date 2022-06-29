@@ -24,9 +24,9 @@ module In1d
        :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
        :type truth: [] bool
      */
-    proc in1d(ar1: [?aD1] ?t, ar2: [?aD2] t, invert: bool = false): [aD1] bool throws {
+    proc in1d(ar1: [?aD1] ?t, ar2: [?aD2] t, invert: bool = false, const plan: RadixSortLSDPlan): [aD1] bool throws {
         var truth = if ar2.size <= threshold then in1dAr2PerLocAssoc(ar1, ar2)
-                                             else in1dSort(ar1, ar2);
+                                             else in1dSort(ar1, ar2, plan = plan);
         if invert then truth = !truth;
         return truth;
     }
@@ -62,17 +62,17 @@ module In1d
      * domain of ar1. Scales well with time/size, but sort has non-trivial
      * overhead so typically used when ar2 is "large".
      */
-    proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t) throws {
+    proc in1dSort(ar1: [?aD1] ?t, ar2: [?aD2] t, const plan: RadixSortLSDPlan) throws {
         // Need the inverse index to map back from unique domain to original domain later
-        var (u1, _, inv) = uniqueSortWithInverse(ar1);
-        var u2 = uniqueSort(ar2, needCounts=false);
+        var (u1, _, inv) = uniqueSortWithInverse(ar1, plan = plan);
+        var u2 = uniqueSort(ar2, needCounts=false, plan = plan);
         // Concatenate the two unique arrays
         const ar = concatArrays(u1, u2);
         const D = ar.domain;
         // Sort unique arrays together to find duplicates
         var sar: [D] t;
         var order: [D] int;
-        forall (s, o, so) in zip(sar, order, radixSortLSD(ar)) {
+        forall (s, o, so) in zip(sar, order, radixSortLSD(ar, plan = plan)) {
             (s, o) = so;
         }
         // Duplicates correspond to values in both arrays

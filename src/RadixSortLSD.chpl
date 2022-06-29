@@ -27,6 +27,12 @@ module RadixSortLSD {
         }
     }
 
+    proc makeRadixSortLSDPlan(numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): RadixSortLSDPlan {
+        // for now this factory method is equivalent to calling the constructor but in the future
+        // it could return a cached plan object if one already exists with the same config info
+        return new RadixSortLSDPlan(numTasks, bitsPerDigit);
+    }
+
     record KeysComparator {
       inline proc key(k) { return k; }
     }
@@ -163,21 +169,20 @@ module RadixSortLSD {
         } // for rshift
     }//proc radixSortLSDCore
 
-    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] (t, int) {
+    proc radixSortLSD(a:[?aD] ?t, checkSorted: bool = true, const plan: RadixSortLSDPlan): [aD] (t, int) {
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
         if (checkSorted && isSorted(a)) {
             return kr;
         }
         var (nBits, negs) = getBitWidth(a);
-        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
-        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan);
+        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan = plan);
         return kr;
     }
 
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] int {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true, const plan: RadixSortLSDPlan): [aD] int {
         if (checkSorted && isSorted(a)) {
             var ranks: [aD] int = [i in aD] i;
             return ranks;
@@ -185,8 +190,7 @@ module RadixSortLSD {
 
         var kr: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
         var (nBits, negs) = getBitWidth(a);
-        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
-        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan);
+        radixSortLSDCore(kr, nBits, negs, new KeysRanksComparator(), plan = plan);
         var ranks: [aD] int = [(_, rank) in kr] rank;
         return ranks;
     }
@@ -194,27 +198,26 @@ module RadixSortLSD {
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true, numTasks: int = here.maxTaskPar, bitsPerDigit: int = RSLSD_bitsPerDigit): [aD] t {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true, const plan: RadixSortLSDPlan): [aD] t {
         var copy = a;
         if (checkSorted && isSorted(a)) {
             return copy;
         }
         var (nBits, negs) = getBitWidth(a);
-        var plan = new RadixSortLSDPlan(numTasks, bitsPerDigit);
-        radixSortLSDCore(copy, nBits, negs, new KeysComparator(), plan);
+        radixSortLSDCore(copy, nBits, negs, new KeysComparator(), plan = plan);
         return copy;
     }
 
-    proc radixSortLSD_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, numBuckets: int = 1 << RSLSD_bitsPerDigit) {
+    proc radixSortLSD_memEst(size: int, itemsize: int, const plan: RadixSortLSDPlan) {
         // 2 temp key+ranks arrays + globalStarts/globalClounts
         return (2 * size * (itemsize + numBytes(int))) +
-               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+               (2 * numLocales * plan.numTasks * plan.numBuckets * numBytes(int));
     }
 
-    proc radixSortLSD_keys_memEst(size: int, itemsize: int, numTasks: int = here.maxTaskPar, numBuckets: int = 1 << RSLSD_bitsPerDigit) {
+    proc radixSortLSD_keys_memEst(size: int, itemsize: int, const plan: RadixSortLSDPlan) {
         // 2 temp key arrays + globalStarts/globalClounts
         return (2 * size * itemsize) +
-               (2 * numLocales * numTasks * numBuckets * numBytes(int));
+               (2 * numLocales * plan.numTasks * plan.numBuckets * numBytes(int));
 
     }
 }

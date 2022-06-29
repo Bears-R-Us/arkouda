@@ -6,6 +6,7 @@ prototype module UnitTestGroupby
   use FindSegmentsMsg;
   use ReductionMsg;
   use RandMsg;
+  use RadixSortLSD;
   use IndexingMsg;
     
   config const LEN:int;
@@ -76,8 +77,9 @@ prototype module UnitTestGroupby
     var d: Diags;
     if (STRATEGY == "default") {
       writeln("argsortDefault");
+      const plan = makeRadixSortLSDPlan();
       d.start();
-      iv = argsortDefault(keys.a);
+      iv = argsortDefault(keys.a, plan = plan);
       d.stop("argsortDefault");
     } else {
       halt("Unrecognized STRATEGY: ", STRATEGY);

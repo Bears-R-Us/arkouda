@@ -21,8 +21,8 @@ module SortMsg
 
     /* Sort the given pdarray using Radix Sort and
        return sorted keys as a block distributed array */
-    proc sort(a: [?aD] ?t): [aD] t throws {
-      var sorted: [aD] t = radixSortLSD_keys(a);
+    proc sort(a: [?aD] ?t, const plan: RadixSortLSDPlan): [aD] t throws {
+      var sorted: [aD] t = radixSortLSD_keys(a, plan = plan);
       return sorted;
     }
 
@@ -52,9 +52,6 @@ module SortMsg
       var sortedName = st.nextName();
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
-      // check and throw if over memory limit
-      overMemLimit(radixSortLSD_keys_memEst(gEnt.size,  gEnt.itemsize));
  
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "cmd: %s name: %s sortedName: %s dtype: %t".format(
@@ -71,7 +68,11 @@ module SortMsg
             var numTasks = if nt != -1 then nt else here.maxTaskPar;
             var bitsPerDigit = if bpd != -1 then bpd else RSLSD_bitsPerDigit;
 
-            return radixSortLSD_keys(a, numTasks = numTasks, bitsPerDigit = bitsPerDigit);
+            const plan = makeRadixSortLSDPlan(numTasks, bitsPerDigit);
+            // check and throw if over memory limit
+            overMemLimit(radixSortLSD_keys_memEst(gEnt.size, gEnt.itemsize, plan = plan));
+
+            return radixSortLSD_keys(a, plan = plan);
           }
           otherwise {
             throw getErrorWithContext(

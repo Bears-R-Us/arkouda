@@ -4,6 +4,7 @@ module In1dMsg
     use ServerConfig;
 
     use Reflection;
+    use RadixSortLSD;
     use ServerErrors;
     use Logging;
     use Message;
@@ -49,19 +50,23 @@ module In1dMsg
                         "cmd: %s pdarray1: %s pdarray2: %s invert: %t new pdarray name: %t".format(
                                    cmd,st.attrib(name),st.attrib(sname),invert,rname));
 
+        const plan = makeRadixSortLSDPlan();
+        // check and throw if over memory limit
+        overMemLimit(radixSortLSD_memEst(gAr1.size + gAr2.size, gAr1.itemsize, plan = plan));
+
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {
                 var ar1 = toSymEntry(gAr1,int);
                 var ar2 = toSymEntry(gAr2,int);
 
-                var truth = in1d(ar1.a, ar2.a, invert);
+                var truth = in1d(ar1.a, ar2.a, invert, plan = plan);
                 st.addEntry(rname, new shared SymEntry(truth));
             }
             when (DType.UInt64, DType.UInt64) {
                 var ar1 = toSymEntry(gAr1,uint);
                 var ar2 = toSymEntry(gAr2,uint);
 
-                var truth = in1d(ar1.a, ar2.a, invert);
+                var truth = in1d(ar1.a, ar2.a, invert, plan = plan);
                 st.addEntry(rname, new shared SymEntry(truth));
             }
             otherwise {

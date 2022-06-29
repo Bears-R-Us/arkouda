@@ -54,16 +54,17 @@ prototype module UnitTestSort
   /* Main sort testing routine */
 
   proc testSort(A:[?D], type elemType, nElems, sortDesc) {
+    const plan = makeRadixSortLSDPlan();
     if testKeys {
       startDiag();
-      var sortedA = radixSortLSD_keys(A, checkSorted=false);
+      var sortedA = radixSortLSD_keys(A, checkSorted=false, plan = plan);
       endDiag("radixSortLSD_keys", elemType, nElems, sortDesc);
       if printArrays { writeln(A); writeln(sortedA); }
       if verify { assert(AryUtil.isSorted(sortedA)); }
     }
     if testRanks {
       startDiag();
-      var rankSortedA = radixSortLSD_ranks(A, checkSorted=false);
+      var rankSortedA = radixSortLSD_ranks(A, checkSorted=false, plan = plan);
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
       if verify {
         var sortedA: [D] elemType;
@@ -200,8 +201,9 @@ prototype module UnitTestSort
     A = B:perfElemType;
 
     if perfWarmup {
-      if testKeys then radixSortLSD_keys(A, checkSorted=false);
-      if testRanks then radixSortLSD_ranks(A, checkSorted=false);
+      const plan = makeRadixSortLSDPlan();
+      if testKeys then radixSortLSD_keys(A, checkSorted=false, plan = plan);
+      if testRanks then radixSortLSD_ranks(A, checkSorted=false, plan = plan);
     }
 
     for 1..perfTrials {

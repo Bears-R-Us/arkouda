@@ -176,6 +176,7 @@ module SegStringSort {
   }
   
   proc radixSortLSD_raw(const ref offsets: [?aD] int, const ref lengths: [aD] int, const ref values: [] uint(8), const ref inds: [aD] int, const pivot: int): [aD] int throws {
+    // TODO why do we ahve this extra version of radixSortLSD? Can this be covered by the regular one?
     const numBuckets = 2**16;
     type state = (uint(8), uint(8), int, int, int);
     inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int, ref agg) {

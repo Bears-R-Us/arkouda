@@ -1,6 +1,7 @@
 module AryUtil
 {
     use CTypes;
+    use RadixSortLSD;
     use Random;
     use Reflection;
     use Logging;
@@ -327,7 +328,8 @@ module AryUtil
     proc mergeNumericArrays(param numDigits, size, totalDigits, bitWidths, negs, names, st) throws {
       // check mem limit for merged array and sort on merged array
       const itemsize = numDigits * bitsPerDigit / 8;
-      overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
+      const plan = makeRadixSortLSDPlan();
+      overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize, plan = plan));
 
       var ivname = st.nextName();
       var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));

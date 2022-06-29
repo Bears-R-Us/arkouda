@@ -7,7 +7,8 @@ use Random;
 proc testBinarySearch(size, trials) {
   var a = makeDistArray(size, int);
   fillRandom(a);
-  var b = radixSortLSD_keys(a);
+  const plan = makeRadixSortLSDPlan();
+  var b = radixSortLSD_keys(a, plan = plan);
   var R = new RandomStream(int);
   const fixed = [min(int), b[0], b[size-1], max(int)];
   const ans = [0, 0, size-1, size];

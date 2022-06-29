@@ -3,6 +3,7 @@ prototype module UnitTestIn1d
     use TestBase;
     
     use Random;
+    use RadixSortLSD;
 
     use In1d;
     
@@ -81,8 +82,9 @@ prototype module UnitTestIn1d
         if printExpected then writeln("<<< #a[i] in b = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();
 
         writeln(">>> in1dSort");
+        const plan = makeRadixSortLSDPlan();
         d.start();
-        var truth2 = in1dSort(a, b);
+        var truth2 = in1dSort(a, b, plan = plan);
         d.stop("in1dSort");
         if printExpected then writeln("<<< #a[i] in b = ", + reduce truth2, " (expected ", expected, ")");try! stdout.flush();
 
@@ -100,8 +102,9 @@ prototype module UnitTestIn1d
         // returns a boolean vector
         var truth = in1dAr2PerLocAssoc(str1.siphash(), str2.siphash());
         d.stop("in1d (associative domain)");
+        const plan = makeRadixSortLSDPlan();
         d.start();
-        var truth2 = in1dSort(str1.siphash(), str2.siphash());
+        var truth2 = in1dSort(str1.siphash(), str2.siphash(), plan = plan);
         d.stop("in1d (sort-based)");
         writeln("Results of both strategies match? >>> ", && reduce (truth == truth2), " <<<");
         if printExpected then writeln("<<< #str1[i] in str2 = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();

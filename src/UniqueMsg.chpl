@@ -174,9 +174,9 @@ module UniqueMsg
       }
       proc helper(itemsize, type t, keys: [?D] t) throws {
         // Sort the keys
-        var sortMem = radixSortLSD_memEst(keys.size, itemsize);
-        overMemLimit(sortMem);
-        var kr = radixSortLSD(keys);
+        const plan = makeRadixSortLSDPlan();
+        overMemLimit(radixSortLSD_memEst(keys.size, itemsize, plan = plan));
+        var kr = radixSortLSD(keys, plan = plan);
         // Unpack the permutation and sorted keys
         // var perm: [kr.domain] int;
         var permutation = new shared SymEntry(kr.size, int);

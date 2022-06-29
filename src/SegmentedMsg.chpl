@@ -9,6 +9,7 @@ module SegmentedMsg {
   use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use RadixSortLSD;
   use RandArray;
   use IO;
   use Map;
@@ -967,7 +968,10 @@ module SegmentedMsg {
               var mainStr = getSegString(mainName, st);
               var testStr = getSegString(testName, st);
               var e = st.addEntry(rname, mainStr.size, bool);
-              e.a = in1d(mainStr, testStr, invert);
+              const plan = makeRadixSortLSDPlan();
+              // check and throw if over memory limit
+              overMemLimit(radixSortLSD_memEst(mainStr.size + testStr.size, mainStr.values.itemsize, plan = plan));
+              e.a = in1d(mainStr, testStr, invert, plan = plan);
           }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");

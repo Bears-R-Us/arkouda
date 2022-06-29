@@ -48,8 +48,14 @@ module ArraySetopsMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
         
-        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
-        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        // TODO look into this more, might be easier to move mem check into ArraySetOps
+        // I'm not sure these are calculating the sort size correctly
+        // because sometimes we sort both arrays so (gEnt_sortMem + gEnt2_sortMem)
+        // and sometimes we sort the concat of the 2 arrays radixSortLSD_memEst(gEnt.size + gEnt2.size, max(gEnt.itemsize, gEnt2.itemsize), plan);
+        const plan = makeRadixSortLSDPlan();
+        const plan2 = makeRadixSortLSDPlan();
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize, plan = plan);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize, plan = plan2);
         var intersect_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(intersect_maxMem);
 
@@ -58,7 +64,8 @@ module ArraySetopsMsg
             var e = toSymEntry(gEnt,int);
             var f = toSymEntry(gEnt2,int);
 
-            var aV = intersect1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+            var aV = intersect1d(e.a, f.a, isUnique, plan = plan);
             st.addEntry(vname, new shared SymEntry(aV));
 
             repMsg = "created " + st.attrib(vname);
@@ -69,7 +76,8 @@ module ArraySetopsMsg
             var e = toSymEntry(gEnt,uint);
             var f = toSymEntry(gEnt2,uint);
 
-            var aV = intersect1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+            var aV = intersect1d(e.a, f.a, isUnique, plan = plan);
             st.addEntry(vname, new shared SymEntry(aV));
 
             repMsg = "created " + st.attrib(vname);
@@ -104,8 +112,14 @@ module ArraySetopsMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
 
-        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
-        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        // TODO look into this more, might be easier to move mem check into ArraySetOps
+        // I'm not sure these are calculating the sort size correctly
+        // because sometimes we sort both arrays so (gEnt_sortMem + gEnt2_sortMem)
+        // and sometimes we sort the concat of the 2 arrays radixSortLSD_memEst(gEnt.size + gEnt2.size, max(gEnt.itemsize, gEnt2.itemsize), plan);
+        const plan = makeRadixSortLSDPlan();
+        const plan2 = makeRadixSortLSDPlan();
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize, plan = plan);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize, plan = plan2);
         var xor_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(xor_maxMem);
 
@@ -114,7 +128,8 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2,int);
              
-             var aV = setxor1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+             var aV = setxor1d(e.a, f.a, isUnique, plan = plan);
              st.addEntry(vname, new shared SymEntry(aV));
 
              repMsg = "created " + st.attrib(vname);
@@ -125,7 +140,8 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,uint);
              var f = toSymEntry(gEnt2,uint);
              
-             var aV = setxor1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+             var aV = setxor1d(e.a, f.a, isUnique, plan = plan);
              st.addEntry(vname, new shared SymEntry(aV));
 
              repMsg = "created " + st.attrib(vname);
@@ -160,8 +176,14 @@ module ArraySetopsMsg
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
 
-        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
-        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        // TODO look into this more, might be easier to move mem check into ArraySetOps
+        // I'm not sure these are calculating the sort size correctly
+        // because sometimes we sort both arrays so (gEnt_sortMem + gEnt2_sortMem)
+        // and sometimes we sort the concat of the 2 arrays radixSortLSD_memEst(gEnt.size + gEnt2.size, max(gEnt.itemsize, gEnt2.itemsize), plan);
+        const plan = makeRadixSortLSDPlan();
+        const plan2 = makeRadixSortLSDPlan();
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize, plan = plan);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize, plan = plan2);
         var diff_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
         overMemLimit(diff_maxMem);
 
@@ -170,7 +192,8 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = setdiff1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+             var aV = setdiff1d(e.a, f.a, isUnique, plan = plan);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var repMsg = "created " + st.attrib(vname);
@@ -181,7 +204,8 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,uint);
              var f = toSymEntry(gEnt2, uint);
              
-             var aV = setdiff1d(e.a, f.a, isUnique);
+            // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+             var aV = setdiff1d(e.a, f.a, isUnique, plan = plan);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var repMsg = "created " + st.attrib(vname);
@@ -214,9 +238,15 @@ module ArraySetopsMsg
 
       var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
       var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
-      
-      var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
-      var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+
+      // TODO look into this more, might be easier to move mem check into ArraySetOps
+      // I'm not sure these are calculating the sort size correctly
+      // because sometimes we sort both arrays so (gEnt_sortMem + gEnt2_sortMem)
+      // and sometimes we sort the concat of the 2 arrays radixSortLSD_memEst(gEnt.size + gEnt2.size, max(gEnt.itemsize, gEnt2.itemsize), plan);
+      const plan = makeRadixSortLSDPlan();
+      const plan2 = makeRadixSortLSDPlan();
+      var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize, plan = plan);
+      var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize, plan = plan2);
       var union_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
       overMemLimit(union_maxMem);
 
@@ -225,7 +255,8 @@ module ArraySetopsMsg
            var e = toSymEntry(gEnt,int);
            var f = toSymEntry(gEnt2,int);
 
-           var aV = union1d(e.a, f.a);
+          // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+           var aV = union1d(e.a, f.a, plan = plan);
            st.addEntry(vname, new shared SymEntry(aV));
 
            var repMsg = "created " + st.attrib(vname);
@@ -236,7 +267,8 @@ module ArraySetopsMsg
            var e = toSymEntry(gEnt,uint);
            var f = toSymEntry(gEnt2,uint);
 
-           var aV = union1d(e.a, f.a);
+          // it's unclear if plan or plan2 should be passed (should be equivalent rn), revisit along with mem estimates
+           var aV = union1d(e.a, f.a, plan = plan);
            st.addEntry(vname, new shared SymEntry(aV));
 
            var repMsg = "created " + st.attrib(vname);

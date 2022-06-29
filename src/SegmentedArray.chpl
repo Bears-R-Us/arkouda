@@ -358,7 +358,10 @@ module SegmentedArray {
         }
 
         // Return the permutation that sorts the hashes
-        var iv = radixSortLSD_ranks(hashes);
+        const plan = makeRadixSortLSDPlan();
+        // check and throw if over memory limit
+        overMemLimit(radixSortLSD_memEst(values.size,  2*dtypeSize(DType.UInt64), plan = plan));
+        var iv = radixSortLSD_ranks(hashes, plan = plan);
         if logLevel == LogLevel.DEBUG { 
             t.stop(); 
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1256,14 +1259,14 @@ module SegmentedArray {
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, const plan: RadixSortLSDPlan) throws where useHash {
     use In1d;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       var truth: [mainStr.offsets.aD] bool;
       return truth;
     }
-    return in1d(mainStr.siphash(), testStr.siphash(), invert);
+    return in1d(mainStr.siphash(), testStr.siphash(), invert, plan = plan);
   }
 
   proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws {
@@ -1281,7 +1284,7 @@ module SegmentedArray {
 
   private config const in1dSortThreshold = 64;
   
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, const plan: RadixSortLSDPlan) throws where !useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
@@ -1295,8 +1298,8 @@ module SegmentedArray {
       return truth;
     } else {
       // This is inspired by numpy in1d
-      const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
-      const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
+      const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true, plan = plan);
+      const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr, plan = plan);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
            "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(

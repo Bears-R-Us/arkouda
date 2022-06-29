@@ -118,7 +118,7 @@ module ArgSortMsg
        permutation vector and further permuting it in the manner required
        to sort an array of keys.
      */
-    proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws {
+    proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int, const plan: RadixSortLSDPlan): [] int throws {
       // Store the incremental permutation to be applied on top of the initial perm
       var deltaIV: [aD] int;
       // Discover the dtype of the entry holding the keys array
@@ -133,7 +133,7 @@ module ArgSortMsg
                   agg.copy(newai, olda[idx]);
               }
               // Generate the next incremental permutation
-              deltaIV = argsortDefault(newa);
+              deltaIV = argsortDefault(newa, plan = plan);
           }
           when DType.UInt64 {
               var e = toSymEntry(g, uint);
@@ -145,7 +145,7 @@ module ArgSortMsg
                   agg.copy(newai, olda[idx]);
               }
               // Generate the next incremental permutation
-              deltaIV = argsortDefault(newa);
+              deltaIV = argsortDefault(newa, plan = plan);
           }
           when DType.Float64 {
               var e = toSymEntry(g, real);
@@ -154,7 +154,7 @@ module ArgSortMsg
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
                   agg.copy(newai, olda[idx]);
               }
-              deltaIV = argsortDefault(newa);
+              deltaIV = argsortDefault(newa, plan = plan);
           }
           otherwise { throw getErrorWithContext(
                                 msg="Unsupported DataType: %t".format(dtype2str(g.dtype)),
@@ -174,13 +174,13 @@ module ArgSortMsg
       return newIV;
     }
 
-    proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
+    proc incrementalArgSort(s: SegString, iv: [?aD] int, const plan: RadixSortLSDPlan): [] int throws {
       var hashes = s.siphash();
       var newHashes: [aD] 2*uint;
       forall (nh, idx) in zip(newHashes, iv) with (var agg = newSrcAggregator((2*uint))) {
         agg.copy(nh, hashes[idx]);
       }
-      var deltaIV = argsortDefault(newHashes);
+      var deltaIV = argsortDefault(newHashes, plan = plan);
       // var (newOffsets, newVals) = s[iv];
       // var deltaIV = newStr.argGroup();
       var newIV: [aD] int;
@@ -249,12 +249,13 @@ module ArgSortMsg
 
           // check mem limit for merged array and sort on merged array
           const itemsize = numDigits * bitsPerDigit / 8;
-          overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
+          const plan = makeRadixSortLSDPlan();
+          overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize, plan = plan));
 
           var ivname = st.nextName();
           var merged = mergeNumericArrays(numDigits, size, totalDigits, bitWidths, negs, names, st);
 
-          var iv = argsortDefault(merged, algorithm=algorithm);
+          var iv = argsortDefault(merged, algorithm=algorithm, plan = plan);
           st.addEntry(ivname, new shared SymEntry(iv));
 
           var repMsg = "created " + st.attrib(ivname);
@@ -271,7 +272,8 @@ module ArgSortMsg
 
       // check mem limit for permutation vectors and sort
       const itemsize = numBytes(int);
-      overMemLimit(2*size*itemsize + radixSortLSD_memEst(size, itemsize));
+      const plan = makeRadixSortLSDPlan();
+      overMemLimit(2*size*itemsize + radixSortLSD_memEst(size, itemsize, plan = plan));
       
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
@@ -283,11 +285,11 @@ module ArgSortMsg
                         types.domain.low..types.domain.high by -1) {
         if (types[j] == "str") {
           var strings = getSegString(names[i], st);
-          iv.a = incrementalArgSort(strings, iv.a);
+          iv.a = incrementalArgSort(strings, iv.a, plan = plan);
         } else {
           var g: borrowed GenSymEntry = getGenericTypedArrayEntry(names[i], st);
           // Perform the coArgSort and store in the new SymEntry
-          iv.a = incrementalArgSort(g, iv.a);
+          iv.a = incrementalArgSort(g, iv.a, plan = plan);
         }
       }
       repMsg = "created " + st.attrib(rname);
@@ -295,7 +297,7 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm):[D] int throws {
+    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, const plan: RadixSortLSDPlan):[D] int throws {
       var t1 = Time.getCurrentTime();
       var iv: [D] int;
       select algorithm {
@@ -305,7 +307,7 @@ module ArgSortMsg
           iv = [(a, i) in AI] i;
         }
         when SortingAlgorithm.RadixSortLSD {
-          iv = radixSortLSD_ranks(A);
+          iv = radixSortLSD_ranks(A, plan = plan);
         }
         otherwise {
           throw getErrorWithContext(
@@ -351,22 +353,23 @@ module ArgSortMsg
           when "pdarray" {
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
             // check and throw if over memory limit
-            overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize));
+            const plan = makeRadixSortLSDPlan();
+            overMemLimit(radixSortLSD_memEst(gEnt.size, gEnt.itemsize, plan = plan));
         
             select (gEnt.dtype) {
                 when (DType.Int64) {
                     var e = toSymEntry(gEnt,int);
-                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    var iv = argsortDefault(e.a, algorithm=algorithm, plan = plan);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 when (DType.UInt64) {
                     var e = toSymEntry(gEnt,uint);
-                    var iv = argsortDefault(e.a, algorithm=algorithm);
+                    var iv = argsortDefault(e.a, algorithm=algorithm, plan = plan);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 when (DType.Float64) {
                     var e = toSymEntry(gEnt, real);
-                    var iv = argsortDefault(e.a);
+                    var iv = argsortDefault(e.a, plan = plan);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 otherwise {

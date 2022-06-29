@@ -14,7 +14,8 @@ proc testPermute(n:int, meanLen: numeric) {
   var strings = getSegString(segs, vals, st);
   var rint: [segs.domain] int;
   fillInt(rint, 0, max(int));
-  var perm = radixSortLSD_ranks(rint);
+  const plan = makeRadixSortLSDPlan();
+  var perm = radixSortLSD_ranks(rint, plan = plan);
   d.start();
   var (psegs, pvals) = strings[perm];
   d.stop(printTime=false);
