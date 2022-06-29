@@ -54,8 +54,6 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-12-dev llvm-12 llvm-12-tools clang-12 libclang-12-dev libclang-cpp12-dev libedit-dev
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-# Chapel 1.26.0 is recommended, but 1.25.1 is still supported.
-# To use Chapel 1.25.1, replace '1.26.0' in the following three commands with '1.25.1'
 wget https://github.com/chapel-lang/chapel/releases/download/1.26.0/chapel-1.26.0.tar.gz
 tar xvf chapel-1.26.0.tar.gz
 cd chapel-1.26.0/
@@ -254,7 +252,7 @@ pip install -e .[dev]
 
 ```bash
 # build chapel in the user home directory with these settings...
-export CHPL_HOME=~/chapel/chapel-1.25.1
+export CHPL_HOME=~/chapel/chapel-1.26.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
