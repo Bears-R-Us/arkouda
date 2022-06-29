@@ -137,6 +137,8 @@ class Categorical:
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
+        self.dtype = np.str_
+        self.objType = "Categorical"
         self.name: Optional[str] = None
 
     @classmethod
