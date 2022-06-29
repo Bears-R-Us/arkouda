@@ -141,6 +141,10 @@ class Categorical:
         self.dtype = str_
         self.name: Optional[str] = None
 
+    @property
+    def objtype(self):
+        return self.objtype
+
     @classmethod
     @typechecked
     def from_codes(
