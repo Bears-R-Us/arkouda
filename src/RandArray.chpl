@@ -21,11 +21,6 @@ module RandArray {
         var seed = (seedStr:int) + here.id;
         fillRandom(a, seed);
       }
-      const a2 = a:uint;
-      if (aMax > aMin) {
-        const modulus = aMax:uint - aMin:uint;
-        a = (a2 % modulus):t + aMin:t;
-      }
   }
 
   proc fillUInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isUintType(t) {
@@ -34,10 +29,6 @@ module RandArray {
       } else {
         var seed = (seedStr:int) + here.id;
         fillRandom(a, seed);
-      }
-      if (aMax > aMin) {
-        const modulus = aMax - aMin;
-        [x in a] x = ((x:t % (modulus:t)) + aMin:t):t;
       }
   }
 
