@@ -221,8 +221,10 @@ Functions
    arkouda.generic_concat
    arkouda.get_callback
    arkouda.register
+   arkouda.where
    arkouda.is_sorted
    arkouda.arange
+   arkouda.full
    arkouda.ones
    arkouda.zeros
    arkouda.argsort
@@ -234,6 +236,7 @@ Functions
    arkouda.right_align
    arkouda.left_align
    arkouda.in1dmulti
+   arkouda.find
    arkouda.lookup
    arkouda.in1d_intervals
    arkouda.search_intervals
@@ -285,9 +288,9 @@ Attributes
    arkouda.akfloat64
    arkouda.akint64
    arkouda.akbool
+   arkouda.akfloat64
    arkouda.akint64
    arkouda.akuint64
-   arkouda.akfloat64
 
 
 .. py:function:: get_versions()
@@ -13742,6 +13745,11 @@ Attributes
 
    
 
+.. py:data:: akfloat64
+   
+
+   
+
 .. py:data:: akint64
    
 
@@ -13752,10 +13760,57 @@ Attributes
 
    
 
-.. py:data:: akfloat64
-   
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
 
-   
+   Returns an array with elements chosen from A and B based upon a
+   conditioning array. As is the case with numpy.where, the return array
+   consists of values from the first array (A) where the conditioning array
+   elements are True and from the second array (B) where the conditioning
+   array elements are False.
+
+   :param condition: Used to choose values from A or B
+   :type condition: pdarray
+   :param A: Value(s) used when condition is True
+   :type A: Union[numeric_scalars, pdarray]
+   :param B: Value(s) used when condition is False
+   :type B: Union[numeric_scalars, pdarray]
+
+   :returns: Values chosen from A where the condition is True and B where
+             the condition is False
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
+       an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes
+       are not supported or do not match, or multiple condition clauses (see
+       Notes section) are applied
+   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
+
+   .. rubric:: Examples
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 == 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = 10
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 10, 10, 10, 10, 10])
+
+   .. rubric:: Notes
+
+   A and B must have the same dtype and only one conditional clause
+   is supported e.g., n < 5, n > 1, which is supported in numpy
+   is not currently supported in Arkouda
+
 
 .. py:function:: is_sorted(pda: pdarray) -> numpy.bool_
 
@@ -14713,6 +14768,37 @@ Attributes
 
    >>> ak.arange(-5, -10, -1)
    array([-5, -6, -7, -8, -9])
+
+
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with fill_value.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param fill_value: Value with which the array will be filled
+   :type fill_value: int_scalars
+   :param dtype: Resulting array type, default float64
+   :type dtype: all_scalars
+
+   :returns: array of the requested size and dtype filled with fill_value
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones`
+
+   .. rubric:: Examples
+
+   >>> ak.full(5, 7, dtype=ak.int64)
+   array([7, 7, 7, 7, 7])
+
+   >>> ak.full(5, 9, dtype=ak.float64)
+   array([9, 9, 9, 9, 9])
+
+   >>> ak.full(5, 5, dtype=ak.bool)
+   array([True, True, True, True, True])
 
 
 .. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
@@ -16072,6 +16158,19 @@ Attributes
 
    :returns: * *pdarray, bool* -- True for each row in a that is contained in b
              * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+
+
+.. py:function:: find(query, space)
+
+   Return indices of query items in a search list of items (-1 if not found).
+
+   :param query: The items to search for. If multiple arrays, each "row" is an item.
+   :type query: (sequence of) array-like
+   :param space: The set of items in which to search. Must have same shape/dtype as query.
+   :type space: (sequence of) array-like
+
+   :returns: **indices** -- For each item in query, its index in space or -1 if not found.
+   :rtype: pdarray, int64
 
 
 .. py:function:: lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False)

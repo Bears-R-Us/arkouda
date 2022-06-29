@@ -19,6 +19,7 @@ Functions
    arkouda.alignment.right_align
    arkouda.alignment.left_align
    arkouda.alignment.in1dmulti
+   arkouda.alignment.find
    arkouda.alignment.lookup
    arkouda.alignment.in1d_intervals
    arkouda.alignment.search_intervals
@@ -92,6 +93,19 @@ Functions
 
    :returns: * *pdarray, bool* -- True for each row in a that is contained in b
              * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+
+
+.. py:function:: find(query, space)
+
+   Return indices of query items in a search list of items (-1 if not found).
+
+   :param query: The items to search for. If multiple arrays, each "row" is an item.
+   :type query: (sequence of) array-like
+   :param space: The set of items in which to search. Must have same shape/dtype as query.
+   :type space: (sequence of) array-like
+
+   :returns: **indices** -- For each item in query, its index in space or -1 if not found.
+   :rtype: pdarray, int64
 
 
 .. py:function:: lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False)
