@@ -340,7 +340,7 @@ module AryUtil
 
           const r = 0..#nBits by bitsPerDigit;
           for rshift in r {
-            const myDigit = (r.high - rshift) / bitsPerDigit;
+            const myDigit = (nBits-1 - rshift) / bitsPerDigit;
             const last = myDigit == 0;
             forall (m, a) in zip(merged, A) {
               m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
@@ -381,7 +381,7 @@ module AryUtil
         /* Do we own the memory? */
         var isOwned: bool = false;
 
-        proc init(A: [] ?t, region: range(?)) {
+        proc init(A: [] ?t, region: range(stridable=false)) {
             use CommPrimitives;
             use CTypes;
 

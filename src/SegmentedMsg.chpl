@@ -739,7 +739,7 @@ module SegmentedMsg {
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             // TO DO: in the future, we will force the client to handle this
-            var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
+            var slice = convertPythonSliceToChapel(start, stop);
             // Compute the slice
             var (newSegs, newVals) = strings[slice];
             // Store the resulting offsets and bytes arrays
@@ -756,16 +756,12 @@ module SegmentedMsg {
     }
   }
 
-  proc convertPythonSliceToChapel(start:int, stop:int, stride:int=1): range(stridable=true) {
-    var slice: range(stridable=true);
-    // convert python slice to chapel slice
-    // backwards iteration with negative stride
-    if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-    // forward iteration with positive stride
-    else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-    // BAD FORM start < stop and stride is negative
-    else {slice = 1..0;}
-    return slice;
+  proc convertPythonSliceToChapel(start:int, stop:int): range(stridable=false) {
+    if (start <= stop) {
+      return start..(stop-1);
+    } else {
+      return 1..0;
+    }
   }
 
   proc segPdarrayIndex(objtype: string, args: [] string, 
