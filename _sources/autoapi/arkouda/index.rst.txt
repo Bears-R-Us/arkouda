@@ -18,6 +18,7 @@ Submodules
    client/index.rst
    client_dtypes/index.rst
    dataframe/index.rst
+   decorators/index.rst
    dtypes/index.rst
    groupbyclass/index.rst
    index/index.rst
@@ -120,6 +121,7 @@ Functions
    arkouda.resolve_scalar_dtype
    arkouda.get_byteorder
    arkouda.get_server_byteorder
+   arkouda.objtypedec
    arkouda.clear
    arkouda.any
    arkouda.all
@@ -4447,6 +4449,9 @@ Attributes
 .. py:function:: get_server_byteorder() -> str
 
    Get the server's byteorder
+
+
+.. py:function:: objtypedec(orig_cls)
 
 
 .. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
@@ -8808,11 +8813,6 @@ Attributes
 
       
 
-   .. py:attribute:: objtype
-      :annotation: = category
-
-      
-
    .. py:attribute:: permutation
       
 
@@ -8822,6 +8822,10 @@ Attributes
       
 
       
+
+   .. py:method:: objtype(self)
+      :property:
+
 
    .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
@@ -13319,11 +13323,6 @@ Attributes
 
       
 
-   .. py:attribute:: objtype
-      :annotation: = category
-
-      
-
    .. py:attribute:: permutation
       
 
@@ -13333,6 +13332,10 @@ Attributes
       
 
       
+
+   .. py:method:: objtype(self)
+      :property:
+
 
    .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
@@ -16571,11 +16574,6 @@ Attributes
 
       
 
-   .. py:attribute:: objtype
-      :annotation: = category
-
-      
-
    .. py:attribute:: permutation
       
 
@@ -16585,6 +16583,10 @@ Attributes
       
 
       
+
+   .. py:method:: objtype(self)
+      :property:
+
 
    .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:

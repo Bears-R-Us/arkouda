@@ -92,11 +92,6 @@ Classes
 
       
 
-   .. py:attribute:: objtype
-      :annotation: = category
-
-      
-
    .. py:attribute:: permutation
       
 
@@ -106,6 +101,10 @@ Classes
       
 
       
+
+   .. py:method:: objtype(self)
+      :property:
+
 
    .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:

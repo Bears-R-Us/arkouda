@@ -1,0 +1,22 @@
+:py:mod:`arkouda.decorators`
+============================
+
+.. py:module:: arkouda.decorators
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.decorators.objtypedec
+
+
+
+.. py:function:: objtypedec(orig_cls)
+
+
