@@ -821,7 +821,7 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> ArrayView:
         - dset currently only reading a single dataset is supported
         - file_path will need to support list[str] and str for glob
     """
-    rep_msg = generic_msg(cmd="readhdf_multi", args=f"{file_path} {dset}",)
+    rep_msg = cast(str, generic_msg(cmd="readhdf_multi", args=f"{file_path} {dset}",))
 
     objs = rep_msg.split("+")
 
