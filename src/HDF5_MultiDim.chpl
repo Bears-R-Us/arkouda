@@ -284,10 +284,11 @@ module HDF5_MultiDim {
         //open the created dset so we can add attributes.
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
 
-        // Write attributes for the dataset
+        // Create the attribute space
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
         var attr_id: C_HDF5.hid_t;
 
+        // Create the objectType. This will be important when merging with other read/write functionality.
         var objType: string = "ArrayView";
         var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
         C_HDF5.H5Tset_size(attrStringType, objType.size:uint(64) + 1); // ensure space for NULL terminator
@@ -302,10 +303,12 @@ module HDF5_MultiDim {
         C_HDF5.H5Awrite(attr_id, attrStringType, type_chars);
         C_HDF5.H5Aclose(attr_id);
 
+        // Store the rank of the dataset. Required to read so that shape can be built
         attr_id = C_HDF5.H5Acreate2(dset_id, "Rank".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(shape.size));
         C_HDF5.H5Aclose(attr_id);
 
+        // Indicates if the data is stored as Flat or Mutli-dimensional.
         attr_id = C_HDF5.H5Acreate2(dset_id, "Format".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(method));
         C_HDF5.H5Aclose(attr_id);
