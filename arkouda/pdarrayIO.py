@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import json
 import os
@@ -7,7 +9,7 @@ from typing import Dict, List, Mapping, Optional, Union, cast
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda.array_view import ArrayView
+import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -795,7 +797,7 @@ def export(
 
 
 @typechecked
-def read_hdf5_multi_dim(file_path: str, dset: str) -> ArrayView:
+def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView:
     """
     Read a multi-dimensional object from an HDF5 file
 
@@ -828,7 +830,7 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> ArrayView:
     shape = create_pdarray(objs[0])
     flat = create_pdarray(objs[1])
 
-    arr = ArrayView(flat, shape)
+    arr = arkouda.array_view.ArrayView(flat, shape)
     return arr
 
 
@@ -888,7 +890,11 @@ def _mode_str_to_int(mode: str) -> int:
 
 @typechecked
 def write_hdf5_multi_dim(
-    obj: ArrayView, file_path: str, dset: str, mode: str = "truncate", storage: str = "Flat"
+    obj: arkouda.array_view.ArrayView,
+    file_path: str,
+    dset: str,
+    mode: str = "truncate",
+    storage: str = "Flat",
 ):
     """
     Write a multi-dimensional ArrayView object to an HDF5 file
