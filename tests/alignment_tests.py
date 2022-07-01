@@ -30,6 +30,31 @@ class DataFrameTest(ArkoudaTest):
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
         self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
 
+    def test_multi_array_search_interval(self):
+        # Added for Issue #1548
+        starts = (ak.array([0, 10, 20]), ak.array([0, 10, 20]))
+        ends = (ak.array([5, 15, 25]), ak.array([5, 15, 25]))
+        vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
+        ans = [-1, 1, -1]
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
+        self.assertListEqual(
+            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
+        )
+
+        vals = (ak.array([23, 13, 3]), ak.array([23, 13, 3]))
+        ans = [2, 1, 0]
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
+        self.assertListEqual(
+            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
+        )
+
+        vals = (ak.array([23, 13, 33]), ak.array([23, 13, 3]))
+        ans = [2, 1, -1]
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
+        self.assertListEqual(
+            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
+        )
+
     def test_search_interval_nonunique(self):
         expected_result = [2, 5, 2, 1, 3, 1, 4, -1, -1]
         lb = [0, 10, 20, 30, 40, 50]

@@ -1,3 +1,4 @@
+import functools
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -11,7 +12,8 @@ from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numeric import where
 from arkouda.pdarrayclass import is_sorted, pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
-from arkouda.pdarraysetops import argsort, concatenate, in1d
+from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.sorting import argsort
 from arkouda.strings import Strings
 
 
@@ -238,7 +240,7 @@ def find(query, space):
     return spaceidx[i >= spacesize]
 
 
-def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
+def lookup(keys, values, arguments, fillvalue=-1):
     """
     Apply the function defined by the mapping keys --> values to arguments.
 
@@ -254,9 +256,6 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
         (or tuple of dtypes, for a sequence) as keys.
     fillvalue : scalar
         The default value to return for arguments not in keys.
-    keys_from_unique : bool
-        If True, keys are assumed to be the output of ak.unique, e.g. the
-        .unique_keys attribute of a GroupBy instance.
 
     Returns
     -------
@@ -302,7 +301,7 @@ def lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False):
     return retvals
 
 
-def in1d_intervals(vals, intervals, symmetric=False, assume_unique=False):
+def in1d_intervals(vals, intervals, symmetric=False):
     """
     Test each value for membership in *any* of a set of half-open (pythonic)
     intervals.
@@ -343,7 +342,7 @@ def in1d_intervals(vals, intervals, symmetric=False, assume_unique=False):
         ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
     But much faster when vals is non-trivial size.
     """
-    idx = search_intervals(vals, intervals, assume_unique=assume_unique)
+    idx = search_intervals(vals, intervals)
     found = idx > -1
     if symmetric:
         containresult = in1d(arange(intervals[0].size), idx)
@@ -360,11 +359,12 @@ def search_intervals(vals, intervals):
 
     Parameters
     ----------
-    vals : pdarray(int, float)
-        Values to search for in intervals
-    intervals : 2-tuple of pdarrays
+    vals : (sequence of) pdarray(int, uint, float)
+        Values to search for in intervals. If multiple arrays, each "row" is an item.
+    intervals : 2-tuple of (sequences of) pdarrays
         Non-overlapping, half-open intervals, as a tuple of
         (lower_bounds_inclusive, upper_bounds_exclusive)
+        Must have same shape/dtype as vals.
 
     Returns
     -------
@@ -383,61 +383,139 @@ def search_intervals(vals, intervals):
     if len(intervals) != 2:
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_exclusive)")
 
-    def check_numeric(x):
-        if not (isinstance(x, pdarray) and x.dtype in (akint64, akuint64, akfloat64)):
-            raise TypeError("arguments must be numeric arrays")
-
-    check_numeric(vals)
-    check_numeric(intervals[0])
-    check_numeric(intervals[1])
-    # validate the dtypes of intervals and values
-    if not intervals[0].dtype == intervals[1].dtype and intervals[0].dtype == vals.dtype:
-        raise TypeError(
-            f"vals and intervals must all have the same type. "
-            f"Found {intervals[0].dtype}, {intervals[1].dtype}, and {vals.dtype}"
-        )
-
-    low = intervals[0]
     # Convert to closed (inclusive) intervals
-    high = intervals[1] - 1
-    if low.size != high.size:
-        raise ValueError("Lower and upper bound arrays must be same size")
-    if not (high >= low).all():
-        raise ValueError("Upper bounds must be greater than lower bounds")
-    if not is_sorted(low):
-        raise ValueError("Intervals must be sorted in ascending order")
-    if not (low[1:] > high[:-1]).all():
-        raise ValueError("Intervals must be non-overlapping")
+    low = intervals[0]
+    high = intervals[1] - 1 if isinstance(intervals[1], pdarray) else [h - 1 for h in intervals[1]]
 
-    # Index of interval containing each unique value (initialized to -1: not found)
-    containinginterval = -ones(vals.size, dtype=akint64)
-    concat = concatenate((low, vals, high))
-    perm = argsort(concat)
-    # iperm is the indices of the original values in the sorted array
-    iperm = argsort(perm)  # aku.invert_permutation(perm)
-    boundary = vals.size + low.size
-    # indices of the lower bounds in the sorted array
-    starts = iperm[: low.size]
-    # indices of the upper bounds in the sorted array
-    ends = iperm[boundary:]
-    # which lower/upper bound pairs have any indices between them?
-    valid = ends > starts + 1
-    if valid.sum() > 0:
-        # pranges is all the indices in sorted array that fall between a lower and an uppper bound
-        segs, pranges = gen_ranges(starts[valid] + 1, ends[valid])
-        # matches are the indices of those items in the original array
-        matches = perm[pranges]
-        # integer indices of each interval containing a hit
-        hitidx = arange(valid.size)[valid]
-        # broadcast interval index out to matches
-        matchintervalidx = broadcast(segs, hitidx, matches.size)
-        # make sure not to include any of the bounds themselves
-        validmatch = (matches >= low.size) & (matches < boundary)
-        # indices of unique values found (translated from concat keys)
-        uvalidx = matches[validmatch] - low.size
-        # set index of containing interval for uvals that were found
-        containinginterval[uvalidx] = matchintervalidx[validmatch]
-    return containinginterval
+    if isinstance(vals, pdarray) and vals.dtype in (akint64, akuint64, akfloat64):
+        # argument validation for pdarray
+        if not isinstance(low, pdarray) or not isinstance(high, pdarray):
+            raise TypeError("intervals must be same objtype as vals")
+
+        # validate the dtypes
+        if vals.dtype != low.dtype or vals.dtype != high.dtype:
+            raise TypeError(
+                f"vals and intervals must all have the same dtype. "
+                f"Found {low.dtype}, {high.dtype}, and {vals.dtype}"
+            )
+
+        # verify lower and upper bounds are same length
+        if low.size != high.size:
+            raise ValueError("Lower and upper bound arrays must be same size")
+        # verify upper bounds are greater than lower bounds
+        if not (high >= low).all():
+            raise ValueError("Upper bounds must be greater than lower bounds")
+        # verify intervals are sorted
+        if not is_sorted(low):
+            raise ValueError("Intervals must be sorted in ascending order")
+        # verify intervals are non-overlapping
+        if not (low[1:] > high[:-1]).all():
+            raise ValueError("Intervals must be non-overlapping")
+
+        # Index of interval containing each unique value (initialized to -1: not found)
+        containinginterval = -ones(vals.size, dtype=akint64)
+        concat = concatenate((low, vals, high))
+        perm = argsort(concat)
+        # iperm is the indices of the original values in the sorted array
+        iperm = argsort(perm)  # aku.invert_permutation(perm)
+        boundary = vals.size + low.size
+        # indices of the lower bounds in the sorted array
+        starts = iperm[: low.size]
+        # indices of the upper bounds in the sorted array
+        ends = iperm[boundary:]
+        # which lower/upper bound pairs have any indices between them?
+        valid = ends > starts + 1
+        if valid.sum() > 0:
+            # pranges is all the indices in sorted array that fall between a lower and an uppper bound
+            segs, pranges = gen_ranges(starts[valid] + 1, ends[valid])
+            # matches are the indices of those items in the original array
+            matches = perm[pranges]
+            # integer indices of each interval containing a hit
+            hitidx = arange(valid.size)[valid]
+            # broadcast interval index out to matches
+            matchintervalidx = broadcast(segs, hitidx, matches.size)
+            # make sure not to include any of the bounds themselves
+            validmatch = (matches >= low.size) & (matches < boundary)
+            # indices of unique values found (translated from concat keys)
+            uvalidx = matches[validmatch] - low.size
+            # set index of containing interval for uvals that were found
+            containinginterval[uvalidx] = matchintervalidx[validmatch]
+        return containinginterval
+    elif isinstance(vals, (list, tuple)):
+        # argument validation for multi-array
+        if not isinstance(low, (list, tuple)) or not isinstance(high, (list, tuple)):
+            raise TypeError("intervals must be same type as vals")
+        if len(vals) != len(low) or len(vals) != len(high):
+            raise TypeError("Multi-array arguments must have same number of arrays")
+        if (
+            any([not isinstance(v, pdarray) for v in vals])
+            or any([not isinstance(lo, pdarray) for lo in low])
+            or any([not isinstance(hi, pdarray) for hi in high])
+        ):
+            raise TypeError("All elements of Multi-array arguments must be pdarrays")
+
+        valsize = set(v.size for v in vals)
+        lowsize = set(lo.size for lo in low)
+        highsize = set(hi.size for hi in high)
+        if len(valsize) != 1 or len(lowsize) != 1 or len(highsize) != 1:
+            raise TypeError("Multi-array arguments must be non-empty and have equal-length arrays")
+
+        # validate the dtypes
+        valtypes = np.array([v.dtype for v in vals])
+        lowtypes = np.array([lo.dtype for lo in low])
+        hightypes = np.array([hi.dtype for hi in high])
+        if (valtypes != lowtypes).any() or (valtypes != hightypes).any():
+            raise TypeError("Values and intervals must have matching dtypes")
+
+        valsize = valsize.pop()
+        lowsize = lowsize.pop()
+        highsize = highsize.pop()
+        # verify lower and upper bounds are same length
+        if lowsize != highsize:
+            raise ValueError("Lower and upper bound arrays must be same size")
+        # verify upper bounds are greater than lower bounds
+        if not all([(hi >= lo).all() for hi, lo in zip(high, low)]):
+            raise ValueError("Upper bounds must be greater than lower bounds")
+        # verify intervals are sorted
+        if not all([is_sorted(lo) for lo in low]):
+            raise ValueError("Intervals must be sorted in ascending order")
+        # verify intervals are non-overlapping
+        if not all([(lo[1:] > hi[:-1]).all() for hi, lo in zip(high, low)]):
+            raise ValueError("Intervals must be non-overlapping")
+
+        # Index of interval containing each unique value (initialized to -1: not found)
+        containinginterval = [-ones(valsize, dtype=akint64) for i in range(len(vals))]
+        concat = [concatenate((lo, v, hi)) for lo, v, hi in zip(low, vals, high)]
+        perm = [argsort(c) for c in concat]
+        # iperm is the indices of the original values in the sorted array
+        iperm = [argsort(p) for p in perm]  # aku.invert_permutation(perm)
+        boundary = valsize + lowsize
+        # indices of the lower bounds in the sorted array
+        starts = [ip[:lowsize] for ip in iperm]
+        # indices of the upper bounds in the sorted array
+        ends = [ip[boundary:] for ip in iperm]
+        # which lower/upper bound pairs have any indices between them?
+        # take the logical AND of all elements in list
+        valid = functools.reduce(lambda x, y: x & y, [e > s + 1 for e, s in zip(ends, starts)])
+        if valid.sum() > 0:
+            # pranges is all the indices in sorted array that fall between a lower and an uppper bound
+            segs, pranges = zip(*[gen_ranges(s[valid] + 1, e[valid]) for s, e in zip(starts, ends)])
+            # matches are the indices of those items in the original array
+            matches = [pm[pr] for pm, pr in zip(perm, pranges)]
+            # integer indices of each interval containing a hit
+            hitidx = arange(valid.size)[valid]
+            # broadcast interval index out to matches
+            matchintervalidx = [broadcast(s, hitidx, m.size) for s, m in zip(segs, matches)]
+            # make sure not to include any of the bounds themselves
+            validmatch = [(m >= lowsize) & (m < boundary) for m in matches]
+            # indices of unique values found (translated from concat keys)
+            uvalidx = [m[vm] - lowsize for m, vm in zip(matches, validmatch)]
+            # set index of containing interval for uvals that were found
+            for ci, uv, mi, vm in zip(containinginterval, uvalidx, matchintervalidx, validmatch):
+                ci[uv] = mi[vm]
+            return functools.reduce(lambda x, y: where(x == y, x, -1), containinginterval)
+    else:
+        raise TypeError("arguments must be numeric pdarrays or a sequence of numeric pdarrays")
 
 
 def interval_lookup(keys, values, arguments, fillvalue=-1):
@@ -447,13 +525,14 @@ def interval_lookup(keys, values, arguments, fillvalue=-1):
 
     Parameters
     ----------
-    keys : 2-tuple of pdarray
+    keys : 2-tuple of (sequences of) pdarrays
         Tuple of non-overlapping, half-open intervals expressed
         as (lower_bounds_inclusive, upper_bounds_exclusive)
+        Must have same shape/dtype as vals.
     values : pdarray
         Function value to return for each entry in keys.
-    arguments : pdarray
-        Arguments to the function
+    arguments : (sequences of) pdarray
+        Values to search for in intervals. If multiple arrays, each "row" is an item.
     fillvalue : scalar
         Default value to return when argument is not in any interval.
 
@@ -464,8 +543,9 @@ def interval_lookup(keys, values, arguments, fillvalue=-1):
         containing each argument, or fillvalue if argument not
         in any interval.
     """
-    idx = search_intervals(arguments, keys, assume_unique=True)
-    res = zeros(arguments.size, dtype=values.dtype)
+    idx = search_intervals(arguments, keys)
+    arguments_size = arguments.size if isinstance(arguments, pdarray) else arguments[0].size
+    res = zeros(arguments_size, dtype=values.dtype)
     if fillvalue is not None:
         res.fill(fillvalue)
     found = idx > -1
