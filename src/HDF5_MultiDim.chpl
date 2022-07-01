@@ -5,6 +5,8 @@ module HDF5_MultiDim {
     use HDF5;
     use FileIO;
     use FileSystem;
+    use AryUtil;
+    use NumPyDType;
 
     use Logging;
     use ServerConfig;
@@ -203,6 +205,59 @@ module HDF5_MultiDim {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    proc writeMultiDimDset(file_id: C_HDF5.hid_t, dset_name: string, A, shape: SymEntry, method: int, arrType: DType) throws{
+        // Convert the Chapel dtype to HDF5
+        var dtype_id: C_HDF5.hid_t;
+        select arrType {
+            when DType.Int64 {
+                dtype_id = getHDF5Type(int);
+            }
+            when DType.UInt64 {
+                dtype_id = getHDF5Type(uint);
+            }
+            when DType.Float64 {
+                dtype_id = getHDF5Type(real);
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Invalid Data Type: %s".format(dtype2str(arrType)),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+            }
+        }
+
+        // write the dataset based in the format provided
+        var rank: c_int;
+        select (method) {
+            when (FLAT) { // store data as a flattened single array
+                rank = 1:c_int;
+                var dims: [0..#1] C_HDF5.hsize_t;
+                dims[0] = (* reduce shape.a):C_HDF5.hsize_t;
+                C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), rank, dims, dtype_id, A.ptr);
+            }
+            when (MULTI_DIM) { // store the data as the multi-dimensional object
+                rank = shape.size:c_int;
+                // reshape the data based on the shape passed.
+                var dims: [0..#shape.size] C_HDF5.hsize_t;
+                forall i in 0..#shape.size{
+                    dims[i] = shape.a[i]:C_HDF5.hsize_t;
+                }
+                C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), rank, dims, dtype_id, A.ptr);
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unknown storage method. Expecting 0 (flat) or 1 (multi). Found %s".format(method),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+            }
+        }
+        
+    }
+
     /*
     * Takes a multidimensional array obj and writes it into and HDF5 dataset.
     * Provides the ability to store the data flat or multidimensional.
@@ -219,8 +274,20 @@ module HDF5_MultiDim {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
+        var entry = st.lookup(flat_name);
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+            entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+            entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+            var errorMsg = "writehdf_multi Unsupported SymbolEntryType:%t".format(entry.entryType);
+            h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
         var flat_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(flat_name, st);
-        var flat = toSymEntry(flat_sym, int);
+        // var flat = toSymEntry(flat_sym, int);
         var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(shape_name, st);
         var shape = toSymEntry(shape_sym, int);
 
@@ -256,26 +323,25 @@ module HDF5_MultiDim {
             h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
-        
-        var rank: c_int;
-        select (method) {
-            when (FLAT) { // store data as a flattened single array
-                rank = 1:c_int;
-                var dims: [0..#1] C_HDF5.hsize_t;
-                dims[0] = flat.size:C_HDF5.hsize_t;
-                C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), rank, dims, getHDF5Type(flat.a.eltType), c_ptrTo(flat.a));
+
+        select entryDtype {
+            when DType.Int64 {
+                var flat = toSymEntry(toGenSymEntry(entry), int);
+                var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
+                writeMultiDimDset(file_id, dset_name, localFlat, shape, method, DType.Int64);
             }
-            when (MULTI_DIM) { // store the data as the multi-dimensional object
-                rank = shape.size:c_int;
-                // reshape the data based on the shape passed.
-                var dims: [0..#shape.size] C_HDF5.hsize_t;
-                forall i in 0..#shape.size{
-                    dims[i] = shape.a[i]:C_HDF5.hsize_t;
-                }
-                C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), rank, dims, getHDF5Type(flat.a.eltType), c_ptrTo(flat.a));
+            when DType.UInt64 {
+                var flat = toSymEntry(toGenSymEntry(entry), uint);
+                var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
+                writeMultiDimDset(file_id, dset_name, localFlat, shape, method, DType.UInt64);
+            }
+            when DType.Float64 {
+                var flat = toSymEntry(toGenSymEntry(entry), real);
+                var localFlat = new lowLevelLocalizingSlice(flat.a, 0..#flat.size);
+                writeMultiDimDset(file_id, dset_name, localFlat, shape, method, DType.Float64);
             }
             otherwise {
-                var errorMsg = "Unknown storage method. Expecting 'flat' or 'multi'. Found %s".format(method_str);
+                var errorMsg = unrecognizedTypeError("writehdf_multi", dtype2str(entryDtype));
                 h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
