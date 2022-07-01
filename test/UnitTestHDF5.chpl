@@ -89,12 +89,12 @@ proc test_readAllHdfMsg(t: borrowed Test) throws {
     // Exercise the basic read functionality with & without offsets and then again using dataset names
     var payload = "false 1 1 false false [\"strings\"] | [\"resources/UnitTestHDF5_withOffsets_LOCALE0000\"]";
     var msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    t.assertTrue(msg.msg.find("str 5 1 (5) 1+created bytes.size 24") > 0);
+    t.assertTrue(msg.msg.find("str 5 1 (5,) 1+created bytes.size 24") > 0);
 
     // Same test built with calcOffsets true & noOffsets file
     payload = "false 1 1 false true [\"strings\"] | [\"resources/UnitTestHDF5_noOffsets_LOCALE0000\"]";
     msg = readAllHdfMsg("readAllHdfMsg", payload, st);
-    t.assertTrue(msg.msg.find("str 5 1 (5) 1+created bytes.size 24") > 0);
+    t.assertTrue(msg.msg.find("str 5 1 (5,) 1+created bytes.size 24") > 0);
 }
 
 /**
