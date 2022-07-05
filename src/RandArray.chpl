@@ -19,7 +19,7 @@ module RandArray {
         fillRandom(a);
       } else {
         var seed = (seedStr:int) + here.id;
-        fillRandom(a, seed);
+        fillRandom(a, aMin, aMax-1, seed);
       }
   }
 
@@ -28,7 +28,7 @@ module RandArray {
         fillRandom(a);
       } else {
         var seed = (seedStr:int) + here.id;
-        fillRandom(a, seed);
+        fillRandom(a, aMin, aMax-1, seed);
       }
   }
 
