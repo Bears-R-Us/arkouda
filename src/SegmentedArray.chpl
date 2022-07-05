@@ -335,7 +335,7 @@ module SegmentedArray {
 
     /* Apply a hash function to all strings. This is useful for grouping
        and set membership. The hash used is SipHash128.*/
-    proc hash() throws {
+    proc siphash() throws {
       return computeOnSegments(offsets.a, values.a, SegFunction.SipHash128, 2*uint(64));
     }
 
@@ -348,7 +348,7 @@ module SegmentedArray {
         // Hash all strings
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
         if logLevel == LogLevel.DEBUG { t.start(); }
-        var hashes = this.hash();
+        var hashes = this.siphash();
 
         if logLevel == LogLevel.DEBUG { 
             t.stop();    
@@ -1113,8 +1113,8 @@ module SegmentedArray {
                            errorClass="ArgumentError");
     }
     if useHash {
-      const lh = lss.hash();
-      const rh = rss.hash();
+      const lh = lss.siphash();
+      const rh = rss.siphash();
       return if polarity then (lh == rh) else (lh != rh);
     }
     ref oD = lss.offsets.aD;
@@ -1263,7 +1263,7 @@ module SegmentedArray {
       var truth: [mainStr.offsets.aD] bool;
       return truth;
     }
-    return in1d(mainStr.hash(), testStr.hash(), invert);
+    return in1d(mainStr.siphash(), testStr.siphash(), invert);
   }
 
   proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws {
