@@ -156,7 +156,7 @@ module SegmentedArray {
     /* Take a slice of strings from the array. The slice must be a 
        Chapel range, i.e. low..high by stride, not a Python slice.
        Returns arrays for the segment offsets and bytes of the slice.*/
-    proc this(const slice: range(stridable=true)) throws {
+    proc this(const slice: range(stridable=false)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
           saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
           "Array is out of bounds");

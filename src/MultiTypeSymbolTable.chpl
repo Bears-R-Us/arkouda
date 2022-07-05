@@ -485,7 +485,7 @@ module MultiTypeSymbolTable
             var regex = compile(pattern);
             var infoStr = "";
             forall name in tab.keysToArray() with (+ reduce infoStr) {
-                if name.match(regex) {
+                if regex.match(name) {
                     infoStr += name + "+";
                 }
             }
