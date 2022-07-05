@@ -151,7 +151,7 @@ or
 
       Do we own the memory? 
 
-   .. method:: proc init(A: [] ?t, region: range(?))
+   .. method:: proc init(A: [] ?t, region: range(stridable = false))
 
    .. method:: proc deinit()
 
