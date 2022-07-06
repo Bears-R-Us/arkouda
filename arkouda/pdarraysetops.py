@@ -24,11 +24,6 @@ __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor
 logger = getArkoudaLogger(name="pdarraysetops")
 
 
-class NonUniqueError(ValueError):
-    # This is added to prevent circular import
-    pass
-
-
 def _in1d_single(
     pda1: Union[pdarray, Strings, "Categorical"],  # type: ignore
     pda2: Union[pdarray, Strings, "Categorical"],  # type: ignore
@@ -156,6 +151,7 @@ def in1d(
         Only works for pdarrays of int64 dtype, Strings, or Categorical
     """
     from arkouda.categorical import Categorical as Categorical_
+    from arkouda.alignment import NonUniqueError
 
     if isinstance(pda1, (pdarray, Strings, Categorical_)):
         if isinstance(pda1, (Strings, Categorical_)) and not isinstance(pda2, (Strings, Categorical_)):

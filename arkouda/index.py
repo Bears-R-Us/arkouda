@@ -388,5 +388,5 @@ class MultiIndex(Index):
     def lookup(self, key):
         if type(key) != list and type(key) != tuple:
             raise TypeError("MultiIndex lookup failure")
-        
+
         return in1d(self.index, key)
