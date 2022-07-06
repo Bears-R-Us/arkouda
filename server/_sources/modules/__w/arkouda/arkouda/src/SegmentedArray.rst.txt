@@ -109,7 +109,7 @@ or
 
       Logical indexing (compress) of strings. 
 
-   .. method:: proc hash() throws
+   .. method:: proc siphash() throws
 
       Apply a hash function to all strings. This is useful for grouping
       and set membership. The hash used is SipHash128.
