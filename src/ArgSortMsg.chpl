@@ -175,7 +175,7 @@ module ArgSortMsg
     }
 
     proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
-      var hashes = s.hash();
+      var hashes = s.siphash();
       var newHashes: [aD] 2*uint;
       forall (nh, idx) in zip(newHashes, iv) with (var agg = newSrcAggregator((2*uint))) {
         agg.copy(nh, hashes[idx]);

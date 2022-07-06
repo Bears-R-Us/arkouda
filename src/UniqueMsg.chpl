@@ -271,7 +271,7 @@ module UniqueMsg
           when "str" {
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = getSegString(myNames, st);
-            hashes ^= rotl(g.hash(), i);
+            hashes ^= rotl(g.siphash(), i);
           }
         }
       }

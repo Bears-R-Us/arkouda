@@ -172,7 +172,7 @@ module Unique
         var truth: [aD] bool;
         var perm: [aD] int;
         if SegmentedArrayUseHash {
-          var hashes = str.hash();
+          var hashes = str.siphash();
           var sorted: [aD] 2*uint;
           forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes)) {
             (s, p) = sp;

@@ -601,7 +601,7 @@ module SegmentedMsg {
     select objtype {
         when "str" {
             var strings = getSegString(name, st);
-            var hashes = strings.hash();
+            var hashes = strings.siphash();
             var name1 = st.nextName();
             var hash1 = st.addEntry(name1, hashes.size, uint);
             var name2 = st.nextName();
