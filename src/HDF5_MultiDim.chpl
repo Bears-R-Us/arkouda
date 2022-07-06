@@ -385,7 +385,8 @@ module HDF5_MultiDim {
         C_HDF5.H5Sset_extent_simple(attrSpaceId, 1, c_ptrTo(adim), c_ptrTo(adim));
 
         attr_id = C_HDF5.H5Acreate2(dset_id, "Shape".c_str(), getHDF5Type(shape.a.eltType), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        C_HDF5.H5Awrite(attr_id, getHDF5Type(shape.a.eltType), c_ptrTo(shape.a));
+        var localShape = new lowLevelLocalizingSlice(shape.a, 0..#shape.size);
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(shape.a.eltType), localShape.ptr);
         C_HDF5.H5Aclose(attr_id);
 
 
