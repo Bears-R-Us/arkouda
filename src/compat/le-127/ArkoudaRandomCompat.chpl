@@ -188,7 +188,7 @@ module ArkoudaRandomCompat {
       return (toprand << 32) | botrand;
     } else {
       // Generate a # with RNG 1 but ignore it, to keep the                   
-	    // stepping consistent.                                                 
+      // stepping consistent.                                                 
       rand32_1(states);
       return boundedrand32_2(states, seed, count, bound:uint(32));
     }
