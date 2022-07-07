@@ -150,8 +150,8 @@ def in1d(
     Notes:
         Only works for pdarrays of int64 dtype, Strings, or Categorical
     """
-    from arkouda.categorical import Categorical as Categorical_
     from arkouda.alignment import NonUniqueError
+    from arkouda.categorical import Categorical as Categorical_
 
     if isinstance(pda1, (pdarray, Strings, Categorical_)):
         if isinstance(pda1, (Strings, Categorical_)) and not isinstance(pda2, (Strings, Categorical_)):
@@ -203,6 +203,14 @@ def in1d(
             return atruth, btruth
         else:
             return atruth
+
+
+def in1dmulti(a, b, assume_unique=False, symmetric=False):
+    """
+    Alias for in1d to maintain backwards compatibility.
+    Calls in1d.
+    """
+    return in1d(a, b, assume_unique=assume_unique, symmetric=symmetric)
 
 
 # fmt: off
