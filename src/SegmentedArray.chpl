@@ -529,7 +529,7 @@ module SegmentedArray {
                                                                                var numMatchAgg = newDstAggregator(int)) {
         var matchessize = 0;
         for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), regexMaxCaptures) {
-          var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
+          var match = m[0];
           var group = m[groupNum];
           if group.byteOffset != -1 {
             lenAgg.copy(sparseLens[off + group.byteOffset:int], group.numBytes);
@@ -677,7 +677,7 @@ module SegmentedArray {
         var replacementCounter = 0;
         var replLen = 0;
         for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true)) {
-          var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
+          var match = m[0];
           for k in (off + match.byteOffset:int)..#match.numBytes {
             nonMatchAgg.copy(nonMatch[k], false);
           }
@@ -790,7 +790,7 @@ module SegmentedArray {
         else {
           // The string can be peeled; figure out where to split
           var match_index: int = if left then (times - 1) else (matches.size - times);
-          var match = matches[match_index][0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
+          var match = matches[match_index][0];
           var j: int = o + match.byteOffset: int;
           // j is now the start of the correct delimiter
           // tweak leftEnd and rightStart based on includeDelimiter
