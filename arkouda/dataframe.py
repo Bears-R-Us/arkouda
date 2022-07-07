@@ -1001,21 +1001,27 @@ class DataFrame(UserDict):
             None when `inplace=True`
         See Also
         -------
-        ak.DataFrame._rename_column
-        ak.DataFrame.rename
+            ak.DataFrame._rename_column
+            ak.DataFrame.rename
+        Notes
+        -----
+            This does not function exactly like pandas. The replacement value here must be
+            the same type as the existing value.
         """
         obj = self if inplace else self.copy()
-
+        # TODO - does the replacement need to be the same type????
         if callable(mapper):
             for i in range(obj.index.size):
                 oldval = obj.index[i]
                 newval = mapper(oldval)
+                if type(oldval) != type(newval):
+                    raise TypeError("Replacement value must have the same type as the original value")
                 obj.index.values[obj.index.values == oldval] = newval
-            # self._set_index(newidx)
         elif isinstance(mapper, dict):
             for key, val in mapper.items():
+                if type(key) != type(val):
+                    raise TypeError("Replacement value must have the same type as the original value")
                 obj.index.values[obj.index.values == key] = val
-            # self._set_index(newidx)
         else:
             raise TypeError("Argument must be callable or dict-like")
         if not inplace:
