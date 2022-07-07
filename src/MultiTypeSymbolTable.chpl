@@ -6,7 +6,7 @@ module MultiTypeSymbolTable
     use Reflection;
     use ServerErrors;
     use Logging;
-    use ArkoudaRegexCompat;
+    use Regex;
     
     use MultiTypeSymEntry;
     use Map;

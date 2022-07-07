@@ -15,7 +15,7 @@ module SegmentedArray {
   use Reflection;
   use Logging;
   use ServerErrors;
-  use ArkoudaRegexCompat;
+  use Regex;
   use SegmentedComputation;
 
   private config const logLevel = ServerConfig.logLevel;

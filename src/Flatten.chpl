@@ -7,7 +7,7 @@ module Flatten {
   use SymArrayDmap;
   use CommAggregation;
   use Reflection;
-  use ArkoudaRegexCompat;
+  use Regex;
   use CTypes;
   use SegmentedArray only checkCompile, _unsafeCompileRegex;
 
