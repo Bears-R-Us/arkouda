@@ -559,8 +559,11 @@ module ParquetMsg {
     try {
         dsetlist = jsonToPdArray(jsondsets, ndsets);
     } catch {
+        // limit length of dataset names to 2000 chars
+        var n: int = 1000;
+        var dsets: string = if jsondsets.size > 2*n then jsondsets[0..#n]+'...'+jsondsets[jsondsets.size-n..#n] else jsondsets;
         var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
-                                            1, jsondsets);
+                                            ndsets, dsets);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -568,7 +571,10 @@ module ParquetMsg {
     try {
         filelist = jsonToPdArray(jsonfiles, nfiles);
     } catch {
-        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+        // limit length of file names to 2000 chars
+        var n: int = 1000;
+        var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
+        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
     }
@@ -896,7 +902,10 @@ module ParquetMsg {
     try {
       filelist = jsonToPdArray(jsonfiles, nfiles);
     } catch {
-      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+      // limit length of file names to 2000 chars
+      var n: int = 1000;
+      var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
+      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
