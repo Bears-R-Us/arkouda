@@ -50,7 +50,7 @@ module Flatten {
       // for each string, find delim matches and set the positions of matches in writeToVal to false (non-matches will be copied to flattenedVals)
       // mark the locations of null bytes (the positions before original offsets and the last character of matches)
       for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
-        var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
+        var match = m[0];
         // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
         for k in (off + match.byteOffset:int)..#(match.numBytes - 1) {
           writeAgg.copy(writeToVal[k], false);
@@ -153,7 +153,7 @@ module Flatten {
       // for each string, find pattern matches and set the positions of matches in writeToVal to false (non-matches will be copied to splitVals)
       // mark the locations of null bytes (the positions before original offsets and the last character of matches)
       for m in myRegex.matches(interpretAsBytes(origVals, off..#len, borrow=true)) {
-        var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
+        var match = m[0];
         // set writeToVal to false for matches (except the last character of the match because we will write a null byte)
         for k in (off + match.byteOffset:int)..#(match.numBytes - 1) {
           writeAgg.copy(writeToVal[k], false);

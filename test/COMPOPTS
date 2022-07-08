@@ -13,7 +13,7 @@ TEST_FLAGS=$(cd $ARKOUDA_HOME && make print-TEST_CHPL_FLAGS)
 # -M dir
 SRC_DIR=$(cd $ARKOUDA_HOME && make print-ARKOUDA_SOURCE_DIR)
 
-# Compat modules due to movement of Memory -> Memory.Diagnostics in 1.24
+# Compat modules
 COMPAT_MODULES=$(cd $ARKOUDA_HOME && make print-ARKOUDA_COMPAT_MODULES)
 
 # Location of the configuration file, so we always include it and disable extra
