@@ -79,6 +79,21 @@ class Index:
     def shape(self):
         return (self.size,)
 
+    @property
+    def is_unique(self):
+        """
+        Property indicating if all values in the index are unique
+        Returns
+        -------
+            bool - True if all values are unique, False otherwise.
+        """
+        g = GroupBy(self.values)
+        key, ct = g.count()
+        if (ct > 1).any():
+            return False
+        else:
+            return True
+
     @staticmethod
     def factory(index):
         t = type(index)
