@@ -938,7 +938,7 @@ class DataFrame(UserDict):
         ----------
         mapper : callable or dict-like
             Function or dictionary mapping existing columns to new columns.
-            Nonexistent names will not raise anerror.
+            Nonexistent names will not raise an error.
         inplace: bool
             Default False. When True, perform the operation on the calling object.
             When False, return a new object.
@@ -991,7 +991,7 @@ class DataFrame(UserDict):
         ----------
         mapper : callable or dict-like
             Function or dictionary mapping existing indexes to new indexes.
-            Nonexistent names will not raise anerror.
+            Nonexistent names will not raise an error.
         inplace: bool
             Default False. When True, perform the operation on the calling object.
             When False, return a new object.
@@ -1043,7 +1043,7 @@ class DataFrame(UserDict):
         ----------
         mapper : callable or dict-like, Optional
             Function or dictionary mapping existing values to new values.
-            Nonexistent names will not raise anerror.
+            Nonexistent names will not raise an error.
             Uses the value of axis to determine if renaming column or index
         column : callable or dict-like, Optional
             Function or dictionary mapping existing column names to
