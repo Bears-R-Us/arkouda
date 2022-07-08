@@ -302,6 +302,7 @@ class Index:
             ),
         )
 
+
 class MultiIndex(Index):
     def __init__(self, values):
         if not (isinstance(values, list) or isinstance(values, tuple)):
