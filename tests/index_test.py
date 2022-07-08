@@ -33,6 +33,13 @@ class IndexTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             idx = ak.MultiIndex([ak.arange(5), ak.arange(3)])
 
+    def test_is_unique(self):
+        i = ak.Index(ak.array([0, 1, 2]))
+        self.assertTrue(i.is_unique)
+
+        i = ak.Index(ak.array([0, 1, 1]))
+        self.assertTrue(i.is_unique is False)
+
     def test_factory(self):
         idx = ak.Index.factory(ak.arange(5))
         self.assertIsInstance(idx, ak.Index)
