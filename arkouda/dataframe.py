@@ -930,13 +930,13 @@ class DataFrame(UserDict):
     @typechecked
     def _rename_column(
         self, mapper: Union[Callable, Dict], inplace: bool = False
-    ) -> Union[None, DataFrame]:
+    ) -> Optional[DataFrame]:
         """
         Rename columns within the dataframe
 
         Parameters
         ----------
-        mapper : callable or dict-like, Optional
+        mapper : callable or dict-like
             Function or dictionary mapping existing columns to new columns.
             Nonexistent names will not raise anerror.
         inplace: bool
@@ -983,13 +983,13 @@ class DataFrame(UserDict):
     @typechecked
     def _rename_index(
         self, mapper: Union[Callable, Dict], inplace: bool = False
-    ) -> Union[None, DataFrame]:
+    ) -> Optional[DataFrame]:
         """
-        Rename indexes withing the dataframe
+        Rename indexes within the dataframe
 
         Parameters
         ----------
-        mapper : callable or dict-like, Optional
+        mapper : callable or dict-like
             Function or dictionary mapping existing indexes to new indexes.
             Nonexistent names will not raise anerror.
         inplace: bool
@@ -1009,7 +1009,6 @@ class DataFrame(UserDict):
             the same type as the existing value.
         """
         obj = self if inplace else self.copy()
-        # TODO - does the replacement need to be the same type????
         if callable(mapper):
             for i in range(obj.index.size):
                 oldval = obj.index[i]
@@ -1036,9 +1035,9 @@ class DataFrame(UserDict):
         column: Optional[Union[Callable, Dict]] = None,
         axis: Union[str, int] = 0,
         inplace: bool = False,
-    ) -> Union[None, DataFrame]:
+    ) -> Optional[DataFrame]:
         """
-        Rename columns in-place according to a mapping.
+        Rename indexes or columns according to a mapping.
 
         Parameters
         ----------
