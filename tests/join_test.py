@@ -118,7 +118,7 @@ class JoinTest(ArkoudaTest):
         ans = np.array([-1, 30, 10, 40, 20, 30, 10, 0])
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
-        res = ak.lookup(keys, values, args, fillvalue=-1, keys_from_unique=True)
+        res = ak.lookup(keys, values, args, fillvalue=-1)
         self.assertTrue((res.to_ndarray() == ans).all())
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
