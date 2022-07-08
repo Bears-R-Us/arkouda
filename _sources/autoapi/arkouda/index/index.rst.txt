@@ -46,6 +46,13 @@ Classes
       :property:
 
 
+   .. py:method:: is_unique(self)
+      :property:
+
+      Property indicating if all values in the index are unique
+      :rtype: bool - True if all values are unique, False otherwise.
+
+
    .. py:method:: factory(index)
       :staticmethod:
 
