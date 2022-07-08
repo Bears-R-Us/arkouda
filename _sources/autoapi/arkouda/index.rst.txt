@@ -231,9 +231,9 @@ Functions
    arkouda.full
    arkouda.ones
    arkouda.zeros
-   arkouda.argsort
    arkouda.concatenate
    arkouda.in1d
+   arkouda.argsort
    arkouda.unsqueeze
    arkouda.zero_up
    arkouda.align
@@ -14982,33 +14982,6 @@ Attributes
    array([False, False, False, False, False])
 
 
-.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
-
-   Return the permutation that sorts the array.
-
-   :param pda: The array to sort (int64, uint64, or float64)
-   :type pda: pdarray or Strings or Categorical
-
-   :returns: The indices such that ``pda[indices]`` is sorted
-   :rtype: pdarray, int64
-
-   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
-
-   .. seealso:: :obj:`coargsort`
-
-   .. rubric:: Notes
-
-   Uses a least-significant-digit radix sort, which is stable and
-   resilient to non-uniformity in data but communication intensive.
-
-   .. rubric:: Examples
-
-   >>> a = ak.randint(0, 10, 10)
-   >>> perm = ak.argsort(a)
-   >>> a[perm]
-   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
-
-
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
@@ -15088,6 +15061,33 @@ Attributes
 
    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
    array([False, True])
+
+
+.. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
+
+   Return the permutation that sorts the array.
+
+   :param pda: The array to sort (int64, uint64, or float64)
+   :type pda: pdarray or Strings or Categorical
+
+   :returns: The indices such that ``pda[indices]`` is sorted
+   :rtype: pdarray, int64
+
+   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
+
+   .. seealso:: :obj:`coargsort`
+
+   .. rubric:: Notes
+
+   Uses a least-significant-digit radix sort, which is stable and
+   resilient to non-uniformity in data but communication intensive.
+
+   .. rubric:: Examples
+
+   >>> a = ak.randint(0, 10, 10)
+   >>> perm = ak.argsort(a)
+   >>> a[perm]
+   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
 .. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
@@ -16339,7 +16339,7 @@ Attributes
    :rtype: pdarray, int64
 
 
-.. py:function:: lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False)
+.. py:function:: lookup(keys, values, arguments, fillvalue=-1)
 
    Apply the function defined by the mapping keys --> values to arguments.
 
@@ -16353,9 +16353,6 @@ Attributes
    :type arguments: (sequence of) array-like
    :param fillvalue: The default value to return for arguments not in keys.
    :type fillvalue: scalar
-   :param keys_from_unique: If True, keys are assumed to be the output of ak.unique, e.g. the
-                            .unique_keys attribute of a GroupBy instance.
-   :type keys_from_unique: bool
 
    :returns: **evaluated** -- The result of evaluating the function over arguments.
    :rtype: pdarray
@@ -16387,7 +16384,7 @@ Attributes
    array(['four', 'one', 'two']))
 
 
-.. py:function:: in1d_intervals(vals, intervals, symmetric=False, assume_unique=False)
+.. py:function:: in1d_intervals(vals, intervals, symmetric=False)
 
    Test each value for membership in *any* of a set of half-open (pythonic)
    intervals.
@@ -16429,11 +16426,12 @@ Attributes
    intervals, return the index of the interval containing each query value,
    or -1 if not present in any interval.
 
-   :param vals: Values to search for in intervals
-   :type vals: pdarray(int, float)
+   :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type vals: (sequence of) pdarray(int, uint, float)
    :param intervals: Non-overlapping, half-open intervals, as a tuple of
                      (lower_bounds_inclusive, upper_bounds_exclusive)
-   :type intervals: 2-tuple of pdarrays
+                     Must have same shape/dtype as vals.
+   :type intervals: 2-tuple of (sequences of) pdarrays
 
    :returns: **idx** -- Index of interval containing each query value, or -1 if not found
    :rtype: pdarray(int64)
@@ -16453,11 +16451,12 @@ Attributes
 
    :param keys: Tuple of non-overlapping, half-open intervals expressed
                 as (lower_bounds_inclusive, upper_bounds_exclusive)
-   :type keys: 2-tuple of pdarray
+                Must have same shape/dtype as vals.
+   :type keys: 2-tuple of (sequences of) pdarrays
    :param values: Function value to return for each entry in keys.
    :type values: pdarray
-   :param arguments: Arguments to the function
-   :type arguments: pdarray
+   :param arguments: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type arguments: (sequences of) pdarray
    :param fillvalue: Default value to return when argument is not in any interval.
    :type fillvalue: scalar
 

@@ -108,7 +108,7 @@ Functions
    :rtype: pdarray, int64
 
 
-.. py:function:: lookup(keys, values, arguments, fillvalue=-1, keys_from_unique=False)
+.. py:function:: lookup(keys, values, arguments, fillvalue=-1)
 
    Apply the function defined by the mapping keys --> values to arguments.
 
@@ -122,9 +122,6 @@ Functions
    :type arguments: (sequence of) array-like
    :param fillvalue: The default value to return for arguments not in keys.
    :type fillvalue: scalar
-   :param keys_from_unique: If True, keys are assumed to be the output of ak.unique, e.g. the
-                            .unique_keys attribute of a GroupBy instance.
-   :type keys_from_unique: bool
 
    :returns: **evaluated** -- The result of evaluating the function over arguments.
    :rtype: pdarray
@@ -156,7 +153,7 @@ Functions
    array(['four', 'one', 'two']))
 
 
-.. py:function:: in1d_intervals(vals, intervals, symmetric=False, assume_unique=False)
+.. py:function:: in1d_intervals(vals, intervals, symmetric=False)
 
    Test each value for membership in *any* of a set of half-open (pythonic)
    intervals.
@@ -198,11 +195,12 @@ Functions
    intervals, return the index of the interval containing each query value,
    or -1 if not present in any interval.
 
-   :param vals: Values to search for in intervals
-   :type vals: pdarray(int, float)
+   :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type vals: (sequence of) pdarray(int, uint, float)
    :param intervals: Non-overlapping, half-open intervals, as a tuple of
                      (lower_bounds_inclusive, upper_bounds_exclusive)
-   :type intervals: 2-tuple of pdarrays
+                     Must have same shape/dtype as vals.
+   :type intervals: 2-tuple of (sequences of) pdarrays
 
    :returns: **idx** -- Index of interval containing each query value, or -1 if not found
    :rtype: pdarray(int64)
@@ -222,11 +220,12 @@ Functions
 
    :param keys: Tuple of non-overlapping, half-open intervals expressed
                 as (lower_bounds_inclusive, upper_bounds_exclusive)
-   :type keys: 2-tuple of pdarray
+                Must have same shape/dtype as vals.
+   :type keys: 2-tuple of (sequences of) pdarrays
    :param values: Function value to return for each entry in keys.
    :type values: pdarray
-   :param arguments: Arguments to the function
-   :type arguments: pdarray
+   :param arguments: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type arguments: (sequences of) pdarray
    :param fillvalue: Default value to return when argument is not in any interval.
    :type fillvalue: scalar
 
