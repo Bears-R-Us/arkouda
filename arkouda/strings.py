@@ -526,6 +526,51 @@ class Strings:
         )
 
     @typechecked
+    def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
+        """
+        Returns a new Strings object with all leading and trailing occurrences of characters contained
+        in chars removed. The chars argument is a string specifying the set of characters to be removed.
+        If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+        prefix or suffix; rather, all combinations of its values are stripped.
+
+        Parameters
+        ----------
+        chars : the set of characters to be removed
+
+        Returns
+        -------
+        Strings
+            Strings object with the leading and trailing characters matching the set of characters in
+            the chars argument removed
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        Examples
+        --------
+        >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+        >>> s = strings.strip()
+        >>> s
+        array(['Strings', 'StringS', 'StringS'])
+
+        >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+        >>> s = strings.strip(' 12')
+        >>> s
+        array(['Strings', 'StringS', 'StringS'])
+        """
+        # The following "if" block is a hack to get around the limitation of sending arguments where
+        # the first character of the argument is a space. Ordinarily, this would result in the space not
+        # being part of the argument.
+        # TODO - Remove this "if" block when we go to JSON for message passing.
+        if isinstance(chars, bytes):
+            chars = chars.decode()
+        args = "{} {} {}".format(self.objtype, self.entry.name, chars,)
+        rep_msg = generic_msg(cmd="segmentedStrip", args=args)
+        return Strings.from_return_msg(cast(str, rep_msg))
+
+    @typechecked
     def cached_regex_patterns(self) -> List:
         """
         Returns the regex patterns for which Match objects have been cached

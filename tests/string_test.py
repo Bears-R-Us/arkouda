@@ -540,6 +540,42 @@ class StringTest(ArkoudaTest):
         lengths = s1.get_lengths()
         self.assertTrue((ak.array([3, 3, 5, 4, 4]) == lengths).all())
 
+    def test_strip(self):
+        s = ak.array([" Jim1", "John1   ", "Steve1 2"])
+        strip = s.strip(" 12")
+        expected = ak.array(["Jim", "John", "Steve"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array([" Jim1", "John1   ", "Steve1 2"])
+        strip = s.strip("12 ")
+        expected = ak.array(["Jim", "John", "Steve"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array([" Jim1", "John1   ", "Steve1 2"])
+        strip = s.strip("1 2")
+        expected = ak.array(["Jim", "John", "Steve"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array([" Jim", "John 1", "Steve1 2  "])
+        strip = s.strip()
+        expected = ak.array(["Jim", "John 1", "Steve1 2"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array(['\nStrings ', ' \n StringS \r', 'bbabStringS \r\t '])
+        strip = s.strip()
+        expected = ak.array(["Strings", "StringS", "bbabStringS"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array(["abcStringsbac", "cabStringScc", "bbabStringS abc"])
+        strip = s.strip('abc')
+        expected = ak.array(["Strings", "StringS", "StringS "])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
+        s = ak.array(['\nStrings ', ' \n StringS \r', ' \t   StringS \r\t '])
+        strip = s.strip()
+        expected = ak.array(["Strings", "StringS", "StringS"])
+        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+
     def test_case_change(self):
         mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
@@ -570,7 +606,7 @@ class StringTest(ArkoudaTest):
         istitle = lmut.is_title()
         expected = ak.arange(40) >= 30
         self.assertListEqual(istitle.to_ndarray().tolist(), expected.to_ndarray().tolist())
-        
+
     def test_concatenate(self):
         s1 = self._get_strings("string", 51)
         s2 = self._get_strings("string-two", 51)
