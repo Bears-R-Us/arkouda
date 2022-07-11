@@ -150,11 +150,9 @@ module HDF5_MultiDim {
         // check if rank is attr and then get.
         var rank: int;
         if C_HDF5.H5Aexists_by_name(dset_id, ".".c_str(), "Rank", C_HDF5.H5P_DEFAULT) > 0 {
-            writeln("Rank attr Found");
             var rank_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(dset_id, ".".c_str(), "Rank", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
             var attr_type: C_HDF5.hid_t = C_HDF5.H5Aget_type(rank_id);
             C_HDF5.H5Aread(rank_id, getHDF5Type(int), c_ptrTo(rank));
-            //writeln(rank);
         }
         else{
             // Return error that file does not have required attrs
@@ -166,7 +164,6 @@ module HDF5_MultiDim {
         // check if shape attr is present and read it
         var shape: [0..#rank] int;
         if C_HDF5.H5Aexists_by_name(dset_id, ".".c_str(), "Shape", C_HDF5.H5P_DEFAULT) > 0 {
-            //writeln("Shape attr Found");
             var shape_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(dset_id, ".".c_str(), "Shape", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
             var attr_type: C_HDF5.hid_t = C_HDF5.H5Aget_type(shape_id);
             C_HDF5.H5Aread(shape_id, getHDF5Type(shape.eltType), c_ptrTo(shape));

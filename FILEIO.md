@@ -8,7 +8,7 @@
    1. [Multidimensional Objects](#multidim)
 
 ## Supported File Types
-Arkouda currently supports 2 file types (listed below). When storing data, the way the data is stored may vary. This file will detail out the "schema" each file type is expected to follow. If your file does not follow the detailed "schema", please try utilization of our `import`/`export` tools. *Please Note: utilization of these tools is dependent on the size of the data because they only run on the client.*
+Arkouda currently supports 2 file types (listed below). When storing data, the way the data is stored may vary. This file will detail out the "schema" each file type is expected to follow. If your file does not follow the detailed "schema", please try using our `import`/`export` tools. *Please Note: The functionality of these tools is dependent on the size of the data because they only run on the client.*
 
 - HDF5
 - Parquet
@@ -21,7 +21,7 @@ Arkouda currently supports 2 file types (listed below). When storing data, the w
       1) Attributes
       2) Data
 
-Each file can contain multiple datasets. Groups are not currently utilized.
+Each file can contain multiple datasets. Groups are not currently used.
 
 ### Multidimensional Objects
 
