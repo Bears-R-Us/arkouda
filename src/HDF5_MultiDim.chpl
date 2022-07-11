@@ -283,8 +283,6 @@ module HDF5_MultiDim {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        var flat_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(flat_name, st);
-        // var flat = toSymEntry(flat_sym, int);
         var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(shape_name, st);
         var shape = toSymEntry(shape_sym, int);
 
