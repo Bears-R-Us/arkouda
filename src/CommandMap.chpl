@@ -1,5 +1,4 @@
 module CommandMap {
-  use ServerRegistration;
   use Map;
   use Message;
   use MultiTypeSymbolTable;

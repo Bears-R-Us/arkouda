@@ -427,7 +427,6 @@ test: test-python
 .PHONY: test-chapel
 .SILENT:
 test-chapel:
-	@echo $(shell python3 $(MODULE_GENERATION_SCRIPT) $(ARKOUDA_CONFIG_FILE));
 	start_test $(TEST_SOURCE_DIR)
 
 .PHONY: test-all
