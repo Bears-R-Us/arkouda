@@ -148,7 +148,7 @@ proc main() {
     writeln("%i: %s".format(i, permStrings[i]));
   }
 
-  if !SegmentedArrayUseHash {
+  if !SegmentedStringUseHash {
     writeln("Checking if strings are sorted..."); stdout.flush();
     writeln("Strings sorted? >>> ", permStrings.isSorted(), " <<<"); stdout.flush();
   }

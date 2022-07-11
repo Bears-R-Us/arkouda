@@ -4,7 +4,7 @@ module SegmentedMsg {
   use ServerErrors;
   use Logging;
   use Message;
-  use SegmentedArray;
+  use SegmentedString;
   use ServerErrorStrings;
   use ServerConfig;
   use MultiTypeSymbolTable;

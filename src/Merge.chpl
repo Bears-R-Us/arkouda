@@ -1,6 +1,6 @@
 module Merge {
   use IO;
-  use SegmentedArray;
+  use SegmentedString;
   use RadixSortLSD only numTasks, calcBlock;
   use Reflection;
   use ServerConfig;

@@ -9,7 +9,7 @@ public use MultiTypeSymEntry;
 public use MultiTypeSymbolTable;
 
 public use SymArrayDmap;
-public use SegmentedArray;
+public use SegmentedString;
 public use RandArray;
 public use AryUtil as AryUtil;
 

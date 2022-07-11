@@ -1,0 +1,2 @@
+ld: warning: directory not found for option '-L/opt/homebrew/Caskroom/miniforge/base/envs/ak-base/lib'
+timedexec: target program died with signal 11, without coredump

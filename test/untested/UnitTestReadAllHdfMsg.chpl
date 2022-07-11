@@ -1,6 +1,6 @@
 use GenSymIO;
 use MultiTypeSymbolTable;
-use SegmentedArray;
+use SegmentedString;
 use SegmentedMsg;
 use UniqueMsg;
 
