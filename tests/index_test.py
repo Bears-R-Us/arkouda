@@ -38,7 +38,7 @@ class IndexTest(ArkoudaTest):
         self.assertTrue(i.is_unique)
 
         i = ak.Index(ak.array([0, 1, 1]))
-        self.assertTrue(i.is_unique is False)
+        self.assertFalse(i.is_unique)
 
     def test_factory(self):
         idx = ak.Index.factory(ak.arange(5))
