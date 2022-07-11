@@ -9,7 +9,6 @@ module Flatten {
   use Reflection;
   use ArkoudaRegexCompat;
   use CTypes;
-  use SegmentedString only checkCompile, _unsafeCompileRegex;
 
   config const NULL_STRINGS_VALUE = 0:uint(8);
 
