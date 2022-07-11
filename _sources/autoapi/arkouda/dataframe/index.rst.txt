@@ -264,13 +264,12 @@ Functions
       Computes the number of bytes on the arkouda server.
 
 
-   .. py:method:: rename(self, mapper: Union[Callable, dict], inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: _rename_column(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
 
-      Rename columns in-place according to a mapping.
+      Rename columns within the dataframe
 
-      :param mapper: Function or dictionary mapping existing column names to
-                     new column names. Nonexistent names will not raise an
-                     error.
+      :param mapper: Function or dictionary mapping existing columns to new columns.
+                     Nonexistent names will not raise an error.
       :type mapper: callable or dict-like
       :param inplace: Default False. When True, perform the operation on the calling object.
                       When False, return a new object.
@@ -278,6 +277,83 @@ Functions
 
       :returns: * DateFrame when `inplace=False`
                 * None when `inplace=True`
+
+      .. seealso:: :obj:`ak.DataFrame._rename_index`, :obj:`ak.DataFrame.rename`
+
+
+   .. py:method:: _rename_index(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
+
+      Rename indexes within the dataframe
+
+      :param mapper: Function or dictionary mapping existing indexes to new indexes.
+                     Nonexistent names will not raise an error.
+      :type mapper: callable or dict-like
+      :param inplace: Default False. When True, perform the operation on the calling object.
+                      When False, return a new object.
+      :type inplace: bool
+
+      :returns: * DateFrame when `inplace=False`
+                * None when `inplace=True`
+
+      .. rubric:: Notes
+
+      This does not function exactly like pandas. The replacement value here must be
+      the same type as the existing value.
+
+
+   .. py:method:: rename(self, mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
+
+      Rename indexes or columns according to a mapping.
+
+      :param mapper: Function or dictionary mapping existing values to new values.
+                     Nonexistent names will not raise an error.
+                     Uses the value of axis to determine if renaming column or index
+      :type mapper: callable or dict-like, Optional
+      :param column: Function or dictionary mapping existing column names to
+                     new column names. Nonexistent names will not raise an
+                     error.
+                     When this is set, axis is ignored.
+      :type column: callable or dict-like, Optional
+      :param index: Function or dictionary mapping existing index names to
+                    new index names. Nonexistent names will not raise an
+                    error.
+                    When this is set, axis is ignored
+      :type index: callable or dict-like, Optional
+      :param axis: Default 0.
+                   Indicates which axis to perform the rename.
+                   0/"index" - Indexes
+                   1/"column" - Columns
+      :type axis: int or str
+      :param inplace: Default False. When True, perform the operation on the calling object.
+                      When False, return a new object.
+      :type inplace: bool
+
+      :returns: * DateFrame when `inplace=False`
+                * None when `inplace=True`
+
+      .. rubric:: Examples
+
+      >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
+      Rename columns using a mapping
+      >>> df.rename(columns={'A':'a', 'B':'c'})
+          a   c
+      0   1   4
+      1   2   5
+      2   3   6
+
+      Rename indexes using a mapping
+      >>> df.rename(index={0:99, 2:11})
+           A   B
+      99   1   4
+      1   2   5
+      11   3   6
+
+      Rename using an axis style parameter
+      >>> df.rename(str.lower, axis='column')
+          a   b
+      0   1   4
+      1   2   5
+      2   3   6
 
 
    .. py:method:: append(self, other, ordered=True)
