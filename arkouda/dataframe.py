@@ -4,7 +4,7 @@ import json
 import os
 import random
 from collections import UserDict
-from typing import Callable, Dict, List, Union, cast
+from typing import Callable, Dict, List, Optional, Union, cast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -511,9 +511,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024**2:
+        elif self._bytes < 1024 ** 2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024**3:
+        elif self._bytes < 1024 ** 3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -900,9 +900,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024**2:
+        elif self._bytes < 1024 ** 2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024**3:
+        elif self._bytes < 1024 ** 3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -928,30 +928,33 @@ class DataFrame(UserDict):
             self._size = sizes.pop()
 
     @typechecked
-    def rename(self, mapper: Union[Callable, dict], inplace: bool = False) -> Union[None, DataFrame]:
+    def _rename_column(
+        self, mapper: Union[Callable, Dict], inplace: bool = False
+    ) -> Optional[DataFrame]:
         """
-        Rename columns in-place according to a mapping.
+        Rename columns within the dataframe
 
         Parameters
         ----------
         mapper : callable or dict-like
-            Function or dictionary mapping existing column names to
-            new column names. Nonexistent names will not raise an
-            error.
+            Function or dictionary mapping existing columns to new columns.
+            Nonexistent names will not raise an error.
         inplace: bool
             Default False. When True, perform the operation on the calling object.
             When False, return a new object.
-
         Returns
         -------
             DateFrame when `inplace=False`
             None when `inplace=True`
-        """
 
+        See Also
+        -------
+        ak.DataFrame._rename_index
+        ak.DataFrame.rename
+        """
         obj = self if inplace else self.copy()
 
         if callable(mapper):
-            # Do not rename index, start at 1
             for i in range(0, len(obj._columns)):
                 oldname = obj._columns[i]
                 newname = mapper(oldname)
@@ -976,6 +979,140 @@ class DataFrame(UserDict):
         if not inplace:
             return obj
         return None
+
+    @typechecked
+    def _rename_index(
+        self, mapper: Union[Callable, Dict], inplace: bool = False
+    ) -> Optional[DataFrame]:
+        """
+        Rename indexes within the dataframe
+
+        Parameters
+        ----------
+        mapper : callable or dict-like
+            Function or dictionary mapping existing indexes to new indexes.
+            Nonexistent names will not raise an error.
+        inplace: bool
+            Default False. When True, perform the operation on the calling object.
+            When False, return a new object.
+        Returns
+        -------
+            DateFrame when `inplace=False`
+            None when `inplace=True`
+        See Also
+        -------
+            ak.DataFrame._rename_column
+            ak.DataFrame.rename
+        Notes
+        -----
+            This does not function exactly like pandas. The replacement value here must be
+            the same type as the existing value.
+        """
+        obj = self if inplace else self.copy()
+        if callable(mapper):
+            for i in range(obj.index.size):
+                oldval = obj.index[i]
+                newval = mapper(oldval)
+                if type(oldval) != type(newval):
+                    raise TypeError("Replacement value must have the same type as the original value")
+                obj.index.values[obj.index.values == oldval] = newval
+        elif isinstance(mapper, dict):
+            for key, val in mapper.items():
+                if type(key) != type(val):
+                    raise TypeError("Replacement value must have the same type as the original value")
+                obj.index.values[obj.index.values == key] = val
+        else:
+            raise TypeError("Argument must be callable or dict-like")
+        if not inplace:
+            return obj
+        return None
+
+    @typechecked
+    def rename(
+        self,
+        mapper: Optional[Union[Callable, Dict]] = None,
+        index: Optional[Union[Callable, Dict]] = None,
+        column: Optional[Union[Callable, Dict]] = None,
+        axis: Union[str, int] = 0,
+        inplace: bool = False,
+    ) -> Optional[DataFrame]:
+        """
+        Rename indexes or columns according to a mapping.
+
+        Parameters
+        ----------
+        mapper : callable or dict-like, Optional
+            Function or dictionary mapping existing values to new values.
+            Nonexistent names will not raise an error.
+            Uses the value of axis to determine if renaming column or index
+        column : callable or dict-like, Optional
+            Function or dictionary mapping existing column names to
+            new column names. Nonexistent names will not raise an
+            error.
+            When this is set, axis is ignored.
+        index : callable or dict-like, Optional
+            Function or dictionary mapping existing index names to
+            new index names. Nonexistent names will not raise an
+            error.
+            When this is set, axis is ignored
+        axis: int or str
+            Default 0.
+            Indicates which axis to perform the rename.
+            0/"index" - Indexes
+            1/"column" - Columns
+        inplace: bool
+            Default False. When True, perform the operation on the calling object.
+            When False, return a new object.
+        Returns
+        -------
+            DateFrame when `inplace=False`
+            None when `inplace=True`
+        Examples
+        --------
+        >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
+        Rename columns using a mapping
+        >>> df.rename(columns={'A':'a', 'B':'c'})
+            a   c
+        0   1   4
+        1   2   5
+        2   3   6
+
+        Rename indexes using a mapping
+        >>> df.rename(index={0:99, 2:11})
+             A   B
+        99   1   4
+        1   2   5
+        11   3   6
+
+        Rename using an axis style parameter
+        >>> df.rename(str.lower, axis='column')
+            a   b
+        0   1   4
+        1   2   5
+        2   3   6
+        """
+        if column is not None and index is not None:
+            raise RuntimeError("Only column or index can be renamed, cannot rename both at once")
+
+        # convert the axis to the integer value and validate
+        if isinstance(axis, str):
+            if axis == "column" or axis == "1":
+                axis = 1
+            elif axis == "index" or axis == "0":
+                axis = 0
+            else:
+                raise ValueError(f"Unknown axis value {axis}. Expecting 0, 1, 'column' or 'index'.")
+
+        if column is not None:
+            return self._rename_column(column, inplace)
+        elif mapper is not None and axis == 1:
+            return self._rename_column(mapper, inplace)
+        elif index is not None:
+            return self._rename_index(index, inplace)
+        elif mapper is not None and axis == 0:
+            return self._rename_index(mapper, inplace)
+        else:
+            raise RuntimeError("Rename expects index or columns to be specified.")
 
     def append(self, other, ordered=True):
         """
@@ -1535,7 +1672,8 @@ class DataFrame(UserDict):
             for key, val in self.items():
                 res[key] = val[:]
 
-            res._set_index(Index(self.index.index))
+            # if this is not a slice, renaming indexes with update both
+            res._set_index(Index(self.index.index[:]))
 
             return res
         else:

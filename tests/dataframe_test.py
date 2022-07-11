@@ -230,8 +230,8 @@ class DataFrameTest(ArkoudaTest):
 
         rename = {"userName": "name_col", "userID": "user_id"}
 
-        # Test out of Place
-        df_rename = df.rename(rename)
+        # Test out of Place - column
+        df_rename = df.rename(rename, axis=1)
         self.assertIn("user_id", df_rename.columns)
         self.assertIn("name_col", df_rename.columns)
         self.assertNotIn("userName", df_rename.columns)
@@ -241,12 +241,27 @@ class DataFrameTest(ArkoudaTest):
         self.assertNotIn("user_id", df.columns)
         self.assertNotIn("name_col", df.columns)
 
-        # Test in place
-        df.rename(rename, inplace=True)
+        # Test in place - column
+        df.rename(column=rename, inplace=True)
         self.assertIn("user_id", df.columns)
         self.assertIn("name_col", df.columns)
         self.assertNotIn("userName", df.columns)
         self.assertNotIn("userID", df.columns)
+
+        #prep for index renaming
+        rename_idx = {1:17, 2:93}
+        conf = list(range(6))
+        conf[1] = 17
+        conf[2] = 93
+
+        # Test out of Place - index
+        df_rename = df.rename(rename_idx)
+        self.assertListEqual(df_rename.index.values.to_ndarray().tolist(), conf)
+        self.assertListEqual(df.index.values.to_ndarray().tolist(), list(range(6)))
+
+        # Test in place - index
+        df.rename(index=rename_idx, inplace=True)
+        self.assertListEqual(df.index.values.to_ndarray().tolist(), conf)
 
     def test_append(self):
         df = build_ak_df()
