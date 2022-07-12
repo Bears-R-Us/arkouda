@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import ForwardRef, Sequence, Union, cast
 
+import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
@@ -23,7 +24,7 @@ __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor
 logger = getArkoudaLogger(name="pdarraysetops")
 
 
-def in1d(
+def _in1d_single(
     pda1: Union[pdarray, Strings, "Categorical"],  # type: ignore
     pda2: Union[pdarray, Strings, "Categorical"],  # type: ignore
     invert: bool = False,
@@ -107,6 +108,109 @@ def in1d(
         return create_pdarray(cast(str, repMsg))
     else:
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
+
+
+@typechecked
+def in1d(
+    pda1: groupable,
+    pda2: groupable,
+    assume_unique: bool = False,
+    symmetric: bool = False,
+    invert: bool = False,
+) -> Union[pdarray, groupable]:
+    """
+    Test whether each element of a 1-D array is also present in a second array.
+
+    Returns a boolean array the same length as `pda1` that is True
+    where an element of `pda1` is in `pda2` and False otherwise.
+
+    Support multi-level -- test membership of rows of a in the set of rows of b.
+
+    Parameters
+    ----------
+    a : list of pdarrays, pdarray, Strings, or Categorical
+        Rows are elements for which to test membership in b
+    b : list of pdarrays, pdarray, Strings, or Categorical
+        Rows are elements of the set in which to test membership
+    assume_unique : bool
+        If true, assume rows of a and b are each unique and sorted.
+        By default, sort and unique them explicitly.
+    symmetric: bool
+        Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
+    invert : bool, optional
+        If True, the values in the returned array are inverted (that is,
+        False where an element of `pda1` is in `pda2` and True otherwise).
+        Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
+        to (but is faster than) ``~ak.in1d(a, b)``.
+    Returns
+    -------
+    pdarray, bool
+        True for each row in a that is contained in b
+
+    Notes:
+        Only works for pdarrays of int64 dtype, Strings, or Categorical
+    """
+    from arkouda.alignment import NonUniqueError
+    from arkouda.categorical import Categorical as Categorical_
+
+    if isinstance(pda1, (pdarray, Strings, Categorical_)):
+        if isinstance(pda1, (Strings, Categorical_)) and not isinstance(pda2, (Strings, Categorical_)):
+            raise TypeError("Arguments must have compatible types, Strings/Categorical")
+        elif isinstance(pda1, pdarray) and not isinstance(pda2, pdarray):
+            raise TypeError("If pda1 is pdarray, pda2 must also be pda2")
+        if symmetric:
+            return _in1d_single(pda1, pda2), _in1d_single(pda2, pda1, invert)
+        else:
+            return _in1d_single(pda1, pda2, invert)
+    atypes = np.array([ai.dtype for ai in pda1])
+    btypes = np.array([bi.dtype for bi in pda2])
+    if not (atypes == btypes).all():
+        raise TypeError("Array dtypes of arguments must match")
+    if not assume_unique:
+        ag = GroupBy(pda1)
+        ua = ag.unique_keys
+        bg = GroupBy(pda2)
+        ub = bg.unique_keys
+    else:
+        ua = pda1
+        ub = pda2
+    # Key for deinterleaving result
+    isa = concatenate((ones(ua[0].size, dtype=akbool), zeros(ub[0].size, dtype=akbool)), ordered=False)
+    c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
+    g = GroupBy(c)
+    k, ct = g.count()
+    if assume_unique:
+        # need to verify uniqueness, otherwise answer will be wrong
+        if (g.sum(isa)[1] > 1).any():
+            raise NonUniqueError("Called with assume_unique=True, but first argument is not unique")
+        if (g.sum(~isa)[1] > 1).any():
+            raise NonUniqueError("Called with assume_unique=True, but second argument is not unique")
+    # Where value appears twice, it is present in both a and b
+    # truth = answer in c domain
+    truth = g.broadcast(ct == 2, permute=True)
+    if assume_unique:
+        # Deinterleave truth into a and b domains
+        if symmetric:
+            return truth[isa], truth[~isa]
+        else:
+            return truth[isa]
+    else:
+        # If didn't start unique, first need to deinterleave into ua domain,
+        # then broadcast to a domain
+        atruth = ag.broadcast(truth[isa], permute=True)
+        if symmetric:
+            btruth = bg.broadcast(truth[~isa], permute=True)
+            return atruth, btruth
+        else:
+            return atruth
+
+
+def in1dmulti(a, b, assume_unique=False, symmetric=False):
+    """
+    Alias for in1d to maintain backwards compatibility.
+    Calls in1d.
+    """
+    return in1d(a, b, assume_unique=assume_unique, symmetric=symmetric)
 
 
 # fmt: off
