@@ -89,10 +89,7 @@ class Index:
         """
         g = GroupBy(self.values)
         key, ct = g.count()
-        if (ct > 1).any():
-            return False
-        else:
-            return True
+        return (ct == 1).all()
 
     @staticmethod
     def factory(index):
