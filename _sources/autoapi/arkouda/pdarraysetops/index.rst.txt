@@ -22,49 +22,32 @@ Functions
 
 
 
-.. py:function:: in1d(pda1: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], pda2: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], invert: bool = False) -> arkouda.pdarrayclass.pdarray
+.. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Test whether each element of a 1-D array is also present in a second array.
 
    Returns a boolean array the same length as `pda1` that is True
    where an element of `pda1` is in `pda2` and False otherwise.
 
-   :param pda1: Input array.
-   :type pda1: pdarray or Strings or Categorical
-   :param pda2: The values against which to test each value of `pda1`. Must be the
-                same type as `pda1`.
-   :type pda2: pdarray or Strings or Categorical
+   Support multi-level -- test membership of rows of a in the set of rows of b.
+
+   :param a: Rows are elements for which to test membership in b
+   :type a: list of pdarrays, pdarray, Strings, or Categorical
+   :param b: Rows are elements of the set in which to test membership
+   :type b: list of pdarrays, pdarray, Strings, or Categorical
+   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
+                         By default, sort and unique them explicitly.
+   :type assume_unique: bool
+   :param symmetric: Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.
+   :type symmetric: bool
    :param invert: If True, the values in the returned array are inverted (that is,
                   False where an element of `pda1` is in `pda2` and True otherwise).
                   Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :returns: The values `pda1[in1d]` are in `pda2`.
-   :rtype: pdarray, bool
-
-   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray, Strings, or
-       Categorical object or if invert is not a bool
-   :raises RuntimeError: Raised if the dtype of either array is not supported
-
-   .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
-
-   .. rubric:: Notes
-
-   `in1d` can be considered as an element-wise function version of the
-   python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
-   equivalent to ``ak.array([item in b for item in a])``, but is much
-   faster and scales to arbitrarily large ``a``.
-
-   ak.in1d is not supported for bool or float64 pdarrays
-
-   .. rubric:: Examples
-
-   >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
-   array([False, True, False])
-
-   >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
-   array([False, True])
+   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
+             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]

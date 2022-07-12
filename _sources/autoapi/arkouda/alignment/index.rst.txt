@@ -18,7 +18,6 @@ Functions
    arkouda.alignment.align
    arkouda.alignment.right_align
    arkouda.alignment.left_align
-   arkouda.alignment.in1dmulti
    arkouda.alignment.find
    arkouda.alignment.lookup
    arkouda.alignment.in1d_intervals
@@ -77,22 +76,6 @@ Functions
    Bases: :py:obj:`ValueError`
 
    Inappropriate argument value (of correct type).
-
-
-.. py:function:: in1dmulti(a, b, assume_unique=False, symmetric=False)
-
-   The multi-level analog of ak.in1d -- test membership of rows of a in the set of rows of b.
-
-   :param a: Rows are elements for which to test membership in b
-   :type a: list of pdarrays
-   :param b: Rows are elements of the set in which to test membership
-   :type b: list of pdarrays
-   :param assume_unique: If true, assume rows of a and b are each unique and sorted.
-                         By default, sort and unique them explicitly.
-   :type assume_unique: bool
-
-   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
-             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
 .. py:function:: find(query, space)
