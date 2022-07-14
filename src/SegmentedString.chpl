@@ -719,6 +719,54 @@ module SegmentedString {
     }
 
     /*
+      Strip out all of the leading and trailing characters of each element of a segstring that are
+      called out in the "chars" argument.
+
+      :arg chars: the set of characters to be removed
+      :type chars: string
+
+      :returns: Strings – substrings with stripped characters from the original string and the offsets into those substrings
+    */
+    
+    proc strip(chars: string) throws {
+      ref origOffsets = this.offsets.a;
+      ref origVals = this.values.a;
+      const lengths = this.getLengths();
+
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "chars: %s - origOffsets: %t - origVals: %t"
+                                             .format(chars, origOffsets, origVals:bytes));
+
+      var replacedLens: [this.offsets.aD] int;
+
+      forall (off, len, rlen) in zip(origOffsets, lengths, replacedLens) {
+        if chars.isEmpty() {
+          rlen = interpretAsBytes(origVals, off..#len).strip().size + 1;
+        } else {
+          rlen = interpretAsBytes(origVals, off..#len).strip(chars:bytes).size + 1;
+        }
+      }
+      var retVals: [makeDistDom(+ reduce replacedLens)] uint(8);
+      var retOffs = (+ scan replacedLens) - replacedLens;
+
+      forall (off, len, roff) in zip(origOffsets, lengths, retOffs) with (var valAgg = newDstAggregator(uint(8))) {
+        var i = 0;
+        if chars.isEmpty() {
+          for b in interpretAsBytes(origVals, off..#len).strip() {
+            valAgg.copy(retVals[roff+i], b:uint(8));
+            i += 1;
+          }
+        } else {
+          for b in interpretAsBytes(origVals, off..#len).strip(chars:bytes) {
+            valAgg.copy(retVals[roff+i], b:uint(8));
+            i += 1;
+          }
+        }
+      }
+      return (retOffs, retVals);
+    }
+
+    /*
       Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
 
       Note: the regular expression engine used, re2, does not support lookahead/lookbehind
