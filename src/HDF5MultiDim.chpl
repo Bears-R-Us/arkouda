@@ -1,4 +1,4 @@
-module HDF5_MultiDim {
+module HDF5MultiDim {
     use IO;
     use CTypes;
     use Reflection;
