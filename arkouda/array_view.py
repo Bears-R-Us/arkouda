@@ -160,7 +160,7 @@ class ArrayView:
             key = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             for i in range(len(key)):
                 x = key[i]
-                if np.isscalar(x) and (resolve_scalar_dtype(x) == "int64" or "uint64"):
+                if np.isscalar(x) and (resolve_scalar_dtype(x) in ["int64", "uint64"]):
                     orig_key = x
                     if x < 0:
                         # Interpret negative key as offset from end of array
