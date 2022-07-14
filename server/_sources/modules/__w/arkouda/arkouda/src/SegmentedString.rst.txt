@@ -1,25 +1,25 @@
 .. default-domain:: chpl
 
-.. module:: SegmentedArray
+.. module:: SegmentedString
 
-SegmentedArray
-==============
+SegmentedString
+===============
 **Usage**
 
 .. code-block:: chapel
 
-   use SegmentedArray;
+   use SegmentedString;
 
 
 or
 
 .. code-block:: chapel
 
-   import SegmentedArray;
+   import SegmentedString;
 
 .. data:: const saLogger = new Logger(logLevel)
 
-.. data:: param SegmentedArrayUseHash = useHash
+.. data:: param SegmentedStringUseHash = useHash
 
 .. class:: OutOfBoundsError : Error
 

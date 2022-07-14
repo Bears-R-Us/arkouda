@@ -106,11 +106,11 @@ or
 
    .. method:: proc init()
 
-.. class:: SegArrayError : ErrorWithContext
+.. class:: SegStringError : ErrorWithContext
 
    
-   * The SegArrayError is thrown if the file corresponding to the SegArray lacks either the
-   * SEGARRAY_OFFSET_NAME or SEGARRAY_VALUE_NAME dataset.
+   * The SegStringError is thrown if the file corresponding to the SegString lacks either the
+   * SEGSTRING_OFFSET_NAME or SEGSTRING_VALUE_NAME dataset.
    
 
 

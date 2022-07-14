@@ -60,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ServerErrors</a></li>
@@ -255,15 +255,15 @@
 </dd></dl>
 
 <dl class="chpl class">
-<dt class="sig sig-object chpl" id="ServerErrors.SegArrayError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegArrayError</span></span><span class="pre">:</span> <span class="pre">ErrorWithContext</span><a class="headerlink" href="#ServerErrors.SegArrayError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerErrors.SegStringError">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegStringError</span></span><span class="pre">:</span> <span class="pre">ErrorWithContext</span><a class="headerlink" href="#ServerErrors.SegStringError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li><p>The SegArrayError is thrown if the file corresponding to the SegArray lacks either the</p></li>
-<li><p>SEGARRAY_OFFSET_NAME or SEGARRAY_VALUE_NAME dataset.</p></li>
+<li><p>The SegStringError is thrown if the file corresponding to the SegString lacks either the</p></li>
+<li><p>SEGSTRING_OFFSET_NAME or SEGSTRING_VALUE_NAME dataset.</p></li>
 </ul>
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerErrors.SegArrayError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.SegArrayError.init" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerErrors.SegStringError.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.SegStringError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
