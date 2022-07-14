@@ -28,6 +28,6 @@ private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
 
 proc main() {
-    var daemon = new shared ArkoudaServerDaemon();
-    daemon.run();
+    var daemon = new ArkoudaServerDaemon();
+    try! daemon.run();
 }
