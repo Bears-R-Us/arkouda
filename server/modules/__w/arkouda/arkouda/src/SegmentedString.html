@@ -366,6 +366,21 @@ If returnNumSubs is set to True, the number of substitutions per string will be 
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedString.SegString.strip">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">strip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chars:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.strip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip out all of the leading and trailing characters of each element of a segstring that are
+called out in the “chars” argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>chars</strong> : <span><code class="xref chpl chpl-chplref docutils literal notranslate"><span class="pre">string</span></code></span> – the set of characters to be removed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Strings – substrings with stripped characters from the original string and the offsets into those substrings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.substringSearch">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.substringSearch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>

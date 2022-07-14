@@ -3207,6 +3207,35 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: strip(self, chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
+
+      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      in chars removed. The chars argument is a string specifying the set of characters to be removed.
+      If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+      prefix or suffix; rather, all combinations of its values are stripped.
+
+      :param chars:
+      :type chars: the set of characters to be removed
+
+      :returns: Strings object with the leading and trailing characters matching the set of characters in
+                the chars argument removed
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+      >>> s = strings.strip()
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+      >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+      >>> s = strings.strip(' 12')
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+
    .. py:method:: cached_regex_patterns(self) -> List
 
       Returns the regex patterns for which Match objects have been cached
@@ -7978,6 +8007,35 @@ Attributes
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
       >>> strings.is_title()
       array([False False False True True True])
+
+
+   .. py:method:: strip(self, chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
+
+      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      in chars removed. The chars argument is a string specifying the set of characters to be removed.
+      If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+      prefix or suffix; rather, all combinations of its values are stripped.
+
+      :param chars:
+      :type chars: the set of characters to be removed
+
+      :returns: Strings object with the leading and trailing characters matching the set of characters in
+                the chars argument removed
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+      >>> s = strings.strip()
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+      >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+      >>> s = strings.strip(' 12')
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
 
 
    .. py:method:: cached_regex_patterns(self) -> List
@@ -16055,6 +16113,35 @@ Attributes
       array([False False False True True True])
 
 
+   .. py:method:: strip(self, chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
+
+      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      in chars removed. The chars argument is a string specifying the set of characters to be removed.
+      If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+      prefix or suffix; rather, all combinations of its values are stripped.
+
+      :param chars:
+      :type chars: the set of characters to be removed
+
+      :returns: Strings object with the leading and trailing characters matching the set of characters in
+                the chars argument removed
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+      >>> s = strings.strip()
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+      >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+      >>> s = strings.strip(' 12')
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+
    .. py:method:: cached_regex_patterns(self) -> List
 
       Returns the regex patterns for which Match objects have been cached
@@ -17445,6 +17532,35 @@ Attributes
       array(['sTrINgs 0', 'sTrINgs 1', 'sTrINgs 2', 'Strings 0', 'Strings 1', 'Strings 2'])
       >>> strings.is_title()
       array([False False False True True True])
+
+
+   .. py:method:: strip(self, chars: Optional[Union[bytes, arkouda.dtypes.str_scalars]] = '') -> Strings
+
+      Returns a new Strings object with all leading and trailing occurrences of characters contained
+      in chars removed. The chars argument is a string specifying the set of characters to be removed.
+      If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+      prefix or suffix; rather, all combinations of its values are stripped.
+
+      :param chars:
+      :type chars: the set of characters to be removed
+
+      :returns: Strings object with the leading and trailing characters matching the set of characters in
+                the chars argument removed
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+      >>> s = strings.strip()
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
+
+      >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+      >>> s = strings.strip(' 12')
+      >>> s
+      array(['Strings', 'StringS', 'StringS'])
 
 
    .. py:method:: cached_regex_patterns(self) -> List

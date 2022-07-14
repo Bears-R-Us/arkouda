@@ -218,6 +218,18 @@ or
       :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
       
 
+   .. method:: proc strip(chars: string) throws
+
+      
+      Strip out all of the leading and trailing characters of each element of a segstring that are
+      called out in the "chars" argument.
+      
+      :arg chars: the set of characters to be removed
+      :type chars: string
+      
+      :returns: Strings – substrings with stripped characters from the original string and the offsets into those substrings
+      
+
    .. method:: proc substringSearch(const pattern: string) throws
 
       
