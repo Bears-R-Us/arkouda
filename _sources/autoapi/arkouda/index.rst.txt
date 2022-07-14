@@ -12585,7 +12585,7 @@ Attributes
       :type n: int
 
       :returns: The first `n` rows of the DataFrame.
-      :rtype: akutil.DataFrame
+      :rtype: ak.DataFrame
 
       .. seealso:: :obj:`tail`
 
@@ -12602,9 +12602,9 @@ Attributes
       :type n: int (default=5)
 
       :returns: The last `n` rows of the DataFrame.
-      :rtype: akutil.DataFrame
+      :rtype: ak.DataFrame
 
-      .. seealso:: :obj:`akutil.dataframe.head`
+      .. seealso:: :obj:`ak.dataframe.head`
 
 
    .. py:method:: sample(self, n=5)
@@ -12615,7 +12615,7 @@ Attributes
       :type n: int (default=5)
 
       :returns: The sampled `n` rows of the DataFrame.
-      :rtype: akutil.DataFrame
+      :rtype: ak.DataFrame
 
 
    .. py:method:: GroupBy(self, keys, use_series=False)
@@ -12625,9 +12625,9 @@ Attributes
       :param keys: An (ordered) list of column names or a single string to group by.
       :type keys: string or list
       :param use_series:
-      :type use_series: If True, returns an akutil.GroupBy oject. Otherwise an arkouda GroupBy object
+      :type use_series: If True, returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object
 
-      :returns: Either an akutil GroupBy or an arkouda GroupBy object.
+      :returns: Either an ak GroupBy or an arkouda GroupBy object.
       :rtype: GroupBy
 
       .. seealso:: :obj:`arkouda.GroupBy`
@@ -12865,12 +12865,12 @@ Attributes
    Note: This fails on sorting ak.Strings, as does DataFrame.sort().
 
    :param df: The DataFrame to sort.
-   :type df: akutil.dataframe.DataFrame
+   :type df: ak.dataframe.DataFrame
    :param column: The name of the column to sort by.
    :type column: str
 
    :returns: A sorted copy of the original DataFrame.
-   :rtype: akutil.dataframe.DataFrame
+   :rtype: ak.dataframe.DataFrame
 
 
 .. py:function:: intersect(a, b, positions=True, unique=False)
