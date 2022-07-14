@@ -314,7 +314,7 @@ class ArrayView:
 
     def save(self, filepath: str, dset: str, mode: str = "truncate", storage: str = "Flat"):
         """
-        Save the current ArrayView object to hdf5
+        Save the current ArrayView object to hdf5 file
 
         Parameters
         ----------

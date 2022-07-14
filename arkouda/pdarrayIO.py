@@ -822,6 +822,7 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
         - This is an initial implementation and updates will be coming soon
         - dset currently only reading a single dataset is supported
         - file_path will need to support list[str] and str for glob
+        - Currently, order is always assumed to be row major
     """
     rep_msg = cast(str, generic_msg(cmd="readhdf_multi", args=f"{file_path} {dset}",))
 

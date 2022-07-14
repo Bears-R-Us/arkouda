@@ -35,10 +35,11 @@ Each file can contain multiple datasets. Groups are not currently used.
       4) Attribute: `Format`
       5) Data
 
-`Rank`: `int` representing the number of dimensions in the dataset. This should be stored as the rank of the *unflattened* data, even when storing as a flattened array.
+`Rank`: `int` 
+   Integer representing the number of dimensions in the dataset. This should be stored as the rank of the *unflattened* data, even when storing as a flattened array.
 
-`Shape`: `int array` storing the size of each dimension. The array should be of length equal to the `Rank`.
+`Shape`: `int array` Integer array storing the size of each dimension. The array should be of length equal to the `Rank`.
 
-`ObjType`: `b'ArrayView'` Indicates the object type. This is used when loading data to return the correct object type.
+`ObjType`: `b'ArrayView'` Byte string indicating the object type. This is used when loading data to return the correct object type.
 
 `Format`: `int` Integer that is mapped to `flat` and `multi`. `flat==0` and `multi==1`. This indicates the formatting of the data within the HDF5 dataset.
