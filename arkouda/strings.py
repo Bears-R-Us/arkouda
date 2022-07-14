@@ -560,10 +560,6 @@ class Strings:
         >>> s
         array(['Strings', 'StringS', 'StringS'])
         """
-        # The following "if" block is a hack to get around the limitation of sending arguments where
-        # the first character of the argument is a space. Ordinarily, this would result in the space not
-        # being part of the argument.
-        # TODO - Remove this "if" block when we go to JSON for message passing.
         if isinstance(chars, bytes):
             chars = chars.decode()
         args = "{} {} {}".format(self.objtype, self.entry.name, chars,)
