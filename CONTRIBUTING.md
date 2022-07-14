@@ -168,7 +168,7 @@ For the most part, only the core dev team or those assigned should review PRs.
 - We prefer to have all feedback resolved before a PR is merged.
 - If you wrote it, don't merge it. It's best practice for someone else to decide it's ready to be merged.
 - To keep the commit history simple and allow for easy manipulation of PRs, we use the `Squash-and-Merge` functionality of GitHub's web interface.
-- Before merging, post a message in slack asking if anyone has objections to the PR being merged and wait at least 5 mins for others to reply. After merging, reply in thread to your original post to let the team know the PR has been merged.
+- Be sure to include `@mhmerrill` as a reviewer
 
 <a id="release"></a>
 ### Release Process<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
