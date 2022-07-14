@@ -25,8 +25,6 @@ module HDF5_MultiDim {
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
-    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
-    private extern proc c_strlen(s:c_ptr(c_char)):c_size_t;
     private extern proc c_incrementCounter(data:c_void_ptr);
     private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
 
@@ -60,12 +58,12 @@ module HDF5_MultiDim {
         var flat_size: int = (* reduce shape);
 
         var flat: [0..#flat_size] int;
-        for loc in D{
+        for coords in D{
             var idx: int;
-            for i in 0..#loc.size {
-                idx += loc[i] * dim_prod[(dim_prod.size-(i+1))];
+            for i in 0..#coords.size {
+                idx += coords[i] * dim_prod[(dim_prod.size-(i+1))];
             }
-            flat[idx] = a[loc];
+            flat[idx] = a[coords];
         }
 
         return flat;
@@ -81,11 +79,7 @@ module HDF5_MultiDim {
 
         var matchingFiles = glob("%s*%s".format(prefix, extension));
 
-        if matchingFiles.size > 0 {
-            return true;
-        } else {
-            return false;
-        }
+        return matchingFiles.size > 0
     }
 
     /*
