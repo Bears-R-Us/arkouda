@@ -22,7 +22,7 @@ module UniqueMsg
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
-    use SegmentedArray;
+    use SegmentedString;
     use ServerErrorStrings;
 
     use RadixSortLSD;

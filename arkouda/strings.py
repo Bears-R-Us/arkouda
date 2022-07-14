@@ -1421,7 +1421,7 @@ class Strings:
 
         Notes
         -----
-        If the arkouda server is compiled with "-sSegmentedArray.useHash=true",
+        If the arkouda server is compiled with "-sSegmentedString.useHash=true",
         then arkouda uses 128-bit hash values to group strings, rather than sorting
         the strings directly. This method is fast, but the resulting permutation
         merely groups equivalent strings and does not sort them. If the "useHash"

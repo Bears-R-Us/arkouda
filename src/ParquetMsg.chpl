@@ -13,7 +13,7 @@ module ParquetMsg {
   use Sort;
   use CommAggregation;
 
-  use SegmentedArray;
+  use SegmentedString;
 
 
   // Use reflection for error information

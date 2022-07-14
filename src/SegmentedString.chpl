@@ -1,4 +1,4 @@
-module SegmentedArray {
+module SegmentedString {
   use AryUtil;
   use CTypes;
   use MultiTypeSymbolTable;
@@ -22,7 +22,7 @@ module SegmentedArray {
   const saLogger = new Logger(logLevel);
 
   private config param useHash = true;
-  param SegmentedArrayUseHash = useHash;
+  param SegmentedStringUseHash = useHash;
 
   private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
   

@@ -3,7 +3,7 @@ module RandArray {
   use ServerErrors;
   use Logging;
   use Random;
-  use SegmentedArray;
+  use SegmentedString;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
   use Map;

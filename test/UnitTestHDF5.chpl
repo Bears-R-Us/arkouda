@@ -5,7 +5,7 @@ use FileIO;
 use GenSymIO;
 use HDF5Msg;
 use Message;
-use SegmentedArray;
+use SegmentedString;
 import FileSystem;
 
 const nb_str:string = b"\x00".decode(); // create null_byte string
@@ -61,7 +61,7 @@ proc test_tohdfMsg(t: borrowed Test) throws {
         }
         var offsets = segmentedCalcOffsets(s_values, s_values.domain);
         var st = new owned SymTab();
-        var segString = getSegString(s_offsets, s_values, st); // from SegmentedArray
+        var segString = getSegString(s_offsets, s_values, st); // from SegmentedString
         var cmd = "tohdf";
         // payload -> arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag
         var payload = segString.name + " strings 0 [" + Q+fWithOffsets+Q + "] strings " + segString.name + " true";

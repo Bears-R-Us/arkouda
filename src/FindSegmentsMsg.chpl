@@ -12,7 +12,7 @@ module FindSegmentsMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use SegmentedArray;
+    use SegmentedString;
 
     use PrivateDist;
     use CommAggregation;

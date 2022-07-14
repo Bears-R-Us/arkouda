@@ -24,7 +24,7 @@ module ArgSortMsg
     use ServerErrorStrings;
 
     use RadixSortLSD;
-    use SegmentedArray;
+    use SegmentedString;
     use Reflection;
     use ServerErrors;
     use Logging;
