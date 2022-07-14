@@ -28,6 +28,5 @@ private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
 
 proc main() {
-    var daemon = new ArkoudaServerDaemon();
-    try! daemon.run();
+    try! getServerDaemon().run();
 }

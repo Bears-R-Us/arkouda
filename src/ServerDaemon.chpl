@@ -1,7 +1,9 @@
 module ServerDaemon {
     use FileIO;
+    use IO;
     use Security;
     use ServerConfig;
+    use ServerErrors;
     use Time only;
     use ZMQ only;
     use Memory;
@@ -17,13 +19,20 @@ module ServerDaemon {
     use SymArrayDmap;
     use ServerErrorStrings;
     use Message;
+    use ExternalIntegration;
     use CommandMap, ServerRegistration;
+    
+    enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
+    
+    private config const externalSystem = SystemType.NONE;
+    
+    private config const daemonType = ServerDaemonType.DEFAULT;
 
     /**
-     * The ArkoudaServerDaemon class serves as the base Arkouda server
+     * The ServerDaemon class serves as the base Arkouda server
      * daemon which is run within the arkouda_server driver
      */
     class ArkoudaServerDaemon {
@@ -462,5 +471,92 @@ module ServerDaemon {
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
                                                                                  t1.elapsed()));        
         }
+    }
+    
+    class ExternalIntegrationServerDaemon : ArkoudaServerDaemon {
+
+        override proc run() throws {
+            on Locales[0] {
+                var appName: string;
+
+                if serverHostname.count('arkouda-locale') > 0 {
+                    appName = 'arkouda-locale';
+                } else {
+                    appName = 'arkouda-server';
+                }
+
+                var params: (string,int,int) = getKubernetesRegistrationParameters(
+                                                          ServiceType.EXTERNAL);
+                registerWithExternalSystem(appName, params(0), params(1), params(2));
+            }
+            super.run();
+        }
+        
+        override proc shutdown(user: string) throws {
+            on Locales[here.id] {
+                var serviceName = getKubernetesDeregisterParameters(
+                                                          ServiceType.EXTERNAL); 
+                deregisterFromExternalSystem(serviceName);
+            }
+
+            super.shutdown(user);
+        }
+        
+        
+        
+        /*
+         * Registers Arkouda with an external system on startup, defaulting to none.
+         */
+        proc registerWithExternalSystem(appName: string, serviceName: string, 
+                                           servicePort: int, targetServicePort: int) throws {   
+            select externalSystem {
+                when SystemType.KUBERNETES {
+                    registerWithKubernetes(appName, serviceName, servicePort, targetServicePort);
+                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Registered Arkouda with Kubernetes");
+                }
+                otherwise {
+                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Did not register Arkouda with any external systems");            
+                }
+            }
+        }
+        
+        /*
+         * Deregisters Arkouda from an external system upon receipt of shutdown command
+         */
+        proc deregisterFromExternalSystem(serviceName: string) throws {
+            select externalSystem {
+                when SystemType.KUBERNETES {
+                    deregisterFromKubernetes(serviceName);
+                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Deregistered service %s from Kubernetes".format(serviceName));
+                }
+                otherwise {
+                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Did not deregister Arkouda from any external system");
+                }
+            }
+        }
+    }
+
+    proc getServerDaemon() throws {
+        select daemonType {
+            when ServerDaemonType.DEFAULT {
+               return new ArkoudaServerDaemon();
+            }
+            when ServerDaemonType.INTEGRATION {
+               return new ExternalIntegrationServerDaemon();
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unrecognized ServerDaemonType: %t".format(daemonType),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(),
+                           moduleName=getModuleName(),
+                           errorClass="ArgumentError"
+                           ); 
+            }   
+        }           
     }
 }

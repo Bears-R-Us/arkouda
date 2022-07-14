@@ -58,6 +58,18 @@ module ServerConfig
     }
 
     /*
+     * Retrieves the hostname of the locale 0 arkouda_server process, which is useful for 
+     * registering Arkouda with cloud environments such as Kubernetes.
+     */
+    proc getConnectHostname() throws {
+        var hostname: string;
+        on Locales[0] {
+            hostname = here.name.strip('-0');
+        }
+        return hostname;
+    }
+
+    /*
     Indicates whether token authentication is being used for Akrouda server requests
     */
     config const authenticate : bool = false;
