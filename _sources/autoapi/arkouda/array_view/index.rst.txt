@@ -134,4 +134,40 @@ Attributes
       numpy.ndarray
 
 
+   .. py:method:: save(self, filepath: str, dset: str, mode: str = 'truncate', storage: str = 'Flat')
+
+      Save the current ArrayView object to hdf5 file
+
+      :param filepath: Path to the file to write the dataset to
+      :type filepath: str
+      :param dset: Name of the dataset to write
+      :type dset: str
+      :param mode: Default: truncate
+                   Mode to write the dataset in. Truncate will overwrite any existing files.
+                   Append will add the dataset to an existing file.
+      :type mode: str (truncate | append)
+      :param storage: Default: Flat
+                      Method to use when storing the dataset.
+                      Flat - flatten the multi-dimensional object into a 1-D array of values
+                      Multi - Store the object in the multidimensional presentation.
+      :type storage: str (Flat | Multi)
+
+      .. seealso:: :obj:`ak.ArrayView.load`
+
+
+   .. py:method:: load(filepath: str, dset: str) -> ArrayView
+      :staticmethod:
+
+      Read a multi-dimensional dataset from an HDF5 file into an ArrayView object
+
+      :param file_path: path to the file to read from
+      :type file_path: str
+      :param dset: name of the dataset to read
+      :type dset: str
+
+      :rtype: ArrayView object representing the data read from file
+
+      .. seealso:: :obj:`ak.ArrayView.save`
+
+
 

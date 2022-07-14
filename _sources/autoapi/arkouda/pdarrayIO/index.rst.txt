@@ -23,6 +23,8 @@ Functions
    arkouda.pdarrayIO.save_all
    arkouda.pdarrayIO.import_data
    arkouda.pdarrayIO.export
+   arkouda.pdarrayIO.read_hdf5_multi_dim
+   arkouda.pdarrayIO.write_hdf5_multi_dim
 
 
 
@@ -340,5 +342,56 @@ Functions
    will remain parquet and hdf5 will remain hdf5.
    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
    the same file type, but formatted to be read by Pandas.
+
+
+.. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
+
+   Read a multi-dimensional object from an HDF5 file
+
+   :param file_path: path to the file to read from
+   :type file_path: str
+   :param dset: name of the dataset to read
+   :type dset: str
+
+   :rtype: ArrayView object representing the data read from file
+
+   .. seealso:: :obj:`ak.write_hdf5_multi_dim`
+
+   .. rubric:: Notes
+
+   - Error handling done on server to prevent multiple server calls
+   - This is an initial implementation and updates will be coming soon
+   - dset currently only reading a single dataset is supported
+   - file_path will need to support list[str] and str for glob
+   - Currently, order is always assumed to be row major
+
+
+.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', storage: str = 'Flat')
+
+   Write a multi-dimensional ArrayView object to an HDF5 file
+
+   :param obj: The object that will be written to the file
+   :type obj: ArrayView
+   :param file_path: Path to the file to write the dataset to
+   :type file_path: str
+   :param dset: Name of the dataset to write
+   :type dset: str
+   :param mode: Default: truncate
+                Mode to write the dataset in. Truncate will overwrite any existing files.
+                Append will add the dataset to an existing file.
+   :type mode: str (truncate | append)
+   :param storage: Default: Flat
+                   Method to use when storing the dataset.
+                   Flat - flatten the multi-dimensional object into a 1-D array of values
+                   Multi - Store the object in the multidimensional presentation.
+   :type storage: str (Flat | Multi)
+
+   .. seealso:: :obj:`ak.read_hdf5_multi_dim`
+
+   .. rubric:: Notes
+
+   - If a file does not exist, it will be created regardless of the mode value
+   - This function is currently standalone functionality for multi-dimensional datasets
+   - Error handling done on server to prevent multiple server calls
 
 
