@@ -79,7 +79,7 @@ module HDF5MultiDim {
 
         var matchingFiles = glob("%s*%s".format(prefix, extension));
 
-        return matchingFiles.size > 0
+        return matchingFiles.size > 0;
     }
 
     /*
