@@ -236,7 +236,7 @@ class Fields(BitVector):
         # Argument validation
         # Normalize names, which can be string or sequence
         self.names = tuple(names)
-        self.name = None # This is needed to silence warnings of missing name during failed creation
+        self.name = None  # This is needed to silence warnings of missing name during failed creation
         if len(self.names) > 63:
             raise ValueError("Cannot represent more than 63 fields")
         # Ensure no duplicate names
@@ -436,7 +436,7 @@ class IPv4(pdarray):
 
     def __init__(self, values):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
-            self.name = None # This is needed to silence warnings of missing name during failed creation
+            self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")
         # Casting always creates a copy with new server-side name,
         # which will avoid unknown symbol errors
