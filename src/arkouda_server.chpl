@@ -291,6 +291,18 @@ proc main() {
             cmd    = msg.cmd;
             var format = msg.format;
             var args   = msg.args;
+            var size: int;
+            try {
+                size = msg.size: int;
+            }
+            catch e {
+                // while size is not being used, we will default it to -1 for now. Error message commented out 
+                size = -1;
+                // asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                //        "Argument List size is not an integer. %s cannot be cast".format(msg.size));
+                // sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
+                //                                  msgFormat=MsgFormat.STRING, user="Unknown"));
+            }
 
             /*
              * If authentication is enabled with the --authenticate flag, authenticate
@@ -360,6 +372,7 @@ proc main() {
                     if commandMap.contains(cmd) {
                         if moduleMap.contains(cmd) then
                           usedModules.add(moduleMap[cmd]);
+                        
                         repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
                     } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
                         if moduleMap.contains(cmd) then

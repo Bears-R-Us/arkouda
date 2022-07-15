@@ -57,7 +57,7 @@ class MessageTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": ""}',
+            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": "", "size": "-1"}',
             json.dumps(msg.asdict()),
         )
 
@@ -75,7 +75,7 @@ class MessageTest(unittest.TestCase):
             repr(minMsg),
         )
         self.assertEqual(
-            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": ""}',
+            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": "", "size": "-1"}',
             json.dumps(minMsg.asdict()),
         )
 
