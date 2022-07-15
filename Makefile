@@ -433,7 +433,6 @@ $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 test: test-python
 
 .PHONY: test-chapel
-.SILENT:
 test-chapel:
 	start_test $(TEST_SOURCE_DIR)
 
