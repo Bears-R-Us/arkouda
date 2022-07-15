@@ -93,7 +93,9 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([2, 3, 5, 7, 5])
         expected = ak.array([1, 4, 5, 7])
 
-        self.assertTrue((expected == ak.setxor1d(pdaOne, pdaTwo)).all())
+        self.assertListEqual(
+            expected.to_ndarray().tolist(), ak.setxor1d(pdaOne, pdaTwo).to_ndarray().tolist()
+        )
 
         with self.assertRaises(TypeError):
             ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -153,7 +155,9 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([3, 4, 5, 6])
         expected = ak.array([1, 2])
 
-        self.assertTrue((expected == ak.setdiff1d(pdaOne, pdaTwo)).all())
+        self.assertListEqual(
+            expected.to_ndarray().tolist(), ak.setdiff1d(pdaOne, pdaTwo).to_ndarray().tolist()
+        )
 
         with self.assertRaises(TypeError):
             ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -206,7 +210,9 @@ class SetOpsTest(ArkoudaTest):
         pdaOne = ak.array([1, 3, 4, 3])
         pdaTwo = ak.array([3, 1, 2, 1])
         expected = ak.array([1, 3])
-        self.assertTrue((expected == ak.intersect1d(pdaOne, pdaTwo)).all())
+        self.assertListEqual(
+            expected.to_ndarray().tolist(), ak.intersect1d(pdaOne, pdaTwo).to_ndarray().tolist()
+        )
 
         with self.assertRaises(TypeError):
             ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -259,7 +265,9 @@ class SetOpsTest(ArkoudaTest):
         pdaOne = ak.array([-1, 0, 1])
         pdaTwo = ak.array([-2, 0, 2])
         expected = ak.array([-2, -1, 0, 1, 2])
-        self.assertTrue((expected == ak.union1d(pdaOne, pdaTwo)).all())
+        self.assertListEqual(
+            expected.to_ndarray().tolist(), ak.union1d(pdaOne, pdaTwo).to_ndarray().tolist()
+        )
 
         with self.assertRaises(TypeError):
             ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -310,7 +318,10 @@ class SetOpsTest(ArkoudaTest):
     def testIn1d(self):
         pdaOne = ak.array([-1, 0, 1, 3])
         pdaTwo = ak.array([-1, 2, 2, 3])
-        self.assertTrue((ak.in1d(pdaOne, pdaTwo) == ak.array([True, False, False, True])).all())
+        self.assertListEqual(
+            ak.in1d(pdaOne, pdaTwo).to_ndarray().tolist(),
+            ak.array([True, False, False, True]).to_ndarray().tolist(),
+        )
 
         vals = [i % 3 for i in range(10)]
         valsTwo = [i % 2 for i in range(10)]
@@ -318,7 +329,9 @@ class SetOpsTest(ArkoudaTest):
         stringsTwo = ak.array(["String {}".format(i) for i in valsTwo])
 
         answer = ak.array([x < 2 for x in vals])
-        self.assertTrue((answer == ak.in1d(stringsOne, stringsTwo)).all())
+        self.assertListEqual(
+            answer.to_ndarray().tolist(), ak.in1d(stringsOne, stringsTwo).to_ndarray().tolist()
+        )
 
     def test_multiarray_validation(self):
         x = [ak.arange(3), ak.arange(3), ak.arange(3)]

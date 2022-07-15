@@ -202,104 +202,135 @@ class GroupByTest(ArkoudaTest):
 
     def test_bitwise_aggregations(self):
         revs = ak.arange(self.igb.length) % 2
-        self.assertTrue((self.igb.OR(revs)[1] == self.igb.max(revs)[1]).all())
-        self.assertTrue((self.igb.AND(revs)[1] == self.igb.min(revs)[1]).all())
-        self.assertTrue((self.igb.XOR(revs)[1] == (self.igb.sum(revs)[1] % 2)).all())
+        self.assertListEqual(
+            self.igb.OR(revs)[1].to_ndarray().tolist(), self.igb.max(revs)[1].to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            self.igb.AND(revs)[1].to_ndarray().tolist(), self.igb.min(revs)[1].to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            self.igb.XOR(revs)[1].to_ndarray().tolist(),
+            (self.igb.sum(revs)[1] % 2).to_ndarray().tolist(),
+        )
 
     def test_standalone_broadcast(self):
         segs = ak.arange(10) ** 2
         vals = ak.arange(10)
         size = 100
         check = ((2 * vals + 1) * vals).sum()
-        self.assertTrue(ak.broadcast(segs, vals, size=size).sum() == check)
+        self.assertEqual(ak.broadcast(segs, vals, size=size).sum(), check)
         perm = ak.arange(99, -1, -1)
         bcast = ak.broadcast(segs, vals, permutation=perm)
-        self.assertTrue(bcast.sum() == check)
+        self.assertEqual(bcast.sum(), check)
         self.assertTrue((bcast[:-1] >= bcast[1:]).all())
 
     def test_broadcast_ints(self):
         keys, counts = self.igb.count()
 
-        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
-        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
+        self.assertListEqual(np.array([1, 4, 2, 1, 2]).tolist(), counts.to_ndarray().tolist())
+        self.assertListEqual(np.array([1, 2, 3, 4, 5]).tolist(), keys.to_ndarray().tolist())
 
         results = self.igb.broadcast(1 * (counts > 2), permute=False)
-        self.assertTrue((np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(1 * (counts == 2), permute=False)
-        self.assertTrue((np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(1 * (counts < 4), permute=False)
-        self.assertTrue((np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(1 * (counts > 2))
-        self.assertTrue((np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(1 * (counts == 2))
-        self.assertTrue((np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(1 * (counts < 4))
-        self.assertTrue((np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
     def test_broadcast_uints(self):
         keys, counts = self.ugb.count()
-        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
-        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
+        self.assertListEqual(np.array([1, 4, 2, 1, 2]).tolist(), counts.to_ndarray().tolist())
+        self.assertListEqual(np.array([1, 2, 3, 4, 5]).tolist(), keys.to_ndarray().tolist())
 
         u_results = self.ugb.broadcast(1 * (counts > 2))
         i_results = self.igb.broadcast(1 * (counts > 2))
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
 
         u_results = self.ugb.broadcast(1 * (counts == 2))
         i_results = self.igb.broadcast(1 * (counts == 2))
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
 
         u_results = self.ugb.broadcast(1 * (counts < 4))
         i_results = self.igb.broadcast(1 * (counts < 4))
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
 
         # test uint Groupby.broadcast with and without permute
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
         i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64), permute=False)
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
         u_results = self.ugb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
         i_results = self.igb.broadcast(ak.array([1, 2, 6, 8, 9], dtype=ak.uint64))
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
 
         # test uint broadcast
         u_results = ak.broadcast(ak.array([0]), ak.array([1], dtype=ak.uint64), 1)
         i_results = ak.broadcast(ak.array([0]), ak.array([1]), 1)
-        self.assertTrue((i_results == u_results).all())
+        self.assertListEqual(i_results.to_ndarray().tolist(), u_results.to_ndarray().tolist())
 
     def test_broadcast_booleans(self):
         keys, counts = self.igb.count()
 
-        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
-        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
+        self.assertListEqual(np.array([1, 4, 2, 1, 2]).tolist(), counts.to_ndarray().tolist())
+        self.assertListEqual(np.array([1, 2, 3, 4, 5]).tolist(), keys.to_ndarray().tolist())
 
         results = self.igb.broadcast(counts > 2, permute=False)
-        self.assertTrue((np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(counts == 2, permute=False)
-        self.assertTrue((np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 0, 0, 0, 1, 1, 0, 1, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(counts < 4, permute=False)
-        self.assertTrue((np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([1, 0, 0, 0, 0, 1, 1, 1, 1, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(counts > 2)
-        self.assertTrue((np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(counts == 2)
-        self.assertTrue((np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
         results = self.igb.broadcast(counts < 4)
-        self.assertTrue((np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]) == results.to_ndarray()).all())
+        self.assertListEqual(
+            np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 1]).tolist(), results.to_ndarray().tolist()
+        )
 
     def test_count(self):
         keys, counts = self.igb.count()
 
-        self.assertTrue((np.array([1, 2, 3, 4, 5]) == keys.to_ndarray()).all())
-        self.assertTrue((np.array([1, 4, 2, 1, 2]) == counts.to_ndarray()).all())
+        self.assertListEqual(np.array([1, 2, 3, 4, 5]).tolist(), keys.to_ndarray().tolist())
+        self.assertListEqual(np.array([1, 4, 2, 1, 2]).tolist(), counts.to_ndarray().tolist())
 
     def test_groupby_reduction_type(self):
         self.assertEqual("any", str(GroupByReductionType.ANY))
@@ -399,7 +430,7 @@ class GroupByTest(ArkoudaTest):
             g = ak.GroupBy(key)
             for val in keys:
                 k, n = g.nunique(val)
-                self.assertTrue((n == expected).all())
+                self.assertListEqual(n.to_ndarray().tolist(), expected.to_ndarray().tolist())
 
     def test_type_failure_multilevel_groupby_aggregate(self):
         # just checking no error occurs with hotfix for Issue 858

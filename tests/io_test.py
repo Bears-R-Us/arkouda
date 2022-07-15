@@ -119,9 +119,9 @@ class IOTest(ArkoudaTest):
         rifp.sort()
 
         self.assertEqual(4, len(retrieved_columns))
-        self.assertTrue((itp == ritp).all())
-        self.assertTrue((ihp == rihp).all())
-        self.assertTrue((ifp == rifp).all())
+        self.assertListEqual(itp.tolist(), ritp.tolist())
+        self.assertListEqual(ihp.tolist(), rihp.tolist())
+        self.assertListEqual(ifp.tolist(), rifp.tolist())
         self.assertEqual(len(self.dict_columns["bool_pdarray"]), len(retrieved_columns["bool_pdarray"]))
         self.assertEqual(4, len(ak.get_datasets("{}/iotest_dict_LOCALE0000".format(IOTest.io_test_dir))))
 
@@ -155,9 +155,9 @@ class IOTest(ArkoudaTest):
         rfp.sort()
 
         self.assertEqual(4, len(retrieved_columns))
-        self.assertTrue((itp == ritp).all())
-        self.assertTrue((ihp == rihp).all())
-        self.assertTrue((fp == rfp).all())
+        self.assertListEqual(itp.tolist(), ritp.tolist())
+        self.assertListEqual(ihp.tolist(), rihp.tolist())
+        self.assertListEqual(fp.tolist(), rfp.tolist())
         self.assertEqual(len(self.list_columns[3]), len(retrieved_columns["bool_pdarray"]))
         self.assertEqual(4, len(ak.get_datasets("{}/iotest_list_LOCALE0000".format(IOTest.io_test_dir))))
 
@@ -308,9 +308,9 @@ class IOTest(ArkoudaTest):
         rfp.sort()
 
         self.assertEqual(4, len(list(retrieved_columns.keys())))
-        self.assertTrue((itp == ritp).all())
-        self.assertTrue((ihp == rihp).all())
-        self.assertTrue((fp == rfp).all())
+        self.assertListEqual(itp.tolist(), ritp.tolist())
+        self.assertListEqual(ihp.tolist(), rihp.tolist())
+        self.assertListEqual(fp.tolist(), rfp.tolist())
         self.assertEqual(len(self.bool_pdarray), len(retrieved_columns["bool_pdarray"]))
 
     def testReadAllWithErrorAndWarn(self):
@@ -388,9 +388,9 @@ class IOTest(ArkoudaTest):
         rafloats = result_array_floats.to_ndarray()
         rafloats.sort()
 
-        self.assertTrue((self.int_tens_ndarray == ratens).all())
-        self.assertTrue((self.int_hundreds_ndarray == rahundreds).all())
-        self.assertTrue((self.float_ndarray == rafloats).all())
+        self.assertListEqual(self.int_tens_ndarray.tolist(), ratens.tolist())
+        self.assertListEqual(self.int_hundreds_ndarray.tolist(), rahundreds.tolist())
+        self.assertListEqual(self.float_ndarray.tolist(), rafloats.tolist())
         self.assertEqual(len(self.bool_pdarray), len(result_array_bools))
 
         # test load_all with file_format parameter usage
@@ -427,9 +427,9 @@ class IOTest(ArkoudaTest):
 
         rafloats = result_array_floats.to_ndarray()
         rafloats.sort()
-        self.assertTrue((self.int_tens_ndarray == ratens).all())
-        self.assertTrue((self.int_hundreds_ndarray == rahundreds).all())
-        self.assertTrue((self.float_ndarray == rafloats).all())
+        self.assertListEqual(self.int_tens_ndarray.tolist(), ratens.tolist())
+        self.assertListEqual(self.int_hundreds_ndarray.tolist(), rahundreds.tolist())
+        self.assertListEqual(self.float_ndarray.tolist(), rafloats.tolist())
         self.assertEqual(len(self.bool_pdarray), len(result_array_bools))
 
         # Test load with invalid prefix
@@ -508,7 +508,7 @@ class IOTest(ArkoudaTest):
         strings.sort()
         r_strings = r_strings_array.to_ndarray()
         r_strings.sort()
-        self.assertTrue((strings == r_strings).all())
+        self.assertListEqual(strings.tolist(), r_strings.tolist())
 
         # Read a part of a saved Strings dataset from one hdf5 file
         r_strings_subset = ak.read(filenames="{}/strings-test_LOCALE0000".format(IOTest.io_test_dir))
@@ -566,7 +566,7 @@ class IOTest(ArkoudaTest):
         strings.sort()
         r_strings = r_strings_array.to_ndarray()
         r_strings.sort()
-        self.assertTrue((strings == r_strings).all())
+        self.assertListEqual(strings.tolist(), r_strings.tolist())
 
     def testSaveLongStringsDataset(self):
         # Create, save, and load Strings dataset
@@ -583,7 +583,7 @@ class IOTest(ArkoudaTest):
         r_strings = ak.load("{}/strings-test".format(IOTest.io_test_dir), dataset="strings").to_ndarray()
         r_strings.sort()
 
-        self.assertTrue((n_strings == r_strings).all())
+        self.assertListEqual(n_strings.tolist(), r_strings.tolist())
 
     def testSaveMixedStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
@@ -595,15 +595,18 @@ class IOTest(ArkoudaTest):
         )
         r_mixed = ak.load_all("{}/multi-type-test".format(IOTest.io_test_dir))
 
-        self.assertTrue((strings_array.to_ndarray().sort() == r_mixed["m_strings"].to_ndarray().sort()))
+        self.assertListEqual(
+            np.sort(strings_array.to_ndarray()).tolist(),
+            np.sort(r_mixed["m_strings"].to_ndarray()).tolist(),
+        )
         self.assertIsNotNone(r_mixed["m_floats"])
         self.assertIsNotNone(r_mixed["m_ints"])
 
         r_floats = ak.sort(ak.load("{}/multi-type-test".format(IOTest.io_test_dir), dataset="m_floats"))
-        self.assertTrue((m_floats == r_floats).all())
+        self.assertListEqual(m_floats.to_ndarray().tolist(), r_floats.to_ndarray().tolist())
 
         r_ints = ak.sort(ak.load("{}/multi-type-test".format(IOTest.io_test_dir), dataset="m_ints"))
-        self.assertTrue((m_ints == r_ints).all())
+        self.assertListEqual(m_ints.to_ndarray().tolist(), r_ints.to_ndarray().tolist())
 
         strings = strings_array.to_ndarray()
         strings.sort()
@@ -612,7 +615,7 @@ class IOTest(ArkoudaTest):
         ).to_ndarray()
         r_strings.sort()
 
-        self.assertTrue((strings == r_strings).all())
+        self.assertListEqual(strings.tolist(), r_strings.tolist())
 
     def testAppendStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
@@ -625,7 +628,7 @@ class IOTest(ArkoudaTest):
         r_strings_dupe = ak.load(
             "{}/append-strings-test".format(IOTest.io_test_dir), dataset="strings-dupe"
         )
-        self.assertTrue((r_strings == r_strings_dupe).all())
+        self.assertListEqual(r_strings.to_ndarray().tolist(), r_strings_dupe.to_ndarray().tolist())
 
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
@@ -648,15 +651,15 @@ class IOTest(ArkoudaTest):
         r_ints = ak.sort(
             ak.load("{}/append-multi-type-test".format(IOTest.io_test_dir), dataset="m_ints")
         )
-        self.assertTrue((m_floats == r_floats).all())
-        self.assertTrue((m_ints == r_ints).all())
+        self.assertListEqual(m_floats.to_ndarray().tolist(), r_floats.to_ndarray().tolist())
+        self.assertListEqual(m_ints.to_ndarray().tolist(), r_ints.to_ndarray().tolist())
 
         strings = strings_array.to_ndarray()
         strings.sort()
         r_strings = r_mixed["m_strings"].to_ndarray()
         r_strings.sort()
 
-        self.assertTrue((strings == r_strings).all())
+        self.assertListEqual(strings.tolist(), r_strings.tolist())
 
     def testStrictTypes(self):
         N = 100
@@ -673,7 +676,9 @@ class IOTest(ArkoudaTest):
             ak.read(prefix + "*")
 
         a = ak.read(prefix + "*", strictTypes=False)
-        self.assertTrue((a["integers"] == ak.arange(len(inttypes) * N)).all())
+        self.assertListEqual(
+            a["integers"].to_ndarray().tolist(), ak.arange(len(inttypes) * N).to_ndarray().tolist()
+        )
         self.assertTrue(
             np.allclose(a["floats"].to_ndarray(), np.arange(len(floattypes) * N, dtype=np.float64))
         )
@@ -682,12 +687,12 @@ class IOTest(ArkoudaTest):
         ones = ak.ones(10)
         n_ones = ones.to_ndarray()
         new_ones = ak.array(n_ones)
-        self.assertTrue((ones.to_ndarray() == new_ones.to_ndarray()).all())
+        self.assertListEqual(ones.to_ndarray().tolist(), new_ones.to_ndarray().tolist())
 
         empty_ones = ak.ones(0)
         n_empty_ones = empty_ones.to_ndarray()
         new_empty_ones = ak.array(n_empty_ones)
-        self.assertTrue((empty_ones.to_ndarray() == new_empty_ones.to_ndarray()).all())
+        self.assertListEqual(empty_ones.to_ndarray().tolist(), new_empty_ones.to_ndarray().tolist())
 
     def testSmallArrayToHDF5(self):
         a1 = ak.array([1])
@@ -728,7 +733,7 @@ class IOTest(ArkoudaTest):
             pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")
             self.assertEqual(str(pda1), str(pda2))
             self.assertEqual(18446744073709551500, pda2[0])
-            self.assertTrue((pda2.to_ndarray() == npa1).all())
+            self.assertListEqual(pda2.to_ndarray().tolist(), npa1.tolist())
 
     def testUint64ToFromArray(self):
         """
@@ -739,7 +744,7 @@ class IOTest(ArkoudaTest):
         )
         pda1 = ak.array(npa1)
         self.assertEqual(18446744073709551500, pda1[0])
-        self.assertTrue((pda1.to_ndarray() == npa1).all())
+        self.assertListEqual(pda1.to_ndarray().tolist(), npa1.tolist())
 
     def testHdfUnsanitizedNames(self):
         # Test when quotes are part of the dataset name
@@ -772,9 +777,11 @@ class IOTest(ArkoudaTest):
     def test_multi_dim_rdwr(self):
         arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            ak.write_hdf5_multi_dim(arr, tmp_dirname+"/multi_dim_test", 'MultiDimObj', mode="append", storage="flat")
+            ak.write_hdf5_multi_dim(
+                arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append", storage="flat"
+            )
             # load data back
-            read_arr = ak.read_hdf5_multi_dim(tmp_dirname+"/multi_dim_test", "MultiDimObj")
+            read_arr = ak.read_hdf5_multi_dim(tmp_dirname + "/multi_dim_test", "MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
 
     def tearDown(self):

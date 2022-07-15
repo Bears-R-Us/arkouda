@@ -132,12 +132,12 @@ class ParquetTest(ArkoudaTest):
     def test_parquet(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = read_write_test(dtype)
-            self.assertTrue((ak_arr == pq_arr).all())
+            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
 
     def test_multi_file(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = read_write_multi_test(dtype)
-            self.assertTrue((ak_arr == pq_arr).all())
+            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
 
     def test_wrong_dset_name(self):
         ak_arr = ak.randint(0, 2**32, SIZE)
@@ -167,7 +167,7 @@ class ParquetTest(ArkoudaTest):
             a = ak.array([val])
             a.save_parquet("pq_test", "test-dset")
             ak_res = ak.read("pq_test*", "test-dset")
-            self.assertTrue(ak_res[0] == val)
+            self.assertEqual(ak_res[0], val)
 
             for f in glob.glob("pq_test*"):
                 os.remove(f)
@@ -175,7 +175,7 @@ class ParquetTest(ArkoudaTest):
     def test_get_datasets(self):
         for dtype in TYPES:
             dsets = get_datasets_test(dtype)
-            self.assertTrue(["TEST_DSET"] == dsets)
+            self.assertEqual(["TEST_DSET"], dsets)
 
         for f in glob.glob("pq_test*"):
             os.remove(f)
@@ -184,7 +184,7 @@ class ParquetTest(ArkoudaTest):
         ak_vals, ak_dict = append_test()
 
         for key in ak_dict:
-            self.assertTrue((ak_vals[key] == ak_dict[key]).all())
+            self.assertListEqual(ak_vals[key].to_ndarray().tolist(), ak_dict[key].to_ndarray().tolist())
 
     def test_null_strings(self):
         datadir = "resources/parquet-testing"
@@ -194,7 +194,7 @@ class ParquetTest(ArkoudaTest):
         filename = os.path.join(datadir, basename)
         res = ak.read(filename)
 
-        self.assertTrue((expected == res).all())
+        self.assertListEqual(expected.to_ndarray().tolist(), res.to_ndarray().tolist())
 
     def test_null_indices(self):
         datadir = "resources/parquet-testing"
@@ -204,13 +204,13 @@ class ParquetTest(ArkoudaTest):
         filename = os.path.join(datadir, basename)
         res = ak.get_null_indices(filename, datasets="col1")
 
-        self.assertTrue((expected == res).all())
+        self.assertListEqual(expected.to_ndarray().tolist(), res.to_ndarray().tolist())
 
     def test_append_empty(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = empty_append_test(dtype)
-            
-            self.assertTrue((ak_arr == pq_arr).all())
+
+            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

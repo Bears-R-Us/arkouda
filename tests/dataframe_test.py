@@ -216,14 +216,22 @@ class DataFrameTest(ArkoudaTest):
         df = build_ak_df()
 
         slice_df = df[ak.array([1, 3, 5])]
-        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+        self.assertListEqual(
+            slice_df.index.to_ndarray().tolist(), ak.array([1, 3, 5]).to_ndarray().tolist()
+        )
 
         df_reset = slice_df.reset_index()
-        self.assertTrue((df_reset.index == ak.array([0, 1, 2])).all())
-        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+        self.assertListEqual(
+            df_reset.index.to_ndarray().tolist(), ak.array([0, 1, 2]).to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            slice_df.index.to_ndarray().tolist(), ak.array([1, 3, 5]).to_ndarray().tolist()
+        )
 
         slice_df.reset_index(inplace=True)
-        self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
+        self.assertListEqual(
+            slice_df.index.to_ndarray().tolist(), ak.array([0, 1, 2]).to_ndarray().tolist()
+        )
 
     def test_rename(self):
         df = build_ak_df()
@@ -248,8 +256,8 @@ class DataFrameTest(ArkoudaTest):
         self.assertNotIn("userName", df.columns)
         self.assertNotIn("userID", df.columns)
 
-        #prep for index renaming
-        rename_idx = {1:17, 2:93}
+        # prep for index renaming
+        rename_idx = {1: 17, 2: 93}
         conf = list(range(6))
         conf[1] = 17
         conf[2] = 93
@@ -347,7 +355,7 @@ class DataFrameTest(ArkoudaTest):
 
         c = gb.count()
         self.assertIsInstance(c, ak.Series)
-        self.assertListEqual(c.index.to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
+        self.assertListEqual(c.index.to_ndarray().tolist(), ["Alice", "Carol", "Bob"])
         self.assertListEqual(c.values.to_ndarray().tolist(), [3, 1, 2])
 
     def test_to_pandas(self):
@@ -493,12 +501,12 @@ class DataFrameTest(ArkoudaTest):
 
         # test save with index true
         akdf.save(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
-        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()["numLocales"])
+        self.assertEqual(len(glob.glob(f"{d}/testName_with_index*.pq")), ak.get_config()["numLocales"])
 
         # Test for df having seg array col
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
         df.save(f"{d}/seg_test.h5")
-        self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()["numLocales"])
+        self.assertEqual(len(glob.glob(f"{d}/seg_test*.h5")), ak.get_config()["numLocales"])
         ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
         self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
@@ -533,5 +541,5 @@ class DataFrameTest(ArkoudaTest):
 
     def test_multiindex_compat(self):
         # Added for testing Issue #1505
-        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
-        df.groupby(['a', 'b']).sum('c')
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
+        df.groupby(["a", "b"]).sum("c")

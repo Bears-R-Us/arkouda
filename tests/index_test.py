@@ -107,7 +107,7 @@ class IndexTest(ArkoudaTest):
 
         idx = ak.Index(ak.arange(5))
         idx.save(f"{d}/idx_file.h5")
-        self.assertTrue(len(glob.glob(f"{d}/idx_file_*.h5")) == locale_count)
+        self.assertEqual(len(glob.glob(f"{d}/idx_file_*.h5")), locale_count)
 
         # clean up test files
         rmtree(d)

@@ -5,6 +5,7 @@ import arkouda as ak
 import pandas as pd
 import logging
 
+
 def build_op_table():
     ALL_OPS = ak.pdarray.BinOps - set(("<<<", ">>>"))
     table = {}
@@ -25,6 +26,7 @@ def build_op_table():
 
 
 class DatetimeTest(ArkoudaTest):
+    # Leave these comparisons as ( == ).all() instead of assertListEqual, to test the datetime comparison ops
     def setUp(self):
         ArkoudaTest.setUp(self)
         self.dtvec1 = ak.date_range(start="2021-01-01 12:00:00", periods=100, freq="s")

@@ -14,7 +14,9 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
 
         self.assertIsInstance(segarr, ak.SegArray)
-        self.assertTrue((segarr._get_lengths() == ak.array([6, 2, 4])).all())
+        self.assertListEqual(
+            segarr._get_lengths().to_ndarray().tolist(), ak.array([6, 2, 4]).to_ndarray().tolist()
+        )
         self.assertEqual(segarr.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
         self.assertEqual(segarr.__getitem__(1).__str__(), str(b).replace(",", ""))
         self.assertEqual(
@@ -137,18 +139,24 @@ class SegArrayTest(ArkoudaTest):
 
         suffix, origin = segarr.get_suffixes(1)
         self.assertTrue(origin.all())
-        self.assertTrue((suffix[0] == ak.array([15, 21, 33])).all())
+        self.assertListEqual(
+            suffix[0].to_ndarray().tolist(), ak.array([15, 21, 33]).to_ndarray().tolist()
+        )
 
         suffix, origin = segarr.get_suffixes(2)
-        self.assertTrue((suffix[0] == ak.array([14, 32])).all())
-        self.assertTrue((suffix[1] == ak.array([15, 33])).all())
+        self.assertListEqual(suffix[0].to_ndarray().tolist(), ak.array([14, 32]).to_ndarray().tolist())
+        self.assertListEqual(suffix[1].to_ndarray().tolist(), ak.array([15, 33]).to_ndarray().tolist())
         self.assertTrue(origin[0])
         self.assertFalse(origin[1])
         self.assertTrue(origin[2])
 
         suffix, origin = segarr.get_suffixes(2, proper=False)
-        self.assertTrue((suffix[0] == ak.array([14, 20, 32])).all())
-        self.assertTrue((suffix[1] == ak.array([15, 21, 33])).all())
+        self.assertListEqual(
+            suffix[0].to_ndarray().tolist(), ak.array([14, 20, 32]).to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            suffix[1].to_ndarray().tolist(), ak.array([15, 21, 33]).to_ndarray().tolist()
+        )
         self.assertTrue(origin.all())
 
         # Test with empty segment
@@ -171,19 +179,25 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
         prefix, origin = segarr.get_prefixes(1)
 
-        self.assertTrue((prefix[0] == ak.array([10, 20, 30])).all())
+        self.assertListEqual(
+            prefix[0].to_ndarray().tolist(), ak.array([10, 20, 30]).to_ndarray().tolist()
+        )
         self.assertTrue(origin.all())
 
         prefix, origin = segarr.get_prefixes(2)
-        self.assertTrue((prefix[0] == ak.array([10, 30])).all())
-        self.assertTrue((prefix[1] == ak.array([11, 31])).all())
+        self.assertListEqual(prefix[0].to_ndarray().tolist(), ak.array([10, 30]).to_ndarray().tolist())
+        self.assertListEqual(prefix[1].to_ndarray().tolist(), ak.array([11, 31]).to_ndarray().tolist())
         self.assertTrue(origin[0])
         self.assertFalse(origin[1])
         self.assertTrue(origin[2])
 
         prefix, origin = segarr.get_prefixes(2, proper=False)
-        self.assertTrue((prefix[0] == ak.array([10, 20, 30])).all())
-        self.assertTrue((prefix[1] == ak.array([11, 21, 31])).all())
+        self.assertListEqual(
+            prefix[0].to_ndarray().tolist(), ak.array([10, 20, 30]).to_ndarray().tolist()
+        )
+        self.assertListEqual(
+            prefix[1].to_ndarray().tolist(), ak.array([11, 21, 31]).to_ndarray().tolist()
+        )
         self.assertTrue(origin.all())
 
         # Test with empty segment
@@ -205,17 +219,25 @@ class SegArrayTest(ArkoudaTest):
 
         segarr = ak.SegArray(segments, akflat)
         ngram, origin = segarr.get_ngrams(2)
-        self.assertTrue((ngram[0] == ak.array([10, 11, 12, 13, 14, 20, 30, 31, 32])).all())
-        self.assertTrue((ngram[1] == ak.array([11, 12, 13, 14, 15, 21, 31, 32, 33])).all())
-        self.assertTrue((origin == ak.array([0, 0, 0, 0, 0, 1, 2, 2, 2])).all())
+        self.assertListEqual(
+            ngram[0].to_ndarray().tolist(),
+            ak.array([10, 11, 12, 13, 14, 20, 30, 31, 32]).to_ndarray().tolist(),
+        )
+        self.assertListEqual(
+            ngram[1].to_ndarray().tolist(),
+            ak.array([11, 12, 13, 14, 15, 21, 31, 32, 33]).to_ndarray().tolist(),
+        )
+        self.assertListEqual(
+            origin.to_ndarray().tolist(), ak.array([0, 0, 0, 0, 0, 1, 2, 2, 2]).to_ndarray().tolist()
+        )
 
         ngram, origin = segarr.get_ngrams(5)
-        self.assertTrue((ngram[0] == ak.array([10, 11])).all())
-        self.assertTrue((ngram[1] == ak.array([11, 12])).all())
-        self.assertTrue((ngram[2] == ak.array([12, 13])).all())
-        self.assertTrue((ngram[3] == ak.array([13, 14])).all())
-        self.assertTrue((ngram[4] == ak.array([14, 15])).all())
-        self.assertTrue((origin == ak.array([0, 0])).all())
+        self.assertListEqual(ngram[0].to_ndarray().tolist(), ak.array([10, 11]).to_ndarray().tolist())
+        self.assertListEqual(ngram[1].to_ndarray().tolist(), ak.array([11, 12]).to_ndarray().tolist())
+        self.assertListEqual(ngram[2].to_ndarray().tolist(), ak.array([12, 13]).to_ndarray().tolist())
+        self.assertListEqual(ngram[3].to_ndarray().tolist(), ak.array([13, 14]).to_ndarray().tolist())
+        self.assertListEqual(ngram[4].to_ndarray().tolist(), ak.array([14, 15]).to_ndarray().tolist())
+        self.assertListEqual(origin.to_ndarray().tolist(), ak.array([0, 0]).to_ndarray().tolist())
 
         # Test with empty segment
         flat = ak.array(a + b)
@@ -241,11 +263,11 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
 
         res, origins = segarr.get_jth(1)
-        self.assertTrue((res == ak.array([11, 21, 31])).all())
+        self.assertListEqual(res.to_ndarray().tolist(), ak.array([11, 21, 31]).to_ndarray().tolist())
         res, origins = segarr.get_jth(5)
-        self.assertTrue((res == ak.array([15, 0, 0])).all())
+        self.assertListEqual(res.to_ndarray().tolist(), ak.array([15, 0, 0]).to_ndarray().tolist())
         res, origins = segarr.get_jth(5, compressed=True)
-        self.assertTrue((res == ak.array([15])).all())
+        self.assertListEqual(res.to_ndarray().tolist(), ak.array([15]).to_ndarray().tolist())
 
         # Test with empty segment
         flat = ak.array(a + b)
@@ -302,8 +324,8 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
 
         elem, origin = segarr.get_length_n(2)
-        self.assertTrue((elem[0] == ak.array([20])).all())
-        self.assertTrue((elem[1] == ak.array([21])).all())
+        self.assertListEqual(elem[0].to_ndarray().tolist(), ak.array([20]).to_ndarray().tolist())
+        self.assertListEqual(elem[1].to_ndarray().tolist(), ak.array([21]).to_ndarray().tolist())
 
         # Test with empty segment
         flat = ak.array(a + b)

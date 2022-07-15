@@ -10,12 +10,12 @@ class SeriesTest(ArkoudaTest):
         s = ak.Series(ar_tuple)
         self.assertIsInstance(s, ak.Series)
 
-        ar_tuple = ak.array(['A', 'B', 'C']), ak.arange(3)
+        ar_tuple = ak.array(["A", "B", "C"]), ak.arange(3)
         s = ak.Series(ar_tuple)
         self.assertIsInstance(s, ak.Series)
 
         # Both data and index are supplied
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -32,7 +32,7 @@ class SeriesTest(ArkoudaTest):
             s = ak.Series(index=i)
 
         # Just data is supplied (positional argument)
-        s = ak.Series(ak.array(['A', 'B', 'C']))
+        s = ak.Series(ak.array(["A", "B", "C"]))
         self.assertIsInstance(s, ak.Series)
 
         # Just index is supplied (ar_tuple argument)
@@ -48,7 +48,7 @@ class SeriesTest(ArkoudaTest):
             s = ak.Series(data=ak.arange(3), index=ak.arange(6))
 
     def test_lookup(self):
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -65,7 +65,7 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(lk.values[1], "C")
 
     def test_shape(self):
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -194,6 +194,6 @@ class SeriesTest(ArkoudaTest):
 
     def test_index_as_index_compat(self):
         # added to validate functionality for issue #1506
-        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
-        g = df.groupby(['a', 'b'])
-        g.broadcast(g.sum('c'))
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
+        g = df.groupby(["a", "b"])
+        g.broadcast(g.sum("c"))

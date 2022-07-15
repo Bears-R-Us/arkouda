@@ -528,17 +528,21 @@ class StringTest(ArkoudaTest):
         flat, mapping = orig.flatten("|", return_segments=True)
         ans = ak.array(["one", "two", "three", "four", "five", "six"])
         ans2 = ak.array([0, 2, 5])
-        self.assertTrue((flat == ans).all())
-        self.assertTrue((mapping == ans2).all())
+        self.assertListEqual(flat.to_ndarray().tolist(), ans.to_ndarray().tolist())
+        self.assertListEqual(mapping.to_ndarray().tolist(), ans2.to_ndarray().tolist())
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
         thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
         flatrange = thickrange.flatten(", ")
-        self.assertTrue((ak.cast(flatrange, "int64") == ak.arange(99)).all())
+        self.assertListEqual(
+            ak.cast(flatrange, "int64").to_ndarray().tolist(), ak.arange(99).to_ndarray().tolist()
+        )
 
     def test_get_lengths(self):
         s1 = ak.array(["one", "two", "three", "four", "five"])
         lengths = s1.get_lengths()
-        self.assertTrue((ak.array([3, 3, 5, 4, 4]) == lengths).all())
+        self.assertListEqual(
+            ak.array([3, 3, 5, 4, 4]).to_ndarray().tolist(), lengths.to_ndarray().tolist()
+        )
 
     def test_strip(self):
         s = ak.array([" Jim1", "John1   ", "Steve1 2"])
@@ -638,7 +642,7 @@ class StringTest(ArkoudaTest):
 
         # Ordered concatenation
         s12ord = ak.concatenate([s1, s2], ordered=True)
-        self.assertTrue((expectedResult == s12ord).all())
+        self.assertListEqual(expectedResult.to_ndarray().tolist(), s12ord.to_ndarray().tolist())
         # Unordered (but still deterministic) concatenation
         # TODO: the unordered concatenation test is disabled per #710 #721
         # s12unord = ak.concatenate([s1, s2], ordered=False)

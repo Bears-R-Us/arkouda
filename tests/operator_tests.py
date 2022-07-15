@@ -264,20 +264,33 @@ class OperatorsTest(ArkoudaTest):
         pdaOne = ak.arange(1, 4)
         pdaTwo = ak.arange(4, 7)
 
-        self.assertTrue((ak.array([1, 2, 3, 4, 5, 6]) == ak.concatenate([pdaOne, pdaTwo])).all())
-        self.assertTrue((ak.array([4, 5, 6, 1, 2, 3]) == ak.concatenate([pdaTwo, pdaOne])).all())
+        self.assertListEqual(
+            ak.array([1, 2, 3, 4, 5, 6]).to_ndarray().tolist(),
+            ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
+        )
+        self.assertListEqual(
+            ak.array([4, 5, 6, 1, 2, 3]).to_ndarray().tolist(),
+            ak.concatenate([pdaTwo, pdaOne]).to_ndarray().tolist(),
+        )
 
         pdaOne = ak.linspace(start=1, stop=3, length=3)
         pdaTwo = ak.linspace(start=4, stop=6, length=3)
 
-        self.assertTrue((ak.array([1, 2, 3, 4, 5, 6]) == ak.concatenate([pdaOne, pdaTwo])).all())
-        self.assertTrue((ak.array([4, 5, 6, 1, 2, 3]) == ak.concatenate([pdaTwo, pdaOne])).all())
+        self.assertListEqual(
+            ak.array([1, 2, 3, 4, 5, 6]).to_ndarray().tolist(),
+            ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
+        )
+        self.assertListEqual(
+            ak.array([4, 5, 6, 1, 2, 3]).to_ndarray().tolist(),
+            ak.concatenate([pdaTwo, pdaOne]).to_ndarray().tolist(),
+        )
 
         pdaOne = ak.array([True, False, True])
         pdaTwo = ak.array([False, True, True])
 
-        self.assertTrue(
-            (ak.array([True, False, True, False, True, True]) == ak.concatenate([pdaOne, pdaTwo])).all()
+        self.assertListEqual(
+            ak.array([True, False, True, False, True, True]).to_ndarray().tolist(),
+            ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
         )
 
     def test_concatenate_type_preservation(self):
@@ -400,7 +413,7 @@ class OperatorsTest(ArkoudaTest):
         # with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
         with self.assertRaises(RuntimeError) as cm:
-            ak.concatenate([ak.array([True]),ak.array([True])]).is_sorted()
+            ak.concatenate([ak.array([True]), ak.array([True])]).is_sorted()
 
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])

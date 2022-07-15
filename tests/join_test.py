@@ -93,7 +93,7 @@ class JoinTest(ArkoudaTest):
         right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
 
         l, r = ak.join.inner_join(left, right)
-        self.assertTrue((left[l] == right[r]).all())
+        self.assertListEqual(left[l].to_ndarray().tolist(), right[r].to_ndarray().tolist())
 
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
@@ -119,15 +119,15 @@ class JoinTest(ArkoudaTest):
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
         res = ak.lookup(keys, values, args, fillvalue=-1)
-        self.assertTrue((res.to_ndarray() == ans).all())
+        self.assertListEqual(res.to_ndarray().tolist(), ans.tolist())
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
             (ak.cast(keys, ak.str_), keys), values, (ak.cast(args, ak.str_), args), fillvalue=-1
         )
-        self.assertTrue((res2.to_ndarray() == ans).all())
+        self.assertListEqual(res2.to_ndarray().tolist(), ans.tolist())
         # Keys not in uniqued order
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
-        self.assertTrue((res3.to_ndarray() == ans).all())
+        self.assertListEqual(res3.to_ndarray().tolist(), ans.tolist())
         # Non-unique keys should raise error
         with self.assertWarns(UserWarning):
             keys = ak.arange(10) % 5

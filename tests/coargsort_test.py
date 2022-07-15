@@ -172,23 +172,23 @@ class CoargsortTest(ArkoudaTest):
             # coargsort on categorical
             cat_perm = ak.coargsort([cat], algo)
             cat_sorted = cat[cat_perm].to_ndarray()
-            self.assertTrue((str_sorted == cat_sorted).all())
+            self.assertListEqual(str_sorted.tolist(), cat_sorted.tolist())
 
             # coargsort on categorical.from_codes
             # coargsort sorts using codes, the order isn't guaranteed, only grouping
             from_codes_perm = ak.coargsort([cat_from_codes], algo)
             from_codes_sorted = cat_from_codes[from_codes_perm].to_ndarray()
-            self.assertTrue((["a", "a", "b", "b", "c"] == from_codes_sorted).all())
+            self.assertListEqual(["a", "a", "b", "b", "c"], from_codes_sorted.tolist())
 
             # coargsort on 2 categoricals (one from_codes)
             cat_perm = ak.coargsort([cat, cat_from_codes], algo)
             cat_sorted = cat[cat_perm].to_ndarray()
-            self.assertTrue((str_sorted == cat_sorted).all())
+            self.assertListEqual(str_sorted.tolist(), cat_sorted.tolist())
 
             # coargsort on mixed strings and categoricals
             mixed_perm = ak.coargsort([cat, string, cat_from_codes], algo)
             mixed_sorted = cat_from_codes[mixed_perm].to_ndarray()
-            self.assertTrue((str_sorted == mixed_sorted).all())
+            self.assertListEqual(str_sorted.tolist(), mixed_sorted.tolist())
 
 
 def create_parser():

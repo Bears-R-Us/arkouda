@@ -17,16 +17,16 @@ class utilTest(ArkoudaTest):
         b_attached = attach(b.name)
         b_typed_attach = attach(b.name, "pdarray")
 
-        self.assertTrue((a == a_attached).all())
+        self.assertListEqual(a.to_ndarray().tolist(), a_attached.to_ndarray().tolist())
         self.assertIsInstance(a_attached, ak.Strings)
 
-        self.assertTrue((a == a_typed_attach).all())
+        self.assertListEqual(a.to_ndarray().tolist(), a_typed_attach.to_ndarray().tolist())
         self.assertIsInstance(a_typed_attach, ak.Strings)
 
-        self.assertTrue((b == b_attached).all())
+        self.assertListEqual(b.to_ndarray().tolist(), b_attached.to_ndarray().tolist())
         self.assertIsInstance(b_attached, ak.pdarray)
 
-        self.assertTrue((b == b_typed_attach).all())
+        self.assertListEqual(b.to_ndarray().tolist(), b_typed_attach.to_ndarray().tolist())
         self.assertIsInstance(b_typed_attach, ak.pdarray)
 
     def test_categorical_attach(self):
@@ -37,11 +37,11 @@ class utilTest(ArkoudaTest):
         cat.register("catTest")
 
         attached = attach("catTest")
-        self.assertTrue((cat == attached).all())
+        self.assertListEqual(cat.to_ndarray().tolist(), attached.to_ndarray().tolist())
         self.assertIsInstance(attached, ak.Categorical)
 
         attached_typed = attach("catTest", "Categorical")
-        self.assertTrue((cat == attached_typed).all())
+        self.assertListEqual(cat.to_ndarray().tolist(), attached_typed.to_ndarray().tolist())
         self.assertIsInstance(attached_typed, ak.Categorical)
 
     def test_segArray_attach(self):
@@ -56,11 +56,11 @@ class utilTest(ArkoudaTest):
         segarr.register("segTest")
 
         attached = attach("segTest")
-        self.assertTrue((segarr == attached).all())
+        self.assertListEqual(segarr.to_ndarray().tolist(), attached.to_ndarray().tolist())
         self.assertIsInstance(attached, ak.SegArray)
 
         attached_typed = attach("segTest", "SegArray")
-        self.assertTrue((segarr == attached_typed).all())
+        self.assertListEqual(segarr.to_ndarray().tolist(), attached_typed.to_ndarray().tolist())
         self.assertIsInstance(attached_typed, ak.SegArray)
 
     def test_series_attach(self):
