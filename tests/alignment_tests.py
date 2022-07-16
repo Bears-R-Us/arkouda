@@ -111,7 +111,6 @@ class DataFrameTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.search_intervals(vals, (upper_bound, lower_bound))
 
-
     def test_representative_cases(self):
         # Create 4 rectangles (2-d intervals) which demonstrate three classes of
         # relationships between multi-dimensional intervals (hyperslabs):
@@ -128,24 +127,26 @@ class DataFrameTest(ArkoudaTest):
         x0, y0 = tuple(zip(*lowerleft))
         x1, y1 = tuple(zip(*upperright))
         x0 = ak.array(x0)
-        y0 = ak.array(y0) 
-        x1 = ak.array(x1) + 1 # convert to half-open
-        y1 = ak.array(y1) + 1 # convert to half-open
+        y0 = ak.array(y0)
+        x1 = ak.array(x1) + 1  # convert to half-open
+        y1 = ak.array(y1) + 1  # convert to half-open
         intervals = ((x0, y0), (x1, y1))
 
-        testpoints = [(7, 8),
-                      (4, 7),
-                      (2, 6),
-                      (5, 6),
-                      (1, 5),
-                      (4, 5),
-                      (6, 5),
-                      (3, 4),
-                      (6, 4),
-                      (2, 3),
-                      (5, 3),
-                      (8, 2),
-                      (3, 1)]
+        testpoints = [
+            (7, 8),
+            (4, 7),
+            (2, 6),
+            (5, 6),
+            (1, 5),
+            (4, 5),
+            (6, 5),
+            (3, 4),
+            (6, 4),
+            (2, 3),
+            (5, 3),
+            (8, 2),
+            (3, 1),
+        ]
         x_test, y_test = tuple(zip(*testpoints))
         values = (ak.array(x_test), ak.array(y_test))
         tiebreak_smallest = (y1 - y0) * (x1 - x0)

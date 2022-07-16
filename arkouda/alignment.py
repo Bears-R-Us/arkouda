@@ -9,7 +9,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numeric import where
-from arkouda.pdarrayclass import is_sorted, pdarray
+from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
@@ -280,8 +280,8 @@ def in1d_intervals(vals, intervals, symmetric=False):
 
 def search_intervals(vals, intervals, tiebreak=None):
     """
-    Given an array of query vals and half-open (pythonic) intervals, return the index of the 
-    best (see tiebreak) interval containing each query value, or -1 if not present in any 
+    Given an array of query vals and half-open (pythonic) intervals, return the index of the
+    best (see tiebreak) interval containing each query value, or -1 if not present in any
     interval.
 
     Parameters
@@ -443,7 +443,9 @@ def search_intervals(vals, intervals, tiebreak=None):
             # do this by concatenating all the projections and grouping on the id of the hit
             # and the interval and looking for hits that cover all dimensions
             alluvalidx = concatenate(uvalidx, ordered=False)
-            allmatchintervalidx = concatenate([mi[vm] for mi, vm in zip(matchintervalidx, validmatch)], ordered=False)
+            allmatchintervalidx = concatenate(
+                [mi[vm] for mi, vm in zip(matchintervalidx, validmatch)], ordered=False
+            )
             byvalinterval = GroupBy([alluvalidx, allmatchintervalidx])
             # a true hit happens when a value is contained in all of an interval's 1-d projections
             isahit = byvalinterval.count()[1] == len(low)
