@@ -1,5 +1,5 @@
 module SegStringSort {
-  use SegmentedArray;
+  use SegmentedString;
   use Sort;
   use Time;
   use IO;

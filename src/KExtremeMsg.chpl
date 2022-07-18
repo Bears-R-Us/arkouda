@@ -15,7 +15,7 @@ module KExtremeMsg
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
-    use SegmentedArray;
+    use SegmentedString;
     use ServerErrorStrings;
 
     use KReduce;

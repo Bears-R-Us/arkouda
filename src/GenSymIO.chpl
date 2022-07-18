@@ -16,7 +16,7 @@ module GenSymIO {
     use Logging;
     use Message;
     use ServerConfig;
-    use SegmentedArray;
+    use SegmentedString;
 
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);

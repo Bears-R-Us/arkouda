@@ -2,14 +2,13 @@ module Flatten {
   use ServerConfig;
 
   use AryUtil;
-  use SegmentedArray;
+  use SegmentedString;
   use ServerErrors;
   use SymArrayDmap;
   use CommAggregation;
   use Reflection;
   use ArkoudaRegexCompat;
   use CTypes;
-  use SegmentedArray only checkCompile, _unsafeCompileRegex;
 
   config const NULL_STRINGS_VALUE = 0:uint(8);
 

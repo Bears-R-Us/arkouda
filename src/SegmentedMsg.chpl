@@ -4,7 +4,7 @@ module SegmentedMsg {
   use ServerErrors;
   use Logging;
   use Message;
-  use SegmentedArray;
+  use SegmentedString;
   use ServerErrorStrings;
   use ServerConfig;
   use MultiTypeSymbolTable;
@@ -474,6 +474,31 @@ module SegmentedMsg {
     }
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc segmentedStripMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+
+    var (objtype, name, chars) = payload.splitMsgToTuple(" ", 3);
+
+    // check to make sure symbols defined
+    st.checkTable(name);
+
+    select (objtype) {
+      when ("str") {
+        var strings = getSegString(name, st);
+        var (off, val) = strings.strip(chars);
+        var retString = getSegString(off, val, st);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+      otherwise {
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
   }
 
   proc createPeelSymEntries(lo, lv, ro, rv, st: borrowed SymTab) throws {
@@ -1005,6 +1030,7 @@ module SegmentedMsg {
     registerFunction("segmentedFindAll", segmentedFindAllMsg, getModuleName());
     registerFunction("segmentedPeel", segmentedPeelMsg, getModuleName());
     registerFunction("segmentedSub", segmentedSubMsg, getModuleName());
+    registerFunction("segmentedStrip", segmentedStripMsg, getModuleName());
     registerFunction("segmentedIndex", segmentedIndexMsg, getModuleName());
     registerFunction("segmentedBinopvv", segBinopvvMsg, getModuleName());
     registerFunction("segmentedBinopvs", segBinopvsMsg, getModuleName());

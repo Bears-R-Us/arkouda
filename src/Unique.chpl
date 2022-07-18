@@ -23,7 +23,7 @@ module Unique
 
     use CommAggregation;
     use RadixSortLSD;
-    use SegmentedArray;
+    use SegmentedString;
     use AryUtil;
     use Reflection;
     use Logging;
@@ -171,7 +171,7 @@ module Unique
         var inv: [invD] int;
         var truth: [aD] bool;
         var perm: [aD] int;
-        if SegmentedArrayUseHash {
+        if SegmentedStringUseHash {
           var hashes = str.siphash();
           var sorted: [aD] 2*uint;
           forall (s, p, sp) in zip(sorted, perm, radixSortLSD(hashes)) {

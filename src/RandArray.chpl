@@ -3,7 +3,7 @@ module RandArray {
   use ServerErrors;
   use Logging;
   use Random;
-  use SegmentedArray;
+  use ArkoudaRandomCompat;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
   use Map;
@@ -14,30 +14,25 @@ module RandArray {
   private config const logLevel = ServerConfig.logLevel;
   const raLogger = new Logger(logLevel);
 
-  proc fillInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isIntType(t) {
+  proc fillInt(a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isIntType(t) {
       if (seedStr.toLower() == "none") {
-        fillRandom(a);
+        //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
+        fillRandom(a, aMin, aMax-1);
       } else {
         var seed = (seedStr:int) + here.id;
-        fillRandom(a, seed);
-      }
-      const a2 = a:uint;
-      if (aMax > aMin) {
-        const modulus = aMax:uint - aMin:uint;
-        a = (a2 % modulus):t + aMin:t;
+        //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
+        fillRandom(a, aMin, aMax-1, seed);
       }
   }
 
-  proc fillUInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isUintType(t) {
+  proc fillUInt(a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isUintType(t) {
       if (seedStr.toLower() == "none") {
-        fillRandom(a);
+        //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
+        fillRandom(a, aMin, aMax-1);
       } else {
         var seed = (seedStr:int) + here.id;
-        fillRandom(a, seed);
-      }
-      if (aMax > aMin) {
-        const modulus = aMax - aMin;
-        [x in a] x = ((x:t % (modulus:t)) + aMin:t):t;
+        //Subtracting 1 from aMax to make the value exclusive to follow numpy standard.
+        fillRandom(a, aMin, aMax-1, seed);
       }
   }
 
@@ -133,7 +128,7 @@ module RandArray {
     var segs = (+ scan lengths) - lengths;
     var vals = makeDistArray(nBytes, uint(8));
     var (lb, ub) = charBounds[characters];
-    fillUInt(vals, lb, ub, seedStr=seedStr);
+    fillUInt(vals, lb:uint(8), ub:uint(8), seedStr=seedStr);
     // Strings are null-terminated
     [(s, l) in zip(segs, lengths)] vals[s+l-1] = 0:uint(8);
     return (segs, vals);
@@ -159,7 +154,7 @@ module RandArray {
     var segs = (+ scan lengths) - lengths;
     var vals = makeDistArray(nBytes, uint(8));
     var (lb, ub) = charBounds[characters];
-    fillUInt(vals, lb, ub, seedStr=seedStr);
+    fillUInt(vals, lb:uint(8), ub:uint(8), seedStr=seedStr);
     // Strings are null-terminated
     [(s, l) in zip(segs, lengths)] vals[s+l-1] = 0:uint(8);
     return (segs, vals);

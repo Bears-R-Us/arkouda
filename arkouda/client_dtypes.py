@@ -68,6 +68,7 @@ class BitVector(pdarray):
 
     def __init__(self, values, width=64, reverse=False):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
+            self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be integer pdarray")
         self.width = width
         self.reverse = reverse
@@ -235,6 +236,7 @@ class Fields(BitVector):
         # Argument validation
         # Normalize names, which can be string or sequence
         self.names = tuple(names)
+        self.name = None  # This is needed to silence warnings of missing name during failed creation
         if len(self.names) > 63:
             raise ValueError("Cannot represent more than 63 fields")
         # Ensure no duplicate names
@@ -434,6 +436,7 @@ class IPv4(pdarray):
 
     def __init__(self, values):
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
+            self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")
         # Casting always creates a copy with new server-side name,
         # which will avoid unknown symbol errors
@@ -582,11 +585,11 @@ def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
         raise RuntimeError("When supplying a value for ip2, ip and ip2 must be the same size.")
 
     if ip2 is not None:
-        ans = ip < 2 ** 32
+        ans = ip < 2**32
         ans2 = ip2 == 0
         return ans & ans2
     else:
-        return ip < 2 ** 32
+        return ip < 2**32
 
 
 @typechecked
@@ -618,8 +621,8 @@ def is_ipv6(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
         raise RuntimeError("When supplying a value for ip2, ip and ip2 must be the same size.")
 
     if ip2 is not None:
-        ans = ip >= 2 ** 32
+        ans = ip >= 2**32
         ans2 = ip2 != 0
         return ans | ans2
     else:
-        return ip >= 2 ** 32
+        return ip >= 2**32

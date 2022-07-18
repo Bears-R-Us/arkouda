@@ -13,6 +13,7 @@ We welcome contributions via issues and pull requests.
    - [Coding Conventions and Linting](#code-quality)
    - [Testing](#testing)
    - [Writing Pull Requests](#writing-prs)
+   - [Reviewing Pull Requests](#reviewing-prs)
 3. [Core Development Team Only](#core-dev)
    - [Merging Pull Requests](#merging-prs)
    - [Release Process](#release)
@@ -149,6 +150,13 @@ Note:
 - It will be helpful if reviewers keep THIS in mind
 ````
 
+<a id="reviewing-prs"></a>
+### Reviewing Pull Requests <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+For the most part, only the core dev team or those assigned should review PRs.
+- As the person who left the PR feedback, you should be the one to resolve the conversation once you decide the author has addressed the issue.
+- Try to resolve all of your feedback when you feel the PR is ready to be merged.
+  - If necessary, add an issue to track any feedback which is outside the scope of the PR and link the PR comment in the issue.
+
 <a id="core-dev"></a>
 ## Core Development Team Only<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
@@ -157,8 +165,10 @@ Note:
 - Only members of the core dev team with quite a bit of experience writing and reviewing PRs should merge pull requests. If you're unsure, ask first.
 - Only merge PRs with 2 or more concurrent approvals from members of the core dev team with limited exceptions.
 - Only merge PRs after the CI has passed and if there are no conflicts. Ideally rebase or merge with master first.
+- We prefer to have all feedback resolved before a PR is merged.
 - If you wrote it, don't merge it. It's best practice for someone else to decide it's ready to be merged.
 - To keep the commit history simple and allow for easy manipulation of PRs, we use the `Squash-and-Merge` functionality of GitHub's web interface.
+- Be sure to include `@mhmerrill` as a reviewer
 
 <a id="release"></a>
 ### Release Process<sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

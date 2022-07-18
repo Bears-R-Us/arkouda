@@ -5,7 +5,7 @@ module FlattenMsg {
   use Reflection;
   use Flatten;
   use ServerConfig;
-  use SegmentedArray;
+  use SegmentedString;
   use Logging;
   use Message;
   

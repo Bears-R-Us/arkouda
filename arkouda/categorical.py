@@ -471,7 +471,7 @@ class Categorical:
         return self._binop(other, "!=")
 
     def __getitem__(self, key) -> Categorical:
-        if np.isscalar(key) and resolve_scalar_dtype(key) == "int64":
+        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             return self.categories[self.codes[key]]
         else:
             # Don't reset categories because they might have been user-defined

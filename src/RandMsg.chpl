@@ -55,8 +55,8 @@ module RandMsg
             }
             when (DType.UInt8) {
                 overMemLimit(len);
-                var aMin = aMinStr:int;
-                var aMax = aMaxStr:int;
+                var aMin = aMinStr:uint(8);
+                var aMax = aMaxStr:uint(8);
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -69,8 +69,8 @@ module RandMsg
             }
             when (DType.UInt64) {
                 overMemLimit(len);
-                var aMin = aMinStr:int;
-                var aMax = aMaxStr:int;
+                var aMin = aMinStr:uint;
+                var aMax = aMaxStr:uint;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
