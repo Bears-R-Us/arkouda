@@ -75,8 +75,6 @@ module In1dMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("in1d", in1dMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("in1d", in1dMsg, getModuleName());
 }

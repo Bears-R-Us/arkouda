@@ -109,8 +109,6 @@ module SortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end sortMsg()
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("sort", sortMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("sort", sortMsg, getModuleName());
 }// end module SortMsg
