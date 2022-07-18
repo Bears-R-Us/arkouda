@@ -21,7 +21,7 @@ use SymArrayDmap;
 use ServerErrorStrings;
 use Message;
 
-use CommandMap, ServerRegistration;
+use CommandMap;
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
@@ -155,9 +155,6 @@ proc main() {
         registerFunction("noop", akMsgSign);
         registerFunction("ruok", akMsgSign);
         registerFunction("shutdown", akMsgSign);
-
-        // Add the dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
-        doRegister();
     }
 
     const arkDirectory = initArkoudaDirectory();

@@ -13,14 +13,13 @@ def getModules(filename):
         return ret
 
 
-def generateServerIncludes(config_filename, reg_filename):
-    serverfile = open(reg_filename, "w")
-    serverfile.write("proc doRegister() {\n")
+def generateServerIncludes(config_filename, src_dir):
+    res = ""
     for mod in getModules(config_filename):
-        serverfile.write(f"  import {mod};\n  {mod}.registerMe();\n")
+        res += f" {src_dir}/{mod}.chpl"
 
-    serverfile.write("}\n")
+    print(res)
 
 
 if __name__ == "__main__":
-    generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
+    generateServerIncludes(sys.argv[1], sys.argv[2])
