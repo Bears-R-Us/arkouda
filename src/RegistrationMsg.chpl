@@ -13,7 +13,7 @@ module RegistrationMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use SegmentedArray;
+    use SegmentedString;
 
     private config const logLevel = ServerConfig.logLevel;
     const regLogger = new Logger(logLevel);
@@ -174,7 +174,7 @@ module RegistrationMsg
     }
 
     /* 
-    Compile the component parts of a SegArray attach message 
+    Compile the component parts of a SegString attach message 
 
     :arg cmd: calling command 
     :type cmd: string 
@@ -189,7 +189,7 @@ module RegistrationMsg
     */
     proc attachSegArrayMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting SegArray components for '%s'".format(cmd, name));
+                            "%s: Collecting SegString components for '%s'".format(cmd, name));
 
         var repMsg: string;
 

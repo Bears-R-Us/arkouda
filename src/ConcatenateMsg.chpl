@@ -11,7 +11,7 @@ module ConcatenateMsg
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
-    use SegmentedArray;
+    use SegmentedString;
     use ServerErrorStrings;
     use CommAggregation;
     use PrivateDist;

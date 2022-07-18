@@ -274,7 +274,7 @@ class Strings:
         return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
-        if np.isscalar(key) and (resolve_scalar_dtype(key) == "int64" or "uint64"):
+        if np.isscalar(key) and (resolve_scalar_dtype(key) in ["int64", "uint64"]):
             orig_key = key
             if key < 0:
                 # Interpret negative key as offset from end of array
@@ -524,6 +524,47 @@ class Strings:
         return create_pdarray(
             generic_msg(cmd="checkChars", args=f"isTitle {self.objtype} {self.entry.name}")
         )
+
+    @typechecked
+    def strip(self, chars: Optional[Union[bytes, str_scalars]] = "") -> Strings:
+        """
+        Returns a new Strings object with all leading and trailing occurrences of characters contained
+        in chars removed. The chars argument is a string specifying the set of characters to be removed.
+        If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
+        prefix or suffix; rather, all combinations of its values are stripped.
+
+        Parameters
+        ----------
+        chars : the set of characters to be removed
+
+        Returns
+        -------
+        Strings
+            Strings object with the leading and trailing characters matching the set of characters in
+            the chars argument removed
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        Examples
+        --------
+        >>> strings = ak.array(['Strings ', '  StringS  ', 'StringS   '])
+        >>> s = strings.strip()
+        >>> s
+        array(['Strings', 'StringS', 'StringS'])
+
+        >>> strings = ak.array(['Strings 1', '1 StringS  ', '  1StringS  12 '])
+        >>> s = strings.strip(' 12')
+        >>> s
+        array(['Strings', 'StringS', 'StringS'])
+        """
+        if isinstance(chars, bytes):
+            chars = chars.decode()
+        args = "{} {} {}".format(self.objtype, self.entry.name, chars,)
+        rep_msg = generic_msg(cmd="segmentedStrip", args=args)
+        return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
     def cached_regex_patterns(self) -> List:
@@ -1421,7 +1462,7 @@ class Strings:
 
         Notes
         -----
-        If the arkouda server is compiled with "-sSegmentedArray.useHash=true",
+        If the arkouda server is compiled with "-sSegmentedString.useHash=true",
         then arkouda uses 128-bit hash values to group strings, rather than sorting
         the strings directly. This method is fast, but the resulting permutation
         merely groups equivalent strings and does not sort them. If the "useHash"

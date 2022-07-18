@@ -2,7 +2,7 @@ module Cast {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use Reflection;
-  use SegmentedArray;
+  use SegmentedString;
   use ServerErrors;
   use Logging;
   use CommAggregation;

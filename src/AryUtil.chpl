@@ -2,6 +2,7 @@ module AryUtil
 {
     use CTypes;
     use Random;
+    use ArkoudaRandomCompat;
     use Reflection;
     use Logging;
     use ServerConfig;

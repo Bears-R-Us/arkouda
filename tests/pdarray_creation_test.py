@@ -518,7 +518,7 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
 
         self.assertTrue(
-            (ak.array(["TV", "JTEW", "BOCO", "HF", "D", "UDMM", "T", "NK", "OQNP", "ZXV"]) == pda).all()
+            (ak.array(["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"]) == pda).all()
         )
 
         pda = ak.random_strings_uniform(
@@ -526,12 +526,12 @@ class PdarrayCreationTest(ArkoudaTest):
         )
 
         self.assertTrue(
-            (ak.array(["TV", "JTEW", "BOCO", "HF", "D", "UDMM", "T", "NK", "OQNP", "ZXV"]) == pda).all()
+            (ak.array(["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"]) == pda).all()
         )
 
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10, characters="printable")
         self.assertTrue(
-            (ak.array(["+5", "fp-P", "3Q4k", "~H", "F", "F=`,", "E", "YD", "kBa'", "(t5"]) == pda).all()
+            (ak.array(["eL", "6<OD", "o-GO", " l", "m", "PV y", "f", "}.", "b3Yc", "Kw,"]) == pda).all()
         )
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -603,16 +603,16 @@ class PdarrayCreationTest(ArkoudaTest):
             (
                 ak.array(
                     [
-                        "TVKJTE",
-                        "ABOCORHFM",
-                        "LUDMMGTB",
-                        "KWOQNPHZ",
-                        "VSXRRL",
-                        "AKOZOEEWTB",
-                        "GOSVGEJNOW",
-                        "BFWSIO",
-                        "MRIEJUSA",
-                        "OLUKRJK",
+                        "VWHJEX",
+                        "BEBBXJHGM",
+                        "RWOVKBUR",
+                        "LNJCSDXD",
+                        "NKEDQC",
+                        "GIBAFPAVWF",
+                        "IJIFHGDHKA",
+                        "VUDYRA",
+                        "QHQETTEZ",
+                        "DJBPWJV",
                     ]
                 )
                 == pda
@@ -625,16 +625,16 @@ class PdarrayCreationTest(ArkoudaTest):
             (
                 ak.array(
                     [
-                        "TVKJTE",
-                        "ABOCORHFM",
-                        "LUDMMGTB",
-                        "KWOQNPHZ",
-                        "VSXRRL",
-                        "AKOZOEEWTB",
-                        "GOSVGEJNOW",
-                        "BFWSIO",
-                        "MRIEJUSA",
-                        "OLUKRJK",
+                        "VWHJEX",
+                        "BEBBXJHGM",
+                        "RWOVKBUR",
+                        "LNJCSDXD",
+                        "NKEDQC",
+                        "GIBAFPAVWF",
+                        "IJIFHGDHKA",
+                        "VUDYRA",
+                        "QHQETTEZ",
+                        "DJBPWJV",
                     ]
                 )
                 == pda
@@ -647,16 +647,16 @@ class PdarrayCreationTest(ArkoudaTest):
             (
                 ak.array(
                     [
-                        '+5"fp-',
-                        "]3Q4kC~HF",
-                        "=F=`,IE!",
-                        "DjkBa'9(",
-                        "5oZ1)=",
-                        'T^.1@6aj";',
-                        "8b2$IX!Y7.",
-                        "x|Y!eQ",
-                        ">1\\>2,on",
-                        '&#W":C3',
+                        "eL96<O",
+                        ")o-GOe lR",
+                        ")PV yHf(",
+                        "._b3Yc&K",
+                        ",7Wjef",
+                        "R{lQs_g]5T",
+                        "E[2dk\\2a9J",
+                        "I*VknZ",
+                        "0!u~e$Lm",
+                        "9Q{TtHq",
                     ]
                 )
                 == pda
@@ -671,16 +671,16 @@ class PdarrayCreationTest(ArkoudaTest):
             (
                 ak.array(
                     [
-                        '+5"fp-',
-                        "]3Q4kC~HF",
-                        "=F=`,IE!",
-                        "DjkBa'9(",
-                        "5oZ1)=",
-                        'T^.1@6aj";',
-                        "8b2$IX!Y7.",
-                        "x|Y!eQ",
-                        ">1\\>2,on",
-                        '&#W":C3',
+                        "eL96<O",
+                        ")o-GOe lR",
+                        ")PV yHf(",
+                        "._b3Yc&K",
+                        ",7Wjef",
+                        "R{lQs_g]5T",
+                        "E[2dk\\2a9J",
+                        "I*VknZ",
+                        "0!u~e$Lm",
+                        "9Q{TtHq",
                     ]
                 )
                 == pda

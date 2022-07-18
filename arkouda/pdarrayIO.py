@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import json
 import os
@@ -7,6 +9,7 @@ from typing import Dict, List, Mapping, Optional, Union, cast
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
+import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -23,6 +26,8 @@ __all__ = [
     "get_null_indices",
     "import_data",
     "export",
+    "read_hdf5_multi_dim",
+    "write_hdf5_multi_dim",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -789,3 +794,150 @@ def export(
 
     if return_obj:
         return df
+
+
+@typechecked
+def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView:
+    """
+    Read a multi-dimensional object from an HDF5 file
+
+    Parameters
+    ----------
+    file_path: str
+        path to the file to read from
+    dset: str
+        name of the dataset to read
+
+    Returns
+    -------
+    ArrayView object representing the data read from file
+
+    See Also
+    --------
+    ak.write_hdf5_multi_dim
+
+    Notes
+    -----
+        - Error handling done on server to prevent multiple server calls
+        - This is an initial implementation and updates will be coming soon
+        - dset currently only reading a single dataset is supported
+        - file_path will need to support list[str] and str for glob
+        - Currently, order is always assumed to be row major
+    """
+    rep_msg = cast(
+        str,
+        generic_msg(
+            cmd="readhdf_multi",
+            args=f"{file_path} {dset}",
+        ),
+    )
+
+    objs = rep_msg.split("+")
+
+    shape = create_pdarray(objs[0])
+    flat = create_pdarray(objs[1])
+
+    arr = arkouda.array_view.ArrayView(flat, shape)
+    return arr
+
+
+@typechecked
+def _storage_str_to_int(method: str) -> int:
+    """
+    Convert string to integer representing the storage method
+
+    Parameters
+    ----------
+    method: str (flat | multi)
+        The string representation of the storage format to be converted to integer
+
+    Returns
+    -------
+    int representing the storage method
+
+    Raises
+    ------
+    ValueError
+        - If mode is not 'flat' or 'multi'
+    """
+    if method.lower() == "flat":
+        return 0
+    elif method.lower() == "multi":
+        return 1
+    else:
+        raise ValueError(f"Storage method expected to be 'flat' or 'multi'. Got {method}.")
+
+
+@typechecked
+def _mode_str_to_int(mode: str) -> int:
+    """
+    Convert string to integer representing the mode to write
+
+    Parameters
+    ----------
+    mode: str (truncate | append)
+        The string representation of the write mode to be converted to integer
+
+    Returns
+    -------
+    int representing the mode
+
+    Raises
+    ------
+    ValueError
+        - If mode is not 'truncate' or 'append'
+    """
+    if mode.lower() == "truncate":
+        return 0
+    elif mode.lower() == "append":
+        return 1
+    else:
+        raise ValueError(f"Write Mode expected to be 'truncate' or 'append'. Got {mode}.")
+
+
+@typechecked
+def write_hdf5_multi_dim(
+    obj: arkouda.array_view.ArrayView,
+    file_path: str,
+    dset: str,
+    mode: str = "truncate",
+    storage: str = "Flat",
+):
+    """
+    Write a multi-dimensional ArrayView object to an HDF5 file
+
+    Parameters
+    ----------
+    obj: ArrayView
+        The object that will be written to the file
+    file_path: str
+        Path to the file to write the dataset to
+    dset: str
+        Name of the dataset to write
+    mode: str (truncate | append)
+        Default: truncate
+        Mode to write the dataset in. Truncate will overwrite any existing files.
+        Append will add the dataset to an existing file.
+    storage: str (Flat | Multi)
+        Default: Flat
+        Method to use when storing the dataset.
+        Flat - flatten the multi-dimensional object into a 1-D array of values
+        Multi - Store the object in the multidimensional presentation.
+
+    See Also
+    --------
+    ak.read_hdf5_multi_dim
+
+    Notes
+    -----
+    - If a file does not exist, it will be created regardless of the mode value
+    - This function is currently standalone functionality for multi-dimensional datasets
+    - Error handling done on server to prevent multiple server calls
+    """
+    # error handling is done in the conversion functions
+    storage_int = _storage_str_to_int(storage)
+    mode_int = _mode_str_to_int(mode)
+    generic_msg(
+        cmd="writehdf_multi",
+        args=f"{obj.base.name} {obj.shape.name} {obj.order} {file_path} {dset} {mode_int} {storage_int}",
+    )

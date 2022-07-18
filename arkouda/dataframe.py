@@ -1137,7 +1137,7 @@ class DataFrame(UserDict):
         self
             Appending occurs in-place, but result is returned for compatibility.
         """
-        from arkouda.util import concatenate as util_concatenate
+        from arkouda.util import generic_concat as util_concatenate
 
         # Do nothing if the other dataframe is empty
         if other.empty:
@@ -1178,7 +1178,7 @@ class DataFrame(UserDict):
         """
         Essentially an append, but diffenent formatting
         """
-        from arkouda.util import concatenate as util_concatenate
+        from arkouda.util import generic_concat as util_concatenate
 
         if len(items) == 0:
             return cls()
@@ -1220,7 +1220,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        akutil.DataFrame
+        ak.DataFrame
             The first `n` rows of the DataFrame.
 
         See Also
@@ -1245,12 +1245,12 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        akutil.DataFrame
+        ak.DataFrame
             The last `n` rows of the DataFrame.
 
         See Also
         --------
-        akutil.dataframe.head
+        ak.dataframe.head
         """
 
         self.update_size()
@@ -1269,7 +1269,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        akutil.DataFrame
+        ak.DataFrame
             The sampled `n` rows of the DataFrame.
         """
         self.update_size()
@@ -1285,12 +1285,12 @@ class DataFrame(UserDict):
         ----------
         keys : string or list
             An (ordered) list of column names or a single string to group by.
-        use_series : If True, returns an akutil.GroupBy oject. Otherwise an arkouda GroupBy object
+        use_series : If True, returns an ak.GroupBy oject. Otherwise an arkouda GroupBy object
 
         Returns
         -------
         GroupBy
-            Either an akutil GroupBy or an arkouda GroupBy object.
+            Either an ak GroupBy or an arkouda GroupBy object.
 
         See Also
         --------
@@ -1814,7 +1814,7 @@ def sorted(df, column=False):
 
     Parameters
     ----------
-    df : akutil.dataframe.DataFrame
+    df : ak.dataframe.DataFrame
         The DataFrame to sort.
 
     column : str
@@ -1822,7 +1822,7 @@ def sorted(df, column=False):
 
     Returns
     -------
-    akutil.dataframe.DataFrame
+    ak.dataframe.DataFrame
         A sorted copy of the original DataFrame.
     """
 

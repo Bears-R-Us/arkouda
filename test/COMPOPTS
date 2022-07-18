@@ -8,13 +8,13 @@ PARENT_DIR=$(dirname $(cd $(dirname $0) ; pwd))
 ARKOUDA_HOME=${ARKOUDA_HOME:-$PARENT_DIR}
 
 # Get test flags (dependencies, user options, optimization level)
-TEST_FLAGS=$(cd $ARKOUDA_HOME && make print-TEST_CHPL_FLAGS)
+TEST_FLAGS=$(cd $ARKOUDA_HOME && make -s print-TEST_CHPL_FLAGS)
 
 # -M dir
-SRC_DIR=$(cd $ARKOUDA_HOME && make print-ARKOUDA_SOURCE_DIR)
+SRC_DIR=$(cd $ARKOUDA_HOME && make -s print-ARKOUDA_SOURCE_DIR)
 
 # Compat modules
-COMPAT_MODULES=$(cd $ARKOUDA_HOME && make print-ARKOUDA_COMPAT_MODULES)
+COMPAT_MODULES=$(cd $ARKOUDA_HOME && make -s print-ARKOUDA_COMPAT_MODULES)
 
 # Location of the configuration file, so we always include it and disable extra
 # debugging that might make noise in the tests
@@ -23,7 +23,7 @@ CONFIG_OPTS="${CONFIG_FILE} -strace=false -sarkoudaVersion=\"\\\"TEST_VERSION_ST
 TEST_OPTS="-sprintTimes=false -sprintDiags=false -sprintDiagsSum=false"
 
 if [[ ! -f $SRC_DIR/ArrowFunctions.o ]]; then
-  make -C ${ARKOUDA_HOME} compile-arrow-cpp > /dev/null 2> /dev/null
+  make -s -C ${ARKOUDA_HOME} compile-arrow-cpp > /dev/null 2> /dev/null
 fi
 
 echo "${TEST_FLAGS} -M ${SRC_DIR} ${COMPAT_MODULES} ${CONFIG_OPTS} ${TEST_OPTS}"
