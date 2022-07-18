@@ -463,4 +463,8 @@ module ServerDaemon {
                                                                                  t1.elapsed()));        
         }
     }
+
+    proc getServerDaemon(daemonClass: string) {
+        return new ArkoudaServerDaemon();
+    }
 }
