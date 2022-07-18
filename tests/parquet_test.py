@@ -189,22 +189,21 @@ class ParquetTest(ArkoudaTest):
     def test_null_strings(self):
         datadir = "resources/parquet-testing"
         basename = "null-strings.parquet"
-        expected = ak.array(["first-string", "", "string2", "", "third", "", ""])
+        expected = ["first-string", "", "string2", "", "third", "", ""]
 
         filename = os.path.join(datadir, basename)
         res = ak.read(filename)
 
-        self.assertListEqual(expected.to_ndarray().tolist(), res.to_ndarray().tolist())
+        self.assertListEqual(expected, res.to_ndarray().tolist())
 
     def test_null_indices(self):
         datadir = "resources/parquet-testing"
         basename = "null-strings.parquet"
-        expected = ak.array([0, 1, 0, 1, 0, 1, 1])
 
         filename = os.path.join(datadir, basename)
         res = ak.get_null_indices(filename, datasets="col1")
 
-        self.assertListEqual(expected.to_ndarray().tolist(), res.to_ndarray().tolist())
+        self.assertListEqual([0, 1, 0, 1, 0, 1, 1], res.to_ndarray().tolist())
 
     def test_append_empty(self):
         for dtype in TYPES:

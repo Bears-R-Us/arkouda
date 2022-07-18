@@ -213,21 +213,15 @@ class RegexTest(ArkoudaTest):
     def test_regex_find_locations(self):
         strings = ak.array(["{} string {}".format(i, i) for i in range(1, 6)])
 
-        expected_num_matches = [2, 2, 2, 2, 2]
-        expected_starts = [0, 9, 0, 9, 0, 9, 0, 9, 0, 9]
-        expected_lens = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         actual_num_matches, actual_starts, actual_lens = strings.find_locations("\\d")
-        self.assertListEqual(expected_num_matches, actual_num_matches.to_ndarray().tolist())
-        self.assertListEqual(expected_starts, actual_starts.to_ndarray().tolist())
-        self.assertListEqual(expected_lens, actual_lens.to_ndarray().tolist())
+        self.assertListEqual([2, 2, 2, 2, 2], actual_num_matches.to_ndarray().tolist())
+        self.assertListEqual([0, 9, 0, 9, 0, 9, 0, 9, 0, 9], actual_starts.to_ndarray().tolist())
+        self.assertListEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], actual_lens.to_ndarray().tolist())
 
-        expected_num_matches = [1, 1, 1, 1, 1]
-        expected_starts = [2, 2, 2, 2, 2]
-        expected_lens = [8, 8, 8, 8, 8]
         actual_num_matches, actual_starts, actual_lens = strings.find_locations("string \\d")
-        self.assertListEqual(expected_num_matches, actual_num_matches.to_ndarray().tolist())
-        self.assertListEqual(expected_starts, actual_starts.to_ndarray().tolist())
-        self.assertListEqual(expected_lens, actual_lens.to_ndarray().tolist())
+        self.assertListEqual([1, 1, 1, 1, 1], actual_num_matches.to_ndarray().tolist())
+        self.assertListEqual([2, 2, 2, 2, 2], actual_starts.to_ndarray().tolist())
+        self.assertListEqual([8, 8, 8, 8, 8], actual_lens.to_ndarray().tolist())
 
     def test_regex_findall(self):
         strings = ak.array(["{} string {}".format(i, i) for i in range(1, 6)])

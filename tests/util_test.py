@@ -56,11 +56,17 @@ class utilTest(ArkoudaTest):
         segarr.register("segTest")
 
         attached = attach("segTest")
-        self.assertListEqual(segarr.to_ndarray().tolist(), attached.to_ndarray().tolist())
+        # TODO segarray.to_ndarray() currently returns a list tracked by Issue#1600
+        # potentially return below instead:
+        # self.assertListEqual(segarr.to_ndarray().tolist(), attached.to_ndarray().tolist())
+        self.assertTrue((segarr == attached).all())
         self.assertIsInstance(attached, ak.SegArray)
 
         attached_typed = attach("segTest", "SegArray")
-        self.assertListEqual(segarr.to_ndarray().tolist(), attached_typed.to_ndarray().tolist())
+        # TODO segarray.to_ndarray() currently returns a list tracked by Issue#1600
+        # potentially return below instead:
+        # self.assertListEqual(segarr.to_ndarray().tolist(), attached_typed.to_ndarray().tolist())
+        self.assertTrue((segarr == attached_typed).all())
         self.assertIsInstance(attached_typed, ak.SegArray)
 
     def test_series_attach(self):

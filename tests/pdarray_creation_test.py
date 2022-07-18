@@ -50,40 +50,26 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.array(list(list(0)))
 
     def test_arange(self):
+        self.assertListEqual([0, 1, 2, 3, 4], ak.arange(0, 5, 1).to_ndarray().tolist())
+        self.assertListEqual([5, 4, 3, 2, 1], ak.arange(5, 0, -1).to_ndarray().tolist())
         self.assertListEqual(
-            ak.array([0, 1, 2, 3, 4]).to_ndarray().tolist(), ak.arange(0, 5, 1).to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            ak.array([5, 4, 3, 2, 1]).to_ndarray().tolist(), ak.arange(5, 0, -1).to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            ak.array([-5, -6, -7, -8, -9]).to_ndarray().tolist(),
+            [-5, -6, -7, -8, -9],
             ak.arange(-5, -10, -1).to_ndarray().tolist(),
         )
-        self.assertListEqual(
-            ak.array([0, 2, 4, 6, 8]).to_ndarray().tolist(), ak.arange(0, 10, 2).to_ndarray().tolist()
-        )
+        self.assertListEqual([0, 2, 4, 6, 8], ak.arange(0, 10, 2).to_ndarray().tolist())
 
     def test_arange_dtype(self):
         # test dtype works with optional start/stride
-        expected_stop = ak.array([0, 1, 2])
         uint_stop = ak.arange(3, dtype=ak.uint64)
-        self.assertListEqual(expected_stop.to_ndarray().tolist(), uint_stop.to_ndarray().tolist())
+        self.assertListEqual([0, 1, 2], uint_stop.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_stop.dtype)
 
-        expected_start_stop = ak.array([3, 4, 5, 6])
         uint_start_stop = ak.arange(3, 7, dtype=ak.uint64)
-        self.assertListEqual(
-            expected_start_stop.to_ndarray().tolist(), uint_start_stop.to_ndarray().tolist()
-        )
+        self.assertListEqual([3, 4, 5, 6], uint_start_stop.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_start_stop.dtype)
 
-        expected_start_stop_stride = ak.array([3, 5])
         uint_start_stop_stride = ak.arange(3, 7, 2, dtype=ak.uint64)
-        self.assertListEqual(
-            expected_start_stop_stride.to_ndarray().tolist(),
-            uint_start_stop_stride.to_ndarray().tolist(),
-        )
+        self.assertListEqual([3, 5], uint_start_stop_stride.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_start_stop_stride.dtype)
 
         # test uint64 handles negatives correctly
@@ -102,15 +88,14 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.float64, ak_arange_float.dtype)
 
         # test correct conversion to bool
-        expected_bool = ak.array([False, True, True, True, True])
+        expected_bool = [False, True, True, True, True]
         ak_arange_bool = ak.arange(0, 10, 2, dtype=ak.bool)
-        self.assertListEqual(expected_bool.to_ndarray().tolist(), ak_arange_bool.to_ndarray().tolist())
+        self.assertListEqual(expected_bool, ak_arange_bool.to_ndarray().tolist())
         self.assertEqual(ak.bool, ak_arange_bool.dtype)
 
         # test uint64 input works
-        expected = ak.array([0, 1, 2])
         uint_input = ak.arange(3, dtype=ak.uint64)
-        self.assertListEqual(expected.to_ndarray().tolist(), uint_input.to_ndarray().tolist())
+        self.assertListEqual([0, 1, 2], uint_input.to_ndarray().tolist())
         self.assertEqual(ak.uint64, uint_input.dtype)
 
         # test int_scalars covers uint8, uint16, uint32
@@ -186,44 +171,34 @@ class PdarrayCreationTest(ArkoudaTest):
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
 
-        self.assertListEqual(
-            ak.array([4, 3, 1, 3, 2, 4, 4, 2, 3, 4]).to_ndarray().tolist(), values.to_ndarray().tolist()
-        )
+        self.assertListEqual([4, 3, 1, 3, 2, 4, 4, 2, 3, 4], values.to_ndarray().tolist())
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
         self.assertListEqual(
-            ak.array(
-                [
-                    2.9160772326374946,
-                    4.353429832157099,
-                    4.5392023718621486,
-                    4.4019932101126606,
-                    3.3745324569952304,
-                    1.1642002901528308,
-                    4.4714086874555292,
-                    3.7098921109084522,
-                    4.5939589352472314,
-                    4.0337935981006172,
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                2.9160772326374946,
+                4.353429832157099,
+                4.5392023718621486,
+                4.4019932101126606,
+                3.3745324569952304,
+                1.1642002901528308,
+                4.4714086874555292,
+                3.7098921109084522,
+                4.5939589352472314,
+                4.0337935981006172,
+            ],
             values.to_ndarray().tolist(),
         )
 
         values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
         self.assertListEqual(
-            ak.array([False, True, True, True, True, False, True, True, True, True])
-            .to_ndarray()
-            .tolist(),
+            [False, True, True, True, True, False, True, True, True, True],
             values.to_ndarray().tolist(),
         )
 
         values = ak.randint(1, 5, 10, dtype=bool, seed=2)
         self.assertListEqual(
-            ak.array([False, True, True, True, True, False, True, True, True, True])
-            .to_ndarray()
-            .tolist(),
+            [False, True, True, True, True, False, True, True, True, True],
             values.to_ndarray().tolist(),
         )
 
@@ -243,17 +218,13 @@ class PdarrayCreationTest(ArkoudaTest):
 
         uArray = ak.uniform(size=3, low=0, high=5, seed=0)
         self.assertListEqual(
-            ak.array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
-            .to_ndarray()
-            .tolist(),
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
             uArray.to_ndarray().tolist(),
         )
 
         uArray = ak.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
         self.assertListEqual(
-            ak.array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
-            .to_ndarray()
-            .tolist(),
+            [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
             uArray.to_ndarray().tolist(),
         )
 
@@ -540,9 +511,7 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
 
         self.assertListEqual(
-            ak.array(["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"])
-            .to_ndarray()
-            .tolist(),
+            ["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"],
             pda.to_ndarray().tolist(),
         )
 
@@ -551,17 +520,13 @@ class PdarrayCreationTest(ArkoudaTest):
         )
 
         self.assertListEqual(
-            ak.array(["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"])
-            .to_ndarray()
-            .tolist(),
+            ["VW", "JEXI", "EBBX", "HG", "S", "WOVK", "U", "WL", "JCSD", "DSN"],
             pda.to_ndarray().tolist(),
         )
 
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10, characters="printable")
         self.assertListEqual(
-            ak.array(["eL", "6<OD", "o-GO", " l", "m", "PV y", "f", "}.", "b3Yc", "Kw,"])
-            .to_ndarray()
-            .tolist(),
+            ["eL", "6<OD", "o-GO", " l", "m", "PV y", "f", "}.", "b3Yc", "Kw,"],
             pda.to_ndarray().tolist(),
         )
 
@@ -635,92 +600,72 @@ class PdarrayCreationTest(ArkoudaTest):
 
     def test_random_strings_lognormal_with_seed(self):
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1)
-
         self.assertListEqual(
-            ak.array(
-                [
-                    "VWHJEX",
-                    "BEBBXJHGM",
-                    "RWOVKBUR",
-                    "LNJCSDXD",
-                    "NKEDQC",
-                    "GIBAFPAVWF",
-                    "IJIFHGDHKA",
-                    "VUDYRA",
-                    "QHQETTEZ",
-                    "DJBPWJV",
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                "VWHJEX",
+                "BEBBXJHGM",
+                "RWOVKBUR",
+                "LNJCSDXD",
+                "NKEDQC",
+                "GIBAFPAVWF",
+                "IJIFHGDHKA",
+                "VUDYRA",
+                "QHQETTEZ",
+                "DJBPWJV",
+            ],
             pda.to_ndarray().tolist(),
         )
 
         pda = ak.random_strings_lognormal(float(2), np.float64(0.25), np.int64(10), seed=1)
-
         self.assertListEqual(
-            ak.array(
-                [
-                    "VWHJEX",
-                    "BEBBXJHGM",
-                    "RWOVKBUR",
-                    "LNJCSDXD",
-                    "NKEDQC",
-                    "GIBAFPAVWF",
-                    "IJIFHGDHKA",
-                    "VUDYRA",
-                    "QHQETTEZ",
-                    "DJBPWJV",
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                "VWHJEX",
+                "BEBBXJHGM",
+                "RWOVKBUR",
+                "LNJCSDXD",
+                "NKEDQC",
+                "GIBAFPAVWF",
+                "IJIFHGDHKA",
+                "VUDYRA",
+                "QHQETTEZ",
+                "DJBPWJV",
+            ],
             pda.to_ndarray().tolist(),
         )
 
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters="printable")
-
         self.assertListEqual(
-            ak.array(
-                [
-                    "eL96<O",
-                    ")o-GOe lR",
-                    ")PV yHf(",
-                    "._b3Yc&K",
-                    ",7Wjef",
-                    "R{lQs_g]5T",
-                    "E[2dk\\2a9J",
-                    "I*VknZ",
-                    "0!u~e$Lm",
-                    "9Q{TtHq",
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                "eL96<O",
+                ")o-GOe lR",
+                ")PV yHf(",
+                "._b3Yc&K",
+                ",7Wjef",
+                "R{lQs_g]5T",
+                "E[2dk\\2a9J",
+                "I*VknZ",
+                "0!u~e$Lm",
+                "9Q{TtHq",
+            ],
             pda.to_ndarray().tolist(),
         )
 
         pda = ak.random_strings_lognormal(
             np.int64(2), np.float64(0.25), np.int64(10), seed=1, characters="printable"
         )
-
         self.assertListEqual(
-            ak.array(
-                [
-                    "eL96<O",
-                    ")o-GOe lR",
-                    ")PV yHf(",
-                    "._b3Yc&K",
-                    ",7Wjef",
-                    "R{lQs_g]5T",
-                    "E[2dk\\2a9J",
-                    "I*VknZ",
-                    "0!u~e$Lm",
-                    "9Q{TtHq",
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                "eL96<O",
+                ")o-GOe lR",
+                ")PV yHf(",
+                "._b3Yc&K",
+                ",7Wjef",
+                "R{lQs_g]5T",
+                "E[2dk\\2a9J",
+                "I*VknZ",
+                "0!u~e$Lm",
+                "9Q{TtHq",
+            ],
             pda.to_ndarray().tolist(),
         )
 

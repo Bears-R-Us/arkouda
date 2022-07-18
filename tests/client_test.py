@@ -136,7 +136,6 @@ class ClientTest(ArkoudaTest):
         Tests the ak.client.get_server_commands() method contains an expected
         sample of commands.
         """
-        expected_cmds = ["connect", "array", "create", "tondarray", "info", "str"]
         cmds = ak.client.get_server_commands()
-        for cmd in expected_cmds:
+        for cmd in ["connect", "array", "create", "tondarray", "info", "str"]:
             self.assertTrue(cmd in cmds)

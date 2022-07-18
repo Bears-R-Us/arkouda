@@ -115,19 +115,19 @@ class JoinTest(ArkoudaTest):
         keys = ak.arange(5)
         values = 10 * keys
         args = ak.array([5, 3, 1, 4, 2, 3, 1, 0])
-        ans = np.array([-1, 30, 10, 40, 20, 30, 10, 0])
+        ans = [-1, 30, 10, 40, 20, 30, 10, 0]
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
         res = ak.lookup(keys, values, args, fillvalue=-1)
-        self.assertListEqual(res.to_ndarray().tolist(), ans.tolist())
+        self.assertListEqual(res.to_ndarray().tolist(), ans)
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
             (ak.cast(keys, ak.str_), keys), values, (ak.cast(args, ak.str_), args), fillvalue=-1
         )
-        self.assertListEqual(res2.to_ndarray().tolist(), ans.tolist())
+        self.assertListEqual(res2.to_ndarray().tolist(), ans)
         # Keys not in uniqued order
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
-        self.assertListEqual(res3.to_ndarray().tolist(), ans.tolist())
+        self.assertListEqual(res3.to_ndarray().tolist(), ans)
         # Non-unique keys should raise error
         with self.assertWarns(UserWarning):
             keys = ak.arange(10) % 5

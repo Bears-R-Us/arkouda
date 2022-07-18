@@ -676,9 +676,7 @@ class IOTest(ArkoudaTest):
             ak.read(prefix + "*")
 
         a = ak.read(prefix + "*", strictTypes=False)
-        self.assertListEqual(
-            a["integers"].to_ndarray().tolist(), ak.arange(len(inttypes) * N).to_ndarray().tolist()
-        )
+        self.assertListEqual(a["integers"].to_ndarray().tolist(), np.arange(len(inttypes) * N).tolist())
         self.assertTrue(
             np.allclose(a["floats"].to_ndarray(), np.arange(len(floattypes) * N, dtype=np.float64))
         )

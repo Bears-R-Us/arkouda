@@ -42,31 +42,27 @@ class CategoricalTest(ArkoudaTest):
         cat = self._getCategorical()
 
         self.assertListEqual(
-            ak.array([7, 5, 9, 8, 2, 1, 4, 0, 3, 6]).to_ndarray().tolist(),
+            [7, 5, 9, 8, 2, 1, 4, 0, 3, 6],
             cat.codes.to_ndarray().tolist(),
         )
         self.assertListEqual(
-            ak.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).to_ndarray().tolist(),
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             cat.segments.to_ndarray().tolist(),
         )
         self.assertListEqual(
-            ak.array(
-                [
-                    "string 8",
-                    "string 6",
-                    "string 5",
-                    "string 9",
-                    "string 7",
-                    "string 2",
-                    "string 10",
-                    "string 1",
-                    "string 4",
-                    "string 3",
-                    "N/A",
-                ]
-            )
-            .to_ndarray()
-            .tolist(),
+            [
+                "string 8",
+                "string 6",
+                "string 5",
+                "string 9",
+                "string 7",
+                "string 2",
+                "string 10",
+                "string 1",
+                "string 4",
+                "string 3",
+                "N/A",
+            ],
             cat.categories.to_ndarray().tolist(),
         )
         self.assertEqual(10, cat.size)
@@ -113,9 +109,7 @@ class CategoricalTest(ArkoudaTest):
 
     def testGroup(self):
         group = self._getRandomizedCategorical().group()
-        self.assertListEqual(
-            ak.array([2, 5, 9, 6, 1, 3, 7, 0, 4, 8]).to_ndarray().tolist(), group.to_ndarray().tolist()
-        )
+        self.assertListEqual([2, 5, 9, 6, 1, 3, 7, 0, 4, 8], group.to_ndarray().tolist())
 
     def testUnique(self):
         cat = self._getRandomizedCategorical()
@@ -156,8 +150,7 @@ class CategoricalTest(ArkoudaTest):
         c1 = ak.Categorical(ak.array(["a", "b", "c", "a", "b"]))
         c2 = ak.Categorical(ak.array(["a", "x", "c", "y", "b"]))
         res = c1 == c2
-        ans = ak.array([True, False, True, False, True])
-        self.assertListEqual(res.to_ndarray().tolist(), ans.to_ndarray().tolist())
+        self.assertListEqual(res.to_ndarray().tolist(), [True, False, True, False, True])
 
     def testBinop(self):
         cat = self._getCategorical()
@@ -212,12 +205,10 @@ class CategoricalTest(ArkoudaTest):
         catOne = ak.Categorical(stringsOne)
         catTwo = ak.Categorical(stringsTwo)
 
-        answer = ak.array([x < 2 for x in vals])
+        answer = [x < 2 for x in vals]
 
-        self.assertListEqual(answer.to_ndarray().tolist(), ak.in1d(catOne, catTwo).to_ndarray().tolist())
-        self.assertListEqual(
-            answer.to_ndarray().tolist(), ak.in1d(catOne, stringsTwo).to_ndarray().tolist()
-        )
+        self.assertListEqual(answer, ak.in1d(catOne, catTwo).to_ndarray().tolist())
+        self.assertListEqual(answer, ak.in1d(catOne, stringsTwo).to_ndarray().tolist())
 
         with self.assertRaises(TypeError):
             ak.in1d(catOne, ak.randint(0, 5, 5))
@@ -402,8 +393,7 @@ class CategoricalTest(ArkoudaTest):
         values = ak.Categorical(ak.array(["A", "B", "C"]))
         args = ak.array([3, 2, 1, 0])
         ret = ak.lookup(keys, values, args)
-        expected = ["C", "B", "A", "N/A"]
-        self.assertListEqual(ret.to_ndarray().tolist(), expected)
+        self.assertListEqual(ret.to_ndarray().tolist(), ["C", "B", "A", "N/A"])
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()

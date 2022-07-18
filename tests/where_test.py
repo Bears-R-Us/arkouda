@@ -68,13 +68,11 @@ class WhereTest(ArkoudaTest):
 
         cond = n1 < 5
         result = np.where(cond, n1, n2)
-        self.assertListEqual(np.array([1, 2, 3, 4, 1, 1, 1, 1, 1]).tolist(), result.tolist())
+        self.assertListEqual([1, 2, 3, 4, 1, 1, 1, 1, 1], result.tolist())
 
         cond = a1 < 5
         result = ak.where(cond, a1, a2)
-        self.assertListEqual(
-            ak.array([1, 2, 3, 4, 1, 1, 1, 1, 1]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 2, 3, 4, 1, 1, 1, 1, 1], result.to_ndarray().tolist())
 
     def test_greater_than_where_clause(self):
         n1 = np.arange(1, 10)
@@ -84,13 +82,11 @@ class WhereTest(ArkoudaTest):
 
         cond = n1 > 5
         result = np.where(cond, n1, n2)
-        self.assertListEqual(np.array([1, 1, 1, 1, 1, 6, 7, 8, 9]).tolist(), result.tolist())
+        self.assertListEqual([1, 1, 1, 1, 1, 6, 7, 8, 9], result.tolist())
 
         cond = a1 > 5
         result = ak.where(cond, a1, a2)
-        self.assertListEqual(
-            ak.array([1, 1, 1, 1, 1, 6, 7, 8, 9]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 1, 1, 1, 1, 6, 7, 8, 9], result.to_ndarray().tolist())
 
     def test_greater_than_where_clause_with_scalars(self):
         n1 = np.arange(1, 10)
@@ -98,21 +94,17 @@ class WhereTest(ArkoudaTest):
 
         condN = n1 > 5
         result = np.where(condN, n1, 1)
-        self.assertListEqual(np.array([1, 1, 1, 1, 1, 6, 7, 8, 9]).tolist(), result.tolist())
+        self.assertListEqual([1, 1, 1, 1, 1, 6, 7, 8, 9], result.tolist())
 
         condA = a1 > 5
         result = ak.where(condA, a1, 1)
-        self.assertListEqual(
-            ak.array([1, 1, 1, 1, 1, 6, 7, 8, 9]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 1, 1, 1, 1, 6, 7, 8, 9], result.to_ndarray().tolist())
 
         result = np.where(condN, 1, n1)
-        self.assertListEqual(np.array([1, 2, 3, 4, 5, 1, 1, 1, 1]).tolist(), result.tolist())
+        self.assertListEqual([1, 2, 3, 4, 5, 1, 1, 1, 1], result.tolist())
 
         result = ak.where(condA, 1, a1)
-        self.assertListEqual(
-            ak.array([1, 2, 3, 4, 5, 1, 1, 1, 1]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 2, 3, 4, 5, 1, 1, 1, 1], result.to_ndarray().tolist())
 
     def test_not_equal_where_clause(self):
         n1 = np.arange(1, 10)
@@ -122,13 +114,11 @@ class WhereTest(ArkoudaTest):
 
         cond = n1 != 5
         result = np.where(cond, n1, n2)
-        self.assertListEqual(np.array([1, 2, 3, 4, 1, 6, 7, 8, 9]).tolist(), result.tolist())
+        self.assertListEqual([1, 2, 3, 4, 1, 6, 7, 8, 9], result.tolist())
 
         cond = a1 != 5
         result = ak.where(cond, a1, a2)
-        self.assertListEqual(
-            ak.array([1, 2, 3, 4, 1, 6, 7, 8, 9]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 2, 3, 4, 1, 6, 7, 8, 9], result.to_ndarray().tolist())
 
     def test_equals_where_clause(self):
         n1 = np.arange(1, 10)
@@ -138,13 +128,11 @@ class WhereTest(ArkoudaTest):
 
         cond = n1 == 5
         result = np.where(cond, n1, n2)
-        self.assertListEqual(np.array([1, 1, 1, 1, 5, 1, 1, 1, 1]).tolist(), result.tolist())
+        self.assertListEqual([1, 1, 1, 1, 5, 1, 1, 1, 1], result.tolist())
 
         cond = a1 == 5
         result = ak.where(cond, a1, a2)
-        self.assertListEqual(
-            ak.array([1, 1, 1, 1, 5, 1, 1, 1, 1]).to_ndarray().tolist(), result.to_ndarray().tolist()
-        )
+        self.assertListEqual([1, 1, 1, 1, 5, 1, 1, 1, 1], result.to_ndarray().tolist())
 
     def test_where_filter(self):
         n1 = np.arange(1, 10)

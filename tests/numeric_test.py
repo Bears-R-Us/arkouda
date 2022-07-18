@@ -85,12 +85,12 @@ class NumericTest(ArkoudaTest):
                     )
 
         self.assertListEqual(
-            ak.array([1, 2, 3, 4, 5]).to_ndarray().tolist(),
+            [1, 2, 3, 4, 5],
             ak.cast(ak.linspace(1, 5, 5), dt=ak.int64).to_ndarray().tolist(),
         )
         self.assertEqual(ak.cast(ak.arange(0, 5), dt=ak.float64).dtype, ak.float64)
         self.assertListEqual(
-            ak.array([False, True, True, True, True]).to_ndarray().tolist(),
+            [False, True, True, True, True],
             ak.cast(ak.linspace(0, 4, 5), dt=ak.bool).to_ndarray().tolist(),
         )
 
@@ -165,7 +165,7 @@ class NumericTest(ArkoudaTest):
             ak.arange(5, 1, -1).to_ndarray().tolist(), ak.abs(ak.arange(-5, -1)).to_ndarray().tolist()
         )
         self.assertListEqual(
-            ak.array([5, 4, 3, 2, 1]).to_ndarray().tolist(),
+            [5, 4, 3, 2, 1],
             ak.abs(ak.linspace(-5, -1, 5)).to_ndarray().tolist(),
         )
 
@@ -250,8 +250,7 @@ class NumericTest(ArkoudaTest):
         ark_s_float64 = ak.array(npa)
         ark_isna_float64 = ak.isnan(ark_s_float64)
         actual = ark_isna_float64.to_ndarray()
-        expected = np.isnan(npa)
-        self.assertTrue(np.array_equal(expected, actual))
+        self.assertTrue(np.array_equal(np.isnan(npa), actual))
 
         # Currently we can't make an int64 array with a NaN in it so verify that we throw an Exception
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))

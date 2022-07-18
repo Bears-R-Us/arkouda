@@ -129,8 +129,7 @@ class ClientDTypeTests(ArkoudaTest):
         self.assertListEqual(ans.to_ndarray().tolist(), [True] * 100)
 
         ipv4 = ak.IPv4(ak.array(x))
-        ans = ak.is_ipv4(ipv4)
-        self.assertListEqual(ans.to_ndarray().tolist(), [True] * 100)
+        self.assertListEqual(ak.is_ipv4(ipv4).to_ndarray().tolist(), [True] * 100)
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv4(ak.array(x, ak.uint64))
@@ -147,8 +146,7 @@ class ClientDTypeTests(ArkoudaTest):
         low = ak.array([i & (2**64 - 1) for i in x], dtype=ak.uint64)
         high = ak.array([i >> 64 for i in x], dtype=ak.uint64)
 
-        ans = ak.is_ipv6(high, low)
-        self.assertListEqual(ans.to_ndarray().tolist(), [True] * 100)
+        self.assertListEqual(ak.is_ipv6(high, low).to_ndarray().tolist(), [True] * 100)
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv6(ak.array(x, ak.uint64))

@@ -216,22 +216,14 @@ class DataFrameTest(ArkoudaTest):
         df = build_ak_df()
 
         slice_df = df[ak.array([1, 3, 5])]
-        self.assertListEqual(
-            slice_df.index.to_ndarray().tolist(), ak.array([1, 3, 5]).to_ndarray().tolist()
-        )
+        self.assertListEqual(slice_df.index.to_ndarray().tolist(), [1, 3, 5])
 
         df_reset = slice_df.reset_index()
-        self.assertListEqual(
-            df_reset.index.to_ndarray().tolist(), ak.array([0, 1, 2]).to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            slice_df.index.to_ndarray().tolist(), ak.array([1, 3, 5]).to_ndarray().tolist()
-        )
+        self.assertListEqual(df_reset.index.to_ndarray().tolist(), [0, 1, 2])
+        self.assertListEqual(slice_df.index.to_ndarray().tolist(), [1, 3, 5])
 
         slice_df.reset_index(inplace=True)
-        self.assertListEqual(
-            slice_df.index.to_ndarray().tolist(), ak.array([0, 1, 2]).to_ndarray().tolist()
-        )
+        self.assertListEqual(slice_df.index.to_ndarray().tolist(), [0, 1, 2])
 
     def test_rename(self):
         df = build_ak_df()

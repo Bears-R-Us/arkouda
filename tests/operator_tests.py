@@ -265,11 +265,11 @@ class OperatorsTest(ArkoudaTest):
         pdaTwo = ak.arange(4, 7)
 
         self.assertListEqual(
-            ak.array([1, 2, 3, 4, 5, 6]).to_ndarray().tolist(),
+            [1, 2, 3, 4, 5, 6],
             ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
         )
         self.assertListEqual(
-            ak.array([4, 5, 6, 1, 2, 3]).to_ndarray().tolist(),
+            [4, 5, 6, 1, 2, 3],
             ak.concatenate([pdaTwo, pdaOne]).to_ndarray().tolist(),
         )
 
@@ -277,11 +277,11 @@ class OperatorsTest(ArkoudaTest):
         pdaTwo = ak.linspace(start=4, stop=6, length=3)
 
         self.assertListEqual(
-            ak.array([1, 2, 3, 4, 5, 6]).to_ndarray().tolist(),
+            [1, 2, 3, 4, 5, 6],
             ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
         )
         self.assertListEqual(
-            ak.array([4, 5, 6, 1, 2, 3]).to_ndarray().tolist(),
+            [4, 5, 6, 1, 2, 3],
             ak.concatenate([pdaTwo, pdaOne]).to_ndarray().tolist(),
         )
 
@@ -289,7 +289,7 @@ class OperatorsTest(ArkoudaTest):
         pdaTwo = ak.array([False, True, True])
 
         self.assertListEqual(
-            ak.array([True, False, True, False, True, True]).to_ndarray().tolist(),
+            [True, False, True, False, True, True],
             ak.concatenate([pdaOne, pdaTwo]).to_ndarray().tolist(),
         )
 

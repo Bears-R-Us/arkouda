@@ -526,74 +526,47 @@ class StringTest(ArkoudaTest):
     def test_flatten(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
         flat, mapping = orig.flatten("|", return_segments=True)
-        ans = ak.array(["one", "two", "three", "four", "five", "six"])
-        ans2 = ak.array([0, 2, 5])
-        self.assertListEqual(flat.to_ndarray().tolist(), ans.to_ndarray().tolist())
-        self.assertListEqual(mapping.to_ndarray().tolist(), ans2.to_ndarray().tolist())
+        self.assertListEqual(flat.to_ndarray().tolist(), ["one", "two", "three", "four", "five", "six"])
+        self.assertListEqual(mapping.to_ndarray().tolist(), [0, 2, 5])
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
         thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
         flatrange = thickrange.flatten(", ")
-        self.assertListEqual(
-            ak.cast(flatrange, "int64").to_ndarray().tolist(), ak.arange(99).to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.cast(flatrange, "int64").to_ndarray().tolist(), np.arange(99).tolist())
 
     def test_get_lengths(self):
         s1 = ak.array(["one", "two", "three", "four", "five"])
         lengths = s1.get_lengths()
-        self.assertListEqual(
-            ak.array([3, 3, 5, 4, 4]).to_ndarray().tolist(), lengths.to_ndarray().tolist()
-        )
+        self.assertListEqual([3, 3, 5, 4, 4], lengths.to_ndarray().tolist())
 
     def test_strip(self):
         s = ak.array([" Jim1", "John1   ", "Steve1 2"])
-        strip = s.strip(" 12")
-        expected = ak.array(["Jim", "John", "Steve"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
-
-        s = ak.array([" Jim1", "John1   ", "Steve1 2"])
-        strip = s.strip("12 ")
-        expected = ak.array(["Jim", "John", "Steve"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
-
-        s = ak.array([" Jim1", "John1   ", "Steve1 2"])
-        strip = s.strip("1 2")
-        expected = ak.array(["Jim", "John", "Steve"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(s.strip(" 12").to_ndarray().tolist(), ["Jim", "John", "Steve"])
+        self.assertListEqual(s.strip("12 ").to_ndarray().tolist(), ["Jim", "John", "Steve"])
+        self.assertListEqual(s.strip("1 2").to_ndarray().tolist(), ["Jim", "John", "Steve"])
 
         s = ak.array([" Jim", "John 1", "Steve1 2  "])
-        strip = s.strip()
-        expected = ak.array(["Jim", "John 1", "Steve1 2"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Jim", "John 1", "Steve1 2"])
 
-        s = ak.array(['\nStrings ', ' \n StringS \r', 'bbabStringS \r\t '])
-        strip = s.strip()
-        expected = ak.array(["Strings", "StringS", "bbabStringS"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        s = ak.array(["\nStrings ", " \n StringS \r", "bbabStringS \r\t "])
+        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Strings", "StringS", "bbabStringS"])
 
         s = ak.array(["abcStringsbac", "cabStringScc", "bbabStringS abc"])
-        strip = s.strip('abc')
-        expected = ak.array(["Strings", "StringS", "StringS "])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(s.strip("abc").to_ndarray().tolist(), ["Strings", "StringS", "StringS "])
 
-        s = ak.array(['\nStrings ', ' \n StringS \r', ' \t   StringS \r\t '])
-        strip = s.strip()
-        expected = ak.array(["Strings", "StringS", "StringS"])
-        self.assertListEqual(strip.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        s = ak.array(["\nStrings ", " \n StringS \r", " \t   StringS \r\t "])
+        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Strings", "StringS", "StringS"])
 
     def test_case_change(self):
         mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
         lower = mixed.to_lower()
-        expected = ak.array([f"strings {i}" for i in range(10)])
-        self.assertListEqual(lower.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(lower.to_ndarray().tolist(), [f"strings {i}" for i in range(10)])
 
         upper = mixed.to_upper()
-        expected = ak.array([f"STRINGS {i}" for i in range(10)])
-        self.assertListEqual(upper.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(upper.to_ndarray().tolist(), [f"STRINGS {i}" for i in range(10)])
 
         title = mixed.to_title()
-        expected = ak.array([f"Strings {i}" for i in range(10)])
-        self.assertListEqual(title.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(title.to_ndarray().tolist(), [f"Strings {i}" for i in range(10)])
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
@@ -625,24 +598,22 @@ class StringTest(ArkoudaTest):
 
         s1 = self._get_strings("string", 6)
         s2 = self._get_strings("string-two", 6)
-        expectedResult = ak.array(
-            [
-                "string 1",
-                "string 2",
-                "string 3",
-                "string 4",
-                "string 5",
-                "string-two 1",
-                "string-two 2",
-                "string-two 3",
-                "string-two 4",
-                "string-two 5",
-            ]
-        )
+        expected_result = [
+            "string 1",
+            "string 2",
+            "string 3",
+            "string 4",
+            "string 5",
+            "string-two 1",
+            "string-two 2",
+            "string-two 3",
+            "string-two 4",
+            "string-two 5",
+        ]
 
         # Ordered concatenation
         s12ord = ak.concatenate([s1, s2], ordered=True)
-        self.assertListEqual(expectedResult.to_ndarray().tolist(), s12ord.to_ndarray().tolist())
+        self.assertListEqual(expected_result, s12ord.to_ndarray().tolist())
         # Unordered (but still deterministic) concatenation
         # TODO: the unordered concatenation test is disabled per #710 #721
         # s12unord = ak.concatenate([s1, s2], ordered=False)
