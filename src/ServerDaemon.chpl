@@ -1,7 +1,9 @@
 module ServerDaemon {
     use FileIO;
+    use IO;
     use Security;
     use ServerConfig;
+    use ServerErrors;
     use Time only;
     use ZMQ only;
     use Memory;
@@ -19,8 +21,12 @@ module ServerDaemon {
     use Message;
     use CommandMap, ServerRegistration;
 
+    enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
+
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
+
+    private config const daemonType = ServerDaemonType.DEFAULT;
 
     /**
      * The ArkoudaServerDaemon class serves as the base Arkouda server
@@ -464,7 +470,20 @@ module ServerDaemon {
         }
     }
 
-    proc getServerDaemon(daemonClass: string) {
-        return new ArkoudaServerDaemon();
+    proc getServerDaemon() throws {
+        select daemonType {
+            when ServerDaemonType.DEFAULT {
+               return new ArkoudaServerDaemon();
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unrecognized ServerDaemonType: %t".format(daemonType),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(),
+                           moduleName=getModuleName(),
+                           errorClass="ArgumentError"
+                           );
+            }
+        }
     }
 }
