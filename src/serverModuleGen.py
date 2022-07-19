@@ -19,7 +19,7 @@ def generateServerIncludes(config_filename, src_dir):
         if mod[0] != '/':
             res += f" {src_dir}/{mod}.chpl"
         else:
-            res += f"{mod}.chpl"
+            res += f" {mod}.chpl"
 
     print(res)
 
