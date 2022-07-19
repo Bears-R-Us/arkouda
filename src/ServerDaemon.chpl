@@ -27,18 +27,46 @@ module ServerDaemon {
 
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
+
+    private config const daemonType = ServerDaemonType.DEFAULT;
     
     private config const externalSystem = SystemType.NONE;
-    
-    private config const daemonType = ServerDaemonType.DEFAULT;
+
+    /**
+     * The AbstractServerDaemon class defines the run and shutdown 
+     * functions all derived classes must override
+     */
+    class AbstractServerDaemon {
+        var st = new owned SymTab();
+        var shutdownDaemon = false;
+        var port: int;
+   
+        proc run() throws {
+            throw new NotImplementedError("run() must be overridden",
+                                          getLineNumber(),
+                                          getRoutineName(),
+                                          getModuleName());
+        }
+        
+        proc shutdown(user: string) throws {
+            shutdownDaemon = true;
+        }
+        
+        /*
+         * Converts the incoming request JSON string into RequestMsg object.
+         */
+        proc extractRequest(request : string) : RequestMsg throws {
+            var rm = new RequestMsg();
+            deserialize(rm, request);
+            return rm;
+        }
+    }
 
     /**
      * The ServerDaemon class serves as the base Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class ArkoudaServerDaemon {
-        var st = new owned SymTab();
-        var shutdownServer = false;
+    class ArkoudaServerDaemon : AbstractServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -208,25 +236,16 @@ module ServerDaemon {
             else if serverToken != token {
                 throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
             }
-        } 
+        }
 
         /*
-         * Converts the incoming request JSON string into RequestMsg object.
-         */
-        proc extractRequest(request : string) : RequestMsg throws {
-            var rm = new RequestMsg();
-            deserialize(rm, request);
-            return rm;
-        }
-        
-        /*
-        Sets the shutdownServer boolean to true and sends the shutdown command to socket,
+        Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
         which stops the arkouda_server listener thread and closes socket.
         */
-        proc shutdown(user: string) throws {
+        override proc shutdown(user: string) throws {
             if saveUsedModules then
                 writeUsedModules();
-            this.shutdownServer = true;
+            shutdownDaemon = true;
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
@@ -275,7 +294,7 @@ module ServerDaemon {
             return arkDirectory;
         }
 
-        proc run() throws {
+        override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
@@ -293,7 +312,7 @@ module ServerDaemon {
             t1.clear();
             t1.start();            
         
-            while !this.shutdownServer {
+            while !shutdownDaemon {
             // receive message on the zmq socket
             var reqMsgRaw = socket.recv(bytes);
 
@@ -474,21 +493,28 @@ module ServerDaemon {
         }
     }
 
-    class MetricsServerDaemon : ArkoudaServerDaemon {
+    class MetricsServerDaemon : AbstractServerDaemon {
+    
+        var context: ZMQ.Context;
+        var socket : ZMQ.Socket;      
+        
+        proc init() {
+            this.socket = this.context.socket(ZMQ.REP); 
+            this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
-        proc runMetricsServer() throws {
-            var context: ZMQ.Context;
-            var socket: ZMQ.Socket = context.socket(ZMQ.REP);
-            var port = getEnv('METRICS_SERVER_PORT','5556'):int;
+            try! this.socket.bind("tcp://*:%t".format(this.port));
+            try! sdLogger.debug(getModuleName(), 
+                                getRoutineName(), 
+                                getLineNumber(),
+                                "initialized and listening in port %i".format(
+                                this.port));
+        }
 
-            try! socket.bind("tcp://*:%t".format(port));
-            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                "Metrics Server initialized and listening in port %i".format(port));
-                
-            while !shutdownServer {
+        proc runMetricsServer() throws {                
+            while !shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                                   "awaiting message on port %i".format(port));
-                var req = socket.recv(bytes).decode();
+                               "awaiting message on port %i".format(this.port));
+                var req = this.socket.recv(bytes).decode();
 
                 var msg: RequestMsg = extractRequest(req);
                 var user   = msg.user;
@@ -504,16 +530,16 @@ module ServerDaemon {
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
-                                                "%s with token %s".format(port,user,token), MsgType.NORMAL);
+                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
                         } else {
-                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(port), 
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
                                                                                     MsgType.NORMAL);
                         }
                     }
                     when "getconfig" {repTuple = getconfigMsg(cmd, args, st);}
                 }           
 
-                socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
                                                 msgFormat=MsgFormat.STRING, user=user));
             }
         
@@ -521,20 +547,17 @@ module ServerDaemon {
         }
 
         override proc run() throws {
-            cobegin {
-                this.runMetricsServer();
-                super.run();
-            }
+            this.runMetricsServer();
         }
     }
 
-    proc getServerDaemon() throws {
+    proc getServerDaemons() throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return new ArkoudaServerDaemon();
+               return [new ArkoudaServerDaemon():AbstractServerDaemon];
             }
             when ServerDaemonType.METRICS {
-               return new MetricsServerDaemon();
+               return [new ArkoudaServerDaemon():AbstractServerDaemon, new MetricsServerDaemon():AbstractServerDaemon];
             }
             otherwise {
                 throw getErrorWithContext(
