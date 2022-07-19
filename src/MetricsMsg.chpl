@@ -91,7 +91,7 @@ module MetricsMsg {
         proc getPerUserNumRequestsPerCommandForAllUsersMetrics() {
             var metrics = new list(owned UserMetric?);
             for userName in this.users.getUserNames() {
-                metrics.append(this.getPerUserNumRequestsPerCommandMetrics(userName));
+                metrics.extend(this.getPerUserNumRequestsPerCommandMetrics(userName));
             }
 
             return metrics;
