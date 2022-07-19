@@ -7,7 +7,7 @@ def getModules(filename):
         modules = configfile.readlines()
         ret = []
         for module in modules:
-            module = module.split("#")[0].split("/")[-1].strip()
+            module = module.split("#")[0].strip()
             if module:
                 ret.append(module)
         return ret
@@ -16,7 +16,10 @@ def getModules(filename):
 def generateServerIncludes(config_filename, src_dir):
     res = ""
     for mod in getModules(config_filename):
-        res += f" {src_dir}/{mod}.chpl"
+        if mod[0] != '/':
+            res += f" {src_dir}/{mod}.chpl"
+        else:
+            res += f"{mod}.chpl"
 
     print(res)
 
