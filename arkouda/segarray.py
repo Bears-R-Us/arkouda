@@ -676,7 +676,8 @@ class SegArray:
 
         See Also
         --------
-        array
+        array()
+        to_list()
 
         Examples
         --------
@@ -692,6 +693,30 @@ class SegArray:
         if self.size > 0:
             arr.append(ndvals[ndsegs[-1] :])
         return np.array(arr, dtype=object)
+
+    def to_list(self):
+        """
+        Convert the segarray into a list containing sub-arrays
+
+        Returns
+        -------
+        list
+            A list with the same sub-arrays (also list) as this segarray
+
+        See Also
+        --------
+        to_ndarray()
+
+        Examples
+        --------
+        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr.to_list()
+        [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
+        >>> type(segarr.to_list())
+        list
+        """
+        # TODO this may need to change once #1600 has been worked
+        return [arr.tolist() for arr in self.to_ndarray()]
 
     def sum(self, x=None):
         if x is None:

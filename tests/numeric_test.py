@@ -23,34 +23,34 @@ class NumericTest(ArkoudaTest):
             # Make sure seeded results are same
             a = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
             b = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
-            self.assertListEqual(a.to_ndarray().tolist(), b.to_ndarray().tolist())
+            self.assertListEqual(a.to_list(), b.to_list())
         # Uniform
         self.assertFalse((ak.uniform(N) == ak.uniform(N)).all())
         self.assertListEqual(
-            ak.uniform(N, seed=seed).to_ndarray().tolist(),
-            ak.uniform(N, seed=seed).to_ndarray().tolist(),
+            ak.uniform(N, seed=seed).to_list(),
+            ak.uniform(N, seed=seed).to_list(),
         )
         # Standard Normal
         self.assertFalse((ak.standard_normal(N) == ak.standard_normal(N)).all())
         self.assertListEqual(
-            ak.standard_normal(N, seed=seed).to_ndarray().tolist(),
-            ak.standard_normal(N, seed=seed).to_ndarray().tolist(),
+            ak.standard_normal(N, seed=seed).to_list(),
+            ak.standard_normal(N, seed=seed).to_list(),
         )
         # Strings (uniformly distributed length)
         self.assertFalse(
             (ak.random_strings_uniform(1, 10, N) == ak.random_strings_uniform(1, 10, N)).all()
         )
         self.assertListEqual(
-            ak.random_strings_uniform(1, 10, N, seed=seed).to_ndarray().tolist(),
-            ak.random_strings_uniform(1, 10, N, seed=seed).to_ndarray().tolist(),
+            ak.random_strings_uniform(1, 10, N, seed=seed).to_list(),
+            ak.random_strings_uniform(1, 10, N, seed=seed).to_list(),
         )
         # Strings (log-normally distributed length)
         self.assertFalse(
             (ak.random_strings_lognormal(2, 1, N) == ak.random_strings_lognormal(2, 1, N)).all()
         )
         self.assertListEqual(
-            ak.random_strings_lognormal(2, 1, N, seed=seed).to_ndarray().tolist(),
-            ak.random_strings_lognormal(2, 1, N, seed=seed).to_ndarray().tolist(),
+            ak.random_strings_lognormal(2, 1, N, seed=seed).to_list(),
+            ak.random_strings_lognormal(2, 1, N, seed=seed).to_list(),
         )
 
     def testCast(self):
@@ -86,12 +86,12 @@ class NumericTest(ArkoudaTest):
 
         self.assertListEqual(
             [1, 2, 3, 4, 5],
-            ak.cast(ak.linspace(1, 5, 5), dt=ak.int64).to_ndarray().tolist(),
+            ak.cast(ak.linspace(1, 5, 5), dt=ak.int64).to_list(),
         )
         self.assertEqual(ak.cast(ak.arange(0, 5), dt=ak.float64).dtype, ak.float64)
         self.assertListEqual(
             [False, True, True, True, True],
-            ak.cast(ak.linspace(0, 4, 5), dt=ak.bool).to_ndarray().tolist(),
+            ak.cast(ak.linspace(0, 4, 5), dt=ak.bool).to_list(),
         )
 
     def testStrCastErrors(self):
@@ -119,7 +119,7 @@ class NumericTest(ArkoudaTest):
             res = ak.cast(arg, dt, errors=ak.ErrorMode.ignore)
             self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
             res, valid = ak.cast(arg, dt, errors=ak.ErrorMode.return_validity)
-            self.assertListEqual(valid.to_ndarray().tolist(), validans.to_ndarray().tolist())
+            self.assertListEqual(valid.to_list(), validans.to_list())
             self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
 
     def testHistogram(self):
@@ -161,12 +161,10 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
 
         self.assertTrue(np.allclose(np.abs(na), ak.abs(pda).to_ndarray()))
-        self.assertListEqual(
-            ak.arange(5, 1, -1).to_ndarray().tolist(), ak.abs(ak.arange(-5, -1)).to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.arange(5, 1, -1).to_list(), ak.abs(ak.arange(-5, -1)).to_list())
         self.assertListEqual(
             [5, 4, 3, 2, 1],
-            ak.abs(ak.linspace(-5, -1, 5)).to_ndarray().tolist(),
+            ak.abs(ak.linspace(-5, -1, 5)).to_list(),
         )
 
         with self.assertRaises(TypeError):
@@ -215,12 +213,12 @@ class NumericTest(ArkoudaTest):
         h1, h2 = ak.hash(ak.arange(10))
         rev = ak.arange(9, -1, -1)
         h3, h4 = ak.hash(rev)
-        self.assertListEqual(h1.to_ndarray().tolist(), h3[rev].to_ndarray().tolist())
-        self.assertListEqual(h2.to_ndarray().tolist(), h4[rev].to_ndarray().tolist())
+        self.assertListEqual(h1.to_list(), h3[rev].to_list())
+        self.assertListEqual(h2.to_list(), h4[rev].to_list())
 
         h1 = ak.hash(ak.arange(10), full=False)
         h3 = ak.hash(rev, full=False)
-        self.assertListEqual(h1.to_ndarray().tolist(), h3[rev].to_ndarray().tolist())
+        self.assertListEqual(h1.to_list(), h3[rev].to_list())
 
         h = ak.hash(ak.linspace(0, 10, 10))
         self.assertEqual(h[0].dtype, ak.uint64)

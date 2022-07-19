@@ -12,7 +12,7 @@ class IndexTest(ArkoudaTest):
 
         self.assertIsInstance(idx, ak.Index)
         self.assertEqual(idx.size, 5)
-        self.assertListEqual(idx.to_ndarray().tolist(), [i for i in range(5)])
+        self.assertListEqual(idx.to_list(), [i for i in range(5)])
 
     def test_multiindex_creation(self):
         # test list generation
@@ -50,12 +50,12 @@ class IndexTest(ArkoudaTest):
     def test_argsort(self):
         idx = ak.Index.factory(ak.arange(5))
         i = idx.argsort(False)
-        self.assertListEqual(i.to_ndarray().tolist(), [4, 3, 2, 1, 0])
+        self.assertListEqual(i.to_list(), [4, 3, 2, 1, 0])
 
         idx = ak.Index(ak.array([1, 0, 4, 2, 5, 3]))
         i = idx.argsort()
         # values should be the indexes in the array of idx
-        self.assertListEqual(i.to_ndarray().tolist(), [1, 0, 3, 5, 2, 4])
+        self.assertListEqual(i.to_list(), [1, 0, 3, 5, 2, 4])
 
     def test_concat(self):
         idx_1 = ak.Index.factory(ak.arange(5))
@@ -63,20 +63,20 @@ class IndexTest(ArkoudaTest):
         idx_2 = ak.Index(ak.array([2, 4, 1, 3, 0]))
 
         idx_full = idx_1.concat(idx_2)
-        self.assertListEqual(idx_full.to_ndarray().tolist(), [0, 1, 2, 3, 4, 2, 4, 1, 3, 0])
+        self.assertListEqual(idx_full.to_list(), [0, 1, 2, 3, 4, 2, 4, 1, 3, 0])
 
     def test_lookup(self):
         idx = ak.Index.factory(ak.arange(5))
         lk = idx.lookup(ak.array([0, 4]))
-        self.assertListEqual(lk.to_ndarray().tolist(), [True, False, False, False, True])
+        self.assertListEqual(lk.to_list(), [True, False, False, False, True])
 
     def test_multi_argsort(self):
         idx = ak.Index.factory([ak.arange(5), ak.arange(5)])
         s = idx.argsort(False)
-        self.assertListEqual(s.to_ndarray().tolist(), [4, 3, 2, 1, 0])
+        self.assertListEqual(s.to_list(), [4, 3, 2, 1, 0])
 
         s = idx.argsort()
-        self.assertListEqual(s.to_ndarray().tolist(), [i for i in range(5)])
+        self.assertListEqual(s.to_list(), [i for i in range(5)])
 
     def test_multi_concat(self):
         idx = ak.Index.factory([ak.arange(5), ak.arange(5)])
@@ -97,7 +97,7 @@ class IndexTest(ArkoudaTest):
         lk = ak.array([0, 3, 2])
 
         result = idx.lookup([lk, lk])
-        self.assertListEqual(result.to_ndarray().tolist(), [True, False, True, True, False])
+        self.assertListEqual(result.to_list(), [True, False, True, True, False])
 
     def test_save(self):
         locale_count = ak.get_config()["numLocales"]

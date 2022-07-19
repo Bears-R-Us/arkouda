@@ -361,6 +361,31 @@ class Categorical:
             valcodes = self.codes.to_ndarray()
         return idx[valcodes]
 
+    def to_list(self) -> List:
+        """
+        Convert the Categorical to a list, transferring data from
+        the arkouda server to Python. This conversion discards category
+        information and produces a list of strings. If the arrays
+        exceeds a built-in size limit, a RuntimeError is raised.
+
+        Returns
+        -------
+        list
+            A list of strings corresponding to the values in
+            this Categorical
+
+        Notes
+        -----
+        The number of bytes in the Categorical cannot exceed ``arkouda.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+        """
+        return self.to_ndarray().tolist()
+
     def __iter__(self):
         raise NotImplementedError(
             "Categorical does not support iteration. To force data transfer from server, use to_ndarray"

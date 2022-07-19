@@ -473,7 +473,7 @@ class StringTest(ArkoudaTest):
         # by a null byte.
         # This mimics what should be stored server-side in the strings.bytes pdarray
         expected_series_dec = convert_to_ord(series.to_list())
-        actual_dec = pda._comp_to_ndarray("values").tolist()  # pda.bytes.to_ndarray().tolist()
+        actual_dec = pda._comp_to_ndarray("values").tolist()  # pda.bytes.to_list()
         self.assertListEqual(expected_series_dec, actual_dec)
 
         # Now perform the peel and verify
@@ -489,19 +489,15 @@ class StringTest(ArkoudaTest):
         series = pd.Series([f"abc{d}xyz", f"small{d}dog", f"blue{d}hat", "last"])
         pda = ak.from_series(series)
         a, b = pda.peel(d)
-        aa = a.to_ndarray().tolist()
-        bb = b.to_ndarray().tolist()
-        self.assertListEqual(["abc", "small", "blue", ""], aa)
-        self.assertListEqual(["xyz", "dog", "hat", "last"], bb)
+        self.assertListEqual(["abc", "small", "blue", ""], a.to_list())
+        self.assertListEqual(["xyz", "dog", "hat", "last"], b.to_list())
 
         # Try a slight permutation since we were able to get both versions to fail at one point
         series = pd.Series([f"abc{d}xyz", f"small{d}dog", "last"])
         pda = ak.from_series(series)
         a, b = pda.peel(d)
-        aa = a.to_ndarray().tolist()
-        bb = b.to_ndarray().tolist()
-        self.assertListEqual(["abc", "small", ""], aa)
-        self.assertListEqual(["xyz", "dog", "last"], bb)
+        self.assertListEqual(["abc", "small", ""], a.to_list())
+        self.assertListEqual(["xyz", "dog", "last"], b.to_list())
 
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim, 100)
@@ -526,47 +522,47 @@ class StringTest(ArkoudaTest):
     def test_flatten(self):
         orig = ak.array(["one|two", "three|four|five", "six"])
         flat, mapping = orig.flatten("|", return_segments=True)
-        self.assertListEqual(flat.to_ndarray().tolist(), ["one", "two", "three", "four", "five", "six"])
-        self.assertListEqual(mapping.to_ndarray().tolist(), [0, 2, 5])
+        self.assertListEqual(flat.to_list(), ["one", "two", "three", "four", "five", "six"])
+        self.assertListEqual(mapping.to_list(), [0, 2, 5])
         thirds = [ak.cast(ak.arange(i, 99, 3), "str") for i in range(3)]
         thickrange = thirds[0].stick(thirds[1], delimiter=", ").stick(thirds[2], delimiter=", ")
         flatrange = thickrange.flatten(", ")
-        self.assertListEqual(ak.cast(flatrange, "int64").to_ndarray().tolist(), np.arange(99).tolist())
+        self.assertListEqual(ak.cast(flatrange, "int64").to_list(), np.arange(99).tolist())
 
     def test_get_lengths(self):
         s1 = ak.array(["one", "two", "three", "four", "five"])
         lengths = s1.get_lengths()
-        self.assertListEqual([3, 3, 5, 4, 4], lengths.to_ndarray().tolist())
+        self.assertListEqual([3, 3, 5, 4, 4], lengths.to_list())
 
     def test_strip(self):
         s = ak.array([" Jim1", "John1   ", "Steve1 2"])
-        self.assertListEqual(s.strip(" 12").to_ndarray().tolist(), ["Jim", "John", "Steve"])
-        self.assertListEqual(s.strip("12 ").to_ndarray().tolist(), ["Jim", "John", "Steve"])
-        self.assertListEqual(s.strip("1 2").to_ndarray().tolist(), ["Jim", "John", "Steve"])
+        self.assertListEqual(s.strip(" 12").to_list(), ["Jim", "John", "Steve"])
+        self.assertListEqual(s.strip("12 ").to_list(), ["Jim", "John", "Steve"])
+        self.assertListEqual(s.strip("1 2").to_list(), ["Jim", "John", "Steve"])
 
         s = ak.array([" Jim", "John 1", "Steve1 2  "])
-        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Jim", "John 1", "Steve1 2"])
+        self.assertListEqual(s.strip().to_list(), ["Jim", "John 1", "Steve1 2"])
 
         s = ak.array(["\nStrings ", " \n StringS \r", "bbabStringS \r\t "])
-        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Strings", "StringS", "bbabStringS"])
+        self.assertListEqual(s.strip().to_list(), ["Strings", "StringS", "bbabStringS"])
 
         s = ak.array(["abcStringsbac", "cabStringScc", "bbabStringS abc"])
-        self.assertListEqual(s.strip("abc").to_ndarray().tolist(), ["Strings", "StringS", "StringS "])
+        self.assertListEqual(s.strip("abc").to_list(), ["Strings", "StringS", "StringS "])
 
         s = ak.array(["\nStrings ", " \n StringS \r", " \t   StringS \r\t "])
-        self.assertListEqual(s.strip().to_ndarray().tolist(), ["Strings", "StringS", "StringS"])
+        self.assertListEqual(s.strip().to_list(), ["Strings", "StringS", "StringS"])
 
     def test_case_change(self):
         mixed = ak.array([f"StrINgS {i}" for i in range(10)])
 
         lower = mixed.to_lower()
-        self.assertListEqual(lower.to_ndarray().tolist(), [f"strings {i}" for i in range(10)])
+        self.assertListEqual(lower.to_list(), [f"strings {i}" for i in range(10)])
 
         upper = mixed.to_upper()
-        self.assertListEqual(upper.to_ndarray().tolist(), [f"STRINGS {i}" for i in range(10)])
+        self.assertListEqual(upper.to_list(), [f"STRINGS {i}" for i in range(10)])
 
         title = mixed.to_title()
-        self.assertListEqual(title.to_ndarray().tolist(), [f"Strings {i}" for i in range(10)])
+        self.assertListEqual(title.to_list(), [f"Strings {i}" for i in range(10)])
 
         # first 10 all lower, second 10 mixed case (not lower, upper, or title), third 10 all upper,
         # last 10 all title
@@ -574,15 +570,15 @@ class StringTest(ArkoudaTest):
 
         islower = lmut.is_lower()
         expected = 10 > ak.arange(40)
-        self.assertListEqual(islower.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(islower.to_list(), expected.to_list())
 
         isupper = lmut.is_upper()
         expected = (30 > ak.arange(40)) & (ak.arange(40) >= 20)
-        self.assertListEqual(isupper.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(isupper.to_list(), expected.to_list())
 
         istitle = lmut.is_title()
         expected = ak.arange(40) >= 30
-        self.assertListEqual(istitle.to_ndarray().tolist(), expected.to_ndarray().tolist())
+        self.assertListEqual(istitle.to_list(), expected.to_list())
 
     def test_concatenate(self):
         s1 = self._get_strings("string", 51)
@@ -613,7 +609,7 @@ class StringTest(ArkoudaTest):
 
         # Ordered concatenation
         s12ord = ak.concatenate([s1, s2], ordered=True)
-        self.assertListEqual(expected_result, s12ord.to_ndarray().tolist())
+        self.assertListEqual(expected_result, s12ord.to_list())
         # Unordered (but still deterministic) concatenation
         # TODO: the unordered concatenation test is disabled per #710 #721
         # s12unord = ak.concatenate([s1, s2], ordered=False)

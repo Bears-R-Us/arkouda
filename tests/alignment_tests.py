@@ -14,21 +14,21 @@ class DataFrameTest(ArkoudaTest):
         upper_bound = ak.array(ub)
         vals = ak.array(v)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
         # test uint64
         lower_bound = ak.array(lb, dtype=ak.uint64)
         upper_bound = ak.array(ub, dtype=ak.uint64)
         vals = ak.array(v, dtype=ak.uint64)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
         # test uint64
         lower_bound = ak.array(lb, dtype=ak.float64)
         upper_bound = ak.array(ub, dtype=ak.float64)
         vals = ak.array(v, dtype=ak.float64)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
     def test_multi_array_search_interval(self):
         # Added for Issue #1548
@@ -36,24 +36,18 @@ class DataFrameTest(ArkoudaTest):
         ends = (ak.array([5, 15, 25]), ak.array([5, 15, 25]))
         vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
         ans = [-1, 1, -1]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
-        self.assertListEqual(
-            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
-        )
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
         vals = (ak.array([23, 13, 3]), ak.array([23, 13, 3]))
         ans = [2, 1, 0]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
-        self.assertListEqual(
-            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
-        )
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
         vals = (ak.array([23, 13, 33]), ak.array([23, 13, 3]))
         ans = [2, 1, -1]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_ndarray().tolist())
-        self.assertListEqual(
-            ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_ndarray().tolist()
-        )
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
     def test_search_interval_nonunique(self):
         expected_result = [2, 5, 2, 1, 3, 1, 4, -1, -1]
@@ -66,21 +60,21 @@ class DataFrameTest(ArkoudaTest):
         upper_bound = ak.array(ub)
         vals = ak.array(v)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
         # test uint64
         lower_bound = ak.array(lb, dtype=ak.uint64)
         upper_bound = ak.array(ub, dtype=ak.uint64)
         vals = ak.array(v, dtype=ak.uint64)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
         # test uint64
         lower_bound = ak.array(lb, dtype=ak.float64)
         upper_bound = ak.array(ub, dtype=ak.float64)
         vals = ak.array(v, dtype=ak.float64)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        self.assertListEqual(expected_result, interval_idxs.to_ndarray().tolist())
+        self.assertListEqual(expected_result, interval_idxs.to_list())
 
     def test_error_handling(self):
         lb = [0, 10, 20, 30, 40, 50]

@@ -211,6 +211,10 @@ class _AbstractBaseTime(pdarray):
             dtype="{}64[ns]".format(self.__class__.__name__.lower()),
         )
 
+    def to_list(self):
+        __doc__ = super().to_list().__doc__  # noqa
+        return self.to_ndarray().tolist()
+
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
 

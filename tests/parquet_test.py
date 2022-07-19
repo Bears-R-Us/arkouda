@@ -132,12 +132,12 @@ class ParquetTest(ArkoudaTest):
     def test_parquet(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = read_write_test(dtype)
-            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
+            self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
     def test_multi_file(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = read_write_multi_test(dtype)
-            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
+            self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
     def test_wrong_dset_name(self):
         ak_arr = ak.randint(0, 2**32, SIZE)
@@ -184,7 +184,7 @@ class ParquetTest(ArkoudaTest):
         ak_vals, ak_dict = append_test()
 
         for key in ak_dict:
-            self.assertListEqual(ak_vals[key].to_ndarray().tolist(), ak_dict[key].to_ndarray().tolist())
+            self.assertListEqual(ak_vals[key].to_list(), ak_dict[key].to_list())
 
     def test_null_strings(self):
         datadir = "resources/parquet-testing"
@@ -194,7 +194,7 @@ class ParquetTest(ArkoudaTest):
         filename = os.path.join(datadir, basename)
         res = ak.read(filename)
 
-        self.assertListEqual(expected, res.to_ndarray().tolist())
+        self.assertListEqual(expected, res.to_list())
 
     def test_null_indices(self):
         datadir = "resources/parquet-testing"
@@ -203,13 +203,13 @@ class ParquetTest(ArkoudaTest):
         filename = os.path.join(datadir, basename)
         res = ak.get_null_indices(filename, datasets="col1")
 
-        self.assertListEqual([0, 1, 0, 1, 0, 1, 1], res.to_ndarray().tolist())
+        self.assertListEqual([0, 1, 0, 1, 0, 1, 1], res.to_list())
 
     def test_append_empty(self):
         for dtype in TYPES:
             (ak_arr, pq_arr) = empty_append_test(dtype)
 
-            self.assertListEqual(ak_arr.to_ndarray().tolist(), pq_arr.to_ndarray().tolist())
+            self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

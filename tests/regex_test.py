@@ -51,33 +51,23 @@ class RegexTest(ArkoudaTest):
         re_match = [re.match(pattern, strings[i]) for i in range(strings.size)]
         re_fullmatch = [re.fullmatch(pattern, strings[i]) for i in range(strings.size)]
 
-        self.assertListEqual(
-            ak_search.matched().to_ndarray().tolist(), [m is not None for m in re_search]
-        )
-        self.assertListEqual(ak_match.matched().to_ndarray().tolist(), [m is not None for m in re_match])
-        self.assertListEqual(
-            ak_fullmatch.matched().to_ndarray().tolist(), [m is not None for m in re_fullmatch]
-        )
+        self.assertListEqual(ak_search.matched().to_list(), [m is not None for m in re_search])
+        self.assertListEqual(ak_match.matched().to_list(), [m is not None for m in re_match])
+        self.assertListEqual(ak_fullmatch.matched().to_list(), [m is not None for m in re_fullmatch])
 
         self.assertListEqual(
-            ak_search.start().to_ndarray().tolist(), [m.start() for m in re_search if m is not None]
+            ak_search.start().to_list(), [m.start() for m in re_search if m is not None]
         )
+        self.assertListEqual(ak_match.start().to_list(), [m.start() for m in re_match if m is not None])
         self.assertListEqual(
-            ak_match.start().to_ndarray().tolist(), [m.start() for m in re_match if m is not None]
-        )
-        self.assertListEqual(
-            ak_fullmatch.start().to_ndarray().tolist(),
+            ak_fullmatch.start().to_list(),
             [m.start() for m in re_fullmatch if m is not None],
         )
 
+        self.assertListEqual(ak_search.end().to_list(), [m.end() for m in re_search if m is not None])
+        self.assertListEqual(ak_match.end().to_list(), [m.end() for m in re_match if m is not None])
         self.assertListEqual(
-            ak_search.end().to_ndarray().tolist(), [m.end() for m in re_search if m is not None]
-        )
-        self.assertListEqual(
-            ak_match.end().to_ndarray().tolist(), [m.end() for m in re_match if m is not None]
-        )
-        self.assertListEqual(
-            ak_fullmatch.end().to_ndarray().tolist(), [m.end() for m in re_fullmatch if m is not None]
+            ak_fullmatch.end().to_list(), [m.end() for m in re_fullmatch if m is not None]
         )
 
         self.assertEqual(ak_search.match_type(), "SEARCH")
@@ -88,27 +78,27 @@ class RegexTest(ArkoudaTest):
         match_matches, match_origins = ak_match.find_matches(return_match_origins=True)
         fullmatch_matches, fullmatch_origins = ak_fullmatch.find_matches(return_match_origins=True)
         self.assertListEqual(
-            search_matches.to_ndarray().tolist(),
+            search_matches.to_list(),
             [m.string[m.start() : m.end()] for m in re_search if m is not None],
         )
         self.assertListEqual(
-            search_origins.to_ndarray().tolist(),
+            search_origins.to_list(),
             [i for i in range(len(re_search)) if re_search[i] is not None],
         )
         self.assertListEqual(
-            match_matches.to_ndarray().tolist(),
+            match_matches.to_list(),
             [m.string[m.start() : m.end()] for m in re_match if m is not None],
         )
         self.assertListEqual(
-            match_origins.to_ndarray().tolist(),
+            match_origins.to_list(),
             [i for i in range(len(re_match)) if re_match[i] is not None],
         )
         self.assertListEqual(
-            fullmatch_matches.to_ndarray().tolist(),
+            fullmatch_matches.to_list(),
             [m.string[m.start() : m.end()] for m in re_fullmatch if m is not None],
         )
         self.assertListEqual(
-            fullmatch_origins.to_ndarray().tolist(),
+            fullmatch_origins.to_list(),
             [i for i in range(len(re_fullmatch)) if re_fullmatch[i] is not None],
         )
 
@@ -119,20 +109,20 @@ class RegexTest(ArkoudaTest):
         ak_captures = tug_of_war.search("(\\w+) (\\w+)")
         re_captures = [re.search("(\\w+) (\\w+)", tug_of_war[i]) for i in range(tug_of_war.size)]
         self.assertListEqual(
-            ak_captures.group().to_ndarray().tolist(), [m.group() for m in re_captures if m is not None]
+            ak_captures.group().to_list(), [m.group() for m in re_captures if m is not None]
         )
         self.assertListEqual(
-            ak_captures.group(1).to_ndarray().tolist(),
+            ak_captures.group(1).to_list(),
             [m.group(1) for m in re_captures if m is not None],
         )
         self.assertListEqual(
-            ak_captures.group(2).to_ndarray().tolist(),
+            ak_captures.group(2).to_list(),
             [m.group(2) for m in re_captures if m is not None],
         )
 
         group, group_origins = ak_captures.group(1, return_group_origins=True)
         self.assertListEqual(
-            group_origins.to_ndarray().tolist(),
+            group_origins.to_list(),
             [i for i in range(len(re_captures)) if re_captures[i] is not None],
         )
 
@@ -155,8 +145,8 @@ class RegexTest(ArkoudaTest):
         re_sub = [re.sub(pattern, repl, strings[i], count) for i in range(strings.size)]
         re_sub_counts = [re.subn(pattern, repl, strings[i], count)[1] for i in range(strings.size)]
         ak_sub, ak_sub_counts = strings.subn(pattern, repl, count)
-        self.assertListEqual(re_sub, ak_sub.to_ndarray().tolist())
-        self.assertListEqual(re_sub_counts, ak_sub_counts.to_ndarray().tolist())
+        self.assertListEqual(re_sub, ak_sub.to_list())
+        self.assertListEqual(re_sub_counts, ak_sub_counts.to_list())
 
         # test long repl
         repl = "---------"
@@ -164,8 +154,8 @@ class RegexTest(ArkoudaTest):
         re_sub = [re.sub(pattern, repl, strings[i], count) for i in range(strings.size)]
         re_sub_counts = [re.subn(pattern, repl, strings[i], count)[1] for i in range(strings.size)]
         ak_sub, ak_sub_counts = strings.subn(pattern, repl, count)
-        self.assertListEqual(re_sub, ak_sub.to_ndarray().tolist())
-        self.assertListEqual(re_sub_counts, ak_sub_counts.to_ndarray().tolist())
+        self.assertListEqual(re_sub, ak_sub.to_list())
+        self.assertListEqual(re_sub_counts, ak_sub_counts.to_list())
 
     def test_split(self):
         strings = ak.array(
@@ -181,7 +171,7 @@ class RegexTest(ArkoudaTest):
                 if i == strings.size - 1
                 else split[split_map[i] : split_map[i + 1]]
             )
-            self.assertListEqual(re_split, ak_split.to_ndarray().tolist())
+            self.assertListEqual(re_split, ak_split.to_list())
 
     def test_regex_contains(self):
         digit_strings = ak.array(["{} string {}".format(i, i) for i in range(1, 6)])
@@ -214,37 +204,37 @@ class RegexTest(ArkoudaTest):
         strings = ak.array(["{} string {}".format(i, i) for i in range(1, 6)])
 
         actual_num_matches, actual_starts, actual_lens = strings.find_locations("\\d")
-        self.assertListEqual([2, 2, 2, 2, 2], actual_num_matches.to_ndarray().tolist())
-        self.assertListEqual([0, 9, 0, 9, 0, 9, 0, 9, 0, 9], actual_starts.to_ndarray().tolist())
-        self.assertListEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], actual_lens.to_ndarray().tolist())
+        self.assertListEqual([2, 2, 2, 2, 2], actual_num_matches.to_list())
+        self.assertListEqual([0, 9, 0, 9, 0, 9, 0, 9, 0, 9], actual_starts.to_list())
+        self.assertListEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], actual_lens.to_list())
 
         actual_num_matches, actual_starts, actual_lens = strings.find_locations("string \\d")
-        self.assertListEqual([1, 1, 1, 1, 1], actual_num_matches.to_ndarray().tolist())
-        self.assertListEqual([2, 2, 2, 2, 2], actual_starts.to_ndarray().tolist())
-        self.assertListEqual([8, 8, 8, 8, 8], actual_lens.to_ndarray().tolist())
+        self.assertListEqual([1, 1, 1, 1, 1], actual_num_matches.to_list())
+        self.assertListEqual([2, 2, 2, 2, 2], actual_starts.to_list())
+        self.assertListEqual([8, 8, 8, 8, 8], actual_lens.to_list())
 
     def test_regex_findall(self):
         strings = ak.array(["{} string {}".format(i, i) for i in range(1, 6)])
         expected_matches = ["1", "1", "2", "2", "3", "3", "4", "4", "5", "5"]
         expected_match_origins = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
         actual_matches, actual_match_origins = strings.findall("\\d", return_match_origins=True)
-        self.assertListEqual(expected_matches, actual_matches.to_ndarray().tolist())
-        self.assertListEqual(expected_match_origins, actual_match_origins.to_ndarray().tolist())
+        self.assertListEqual(expected_matches, actual_matches.to_list())
+        self.assertListEqual(expected_match_origins, actual_match_origins.to_list())
         actual_matches = strings.findall("\\d")
-        self.assertListEqual(expected_matches, actual_matches.to_ndarray().tolist())
+        self.assertListEqual(expected_matches, actual_matches.to_list())
 
         expected_matches = ["string 1", "string 2", "string 3", "string 4", "string 5"]
         expected_match_origins = [0, 1, 2, 3, 4]
         actual_matches, actual_match_origins = strings.findall("string \\d", return_match_origins=True)
-        self.assertListEqual(expected_matches, actual_matches.to_ndarray().tolist())
-        self.assertListEqual(expected_match_origins, actual_match_origins.to_ndarray().tolist())
+        self.assertListEqual(expected_matches, actual_matches.to_list())
+        self.assertListEqual(expected_match_origins, actual_match_origins.to_list())
 
         under = ak.array(["", "____", "_1_2", "3___4___", "5"])
         expected_matches = ["____", "_", "_", "___", "___"]
         expected_match_origins = [1, 2, 2, 3, 3]
         actual_matches, actual_match_origins = under.findall("_+", return_match_origins=True)
-        self.assertListEqual(expected_matches, actual_matches.to_ndarray().tolist())
-        self.assertListEqual(expected_match_origins, actual_match_origins.to_ndarray().tolist())
+        self.assertListEqual(expected_matches, actual_matches.to_list())
+        self.assertListEqual(expected_match_origins, actual_match_origins.to_list())
 
     def test_regex_peel(self):
         orig = ak.array(["a.b", "c.d", "e.f.g"])
@@ -254,43 +244,43 @@ class RegexTest(ArkoudaTest):
         o_left, o_right = orig.peel(".")
         d_left, d_right = digit.peel("\\d", regex=True)
         u_left, u_right = under.peel("_+", regex=True)
-        self.assertListEqual(["a", "c", "e"], o_left.to_ndarray().tolist())
-        self.assertListEqual(["a", "c", "e"], d_left.to_ndarray().tolist())
-        self.assertListEqual(["a", "c", "e"], u_left.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f.g"], o_right.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f2g"], d_right.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f____g"], u_right.to_ndarray().tolist())
+        self.assertListEqual(["a", "c", "e"], o_left.to_list())
+        self.assertListEqual(["a", "c", "e"], d_left.to_list())
+        self.assertListEqual(["a", "c", "e"], u_left.to_list())
+        self.assertListEqual(["b", "d", "f.g"], o_right.to_list())
+        self.assertListEqual(["b", "d", "f2g"], d_right.to_list())
+        self.assertListEqual(["b", "d", "f____g"], u_right.to_list())
 
         o_left, o_right = orig.peel(".", includeDelimiter=True)
         d_left, d_right = digit.peel("\\d", includeDelimiter=True, regex=True)
         u_left, u_right = under.peel("_+", includeDelimiter=True, regex=True)
-        self.assertListEqual(["a.", "c.", "e."], o_left.to_ndarray().tolist())
-        self.assertListEqual(["a1", "c1", "e1"], d_left.to_ndarray().tolist())
-        self.assertListEqual(["a_", "c___", "e__"], u_left.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f.g"], o_right.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f2g"], d_right.to_ndarray().tolist())
-        self.assertListEqual(["b", "d", "f____g"], u_right.to_ndarray().tolist())
+        self.assertListEqual(["a.", "c.", "e."], o_left.to_list())
+        self.assertListEqual(["a1", "c1", "e1"], d_left.to_list())
+        self.assertListEqual(["a_", "c___", "e__"], u_left.to_list())
+        self.assertListEqual(["b", "d", "f.g"], o_right.to_list())
+        self.assertListEqual(["b", "d", "f2g"], d_right.to_list())
+        self.assertListEqual(["b", "d", "f____g"], u_right.to_list())
 
         o_left, o_right = orig.peel(".", times=2, keepPartial=True)
         d_left, d_right = digit.peel("\\d", times=2, keepPartial=True, regex=True)
         u_left, u_right = under.peel("_+", times=2, keepPartial=True, regex=True)
-        self.assertListEqual(["a.b", "c.d", "e.f"], o_left.to_ndarray().tolist())
-        self.assertListEqual(["a1b", "c1d", "e1f"], d_left.to_ndarray().tolist())
-        self.assertListEqual(["a_b", "c___d", "e__f"], u_left.to_ndarray().tolist())
-        self.assertListEqual(["", "", "g"], o_right.to_ndarray().tolist())
-        self.assertListEqual(["", "", "g"], d_right.to_ndarray().tolist())
-        self.assertListEqual(["", "", "g"], u_right.to_ndarray().tolist())
+        self.assertListEqual(["a.b", "c.d", "e.f"], o_left.to_list())
+        self.assertListEqual(["a1b", "c1d", "e1f"], d_left.to_list())
+        self.assertListEqual(["a_b", "c___d", "e__f"], u_left.to_list())
+        self.assertListEqual(["", "", "g"], o_right.to_list())
+        self.assertListEqual(["", "", "g"], d_right.to_list())
+        self.assertListEqual(["", "", "g"], u_right.to_list())
 
         # rpeel / fromRight: digit is testing fromRight and under is testing rpeel
         o_left, o_right = orig.peel(".", times=2, includeDelimiter=True, fromRight=True)
         d_left, d_right = digit.peel("\\d", times=2, includeDelimiter=True, fromRight=True, regex=True)
         u_left, u_right = under.rpeel("_+", times=2, includeDelimiter=True, regex=True)
-        self.assertListEqual(["a.b", "c.d", "e"], o_left.to_ndarray().tolist())
-        self.assertListEqual(["a1b", "c1d", "e"], d_left.to_ndarray().tolist())
-        self.assertListEqual(["a_b", "c___d", "e"], u_left.to_ndarray().tolist())
-        self.assertListEqual(["", "", ".f.g"], o_right.to_ndarray().tolist())
-        self.assertListEqual(["", "", "1f2g"], d_right.to_ndarray().tolist())
-        self.assertListEqual(["", "", "__f____g"], u_right.to_ndarray().tolist())
+        self.assertListEqual(["a.b", "c.d", "e"], o_left.to_list())
+        self.assertListEqual(["a1b", "c1d", "e"], d_left.to_list())
+        self.assertListEqual(["a_b", "c___d", "e"], u_left.to_list())
+        self.assertListEqual(["", "", ".f.g"], o_right.to_list())
+        self.assertListEqual(["", "", "1f2g"], d_right.to_list())
+        self.assertListEqual(["", "", "__f____g"], u_right.to_list())
 
     def test_regex_flatten(self):
         orig = ak.array(["one|two", "three|four|five", "six", "seven|eight|nine|ten|", "eleven"])
@@ -319,13 +309,13 @@ class RegexTest(ArkoudaTest):
         digit_flat, digit_map = digit.flatten("\\d", return_segments=True, regex=True)
         under_flat, under_map = under.flatten("_+", return_segments=True, regex=True)
 
-        self.assertListEqual(answer_flat, orig_flat.to_ndarray().tolist())
-        self.assertListEqual(answer_flat, digit_flat.to_ndarray().tolist())
-        self.assertListEqual(answer_flat, under_flat.to_ndarray().tolist())
+        self.assertListEqual(answer_flat, orig_flat.to_list())
+        self.assertListEqual(answer_flat, digit_flat.to_list())
+        self.assertListEqual(answer_flat, under_flat.to_list())
 
-        self.assertListEqual(answer_map, orig_map.to_ndarray().tolist())
-        self.assertListEqual(answer_map, digit_map.to_ndarray().tolist())
-        self.assertListEqual(answer_map, under_map.to_ndarray().tolist())
+        self.assertListEqual(answer_map, orig_map.to_list())
+        self.assertListEqual(answer_map, digit_map.to_list())
+        self.assertListEqual(answer_map, under_map.to_list())
 
         # empty string, start with delim, end with delim, and only delim cases
         orig = ak.array(["", "|", "|1|2", "3|4|", "5"])
@@ -337,8 +327,8 @@ class RegexTest(ArkoudaTest):
         orig_flat, orig_map = orig.flatten("|", return_segments=True)
         regex_flat, regex_map = regex.flatten("_+", return_segments=True, regex=True)
 
-        self.assertListEqual(answer_flat, orig_flat.to_ndarray().tolist())
-        self.assertListEqual(answer_flat, regex_flat.to_ndarray().tolist())
+        self.assertListEqual(answer_flat, orig_flat.to_list())
+        self.assertListEqual(answer_flat, regex_flat.to_list())
 
-        self.assertListEqual(answer_map, orig_map.to_ndarray().tolist())
-        self.assertListEqual(answer_map, regex_map.to_ndarray().tolist())
+        self.assertListEqual(answer_map, orig_map.to_list())
+        self.assertListEqual(answer_map, regex_map.to_list())

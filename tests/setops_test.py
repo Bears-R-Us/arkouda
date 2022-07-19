@@ -92,7 +92,7 @@ class SetOpsTest(ArkoudaTest):
         pdaOne = ak.array([1, 2, 3, 2, 4])
         pdaTwo = ak.array([2, 3, 5, 7, 5])
 
-        self.assertListEqual([1, 4, 5, 7], ak.setxor1d(pdaOne, pdaTwo).to_ndarray().tolist())
+        self.assertListEqual([1, 4, 5, 7], ak.setxor1d(pdaOne, pdaTwo).to_list())
 
         with self.assertRaises(TypeError):
             ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -117,13 +117,13 @@ class SetOpsTest(ArkoudaTest):
 
         # Testing
         t = ak.setxor1d([a1, a2], [b1, b2])
-        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
-        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+        self.assertListEqual(t[0].to_list(), npr0)
+        self.assertListEqual(t[1].to_list(), npr1)
 
         # Testing tuple input
         t = ak.setxor1d((a1, a2), (b1, b2))
-        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
-        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+        self.assertListEqual(t[0].to_list(), npr0)
+        self.assertListEqual(t[1].to_list(), npr1)
 
         # Test for strings
         a = ["abc", "def"]
@@ -135,8 +135,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.setxor1d([a1, a2], [b1, b2])
-        self.assertListEqual(["abc", "abc"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["000", "123"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["abc", "abc"], t[0].to_list())
+        self.assertListEqual(["000", "123"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)
@@ -144,14 +144,14 @@ class SetOpsTest(ArkoudaTest):
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.setxor1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        self.assertListEqual(["abc", "abc"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["000", "123"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["abc", "abc"], t[0].to_list())
+        self.assertListEqual(["000", "123"], t[1].to_list())
 
     def testSetdiff1d(self):
         pdaOne = ak.array([1, 2, 3, 2, 4, 1])
         pdaTwo = ak.array([3, 4, 5, 6])
 
-        self.assertListEqual([1, 2], ak.setdiff1d(pdaOne, pdaTwo).to_ndarray().tolist())
+        self.assertListEqual([1, 2], ak.setdiff1d(pdaOne, pdaTwo).to_list())
 
         with self.assertRaises(TypeError):
             ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -175,8 +175,8 @@ class SetOpsTest(ArkoudaTest):
         npr0, npr1 = map(list, zip(*lr))
 
         t = ak.setdiff1d([a1, a2], [b1, b2])
-        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
-        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+        self.assertListEqual(t[0].to_list(), npr0)
+        self.assertListEqual(t[1].to_list(), npr1)
 
         # Test for strings
         a = ["abc", "def"]
@@ -188,8 +188,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.setdiff1d([a1, a2], [b1, b2])
-        self.assertListEqual(["abc"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["123"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["abc"], t[0].to_list())
+        self.assertListEqual(["123"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)
@@ -197,13 +197,13 @@ class SetOpsTest(ArkoudaTest):
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.setdiff1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        self.assertListEqual(["abc"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["123"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["abc"], t[0].to_list())
+        self.assertListEqual(["123"], t[1].to_list())
 
     def testIntersect1d(self):
         pdaOne = ak.array([1, 3, 4, 3])
         pdaTwo = ak.array([3, 1, 2, 1])
-        self.assertListEqual([1, 3], ak.intersect1d(pdaOne, pdaTwo).to_ndarray().tolist())
+        self.assertListEqual([1, 3], ak.intersect1d(pdaOne, pdaTwo).to_list())
 
         with self.assertRaises(TypeError):
             ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -227,8 +227,8 @@ class SetOpsTest(ArkoudaTest):
         npr0, npr1 = map(list, zip(*lr))
 
         t = ak.intersect1d([a1, a2], [b1, b2])
-        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
-        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+        self.assertListEqual(t[0].to_list(), npr0)
+        self.assertListEqual(t[1].to_list(), npr1)
 
         # Test for strings
         a = ["abc", "def"]
@@ -240,8 +240,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.intersect1d([a1, a2], [b1, b2])
-        self.assertListEqual(["def"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["456"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["def"], t[0].to_list())
+        self.assertListEqual(["456"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)
@@ -249,13 +249,13 @@ class SetOpsTest(ArkoudaTest):
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.intersect1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        self.assertListEqual(["def"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["456"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["def"], t[0].to_list())
+        self.assertListEqual(["456"], t[1].to_list())
 
     def testUnion1d(self):
         pdaOne = ak.array([-1, 0, 1])
         pdaTwo = ak.array([-2, 0, 2])
-        self.assertListEqual([-2, -1, 0, 1, 2], ak.union1d(pdaOne, pdaTwo).to_ndarray().tolist())
+        self.assertListEqual([-2, -1, 0, 1, 2], ak.union1d(pdaOne, pdaTwo).to_list())
 
         with self.assertRaises(TypeError):
             ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
@@ -278,8 +278,8 @@ class SetOpsTest(ArkoudaTest):
         lr = list(sorted(la.union(lb)))
         npr0, npr1 = map(list, zip(*lr))
         t = ak.union1d([a1, a2], [b1, b2])
-        self.assertListEqual(t[0].to_ndarray().tolist(), npr0)
-        self.assertListEqual(t[1].to_ndarray().tolist(), npr1)
+        self.assertListEqual(t[0].to_list(), npr0)
+        self.assertListEqual(t[1].to_list(), npr1)
 
         # Test for Strings
         a = ["abc", "def"]
@@ -291,8 +291,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.union1d([a1, a2], [b1, b2])
-        self.assertListEqual(["def", "xyz", "abc"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["456", "0", "123"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["def", "xyz", "abc"], t[0].to_list())
+        self.assertListEqual(["456", "0", "123"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)
@@ -300,14 +300,14 @@ class SetOpsTest(ArkoudaTest):
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.union1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        self.assertListEqual(["abc", "xyz", "def"], t[0].to_ndarray().tolist())
-        self.assertListEqual(["123", "0", "456"], t[1].to_ndarray().tolist())
+        self.assertListEqual(["abc", "xyz", "def"], t[0].to_list())
+        self.assertListEqual(["123", "0", "456"], t[1].to_list())
 
     def testIn1d(self):
         pdaOne = ak.array([-1, 0, 1, 3])
         pdaTwo = ak.array([-1, 2, 2, 3])
         self.assertListEqual(
-            ak.in1d(pdaOne, pdaTwo).to_ndarray().tolist(),
+            ak.in1d(pdaOne, pdaTwo).to_list(),
             [True, False, False, True],
         )
 
@@ -316,9 +316,7 @@ class SetOpsTest(ArkoudaTest):
         stringsOne = ak.array(["String {}".format(i) for i in vals])
         stringsTwo = ak.array(["String {}".format(i) for i in valsTwo])
 
-        self.assertListEqual(
-            [x < 2 for x in vals], ak.in1d(stringsOne, stringsTwo).to_ndarray().tolist()
-        )
+        self.assertListEqual([x < 2 for x in vals], ak.in1d(stringsOne, stringsTwo).to_list())
 
     def test_multiarray_validation(self):
         x = [ak.arange(3), ak.arange(3), ak.arange(3)]
