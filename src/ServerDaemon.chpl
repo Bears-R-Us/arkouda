@@ -29,14 +29,18 @@ module ServerDaemon {
     private config const daemonType = ServerDaemonType.DEFAULT;
     
     /**
-    The AbstractServerDaemon class defines the run function 
-    all derived classes must override
-    */
+     * The AbstractServerDaemon class defines the run function all
+     * derived classes must override
+     */
     class AbstractServerDaemon {
     
-        proc run() throws {}
+        proc run() throws {
+            throw new NotImplementedError("run() must be overridden",
+                                          getModuleName(),
+                                          getRoutineName(),
+                                          getLineNumber());
+        }
     }
-    
 
     /**
      * The ArkoudaServerDaemon class serves as the base Arkouda server
@@ -54,9 +58,7 @@ module ServerDaemon {
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;        
        
-        /**
-        The init function initializes and binds the socket instance attribute
-        */
+        
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
@@ -273,7 +275,7 @@ module ServerDaemon {
             registerFunction("ruok", akMsgSign);
             registerFunction("shutdown", akMsgSign);
 
-            // Add the dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
+            // Add dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
             doRegister();
         }
         
@@ -287,7 +289,8 @@ module ServerDaemon {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
-                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
+                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 
+                                                   'tokens.txt'));
             }
 
             sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),

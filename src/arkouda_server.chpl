@@ -12,12 +12,12 @@ const asLogger = new Logger(logLevel);
 
 
 /**
-The main method serves as the Arkouda driver that invokes the run method 
-on the configured ServerDaemon
-*/
+ * The main method serves as the Arkouda driver that invokes the run 
+ * method on the configured list of ServerDaemon objects
+ */
 proc main() {
 
-    try! coforall daemon in getServerDaemons() {
+    coforall daemon in getServerDaemons() {
         daemon.run();
     }
 }
