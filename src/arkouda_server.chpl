@@ -10,6 +10,14 @@ use ServerDaemon;
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
 
+
+/**
+The main method serves as the Arkouda driver that invokes the run method 
+on the configured ServerDaemon
+*/
 proc main() {
-    try! getServerDaemon().run();
+
+    try! coforall daemon in getServerDaemons() {
+        daemon.run();
+    }
 }

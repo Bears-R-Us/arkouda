@@ -27,12 +27,22 @@ module ServerDaemon {
     const sdLogger = new Logger(logLevel);
 
     private config const daemonType = ServerDaemonType.DEFAULT;
+    
+    /**
+    The AbstractServerDaemon class defines the run function 
+    all derived classes must override
+    */
+    class AbstractServerDaemon {
+    
+        proc run() throws {}
+    }
+    
 
     /**
      * The ArkoudaServerDaemon class serves as the base Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class ArkoudaServerDaemon {
+    class ArkoudaServerDaemon : AbstractServerDaemon {
         var st = new owned SymTab();
         var shutdownServer = false;
         var serverToken : string;
@@ -44,7 +54,9 @@ module ServerDaemon {
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;        
        
-        
+        /**
+        The init function initializes and binds the socket instance attribute
+        */
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
@@ -271,7 +283,7 @@ module ServerDaemon {
             return arkDirectory;
         }
 
-        proc run() throws {
+        override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
@@ -470,10 +482,10 @@ module ServerDaemon {
         }
     }
 
-    proc getServerDaemon() throws {
+    proc getServerDaemons() throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return new ArkoudaServerDaemon();
+               return [new ArkoudaServerDaemon()];
             }
             otherwise {
                 throw getErrorWithContext(
