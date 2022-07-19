@@ -191,10 +191,10 @@ module MetricsMsg {
     proc exportAllMetrics() throws {        
         var metrics = new list(owned Metric?);
 
-        metrics.append(getNumRequestMetrics());
-        metrics.append(getResponseTimeMetrics());
-        metrics.append(getSystemMetrics());
-        metrics.append(getServerMetrics());
+        metrics.extend(getNumRequestMetrics());
+        metrics.extend(getResponseTimeMetrics());
+        metrics.extend(getSystemMetrics());
+        metrics.extend(getServerMetrics());
 
         for userMetric in getAllUserRequestMetrics() {
             metrics.append(userMetric: owned Metric);
