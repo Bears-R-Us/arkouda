@@ -172,18 +172,21 @@ Functions
    But much faster when vals is non-trivial size.
 
 
-.. py:function:: search_intervals(vals, intervals)
+.. py:function:: search_intervals(vals, intervals, tiebreak=None)
 
-   Given an array of query vals and non-overlapping, half-open (pythonic)
-   intervals, return the index of the interval containing each query value,
-   or -1 if not present in any interval.
+   Given an array of query vals and half-open (pythonic) intervals, return the index of the
+   best (see tiebreak) interval containing each query value, or -1 if not present in any
+   interval.
 
    :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
    :type vals: (sequence of) pdarray(int, uint, float)
-   :param intervals: Non-overlapping, half-open intervals, as a tuple of
-                     (lower_bounds_inclusive, upper_bounds_exclusive)
-                     Must have same shape/dtype as vals.
+   :param intervals: Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
+                     Must have same dtype(s) as vals.
    :type intervals: 2-tuple of (sequences of) pdarrays
+   :param tiebreak: When a value is present in more than one interval, the interval with the
+                    lowest tiebreak value will be chosen. If no tiebreak is given, the
+                    first containing interval will be chosen.
+   :type tiebreak: (optional) pdarray, numeric
 
    :returns: **idx** -- Index of interval containing each query value, or -1 if not found
    :rtype: pdarray(int64)
@@ -196,14 +199,12 @@ Functions
         (intervals[1][idx[present]] > vals[present])).all()
 
 
-.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1)
+.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None)
 
-   Apply a function defined over non-overlapping intervals to
-   an array of arguments.
+   Apply a function defined over intervals to an array of arguments.
 
-   :param keys: Tuple of non-overlapping, half-open intervals expressed
-                as (lower_bounds_inclusive, upper_bounds_exclusive)
-                Must have same shape/dtype as vals.
+   :param keys: Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
+                Must have same dtype(s) as vals.
    :type keys: 2-tuple of (sequences of) pdarrays
    :param values: Function value to return for each entry in keys.
    :type values: pdarray
@@ -211,6 +212,10 @@ Functions
    :type arguments: (sequences of) pdarray
    :param fillvalue: Default value to return when argument is not in any interval.
    :type fillvalue: scalar
+   :param tiebreak: When an argument is present in more than one key interval, the interval with the
+                    lowest tiebreak value will be chosen. If no tiebreak is given, the
+                    first valid key interval will be chosen.
+   :type tiebreak: (optional) pdarray, numeric
 
    :returns: Value of function corresponding to the keys interval
              containing each argument, or fillvalue if argument not
