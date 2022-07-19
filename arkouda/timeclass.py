@@ -9,11 +9,15 @@ from pandas import date_range as pd_date_range  # type: ignore
 from pandas import timedelta_range as pd_timedelta_range  # type: ignore
 from pandas import to_datetime, to_timedelta  # type: ignore
 
+# from arkouda import DataFrame
+import arkouda
+
+# from arkouda.dataframe import DataFrame
 from arkouda.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numeric import abs as akabs
 from arkouda.numeric import cast
 from arkouda.pdarrayclass import pdarray
-from arkouda.pdarraycreation import from_series
+from arkouda.pdarraycreation import array, from_series
 
 _BASE_UNIT = "ns"
 
@@ -61,13 +65,15 @@ def _identity(x, **kwargs):
     return x
 
 
+def _isLeapYear(year: int) -> bool:
+    return ((year & 0x3) == 0) & (((year % 100) != 0) | ((year % 400) == 0))
+
+
 class _Timescalar:
     def __init__(self, scalar):
         if isinstance(scalar, np.datetime64) or isinstance(scalar, datetime.datetime):
             scalar = to_datetime(scalar).to_numpy()
-        elif isinstance(scalar, np.timedelta64) or isinstance(
-            scalar, datetime.timedelta
-        ):
+        elif isinstance(scalar, np.timedelta64) or isinstance(scalar, datetime.timedelta):
             scalar = to_timedelta(scalar).to_numpy()
         self.unit = np.datetime_data(scalar.dtype)[0]
         self._factor = _get_factor(self.unit)
@@ -84,54 +90,50 @@ class _AbstractBaseTime(pdarray):
     so that all resulting operations are transparent.
     """
 
-    def __init__(self, array, unit: str = _BASE_UNIT):  # type: ignore
+    def __init__(self, pda, unit: str = _BASE_UNIT):  # type: ignore
 
-        if isinstance(array, Datetime) or isinstance(array, Timedelta):
-            self.unit: str = array.unit
-            self._factor: int = array._factor
+        if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
+            self.unit: str = pda.unit
+            self._factor: int = pda._factor
             # Make a copy to avoid unknown symbol errors
-            self.values: pdarray = cast(array.values, int64)
+            self.values: pdarray = cast(pda.values, int64)
         # Convert the input to int64 pdarray of nanoseconds
-        elif isinstance(array, pdarray):
-            if array.dtype not in intTypes:
-                raise TypeError(
-                    f"{self.__class__.__name__} array must have int64 dtype"
-                )
+        elif isinstance(pda, pdarray):
+            if pda.dtype not in intTypes:
+                raise TypeError(f"{self.__class__.__name__} pda must have int64 dtype")
             # Already int64 pdarray, just scale
             self.unit = unit
             self._factor = _get_factor(self.unit)
             # This makes a copy of the input array, to leave input unchanged
-            self.values = cast(
-                self._factor * array, int64
-            )  # Mimics a datetime64[ns] array
-        elif hasattr(array, "dtype"):
+            self.values = cast(self._factor * pda, int64)  # Mimics a datetime64[ns] array
+        elif hasattr(pda, "dtype"):
             # Handles all pandas and numpy datetime/timedelta arrays
-            if array.dtype.kind not in ("M", "m"):
+            if pda.dtype.kind not in ("M", "m"):
                 # M = datetime64, m = timedelta64
-                raise TypeError(f"Invalid dtype: {array.dtype.name}")
-            if isinstance(array, Series):
+                raise TypeError(f"Invalid dtype: {pda.dtype.name}")
+            if isinstance(pda, Series):
                 # Pandas Datetime and Timedelta
                 # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(array.values.dtype)[0]
+                self.unit = np.datetime_data(pda.values.dtype)[0]
                 self._factor = _get_factor(self.unit)
                 # Create pdarray
-                self.values = from_series(array)
+                self.values = from_series(pda)
                 # Scale if necessary
                 # This is futureproofing; it will not be used unless pandas
                 # changes its Datetime implementation
                 if self._factor != 1:
                     # Scale inplace because we already created a copy
                     self.values *= self._factor
-            elif isinstance(array, np.ndarray):
+            elif isinstance(pda, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
-                self.__init__(to_datetime(array).to_series())  # type: ignore
-            elif hasattr(array, "to_series"):
+                self.__init__(to_datetime(pda).to_series())  # type: ignore
+            elif hasattr(pda, "to_series"):
                 # Pandas DatetimeIndex
                 # Force through pandas.Series
-                self.__init__(array.to_series())  # type: ignore
+                self.__init__(pda.to_series())  # type: ignore
         else:
-            raise TypeError(f"Unsupported type: {type(array)}")
+            raise TypeError(f"Unsupported type: {type(pda)}")
         # Now that self.values is correct, init self with same metadata
         super().__init__(
             self.values.name,
@@ -143,6 +145,155 @@ class _AbstractBaseTime(pdarray):
         )
         # Deprecated
         self._data = self.values
+
+        if len(self.values):
+            # Year, hour, minute, second
+            seconds = self.values // _get_factor("s")
+            days = cast((seconds // 86400), int64)
+            self._year = cast((days // 365.24 + 1970), int64)
+            self._month = cast(((seconds % 31556926) / 2629743), int64) + 1
+            self._day = cast((((seconds % 31556926) % 2629743) / 86400), int64) + 2
+
+            self._hour = cast((self.values / _get_factor("h")), int64) % 24
+            self._minute = cast((self.values / _get_factor("m")), int64) % 60
+            self._second = cast((self.values / _get_factor("s")), int64) % 60
+            self._millisecond = cast((self.values / _get_factor("ms")), int64) % 1000
+            self._microsecond = cast((self.values / _get_factor("us")), int64) % 1000
+            self._nanosecond = cast((self.values / _get_factor("us")), int64) % 1000
+
+            # Month, day
+            self._day = (self.values // _get_factor("d") + 1401) % 1461
+            self._day[self._day >= 731] -= 731
+            self._day[self._day >= 365] -= 365
+
+            self._month = self._day - self._day + 3
+            ge_306 = self._day >= 306
+            self._month[ge_306] = 1
+            self._day[ge_306] -= 306
+
+            ge_153 = self._day >= 153
+            self._month[ge_153] = 8
+            self._day[ge_153] -= 153
+
+            ge_122 = self._day >= 122
+            self._month[ge_122] += 4
+            self._day[ge_122] -= 122
+
+            ge_61 = self._day >= 61
+            self._month[ge_61] += 2
+            self._day[ge_61] -= 61
+
+            self._day += 2
+            ge_32 = self._day >= 32
+            self._month[ge_32] += 1
+            self._month[self._month >= 13] = 1
+            self._day[ge_32] -= 31
+
+            # Day of year
+            month_days = [
+                [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
+                [0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335],
+            ]
+
+            days = self._day[:]
+            self._date = []
+            for i in range(days.size):
+                if self._month[i] == 2 and self._day[i] == 29 and _isLeapYear(self._year[i]) == 0:
+                    self._month[i] += 1
+                    self._day[i] = 1
+                    days[i] += month_days[_isLeapYear(self._year[i])][self._month[i] - 1]
+                else:
+                    days[i] += month_days[_isLeapYear(self._year[i])][self._month[i]]
+                self._date.append(f"{self._year[i]}-{self._month[i]:02d}-{self._day[i]:02d}")
+            self._dayofyear = array(days, int64)
+
+            # Day of week
+            self._dayofweek = cast(((self.values / _get_factor("d")) + 3), int64)
+            self._dayofweek %= 7
+
+            # Week of year
+            week = (self._dayofyear[:] - 1) - self._dayofweek + 3
+            week[week >= 0] //= 7
+            week[week >= 0] += 1
+
+            for i in range(days.size):
+                if week[i] < 0:
+                    year = int(self._year[i] - 1)
+                    if week[i] > -2 or (week[i] == -2 and _isLeapYear(year)):
+                        week[i] = 53
+                    else:
+                        week[i] = 52
+                elif week[i] == 53:
+                    if 31 - self._day[i] + self.dayofweek[i] < 3:
+                        week[i] = 1
+            self._weekofyear = week
+
+    # Datetime values
+    @property
+    def date(self):
+        return self._date
+
+    @property
+    def year(self):
+        return self._year
+
+    @property
+    def month(self):
+        return self._month
+
+    @property
+    def day(self):
+        return self._day
+
+    @property
+    def dayofyear(self):
+        return self._dayofyear
+
+    @property
+    def dayofweek(self):
+        return self._dayofweek
+
+    @property
+    def week(self):
+        return self._weekofyear
+
+    day_of_week = dayofweek
+    weekday = dayofweek
+    day_of_year = dayofyear
+    week_of_year = week
+    weekofyear = week
+
+    @property
+    def hour(self):
+        return self._hour
+
+    @property
+    def minute(self):
+        return self._minute
+
+    @property
+    def second(self):
+        return self._second
+
+    @property
+    def total_seconds(self):
+        ts = cast(self.values, float)
+        return ts / _get_factor("s")
+
+    @property
+    def components(self):
+        dt = arkouda.DataFrame(
+            {
+                "days": self._day,
+                "hours": self._hour,
+                "minutes": self._minute,
+                "seconds": self._second,
+                "milliseconds": self._millisecond,
+                "microseconds": self._microsecond,
+                "nanoseconds": self._nanosecond,
+            }
+        )
+        return arkouda.DataFrame(dt)
 
     @classmethod
     def _get_callback(cls, other, op):
@@ -207,8 +358,7 @@ class _AbstractBaseTime(pdarray):
     def to_ndarray(self):
         __doc__ = super().to_ndarray.__doc__  # noqa
         return np.array(
-            self.values.to_ndarray(),
-            dtype="{}64[ns]".format(self.__class__.__name__.lower()),
+            self.values.to_ndarray(), dtype="{}64[ns]".format(self.__class__.__name__.lower()),
         )
 
     def to_list(self):
@@ -241,9 +391,7 @@ class _AbstractBaseTime(pdarray):
         #  2) Get other's int64 data to combine with self's data
         if isinstance(other, Datetime) or self._is_datetime_scalar(other):
             if op not in self.supported_with_datetime:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and Datetime"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and Datetime")
             otherclass = "Datetime"
             if self._is_datetime_scalar(other):
                 otherdata = _Timescalar(other).value
@@ -251,21 +399,15 @@ class _AbstractBaseTime(pdarray):
                 otherdata = other.values
         elif isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_with_timedelta:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and Timedelta"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and Timedelta")
             otherclass = "Timedelta"
             if self._is_timedelta_scalar(other):
                 otherdata = _Timescalar(other).value
             else:
                 otherdata = other.values
-        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(
-            other
-        ):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
             if op not in self.supported_with_pdarray:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and integer"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and integer")
             otherclass = "pdarray"
             otherdata = other
         else:
@@ -283,9 +425,7 @@ class _AbstractBaseTime(pdarray):
         # First case is pdarray <op> self
         if isinstance(other, pdarray) and other.dtype in intTypes:
             if op not in self.supported_with_r_pdarray:
-                raise TypeError(
-                    f"{op} not supported between int64 and {self.__class__.__name__}"
-                )
+                raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             callback = self._get_callback("pdarray", op)
             # Need to use other._binop because self.values._r_binop can only handle scalars
             return callback(other._binop(self.values, op))
@@ -306,9 +446,7 @@ class _AbstractBaseTime(pdarray):
             otherdata = _Timescalar(other).value
         elif isSupportedInt(other):
             if op not in self.supported_with_r_pdarray:
-                raise TypeError(
-                    f"{op} not supported between int64 and {self.__class__.__name__}"
-                )
+                raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             otherclass = "pdarray"
             otherdata = other
         else:
@@ -320,9 +458,7 @@ class _AbstractBaseTime(pdarray):
     def opeq(self, other, op):
         if isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_opeq:
-                raise TypeError(
-                    f"{self.__class__.__name__} {op} Timedelta not supported"
-                )
+                raise TypeError(f"{self.__class__.__name__} {op} Timedelta not supported")
             if self._is_timedelta_scalar(other):
                 otherdata = _Timescalar(other).value
             else:
@@ -502,12 +638,8 @@ class Timedelta(_AbstractBaseTime):
 
     supported_with_datetime = frozenset(("+"))
     supported_with_r_datetime = frozenset(("+", "-", "/", "//", "%"))
-    supported_with_timedelta = frozenset(
-        ("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%")
-    )
-    supported_with_r_timedelta = frozenset(
-        ("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%")
-    )
+    supported_with_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
+    supported_with_r_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
     supported_opeq = frozenset(("+=", "-=", "%="))
     supported_with_pdarray = frozenset(("*", "//"))
     supported_with_r_pdarray = frozenset(("*"))
@@ -627,23 +759,11 @@ def date_range(
         inclusive = closed
 
     return Datetime(
-        pd_date_range(
-            start,
-            end,
-            periods,
-            freq,
-            tz,
-            normalize,
-            name,
-            inclusive=inclusive,
-            **kwargs,
-        )
+        pd_date_range(start, end, periods, freq, tz, normalize, name, inclusive=inclusive, **kwargs,)
     )
 
 
-def timedelta_range(
-    start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs
-):
+def timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs):
     """Return a fixed frequency TimedeltaIndex, with day as the default
     frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
     Subject to size limit imposed by client.maxTransferBytes.
@@ -678,6 +798,4 @@ def timedelta_range(
     To learn more about the frequency strings, please see `this link
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
     """
-    return Timedelta(
-        pd_timedelta_range(start, end, periods, freq, name, closed, **kwargs)
-    )
+    return Timedelta(pd_timedelta_range(start, end, periods, freq, name, closed, **kwargs))

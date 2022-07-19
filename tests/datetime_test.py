@@ -1,8 +1,10 @@
 from base_test import ArkoudaTest
 
 import arkouda as ak
+from arkouda import array
 
 import pandas as pd
+import numpy as np
 import logging
 
 
@@ -25,6 +27,19 @@ def build_op_table():
     return table
 
 
+def build_pd_df():
+    days = np.ones(10, dtype=np.int64)
+    hours = np.zeros(10, dtype=np.int64)
+    minutes = np.zeros(10, dtype=np.int64)
+    seconds = np.arange(10)
+    milliseconds = np.zeros(10, dtype=np.int64)
+    microseconds = np.zeros(10, dtype=np.int64)
+    nanoseconds = np.zeros(10, dtype=np.int64)
+    return pd.DataFrame(
+        {"days": days, "hours": hours, "minutes": minutes, "seconds": seconds, "milliseconds":
+            milliseconds, "microseconds": microseconds, "nanoseconds": nanoseconds})
+
+
 class DatetimeTest(ArkoudaTest):
     # Leave these comparisons as ( == ).all() instead of assertListEqual, to test the datetime comparison ops
     def setUp(self):
@@ -35,6 +50,50 @@ class DatetimeTest(ArkoudaTest):
         self.tdvec1 = ak.timedelta_range(start="1 second", end="1 second", periods=100)
         self.tdvec2 = ak.Timedelta(ak.ones(100, dtype=ak.int64), unit="s")
         self.onesecond = pd.Timedelta(1, unit="s")
+
+    def compare(self, start, periods, freq):
+        tdvec3 = ak.date_range(start=start, periods=periods, freq=freq)
+        exp = pd.date_range(start=start, periods=periods, freq=freq)
+
+        self.assertTrue(((array(tdvec3.date).to_ndarray() == list(exp.date.astype(str))).all()).all())
+        self.assertTrue(((tdvec3.year == array(exp.year)).all()).all())
+        self.assertTrue(((tdvec3.month == array(exp.month)).all()).all())
+        self.assertTrue(((tdvec3.day == array(exp.day)).all()).all())
+        self.assertTrue(((tdvec3.hour == array(exp.hour)).all()).all())
+        self.assertTrue(((tdvec3.minute == array(exp.minute)).all()).all())
+        self.assertTrue(((tdvec3.second == array(exp.second)).all()).all())
+        self.assertTrue(((tdvec3.dayofweek == array(exp.dayofweek)).all()).all())
+        self.assertTrue(((tdvec3.dayofyear == array(exp.dayofyear)).all()).all())
+        self.assertTrue(((tdvec3.weekofyear == array(exp.weekofyear)).all()).all())
+        actual_total_seconds = list(tdvec3.total_seconds.to_ndarray())
+        exp_total_seconds = [np.datetime64(x,'s').astype(float) for x in np.array(exp)]
+        self.assertTrue(actual_total_seconds == exp_total_seconds)
+
+    def test_timedelta(self):
+        pd_df = build_pd_df()
+        td1 = ak.timedelta_range(start=0, periods=10, freq="s")
+        td2 = ak.Timedelta(ak.arange(10), unit="s")
+        self.assertTrue(isinstance(td1, ak.Timedelta) and isinstance(td2, ak.Timedelta))
+        self.assertTrue(pd_df.equals(td1.components.to_pandas()))
+        self.assertTrue(((td1.components.to_pandas() == td2.components.to_pandas()).all()).all())
+
+    def test_datetime_accessors(self):
+        self.compare(start="2022-07-18 12:59:55", periods=14, freq="d")
+        self.compare(start="2020-01-01 23:59:55", periods=14, freq="m")
+        self.compare(start="2021-01-01 23:59:55", periods=14, freq="m")
+        self.compare(start="2015-12-31 00:00:00", periods=10, freq="y")
+        self.compare(start="2000-12-31 00:00:00", periods=23, freq="y")
+        self.compare(start="2022-12-31 23:59:55", periods=10, freq="s")
+
+        self.compare(start="2013-12-31 23:59:55", periods=10, freq="w")
+        self.compare(start="2008-12-28 23:59:55", periods=10, freq="w")
+        self.compare(start="2009-12-31 23:59:55", periods=10, freq="w")
+        self.compare(start="2010-01-01 23:59:55", periods=10, freq="w")
+        self.compare(start="2010-01-03 23:59:55", periods=10, freq="w")
+        self.compare(start="2000-01-01 23:59:55", periods=10, freq="w")
+        self.compare(start="2000-01-02 23:59:55", periods=10, freq="w")
+        self.compare(start="2005-01-01 23:59:55", periods=10, freq="w")
+        self.compare(start="2005-01-02 23:59:55", periods=10, freq="w")
 
     def test_creation(self):
         self.assertTrue((self.dtvec1 == self.dtvec2).all())
