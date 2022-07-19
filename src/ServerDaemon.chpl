@@ -21,6 +21,7 @@ module ServerDaemon {
     use Message;
     use ExternalIntegration;
     use CommandMap, ServerRegistration;
+    use MetricsMsg;
     
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -472,70 +473,57 @@ module ServerDaemon {
                                                                                  t1.elapsed()));        
         }
     }
-    
-    class ExternalIntegrationServerDaemon : ArkoudaServerDaemon {
+
+    class MetricsServerDaemon : ArkoudaServerDaemon {
+
+        proc runMetricsServer() throws {
+            var context: ZMQ.Context;
+            var socket: ZMQ.Socket = context.socket(ZMQ.REP);
+            var port = getEnv('METRICS_SERVER_PORT','5556'):int;
+
+            try! socket.bind("tcp://*:%t".format(port));
+            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                "Metrics Server initialized and listening in port %i".format(port));
+                
+            while !shutdownServer {
+                sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                                   "awaiting message on port %i".format(port));
+                var req = socket.recv(bytes).decode();
+
+                var msg: RequestMsg = extractRequest(req);
+                var user   = msg.user;
+                var token  = msg.token;
+                var cmd    = msg.cmd;
+                var format = msg.format;
+                var args   = msg.args;
+
+                var repTuple: MsgTuple;
+
+                select cmd {
+                    when "metrics" {repTuple = metricsMsg(cmd, args, st);}        
+                    when "connect" {
+                        if authenticate {
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
+                                                "%s with token %s".format(port,user,token), MsgType.NORMAL);
+                        } else {
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(port), 
+                                                                                    MsgType.NORMAL);
+                        }
+                    }
+                    when "getconfig" {repTuple = getconfigMsg(cmd, args, st);}
+                }           
+
+                socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                                                msgFormat=MsgFormat.STRING, user=user));
+            }
+        
+            return;
+        }
 
         override proc run() throws {
-            on Locales[0] {
-                var appName: string;
-
-                if serverHostname.count('arkouda-locale') > 0 {
-                    appName = 'arkouda-locale';
-                } else {
-                    appName = 'arkouda-server';
-                }
-
-                var params: (string,int,int) = getKubernetesRegistrationParameters(
-                                                          ServiceType.EXTERNAL);
-                registerWithExternalSystem(appName, params(0), params(1), params(2));
-            }
-            super.run();
-        }
-        
-        override proc shutdown(user: string) throws {
-            on Locales[here.id] {
-                var serviceName = getKubernetesDeregisterParameters(
-                                                          ServiceType.EXTERNAL); 
-                deregisterFromExternalSystem(serviceName);
-            }
-
-            super.shutdown(user);
-        }
-        
-        
-        
-        /*
-         * Registers Arkouda with an external system on startup, defaulting to none.
-         */
-        proc registerWithExternalSystem(appName: string, serviceName: string, 
-                                           servicePort: int, targetServicePort: int) throws {   
-            select externalSystem {
-                when SystemType.KUBERNETES {
-                    registerWithKubernetes(appName, serviceName, servicePort, targetServicePort);
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Registered Arkouda with Kubernetes");
-                }
-                otherwise {
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Did not register Arkouda with any external systems");            
-                }
-            }
-        }
-        
-        /*
-         * Deregisters Arkouda from an external system upon receipt of shutdown command
-         */
-        proc deregisterFromExternalSystem(serviceName: string) throws {
-            select externalSystem {
-                when SystemType.KUBERNETES {
-                    deregisterFromKubernetes(serviceName);
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Deregistered service %s from Kubernetes".format(serviceName));
-                }
-                otherwise {
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Did not deregister Arkouda from any external system");
-                }
+            cobegin {
+                this.runMetricsServer();
+                super.run();
             }
         }
     }
@@ -545,8 +533,8 @@ module ServerDaemon {
             when ServerDaemonType.DEFAULT {
                return new ArkoudaServerDaemon();
             }
-            when ServerDaemonType.INTEGRATION {
-               return new ExternalIntegrationServerDaemon();
+            when ServerDaemonType.METRICS {
+               return new MetricsServerDaemon();
             }
             otherwise {
                 throw getErrorWithContext(
