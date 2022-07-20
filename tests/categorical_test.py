@@ -115,9 +115,9 @@ class CategoricalTest(ArkoudaTest):
         cat = self._getRandomizedCategorical()
 
         self.assertListEqual(
-            ak.Categorical(ak.array(["non-string", "string3", "string1", "non-string2", "string"]))
-            .to_ndarray()
-            .tolist(),
+            ak.Categorical(
+                ak.array(["non-string", "string3", "string1", "non-string2", "string"])
+            ).to_list(),
             cat.unique().to_list(),
         )
 

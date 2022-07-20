@@ -167,28 +167,24 @@ class CoargsortTest(ArkoudaTest):
         )
         for algo in ak.SortingAlgorithm:
             str_perm = ak.coargsort([string], algo)
-            str_sorted = string[str_perm].to_ndarray()
+            str_sorted = string[str_perm].to_list()
 
             # coargsort on categorical
             cat_perm = ak.coargsort([cat], algo)
-            cat_sorted = cat[cat_perm].to_ndarray()
-            self.assertListEqual(str_sorted.tolist(), cat_sorted.tolist())
+            self.assertListEqual(str_sorted, cat[cat_perm].to_list())
 
             # coargsort on categorical.from_codes
             # coargsort sorts using codes, the order isn't guaranteed, only grouping
             from_codes_perm = ak.coargsort([cat_from_codes], algo)
-            from_codes_sorted = cat_from_codes[from_codes_perm].to_ndarray()
-            self.assertListEqual(["a", "a", "b", "b", "c"], from_codes_sorted.tolist())
+            self.assertListEqual(["a", "a", "b", "b", "c"], cat_from_codes[from_codes_perm].to_list())
 
             # coargsort on 2 categoricals (one from_codes)
             cat_perm = ak.coargsort([cat, cat_from_codes], algo)
-            cat_sorted = cat[cat_perm].to_ndarray()
-            self.assertListEqual(str_sorted.tolist(), cat_sorted.tolist())
+            self.assertListEqual(str_sorted, cat[cat_perm].to_list())
 
             # coargsort on mixed strings and categoricals
             mixed_perm = ak.coargsort([cat, string, cat_from_codes], algo)
-            mixed_sorted = cat_from_codes[mixed_perm].to_ndarray()
-            self.assertListEqual(str_sorted.tolist(), mixed_sorted.tolist())
+            self.assertListEqual(str_sorted, cat_from_codes[mixed_perm].to_list())
 
 
 def create_parser():

@@ -147,6 +147,6 @@ class DataFrameTest(ArkoudaTest):
         first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
         smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
         first_result = ak.search_intervals(values, intervals)
-        self.assertListEqual(first_result.to_ndarray().tolist(), first_answer)
+        self.assertListEqual(first_result.to_list(), first_answer)
         smallest_result = ak.search_intervals(values, intervals, tiebreak=tiebreak_smallest)
-        self.assertListEqual(smallest_result.to_ndarray().tolist(), smallest_answer)
+        self.assertListEqual(smallest_result.to_list(), smallest_answer)
