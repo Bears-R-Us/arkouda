@@ -2,31 +2,25 @@
 backend chapel program to mimic ndarray from numpy
 This is the main driver for the arkouda server */
 
-use FileIO;
-use Security;
 use ServerConfig;
-use Time only;
-use ZMQ only;
-use Memory;
-use FileSystem;
 use IO;
-use Logging;
-use Path;
-use MultiTypeSymbolTable;
-use MultiTypeSymEntry;
-use MsgProcessing;
-use GenSymIO;
 use Reflection;
-use SymArrayDmap;
-use ServerErrorStrings;
-use Message;
+use Logging;
 use ServerDaemon;
-
-use CommandMap, ServerRegistration;
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
 
+/**
+ * The main method serves as the Arkouda driver that invokes the run 
+ * method on the configured list of ArkoudaServerDaemon objects
+ */
 proc main() {
-    try! getServerDaemon().run();
+    asLogger.info(getModuleName(), 
+                  getRoutineName(), 
+                  getLineNumber(),
+                  'Starting Arkouda Server Daemons');
+    coforall daemon in getServerDaemons() {
+        daemon.run();
+    }
 }

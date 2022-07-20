@@ -19,25 +19,54 @@ module ServerDaemon {
     use SymArrayDmap;
     use ServerErrorStrings;
     use Message;
-    use ExternalIntegration;
     use CommandMap, ServerRegistration;
-    
+    use Errors;
+    use ExternalIntegration;
+
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
+
+    private config const daemonType = ServerDaemonType.DEFAULT;
     
     private config const externalSystem = SystemType.NONE;
-    
-    private config const daemonType = ServerDaemonType.DEFAULT;
 
     /**
-     * The ServerDaemon class serves as the base Arkouda server
-     * daemon which is run within the arkouda_server driver
+     * The ArkoudaServerDaemon class defines the run and shutdown 
+     * functions all derived classes must override
      */
     class ArkoudaServerDaemon {
         var st = new owned SymTab();
-        var shutdownServer = false;
+        var shutdownDaemon = false;
+        var port: int;
+ 
+        proc run() throws {
+            throw new NotImplementedError("run() must be overridden",
+                                          getLineNumber(),
+                                          getRoutineName(),
+                                          getModuleName());
+        }
+        
+        proc shutdown(user: string) throws {
+            this.shutdownDaemon = true;
+        }
+        
+        /*
+         * Converts the incoming request JSON string into RequestMsg object.
+         */
+        proc extractRequest(request : string) : RequestMsg throws {
+            var rm = new RequestMsg();
+            deserialize(rm, request);
+            return rm;
+        }
+    }
+
+    /**
+     * The BaseServerDaemon class serves as the base Arkouda server
+     * daemon which is run within the arkouda_server driver
+     */
+    class BaseServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -47,7 +76,6 @@ module ServerDaemon {
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;        
        
-        
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
@@ -207,25 +235,16 @@ module ServerDaemon {
             else if serverToken != token {
                 throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
             }
-        } 
+        }
 
         /*
-         * Converts the incoming request JSON string into RequestMsg object.
-         */
-        proc extractRequest(request : string) : RequestMsg throws {
-            var rm = new RequestMsg();
-            deserialize(rm, request);
-            return rm;
-        }
-        
-        /*
-        Sets the shutdownServer boolean to true and sends the shutdown command to socket,
+        Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
         which stops the arkouda_server listener thread and closes socket.
         */
-        proc shutdown(user: string) throws {
+        override proc shutdown(user: string) throws {
             if saveUsedModules then
                 writeUsedModules();
-            this.shutdownServer = true;
+            this.shutdownDaemon = true;
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
@@ -274,7 +293,7 @@ module ServerDaemon {
             return arkDirectory;
         }
 
-        proc run() throws {
+        override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
@@ -292,7 +311,7 @@ module ServerDaemon {
             t1.clear();
             t1.start();            
         
-            while !this.shutdownServer {
+            while !this.shutdownDaemon {
             // receive message on the zmq socket
             var reqMsgRaw = socket.recv(bytes);
 
@@ -469,11 +488,12 @@ module ServerDaemon {
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
-                                                                                 t1.elapsed()));        
+                                                                                 t1.elapsed()));                                                          
+         exit(0);
         }
     }
     
-    class ExternalIntegrationServerDaemon : ArkoudaServerDaemon {
+    class ExternalIntegrationServerDaemon : BaseServerDaemon {
 
         override proc run() throws {
             on Locales[0] {
@@ -501,9 +521,7 @@ module ServerDaemon {
 
             super.shutdown(user);
         }
-        
-        
-        
+
         /*
          * Registers Arkouda with an external system on startup, defaulting to none.
          */
@@ -540,13 +558,13 @@ module ServerDaemon {
         }
     }
 
-    proc getServerDaemon() throws {
+    proc getServerDaemons() throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return new ArkoudaServerDaemon();
+               return [new BaseServerDaemon():ArkoudaServerDaemon];
             }
             when ServerDaemonType.INTEGRATION {
-               return new ExternalIntegrationServerDaemon();
+               return [new ExternalIntegrationServerDaemon():ArkoudaServerDaemon];
             }
             otherwise {
                 throw getErrorWithContext(
@@ -555,8 +573,8 @@ module ServerDaemon {
                            routineName=getRoutineName(),
                            moduleName=getModuleName(),
                            errorClass="ArgumentError"
-                           ); 
-            }   
-        }           
+                           );
+            }
+        }
     }
 }
