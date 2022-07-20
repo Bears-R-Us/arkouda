@@ -510,9 +510,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024 ** 2:
+        elif self._bytes < 1024**2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024 ** 3:
+        elif self._bytes < 1024**3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -899,9 +899,9 @@ class DataFrame(UserDict):
         # Get units that make the most sense.
         if self._bytes < 1024:
             mem = self.memory_usage(unit="B")
-        elif self._bytes < 1024 ** 2:
+        elif self._bytes < 1024**2:
             mem = self.memory_usage(unit="KB")
-        elif self._bytes < 1024 ** 3:
+        elif self._bytes < 1024**3:
             mem = self.memory_usage(unit="MB")
         else:
             mem = self.memory_usage(unit="GB")
@@ -980,9 +980,7 @@ class DataFrame(UserDict):
         return None
 
     @typechecked
-    def _rename_index(
-        self, mapper: Union[Callable, Dict], inplace: bool = False
-    ) -> Optional[DataFrame]:
+    def _rename_index(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]:
         """
         Rename indexes within the dataframe
 
@@ -1397,12 +1395,16 @@ class DataFrame(UserDict):
             warn(msg, UserWarning)
             return None
 
-        # Proceed with conversion if possible, ignore index column
+        # Proceed with conversion if possible
         pandas_data = {}
         for key in self._columns:
             val = self[key]
             try:
-                pandas_data[key] = val.to_ndarray()
+                # in order for proper pandas functionality, SegArrays must be seen as 1d
+                # and therefore need to be converted to list
+                pandas_data[key] = (
+                    val.to_ndarray() if not isinstance(val, SegArray) else val.to_ndarray().tolist()
+                )
             except TypeError:
                 raise IndexError("Bad index type or format.")
 
