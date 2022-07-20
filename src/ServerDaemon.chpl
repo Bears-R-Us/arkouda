@@ -20,6 +20,7 @@ module ServerDaemon {
     use ServerErrorStrings;
     use Message;
     use CommandMap, ServerRegistration;
+    use Errors;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -29,26 +30,40 @@ module ServerDaemon {
     private config const daemonType = ServerDaemonType.DEFAULT;
     
     /**
-     * The AbstractServerDaemon class defines the run function all
-     * derived classes must override
+     * The ArkoudaServerDaemon class defines the run and shutdown 
+     * functions all derived classes must override
      */
-    class AbstractServerDaemon {
-    
+    class ArkoudaServerDaemon {
+        var st = new owned SymTab();
+        var shutdownDaemon = false;
+        var port: int;
+ 
         proc run() throws {
             throw new NotImplementedError("run() must be overridden",
-                                          getModuleName(),
+                                          getLineNumber(),
                                           getRoutineName(),
-                                          getLineNumber());
+                                          getModuleName());
+        }
+        
+        proc shutdown(user: string) throws {
+            this.shutdownDaemon = true;
+        }
+        
+        /*
+         * Converts the incoming request JSON string into RequestMsg object.
+         */
+        proc extractRequest(request : string) : RequestMsg throws {
+            var rm = new RequestMsg();
+            deserialize(rm, request);
+            return rm;
         }
     }
 
     /**
-     * The ArkoudaServerDaemon class serves as the base Arkouda server
+     * The BaseServerDaemon class serves as the base Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class ArkoudaServerDaemon : AbstractServerDaemon {
-        var st = new owned SymTab();
-        var shutdownServer = false;
+    class BaseServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -58,7 +73,6 @@ module ServerDaemon {
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;        
        
-        
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
@@ -218,25 +232,16 @@ module ServerDaemon {
             else if serverToken != token {
                 throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
             }
-        } 
+        }
 
         /*
-         * Converts the incoming request JSON string into RequestMsg object.
-         */
-        proc extractRequest(request : string) : RequestMsg throws {
-            var rm = new RequestMsg();
-            deserialize(rm, request);
-            return rm;
-        }
-        
-        /*
-        Sets the shutdownServer boolean to true and sends the shutdown command to socket,
+        Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
         which stops the arkouda_server listener thread and closes socket.
         */
-        proc shutdown(user: string) throws {
+        override proc shutdown(user: string) throws {
             if saveUsedModules then
                 writeUsedModules();
-            this.shutdownServer = true;
+            this.shutdownDaemon = true;
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
@@ -275,7 +280,7 @@ module ServerDaemon {
             registerFunction("ruok", akMsgSign);
             registerFunction("shutdown", akMsgSign);
 
-            // Add dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
+            // Add the dynamic Modules/cmds implemented via ServerRegistration.chpl & ServerModules.cfg
             doRegister();
         }
         
@@ -289,8 +294,7 @@ module ServerDaemon {
             this.arkDirectory = this.initArkoudaDirectory();
 
             if authenticate {
-                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 
-                                                   'tokens.txt'));
+                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
             }
 
             sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
@@ -304,7 +308,7 @@ module ServerDaemon {
             t1.clear();
             t1.start();            
         
-            while !this.shutdownServer {
+            while !this.shutdownDaemon {
             // receive message on the zmq socket
             var reqMsgRaw = socket.recv(bytes);
 
@@ -481,14 +485,16 @@ module ServerDaemon {
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
-                                                                                 t1.elapsed()));        
+                                                                                 t1.elapsed()));
+                                                                                 
+         exit(0);
         }
     }
 
     proc getServerDaemons() throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return [new ArkoudaServerDaemon()];
+               return [new BaseServerDaemon():ArkoudaServerDaemon];
             }
             otherwise {
                 throw getErrorWithContext(
