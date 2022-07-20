@@ -22,6 +22,7 @@ module ServerDaemon {
     use ExternalIntegration;
     use CommandMap, ServerRegistration;
     use MetricsMsg;
+    use Errors;
     
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -33,13 +34,16 @@ module ServerDaemon {
     private config const externalSystem = SystemType.NONE;
 
     /**
-     * The AbstractServerDaemon class defines the run and shutdown 
+     * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
      */
-    class AbstractServerDaemon {
+    class ArkoudaServerDaemon {
         var st = new owned SymTab();
         var shutdownDaemon = false;
         var port: int;
+        
+        //var context: ZMQ.Context;
+        //var socket : ZMQ.Socket;      
    
         proc run() throws {
             throw new NotImplementedError("run() must be overridden",
@@ -49,7 +53,7 @@ module ServerDaemon {
         }
         
         proc shutdown(user: string) throws {
-            shutdownDaemon = true;
+            this.shutdownDaemon = true;
         }
         
         /*
@@ -63,10 +67,10 @@ module ServerDaemon {
     }
 
     /**
-     * The ServerDaemon class serves as the base Arkouda server
+     * The BaseServerDaemon class serves as the base Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class ArkoudaServerDaemon : AbstractServerDaemon {
+    class BaseServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -76,7 +80,6 @@ module ServerDaemon {
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;        
        
-        
         proc init() {
             this.socket = this.context.socket(ZMQ.REP); 
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
@@ -245,7 +248,7 @@ module ServerDaemon {
         override proc shutdown(user: string) throws {
             if saveUsedModules then
                 writeUsedModules();
-            shutdownDaemon = true;
+            this.shutdownDaemon = true;
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
@@ -312,7 +315,7 @@ module ServerDaemon {
             t1.clear();
             t1.start();            
         
-            while !shutdownDaemon {
+            while !this.shutdownDaemon {
             // receive message on the zmq socket
             var reqMsgRaw = socket.recv(bytes);
 
@@ -489,11 +492,16 @@ module ServerDaemon {
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
-                                                                                 t1.elapsed()));        
+                                                                                 t1.elapsed()));   
+        exit(0);     
         }
     }
 
-    class MetricsServerDaemon : AbstractServerDaemon {
+    /**
+     * The MetricsServerDaemon provides an endpoint for gathering user, 
+     * request, locale, and server-scoped metrics
+     */
+    class MetricsServerDaemon : ArkoudaServerDaemon {
     
         var context: ZMQ.Context;
         var socket : ZMQ.Socket;      
@@ -510,8 +518,8 @@ module ServerDaemon {
                                 this.port));
         }
 
-        proc runMetricsServer() throws {                
-            while !shutdownDaemon {
+        override proc run() throws {
+            while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "awaiting message on port %i".format(this.port));
                 var req = this.socket.recv(bytes).decode();
@@ -545,19 +553,16 @@ module ServerDaemon {
         
             return;
         }
-
-        override proc run() throws {
-            this.runMetricsServer();
-        }
     }
 
     proc getServerDaemons() throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return [new ArkoudaServerDaemon():AbstractServerDaemon];
+               return [new BaseServerDaemon():ArkoudaServerDaemon];
             }
             when ServerDaemonType.METRICS {
-               return [new ArkoudaServerDaemon():AbstractServerDaemon, new MetricsServerDaemon():AbstractServerDaemon];
+               return [new BaseServerDaemon():ArkoudaServerDaemon, 
+                                       new MetricsServerDaemon():ArkoudaServerDaemon];
             }
             otherwise {
                 throw getErrorWithContext(
