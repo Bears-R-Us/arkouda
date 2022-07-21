@@ -1,5 +1,6 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+import numpy as np
 
 
 class BitOpsTest(ArkoudaTest):
@@ -17,8 +18,8 @@ class BitOpsTest(ArkoudaTest):
         self.assertListEqual(self.a.popcount().to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(self.b.popcount().to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.popcount().to_list(), ans.tolist())
 
         # Function invocation
         # Edge case input
@@ -26,53 +27,53 @@ class BitOpsTest(ArkoudaTest):
         self.assertListEqual(ak.popcount(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(ak.popcount(self.edgeCasesUint).to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.popcount(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_parity(self):
         ans = [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
         self.assertListEqual(self.a.parity().to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(self.b.parity().to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.parity().to_list(), ans.tolist())
 
         ans = [1, 0, 1]
         self.assertListEqual(ak.parity(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(ak.parity(self.edgeCasesUint).to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.parity(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_clz(self):
         ans = [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
         self.assertListEqual(self.a.clz().to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(self.b.clz().to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.clz().to_list(), ans.tolist())
 
         ans = [0, 0, 1]
         self.assertListEqual(ak.clz(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(ak.clz(self.edgeCasesUint).to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.clz(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_ctz(self):
         ans = [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
         self.assertListEqual(self.a.ctz().to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(self.b.ctz().to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.ctz().to_list(), ans.tolist())
 
         ans = [63, 0, 0]
         self.assertListEqual(ak.ctz(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        ans = ak.array(ans, ak.uint64)
-        self.assertListEqual(ak.ctz(self.edgeCasesUint).to_list(), ans.to_list())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.ctz(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_dtypes(self):
         f = ak.zeros(10, dtype=ak.float64)
