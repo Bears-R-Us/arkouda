@@ -715,7 +715,6 @@ class SegArray:
         >>> type(segarr.to_list())
         list
         """
-        # TODO this may need to change once #1600 has been worked
         return [arr.tolist() for arr in self.to_ndarray()]
 
     def sum(self, x=None):

@@ -1402,9 +1402,7 @@ class DataFrame(UserDict):
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
-                pandas_data[key] = (
-                    val.to_ndarray() if not isinstance(val, SegArray) else val.to_ndarray().tolist()
-                )
+                pandas_data[key] = val.to_ndarray() if not isinstance(val, SegArray) else val.to_list()
             except TypeError:
                 raise IndexError("Bad index type or format.")
 
