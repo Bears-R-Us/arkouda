@@ -692,26 +692,24 @@ module SegmentedString {
       }
       // new val size is the original - (total length of replacements) + (repl.size * total numReplacements)
       const valSize = this.values.size - (+ reduce replacedLens) + (repl.size * (+ reduce numReplacements));
-      const valDom = makeDistDom(valSize);
-      var subbedVals: [valDom] uint(8);
+      var subbedVals = makeDistArray(valSize, uint(8));
       overMemLimit(2 * this.offsets.size * numBytes(int));
       // new offsets can be directly calculated
       // new offsets is the original - (running sum of replaced lens) + (running sum of replacements * repl.size)
       var subbedOffsets = origOffsets - ((+ scan replacedLens) - replacedLens) + (repl.size * ((+ scan numReplacements) - numReplacements));
-
       forall (subOff, origOff, origLen) in zip(subbedOffsets, origOffsets, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var j = 0;
         var localizedVals = new lowLevelLocalizingSlice(origVals, origOff..#origLen);
         for i in 0..#origLen {
-          if nonMatch[origOff + i] {
-            valAgg.copy(subbedVals[subOff+j], localizedVals.ptr[i]);
-            j += 1;
-          }
-          else if matchStartBool[origOff + i] {
+          if matchStartBool[origOff + i] {
             for k in repl {
               valAgg.copy(subbedVals[subOff+j], k:uint(8));
               j += 1;
             }
+          }
+          if nonMatch[origOff + i] {
+            valAgg.copy(subbedVals[subOff+j], localizedVals.ptr[i]);
+            j += 1;
           }
         }
       }

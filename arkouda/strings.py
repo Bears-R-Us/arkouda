@@ -562,11 +562,7 @@ class Strings:
         """
         if isinstance(chars, bytes):
             chars = chars.decode()
-        args = {
-            "objType": self.objtype,
-            "name": self.entry.name,
-            "chars": chars
-        }
+        args = {"objType": self.objtype, "name": self.entry.name, "chars": chars}
         rep_msg = generic_msg(cmd="segmentedStrip", args=args)
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -596,6 +592,12 @@ class Strings:
             re.compile(pattern)
         except Exception as e:
             raise ValueError(e)
+        if pattern == "$" or (pattern == "" and (self == "").any()):  # type: ignore
+            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
+            raise ValueError(
+                "regex operations not currently supported with a pattern=$ or pattern='' when "
+                "the empty string is contained in Strings"
+            )
         matcher = None
         if pattern in self._regex_dict:
             matcher = self._regex_dict[pattern]
@@ -948,11 +950,11 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
-        if re.search(substr, ""):
-            # TODO remove once changes from chapel issue #18639 are in arkouda
+        if substr == "$" or (substr == "" and (self == "").any()):  # type: ignore
+            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
             raise ValueError(
-                "regex operations with a pattern that matches the empty string are "
-                "not currently supported"
+                "regex operations not currently supported with a pattern=$ or pattern='' when "
+                "the empty string is contained in Strings"
             )
         matcher = self._get_matcher(substr, create=False)
         if matcher is not None:
@@ -1010,11 +1012,11 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
-        if re.search(substr, ""):
-            # TODO remove once changes from chapel issue #18639 are in arkouda
+        if substr == "$" or (substr == "" and (self == "").any()):  # type: ignore
+            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
             raise ValueError(
-                "regex operations with a pattern that matches the empty string are "
-                "not currently supported"
+                "regex operations not currently supported with a pattern=$ or pattern='' when "
+                "the empty string is contained in Strings"
             )
         matcher = self._get_matcher(substr, create=False)
         if matcher is not None:
@@ -1071,6 +1073,13 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
+        if substr == "$":
+            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
+            # no need to add "" case because it will be caught in contains
+            raise ValueError(
+                "regex operations not currently supported with a pattern=$ or pattern='' when "
+                "the empty string is contained in Strings"
+            )
         return self.contains(substr + "$", regex=True)
 
     def flatten(
@@ -1133,7 +1142,6 @@ class Strings:
                 arrays = repMsg.split("+", maxsplit=2)
                 return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
             else:
-                arrays = repMsg.split("+", maxsplit=1)
                 return Strings.from_return_msg(repMsg)
 
     @typechecked
@@ -1218,10 +1226,8 @@ class Strings:
             except Exception as e:
                 raise ValueError(e)
             if re.search(delimiter, ""):
-                # TODO remove once changes from chapel issue #18639 are in arkouda
                 raise ValueError(
-                    "regex operations with a pattern that matches the empty string are "
-                    "not currently supported"
+                    "peel with a pattern that matches the empty string are not currently supported"
                 )
         if times < 1:
             raise ValueError("times must be >= 1")
