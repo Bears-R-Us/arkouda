@@ -2160,11 +2160,8 @@ module HDF5Msg {
         }
     }
 
-    proc registerMe() {
-        use CommandMap;
-        registerFunction("lshdf", lshdfMsg, getModuleName());
-        registerFunction("readAllHdf", readAllHdfMsg, getModuleName());
-        registerFunction("tohdf", tohdfMsg, getModuleName());
-    }
-
+    use CommandMap;
+    registerFunction("lshdf", lshdfMsg, getModuleName());
+    registerFunction("readAllHdf", readAllHdfMsg, getModuleName());
+    registerFunction("tohdf", tohdfMsg, getModuleName());
 }

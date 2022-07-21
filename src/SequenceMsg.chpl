@@ -105,9 +105,7 @@ module SequenceMsg {
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("arange", arangeMsg, getModuleName());
-      registerFunction("linspace", linspaceMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("arange", arangeMsg, getModuleName());
+    registerFunction("linspace", linspaceMsg, getModuleName());
 }

@@ -78,8 +78,6 @@ module HistogramMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("histogram", histogramMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("histogram", histogramMsg, getModuleName());
 }

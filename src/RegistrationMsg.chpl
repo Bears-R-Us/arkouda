@@ -519,12 +519,10 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("register", registerMsg, getModuleName());
-      registerFunction("attach", attachMsg, getModuleName());
-      registerFunction("genericAttach", genAttachMsg, getModuleName());
-      registerFunction("unregister", unregisterMsg, getModuleName());
-      registerFunction("genericUnregisterByName", unregisterByName, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("register", registerMsg, getModuleName());
+    registerFunction("attach", attachMsg, getModuleName());
+    registerFunction("genericAttach", genAttachMsg, getModuleName());
+    registerFunction("unregister", unregisterMsg, getModuleName());
+    registerFunction("genericUnregisterByName", unregisterByName, getModuleName());
 }
