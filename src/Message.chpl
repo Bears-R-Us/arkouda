@@ -88,7 +88,7 @@ module Message {
         * Return the value as int64
         * Returns int
         */
-        proc getIntValue(): int {
+        proc getIntValue(): int throws {
             try {
                 return this.val:int;
             }
@@ -105,7 +105,7 @@ module Message {
         * Return the value as uint64
         * Returns uint
         */
-        proc getUIntValue(): uint {
+        proc getUIntValue(): uint throws {
             try {
                 return this.val:uint;
             }
@@ -122,7 +122,7 @@ module Message {
         * Return the value as float64
         * Returns real
         */
-        proc getRealValue(): real {
+        proc getRealValue(): real throws {
             try {
                 return this.val:real;
             }
@@ -139,7 +139,7 @@ module Message {
         * Return the value as bool
         * Returns bool
         */
-        proc getBoolValue(): bool {
+        proc getBoolValue(): bool throws {
             try {
                 return this.val:bool;
             }
@@ -216,6 +216,19 @@ module Message {
             for p in this.param_list {
                 if p.key == key {
                     return p;
+                }
+            }
+            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "KeyNotFound");
+        }
+
+        proc getValueOf(key: string) throws {
+            for p in this.param_list {
+                if p.key == key {
+                    return p.val;
                 }
             }
             throw new owned ErrorWithContext("Key Not Found; %s".format(key),

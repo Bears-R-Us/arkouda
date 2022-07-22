@@ -824,11 +824,16 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
         - file_path will need to support list[str] and str for glob
         - Currently, order is always assumed to be row major
     """
+    args = {
+        "filename": file_path,
+        "dset": dset
+    }
     rep_msg = cast(
         str,
         generic_msg(
             cmd="readhdf_multi",
-            args=f"{file_path} {dset}",
+            args=args,
+            #args=f"{file_path} {dset}",
         ),
     )
 
@@ -937,7 +942,18 @@ def write_hdf5_multi_dim(
     # error handling is done in the conversion functions
     storage_int = _storage_str_to_int(storage)
     mode_int = _mode_str_to_int(mode)
+    args = {
+        "flat": obj.base,
+        "shape": obj.shape,
+        "order": obj.order,
+        "filename": file_path,
+        "dset": dset,
+        "mode": mode_int,
+        "method": storage_int
+    }
+
     generic_msg(
         cmd="writehdf_multi",
-        args=f"{obj.base.name} {obj.shape.name} {obj.order} {file_path} {dset} {mode_int} {storage_int}",
+        args=args,
+        # args=f"{obj.base.name} {obj.shape.name} {obj.order} {file_path} {dset} {mode_int} {storage_int}",
     )

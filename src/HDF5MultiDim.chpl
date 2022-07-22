@@ -118,7 +118,9 @@ module HDF5MultiDim {
     */
     proc read_hdf_multi_msg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         // Currently always load flat as row major
-        var (filename, dset_name) = payload.splitMsgToTuple(2);
+        var msgArgs = parseMessageArgs(payload, 2);
+        var filename = msgArgs.getValueOf("filename");
+        var dset_name = msgArgs.getValueOf("dset");
 
         var file_id: C_HDF5.hid_t;
         var dset_id: C_HDF5.hid_t;
@@ -254,18 +256,13 @@ module HDF5MultiDim {
     * Provides the ability to store the data flat or multidimensional.
     */
     proc write_hdf_multi_msg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (flat_name, shape_name, order_str, filename, dset_name, mode_str, method_str) = payload.splitMsgToTuple(7);
-        
-        var method: int;
-        try {
-            method = method_str:int;
-        } catch {
-            var errorMsg = "Could not convert method to numeric";
-            h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        //var (flat_name, shape_name, order_str, filename, dset_name, mode_str, method_str) = payload.splitMsgToTuple(7);
+        var msgArgs = parseMessageArgs(payload, 7);
 
-        var entry = st.lookup(flat_name);
+        //var method_str = msgArgs.get("method");
+        var method: int = msgArgs.get("method").getIntValue();
+
+        var entry = st.lookup(msgArgs.getValueOf("flat"));
         var entryDtype = DType.UNDEF;
         if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
             entryDtype = (entry: borrowed GenSymEntry).dtype;
@@ -277,19 +274,14 @@ module HDF5MultiDim {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(shape_name, st);
+        var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
         var shape = toSymEntry(shape_sym, int);
 
-        var mode: int;
-        try {
-            mode = mode_str: int;
-        } catch {
-            var errorMsg = "Could not convert mode to numeric";
-            h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
+        var mode_str = msgArgs.get("mode");
+        var mode: int = mode_str.getIntValue();
 
         // create the file if it does not exist or if we are truncating
+        var filename = msgArgs.getValueOf("filename");
         prepFile(filename, mode);
         var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
 
@@ -301,7 +293,8 @@ module HDF5MultiDim {
         }
 
         // validate that the dataset does not already exist
-        var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset_name = msgArgs.getValueOf("dset");
+;       var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
         if dset_exists > 0 {
             var errorMsg = "A dataset named %s already exists in %s. Overwriting is not currently supported. Please choose another name.".format(dset_name, filename);
             h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
