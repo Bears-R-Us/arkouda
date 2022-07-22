@@ -1,7 +1,7 @@
 import json
 import os
 import warnings
-from typing import Mapping, Optional, Tuple, Union, cast, Dict
+from typing import Dict, Mapping, Optional, Tuple, Union, cast
 
 import pyfiglet  # type: ignore
 import zmq  # type: ignore
@@ -364,7 +364,9 @@ def _send_string_message(
     -----
     - Size is not yet utilized. It is being provided not in preparation for further development.
     """
-    message = RequestMessage(user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args, size=str(size))
+    message = RequestMessage(
+        user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args, size=str(size)
+    )
 
     logger.debug(f"sending message {message}")
 
@@ -429,7 +431,9 @@ def _send_binary_message(
         expected fields
     """
     # Note - Size is a placeholder here because Binary msg not yet support json args
-    message = RequestMessage(user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args, size="-1")
+    message = RequestMessage(
+        user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args, size="-1"
+    )
 
     logger.debug(f"sending message {message}")
 
@@ -565,8 +569,8 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
         if not isinstance(key, str):
             raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
         if isinstance(val, dict):
-            raise TypeError(f"Nested JSON is not currently supported for server messages.")
-        param = {'key': key}
+            raise TypeError("Nested JSON is not currently supported for server messages.")
+        param = {"key": key}
 
         if isinstance(val, pdarray):
             param["objType"] = "pdarray"
@@ -575,7 +579,8 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
         elif isinstance(val, Strings):
             param["objType"] = "SegString"
             param["dtype"] = "str"
-            param["val"] = val.name
+            # empty string if name of String obj is none
+            param["val"] = val.name if val.name else ""
         elif isinstance(val, list):
             param["objType"] = "list"
             dtypes = set([p.dtype for p in val])
@@ -583,7 +588,7 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
                 t_str = ", ".join(dtypes)
                 raise TypeError(f"List values must be of the same type. Found {t_str}")
             param["dtype"] = dtypes.pop()
-            param['val'] = json.dumps(val)
+            param["val"] = json.dumps(val)
         else:
             param["objType"] = type(val).__name__
             param["dtype"] = type(val).__name__

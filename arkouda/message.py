@@ -71,6 +71,7 @@ class RequestMessage:
     cmd: str
     format: MessageFormat
     args: str
+    size: str
 
     def __init__(
         self,
@@ -79,7 +80,7 @@ class RequestMessage:
         token: str = None,
         format: MessageFormat = MessageFormat.STRING,
         args: str = None,
-        size: str = "-1"
+        size: str = "-1",
     ) -> None:
         """
         Overridden __init__ method sets instance attributes to
