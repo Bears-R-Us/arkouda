@@ -177,10 +177,9 @@ module Message {
         }
 
         /*
-        * Parse value as a list of strings.
-        *@param size: int - number of values in the list
-        * Note - not yet able to handle list of pdarray or SegString names
-
+        Parse value as a list of strings.
+        :size: int: number of values in the list
+        Note - not yet able to handle list of pdarray or SegString names
         */
         proc getList(size: int) {
             if this.objType != "list" {
@@ -195,9 +194,9 @@ module Message {
     }
 
     /*
-    * Container class for the message arguments formatted as json
-    * param_list - array of ParameterObj
-    * size: int - number of parameters contained in list
+    Container class for the message arguments formatted as json
+    :param_list:  array of ParameterObj
+    :size: int - number of parameters contained in list
     */
     class MessageArgs {
         var param_list;
@@ -239,14 +238,14 @@ module Message {
         }
 
         /*
-        * Return "iterable" of ParameterObj
+        Return "iterable" of ParameterObj
         */
         proc items() {
             return this.param_list;
         }
 
         /*
-        * Return a list of all keys
+        Return a list of all keys
         */
         proc keys() {
             var key_list: [0..#this.size] string;
@@ -257,7 +256,7 @@ module Message {
         }
 
         /*
-        * Return a list of all values
+        Return a list of all values
         */
         proc vals(){
             var val_list: [0..#this.size] string;
@@ -269,7 +268,7 @@ module Message {
     }
 
     /*
-    * Parse and individual parameter components into a ParameterObj
+    Parse and individual parameter components into a ParameterObj
     */
     proc parseParameter(payload:string) throws {
         var p: ParameterObj;
@@ -289,7 +288,7 @@ module Message {
     }
 
     /*
-    * Parse arguments formatted as json string into objects
+    Parse arguments formatted as json string into objects
     */
     proc parseMessageArgs(json_str: string, size: int) throws {
         var pArr = jsonToPdArray(json_str, size);
