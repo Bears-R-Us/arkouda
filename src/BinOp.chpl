@@ -296,6 +296,37 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && r.etype == real) || (l.etype == real && r.etype == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a:real + r.a:real;
+          }
+          when "-" {
+            e.a = l.a:real - r.a:real;
+          }
+          when "*" {
+            e.a = l.a:real * r.a:real;
+          }
+          when "/" { // truediv
+            e.a = l.a:real / r.a:real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri) else NAN;
+          }
+          when "**" { 
+            e.a= l.a:real**r.a:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     } else if ((l.etype == int && r.etype == bool) || (l.etype == bool && r.etype == int)) {
       select op {
           when "+" {
@@ -574,6 +605,36 @@ module BinOp
           }
           when "**" { 
             e.a= l.a**val;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a: real + val: real;
+          }
+          when "-" {
+            e.a = l.a: real - val: real;
+          }
+          when "*" {
+            e.a = l.a: real * val: real;
+          }
+          when "/" { // truediv
+            e.a = l.a: real / val: real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li/val) else NAN;
+          }
+          when "**" { 
+            e.a= l.a: real**val: real;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -864,6 +925,36 @@ module BinOp
           }
           when "**" { 
             e.a= val**r.a;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = val:real + r.a:real;
+          }
+          when "-" {
+            e.a = val:real - r.a:real;
+          }
+          when "*" {
+            e.a = val:real * r.a:real;
+          }
+          when "/" { // truediv
+            e.a = val:real / r.a:real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else NAN;
+          }
+          when "**" { 
+            e.a= val:real**r.a:real;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);

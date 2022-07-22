@@ -280,6 +280,51 @@ class OperatorsTest(ArkoudaTest):
             (ak.array([True, False, True, False, True, True]) == ak.concatenate([pdaOne, pdaTwo])).all()
         )
 
+    def test_float_uint_binops(self):
+        # Test fix for issue #1620
+        ak_uint = ak.array([5], dtype=ak.uint64)
+        np_uint = np.array([5], dtype=np.uint64)
+        scalar_uint = np.uint64(5)
+
+        ak_float = ak.array([3.01], dtype=ak.float64)
+        np_float = np.array([3.01], dtype=np.float_)
+        scalar_float = 3.01
+
+        ak_uints = [ak_uint, scalar_uint]
+        np_uints = [np_uint, scalar_uint]
+        ak_floats = [ak_float, scalar_float]
+        np_floats = [np_float, scalar_float]
+        for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
+            self.assertEqual(ak_uint + akf, np_uint + npf)
+            self.assertEqual(akf + ak_uint, npf + np_uint)
+            self.assertEqual(ak_float + aku, np_float + npu)
+            self.assertEqual(aku + ak_float, npu + np_float)
+
+            self.assertEqual(ak_uint - akf, np_uint - npf)
+            self.assertEqual(akf - ak_uint, npf - np_uint)
+            self.assertEqual(ak_float - aku, np_float - npu)
+            self.assertEqual(aku - ak_float, npu - np_float)
+
+            self.assertEqual(ak_uint * akf, np_uint * npf)
+            self.assertEqual(akf * ak_uint, npf * np_uint)
+            self.assertEqual(ak_float * aku, np_float * npu)
+            self.assertEqual(aku * ak_float, npu * np_float)
+
+            self.assertEqual(ak_uint / akf, np_uint / npf)
+            self.assertEqual(akf / ak_uint, npf / np_uint)
+            self.assertEqual(ak_float / aku, np_float / npu)
+            self.assertEqual(aku / ak_float, npu / np_float)
+
+            self.assertEqual(ak_uint // akf, np_uint // npf)
+            self.assertEqual(akf // ak_uint, npf // np_uint)
+            self.assertEqual(ak_float // aku, np_float // npu)
+            self.assertEqual(aku // ak_float, npu // np_float)
+
+            self.assertEqual(ak_uint ** akf, np_uint ** npf)
+            self.assertEqual(akf ** ak_uint, npf ** np_uint)
+            self.assertEqual(ak_float ** aku, np_float ** npu)
+            self.assertEqual(aku ** ak_float, npu ** np_float)
+
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
         from arkouda.util import generic_concat as akuconcat
