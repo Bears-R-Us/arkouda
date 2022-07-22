@@ -344,7 +344,7 @@ def _send_string_message(
         A delimited string containing 1..n command arguments
     size : int
         Default -1
-        Number of parameters contained in args. Only set is args is json.
+        Number of parameters contained in args. Only set if args is json.
 
     Returns
     -------
