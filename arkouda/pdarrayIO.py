@@ -833,7 +833,6 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
         generic_msg(
             cmd="readhdf_multi",
             args=args,
-            #args=f"{file_path} {dset}",
         ),
     )
 
@@ -955,5 +954,4 @@ def write_hdf5_multi_dim(
     generic_msg(
         cmd="writehdf_multi",
         args=args,
-        # args=f"{obj.base.name} {obj.shape.name} {obj.order} {file_path} {dset} {mode_int} {storage_int}",
     )

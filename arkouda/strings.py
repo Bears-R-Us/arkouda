@@ -567,7 +567,6 @@ class Strings:
             "name": self.entry.name,
             "chars": chars
         }
-        # args = "{} {} {}".format(self.objtype, self.entry.name, chars,)
         rep_msg = generic_msg(cmd="segmentedStrip", args=args)
         return Strings.from_return_msg(cast(str, rep_msg))
 
