@@ -1166,7 +1166,7 @@ class DataFrame(UserDict):
             self.data = tmp_data
 
         # Clean up
-        self.reset_index()
+        self.reset_index(inplace=True)
         self.update_size()
         self._empty = False
         return self
