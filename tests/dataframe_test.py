@@ -5,6 +5,7 @@ import string
 from shutil import rmtree
 
 import pandas as pd  # type: ignore
+import numpy as np # type: ignore
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -273,6 +274,9 @@ class DataFrameTest(ArkoudaTest):
 
         # dataframe equality returns series with bool result for each row.
         self.assertTrue(ref_df.equals(df.to_pandas()))
+
+        idx = np.arange(8)
+        self.assertListEqual(idx.tolist(), df.index.index.to_ndarray().tolist())
 
         df_keyerror = build_ak_keyerror()
         with self.assertRaises(KeyError):
