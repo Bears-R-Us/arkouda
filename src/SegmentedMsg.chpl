@@ -480,7 +480,11 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
-    var (objtype, name, chars) = payload.splitMsgToTuple(" ", 3);
+    // var (objtype, name, chars) = payload.splitMsgToTuple(" ", 3);
+
+    var msgArgs = parseMessageArgs(payload, 3);
+    var objtype = msgArgs.getValueOf("objType");
+    var name = msgArgs.getValueOf("name");
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -488,7 +492,7 @@ module SegmentedMsg {
     select (objtype) {
       when ("str") {
         var strings = getSegString(name, st);
-        var (off, val) = strings.strip(chars);
+        var (off, val) = strings.strip(msgArgs.getValueOf("chars"));
         var retString = getSegString(off, val, st);
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
         return new MsgTuple(repMsg, MsgType.NORMAL);
