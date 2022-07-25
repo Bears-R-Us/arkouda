@@ -80,7 +80,7 @@ class RequestMessage:
         token: str = None,
         format: MessageFormat = MessageFormat.STRING,
         args: str = None,
-        size: str = "-1",
+        size: int = -1,
     ) -> None:
         """
         Overridden __init__ method sets instance attributes to
@@ -99,8 +99,8 @@ class RequestMessage:
             The request message format
         args : str
             The delimited string containing the command arguments
-        size : str
-            Integer value indicating the number of parameters in args
+        size : int
+            Value indicating the number of parameters in args
             -1 if args is not json
 
         Returns

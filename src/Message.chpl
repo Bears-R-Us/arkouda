@@ -36,7 +36,7 @@ module Message {
         var cmd: string;
         var format: string;
         var args: string;
-        var size: string; // currently unused, but wired for once all functionality moved to json
+        var size: int; // currently unused, but wired for once all functionality moved to json
     }
 
     /*
@@ -312,6 +312,7 @@ module Message {
         var nreader = newmem.reader();
         try {
             nreader.readf("%jt", msg);
+            writeln("%jt".format(msg));
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
                                        getLineNumber(),

@@ -362,10 +362,10 @@ def _send_string_message(
 
     Notes
     -----
-    - Size is not yet utilized. It is being provided not in preparation for further development.
+    - Size is not yet utilized. It is being provided in preparation for further development.
     """
     message = RequestMessage(
-        user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args, size=str(size)
+        user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size
     )
 
     logger.debug(f"sending message {message}")
@@ -432,7 +432,7 @@ def _send_binary_message(
     """
     # Note - Size is a placeholder here because Binary msg not yet support json args
     message = RequestMessage(
-        user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args, size="-1"
+        user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args, size=-1
     )
 
     logger.debug(f"sending message {message}")
