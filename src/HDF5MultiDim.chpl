@@ -256,10 +256,8 @@ module HDF5MultiDim {
     * Provides the ability to store the data flat or multidimensional.
     */
     proc write_hdf_multi_msg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        //var (flat_name, shape_name, order_str, filename, dset_name, mode_str, method_str) = payload.splitMsgToTuple(7);
         var msgArgs = parseMessageArgs(payload, 7);
 
-        //var method_str = msgArgs.get("method");
         var method: int = msgArgs.get("method").getIntValue();
 
         var entry = st.lookup(msgArgs.getValueOf("flat"));
@@ -277,8 +275,7 @@ module HDF5MultiDim {
         var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
         var shape = toSymEntry(shape_sym, int);
 
-        var mode_str = msgArgs.get("mode");
-        var mode: int = mode_str.getIntValue();
+        var mode_str = msgArgs.get("mode").getIntValue();
 
         // create the file if it does not exist or if we are truncating
         var filename = msgArgs.getValueOf("filename");

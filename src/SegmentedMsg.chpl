@@ -480,8 +480,6 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
-    // var (objtype, name, chars) = payload.splitMsgToTuple(" ", 3);
-
     var msgArgs = parseMessageArgs(payload, 3);
     var objtype = msgArgs.getValueOf("objType");
     var name = msgArgs.getValueOf("name");

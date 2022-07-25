@@ -157,7 +157,7 @@ module Message {
         */
         proc getValueAsType(type t = string): t throws {
             if objType != dtype {
-                throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.".format(t, this.val, t),
+                throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.",
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
@@ -312,7 +312,6 @@ module Message {
         var nreader = newmem.reader();
         try {
             nreader.readf("%jt", msg);
-            writeln("%jt".format(msg));
         } catch bfe : BadFormatError {
             throw new owned ErrorWithContext("Incorrect JSON format %s".format(request),
                                        getLineNumber(),
