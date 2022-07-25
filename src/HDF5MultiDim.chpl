@@ -275,7 +275,7 @@ module HDF5MultiDim {
         var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
         var shape = toSymEntry(shape_sym, int);
 
-        var mode_str = msgArgs.get("mode").getIntValue();
+        var mode = msgArgs.get("mode").getIntValue();
 
         // create the file if it does not exist or if we are truncating
         var filename = msgArgs.getValueOf("filename");
