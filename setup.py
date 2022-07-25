@@ -156,7 +156,7 @@ setup(
     # projects.
     extras_require={  # Optional
         'dev': ['pexpect', 'pytest>=6.0', 'pytest-env',
-                'Sphinx', 'sphinx-argparse', 'sphinx-autoapi',
+                'Sphinx==5.0.2', 'sphinx-argparse', 'sphinx-autoapi',
                 'mypy>=0.931', 'typed-ast', 'black', 'isort',
                 'flake8'],
     },
