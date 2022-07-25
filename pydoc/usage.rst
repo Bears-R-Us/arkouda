@@ -18,5 +18,3 @@ Usage
    usage/groupby
    usage/strings
    usage/categorical
-   usage/segarray
-   usage/arrayview
