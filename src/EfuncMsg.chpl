@@ -832,12 +832,10 @@ module EfuncMsg
       return C;
     }    
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("efunc", efuncMsg, getModuleName());
-      registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
-      registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
-      registerFunction("efunc3sv", efunc3svMsg, getModuleName());
-      registerFunction("efunc3ss", efunc3ssMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("efunc", efuncMsg, getModuleName());
+    registerFunction("efunc3vv", efunc3vvMsg, getModuleName());
+    registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
+    registerFunction("efunc3sv", efunc3svMsg, getModuleName());
+    registerFunction("efunc3ss", efunc3ssMsg, getModuleName());
 }

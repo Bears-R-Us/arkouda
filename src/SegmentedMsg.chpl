@@ -1019,25 +1019,23 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
   
-  proc registerMe() {
-    use CommandMap;
-    registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
-    registerFunction("caseChange", caseChangeMsg, getModuleName());
-    registerFunction("checkChars", checkCharsMsg, getModuleName());
-    registerFunction("segmentedHash", segmentedHashMsg, getModuleName());
-    registerFunction("segmentedSearch", segmentedSearchMsg, getModuleName());
-    registerFunction("segmentedFindLoc", segmentedFindLocMsg, getModuleName());
-    registerFunction("segmentedFindAll", segmentedFindAllMsg, getModuleName());
-    registerFunction("segmentedPeel", segmentedPeelMsg, getModuleName());
-    registerFunction("segmentedSub", segmentedSubMsg, getModuleName());
-    registerFunction("segmentedStrip", segmentedStripMsg, getModuleName());
-    registerFunction("segmentedIndex", segmentedIndexMsg, getModuleName());
-    registerFunction("segmentedBinopvv", segBinopvvMsg, getModuleName());
-    registerFunction("segmentedBinopvs", segBinopvsMsg, getModuleName());
-    registerFunction("segmentedGroup", segGroupMsg, getModuleName());
-    registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
-    registerFunction("randomStrings", randomStringsMsg, getModuleName());
-    registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
-    registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
-  }
+  use CommandMap;
+  registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
+  registerFunction("caseChange", caseChangeMsg, getModuleName());
+  registerFunction("checkChars", checkCharsMsg, getModuleName());
+  registerFunction("segmentedHash", segmentedHashMsg, getModuleName());
+  registerFunction("segmentedSearch", segmentedSearchMsg, getModuleName());
+  registerFunction("segmentedFindLoc", segmentedFindLocMsg, getModuleName());
+  registerFunction("segmentedFindAll", segmentedFindAllMsg, getModuleName());
+  registerFunction("segmentedPeel", segmentedPeelMsg, getModuleName());
+  registerFunction("segmentedSub", segmentedSubMsg, getModuleName());
+  registerFunction("segmentedStrip", segmentedStripMsg, getModuleName());
+  registerFunction("segmentedIndex", segmentedIndexMsg, getModuleName());
+  registerFunction("segmentedBinopvv", segBinopvvMsg, getModuleName());
+  registerFunction("segmentedBinopvs", segBinopvsMsg, getModuleName());
+  registerFunction("segmentedGroup", segGroupMsg, getModuleName());
+  registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
+  registerFunction("randomStrings", randomStringsMsg, getModuleName());
+  registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
+  registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
 }

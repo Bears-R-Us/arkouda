@@ -9,7 +9,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.groupbyclass import GroupBy, broadcast, unique
 from arkouda.numeric import where
-from arkouda.pdarrayclass import is_sorted, pdarray
+from arkouda.pdarrayclass import pdarray
 from arkouda.pdarraycreation import arange, full, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.sorting import argsort
@@ -278,20 +278,23 @@ def in1d_intervals(vals, intervals, symmetric=False):
         return found
 
 
-def search_intervals(vals, intervals):
+def search_intervals(vals, intervals, tiebreak=None):
     """
-    Given an array of query vals and non-overlapping, half-open (pythonic)
-    intervals, return the index of the interval containing each query value,
-    or -1 if not present in any interval.
+    Given an array of query vals and half-open (pythonic) intervals, return the index of the
+    best (see tiebreak) interval containing each query value, or -1 if not present in any
+    interval.
 
     Parameters
     ----------
     vals : (sequence of) pdarray(int, uint, float)
         Values to search for in intervals. If multiple arrays, each "row" is an item.
     intervals : 2-tuple of (sequences of) pdarrays
-        Non-overlapping, half-open intervals, as a tuple of
-        (lower_bounds_inclusive, upper_bounds_exclusive)
-        Must have same shape/dtype as vals.
+        Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
+        Must have same dtype(s) as vals.
+    tiebreak : (optional) pdarray, numeric
+        When a value is present in more than one interval, the interval with the
+        lowest tiebreak value will be chosen. If no tiebreak is given, the
+        first containing interval will be chosen.
 
     Returns
     -------
@@ -313,6 +316,11 @@ def search_intervals(vals, intervals):
     # Convert to closed (inclusive) intervals
     low = intervals[0]
     high = intervals[1] - 1 if isinstance(intervals[1], pdarray) else [h - 1 for h in intervals[1]]
+    intervalsize = low.size if isinstance(low, pdarray) else low[0].size
+    if tiebreak is None:
+        tiebreak = arange(intervalsize)
+    elif not isinstance(tiebreak, pdarray) or tiebreak.size != intervalsize:
+        raise TypeError("Tiebreak must be pdarray of same size as number of intervals")
 
     if isinstance(vals, pdarray) and vals.dtype in (akint64, akuint64, akfloat64):
         # argument validation for pdarray
@@ -332,12 +340,6 @@ def search_intervals(vals, intervals):
         # verify upper bounds are greater than lower bounds
         if not (high >= low).all():
             raise ValueError("Upper bounds must be greater than lower bounds")
-        # verify intervals are sorted
-        if not is_sorted(low):
-            raise ValueError("Intervals must be sorted in ascending order")
-        # verify intervals are non-overlapping
-        if not (low[1:] > high[:-1]).all():
-            raise ValueError("Intervals must be non-overlapping")
 
         # Index of interval containing each unique value (initialized to -1: not found)
         containinginterval = -ones(vals.size, dtype=akint64)
@@ -363,10 +365,14 @@ def search_intervals(vals, intervals):
             matchintervalidx = broadcast(segs, hitidx, matches.size)
             # make sure not to include any of the bounds themselves
             validmatch = (matches >= low.size) & (matches < boundary)
-            # indices of unique values found (translated from concat keys)
-            uvalidx = matches[validmatch] - low.size
+            matchintervalidx = matchintervalidx[validmatch]
+            # indices of values found (translated from concat keys)
+            validx = matches[validmatch] - low.size
+            # break ties for values contained in more than one interval
+            byvalidx = GroupBy(validx)
+            validx, tmpidx = byvalidx.argmin(tiebreak[matchintervalidx])
             # set index of containing interval for uvals that were found
-            containinginterval[uvalidx] = matchintervalidx[validmatch]
+            containinginterval[validx] = matchintervalidx[tmpidx]
         return containinginterval
     elif isinstance(vals, (list, tuple)):
         # argument validation for multi-array
@@ -403,15 +409,9 @@ def search_intervals(vals, intervals):
         # verify upper bounds are greater than lower bounds
         if not all([(hi >= lo).all() for hi, lo in zip(high, low)]):
             raise ValueError("Upper bounds must be greater than lower bounds")
-        # verify intervals are sorted
-        if not all([is_sorted(lo) for lo in low]):
-            raise ValueError("Intervals must be sorted in ascending order")
-        # verify intervals are non-overlapping
-        if not all([(lo[1:] > hi[:-1]).all() for hi, lo in zip(high, low)]):
-            raise ValueError("Intervals must be non-overlapping")
 
         # Index of interval containing each unique value (initialized to -1: not found)
-        containinginterval = [-ones(valsize, dtype=akint64) for i in range(len(vals))]
+        containinginterval = -ones(valsize, dtype=akint64)
         concat = [concatenate((lo, v, hi)) for lo, v, hi in zip(low, vals, high)]
         perm = [argsort(c) for c in concat]
         # iperm is the indices of the original values in the sorted array
@@ -425,43 +425,62 @@ def search_intervals(vals, intervals):
         # take the logical AND of all elements in list
         valid = functools.reduce(lambda x, y: x & y, [e > s + 1 for e, s in zip(ends, starts)])
         if valid.sum() > 0:
-            # pranges is all the indices in sorted array that fall between a lower and an uppper bound
+            # pranges is all the indices in sorted array that fall between a lower and
+            # an uppper bound for each dimension
             segs, pranges = zip(*[gen_ranges(s[valid] + 1, e[valid]) for s, e in zip(starts, ends)])
             # matches are the indices of those items in the original array
             matches = [pm[pr] for pm, pr in zip(perm, pranges)]
-            # integer indices of each interval containing a hit
+            # integer indices of each one-dimensional interval containing a hit
             hitidx = arange(valid.size)[valid]
-            # broadcast interval index out to matches
+            # broadcast 1-d interval index out to matches
             matchintervalidx = [broadcast(s, hitidx, m.size) for s, m in zip(segs, matches)]
             # make sure not to include any of the bounds themselves
             validmatch = [(m >= lowsize) & (m < boundary) for m in matches]
-            # indices of unique values found (translated from concat keys)
+            # indices of values found (translated from concat keys) in 1-d intervals
             uvalidx = [m[vm] - lowsize for m, vm in zip(matches, validmatch)]
-            # set index of containing interval for uvals that were found
-            for ci, uv, mi, vm in zip(containinginterval, uvalidx, matchintervalidx, validmatch):
-                ci[uv] = mi[vm]
-            return functools.reduce(lambda x, y: where(x == y, x, -1), containinginterval)
+            # now go from 1-d to full dimensionality
+            # for each interval, intersect the hits from its 1-d projections
+            # do this by concatenating all the projections and grouping on the id of the hit
+            # and the interval and looking for hits that cover all dimensions
+            alluvalidx = concatenate(uvalidx, ordered=False)
+            allmatchintervalidx = concatenate(
+                [mi[vm] for mi, vm in zip(matchintervalidx, validmatch)], ordered=False
+            )
+            byvalinterval = GroupBy([alluvalidx, allmatchintervalidx])
+            # a true hit happens when a value is contained in all of an interval's 1-d projections
+            isahit = byvalinterval.count()[1] == len(low)
+            # indices of the true hits and their containing intervals
+            valhits, intervalhits = [x[isahit] for x in byvalinterval.unique_keys]
+            # a value might be found in more than one interval, so we need to break ties
+            byval = GroupBy(valhits)
+            hitvalidx, tmpidx = byval.argmin(tiebreak[intervalhits])
+            winninginterval = intervalhits[tmpidx]
+            # set index of best containing interval for values that were found
+            containinginterval[hitvalidx] = winninginterval
+            return containinginterval
     else:
         raise TypeError("arguments must be numeric pdarrays or a sequence of numeric pdarrays")
 
 
-def interval_lookup(keys, values, arguments, fillvalue=-1):
+def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None):
     """
-    Apply a function defined over non-overlapping intervals to
-    an array of arguments.
+    Apply a function defined over intervals to an array of arguments.
 
     Parameters
     ----------
     keys : 2-tuple of (sequences of) pdarrays
-        Tuple of non-overlapping, half-open intervals expressed
-        as (lower_bounds_inclusive, upper_bounds_exclusive)
-        Must have same shape/dtype as vals.
+        Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
+        Must have same dtype(s) as vals.
     values : pdarray
         Function value to return for each entry in keys.
     arguments : (sequences of) pdarray
         Values to search for in intervals. If multiple arrays, each "row" is an item.
     fillvalue : scalar
         Default value to return when argument is not in any interval.
+    tiebreak : (optional) pdarray, numeric
+        When an argument is present in more than one key interval, the interval with the
+        lowest tiebreak value will be chosen. If no tiebreak is given, the
+        first valid key interval will be chosen.
 
     Returns
     -------
@@ -470,7 +489,10 @@ def interval_lookup(keys, values, arguments, fillvalue=-1):
         containing each argument, or fillvalue if argument not
         in any interval.
     """
-    idx = search_intervals(arguments, keys)
+    if isinstance(values, Categorical):
+        codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
+        return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
+    idx = search_intervals(arguments, keys, tiebreak=tiebreak)
     arguments_size = arguments.size if isinstance(arguments, pdarray) else arguments[0].size
     res = zeros(arguments_size, dtype=values.dtype)
     if fillvalue is not None:

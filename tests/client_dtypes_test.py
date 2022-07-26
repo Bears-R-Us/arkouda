@@ -137,7 +137,7 @@ class ClientDTypeTests(ArkoudaTest):
         self.assertListEqual(ans.to_ndarray().tolist(), [i >= 5 for i in range(10)])
 
         with self.assertRaises(TypeError):
-            ak.is_ipv4(ak.array(x))
+            ak.is_ipv4(ak.array(x, ak.float64))
 
         with self.assertRaises(RuntimeError):
             ak.is_ipv4(ak.array(x, dtype=ak.uint64), ak.arange(2, dtype=ak.uint64))

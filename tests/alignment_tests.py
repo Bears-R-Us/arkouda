@@ -111,10 +111,48 @@ class DataFrameTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.search_intervals(vals, (upper_bound, lower_bound))
 
-        with self.assertRaises(ValueError):
-            ak.search_intervals(vals, (lower_bound[::-1], upper_bound[::-1]))
+    def test_representative_cases(self):
+        # Create 4 rectangles (2-d intervals) which demonstrate three classes of
+        # relationships between multi-dimensional intervals (hyperslabs):
+        #    1. Nested (B is a proper subset of A)
+        #    2. Intersecting (A and C overlap but neither is a subset of the other)
+        #    3. Disjoint (A and D do not intersect)
+        # Then create points that explore each region of this diagram.
 
-        with self.assertRaises(ValueError):
-            ak.search_intervals(
-                vals, (ak.array([0, 10, 20, 30, 40, 50]), ak.array([10, 20, 35, 40, 50, 60]))
-            )
+        A = [(2, 3), (5, 6)]
+        B = [(2, 4), (3, 5)]
+        C = [(4, 5), (6, 6)]
+        D = [(7, 1), (8, 3)]
+        lowerleft, upperright = tuple(zip(A, B, C, D))
+        x0, y0 = tuple(zip(*lowerleft))
+        x1, y1 = tuple(zip(*upperright))
+        x0 = ak.array(x0)
+        y0 = ak.array(y0)
+        x1 = ak.array(x1) + 1  # convert to half-open
+        y1 = ak.array(y1) + 1  # convert to half-open
+        intervals = ((x0, y0), (x1, y1))
+
+        testpoints = [
+            (7, 8),
+            (4, 7),
+            (2, 6),
+            (5, 6),
+            (1, 5),
+            (4, 5),
+            (6, 5),
+            (3, 4),
+            (6, 4),
+            (2, 3),
+            (5, 3),
+            (8, 2),
+            (3, 1),
+        ]
+        x_test, y_test = tuple(zip(*testpoints))
+        values = (ak.array(x_test), ak.array(y_test))
+        tiebreak_smallest = (y1 - y0) * (x1 - x0)
+        first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
+        smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
+        first_result = ak.search_intervals(values, intervals)
+        self.assertListEqual(first_result.to_ndarray().tolist(), first_answer)
+        smallest_result = ak.search_intervals(values, intervals, tiebreak=tiebreak_smallest)
+        self.assertListEqual(smallest_result.to_ndarray().tolist(), smallest_answer)

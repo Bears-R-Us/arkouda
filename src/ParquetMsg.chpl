@@ -976,13 +976,10 @@ module ParquetMsg {
     return new MsgTuple(repMsg,MsgType.NORMAL);
   }
 
-  proc registerMe() {
-    use CommandMap;
-    registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
-    registerFunction("writeParquet", toparquetMsg, getModuleName());
-    registerFunction("lspq", lspqMsg, getModuleName());
-    registerFunction("getnullparquet", nullIndicesMsg, getModuleName());
-    ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
-  }
-
+  use CommandMap;
+  registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
+  registerFunction("writeParquet", toparquetMsg, getModuleName());
+  registerFunction("lspq", lspqMsg, getModuleName());
+  registerFunction("getnullparquet", nullIndicesMsg, getModuleName());
+  ServerConfig.appendToConfigStr("ARROW_VERSION", getVersionInfo());
 }

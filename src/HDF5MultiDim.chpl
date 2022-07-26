@@ -389,10 +389,7 @@ module HDF5MultiDim {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-
-    proc registerMe() {
-        use CommandMap;
-        registerFunction("readhdf_multi", read_hdf_multi_msg, getModuleName());
-        registerFunction("writehdf_multi", write_hdf_multi_msg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("readhdf_multi", read_hdf_multi_msg, getModuleName());
+    registerFunction("writehdf_multi", write_hdf_multi_msg, getModuleName());
 }
