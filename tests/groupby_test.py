@@ -122,7 +122,8 @@ def run_test(levels, verbose=False):
                     print("ak: ", akextrema)
                     failures += 1
             else:
-                failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
+                if op != "unique":
+                    failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
     print(
         f"{tests - failures - not_impl} / {tests - not_impl} passed, "
         f"{failures} errors, {not_impl} not implemented"

@@ -345,7 +345,7 @@ class GroupBy:
 
     def aggregate(
         self, values: groupable, operator: str, skipna: bool = True
-    ) -> Tuple[groupable, pdarray]:
+    ) -> Tuple[groupable, groupable]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and apply a reduction to each group's values.
@@ -399,7 +399,7 @@ class GroupBy:
         if operator == "nunique":
             return self.nunique(values)
         if operator == "first":
-            return self.first(values)
+            return self.first(cast(groupable_element_type, values))
         if operator == "mode":
             return self.mode(values)
         if operator == "unique":
@@ -469,7 +469,8 @@ class GroupBy:
         >>> g.sum(b)
         (array([2, 3, 4]), array([8, 14, 6]))
         """
-        return self.aggregate(values, "sum", skipna)
+        k, v = self.aggregate(values, "sum", skipna)
+        return k, cast(pdarray, v)
 
     def prod(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
@@ -517,7 +518,8 @@ class GroupBy:
         >>> g.prod(b)
         (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
         """
-        return self.aggregate(values, "prod", skipna)
+        k, v = self.aggregate(values, "prod", skipna)
+        return k, cast(pdarray, v)
 
     def mean(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
@@ -563,7 +565,8 @@ class GroupBy:
         >>> g.mean(b)
         (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
         """
-        return self.aggregate(values, "mean", skipna)
+        k, v = self.aggregate(values, "mean", skipna)
+        return k, cast(pdarray, v)
 
     def min(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
@@ -610,7 +613,8 @@ class GroupBy:
         """
         if values.dtype == bool:
             raise TypeError("min is only supported for pdarrays of dtype float64, uint64, and int64")
-        return self.aggregate(values, "min", skipna)
+        k, v = self.aggregate(values, "min", skipna)
+        return k, cast(pdarray, v)
 
     def max(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
@@ -657,7 +661,8 @@ class GroupBy:
         """
         if values.dtype == bool:
             raise TypeError("max is only supported for pdarrays of dtype float64, uint64, and int64")
-        return self.aggregate(values, "max", skipna)
+        k, v = self.aggregate(values, "max", skipna)
+        return k, cast(pdarray, v)
 
     def argmin(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
@@ -708,7 +713,8 @@ class GroupBy:
         (array([2, 3, 4]), array([5, 4, 2]))
         """
 
-        return self.aggregate(values, "argmin")
+        k, v = self.aggregate(values, "argmin")
+        return k, cast(pdarray, v)
 
     def argmax(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
@@ -757,7 +763,8 @@ class GroupBy:
         (array([2, 3, 4]), array([9, 3, 2]))
         """
 
-        return self.aggregate(values, "argmax")
+        k, v = self.aggregate(values, "argmax")
+        return k, cast(pdarray, v)
 
     def _nested_grouping_helper(self, values: groupable) -> groupable:
         unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
@@ -1029,7 +1036,7 @@ class GroupBy:
         first_idx = self.permutation[self.segments]
         return self.unique_keys, values[first_idx]  # type: ignore
 
-    def mode(self, values: groupable_element_type) -> Tuple[groupable, groupable_element_type]:
+    def mode(self, values: groupable) -> Tuple[groupable, groupable]:
         """
         Most common value in each group. If a group is multi-modal, return the
         modal value that occurs first.
@@ -1062,7 +1069,7 @@ class GroupBy:
         # GroupBy should be stable with a single key array, but
         # if for some reason these unique keys are not in original
         # order, then permute them accordingly
-        if not (uki == arange(self.ngroups)).all():
+        if not cast(pdarray, (uki == arange(self.ngroups))).all():
             mode_idx = mode_idx[argsort(cast(pdarray, uki))]
         # Gather values at mode indices
         if len(unique_values) == 1:
@@ -1072,7 +1079,7 @@ class GroupBy:
             mode = [uv[mode_idx] for uv in unique_values]
         return self.unique_keys, mode  # type: ignore
 
-    def unique(self, values: groupable) -> Tuple[groupable, groupable]:
+    def unique(self, values: groupable):  # type: ignore
         """
         Return the set of unique values in each group, as a SegArray.
 
@@ -1113,10 +1120,10 @@ class GroupBy:
             if reorder:
                 ret = ret[perm]
         else:
-            ret = [SegArray(g2.segments, uv) for uv in unique_values]
+            ret = [SegArray(g2.segments, uv) for uv in unique_values]  # type: ignore
             if reorder:
-                ret = [r[perm] for r in ret]
-        return self.unique_keys, ret
+                ret = [r[perm] for r in ret]  # type: ignore
+        return self.unique_keys, ret  # type: ignore
 
     @typechecked
     def broadcast(self, values: pdarray, permute: bool = True) -> pdarray:
