@@ -333,10 +333,10 @@ class OperatorsTest(ArkoudaTest):
             self.assertEqual(ak_float // aku, np_float // npu)
             self.assertEqual(aku // ak_float, npu // np_float)
 
-            self.assertEqual(ak_uint ** akf, np_uint ** npf)
-            self.assertEqual(akf ** ak_uint, npf ** np_uint)
-            self.assertEqual(ak_float ** aku, np_float ** npu)
-            self.assertEqual(aku ** ak_float, npu ** np_float)
+            self.assertEqual(ak_uint**akf, np_uint**npf)
+            self.assertEqual(akf**ak_uint, npf**np_uint)
+            self.assertEqual(ak_float**aku, np_float**npu)
+            self.assertEqual(aku**ak_float, npu**np_float)
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
@@ -423,6 +423,35 @@ class OperatorsTest(ArkoudaTest):
         bitvector_akuconcat = akuconcat([bitvector_one, bitvector_two])
         self.assertEqual(type(bitvector_akuconcat), ak.BitVector)
         self.assertListEqual(ak.BitVector(pda_concat).to_list(), bitvector_akuconcat.to_list())
+
+    # currently skipped, needs to be renamed to test_floor_div_edge_cases in order to run
+    def floor_div_edge_cases(self):
+        scalar_edge_cases = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
+        np_edge_cases = np.array(scalar_edge_cases)
+        ak_edge_cases = ak.array(np_edge_cases)
+
+        def equality_helper(a, n):
+            # verify they are NAN in the same locations
+            np_is_nan = np.isnan(n)
+            ak_is_nan = ak.isnan(a)
+            self.assertListEqual(ak_is_nan.to_list(), np_is_nan.tolist())
+
+            # verify they are equal in the locations they are not NAN
+            # Note: we have to do this becasue NAN != NAN
+            self.assertListEqual(a[~ak_is_nan].to_list(), n[~np_is_nan].tolist())
+
+        for s in scalar_edge_cases:
+            # test vector // scalar
+            equality_helper(ak_edge_cases // s, np_edge_cases // s)
+
+            # test scalar // vector
+            equality_helper(s // ak_edge_cases, s // np_edge_cases)
+
+            # test both vector // vector
+            n_vect = np.full(len(scalar_edge_cases), s)
+            a_vect = ak.array(n_vect)
+            equality_helper(ak_edge_cases // a_vect, np_edge_cases // n_vect)
+            equality_helper(a_vect // ak_edge_cases, n_vect // np_edge_cases)
 
     def testAllOperators(self):
         run_tests(verbose)
