@@ -12,6 +12,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import (
@@ -21,6 +22,7 @@ from arkouda.pdarrayclass import (
     unregister_pdarray_by_name,
 )
 from arkouda.pdarraycreation import arange
+from arkouda.sorting import argsort
 from arkouda.strings import Strings
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
@@ -145,6 +147,9 @@ class GroupByReductionType(enum.Enum):
     OR = "or"
     AND = "and"
     XOR = "xor"
+    FIRST = "first"
+    MODE = "mode"
+    UNIQUE = "unique"
 
     def __str__(self) -> str:
         """
@@ -744,6 +749,25 @@ class GroupBy:
 
         return self.aggregate(values, "argmax")
 
+    def _nested_grouping_helper(self, values: groupable) -> groupable:
+        unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
+        if hasattr(values, "_get_grouping_keys"):
+            # All single-array groupable types must have a _get_grouping_keys method
+            if isinstance(values, pdarray) and cast(pdarray, values).dtype == akfloat64:
+                raise TypeError("grouping/uniquing unsupported for float64 arrays")
+            togroup = [unique_key_idx, values]
+        else:
+            # Treat as a sequence of groupable arrays
+            for v in values:
+                if (
+                    isinstance(values, pdarray)
+                    and cast(pdarray, values).dtype != akint64
+                    and cast(pdarray, values).dtype != akuint64
+                ):
+                    raise TypeError("nunique unsupported for this dtype")
+            togroup = [unique_key_idx] + list(values)
+        return togroup
+
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
@@ -793,25 +817,7 @@ class GroupBy:
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
         # return self.aggregate(values, "nunique")
 
-        ukidx = self.broadcast(arange(self.ngroups), permute=True)
-        # Test if values is single array, i.e. either pdarray, Strings,
-        # or Categorical (the last two have a .group() method).
-        # Can't directly test Categorical due to circular import.
-        if isinstance(values, pdarray):
-            if cast(pdarray, values).dtype != akint64 and cast(pdarray, values).dtype != akuint64:
-                raise TypeError("nunique unsupported for this dtype")
-            togroup = [ukidx, values]
-        elif hasattr(values, "group"):
-            togroup = [ukidx, values]
-        else:
-            for v in values:
-                if (
-                    isinstance(values, pdarray)
-                    and cast(pdarray, values).dtype != akint64
-                    and cast(pdarray, values).dtype != akuint64
-                ):
-                    raise TypeError("nunique unsupported for this dtype")
-            togroup = [ukidx] + list(values)
+        togroup = self._nested_grouping_helper(values)
         # Find unique pairs of (key, val)
         g = GroupBy(togroup)
         # Group unique pairs again by original key
@@ -992,6 +998,114 @@ class GroupBy:
             raise TypeError("XOR is only supported for pdarrays of dtype int64 or uint64")
 
         return self.aggregate(values, "xor")  # type: ignore
+
+    def first(self, values: groupable_element_type) -> Tuple[groupable, groupable_element_type]:
+        """
+        First value in each group.
+
+        Parameters
+        ----------
+        values : pdarray-like
+            The values from which to take the first of each group
+        
+        Returns
+        -------
+        unique_keys : (list of) pdarray-like
+            The unique keys, in grouped order
+        result : pdarray-like
+            The first value of each group
+        """
+        # Index of first value in each segment, in input domain
+        first_idx = self.permutation[self.segments]
+        return self.unique_keys, values[first_idx]  # type: ignore
+
+    def mode(self, values: groupable_element_type) -> Tuple[groupable, groupable_element_type]:
+        """
+        Most common value in each group. If a group is multi-modal, return the
+        modal value that occurs first.
+
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values from which to take the mode of each group
+        
+        Returns
+        -------
+        unique_keys : (list of) pdarray-like
+            The unique keys, in grouped order
+        result : (list of) pdarray-like
+            The most common value of each group
+        """
+        togroup = self._nested_grouping_helper(values)
+        # Get value counts for each key group
+        g = GroupBy(togroup)
+        keys_values, value_count = g.count()
+        # Descending rank of first instance of each (key, value) pair
+        first_rank = g.length - g.permutation[g.segments]
+        ki, unique_values = keys_values[0], keys_values[1:]
+        # Find the index of the modal value for each unique key
+        # If more than one modal value, this will get the first one
+        g2 = GroupBy(ki)
+        uki, mode_count = g2.max(value_count)
+        # First value for which value count is maximized
+        _, mode_idx = g2.argmax(first_rank * (value_count == g2.broadcast(mode_count)))
+        # GroupBy should be stable with a single key array, but
+        # if for some reason these unique keys are not in original
+        # order, then permute them accordingly
+        if not (uki == arange(self.ngroups)).all():
+            mode_idx = mode_idx[argsort(cast(pdarray, uki))]
+        # Gather values at mode indices
+        if len(unique_values) == 1:
+            # squeeze singletons
+            mode = unique_values[0][mode_idx]
+        else:
+            mode = [uv[mode_idx] for uv in unique_values]
+        return self.unique_keys, mode  # type: ignore
+
+    def unique(self, values: groupable) -> Tuple[groupable, groupable]:
+        """
+        Return the set of unique values in each group, as a SegArray.
+        
+        Parameters
+        ----------
+        values : (list of) pdarray-like
+            The values to unique
+        
+        Returns
+        -------
+        unique_keys : (list of) pdarray-like
+            The unique keys, in grouped order
+        result : (list of) SegArray
+            The unique values of each group
+        """
+        from arkouda.segarray import SegArray
+        togroup = self._nested_grouping_helper(values)
+        # Group to unique (key, value) pairs
+        g = GroupBy(togroup)
+        ki, unique_values = g.unique_keys[0], g.unique_keys[1:]
+        # Group pairs by key
+        g2 = GroupBy(ki)
+        # GroupBy should be stable with a single key array, but
+        # if for some reason these unique keys are not in original
+        # order, then permute them accordingly
+        if not (g2.unique_keys == arange(self.ngroups)).all():
+            perm = argsort(cast(pdarray, g2.unique_keys))
+            reorder = True
+        else:
+            reorder = False
+        # Form a SegArray for each value array
+        # Segments are from grouping by key indices
+        # Values are the unique elements of the values arg
+        if len(unique_values) == 1:
+            # Squeeze singleton results
+            ret = SegArray(g2.segments, unique_values[0])
+            if reorder:
+                ret = ret[perm]
+        else:
+            ret = [SegArray(g2.segments, uv) for uv in unique_values]
+            if reorder:
+                ret = [r[perm] for r in ret]
+        return self.unique_keys, ret
 
     @typechecked
     def broadcast(self, values: pdarray, permute: bool = True) -> pdarray:
