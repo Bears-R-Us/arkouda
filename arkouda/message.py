@@ -64,13 +64,14 @@ context of an Arkouda server request.
 @dataclass(frozen=True)
 class RequestMessage:
 
-    __slots = ("user", "token", "cmd", "format", "args")
+    __slots = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
     token: str
     cmd: str
     format: MessageFormat
     args: str
+    size: str
 
     def __init__(
         self,
@@ -79,6 +80,7 @@ class RequestMessage:
         token: str = None,
         format: MessageFormat = MessageFormat.STRING,
         args: str = None,
+        size: int = -1,
     ) -> None:
         """
         Overridden __init__ method sets instance attributes to
@@ -97,6 +99,9 @@ class RequestMessage:
             The request message format
         args : str
             The delimited string containing the command arguments
+        size : int
+            Value indicating the number of parameters in args
+            -1 if args is not json
 
         Returns
         -------
@@ -107,6 +112,7 @@ class RequestMessage:
         object.__setattr__(self, "cmd", cmd)
         object.__setattr__(self, "format", format)
         object.__setattr__(self, "args", args)
+        object.__setattr__(self, "size", size)
 
     def asdict(self) -> Dict:
         """
@@ -129,6 +135,7 @@ class RequestMessage:
             "cmd": self.cmd,
             "format": str(self.format),
             "args": args,
+            "size": self.size,
         }
 
 

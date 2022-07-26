@@ -562,7 +562,11 @@ class Strings:
         """
         if isinstance(chars, bytes):
             chars = chars.decode()
-        args = "{} {} {}".format(self.objtype, self.entry.name, chars,)
+        args = {
+            "objType": self.objtype,
+            "name": self.entry.name,
+            "chars": chars
+        }
         rep_msg = generic_msg(cmd="segmentedStrip", args=args)
         return Strings.from_return_msg(cast(str, rep_msg))
 

@@ -1,7 +1,7 @@
 import json
 import os
 import warnings
-from typing import Mapping, Optional, Tuple, Union, cast
+from typing import Dict, Mapping, Optional, Tuple, Union, cast
 
 import pyfiglet  # type: ignore
 import zmq  # type: ignore
@@ -327,7 +327,7 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
 
 
 def _send_string_message(
-    cmd: str, recv_binary: bool = False, args: str = None
+    cmd: str, recv_binary: bool = False, args: str = None, size: int = -1
 ) -> Union[str, memoryview]:
     """
     Generates a RequestMessage encapsulating command and requesting
@@ -342,6 +342,9 @@ def _send_string_message(
         Indicates if the return message will be a string or binary data
     args : str
         A delimited string containing 1..n command arguments
+    size : int
+        Default -1
+        Number of parameters contained in args. Only set if args is json.
 
     Returns
     -------
@@ -356,8 +359,14 @@ def _send_string_message(
     ValueError
         Raised if the return message is malformed JSON or is missing 1..n
         expected fields
+
+    Notes
+    -----
+    - Size is not yet utilized. It is being provided in preparation for further development.
     """
-    message = RequestMessage(user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args)
+    message = RequestMessage(
+        user=username, token=token, cmd=cmd, format=MessageFormat.STRING, args=args, size=size
+    )
 
     logger.debug(f"sending message {message}")
 
@@ -421,7 +430,10 @@ def _send_binary_message(
         Raised if the return message is malformed JSON or is missing 1..n
         expected fields
     """
-    message = RequestMessage(user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args)
+    # Note - Size is a placeholder here because Binary msg not yet support json args
+    message = RequestMessage(
+        user=username, token=token, cmd=cmd, format=MessageFormat.BINARY, args=args, size=-1
+    )
 
     logger.debug(f"sending message {message}")
 
@@ -523,9 +535,71 @@ def shutdown() -> None:
     serverConfig = None
 
 
+def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
+    """
+    Convert Python Dictionary into a JSON formatted string that can be parsed by the msg
+    processing system on the Arkouda Server
+
+    Parameters
+    ----------
+    json_obj : dict
+        Python dictionary of key:val representing command arguments
+
+    Return
+    ------
+    Tuple - the number of parameters found and the json formatted string
+
+    Raises
+    ------
+    TypeError
+        - Keys are a type other than str
+        - Any value is a dictionary.
+        - A list contains values of multiple types.
+
+    Notes
+    -----
+    - Nested dictionaries are not yet supported, but are planned for future support.
+    - Support for lists of pdarray or Strings objects does not yet exist.
+    """
+    from arkouda.pdarrayclass import pdarray
+    from arkouda.strings import Strings
+
+    j = []
+    for key, val in json_obj.items():
+        if not isinstance(key, str):
+            raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
+        if isinstance(val, dict):
+            raise TypeError("Nested JSON is not currently supported for server messages.")
+        param = {"key": key}
+
+        if isinstance(val, pdarray):
+            param["objType"] = "pdarray"
+            param["dtype"] = str(val.dtype)
+            param["val"] = val.name
+        elif isinstance(val, Strings):
+            param["objType"] = "SegString"
+            param["dtype"] = "str"
+            # empty string if name of String obj is none
+            param["val"] = val.name if val.name else ""
+        elif isinstance(val, list):
+            param["objType"] = "list"
+            dtypes = set([p.dtype for p in val])
+            if len(dtypes) > 1:
+                t_str = ", ".join(dtypes)
+                raise TypeError(f"List values must be of the same type. Found {t_str}")
+            param["dtype"] = dtypes.pop()
+            param["val"] = json.dumps(val)
+        else:
+            param["objType"] = type(val).__name__
+            param["dtype"] = type(val).__name__
+            param["val"] = val if isinstance(val, str) else str(val)
+        j.append(json.dumps(param))
+    return len(j), json.dumps(j)
+
+
 def generic_msg(
     cmd: str,
-    args: str = None,
+    args: Union[str, Dict] = None,
     payload: memoryview = None,
     send_binary: bool = False,
     recv_binary: bool = False,
@@ -571,13 +645,18 @@ def generic_msg(
     if not connected:
         raise RuntimeError("client is not connected to a server")
 
+    size = -1
+    # if args are json format, configure json to match the server side parser.
+    if isinstance(args, dict):
+        size, args = _json_args_to_str(args)
+
     try:
         if send_binary:
             assert payload is not None
             return _send_binary_message(cmd=cmd, payload=payload, recv_binary=recv_binary, args=args)
         else:
             assert payload is None
-            return _send_string_message(cmd=cmd, args=args, recv_binary=recv_binary)
+            return _send_string_message(cmd=cmd, args=args, size=size, recv_binary=recv_binary)
 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
