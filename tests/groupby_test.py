@@ -329,8 +329,8 @@ class GroupByTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             gb.broadcast([])
 
-        with self.assertRaises(TypeError):
-            self.igb.nunique(ak.randint(0, 1, 10, dtype=bool))
+        # with self.assertRaises(TypeError):
+        #     self.igb.nunique(ak.randint(0, 1, 10, dtype=bool))
 
         with self.assertRaises(TypeError):
             self.igb.nunique(ak.randint(0, 1, 10, dtype=float64))
@@ -438,6 +438,40 @@ class GroupByTest(ArkoudaTest):
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
 
+    def test_first_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1])
+        vals = ak.array([9, 8, 7, 6, 5, 4])
+        ans =  [9, 8]
+        g = ak.GroupBy(keys)
+        _, res = g.first(vals)
+        self.assertListEqual(ans, res.to_ndarray().tolist())
+
+    def test_mode_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
+        vals = ak.array([4, 3, 5, 3, 5, 2, 6, 2])
+        ans = [5, 3]
+        g = ak.GroupBy(keys)
+        _, res = g.mode(vals)
+        self.assertListEqual(ans, res.to_ndarray().tolist())
+        # Test with multi-array values
+        _, res2 = g.mode([vals, vals])
+        self.assertListEqual(ans, res2[0].to_ndarray().tolist())
+        self.assertListEqual(ans, res2[1].to_ndarray().tolist())
+
+    def test_unique_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
+        vals = ak.array([4, 3, 5, 3, 5, 2, 6, 2])
+        ans = [[4, 5, 6], [2, 3]]
+        g = ak.GroupBy(keys)
+        _, res = g.unique(vals)
+        for a, r in zip(ans, res.to_ndarray().tolist()):
+            self.assertListEqual(a, r.tolist())
+        # Test with multi-array values
+        _, res2 = g.unique([vals, vals])
+        for a, r in zip(ans, res2[0].to_ndarray().tolist()):
+            self.assertListEqual(a, r.tolist())
+        for a, r in zip(ans, res2[1].to_ndarray().tolist()):
+            self.assertListEqual(a, r.tolist())
 
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
