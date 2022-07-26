@@ -1145,11 +1145,8 @@ module ReductionMsg
       throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
-      registerFunction("reduction", reductionMsg, getModuleName());
-      registerFunction("countReduction", countReductionMsg, getModuleName());
-    }
-
+    use CommandMap;
+    registerFunction("segmentedReduction", segmentedReductionMsg, getModuleName());
+    registerFunction("reduction", reductionMsg, getModuleName());
+    registerFunction("countReduction", countReductionMsg, getModuleName());
 }

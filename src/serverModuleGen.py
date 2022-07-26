@@ -7,20 +7,22 @@ def getModules(filename):
         modules = configfile.readlines()
         ret = []
         for module in modules:
-            module = module.split("#")[0].split("/")[-1].strip()
+            module = module.split("#")[0].strip()
             if module:
                 ret.append(module)
         return ret
 
 
-def generateServerIncludes(config_filename, reg_filename):
-    serverfile = open(reg_filename, "w")
-    serverfile.write("proc doRegister() {\n")
+def generateServerIncludes(config_filename, src_dir):
+    res = ""
     for mod in getModules(config_filename):
-        serverfile.write(f"  import {mod};\n  {mod}.registerMe();\n")
+        if mod[0] != '/':
+            res += f" {src_dir}/{mod}.chpl"
+        else:
+            res += f" {mod}.chpl"
 
-    serverfile.write("}\n")
+    print(res)
 
 
 if __name__ == "__main__":
-    generateServerIncludes(sys.argv[1], "src/ServerRegistration.chpl")
+    generateServerIncludes(sys.argv[1], sys.argv[2])

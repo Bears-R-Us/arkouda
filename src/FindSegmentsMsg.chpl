@@ -216,8 +216,6 @@ module FindSegmentsMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("findSegments", findSegmentsMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("findSegments", findSegmentsMsg, getModuleName());
 }
