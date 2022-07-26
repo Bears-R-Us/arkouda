@@ -311,13 +311,10 @@ class MultiIndex(Index):
                 # because we are using obj.size/obj.dtype instead of len(obj)/type(obj)
                 # this should be made explict using typechecking
                 self.size = col.size
-                self.dtype = col.dtype
                 first = False
             else:
                 if col.size != self.size:
                     raise ValueError("All columns in MultiIndex must have same length")
-                if col.dtype != self.dtype:
-                    raise ValueError("All columns in MultiIndex must have same dtype")
         self.levels = len(self.values)
 
     def __getitem__(self, key):
@@ -326,6 +323,9 @@ class MultiIndex(Index):
         if type(key) == Series:
             key = key.values
         return MultiIndex([i[key] for i in self.index])
+
+    def __repr__(self):
+        return f"MultiIndex({repr(self.index)})"
 
     def __len__(self):
         return len(self.index[0])
