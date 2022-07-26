@@ -87,10 +87,10 @@ Classes
 
 
 
-.. py:class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None)
+.. py:class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None, size: int = -1)
 
    .. py:attribute:: __slots
-      :annotation: = ['user', 'token', 'cmd', 'format', 'args']
+      :annotation: = ['user', 'token', 'cmd', 'format', 'args', 'size']
 
       
 
@@ -115,6 +115,11 @@ Classes
       
 
    .. py:attribute:: args
+      :annotation: :str
+
+      
+
+   .. py:attribute:: size
       :annotation: :str
 
       
