@@ -287,7 +287,7 @@ Functions
       :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
       :rtype: np.ndarray
 
-      .. seealso:: :obj:`array`
+      .. seealso:: :obj:`array`, :obj:`to_list`
 
       .. rubric:: Examples
 
@@ -296,6 +296,24 @@ Functions
       array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
       >>> type(segarr.to_ndarray())
       numpy.ndarray
+
+
+   .. py:method:: to_list()
+
+      Convert the segarray into a list containing sub-arrays
+
+      :returns: A list with the same sub-arrays (also list) as this segarray
+      :rtype: list
+
+      .. seealso:: :obj:`to_ndarray`
+
+      .. rubric:: Examples
+
+      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr.to_list()
+      [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
+      >>> type(segarr.to_list())
+      list
 
 
    .. py:method:: sum(x=None)

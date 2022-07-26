@@ -63,6 +63,9 @@ Classes
    .. py:method:: to_ndarray()
 
 
+   .. py:method:: to_list()
+
+
    .. py:method:: set_dtype(dtype)
 
       Change the data type of the index

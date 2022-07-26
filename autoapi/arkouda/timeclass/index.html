@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.timeclass &#8212; arkouda 0+untagged.1.g3415a90 documentation</title>
+    <title>arkouda.timeclass &#8212; arkouda 0+untagged.1.g1c32c33 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -218,7 +218,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime.to_list" title="arkouda.timeclass._AbstractBaseTime.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -228,6 +228,49 @@ value, but proceed with caution.</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
 <span class="go">numpy.ndarray</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass._AbstractBaseTime.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass._AbstractBaseTime.to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the array to a list, transferring array data from the
+Arkouda server to client-side Python. Note: if the pdarray size exceeds
+client.maxTransferBytes, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list with the same data as the pdarray</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
+exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+received does not match expected number of bytes</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime.to_ndarray" title="arkouda.timeclass._AbstractBaseTime.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="go">[0, 1, 2, 3, 4]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
+<span class="go">list</span>
 </pre></div>
 </div>
 </dd></dl>

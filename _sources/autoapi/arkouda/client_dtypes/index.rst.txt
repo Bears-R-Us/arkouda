@@ -95,6 +95,11 @@ Functions
       Export data to a numpy array of string-formatted bit vectors.
 
 
+   .. py:method:: to_list()
+
+      Export data to a list of string-formatted bit vectors.
+
+
    .. py:method:: _cast(values)
 
 
@@ -304,6 +309,11 @@ Functions
    .. py:method:: to_ndarray()
 
       Export array as a numpy array of integers.
+
+
+   .. py:method:: to_list()
+
+      Export array as a list of integers.
 
 
    .. py:method:: __getitem__(key)
