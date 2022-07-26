@@ -121,8 +121,6 @@ module BroadcastMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);    
   }
 
-  proc registerMe() {
-    use CommandMap;
-    registerFunction("broadcast", broadcastMsg, getModuleName());
-  }
+  use CommandMap;
+  registerFunction("broadcast", broadcastMsg, getModuleName());
 }

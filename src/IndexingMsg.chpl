@@ -1149,19 +1149,17 @@ module IndexingMsg
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
-    
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("arrayViewIntIndex", arrayViewIntIndexMsg, getModuleName());
-      registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
-      registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
-      registerFunction("[int]", intIndexMsg, getModuleName());
-      registerFunction("[slice]", sliceIndexMsg, getModuleName());
-      registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
-      registerFunction("[int]=val", setIntIndexToValueMsg, getModuleName());
-      registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
-      registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
-      registerFunction("[slice]=val", setSliceIndexToValueMsg, getModuleName());
-      registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
-    }
+
+    use CommandMap;
+    registerFunction("arrayViewIntIndex", arrayViewIntIndexMsg, getModuleName());
+    registerFunction("arrayViewMixedIndex", arrayViewMixedIndexMsg, getModuleName());
+    registerFunction("arrayViewIntIndexAssign", arrayViewIntIndexAssignMsg, getModuleName());
+    registerFunction("[int]", intIndexMsg, getModuleName());
+    registerFunction("[slice]", sliceIndexMsg, getModuleName());
+    registerFunction("[pdarray]", pdarrayIndexMsg, getModuleName());
+    registerFunction("[int]=val", setIntIndexToValueMsg, getModuleName());
+    registerFunction("[pdarray]=val", setPdarrayIndexToValueMsg, getModuleName());
+    registerFunction("[pdarray]=pdarray", setPdarrayIndexToPdarrayMsg, getModuleName());
+    registerFunction("[slice]=val", setSliceIndexToValueMsg, getModuleName());
+    registerFunction("[slice]=pdarray", setSliceIndexToPdarrayMsg, getModuleName());
 }

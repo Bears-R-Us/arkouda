@@ -228,9 +228,6 @@
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
-
-    proc registerMe() {
-        use CommandMap;
-        registerFunction("dataframe_idx", dataframeBatchIndexingMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("dataframe_idx", dataframeBatchIndexingMsg, getModuleName());
 }

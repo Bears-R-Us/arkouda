@@ -135,9 +135,7 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("randint", randintMsg, getModuleName());
-      registerFunction("randomNormal", randomNormalMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("randint", randintMsg, getModuleName());
+    registerFunction("randomNormal", randomNormalMsg, getModuleName());
 }

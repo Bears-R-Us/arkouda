@@ -1007,12 +1007,10 @@ module OperatorMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("binopvv", binopvvMsg, getModuleName());
-      registerFunction("binopvs", binopvsMsg, getModuleName());
-      registerFunction("binopsv", binopsvMsg, getModuleName());
-      registerFunction("opeqvv", opeqvvMsg, getModuleName());
-      registerFunction("opeqvs", opeqvsMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("binopvv", binopvvMsg, getModuleName());
+    registerFunction("binopvs", binopvsMsg, getModuleName());
+    registerFunction("binopsv", binopsvMsg, getModuleName());
+    registerFunction("opeqvv", opeqvvMsg, getModuleName());
+    registerFunction("opeqvs", opeqvsMsg, getModuleName());
 }

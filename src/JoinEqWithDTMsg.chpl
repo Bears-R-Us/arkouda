@@ -370,8 +370,6 @@ module JoinEqWithDTMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end joinEqWithDTMsg()
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("joinEqWithDT", joinEqWithDTMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("joinEqWithDT", joinEqWithDTMsg, getModuleName());
 }// end module JoinEqWithDTMsg

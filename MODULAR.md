@@ -12,17 +12,13 @@ New config files must follow the same format, listing one module name per line w
 
 ### Adding new modules into the build process
 
-Adding a module from outside of the Arkouda `src/` directory requires adding the module name in the `ServerModules.cfg` file, but also requires setting the `ARKOUDA_SERVER_USER_MODULES` environment variable to a string of the absolute path to the Chapel module. If multiple user modules are included, the paths must be separated by a space. For example, Arkouda could be built with a custom module `TestMsg.chpl` by adding `TestMsg` to a line in the `ServerModules.cfg` file and then by running the command `ARKOUDA_SERVER_USER_MODULES='/Users/path/to/TestMsg.chpl' make` in the Arkouda home directory. Note that for this to work, the absolute path to the `.chpl` file must be specified in the `ARKOUDA_SERVER_USER_MODULES` environment variable.
+Adding a module from outside of the Arkouda `src/` directory can be done in one of two ways: (1) adding the absolute path of the module as a new line to the `ServerModules.cfg` file or (2) setting the `ARKOUDA_SERVER_USER_MODULES` environment variable to a string of the absolute path to the Chapel module. If multiple user modules are included, the paths must be separated by a space. For example, Arkouda could be built with a custom module `/path/toTestMsg.chpl` by adding `/path/to/TestMsg` to the `ServerModules.cfg` file and running `make` or by running the command `ARKOUDA_SERVER_USER_MODULES='/path/to/TestMsg.chpl' make` in the Arkouda home directory. Note that for this to work, the absolute path to the `.chpl` file must be specified in the `ARKOUDA_SERVER_USER_MODULES` environment variable.
 
-Additionally, a `registerMe()` function is required in the module in order to make the new functionality visible to the Arkouda server. This function must have the `CommandMap` module in scope and must call `registerFunction()` with the server message string and function name to be called.
-
-Here is an example `registerFunction()` call taken from [src/KEXtremeMsg.chpl](src/KExtremeMsg.chpl):
+Additionally, code to add the functions contained in the new module must be in module-level scope. Here is an example of what that might look like in practice (taken from [src/KEXtremeMsg.chpl](src/KExtremeMsg.chpl)):
 ```
-proc registerMe() {
-  use CommandMap;
-  registerFunction("mink", minkMsg);
-  registerFunction("maxk", maxkMsg);
-}
+use CommandMap;
+registerFunction("mink", minkMsg, getModuleName());
+registerFunction("maxk", maxkMsg, getModuleName());
 ```
 
 The last step on adding a new function is to add a function for the client side of the server. This can be accomplished in a number of ways, but a simple approach is to create a script of this form:

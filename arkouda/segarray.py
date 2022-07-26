@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from warnings import warn
 
+import numpy as np  # type: ignore
+
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
@@ -680,7 +682,7 @@ class SegArray:
         --------
         >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_ndarray()
-        array([[1, 2, 3, 4], [5, 6, 7], [8, 9, 10, 11, 12]])
+        array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
         >>> type(segarr.to_ndarray())
         numpy.ndarray
         """
@@ -689,7 +691,7 @@ class SegArray:
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
             arr.append(ndvals[ndsegs[-1] :])
-        return arr
+        return np.array(arr, dtype=object)
 
     def sum(self, x=None):
         if x is None:
