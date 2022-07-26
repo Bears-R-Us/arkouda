@@ -921,7 +921,7 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else NAN;
+            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else INFINITY;
           }
           when "**" { 
             e.a= val**r.a;
