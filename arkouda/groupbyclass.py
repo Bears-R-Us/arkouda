@@ -398,6 +398,12 @@ class GroupBy:
         # TO DO: remove once logic is ported over to Chapel
         if operator == "nunique":
             return self.nunique(values)
+        if operator == "first":
+            return self.first(values)
+        if operator == "mode":
+            return self.mode(values)
+        if operator == "unique":
+            return self.unique(values)
 
         # All other aggregations operate on pdarray
         if cast(pdarray, values).size != self.length:
