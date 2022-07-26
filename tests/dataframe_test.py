@@ -276,7 +276,7 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue(ref_df.equals(df.to_pandas()))
 
         idx = np.arange(8)
-        self.assertListEqual(idx.tolist(), df.index.index.to_ndarray().tolist())
+        self.assertListEqual(idx.tolist(), df.index.index.to_list())
 
         df_keyerror = build_ak_keyerror()
         with self.assertRaises(KeyError):
