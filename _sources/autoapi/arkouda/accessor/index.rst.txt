@@ -44,7 +44,7 @@ Functions
    ``Series``, ``DataFrame`` or ``Index`` as the
    single argument ``data``.
 
-   .. py:method:: __get__(self, obj, cls)
+   .. py:method:: __get__(obj, cls)
 
 
 
@@ -56,7 +56,7 @@ Functions
 
 .. py:class:: Properties
 
-   .. py:method:: _make_op(cls, name)
+   .. py:method:: _make_op(name)
       :classmethod:
 
 

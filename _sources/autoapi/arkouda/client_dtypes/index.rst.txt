@@ -75,36 +75,36 @@ Functions
 
       
 
-   .. py:method:: format(self, x)
+   .. py:method:: format(x)
 
       Format a single binary vector as a string.
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Return str(self).
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: to_ndarray(self)
+   .. py:method:: to_ndarray()
 
       Export data to a numpy array of string-formatted bit vectors.
 
 
-   .. py:method:: _cast(self, values)
+   .. py:method:: _cast(values)
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: _binop(self, other, op)
+   .. py:method:: _binop(other, op)
 
       Executes binary operation specified by the op string
 
@@ -122,7 +122,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: _r_binop(self, other, op)
+   .. py:method:: _r_binop(other, op)
 
       Executes reverse binary operation specified by the op string
 
@@ -139,7 +139,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: opeq(self, other, op)
+   .. py:method:: opeq(other, op)
 
 
 
@@ -181,28 +181,28 @@ Functions
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
-   .. py:method:: _convert_strings(self, s)
+   .. py:method:: _convert_strings(s)
 
       Convert string field names to binary vectors.
 
 
-   .. py:method:: _parse_scalar(self, s)
+   .. py:method:: _parse_scalar(s)
 
       Convert a string of named fields to a binary value.
 
 
-   .. py:method:: format(self, x)
+   .. py:method:: format(x)
 
       Format a single binary value as a string of named fields.
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: _cast(self, values)
+   .. py:method:: _cast(values)
 
 
-   .. py:method:: _binop(self, other, op)
+   .. py:method:: _binop(other, op)
 
       Executes binary operation specified by the op string
 
@@ -220,7 +220,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: _r_binop(self, other, op)
+   .. py:method:: _r_binop(other, op)
 
       Executes reverse binary operation specified by the op string
 
@@ -237,7 +237,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: opeq(self, other, op)
+   .. py:method:: opeq(other, op)
 
 
 
@@ -277,42 +277,42 @@ Functions
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
-   .. py:method:: format(self, x)
+   .. py:method:: format(x)
 
       Format a single integer IP address as a string.
 
 
-   .. py:method:: normalize(self, x)
+   .. py:method:: normalize(x)
 
       Take in an IP address as a string, integer, or IPAddress object,
       and convert it to an integer.
 
 
-   .. py:method:: _is_supported_scalar(self, x)
+   .. py:method:: _is_supported_scalar(x)
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Return str(self).
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: to_ndarray(self)
+   .. py:method:: to_ndarray()
 
       Export array as a numpy array of integers.
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: _binop(self, other, op)
+   .. py:method:: _binop(other, op)
 
       Executes binary operation specified by the op string
 
@@ -330,7 +330,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: _r_binop(self, other, op)
+   .. py:method:: _r_binop(other, op)
 
       Executes reverse binary operation specified by the op string
 
@@ -347,7 +347,7 @@ Functions
           a supported dtype
 
 
-   .. py:method:: opeq(self, other, op)
+   .. py:method:: opeq(other, op)
 
 
 

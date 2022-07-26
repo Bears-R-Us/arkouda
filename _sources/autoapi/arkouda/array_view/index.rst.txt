@@ -80,26 +80,26 @@ Attributes
 
       :type: str {'C'/'row_major' | 'F'/'column_major'}
 
-   .. py:method:: __len__(self)
+   .. py:method:: __len__()
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Return str(self).
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: to_ndarray(self) -> numpy.ndarray
+   .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the ArrayView to a np.ndarray, transferring array data from the
       Arkouda server to client-side Python. Note: if the ArrayView size exceeds
@@ -134,7 +134,7 @@ Attributes
       numpy.ndarray
 
 
-   .. py:method:: save(self, filepath: str, dset: str, mode: str = 'truncate', storage: str = 'Flat')
+   .. py:method:: save(filepath: str, dset: str, mode: str = 'truncate', storage: str = 'Flat')
 
       Save the current ArrayView object to hdf5 file
 

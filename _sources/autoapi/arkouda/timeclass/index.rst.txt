@@ -76,11 +76,11 @@ Attributes
    in each case, the input values are normalized to nanoseconds on initialization,
    so that all resulting operations are transparent.
 
-   .. py:method:: _get_callback(cls, other, op)
+   .. py:method:: _get_callback(other, op)
       :classmethod:
 
 
-   .. py:method:: floor(self, freq)
+   .. py:method:: floor(freq)
 
       Round times down to the nearest integer of a given frequency.
 
@@ -91,7 +91,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. py:method:: ceil(self, freq)
+   .. py:method:: ceil(freq)
 
       Round times up to the nearest integer of a given frequency.
 
@@ -102,7 +102,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. py:method:: round(self, freq)
+   .. py:method:: round(freq)
 
       Round times to the nearest integer of a given frequency. Midpoint
       values will be rounded to nearest even integer.
@@ -114,7 +114,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. py:method:: to_ndarray(self)
+   .. py:method:: to_ndarray()
 
       Convert the array to a np.ndarray, transferring array data from the
       Arkouda server to client-side Python. Note: if the pdarray size exceeds
@@ -149,17 +149,17 @@ Attributes
       numpy.ndarray
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Return str(self).
 
 
-   .. py:method:: __repr__(self) -> str
+   .. py:method:: __repr__() -> str
 
       Return repr(self).
 
 
-   .. py:method:: _binop(self, other, op)
+   .. py:method:: _binop(other, op)
 
       Executes binary operation specified by the op string
 
@@ -177,7 +177,7 @@ Attributes
           a supported dtype
 
 
-   .. py:method:: _r_binop(self, other, op)
+   .. py:method:: _r_binop(other, op)
 
       Executes reverse binary operation specified by the op string
 
@@ -194,7 +194,7 @@ Attributes
           a supported dtype
 
 
-   .. py:method:: opeq(self, other, op)
+   .. py:method:: opeq(other, op)
 
 
    .. py:method:: _is_datetime_scalar(scalar)
@@ -205,26 +205,26 @@ Attributes
       :staticmethod:
 
 
-   .. py:method:: _scalar_callback(self, key)
+   .. py:method:: _scalar_callback(key)
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: min(self)
+   .. py:method:: min()
 
       Return the minimum value of the array.
 
 
-   .. py:method:: max(self)
+   .. py:method:: max()
 
       Return the maximum value of the array.
 
 
-   .. py:method:: mink(self, k)
+   .. py:method:: mink(k)
 
       Compute the minimum "k" values.
 
@@ -237,7 +237,7 @@ Attributes
       :raises TypeError: Raised if pda is not a pdarray
 
 
-   .. py:method:: maxk(self, k)
+   .. py:method:: maxk(k)
 
       Compute the maximum "k" values.
 
@@ -319,18 +319,18 @@ Attributes
 
       
 
-   .. py:method:: _get_callback(cls, otherclass, op)
+   .. py:method:: _get_callback(otherclass, op)
       :classmethod:
 
 
-   .. py:method:: _scalar_callback(self, scalar)
+   .. py:method:: _scalar_callback(scalar)
 
 
    .. py:method:: _is_supported_scalar(self, scalar)
       :staticmethod:
 
 
-   .. py:method:: to_pandas(self)
+   .. py:method:: to_pandas()
 
       Convert array to a pandas DatetimeIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
@@ -338,7 +338,7 @@ Attributes
       .. seealso:: :obj:`to_ndarray`
 
 
-   .. py:method:: sum(self)
+   .. py:method:: sum()
 
       Return the sum of all elements in the array.
 
@@ -411,18 +411,18 @@ Attributes
 
       
 
-   .. py:method:: _get_callback(cls, otherclass, op)
+   .. py:method:: _get_callback(otherclass, op)
       :classmethod:
 
 
-   .. py:method:: _scalar_callback(self, scalar)
+   .. py:method:: _scalar_callback(scalar)
 
 
    .. py:method:: _is_supported_scalar(self, scalar)
       :staticmethod:
 
 
-   .. py:method:: to_pandas(self)
+   .. py:method:: to_pandas()
 
       Convert array to a pandas TimedeltaIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
@@ -430,17 +430,17 @@ Attributes
       .. seealso:: :obj:`to_ndarray`
 
 
-   .. py:method:: std(self, ddof: arkouda.dtypes.int_scalars = 0)
+   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0)
 
       Returns the standard deviation as a pd.Timedelta object
 
 
-   .. py:method:: sum(self)
+   .. py:method:: sum()
 
       Return the sum of all elements in the array.
 
 
-   .. py:method:: abs(self)
+   .. py:method:: abs()
 
       Absolute value of time interval.
 

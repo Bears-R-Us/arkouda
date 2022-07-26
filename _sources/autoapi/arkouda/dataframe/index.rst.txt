@@ -82,67 +82,67 @@ Functions
 
       
 
-   .. py:method:: __getattr__(self, key)
+   .. py:method:: __getattr__(key)
 
 
-   .. py:method:: __dir__(self)
+   .. py:method:: __dir__()
 
       Default dir() implementation.
 
 
-   .. py:method:: __delitem__(self, key)
+   .. py:method:: __delitem__(key)
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(key, value)
 
 
-   .. py:method:: __len__(self)
+   .. py:method:: __len__()
 
       Return the number of rows
 
 
-   .. py:method:: _ncols(self)
+   .. py:method:: _ncols()
 
       Number of columns.
       If index appears, we now want to utilize this
       because the actual index has been moved to a property
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Returns a summary string of this dataframe.
 
 
-   .. py:method:: _get_head_tail(self)
+   .. py:method:: _get_head_tail()
 
 
-   .. py:method:: _get_head_tail_server(self)
+   .. py:method:: _get_head_tail_server()
 
 
-   .. py:method:: _shape_str(self)
+   .. py:method:: _shape_str()
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return ascii-formatted version of the dataframe.
 
 
-   .. py:method:: _repr_html_(self)
+   .. py:method:: _repr_html_()
 
       Return html-formatted version of the dataframe.
 
 
-   .. py:method:: _ipython_key_completions_(self)
+   .. py:method:: _ipython_key_completions_()
 
 
-   .. py:method:: from_pandas(cls, pd_df)
+   .. py:method:: from_pandas(pd_df)
       :classmethod:
 
 
-   .. py:method:: _drop_column(self, keys)
+   .. py:method:: _drop_column(keys)
 
       Drop a column or columns from the dataframe, in-place.
 
@@ -150,7 +150,7 @@ Functions
           The labels to be dropped on the given axis
 
 
-   .. py:method:: _drop_row(self, keys)
+   .. py:method:: _drop_row(keys)
 
       Drop a row or rows from the dataframe, in-place.
 
@@ -158,7 +158,7 @@ Functions
           The indexes to be dropped on the given axis
 
 
-   .. py:method:: drop(self, keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
 
       Drop column/s or row/s from the dataframe, in-place.
 
@@ -184,7 +184,7 @@ Functions
       >>> df.drop(1, axis=0)
 
 
-   .. py:method:: drop_duplicates(self, subset=None, keep='first')
+   .. py:method:: drop_duplicates(subset=None, keep='first')
 
       Drops duplcated rows and returns resulting DataFrame.
 
@@ -200,36 +200,36 @@ Functions
       :rtype: DataFrame
 
 
-   .. py:method:: size(self)
+   .. py:method:: size()
       :property:
 
       Returns the number of bytes on the arkouda server.
 
 
-   .. py:method:: dtypes(self)
+   .. py:method:: dtypes()
       :property:
 
 
-   .. py:method:: empty(self)
+   .. py:method:: empty()
       :property:
 
 
-   .. py:method:: shape(self)
+   .. py:method:: shape()
       :property:
 
 
-   .. py:method:: columns(self)
+   .. py:method:: columns()
       :property:
 
 
-   .. py:method:: index(self)
+   .. py:method:: index()
       :property:
 
 
-   .. py:method:: _set_index(self, value)
+   .. py:method:: _set_index(value)
 
 
-   .. py:method:: reset_index(self, size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
+   .. py:method:: reset_index(size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
 
@@ -253,18 +253,18 @@ Functions
          support this behavior.
 
 
-   .. py:method:: info(self)
+   .. py:method:: info()
       :property:
 
       Returns a summary string of this dataframe.
 
 
-   .. py:method:: update_size(self)
+   .. py:method:: update_size()
 
       Computes the number of bytes on the arkouda server.
 
 
-   .. py:method:: _rename_column(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
+   .. py:method:: _rename_column(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
 
       Rename columns within the dataframe
 
@@ -281,7 +281,7 @@ Functions
       .. seealso:: :obj:`ak.DataFrame._rename_index`, :obj:`ak.DataFrame.rename`
 
 
-   .. py:method:: _rename_index(self, mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
+   .. py:method:: _rename_index(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
 
       Rename indexes within the dataframe
 
@@ -301,7 +301,7 @@ Functions
       the same type as the existing value.
 
 
-   .. py:method:: rename(self, mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
+   .. py:method:: rename(mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
 
       Rename indexes or columns according to a mapping.
 
@@ -356,7 +356,7 @@ Functions
       2   3   6
 
 
-   .. py:method:: append(self, other, ordered=True)
+   .. py:method:: append(other, ordered=True)
 
       Concatenate data from 'other' onto the end of this DataFrame, in place.
 
@@ -377,13 +377,13 @@ Functions
       :rtype: self
 
 
-   .. py:method:: concat(cls, items, ordered=True)
+   .. py:method:: concat(items, ordered=True)
       :classmethod:
 
       Essentially an append, but diffenent formatting
 
 
-   .. py:method:: head(self, n=5)
+   .. py:method:: head(n=5)
 
       Return the first `n` rows.
 
@@ -400,7 +400,7 @@ Functions
       .. seealso:: :obj:`tail`
 
 
-   .. py:method:: tail(self, n=5)
+   .. py:method:: tail(n=5)
 
       Return the last `n` rows.
 
@@ -417,7 +417,7 @@ Functions
       .. seealso:: :obj:`ak.dataframe.head`
 
 
-   .. py:method:: sample(self, n=5)
+   .. py:method:: sample(n=5)
 
       Return a random sample of `n` rows.
 
@@ -428,7 +428,7 @@ Functions
       :rtype: ak.DataFrame
 
 
-   .. py:method:: GroupBy(self, keys, use_series=False)
+   .. py:method:: GroupBy(keys, use_series=False)
 
       Group the dataframe by a column or a list of columns.
 
@@ -443,7 +443,7 @@ Functions
       .. seealso:: :obj:`arkouda.GroupBy`
 
 
-   .. py:method:: memory_usage(self, unit='GB')
+   .. py:method:: memory_usage(unit='GB')
 
       Print the size of this DataFrame.
 
@@ -454,7 +454,7 @@ Functions
       :rtype: int
 
 
-   .. py:method:: to_pandas(self, datalimit=maxTransferBytes, retain_index=False)
+   .. py:method:: to_pandas(datalimit=maxTransferBytes, retain_index=False)
 
       Send this DataFrame to a pandas DataFrame.
 
@@ -470,7 +470,7 @@ Functions
       :rtype: pandas.DataFrame
 
 
-   .. py:method:: save(self, path, index=False, columns=None, file_format='HDF5')
+   .. py:method:: save(path, index=False, columns=None, file_format='HDF5')
 
       Save DataFrame to disk, preserving column names.
 
@@ -490,14 +490,14 @@ Functions
       locale number.
 
 
-   .. py:method:: load(cls, prefix_path, file_format='INFER')
+   .. py:method:: load(prefix_path, file_format='INFER')
       :classmethod:
 
       Load dataframe from file
       file_format needed for consistency with other load functions
 
 
-   .. py:method:: argsort(self, key, ascending=True)
+   .. py:method:: argsort(key, ascending=True)
 
       Return the permutation that sorts the dataframe by `key`.
 
@@ -508,7 +508,7 @@ Functions
       :rtype: ak.pdarray
 
 
-   .. py:method:: coargsort(self, keys, ascending=True)
+   .. py:method:: coargsort(keys, ascending=True)
 
       Return the permutation that sorts the dataframe by `keys`.
 
@@ -521,7 +521,7 @@ Functions
       :rtype: ak.pdarray
 
 
-   .. py:method:: sort_values(self, by=None, ascending=True)
+   .. py:method:: sort_values(by=None, ascending=True)
 
       Sort the DataFrame by one or more columns.
 
@@ -537,7 +537,7 @@ Functions
       .. seealso:: :obj:`apply_permutation`, :obj:`sorted`
 
 
-   .. py:method:: apply_permutation(self, perm)
+   .. py:method:: apply_permutation(perm)
 
       Apply a permutation to an entire DataFrame.
 
@@ -554,7 +554,7 @@ Functions
       .. seealso:: :obj:`sort`
 
 
-   .. py:method:: filter_by_range(self, keys, low=1, high=None)
+   .. py:method:: filter_by_range(keys, low=1, high=None)
 
       Find all rows where the value count of the items in a given set of
       columns (keys) is within the range [low, high].
@@ -574,7 +574,7 @@ Functions
       .. seealso:: :obj:`filter_by_count`
 
 
-   .. py:method:: copy(self, deep=True)
+   .. py:method:: copy(deep=True)
 
       Make a copy of this object's data.
 
@@ -594,7 +594,7 @@ Functions
       :rtype: aku.DataFrame
 
 
-   .. py:method:: groupby(self, keys, use_series=True)
+   .. py:method:: groupby(keys, use_series=True)
 
       Group the dataframe by a column or a list of columns.  Alias for GroupBy
 
@@ -606,7 +606,7 @@ Functions
       :rtype: An arkouda Groupby instance
 
 
-   .. py:method:: isin(self, values: Union[arkouda.pdarrayclass.pdarray, Dict, arkouda.series.Series, DataFrame]) -> DataFrame
+   .. py:method:: isin(values: Union[arkouda.pdarrayclass.pdarray, Dict, arkouda.series.Series, DataFrame]) -> DataFrame
 
       Determine whether each element in the DataFrame is contained in values.
 

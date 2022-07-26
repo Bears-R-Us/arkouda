@@ -38,13 +38,13 @@ Classes
 
       
 
-   .. py:method:: __str__(self) -> str
+   .. py:method:: __str__() -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageFormat object to JSON.
 
 
-   .. py:method:: __repr__(self) -> str
+   .. py:method:: __repr__() -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageFormat object to JSON.
@@ -74,13 +74,13 @@ Classes
 
       
 
-   .. py:method:: __str__(self) -> str
+   .. py:method:: __str__() -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageType object to JSON.
 
 
-   .. py:method:: __repr__(self) -> str
+   .. py:method:: __repr__() -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageType object to JSON.
@@ -119,7 +119,7 @@ Classes
 
       
 
-   .. py:method:: asdict(self) -> Dict
+   .. py:method:: asdict() -> Dict
 
       Overridden asdict implementation sets the values of non-required
       fields to an empty space (for Chapel JSON processing) and invokes

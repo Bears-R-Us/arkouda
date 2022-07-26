@@ -20,33 +20,33 @@ Classes
 
 .. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: __len__(self)
+   .. py:method:: __len__()
 
 
-   .. py:method:: __eq__(self, v)
+   .. py:method:: __eq__(v)
 
       Return self==value.
 
 
-   .. py:method:: index(self)
+   .. py:method:: index()
       :property:
 
       This is maintained to support older code
 
 
-   .. py:method:: shape(self)
+   .. py:method:: shape()
       :property:
 
 
-   .. py:method:: is_unique(self)
+   .. py:method:: is_unique()
       :property:
 
       Property indicating if all values in the index are unique
@@ -57,23 +57,23 @@ Classes
       :staticmethod:
 
 
-   .. py:method:: to_pandas(self)
+   .. py:method:: to_pandas()
 
 
-   .. py:method:: to_ndarray(self)
+   .. py:method:: to_ndarray()
 
 
-   .. py:method:: set_dtype(self, dtype)
+   .. py:method:: set_dtype(dtype)
 
       Change the data type of the index
 
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: register(self, label)
+   .. py:method:: register(label)
 
 
-   .. py:method:: is_registered(self)
+   .. py:method:: is_registered()
 
       Return True if the object is contained in the registry
 
@@ -83,31 +83,31 @@ Classes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-   .. py:method:: to_dict(self, label)
+   .. py:method:: to_dict(label)
 
 
-   .. py:method:: _check_types(self, other)
+   .. py:method:: _check_types(other)
 
 
-   .. py:method:: _merge(self, other)
+   .. py:method:: _merge(other)
 
 
-   .. py:method:: _merge_all(self, idx_list)
+   .. py:method:: _merge_all(idx_list)
 
 
-   .. py:method:: _check_aligned(self, other)
+   .. py:method:: _check_aligned(other)
 
 
-   .. py:method:: argsort(self, ascending=True)
+   .. py:method:: argsort(ascending=True)
 
 
-   .. py:method:: concat(self, other)
+   .. py:method:: concat(other)
 
 
-   .. py:method:: lookup(self, key)
+   .. py:method:: lookup(key)
 
 
-   .. py:method:: save(self, prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5') -> str
 
       Save the index to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -165,52 +165,57 @@ Classes
 
    Bases: :py:obj:`Index`
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: __len__(self)
+   .. py:method:: __repr__()
+
+      Return repr(self).
 
 
-   .. py:method:: __eq__(self, v)
+   .. py:method:: __len__()
+
+
+   .. py:method:: __eq__(v)
 
       Return self==value.
 
 
-   .. py:method:: index(self)
+   .. py:method:: index()
       :property:
 
       This is maintained to support older code
 
 
-   .. py:method:: to_pandas(self)
+   .. py:method:: to_pandas()
 
 
-   .. py:method:: set_dtype(self, dtype)
+   .. py:method:: set_dtype(dtype)
 
       Change the data type of the index
 
       Currently only aku.ip_address and ak.array are supported.
 
 
-   .. py:method:: register(self, label)
+   .. py:method:: register(label)
 
 
-   .. py:method:: to_dict(self, labels)
+   .. py:method:: to_dict(labels)
 
 
-   .. py:method:: _merge(self, other)
+   .. py:method:: _merge(other)
 
 
-   .. py:method:: _merge_all(self, array)
+   .. py:method:: _merge_all(array)
 
 
-   .. py:method:: argsort(self, ascending=True)
+   .. py:method:: argsort(ascending=True)
 
 
-   .. py:method:: concat(self, other)
+   .. py:method:: concat(other)
 
 
-   .. py:method:: lookup(self, key)
+   .. py:method:: lookup(key)
 
 
 

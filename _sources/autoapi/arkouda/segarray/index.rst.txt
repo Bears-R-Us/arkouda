@@ -52,7 +52,7 @@ Functions
 
 .. py:class:: SegArray(segments, values, copy=False, lengths=None, grouping=None)
 
-   .. py:method:: from_multi_array(cls, m)
+   .. py:method:: from_multi_array(m)
       :classmethod:
 
       Construct a SegArray from a list of columns. This essentially transposes the input,
@@ -65,7 +65,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: concat(cls, x, axis=0, ordered=True)
+   .. py:method:: concat(x, axis=0, ordered=True)
       :classmethod:
 
       Concatenate a sequence of SegArrays
@@ -99,33 +99,33 @@ Functions
           the categorical instance
 
 
-   .. py:method:: copy(self)
+   .. py:method:: copy()
 
       Return a deep copy.
 
 
-   .. py:method:: _get_lengths(self)
+   .. py:method:: _get_lengths()
 
 
-   .. py:method:: __getitem__(self, i)
+   .. py:method:: __getitem__(i)
 
 
-   .. py:method:: __eq__(self, other)
+   .. py:method:: __eq__(other)
 
       Return self==value.
 
 
-   .. py:method:: __str__(self)
+   .. py:method:: __str__()
 
       Return str(self).
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return repr(self).
 
 
-   .. py:method:: get_suffixes(self, n, return_origins=True, proper=True)
+   .. py:method:: get_suffixes(n, return_origins=True, proper=True)
 
       Return the n-long suffix of each sub-array, where possible
 
@@ -145,7 +145,7 @@ Functions
                   an n-suffix, False otherwise.
 
 
-   .. py:method:: get_prefixes(self, n, return_origins=True, proper=True)
+   .. py:method:: get_prefixes(n, return_origins=True, proper=True)
 
       Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)
 
@@ -165,7 +165,7 @@ Functions
                   an n-suffix, False otherwise.
 
 
-   .. py:method:: get_ngrams(self, n, return_origins=True)
+   .. py:method:: get_ngrams(n, return_origins=True)
 
       Return all n-grams from all sub-arrays.
 
@@ -179,10 +179,10 @@ Functions
                 * **origin_indices** (*pdarray, int*) -- The index of the sub-array from which the corresponding n-gram originated
 
 
-   .. py:method:: _normalize_index(self, j)
+   .. py:method:: _normalize_index(j)
 
 
-   .. py:method:: get_jth(self, j, return_origins=True, compressed=False, default=0)
+   .. py:method:: get_jth(j, return_origins=True, compressed=False, default=0)
 
       Select the j-th element of each sub-array, where possible.
 
@@ -206,7 +206,7 @@ Functions
                 * **origin_indices** (*pdarray, bool*) -- A Boolean array that is True where j is in bounds for the sub-array.
 
 
-   .. py:method:: set_jth(self, i, j, v)
+   .. py:method:: set_jth(i, j, v)
 
       Set the j-th element of each sub-array in a subset.
 
@@ -221,7 +221,7 @@ Functions
       :raises ValueError: If j is out of bounds in any of the sub-arrays specified by i.
 
 
-   .. py:method:: get_length_n(self, n, return_origins=True)
+   .. py:method:: get_length_n(n, return_origins=True)
 
       Return all sub-arrays of length n, as a list of columns.
 
@@ -237,7 +237,7 @@ Functions
                   has length n.
 
 
-   .. py:method:: append(self, other, axis=0)
+   .. py:method:: append(other, axis=0)
 
       Append other to self, either vertically (axis=0, length of resulting SegArray
       increases), or horizontally (axis=1, each sub-array of other appends to the
@@ -254,7 +254,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: append_single(self, x, prepend=False)
+   .. py:method:: append_single(x, prepend=False)
 
       Append a single value to each sub-array.
 
@@ -265,10 +265,10 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: prepend_single(self, x)
+   .. py:method:: prepend_single(x)
 
 
-   .. py:method:: remove_repeats(self, return_multiplicity=False)
+   .. py:method:: remove_repeats(return_multiplicity=False)
 
       Condense sequences of repeated values within a sub-array to a single value.
 
@@ -280,7 +280,7 @@ Functions
                   each value in the returned SegArray was repeated in the original SegArray.
 
 
-   .. py:method:: to_ndarray(self)
+   .. py:method:: to_ndarray()
 
       Convert the array into a numpy.ndarray containing sub-arrays
 
@@ -298,49 +298,49 @@ Functions
       numpy.ndarray
 
 
-   .. py:method:: sum(self, x=None)
+   .. py:method:: sum(x=None)
 
 
-   .. py:method:: prod(self, x=None)
+   .. py:method:: prod(x=None)
 
 
-   .. py:method:: min(self, x=None)
+   .. py:method:: min(x=None)
 
 
-   .. py:method:: max(self, x=None)
+   .. py:method:: max(x=None)
 
 
-   .. py:method:: argmin(self, x=None)
+   .. py:method:: argmin(x=None)
 
 
-   .. py:method:: argmax(self, x=None)
+   .. py:method:: argmax(x=None)
 
 
-   .. py:method:: any(self, x=None)
+   .. py:method:: any(x=None)
 
 
-   .. py:method:: all(self, x=None)
+   .. py:method:: all(x=None)
 
 
-   .. py:method:: OR(self, x=None)
+   .. py:method:: OR(x=None)
 
 
-   .. py:method:: AND(self, x=None)
+   .. py:method:: AND(x=None)
 
 
-   .. py:method:: XOR(self, x=None)
+   .. py:method:: XOR(x=None)
 
 
-   .. py:method:: nunique(self, x=None)
+   .. py:method:: nunique(x=None)
 
 
-   .. py:method:: mean(self, x=None)
+   .. py:method:: mean(x=None)
 
 
-   .. py:method:: aggregate(self, op, x=None)
+   .. py:method:: aggregate(op, x=None)
 
 
-   .. py:method:: unique(self, x=None)
+   .. py:method:: unique(x=None)
 
       Return sub-arrays of unique values.
 
@@ -353,7 +353,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: save(self, prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_format='HDF5')
+   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_format='HDF5')
 
       Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
@@ -380,7 +380,7 @@ Functions
       the HDF5 file, not nested under a group.
 
 
-   .. py:method:: load(cls, prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate')
+   .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate')
       :classmethod:
 
       Load a saved SegArray from HDF5. All arguments msut match what
@@ -398,7 +398,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: intersect(self, other)
+   .. py:method:: intersect(other)
 
       Computes the intersection of 2 SegArrays.
 
@@ -425,7 +425,7 @@ Functions
       ])
 
 
-   .. py:method:: union(self, other)
+   .. py:method:: union(other)
 
       Computes the union of 2 SegArrays.
 
@@ -452,7 +452,7 @@ Functions
       ])
 
 
-   .. py:method:: setdiff(self, other)
+   .. py:method:: setdiff(other)
 
       Computes the set difference of 2 SegArrays.
 
@@ -479,7 +479,7 @@ Functions
       ])
 
 
-   .. py:method:: setxor(self, other)
+   .. py:method:: setxor(other)
 
       Computes the symmetric difference of 2 SegArrays.
 
@@ -506,17 +506,17 @@ Functions
       ])
 
 
-   .. py:method:: register(self, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+   .. py:method:: register(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
 
 
-   .. py:method:: unregister(self)
+   .. py:method:: unregister()
 
 
-   .. py:method:: attach(cls, name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+   .. py:method:: attach(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
       :classmethod:
 
 
-   .. py:method:: is_registered(self) -> bool
+   .. py:method:: is_registered() -> bool
 
       Checks if all components of the SegArray object are registered
 

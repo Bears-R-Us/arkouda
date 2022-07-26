@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>arkouda.util &#8212; arkouda 0+untagged.1.g5ed28d4 documentation</title>
+    <title>arkouda.util &#8212; arkouda 0+untagged.1.g08bcec0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -49,19 +49,19 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.get_callback" title="arkouda.util.get_callback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_callback</span></code></a>(x)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.concatenate" title="arkouda.util.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(items, ordered=True)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.concatenate" title="arkouda.util.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concatenate</span></code></a>(items[, ordered])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.generic_concat" title="arkouda.util.generic_concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_concat</span></code></a>(items, ordered=True)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.generic_concat" title="arkouda.util.generic_concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_concat</span></code></a>(items[, ordered])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>(pre='')</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.report_mem" title="arkouda.util.report_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_mem</span></code></a>([pre])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.register" title="arkouda.util.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>(a, name)</p></td>
 <td><p>Register an arkouda object with a user-specified name. Backwards compatible</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data, prefix, overwrite=True)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.register_all" title="arkouda.util.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data, prefix[, overwrite])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.attach_all" title="arkouda.util.attach_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_all</span></code></a>(prefix)</p></td>
@@ -82,19 +82,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.arkouda_to_numpy" title="arkouda.util.arkouda_to_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda_to_numpy</span></code></a>(A: arkouda.pdarrayclass.pdarray, tmp_dir: str = '') → numpy.ndarray</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.arkouda_to_numpy" title="arkouda.util.arkouda_to_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda_to_numpy</span></code></a>(→ numpy.ndarray)</p></td>
 <td><p>Convert from arkouda to numpy using disk rather than sockets.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.numpy_to_arkouda" title="arkouda.util.numpy_to_arkouda"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_to_arkouda</span></code></a>(A: numpy.ndarray, tmp_dir: str = '') → Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.numpy_to_arkouda" title="arkouda.util.numpy_to_arkouda"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_to_arkouda</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Convert from numpy to arkouda using disk rather than sockets.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
 <td><p>Convert a Categorical array to Strings for display</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name: str, dtype: str = 'infer')</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.attach" title="arkouda.util.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(name[, dtype])</p></td>
 <td><p>Attaches to a known element name. If a type is passed, the server will use that type</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_by_name" title="arkouda.util.unregister_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_by_name</span></code></a>(name: str, dtype: str = 'infer')</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.unregister_by_name" title="arkouda.util.unregister_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_by_name</span></code></a>(name[, dtype])</p></td>
 <td><p>Unregisters all components of a given registered object's name</p></td>
 </tr>
 </tbody>

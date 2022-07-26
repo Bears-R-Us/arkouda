@@ -57,22 +57,22 @@ Classes
 
       
 
-   .. py:method:: __len__(self)
+   .. py:method:: __len__()
 
 
-   .. py:method:: __repr__(self)
+   .. py:method:: __repr__()
 
       Return ascii-formatted version of the series.
 
 
-   .. py:method:: __getitem__(self, key)
+   .. py:method:: __getitem__(key)
 
 
-   .. py:method:: shape(self)
+   .. py:method:: shape()
       :property:
 
 
-   .. py:method:: isin(self, lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
+   .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
 
       Find series elements whose values are in the specified list
 
@@ -83,7 +83,7 @@ Classes
       :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
 
 
-   .. py:method:: locate(self, key: Union[int, arkouda.pdarrayclass.pdarray, Series, List, Tuple]) -> Series
+   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, Series, List, Tuple]) -> Series
 
       Lookup values by index label
 
@@ -96,22 +96,22 @@ Classes
       :rtype: A Series containing the values corresponding to the key.
 
 
-   .. py:method:: _make_binop(cls, operator)
+   .. py:method:: _make_binop(operator)
       :classmethod:
 
 
-   .. py:method:: _make_unaryop(cls, operator)
+   .. py:method:: _make_unaryop(operator)
       :classmethod:
 
 
-   .. py:method:: _make_aggop(cls, name)
+   .. py:method:: _make_aggop(name)
       :classmethod:
 
 
-   .. py:method:: add(self, b: Series) -> Series
+   .. py:method:: add(b: Series) -> Series
 
 
-   .. py:method:: topn(self, n: int = 10) -> Series
+   .. py:method:: topn(n: int = 10) -> Series
 
       Return the top values of the series
 
@@ -121,36 +121,36 @@ Classes
       :rtype: A new Series with the top values
 
 
-   .. py:method:: sort_index(self, ascending: bool = True) -> Series
+   .. py:method:: sort_index(ascending: bool = True) -> Series
 
       Sort the series by its index
 
       :rtype: A new Series sorted.
 
 
-   .. py:method:: sort_values(self, ascending: bool = True) -> Series
+   .. py:method:: sort_values(ascending: bool = True) -> Series
 
       Sort the series numerically
 
       :rtype: A new Series sorted smallest to largest
 
 
-   .. py:method:: tail(self, n: int = 10) -> Series
+   .. py:method:: tail(n: int = 10) -> Series
 
       Return the last n values of the series
 
 
-   .. py:method:: head(self, n: int = 10) -> Series
+   .. py:method:: head(n: int = 10) -> Series
 
       Return the first n values of the series
 
 
-   .. py:method:: to_pandas(self) -> pandas.Series
+   .. py:method:: to_pandas() -> pandas.Series
 
       Convert the series to a local PANDAS series
 
 
-   .. py:method:: value_counts(self, sort: bool = True) -> Series
+   .. py:method:: value_counts(sort: bool = True) -> Series
 
       Return a Series containing counts of unique values.
 
@@ -161,14 +161,14 @@ Classes
       :type sort: Boolean. Whether or not to sort the results.  Default is true.
 
 
-   .. py:method:: diff(self) -> Series
+   .. py:method:: diff() -> Series
 
       Diffs consecutive values of the series.
 
       Returns a new series with the same index and length.  First value is set to NaN.
 
 
-   .. py:method:: to_dataframe(self, index_labels: List[str] = None, value_label: str = None) -> arkouda.dataframe.DataFrame
+   .. py:method:: to_dataframe(index_labels: List[str] = None, value_label: str = None) -> arkouda.dataframe.DataFrame
 
       Converts series to an arkouda data frame
 
@@ -180,7 +180,7 @@ Classes
       :rtype: An arkouda dataframe.
 
 
-   .. py:method:: register(self, label: str) -> int
+   .. py:method:: register(label: str) -> int
 
       Register the series with arkouda
 
@@ -201,7 +201,7 @@ Classes
       :type nkeys: number of keys, if a multi-index was registerd
 
 
-   .. py:method:: is_registered(self) -> bool
+   .. py:method:: is_registered() -> bool
 
       Checks if all components of the Series object are registered
 
