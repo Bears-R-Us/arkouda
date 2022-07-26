@@ -10,9 +10,9 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
-from arkouda.dtypes import float64 as akfloat64
 from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import (
@@ -112,7 +112,11 @@ def unique(
     repMsg = generic_msg(
         cmd="unique",
         args="{} {} {:n} {} {}".format(
-            return_groups, assume_sorted, effectiveKeys, " ".join(keynames), " ".join(keytypes),
+            return_groups,
+            assume_sorted,
+            effectiveKeys,
+            " ".join(keynames),
+            " ".join(keytypes),
         ),
     )
     if return_groups:
@@ -1007,7 +1011,7 @@ class GroupBy:
         ----------
         values : pdarray-like
             The values from which to take the first of each group
-        
+
         Returns
         -------
         unique_keys : (list of) pdarray-like
@@ -1028,7 +1032,7 @@ class GroupBy:
         ----------
         values : (list of) pdarray-like
             The values from which to take the mode of each group
-        
+
         Returns
         -------
         unique_keys : (list of) pdarray-like
@@ -1065,12 +1069,12 @@ class GroupBy:
     def unique(self, values: groupable) -> Tuple[groupable, groupable]:
         """
         Return the set of unique values in each group, as a SegArray.
-        
+
         Parameters
         ----------
         values : (list of) pdarray-like
             The values to unique
-        
+
         Returns
         -------
         unique_keys : (list of) pdarray-like
@@ -1079,6 +1083,7 @@ class GroupBy:
             The unique values of each group
         """
         from arkouda.segarray import SegArray
+
         togroup = self._nested_grouping_helper(values)
         # Group to unique (key, value) pairs
         g = GroupBy(togroup)
