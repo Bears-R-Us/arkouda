@@ -20,7 +20,7 @@ def check_bool(N):
     a = ak.arange(N)
     b = ak.ones(N)
     try:
-        c = a and b
+        a and b
     except ValueError:
         correct = True
     except:

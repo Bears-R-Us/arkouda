@@ -22,20 +22,16 @@ class IndexingTest(ArkoudaTest):
         # for every pda in array_dict test indexing with uint array and uint scalar
         for pda in self.array_dict.values():
             self.assertEqual(pda[np.uint(2)], pda[2])
-            self.assertListEqual(
-                pda[self.ukeys].to_ndarray().tolist(), pda[self.ikeys].to_ndarray().tolist()
-            )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
     def test_strings_uint_indexing(self):
         # test Strings array indexing with uint array and uint scalar
         self.assertEqual(self.s[np.uint(2)], self.s[2])
-        self.assertListEqual(
-            self.s[self.ukeys].to_ndarray().tolist(), self.s[self.ikeys].to_ndarray().tolist()
-        )
+        self.assertListEqual(self.s[self.ukeys].to_list(), self.s[self.ikeys].to_list())
 
     def test_uint_bool_indexing(self):
         # test uint array with bool indexing
-        self.assertListEqual(self.u[self.b].to_ndarray().tolist(), self.i[self.b].to_ndarray().tolist())
+        self.assertListEqual(self.u[self.b].to_list(), self.i[self.b].to_list())
 
     def test_set_uint(self):
         # for every pda in array_dict test __setitem__ indexing with uint array and uint scalar
@@ -46,23 +42,15 @@ class IndexingTest(ArkoudaTest):
 
             # set [slice] = scalar/pdarray
             pda[:10] = np.uint(-2)
-            self.assertListEqual(
-                pda[self.ukeys].to_ndarray().tolist(), pda[self.ikeys].to_ndarray().tolist()
-            )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
             pda[:10] = ak.cast(ak.arange(10), t)
-            self.assertListEqual(
-                pda[self.ukeys].to_ndarray().tolist(), pda[self.ikeys].to_ndarray().tolist()
-            )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
             # set [pdarray] = scalar/pdarray with uint key pdarray
             pda[ak.arange(10, dtype=ak.uint64)] = np.uint(3)
-            self.assertListEqual(
-                pda[self.ukeys].to_ndarray().tolist(), pda[self.ikeys].to_ndarray().tolist()
-            )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
             pda[ak.arange(10, dtype=ak.uint64)] = ak.cast(ak.arange(10), t)
-            self.assertListEqual(
-                pda[self.ukeys].to_ndarray().tolist(), pda[self.ikeys].to_ndarray().tolist()
-            )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails

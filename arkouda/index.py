@@ -108,6 +108,9 @@ class Index:
         val = convert_if_categorical(self.values)
         return val.to_ndarray()
 
+    def to_list(self):
+        return self.to_ndarray().tolist()
+
     def set_dtype(self, dtype):
         """Change the data type of the index
 

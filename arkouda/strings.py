@@ -1510,7 +1510,8 @@ class Strings:
 
         See Also
         --------
-        array
+        array()
+        to_list()
 
         Examples
         --------
@@ -1533,6 +1534,41 @@ class Strings:
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
             res[i] = np.str_("".join(chr(b) for b in npvalues[o : o + l]))
         return res
+
+    def to_list(self) -> list:
+        """
+        Convert the SegString to a list, transferring data from the
+        arkouda server to Python. If the SegString exceeds a built-in size limit,
+        a RuntimeError is raised.
+
+        Returns
+        -------
+        list
+            A list with the same strings as this SegString
+
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        to_ndarray()
+
+        Examples
+        --------
+        >>> a = ak.array(["hello", "my", "world"])
+        >>> a.to_list()
+        ['hello', 'my', 'world']
+        >>> type(a.to_list())
+        list
+        """
+        return self.to_ndarray().tolist()
 
     def _comp_to_ndarray(self, comp: str) -> np.ndarray:
         """

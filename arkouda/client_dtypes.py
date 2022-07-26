@@ -122,6 +122,12 @@ class BitVector(pdarray):
         """
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
+    def to_list(self):
+        """
+        Export data to a list of string-formatted bit vectors.
+        """
+        return self.to_ndarray().tolist()
+
     def _cast(self, values):
         return self.__class__(values, width=self.width, reverse=self.reverse)
 
@@ -498,6 +504,12 @@ class IPv4(pdarray):
         Export array as a numpy array of integers.
         """
         return np.array([self.format(x) for x in self.values.to_ndarray()])
+
+    def to_list(self):
+        """
+        Export array as a list of integers.
+        """
+        return self.to_ndarray().tolist()
 
     def __getitem__(self, key):
         if isSupportedInt(key):

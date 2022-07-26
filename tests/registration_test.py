@@ -30,7 +30,7 @@ class RegistrationTest(ArkoudaTest):
 
         self.assertEqual("test_int64_a", self.a_array.name, "Expect name to change inplace")
         self.assertTrue(self.a_array is ar_array, "These should be the same object")
-        self.assertTrue((self.a_array.to_ndarray() == ar_array.to_ndarray()).all())
+        self.assertListEqual(self.a_array.to_list(), ar_array.to_list())
         ak.clear()
         # Both ar_array and self.a_array point to the same object, so both should still be usable.
         str(ar_array)
@@ -110,14 +110,14 @@ class RegistrationTest(ArkoudaTest):
         aar_array = ak.attach_pdarray("test_int64_a")
 
         self.assertEqual(ar_array.name, aar_array.name)
-        self.assertTrue((ar_array.to_ndarray() == aar_array.to_ndarray()).all())
+        self.assertListEqual(ar_array.to_list(), aar_array.to_list())
 
         ak.disconnect()
         ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         aar_array = ak.attach_pdarray("test_int64_a")
 
         self.assertEqual(ar_array.name, aar_array.name)
-        self.assertTrue((ar_array.to_ndarray() == aar_array.to_ndarray()).all())
+        self.assertListEqual(ar_array.to_list(), aar_array.to_list())
 
         ar_array.unregister()
         ak.clear()
@@ -151,7 +151,7 @@ class RegistrationTest(ArkoudaTest):
         twos_array.fill(2)
 
         g_twos_array = self.a_array + self.b_array
-        self.assertTrue((twos_array.to_ndarray() == g_twos_array.to_ndarray()).all())
+        self.assertListEqual(twos_array.to_list(), g_twos_array.to_list())
 
         ak.clear()  # This should remove self.b_array and g_twos_array
 
@@ -173,7 +173,7 @@ class RegistrationTest(ArkoudaTest):
             self.a_array + self.b_array
 
         g_twos_array = ar_array + aar_array
-        self.assertTrue((twos_array.to_ndarray() == g_twos_array.to_ndarray()).all())
+        self.assertListEqual(twos_array.to_list(), g_twos_array.to_list())
 
     def test_register_info(self):
         """
@@ -226,11 +226,11 @@ class RegistrationTest(ArkoudaTest):
             msg="info(AllSymbols) should have more objects than info(RegisteredSymbols) before clear()",
         )
         ak.clear()
-        self.assertTrue(
-            len(json.loads(ak.information(ak.AllSymbols)))
-            == len(json.loads(ak.information(ak.RegisteredSymbols))),
+        self.assertEqual(
+            len(json.loads(ak.information(ak.AllSymbols))),
+            len(json.loads(ak.information(ak.RegisteredSymbols))),
             msg="info(AllSymbols) and info(RegisteredSymbols) should have same num of objects "
-                "after clear()",
+            "after clear()",
         )
 
         # After unregister(), the registered field should be set to false for AllSymbol and
@@ -337,17 +337,17 @@ class RegistrationTest(ArkoudaTest):
         cleanup()
         # Initial registration should set name
         keep = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
-        self.assertTrue(keep.register("keep_me").name == "keep_me")
+        self.assertEqual(keep.register("keep_me").name, "keep_me")
         self.assertTrue(keep.is_registered(), "Expected Strings object to be registered")
 
         # Register a second time to confirm name change
-        self.assertTrue(keep.register("kept").name == "kept")
+        self.assertEqual(keep.register("kept").name, "kept")
         self.assertTrue(keep.is_registered(), "Object should be registered with updated name")
 
         # Add an item to discard, confirm our registered item remains and discarded item is gone
         discard = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
         ak.clear()
-        self.assertTrue(keep.name == "kept")
+        self.assertEqual(keep.name, "kept")
         with self.assertRaises(RuntimeError, msg="discard was not registered and should be discarded"):
             str(discard)
 
@@ -431,7 +431,8 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(c.is_registered(), "test_me categorical should be registered after attach")
         c.unregister()
         self.assertFalse(c.is_registered(), "test_me should be unregistered")
-        self.assertTrue(c.register("another_name").name == "another_name" and c.is_registered())
+        self.assertEqual(c.register("another_name").name, "another_name")
+        self.assertTrue(c.is_registered())
 
         # Test static unregister_by_name
         ak.Categorical.unregister_categorical_by_name("another_name")
@@ -462,7 +463,8 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(cat.is_registered(), "test_me categorical should be registered after attach")
         cat.unregister()
         self.assertFalse(cat.is_registered(), "test_me should be unregistered")
-        self.assertTrue(cat.register("another_name").name == "another_name" and cat.is_registered())
+        self.assertEqual(cat.register("another_name").name, "another_name")
+        self.assertTrue(cat.is_registered())
 
         # Test static unregister_by_name
         ak.Categorical.unregister_categorical_by_name("another_name")
@@ -507,7 +509,7 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue(s.is_registered())
 
         s2 = Series.attach("seriesTest")
-        self.assertListEqual(s2.values.to_ndarray().tolist(), s.values.to_ndarray().tolist())
+        self.assertListEqual(s2.values.to_list(), s.values.to_list())
         sEq = s2.index == s.index
         self.assertTrue(all(sEq.to_ndarray()))
 
@@ -518,16 +520,10 @@ class RegistrationTest(ArkoudaTest):
         sAttach = ak.GroupBy.attach("stringsTest")
 
         # Verify the attached GroupBy's components equal the original components
-        self.assertListEqual(sGroup.keys.to_ndarray().tolist(), sAttach.keys.to_ndarray().tolist())
-        self.assertListEqual(
-            sGroup.permutation.to_ndarray().tolist(), sAttach.permutation.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            sGroup.segments.to_ndarray().tolist(), sAttach.segments.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            sGroup.unique_keys.to_ndarray().tolist(), sAttach.unique_keys.to_ndarray().tolist()
-        )
+        self.assertListEqual(sGroup.keys.to_list(), sAttach.keys.to_list())
+        self.assertListEqual(sGroup.permutation.to_list(), sAttach.permutation.to_list())
+        self.assertListEqual(sGroup.segments.to_list(), sAttach.segments.to_list())
+        self.assertListEqual(sGroup.unique_keys.to_list(), sAttach.unique_keys.to_list())
 
         self.assertIsInstance(sAttach.keys, ak.Strings)
         self.assertIsInstance(sAttach.permutation, ak.pdarray)
@@ -541,16 +537,10 @@ class RegistrationTest(ArkoudaTest):
         aAttach = ak.GroupBy.attach("pdarray_test")
 
         # Verify the attached GroupBy's components equal the original components
-        self.assertListEqual(aGroup.keys.to_ndarray().tolist(), aAttach.keys.to_ndarray().tolist())
-        self.assertListEqual(
-            aGroup.permutation.to_ndarray().tolist(), aAttach.permutation.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            aGroup.segments.to_ndarray().tolist(), aAttach.segments.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            aGroup.unique_keys.to_ndarray().tolist(), aAttach.unique_keys.to_ndarray().tolist()
-        )
+        self.assertListEqual(aGroup.keys.to_list(), aAttach.keys.to_list())
+        self.assertListEqual(aGroup.permutation.to_list(), aAttach.permutation.to_list())
+        self.assertListEqual(aGroup.segments.to_list(), aAttach.segments.to_list())
+        self.assertListEqual(aGroup.unique_keys.to_list(), aAttach.unique_keys.to_list())
 
         self.assertIsInstance(aAttach.keys, ak.pdarray)
         self.assertIsInstance(aAttach.permutation, ak.pdarray)
@@ -565,16 +555,10 @@ class RegistrationTest(ArkoudaTest):
         catAttach = ak.GroupBy.attach("categorical_test")
 
         # Verify the attached GroupBy's components equal the original components
-        self.assertListEqual(catGroup.keys.to_ndarray().tolist(), catAttach.keys.to_ndarray().tolist())
-        self.assertListEqual(
-            catGroup.permutation.to_ndarray().tolist(), catAttach.permutation.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            catGroup.segments.to_ndarray().tolist(), catAttach.segments.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            catGroup.unique_keys.to_ndarray().tolist(), catAttach.unique_keys.to_ndarray().tolist()
-        )
+        self.assertListEqual(catGroup.keys.to_list(), catAttach.keys.to_list())
+        self.assertListEqual(catGroup.permutation.to_list(), catAttach.permutation.to_list())
+        self.assertListEqual(catGroup.segments.to_list(), catAttach.segments.to_list())
+        self.assertListEqual(catGroup.unique_keys.to_list(), catAttach.unique_keys.to_list())
 
         self.assertIsInstance(catAttach.keys, ak.Categorical)
         self.assertIsInstance(catAttach.permutation, ak.pdarray)
@@ -592,30 +576,14 @@ class RegistrationTest(ArkoudaTest):
 
         # Verify the attached GroupBy's components equal the original components for each key
         # in the sequence
-        self.assertListEqual(
-            group.keys[0].to_ndarray().tolist(), seqAttach.keys[0].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.keys[1].to_ndarray().tolist(), seqAttach.keys[1].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.keys[2].to_ndarray().tolist(), seqAttach.keys[2].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.unique_keys[0].to_ndarray().tolist(), seqAttach.unique_keys[0].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.unique_keys[1].to_ndarray().tolist(), seqAttach.unique_keys[1].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.unique_keys[2].to_ndarray().tolist(), seqAttach.unique_keys[2].to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.permutation.to_ndarray().tolist(), seqAttach.permutation.to_ndarray().tolist()
-        )
-        self.assertListEqual(
-            group.segments.to_ndarray().tolist(), seqAttach.segments.to_ndarray().tolist()
-        )
+        self.assertListEqual(group.keys[0].to_list(), seqAttach.keys[0].to_list())
+        self.assertListEqual(group.keys[1].to_list(), seqAttach.keys[1].to_list())
+        self.assertListEqual(group.keys[2].to_list(), seqAttach.keys[2].to_list())
+        self.assertListEqual(group.unique_keys[0].to_list(), seqAttach.unique_keys[0].to_list())
+        self.assertListEqual(group.unique_keys[1].to_list(), seqAttach.unique_keys[1].to_list())
+        self.assertListEqual(group.unique_keys[2].to_list(), seqAttach.unique_keys[2].to_list())
+        self.assertListEqual(group.permutation.to_list(), seqAttach.permutation.to_list())
+        self.assertListEqual(group.segments.to_list(), seqAttach.segments.to_list())
 
         # Verify the attached GroupBy preserved the type of each key
         self.assertIsInstance(seqAttach.keys[0], ak.pdarray)

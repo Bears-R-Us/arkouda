@@ -1,5 +1,6 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+import numpy as np
 
 
 class BitOpsTest(ArkoudaTest):
@@ -13,82 +14,66 @@ class BitOpsTest(ArkoudaTest):
     def test_popcount(self):
         # Method invocation
         # Toy input
-        p = self.a.popcount()
-        ans = ak.array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
-        self.assertTrue((p == ans).all())
+        ans = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2]
+        self.assertListEqual(self.a.popcount().to_list(), ans)
 
         # Test uint case
-        p = self.b.popcount()
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.popcount().to_list(), ans.tolist())
 
         # Function invocation
         # Edge case input
-        p = ak.popcount(self.edgeCases)
-        ans = ak.array([1, 64, 63])
-        self.assertTrue((p == ans).all())
+        ans = [1, 64, 63]
+        self.assertListEqual(ak.popcount(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        p = ak.popcount(self.edgeCasesUint)
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.popcount(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_parity(self):
-        p = self.a.parity()
-        ans = ak.array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
-        self.assertTrue((p == ans).all())
+        ans = [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
+        self.assertListEqual(self.a.parity().to_list(), ans)
 
         # Test uint case
-        p = self.b.parity()
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.parity().to_list(), ans.tolist())
 
-        p = ak.parity(self.edgeCases)
-        ans = ak.array([1, 0, 1])
-        self.assertTrue((p == ans).all())
+        ans = [1, 0, 1]
+        self.assertListEqual(ak.parity(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        p = ak.parity(self.edgeCasesUint)
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.parity(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_clz(self):
-        p = self.a.clz()
-        ans = ak.array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
-        self.assertTrue((p == ans).all())
+        ans = [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
+        self.assertListEqual(self.a.clz().to_list(), ans)
 
         # Test uint case
-        p = self.b.clz()
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.clz().to_list(), ans.tolist())
 
-        p = ak.clz(self.edgeCases)
-        ans = ak.array([0, 0, 1])
-        self.assertTrue((p == ans).all())
+        ans = [0, 0, 1]
+        self.assertListEqual(ak.clz(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        p = ak.clz(self.edgeCasesUint)
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.clz(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_ctz(self):
-        p = self.a.ctz()
-        ans = ak.array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
-        self.assertTrue((p == ans).all())
+        ans = [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
+        self.assertListEqual(self.a.ctz().to_list(), ans)
 
         # Test uint case
-        p = self.b.ctz()
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(self.b.ctz().to_list(), ans.tolist())
 
-        p = ak.ctz(self.edgeCases)
-        ans = ak.array([63, 0, 0])
-        self.assertTrue((p == ans).all())
+        ans = [63, 0, 0]
+        self.assertListEqual(ak.ctz(self.edgeCases).to_list(), ans)
 
         # Test uint case
-        p = ak.ctz(self.edgeCasesUint)
-        ans = ak.cast(ans, ak.uint64)
-        self.assertTrue((p == ans).all())
+        ans = np.array(ans, ak.uint64)
+        self.assertListEqual(ak.ctz(self.edgeCasesUint).to_list(), ans.tolist())
 
     def test_dtypes(self):
         f = ak.zeros(10, dtype=ak.float64)
@@ -103,51 +88,45 @@ class BitOpsTest(ArkoudaTest):
         rotated = self.a.rotl(5)
         shifted = self.a << 5
         # No wraparound, so these should be equal
-        self.assertTrue((rotated == shifted).all())
+        self.assertListEqual(rotated.to_list(), shifted.to_list())
 
         r = ak.rotl(self.edgeCases, 1)
-        ans = ak.array([1, -1, -2])
-        self.assertTrue((r == ans).all())
+        self.assertListEqual(r.to_list(), [1, -1, -2])
 
         # vector <<< vector
         rotated = self.a.rotl(self.a)
         shifted = self.a << self.a
         # No wraparound, so these should be equal
-        self.assertTrue((rotated == shifted).all())
+        self.assertListEqual(rotated.to_list(), shifted.to_list())
 
         r = ak.rotl(self.edgeCases, ak.array([1, 1, 1]))
-        ans = ak.array([1, -1, -2])
-        self.assertTrue((r == ans).all())
+        self.assertListEqual(r.to_list(), [1, -1, -2])
 
         # scalar <<< vector
         rotated = ak.rotl(-(2**63), self.a)
-        ans = ak.array([-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256])
-        self.assertTrue((rotated == ans).all())
+        ans = [-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256]
+        self.assertListEqual(rotated.to_list(), ans)
 
     def test_rotr(self):
         # vector <<< scalar
         rotated = (1024 * self.a).rotr(5)
         shifted = (1024 * self.a) >> 5
         # No wraparound, so these should be equal
-        self.assertTrue((rotated == shifted).all())
+        self.assertListEqual(rotated.to_list(), shifted.to_list())
 
         r = ak.rotr(self.edgeCases, 1)
-        ans = ak.array([2**62, -1, -(2**62) - 1])
-        self.assertTrue((r == ans).all())
+        self.assertListEqual(r.to_list(), [2**62, -1, -(2**62) - 1])
 
         # vector <<< vector
         rotated = (1024 * self.a).rotr(self.a)
         shifted = (1024 * self.a) >> self.a
         # No wraparound, so these should be equal
-        self.assertTrue((rotated == shifted).all())
+        self.assertListEqual(rotated.to_list(), shifted.to_list())
 
         r = ak.rotr(self.edgeCases, ak.array([1, 1, 1]))
-        ans = ak.array([2**62, -1, -(2**62) - 1])
-        self.assertTrue((r == ans).all())
+        self.assertListEqual(r.to_list(), [2**62, -1, -(2**62) - 1])
 
         # scalar <<< vector
         rotated = ak.rotr(1, self.a)
-        ans = ak.array(
-            [1, -(2**63), 2**62, 2**61, 2**60, 2**59, 2**58, 2**57, 2**56, 2**55]
-        )
-        self.assertTrue((rotated == ans).all())
+        ans = [1, -(2**63), 2**62, 2**61, 2**60, 2**59, 2**58, 2**57, 2**56, 2**55]
+        self.assertListEqual(rotated.to_list(), ans)
