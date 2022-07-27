@@ -77,7 +77,7 @@ module IndexingMsg
                 //     var indArrEntry = toSymEntry(indArr, int);
                 //     var scaledArray = indArrEntry.a * dimProdEntry.a[i/2];
                 //     // var localizedArray = new lowLevelLocalizingSlice(scaledArray, offsets[i/2]..#indArrEntry.a.size);
-                //     forall (j, s) in zip(indArrEntry.aD, scaledArray) with (var DstAgg = newDstAggregator(int)) {
+                //     forall (j, s) in zip(indArrEntry.a.domain, scaledArray) with (var DstAgg = newDstAggregator(int)) {
                 //         DstAgg.copy(scaledCoords[offsets[i/2]+j], s);
                 //     }
                 // }
@@ -360,7 +360,7 @@ module IndexingMsg
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             var a = st.addEntry(rname, iv.size, XType);
-            //[i in iv.aD] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
+            //[i in iv.a.domain] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.a.domain?
             ref a2 = e.a;
             ref iva = iv.a;
             ref aa = a.a;
@@ -396,7 +396,7 @@ module IndexingMsg
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
             var a = st.addEntry(rname, iv.size, XType);
-            //[i in iv.aD] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
+            //[i in iv.a.domain] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.a.domain?
             ref a2 = e.a;
             ref iva = iv.a;
             ref aa = a.a;
@@ -421,14 +421,14 @@ module IndexingMsg
             }
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * truth.size);
-            var iv: [truth.aD] int = (+ scan truth.a);
+            var iv: [truth.a.domain] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                               "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
 
             var a = st.addEntry(rname, pop, XType);
-            //[i in e.aD] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
-            ref ead = e.aD;
+            //[i in e.a.domain] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+            const ref ead = e.a.domain;
             ref ea = e.a;
             ref trutha = truth.a;
             ref aa = a.a;
@@ -694,7 +694,7 @@ module IndexingMsg
                 value = value.replace("False","false"); // chapel to python bool
             }
             var val = try! value:dtype;
-            ref ead = e.aD;
+            const ref ead = e.a.domain;
             ref ea = e.a;
             ref trutha = truth.a;
             forall i in ead with (var agg = newDstAggregator(dtype)) {
@@ -857,7 +857,7 @@ module IndexingMsg
             var truth = toSymEntry(gIV,bool);
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * truth.size);
-            var iv: [truth.aD] int = (+ scan truth.a);
+            var iv: [truth.a.domain] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                          "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
@@ -868,7 +868,7 @@ module IndexingMsg
                 return new MsgTuple(errorMsg,MsgType.ERROR);;                
             }
             ref ya = y.a;
-            ref ead = e.aD;
+            const ref ead = e.a.domain;
             ref ea = e.a;
             ref trutha = truth.a;
             forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {

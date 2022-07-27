@@ -65,18 +65,18 @@ module SegmentedArray {
 
         /* Retrieve one string from the array */
         proc this(idx: ?t) throws where t == int || t == uint {
-            if (idx < segments.aD.low) || (idx > segments.aD.high) {
+            if (idx < segments.a.domain.low) || (idx > segments.a.domain.high) {
                 throw new owned OutOfBoundsError();
             }
             // Start index of the segment
             var start: int = segments.a[idx:int];
             // end index
-            var end: int = if idx:int == segments.aD.high then values.size-1 else segments.a[idx:int+1]-1;
+            var end: int = if idx:int == segments.a.domain.high then values.size-1 else segments.a[idx:int+1]-1;
             return values.a[start..end];
         }
 
         proc this(const slice: range(stridable=false)) throws {
-            if (slice.low < segments.aD.low) || (slice.high > segments.aD.high) {
+            if (slice.low < segments.a.domain.low) || (slice.high > segments.a.domain.high) {
                 saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                 "Slice is out of bounds");
                 throw new owned OutOfBoundsError();
@@ -89,7 +89,7 @@ module SegmentedArray {
             ref sa = segments.a;
             var start = sa[slice.low];
             // end index
-            var end: int = if slice.high == segments.aD.high then values.size-1 else sa[slice.high:int+1]-1;
+            var end: int = if slice.high == segments.a.domain.high then values.size-1 else sa[slice.high:int+1]-1;
 
             // Segment offsets of the new slice
             var newSegs = makeDistArray(slice.size, int);
@@ -128,7 +128,7 @@ module SegmentedArray {
                                                     "Computing lengths and offsets");
             var t1 = getCurrentTime();
             ref oa = segments.a;
-            const low = segments.aD.low, high = segments.aD.high;
+            const low = segments.a.domain.low, high = segments.a.domain.high;
 
             // Gather the right and left boundaries of the indexed strings
             // NOTE: cannot compute lengths inside forall because agg.copy will
@@ -208,7 +208,7 @@ module SegmentedArray {
         /* Logical indexing (compress) of SegArray. */
         proc this(iv: [?D] bool) throws {
             // Index vector must be same domain as array
-            if (D != segments.aD) {
+            if (D != segments.a.domain) {
                 saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                                 "Array out of bounds");
                 throw new owned OutOfBoundsError();
@@ -217,7 +217,7 @@ module SegmentedArray {
                                                         "Computing lengths and offsets");
 
             ref oa = segments.a;
-            const low = segments.aD.low, high = segments.aD.high;
+            const low = segments.a.domain.low, high = segments.a.domain.high;
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * iv.size);
             // Calculate the destination indices

@@ -421,7 +421,7 @@ module ParquetMsg {
     
     const extraOffset = ss.values.size;
     const lastOffset = A[A.domain.high];
-    const lastValIdx = ss.values.aD.high;
+    const lastValIdx = ss.values.a.domain.high;
     // For each locale gather the string bytes corresponding to the offsets in its local domain
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
         const myFilename = filenames[idx];

@@ -43,7 +43,7 @@ module TimeClassMsg {
         var valuesEntry = toSymEntry(values, int);
         var attributesDict = simpleAttributesHelper(valuesEntry.a, st);
 
-        const valDom = valuesEntry.aD;
+        const valDom = valuesEntry.a.domain;
         var year: [valDom] int;
         var month: [valDom] int;
         var day: [valDom] int;

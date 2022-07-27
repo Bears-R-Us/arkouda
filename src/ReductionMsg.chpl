@@ -51,7 +51,7 @@ module ReductionMsg
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0);
-                        if sum == e.aD.size {val = "True";} else {val = "False";}
+                        if sum == e.a.domain.size {val = "True";} else {val = "False";}
                        repMsg = "bool %s".format(val);
                     }
                     when "sum" {
@@ -73,11 +73,11 @@ module ReductionMsg
                         repMsg = "int64 %i".format(val);
                     }
                     when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(minLoc);
                     }
                     when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
@@ -133,11 +133,11 @@ module ReductionMsg
                         repMsg = "uint64 %i".format(val);
                     }
                     when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "uint64 %i".format(minLoc);
                     }
                     when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
                         repMsg = "uint64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
@@ -167,7 +167,7 @@ module ReductionMsg
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0.0);
-                        if sum == e.aD.size {val = "True";} else {val = "False";}
+                        if sum == e.a.domain.size {val = "True";} else {val = "False";}
                         repMsg = "bool %s".format(val);
                     }
                     when "sum" {
@@ -187,11 +187,11 @@ module ReductionMsg
                         repMsg = "float64 %.17r".format(val);
                     }
                     when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(minLoc);
                     }
                     when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
@@ -242,11 +242,11 @@ module ReductionMsg
                         repMsg = "bool %s".format(val);
                     }
                     when "argmax" {
-                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(maxLoc);
                     }
                     when "argmin" {
-                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.a.domain);
                         repMsg = "int64 %i".format(minLoc);
                     }
                     otherwise {

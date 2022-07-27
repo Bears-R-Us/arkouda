@@ -85,7 +85,7 @@ prototype module UnitTestArgSort
         var coa = toSymEntry(toGenSymEntry(st.lookup(coaname)), int);
         var cof = toSymEntry(toGenSymEntry(st.lookup(cofname)), real);
         var allSorted: atomic bool = true;
-        forall (a, f, i) in zip(coa.a[1..], cof.a[1..], coa.aD.low+1..) {
+        forall (a, f, i) in zip(coa.a[1..], cof.a[1..], coa.a.domain.low+1..) {
           ref coaa = coa.a;
           ref cofa = cof.a;
           if (coaa[i-1] > a) {

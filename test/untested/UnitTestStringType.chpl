@@ -96,12 +96,12 @@ proc main() {
   var giv = st.lookup(aname);
   var iv = toSymEntry(giv, bool);
   var steps = + scan iv.a;
-  var pop = steps[iv.aD.high];
+  var pop = steps[iv.a.domain.high];
   printAry("strings == %s: ".format(testString), iv.a);
   writeln("pop = ", pop);
   if (pop > 0) {
     var inds: [0..#pop] int;
-    [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {inds[i-1] = idx;}
+    [(idx, present, i) in zip(iv.a.domain, iv.a, steps)] if present {inds[i-1] = idx;}
     printAry("inds: ", inds);
     var diff = inds[1..#(pop-1)] - inds[0..#(pop-1)];
     var consecutive = && reduce (diff == 1);
@@ -164,12 +164,12 @@ proc main() {
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   steps = + scan iv.a;
-  pop = steps[iv.aD.high];
+  pop = steps[iv.a.domain.high];
   printAry("strings == %s: ".format(testString), iv.a);
   writeln("pop = ", pop);
   if pop > 0 {
     var permInds: [0..#pop] int;
-    [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {permInds[i-1] = idx;}
+    [(idx, present, i) in zip(iv.a.domain, iv.a, steps)] if present {permInds[i-1] = idx;}
     //printAry("permInds: ", permInds);
     writeln("permInds: ", permInds);
     var permDiff = permInds[1..#(pop-1)] - permInds[0..#(pop-1)];

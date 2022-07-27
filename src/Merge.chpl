@@ -101,9 +101,9 @@ module Merge {
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                           "OOB: outPos = %t not in %t".format(outPos, perm.domain));
                   }
-                  if (bigPos > big.offsets.aD.high) { 
+                  if (bigPos > big.offsets.a.domain.high) { 
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "OOB: bigPos = %t not in %t".format(bigPos, big.offsets.aD));
+                                          "OOB: bigPos = %t not in %t".format(bigPos, big.offsets.a.domain));
                   }
                   if (outOffset + bigS.numBytes >= vals.size) { 
                       mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -131,9 +131,9 @@ module Merge {
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                "OOB: outPos = %t not in %t".format(outPos, perm.domain));
                 }
-                if (smallPos > small.offsets.aD.high) { 
+                if (smallPos > small.offsets.a.domain.high) { 
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "OOB: smallPos = %t not in %t".format(smallPos, small.offsets.aD));
+                               "OOB: smallPos = %t not in %t".format(smallPos, small.offsets.a.domain));
                 }
                 if (outOffset + bigS.numBytes >= vals.size) {
                     mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
