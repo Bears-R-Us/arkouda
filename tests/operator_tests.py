@@ -424,8 +424,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertEqual(type(bitvector_akuconcat), ak.BitVector)
         self.assertListEqual(ak.BitVector(pda_concat).to_list(), bitvector_akuconcat.to_list())
 
-    # currently skipped, needs to be renamed to test_floor_div_edge_cases in order to run
-    def floor_div_edge_cases(self):
+    def test_floor_div_edge_cases(self):
         scalar_edge_cases = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
         np_edge_cases = np.array(scalar_edge_cases)
         ak_edge_cases = ak.array(np_edge_cases)
