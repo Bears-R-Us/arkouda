@@ -13,6 +13,21 @@ module BinOp
   const omLogger = new Logger(logLevel);
 
   /*
+  Helper function to ensure that floor division cases are handled in accordance with numpy
+  */
+  proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
+    if (numerator == 0 && denom == 0) || (isinf(numerator) && denom > 0){
+      return NAN;
+    }
+    else if (numerator > 0 && denom == -INFINITY) || (numerator < 0 && denom == INFINITY){
+      return -1:real;
+    }
+    else {
+      return floor(numerator/denom);
+    }
+  }
+
+  /*
   Generic function to execute a binary operation on pdarray entries 
   in the symbol table
 
@@ -283,7 +298,7 @@ module BinOp
             ref ea = e.a;
             ref la = l.a;
             ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri) else NAN;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
           }
           when "**" { 
             e.a= l.a**r.a;
@@ -601,7 +616,7 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref la = l.a;
-            [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li/val) else NAN;
+            [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);
           }
           when "**" { 
             e.a= l.a**val;
@@ -921,7 +936,7 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else INFINITY;
+            [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           when "**" { 
             e.a= val**r.a;
