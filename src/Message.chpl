@@ -182,7 +182,7 @@ module Message {
         :size: int: number of values in the list
         Note - not yet able to handle list of pdarray or SegString names
         */
-        proc getList(size: int) {
+        proc getList(size: int) throws {
             if this.objType != ObjectType.LIST {
                 throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
                                     getLineNumber(),
