@@ -329,7 +329,7 @@ module BinOp
             ref ea = e.a;
             ref la = l.a;
             ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri) else NAN;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);//if ri != 0 then floor(li/ri) else NAN;
           }
           when "**" { 
             e.a= l.a:real**r.a:real;
@@ -646,7 +646,7 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref la = l.a;
-            [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li/val) else NAN;
+            [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);//if val != 0 then floor(li/val) else NAN;
           }
           when "**" { 
             e.a= l.a: real**val: real;
@@ -966,7 +966,7 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else NAN;
+            [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           when "**" { 
             e.a= val:real**r.a:real;
