@@ -15,7 +15,7 @@ module BinOp
   /*
   Helper function to ensure that floor division cases are handled in accordance with numpy
   */
-  proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
+  inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
     if (numerator == 0 && denom == 0) || (isinf(numerator) && (denom != 0 || isinf(denom))){
       return NAN;
     }
