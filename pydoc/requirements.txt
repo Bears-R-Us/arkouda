@@ -18,7 +18,7 @@ pyarrow>=1.0.1
 pexpect
 pytest>=6.0
 pytest-env
-Sphinx==5.0.2
+Sphinx>=5.1.1
 sphinx-argparse
 sphinx-autoapi
 typed-ast
