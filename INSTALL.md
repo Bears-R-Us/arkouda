@@ -338,11 +338,11 @@ pip install -e .[dev]
 
 <a id="env-upd"></a>
 ## Updating Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preffered environment management tool. 
+As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool. 
 
 <a id="env-upd-conda"></a>
 ### Conda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-*If you provided a different name when creating the environment, place `arkouda-dev` or `arkouda` with the name of your Conda environment.*
+*If you provided a different name when creating the environment, replace `arkouda-dev` or `arkouda` with the name of your Conda environment.*
 ```bash
 # developer environment update
 conda env update -n arkouda-dev -f arkouda-env-dev.yml
