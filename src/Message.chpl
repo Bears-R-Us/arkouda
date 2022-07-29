@@ -157,7 +157,7 @@ module Message {
         * Return the value as the provided type
         */
         proc getValueAsType(type t = string): t throws {
-            if objType != dtype {
+            if objType != ObjectType.VALUE {
                 throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.",
                                     getLineNumber(),
                                     getRoutineName(),
@@ -183,7 +183,7 @@ module Message {
         Note - not yet able to handle list of pdarray or SegString names
         */
         proc getList(size: int) {
-            if this.objType != "list" {
+            if this.objType != ObjectType.LIST {
                 throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
