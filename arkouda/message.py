@@ -4,6 +4,56 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 
+
+class ObjectType(Enum):
+    """
+    Class used for assigning object types in the JSON string
+    sent to the server for processing
+    """
+    PDARRAY = "PDARRAY"
+    STRINGS = "SEGSTRING"
+    LIST = "LIST"
+    VALUE = "VALUE"
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+
+class ParameterObject:
+    __slots = ("key", "objType", "dtype", "val")
+
+    key: str
+    objType: MessageFormat
+    dtype: str
+    val: str
+
+    def __init__(self, key, objType, dtype, val):
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "objType", objType)
+        object.__setattr__(self, "dtype", dtype)
+        object.__setattr__(self, "val", val)
+
+    @property
+    def dict(self):
+        return {
+            "key": self.key,
+            "objType": str(self.objType),
+            "dtype": self.dtype,
+            "val": self.val,
+        }
+
+
 """
 The MessageFormat enum provides controlled vocabulary for the message
 format which can be either a string or a binary (bytes) object.

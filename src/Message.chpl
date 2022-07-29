@@ -7,6 +7,7 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, VALUE}
 
     /*
      * Encapsulates the message string and message type.
@@ -48,7 +49,7 @@ module Message {
     record ParameterObj {
         var key: string; // json key value 
         var val: string; // json value
-        var objType: string; // type of the object
+        var objType: ObjectType; // type of the object
         var dtype: string; // type of elements contained in the object
 
         proc init() {}

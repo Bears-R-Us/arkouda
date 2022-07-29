@@ -8,7 +8,7 @@ import zmq  # type: ignore
 
 from arkouda import __version__, io_util, security
 from arkouda.logger import getArkoudaLogger
-from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
+from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage, ParameterObject, ObjectType
 
 __all__ = [
     "connect",
@@ -570,30 +570,23 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
             raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
         if isinstance(val, dict):
             raise TypeError("Nested JSON is not currently supported for server messages.")
-        param = {"key": key}
 
         if isinstance(val, pdarray):
-            param["objType"] = "pdarray"
-            param["dtype"] = str(val.dtype)
-            param["val"] = val.name
+            param = ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
         elif isinstance(val, Strings):
-            param["objType"] = "SegString"
-            param["dtype"] = "str"
             # empty string if name of String obj is none
-            param["val"] = val.name if val.name else ""
+            name = val.name if val.name else ""
+            param = ParameterObject(key, ObjectType.STRINGS, "str", name)
         elif isinstance(val, list):
-            param["objType"] = "list"
             dtypes = set([p.dtype for p in val])
             if len(dtypes) > 1:
                 t_str = ", ".join(dtypes)
                 raise TypeError(f"List values must be of the same type. Found {t_str}")
-            param["dtype"] = dtypes.pop()
-            param["val"] = json.dumps(val)
+            param = ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
         else:
-            param["objType"] = type(val).__name__
-            param["dtype"] = type(val).__name__
-            param["val"] = val if isinstance(val, str) else str(val)
-        j.append(json.dumps(param))
+            v = val if isinstance(val, str) else str(val)
+            param = ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
+        j.append(json.dumps(param.dict))
     return len(j), json.dumps(j)
 
 
