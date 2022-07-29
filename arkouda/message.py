@@ -10,6 +10,7 @@ class ObjectType(Enum):
     Class used for assigning object types in the JSON string
     sent to the server for processing
     """
+
     PDARRAY = "PDARRAY"
     STRINGS = "SEGSTRING"
     LIST = "LIST"

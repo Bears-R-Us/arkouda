@@ -8,7 +8,14 @@ import zmq  # type: ignore
 
 from arkouda import __version__, io_util, security
 from arkouda.logger import getArkoudaLogger
-from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage, ParameterObject, ObjectType
+from arkouda.message import (
+    MessageFormat,
+    MessageType,
+    ObjectType,
+    ParameterObject,
+    ReplyMessage,
+    RequestMessage,
+)
 
 __all__ = [
     "connect",
