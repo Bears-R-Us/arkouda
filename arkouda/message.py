@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
+from typeguard import typechecked
+
+import json
 
 
 class ObjectType(Enum):
@@ -32,6 +35,7 @@ class ObjectType(Enum):
 
 
 class ParameterObject:
+
     __slots = ("key", "objType", "dtype", "val")
 
     key: str
@@ -54,6 +58,50 @@ class ParameterObject:
             "val": self.val,
         }
 
+    @staticmethod
+    @typechecked
+    def _build_pdarray_param(key: str, val) -> ParameterObject:
+        return ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
+
+    @staticmethod
+    @typechecked
+    def _build_strings_param(key: str, val) -> ParameterObject:
+        # empty string if name of String obj is none
+        name = val.name if val.name else ""
+        return ParameterObject(key, ObjectType.STRINGS, "str", name)
+
+    @staticmethod
+    @typechecked
+    def _build_list_param(key: str, val: list) -> ParameterObject:
+        dtypes = set([p.dtype for p in val])
+        if len(dtypes) > 1:
+            t_str = ", ".join(dtypes)
+            raise TypeError(f"List values must be of the same type. Found {t_str}")
+        return ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
+
+    @staticmethod
+    @typechecked
+    def _build_gen_param(key: str, val) -> ParameterObject:
+        v = val if isinstance(val, str) else str(val)
+        return ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
+
+    @staticmethod
+    def generate_dispatch() -> Dict:
+        from arkouda.pdarrayclass import pdarray
+        from arkouda.strings import Strings
+        return {
+            pdarray.__name__: ParameterObject._build_pdarray_param,
+            Strings.__name__: ParameterObject._build_strings_param,
+            list.__name__: ParameterObject._build_list_param,
+        }
+
+    @staticmethod
+    def factory(key: str, val) -> ParameterObject:
+        dispatch = ParameterObject.generate_dispatch()
+        if (f := dispatch.get(type(val).__name__)) is not None:
+            return f(key, val)
+        else:
+            return ParameterObject._build_gen_param(key, val)
 
 """
 The MessageFormat enum provides controlled vocabulary for the message

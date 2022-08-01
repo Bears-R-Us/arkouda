@@ -11,7 +11,6 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.message import (
     MessageFormat,
     MessageType,
-    ObjectType,
     ParameterObject,
     ReplyMessage,
     RequestMessage,
@@ -568,9 +567,6 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
     - Nested dictionaries are not yet supported, but are planned for future support.
     - Support for lists of pdarray or Strings objects does not yet exist.
     """
-    from arkouda.pdarrayclass import pdarray
-    from arkouda.strings import Strings
-
     j = []
     for key, val in json_obj.items():
         if not isinstance(key, str):
@@ -578,21 +574,7 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
         if isinstance(val, dict):
             raise TypeError("Nested JSON is not currently supported for server messages.")
 
-        if isinstance(val, pdarray):
-            param = ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
-        elif isinstance(val, Strings):
-            # empty string if name of String obj is none
-            name = val.name if val.name else ""
-            param = ParameterObject(key, ObjectType.STRINGS, "str", name)
-        elif isinstance(val, list):
-            dtypes = set([p.dtype if hasattr(p, "dtype") else type(p).__name__ for p in val])
-            if len(dtypes) > 1:
-                t_str = ", ".join(dtypes)
-                raise TypeError(f"List values must be of the same type. Found {t_str}")
-            param = ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
-        else:
-            v = val if isinstance(val, str) else str(val)
-            param = ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
+        param = ParameterObject.factory(key, val)
         j.append(json.dumps(param.dict))
     return len(j), json.dumps(j)
 
