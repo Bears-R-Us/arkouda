@@ -7,6 +7,7 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, VALUE}
 
     /*
      * Encapsulates the message string and message type.
@@ -48,7 +49,7 @@ module Message {
     record ParameterObj {
         var key: string; // json key value 
         var val: string; // json value
-        var objType: string; // type of the object
+        var objType: ObjectType; // type of the object
         var dtype: string; // type of elements contained in the object
 
         proc init() {}
@@ -156,7 +157,7 @@ module Message {
         * Return the value as the provided type
         */
         proc getValueAsType(type t = string): t throws {
-            if objType != dtype {
+            if objType != ObjectType.VALUE {
                 throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.",
                                     getLineNumber(),
                                     getRoutineName(),
@@ -182,7 +183,7 @@ module Message {
         Note - not yet able to handle list of pdarray or SegString names
         */
         proc getList(size: int) {
-            if this.objType != "list" {
+            if this.objType != ObjectType.LIST {
                 throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
                                     getLineNumber(),
                                     getRoutineName(),
