@@ -585,7 +585,7 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
             name = val.name if val.name else ""
             param = ParameterObject(key, ObjectType.STRINGS, "str", name)
         elif isinstance(val, list):
-            dtypes = set([p.dtype for p in val])
+            dtypes = set([p.dtype if hasattr(p, "dtype") else type(p) for p in val])
             if len(dtypes) > 1:
                 t_str = ", ".join(dtypes)
                 raise TypeError(f"List values must be of the same type. Found {t_str}")
