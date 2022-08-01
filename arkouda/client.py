@@ -26,7 +26,6 @@ __all__ = [
     "get_server_commands",
     "print_server_commands",
     "ruok",
-    "_json_args_to_str",
 ]
 
 # stuff for zmq connection
