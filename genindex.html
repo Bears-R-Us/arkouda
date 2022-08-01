@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; arkouda 0+untagged.1.gafd0735 documentation</title>
+    <title>Index &#8212; arkouda 0+untagged.1.g2de04d4 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -47,6 +47,7 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -440,6 +441,8 @@
 </li>
         <li><a href="autoapi/arkouda/message/index.html#arkouda.message.MessageType.__repr__">(arkouda.message.MessageType method)</a>
 </li>
+        <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.__repr__">(arkouda.message.ObjectType method)</a>
+</li>
         <li><a href="autoapi/arkouda/index.html#arkouda.MultiIndex.__repr__">(arkouda.MultiIndex method)</a>
 </li>
         <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.__repr__">(arkouda.pdarray method)</a>, <a href="autoapi/arkouda/index.html#id129">[1]</a>, <a href="autoapi/arkouda/index.html#id17">[2]</a>, <a href="autoapi/arkouda/index.html#id313">[3]</a>, <a href="autoapi/arkouda/index.html#id425">[4]</a>, <a href="autoapi/arkouda/index.html#id538">[5]</a>, <a href="autoapi/arkouda/index.html#id652">[6]</a>
@@ -563,8 +566,12 @@
         <li><a href="autoapi/arkouda/timeclass/index.html#arkouda.timeclass._AbstractBaseTime.__setitem__">(arkouda.timeclass._AbstractBaseTime method)</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.RequestMessage.__slots">__slots (arkouda.message.RequestMessage attribute)</a>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.__slots">__slots (arkouda.message.ParameterObject attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/arkouda/message/index.html#arkouda.message.RequestMessage.__slots">(arkouda.message.RequestMessage attribute)</a>
 </li>
+      </ul></li>
       <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ReplyMessage.__slots__">__slots__ (arkouda.message.ReplyMessage attribute)</a>
 </li>
       <li><a href="autoapi/arkouda/index.html#arkouda._AbstractBaseTime.__str__">__str__() (arkouda._AbstractBaseTime method)</a>
@@ -593,6 +600,8 @@
         <li><a href="autoapi/arkouda/message/index.html#arkouda.message.MessageFormat.__str__">(arkouda.message.MessageFormat method)</a>
 </li>
         <li><a href="autoapi/arkouda/message/index.html#arkouda.message.MessageType.__str__">(arkouda.message.MessageType method)</a>
+</li>
+        <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.__str__">(arkouda.message.ObjectType method)</a>
 </li>
         <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.__str__">(arkouda.pdarray method)</a>, <a href="autoapi/arkouda/index.html#id128">[1]</a>, <a href="autoapi/arkouda/index.html#id16">[2]</a>, <a href="autoapi/arkouda/index.html#id312">[3]</a>, <a href="autoapi/arkouda/index.html#id424">[4]</a>, <a href="autoapi/arkouda/index.html#id537">[5]</a>, <a href="autoapi/arkouda/index.html#id651">[6]</a>
 </li>
@@ -1847,6 +1856,8 @@
       </ul></li>
       <li><a href="autoapi/arkouda/io_util/index.html#arkouda.io_util.delimited_file_to_dict">delimited_file_to_dict() (in module arkouda.io_util)</a>
 </li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.dict">dict (arkouda.message.ParameterObject property)</a>
+</li>
       <li><a href="autoapi/arkouda/io_util/index.html#arkouda.io_util.dict_to_delimited_file">dict_to_delimited_file() (in module arkouda.io_util)</a>
 </li>
       <li><a href="autoapi/arkouda/index.html#arkouda.Series.diff">diff() (arkouda.Series method)</a>
@@ -1891,6 +1902,8 @@
 
       <ul>
         <li><a href="autoapi/arkouda/index.html#arkouda.ArrayView.dtype">(arkouda.ArrayView attribute)</a>, <a href="usage/arrayview.html#arkouda.ArrayView.dtype">[1]</a>
+</li>
+        <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.dtype">(arkouda.message.ParameterObject attribute)</a>
 </li>
         <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.dtype">(arkouda.pdarray attribute)</a>, <a href="autoapi/arkouda/index.html#id116">[1]</a>, <a href="autoapi/arkouda/index.html#id300">[2]</a>, <a href="autoapi/arkouda/index.html#id4">[3]</a>, <a href="autoapi/arkouda/index.html#id412">[4]</a>, <a href="autoapi/arkouda/index.html#id525">[5]</a>, <a href="autoapi/arkouda/index.html#id639">[6]</a>, <a href="usage/pdarray.html#arkouda.pdarray.dtype">[7]</a>
 </li>
@@ -2622,6 +2635,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.key">key (arkouda.message.ParameterObject attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -2637,6 +2658,8 @@
         <li><a href="autoapi/arkouda/pdarraycreation/index.html#arkouda.pdarraycreation.linspace">(in module arkouda.pdarraycreation)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.LIST">LIST (arkouda.message.ObjectType attribute)</a>
+</li>
       <li><a href="autoapi/arkouda/index.html#arkouda.list_registry">list_registry() (in module arkouda)</a>, <a href="autoapi/arkouda/index.html#id522">[1]</a>
 
       <ul>
@@ -3042,11 +3065,15 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType">ObjectType (class in arkouda.message)</a>
+</li>
       <li><a href="autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical.objtype">objtype (arkouda.categorical.Categorical property)</a>
+</li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.objType">objType (arkouda.message.ParameterObject attribute)</a>
+</li>
+      <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.objtype">objtype (arkouda.pdarray attribute)</a>, <a href="autoapi/arkouda/index.html#id11">[1]</a>, <a href="autoapi/arkouda/index.html#id123">[2]</a>, <a href="autoapi/arkouda/index.html#id307">[3]</a>, <a href="autoapi/arkouda/index.html#id419">[4]</a>, <a href="autoapi/arkouda/index.html#id532">[5]</a>, <a href="autoapi/arkouda/index.html#id646">[6]</a>
 
       <ul>
-        <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.objtype">(arkouda.pdarray attribute)</a>, <a href="autoapi/arkouda/index.html#id11">[1]</a>, <a href="autoapi/arkouda/index.html#id123">[2]</a>, <a href="autoapi/arkouda/index.html#id307">[3]</a>, <a href="autoapi/arkouda/index.html#id419">[4]</a>, <a href="autoapi/arkouda/index.html#id532">[5]</a>, <a href="autoapi/arkouda/index.html#id646">[6]</a>
-</li>
         <li><a href="autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray.objtype">(arkouda.pdarrayclass.pdarray attribute)</a>
 </li>
         <li><a href="autoapi/arkouda/index.html#arkouda.Strings.objtype">(arkouda.Strings attribute)</a>, <a href="autoapi/arkouda/index.html#id235">[1]</a>, <a href="autoapi/arkouda/index.html#id758">[2]</a>, <a href="autoapi/arkouda/index.html#id825">[3]</a>
@@ -3130,6 +3157,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject">ParameterObject (class in arkouda.message)</a>
+</li>
       <li><a href="autoapi/arkouda/index.html#arkouda.pdarray.parity">parity() (arkouda.pdarray method)</a>, <a href="autoapi/arkouda/index.html#id202">[1]</a>, <a href="autoapi/arkouda/index.html#id386">[2]</a>, <a href="autoapi/arkouda/index.html#id498">[3]</a>, <a href="autoapi/arkouda/index.html#id611">[4]</a>, <a href="autoapi/arkouda/index.html#id725">[5]</a>, <a href="autoapi/arkouda/index.html#id90">[6]</a>
 
       <ul>
@@ -3143,6 +3172,8 @@
       <li><a href="autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical.parse_hdf_categoricals">parse_hdf_categoricals() (arkouda.categorical.Categorical static method)</a>
 </li>
       <li><a href="autoapi/arkouda/index.html#arkouda.parse_single_value">parse_single_value() (in module arkouda)</a>
+</li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.PDARRAY">PDARRAY (arkouda.message.ObjectType attribute)</a>
 </li>
       <li><a href="autoapi/arkouda/index.html#arkouda.pdarray">pdarray (class in arkouda)</a>, <a href="autoapi/arkouda/index.html#id114">[1]</a>, <a href="autoapi/arkouda/index.html#id2">[2]</a>, <a href="autoapi/arkouda/index.html#id298">[3]</a>, <a href="autoapi/arkouda/index.html#id410">[4]</a>, <a href="autoapi/arkouda/index.html#id523">[5]</a>, <a href="autoapi/arkouda/index.html#id637">[6]</a>, <a href="usage/pdarray.html#arkouda.pdarray">[7]</a>
 
@@ -3686,8 +3717,6 @@
         <li><a href="autoapi/arkouda/sorting/index.html#arkouda.sorting.sort">(in module arkouda.sorting)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/arkouda/index.html#arkouda.Series.sort_index">sort_index() (arkouda.Series method)</a>
 
       <ul>
@@ -3696,6 +3725,8 @@
         <li><a href="usage/series.html#arkouda.Series.sort_index">(in module arkouda.Series)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/arkouda/index.html#arkouda.DataFrame.sort_values">sort_values() (arkouda.DataFrame method)</a>
 
       <ul>
@@ -3808,6 +3839,8 @@
         <li><a href="autoapi/arkouda/accessor/index.html#arkouda.accessor.StringAccessor">(class in arkouda.accessor)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.STRINGS">STRINGS (arkouda.message.ObjectType attribute)</a>
+</li>
       <li><a href="autoapi/arkouda/index.html#arkouda.Strings">Strings (class in arkouda)</a>, <a href="autoapi/arkouda/index.html#id226">[1]</a>, <a href="autoapi/arkouda/index.html#id749">[2]</a>, <a href="autoapi/arkouda/index.html#id816">[3]</a>
 
       <ul>
@@ -4260,6 +4293,10 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ParameterObject.val">val (arkouda.message.ParameterObject attribute)</a>
+</li>
+      <li><a href="autoapi/arkouda/message/index.html#arkouda.message.ObjectType.VALUE">VALUE (arkouda.message.ObjectType attribute)</a>
+</li>
       <li><a href="autoapi/arkouda/index.html#arkouda.Series.value_counts">value_counts() (arkouda.Series method)</a>
 
       <ul>

@@ -12,11 +12,85 @@ Classes
 
 .. autoapisummary::
 
+   arkouda.message.ObjectType
+   arkouda.message.ParameterObject
    arkouda.message.MessageFormat
    arkouda.message.MessageType
    arkouda.message.RequestMessage
    arkouda.message.ReplyMessage
 
+
+
+
+.. py:class:: ObjectType
+
+   Bases: :py:obj:`enum.Enum`
+
+   Class used for assigning object types in the JSON string
+   sent to the server for processing
+
+   .. py:attribute:: PDARRAY
+      :annotation: = PDARRAY
+
+      
+
+   .. py:attribute:: STRINGS
+      :annotation: = SEGSTRING
+
+      
+
+   .. py:attribute:: LIST
+      :annotation: = LIST
+
+      
+
+   .. py:attribute:: VALUE
+      :annotation: = VALUE
+
+      
+
+   .. py:method:: __str__() -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageType object to JSON.
+
+
+   .. py:method:: __repr__() -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageType object to JSON.
+
+
+
+.. py:class:: ParameterObject(key, objType, dtype, val)
+
+   .. py:attribute:: __slots
+      :annotation: = ['key', 'objType', 'dtype', 'val']
+
+      
+
+   .. py:attribute:: key
+      :annotation: :str
+
+      
+
+   .. py:attribute:: objType
+      :annotation: :MessageFormat
+
+      
+
+   .. py:attribute:: dtype
+      :annotation: :str
+
+      
+
+   .. py:attribute:: val
+      :annotation: :str
+
+      
+
+   .. py:method:: dict()
+      :property:
 
 
 

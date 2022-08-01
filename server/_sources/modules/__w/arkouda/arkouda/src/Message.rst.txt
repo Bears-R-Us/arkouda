@@ -21,6 +21,8 @@ or
 
 .. enum:: enum MsgFormat { STRING, BINARY }
 
+.. enum:: enum ObjectType { PDARRAY, SEGSTRING, LIST, VALUE }
+
 .. record:: MsgTuple
 
    
@@ -81,7 +83,7 @@ or
 
    .. attribute:: var val: string
 
-   .. attribute:: var objType: string
+   .. attribute:: var objType: ObjectType
 
    .. attribute:: var dtype: string
 
