@@ -4,6 +4,57 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 
+
+class ObjectType(Enum):
+    """
+    Class used for assigning object types in the JSON string
+    sent to the server for processing
+    """
+
+    PDARRAY = "PDARRAY"
+    STRINGS = "SEGSTRING"
+    LIST = "LIST"
+    VALUE = "VALUE"
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+
+class ParameterObject:
+    __slots = ("key", "objType", "dtype", "val")
+
+    key: str
+    objType: MessageFormat
+    dtype: str
+    val: str
+
+    def __init__(self, key, objType, dtype, val):
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "objType", objType)
+        object.__setattr__(self, "dtype", dtype)
+        object.__setattr__(self, "val", val)
+
+    @property
+    def dict(self):
+        return {
+            "key": self.key,
+            "objType": str(self.objType),
+            "dtype": self.dtype,
+            "val": self.val,
+        }
+
+
 """
 The MessageFormat enum provides controlled vocabulary for the message
 format which can be either a string or a binary (bytes) object.
@@ -64,13 +115,14 @@ context of an Arkouda server request.
 @dataclass(frozen=True)
 class RequestMessage:
 
-    __slots = ("user", "token", "cmd", "format", "args")
+    __slots = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
     token: str
     cmd: str
     format: MessageFormat
     args: str
+    size: str
 
     def __init__(
         self,
@@ -79,6 +131,7 @@ class RequestMessage:
         token: str = None,
         format: MessageFormat = MessageFormat.STRING,
         args: str = None,
+        size: int = -1,
     ) -> None:
         """
         Overridden __init__ method sets instance attributes to
@@ -97,6 +150,9 @@ class RequestMessage:
             The request message format
         args : str
             The delimited string containing the command arguments
+        size : int
+            Value indicating the number of parameters in args
+            -1 if args is not json
 
         Returns
         -------
@@ -107,6 +163,7 @@ class RequestMessage:
         object.__setattr__(self, "cmd", cmd)
         object.__setattr__(self, "format", format)
         object.__setattr__(self, "args", args)
+        object.__setattr__(self, "size", size)
 
     def asdict(self) -> Dict:
         """
@@ -129,6 +186,7 @@ class RequestMessage:
             "cmd": self.cmd,
             "format": str(self.format),
             "args": args,
+            "size": self.size,
         }
 
 

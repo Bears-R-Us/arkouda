@@ -3,9 +3,11 @@ module Message {
     use FileIO;
     use Reflection;
     use ServerErrors;
+    use NumPyDType;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, VALUE}
 
     /*
      * Encapsulates the message string and message type.
@@ -35,13 +37,274 @@ module Message {
         var cmd: string;
         var format: string;
         var args: string;
+        var size: int; // currently unused, but wired for once all functionality moved to json
+    }
+
+    /*
+    * Encapsulate parameter for a request sent to the Arkouda server
+    * Note - Only used when args is in JSON format. 
+    * Note - during the transition from space delimited string to JSON formated string, this object is not part of RequestMsg,
+    *   but will be once all messages are transitioned to JSON arguments.
+    */
+    record ParameterObj {
+        var key: string; // json key value 
+        var val: string; // json value
+        var objType: ObjectType; // type of the object
+        var dtype: string; // type of elements contained in the object
+
+        proc init() {}
+
+        proc init(key: string, val: string, objType: string, dtype: string) {
+            this.key = key;
+            this.val = val;
+            this.objType = objType;
+            this.dtype = dtype;
+        }
+
+        /*
+        * Return the objType value
+        * Returns str
+        */
+        proc getObjType(){
+            return this.objType;
+        }
+
+        /*
+        * Return the Dtype value as NumpyDtype
+        * Returns Dtype
+        */
+        proc getDType() {
+            return str2dtype(this.dtype);
+        }
+
+        /*
+        * Return the raw string value
+        * Returns string
+        */
+        proc getValue() {
+            return this.val;
+        }
+
+        /*
+        * Return the value as int64
+        * Returns int
+        */
+        proc getIntValue(): int throws {
+            try {
+                return this.val:int;
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as int. Attempting to cast %s as type int failed".format(this.val),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        /*
+        * Return the value as uint64
+        * Returns uint
+        */
+        proc getUIntValue(): uint throws {
+            try {
+                return this.val:uint;
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint. Attempting to cast %s as type uint failed".format(this.val),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        /*
+        * Return the value as float64
+        * Returns real
+        */
+        proc getRealValue(): real throws {
+            try {
+                return this.val:real;
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as real. Attempting to cast %s as type real failed".format(this.val),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        /*
+        * Return the value as bool
+        * Returns bool
+        */
+        proc getBoolValue(): bool throws {
+            try {
+                return this.val:bool;
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        /*
+        * Return the value as the provided type
+        */
+        proc getValueAsType(type t = string): t throws {
+            if objType != ObjectType.VALUE {
+                throw new owned ErrorWithContext("The value provided is not a castable type, please use ParameterObj.getSymEntry for this object.",
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+            
+            try {
+                return this.val:t; 
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as %t. Attempting to cast %s as type %t failed".format(t, this.val, t),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        /*
+        Parse value as a list of strings.
+        :size: int: number of values in the list
+        Note - not yet able to handle list of pdarray or SegString names
+        */
+        proc getList(size: int) {
+            if this.objType != ObjectType.LIST {
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a list.".format(this.key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+            return jsonToPdArray(this.val, size);
+        }
+    }
+
+    /*
+    Container class for the message arguments formatted as json
+    :param_list:  array of ParameterObj
+    :size: int - number of parameters contained in list
+    */
+    class MessageArgs {
+        var param_list;
+        var size: int;
+        proc init(param_list: [?aD] ?t) {
+            this.param_list = param_list;
+            this.size = param_list.size;
+        }
+
+        /*
+        * Identify the parameter with the provided key and return it
+        * Returns ParameterObj with the provided key
+        * Throws KeyNotFound error if the provide key does not exist.
+        */
+        proc get(key: string) throws {
+            for p in this.param_list {
+                if p.key == key {
+                    return p;
+                }
+            }
+            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "KeyNotFound");
+        }
+
+        proc getValueOf(key: string) throws {
+            for p in this.param_list {
+                if p.key == key {
+                    return p.val;
+                }
+            }
+            throw new owned ErrorWithContext("Key Not Found; %s".format(key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "KeyNotFound");
+        }
+
+        /*
+        Return "iterable" of ParameterObj
+        */
+        proc items() {
+            return this.param_list;
+        }
+
+        /*
+        Return a list of all keys
+        */
+        proc keys() {
+            var key_list: [0..#this.size] string;
+            forall (idx, p) in zip(0..#this.size, this.param_list) {
+                key_list[idx] = p.key;
+            }
+            return key_list;
+        }
+
+        /*
+        Return a list of all values
+        */
+        proc vals(){
+            var val_list: [0..#this.size] string;
+            forall (idx, p) in zip(0..#this.size, this.param_list) {
+                val_list[idx] = p.val;
+            }
+            return val_list;
+        }
+    }
+
+    /*
+    Parse and individual parameter components into a ParameterObj
+    */
+    proc parseParameter(payload:string) throws {
+        var p: ParameterObj;
+        var newmem = openmem();
+        newmem.writer().write(payload);
+        var nreader = newmem.reader();
+        try {
+            nreader.readf("%jt", p);
+        } catch bfe : BadFormatError {
+            throw new owned ErrorWithContext("Incorrect JSON format %s".format(payload),
+                                       getLineNumber(),
+                                       getRoutineName(),
+                                       getModuleName(),
+                                       "ValueError");
+        }
+        return p;
+    }
+
+    /*
+    Parse arguments formatted as json string into objects
+    */
+    proc parseMessageArgs(json_str: string, size: int) throws {
+        var pArr = jsonToPdArray(json_str, size);
+        var paramArr: [0..#size] ParameterObj;
+        forall (i, j_str) in zip(0..#size, pArr) {
+            paramArr[i] = parseParameter(j_str);
+        }
+        return new MessageArgs(paramArr);
     }
 
     /*
      * Deserializes a JSON-formatted string to a RequestMsg object, where the
-     * JSON format is as follows:
+     * JSON format is as follows (size is only set for json args. Otherwise, -1):
      *
-     * {"user": "user", "token": "token", "cmd": "cmd", "format": "STRING", "args": "arg1 arg2"}
+     * {"user": "user", "token": "token", "cmd": "cmd", "format": "STRING", "args": "arg1 arg2", "size": "-1"}
      *
      */
     proc deserialize(ref msg: RequestMsg, request: string) throws {

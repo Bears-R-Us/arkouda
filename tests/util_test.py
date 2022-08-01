@@ -17,16 +17,16 @@ class utilTest(ArkoudaTest):
         b_attached = attach(b.name)
         b_typed_attach = attach(b.name, "pdarray")
 
-        self.assertTrue((a == a_attached).all())
+        self.assertListEqual(a.to_list(), a_attached.to_list())
         self.assertIsInstance(a_attached, ak.Strings)
 
-        self.assertTrue((a == a_typed_attach).all())
+        self.assertListEqual(a.to_list(), a_typed_attach.to_list())
         self.assertIsInstance(a_typed_attach, ak.Strings)
 
-        self.assertTrue((b == b_attached).all())
+        self.assertListEqual(b.to_list(), b_attached.to_list())
         self.assertIsInstance(b_attached, ak.pdarray)
 
-        self.assertTrue((b == b_typed_attach).all())
+        self.assertListEqual(b.to_list(), b_typed_attach.to_list())
         self.assertIsInstance(b_typed_attach, ak.pdarray)
 
     def test_categorical_attach(self):
@@ -37,11 +37,11 @@ class utilTest(ArkoudaTest):
         cat.register("catTest")
 
         attached = attach("catTest")
-        self.assertTrue((cat == attached).all())
+        self.assertListEqual(cat.to_list(), attached.to_list())
         self.assertIsInstance(attached, ak.Categorical)
 
         attached_typed = attach("catTest", "Categorical")
-        self.assertTrue((cat == attached_typed).all())
+        self.assertListEqual(cat.to_list(), attached_typed.to_list())
         self.assertIsInstance(attached_typed, ak.Categorical)
 
     def test_segArray_attach(self):
@@ -56,11 +56,11 @@ class utilTest(ArkoudaTest):
         segarr.register("segTest")
 
         attached = attach("segTest")
-        self.assertTrue((segarr == attached).all())
+        self.assertListEqual(segarr.to_list(), attached.to_list())
         self.assertIsInstance(attached, ak.SegArray)
 
         attached_typed = attach("segTest", "SegArray")
-        self.assertTrue((segarr == attached_typed).all())
+        self.assertListEqual(segarr.to_list(), attached_typed.to_list())
         self.assertIsInstance(attached_typed, ak.SegArray)
 
     def test_series_attach(self):
@@ -74,11 +74,11 @@ class utilTest(ArkoudaTest):
         s_attach = ak.util.attach("series_test")
         s2_attach = ak.util.attach("series_2_test")
 
-        self.assertListEqual(s_attach.values.to_ndarray().tolist(), s.values.to_ndarray().tolist())
+        self.assertListEqual(s_attach.values.to_list(), s.values.to_list())
         sEq = s_attach.index == s.index
         self.assertTrue(all(sEq.to_ndarray()))
 
-        self.assertListEqual(s2_attach.values.to_ndarray().tolist(), s2.values.to_ndarray().tolist())
+        self.assertListEqual(s2_attach.values.to_list(), s2.values.to_list())
         s2Eq = s2_attach.index == s2.index
         self.assertTrue(all(s2Eq.to_ndarray()))
 

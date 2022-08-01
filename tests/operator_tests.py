@@ -264,21 +264,79 @@ class OperatorsTest(ArkoudaTest):
         pdaOne = ak.arange(1, 4)
         pdaTwo = ak.arange(4, 7)
 
-        self.assertTrue((ak.array([1, 2, 3, 4, 5, 6]) == ak.concatenate([pdaOne, pdaTwo])).all())
-        self.assertTrue((ak.array([4, 5, 6, 1, 2, 3]) == ak.concatenate([pdaTwo, pdaOne])).all())
+        self.assertListEqual(
+            [1, 2, 3, 4, 5, 6],
+            ak.concatenate([pdaOne, pdaTwo]).to_list(),
+        )
+        self.assertListEqual(
+            [4, 5, 6, 1, 2, 3],
+            ak.concatenate([pdaTwo, pdaOne]).to_list(),
+        )
 
         pdaOne = ak.linspace(start=1, stop=3, length=3)
         pdaTwo = ak.linspace(start=4, stop=6, length=3)
 
-        self.assertTrue((ak.array([1, 2, 3, 4, 5, 6]) == ak.concatenate([pdaOne, pdaTwo])).all())
-        self.assertTrue((ak.array([4, 5, 6, 1, 2, 3]) == ak.concatenate([pdaTwo, pdaOne])).all())
+        self.assertListEqual(
+            [1, 2, 3, 4, 5, 6],
+            ak.concatenate([pdaOne, pdaTwo]).to_list(),
+        )
+        self.assertListEqual(
+            [4, 5, 6, 1, 2, 3],
+            ak.concatenate([pdaTwo, pdaOne]).to_list(),
+        )
 
         pdaOne = ak.array([True, False, True])
         pdaTwo = ak.array([False, True, True])
 
-        self.assertTrue(
-            (ak.array([True, False, True, False, True, True]) == ak.concatenate([pdaOne, pdaTwo])).all()
+        self.assertListEqual(
+            [True, False, True, False, True, True],
+            ak.concatenate([pdaOne, pdaTwo]).to_list(),
         )
+
+    def test_float_uint_binops(self):
+        # Test fix for issue #1620
+        ak_uint = ak.array([5], dtype=ak.uint64)
+        np_uint = np.array([5], dtype=np.uint64)
+        scalar_uint = np.uint64(5)
+
+        ak_float = ak.array([3.01], dtype=ak.float64)
+        np_float = np.array([3.01], dtype=np.float_)
+        scalar_float = 3.01
+
+        ak_uints = [ak_uint, scalar_uint]
+        np_uints = [np_uint, scalar_uint]
+        ak_floats = [ak_float, scalar_float]
+        np_floats = [np_float, scalar_float]
+        for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
+            self.assertEqual(ak_uint + akf, np_uint + npf)
+            self.assertEqual(akf + ak_uint, npf + np_uint)
+            self.assertEqual(ak_float + aku, np_float + npu)
+            self.assertEqual(aku + ak_float, npu + np_float)
+
+            self.assertEqual(ak_uint - akf, np_uint - npf)
+            self.assertEqual(akf - ak_uint, npf - np_uint)
+            self.assertEqual(ak_float - aku, np_float - npu)
+            self.assertEqual(aku - ak_float, npu - np_float)
+
+            self.assertEqual(ak_uint * akf, np_uint * npf)
+            self.assertEqual(akf * ak_uint, npf * np_uint)
+            self.assertEqual(ak_float * aku, np_float * npu)
+            self.assertEqual(aku * ak_float, npu * np_float)
+
+            self.assertEqual(ak_uint / akf, np_uint / npf)
+            self.assertEqual(akf / ak_uint, npf / np_uint)
+            self.assertEqual(ak_float / aku, np_float / npu)
+            self.assertEqual(aku / ak_float, npu / np_float)
+
+            self.assertEqual(ak_uint // akf, np_uint // npf)
+            self.assertEqual(akf // ak_uint, npf // np_uint)
+            self.assertEqual(ak_float // aku, np_float // npu)
+            self.assertEqual(aku // ak_float, npu // np_float)
+
+            self.assertEqual(ak_uint**akf, np_uint**npf)
+            self.assertEqual(akf**ak_uint, npf**np_uint)
+            self.assertEqual(ak_float**aku, np_float**npu)
+            self.assertEqual(aku**ak_float, npu**np_float)
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
@@ -293,14 +351,10 @@ class OperatorsTest(ArkoudaTest):
         ipv4_two = ak.IPv4(pda_two)
         ipv4_concat = ak.concatenate([ipv4_one, ipv4_two])
         self.assertEqual(type(ipv4_concat), ak.IPv4)
-        self.assertListEqual(
-            ak.IPv4(pda_concat).to_ndarray().tolist(), ipv4_concat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.IPv4(pda_concat).to_list(), ipv4_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([ipv4_one])), ak.IPv4)
-        self.assertListEqual(
-            ak.IPv4(pda_one).to_ndarray().tolist(), ak.concatenate([ipv4_one]).to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.IPv4(pda_one).to_list(), ak.concatenate([ipv4_one]).to_list())
         self.assertEqual(type(ak.concatenate([ak.IPv4(ak.array([], dtype=ak.int64))])), ak.IPv4)
 
         # Datetime test
@@ -308,14 +362,12 @@ class OperatorsTest(ArkoudaTest):
         datetime_two = ak.Datetime(pda_two)
         datetime_concat = ak.concatenate([datetime_one, datetime_two])
         self.assertEqual(type(datetime_concat), ak.Datetime)
-        self.assertListEqual(
-            ak.Datetime(pda_concat).to_ndarray().tolist(), datetime_concat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.Datetime(pda_concat).to_list(), datetime_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([datetime_one])), ak.Datetime)
         self.assertListEqual(
-            ak.Datetime(pda_one).to_ndarray().tolist(),
-            ak.concatenate([datetime_one]).to_ndarray().tolist(),
+            ak.Datetime(pda_one).to_list(),
+            ak.concatenate([datetime_one]).to_list(),
         )
         self.assertEqual(type(ak.concatenate([ak.Datetime(ak.array([], dtype=ak.int64))])), ak.Datetime)
 
@@ -324,14 +376,12 @@ class OperatorsTest(ArkoudaTest):
         timedelta_two = ak.Timedelta(pda_two)
         timedelta_concat = ak.concatenate([timedelta_one, timedelta_two])
         self.assertEqual(type(timedelta_concat), ak.Timedelta)
-        self.assertListEqual(
-            ak.Timedelta(pda_concat).to_ndarray().tolist(), timedelta_concat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.Timedelta(pda_concat).to_list(), timedelta_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([timedelta_one])), ak.Timedelta)
         self.assertListEqual(
-            ak.Timedelta(pda_one).to_ndarray().tolist(),
-            ak.concatenate([timedelta_one]).to_ndarray().tolist(),
+            ak.Timedelta(pda_one).to_list(),
+            ak.concatenate([timedelta_one]).to_list(),
         )
         self.assertEqual(
             type(ak.concatenate([ak.Timedelta(ak.array([], dtype=ak.int64))])), ak.Timedelta
@@ -342,14 +392,12 @@ class OperatorsTest(ArkoudaTest):
         bitvector_two = ak.BitVector(pda_two)
         bitvector_concat = ak.concatenate([bitvector_one, bitvector_two])
         self.assertEqual(type(bitvector_concat), ak.BitVector)
-        self.assertListEqual(
-            ak.BitVector(pda_concat).to_ndarray().tolist(), bitvector_concat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.BitVector(pda_concat).to_list(), bitvector_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([bitvector_one])), ak.BitVector)
         self.assertListEqual(
-            ak.BitVector(pda_one).to_ndarray().tolist(),
-            ak.concatenate([bitvector_one]).to_ndarray().tolist(),
+            ak.BitVector(pda_one).to_list(),
+            ak.concatenate([bitvector_one]).to_list(),
         )
         self.assertEqual(
             type(ak.concatenate([ak.BitVector(ak.array([], dtype=ak.int64))])), ak.BitVector
@@ -362,27 +410,47 @@ class OperatorsTest(ArkoudaTest):
         # verify ak.util.concatenate still works
         ipv4_akuconcat = akuconcat([ipv4_one, ipv4_two])
         self.assertEqual(type(ipv4_akuconcat), ak.IPv4)
-        self.assertListEqual(
-            ak.IPv4(pda_concat).to_ndarray().tolist(), ipv4_akuconcat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.IPv4(pda_concat).to_list(), ipv4_akuconcat.to_list())
 
         datetime_akuconcat = akuconcat([datetime_one, datetime_two])
         self.assertEqual(type(datetime_akuconcat), ak.Datetime)
-        self.assertListEqual(
-            ak.Datetime(pda_concat).to_ndarray().tolist(), datetime_akuconcat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.Datetime(pda_concat).to_list(), datetime_akuconcat.to_list())
 
         timedelta_akuconcat = akuconcat([timedelta_one, timedelta_two])
         self.assertEqual(type(timedelta_akuconcat), ak.Timedelta)
-        self.assertListEqual(
-            ak.Timedelta(pda_concat).to_ndarray().tolist(), timedelta_akuconcat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.Timedelta(pda_concat).to_list(), timedelta_akuconcat.to_list())
 
         bitvector_akuconcat = akuconcat([bitvector_one, bitvector_two])
         self.assertEqual(type(bitvector_akuconcat), ak.BitVector)
-        self.assertListEqual(
-            ak.BitVector(pda_concat).to_ndarray().tolist(), bitvector_akuconcat.to_ndarray().tolist()
-        )
+        self.assertListEqual(ak.BitVector(pda_concat).to_list(), bitvector_akuconcat.to_list())
+
+    def test_floor_div_edge_cases(self):
+        scalar_edge_cases = [-np.inf, -7.0, -0.0, np.nan, 0.0, 7.0, np.inf]
+        np_edge_cases = np.array(scalar_edge_cases)
+        ak_edge_cases = ak.array(np_edge_cases)
+
+        def equality_helper(a, n):
+            # verify they are NAN in the same locations
+            np_is_nan = np.isnan(n)
+            ak_is_nan = ak.isnan(a)
+            self.assertListEqual(ak_is_nan.to_list(), np_is_nan.tolist())
+
+            # verify they are equal in the locations they are not NAN
+            # Note: we have to do this becasue NAN != NAN
+            self.assertListEqual(a[~ak_is_nan].to_list(), n[~np_is_nan].tolist())
+
+        for s in scalar_edge_cases:
+            # test vector // scalar
+            equality_helper(ak_edge_cases // s, np_edge_cases // s)
+
+            # test scalar // vector
+            equality_helper(s // ak_edge_cases, s // np_edge_cases)
+
+            # test both vector // vector
+            n_vect = np.full(len(scalar_edge_cases), s)
+            a_vect = ak.array(n_vect)
+            equality_helper(ak_edge_cases // a_vect, np_edge_cases // n_vect)
+            equality_helper(a_vect // ak_edge_cases, n_vect // np_edge_cases)
 
     def testAllOperators(self):
         run_tests(verbose)
@@ -400,7 +468,7 @@ class OperatorsTest(ArkoudaTest):
         # with self.assertRaises(ValueError) as cm:
         #    ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
         with self.assertRaises(RuntimeError) as cm:
-            ak.concatenate([ak.array([True]),ak.array([True])]).is_sorted()
+            ak.concatenate([ak.array([True]), ak.array([True])]).is_sorted()
 
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
