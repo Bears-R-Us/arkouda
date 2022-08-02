@@ -62,6 +62,7 @@
 <li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerDaemon.html">ServerDaemon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
@@ -110,25 +111,13 @@
 <dd></dd></dl>
 
 <dl class="chpl function">
-<dt class="sig sig-object chpl" id="arkouda_server.initArkoudaDirectory">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initArkoudaDirectory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda_server.initArkoudaDirectory" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
 <dt class="sig sig-object chpl" id="arkouda_server.main">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda_server.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="arkouda_server.createServerConnectionInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda_server.createServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the serverConnectionInfo file on arkouda_server startup</p>
-</dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="arkouda_server.deleteServerConnectionInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda_server.deleteServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deletes the serverConnetionFile on arkouda_server shutdown</p>
+<dd><ul class="simple">
+<li></li>
+<li><p>The main method serves as the Arkouda driver that invokes the run</p></li>
+<li><p>method on the configured list of ArkoudaServerDaemon objects</p></li>
+</ul>
 </dd></dl>
 
 </div>

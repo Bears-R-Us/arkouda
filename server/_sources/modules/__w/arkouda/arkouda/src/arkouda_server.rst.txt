@@ -19,17 +19,10 @@ or
 
 .. data:: const asLogger = new Logger(logLevel)
 
-.. function:: proc initArkoudaDirectory()
-
 .. function:: proc main()
 
-.. function:: proc createServerConnectionInfo()
-
+   *
+   * The main method serves as the Arkouda driver that invokes the run 
+   * method on the configured list of ArkoudaServerDaemon objects
    
-   Creates the serverConnectionInfo file on arkouda_server startup
-
-.. function:: proc deleteServerConnectionInfo()
-
-   
-   Deletes the serverConnetionFile on arkouda_server shutdown
 
