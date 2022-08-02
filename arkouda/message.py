@@ -115,7 +115,7 @@ class ParameterObject:
         -------
         ParameterObject
         """
-        dtypes = set([p.dtype for p in val])
+        dtypes = set([p.dtype if hasattr(p, "dtype") else type(p).__name__ for p in val])
         if len(dtypes) > 1:
             t_str = ", ".join(dtypes)
             raise TypeError(f"List values must be of the same type. Found {t_str}")
