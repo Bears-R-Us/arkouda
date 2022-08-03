@@ -115,11 +115,21 @@ class ParameterObject:
         -------
         ParameterObject
         """
-        dtypes = set([p.dtype if hasattr(p, "dtype") else type(p).__name__ for p in val])
+        from arkouda.pdarrayclass import pdarray
+        from arkouda.strings import Strings
+
+        # want the object type. If pdarray the content dtypes can vary
+        dtypes = set([type(p).__name__ for p in val])
         if len(dtypes) > 1:
             t_str = ", ".join(dtypes)
             raise TypeError(f"List values must be of the same type. Found {t_str}")
-        return ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
+        t = dtypes.pop()
+        if any(x == t for x in [pdarray.__name__, Strings.__name__]):
+            return ParameterObject(key, ObjectType.LIST, t, json.dumps([x.name for x in val]))
+        else:
+            # need all values to be str for chapel to read list properly
+            v = val if t == str.__name__ else [str(x) for x in val]
+            return ParameterObject(key, ObjectType.LIST, t, json.dumps(v))
 
     @staticmethod
     @typechecked
