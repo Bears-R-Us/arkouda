@@ -124,6 +124,7 @@ def run_tests(verbose):
                 res = "np: {}\nak: {}".format(npres, akasnp)
                 # warnings.warn("result mismatch: {} =\n{}".format(expression, res))
                 results["both_implement"].append((expression, res, False, False, True))
+                continue
             # Finally, both numpy and arkouda agree on result
             results["both_implement"].append((expression, "", False, False, False))
 
