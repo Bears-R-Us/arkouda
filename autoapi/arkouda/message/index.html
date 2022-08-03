@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.message &#8212; arkouda 0+untagged.1.ga71a5e1 documentation</title>
+    <title>arkouda.message &#8212; arkouda 0+untagged.1.g02c065d documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -137,6 +137,102 @@ a MessageType object to JSON.</p>
 <dt class="sig sig-object py" id="arkouda.message.ParameterObject.dict">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dict</span></span><a class="headerlink" href="#arkouda.message.ParameterObject.dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject._build_pdarray_param">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_pdarray_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject"><span class="pre">ParameterObject</span></a></span></span><a class="headerlink" href="#arkouda.message.ParameterObject._build_pdarray_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ParameterObject from a pdarray value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key from the dictionary object</p></li>
+<li><p><strong>val</strong> – pdarray object ot load from the symbol table</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject">ParameterObject</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject._build_strings_param">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_strings_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject"><span class="pre">ParameterObject</span></a></span></span><a class="headerlink" href="#arkouda.message.ParameterObject._build_strings_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ParameterObject from a Strings value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key from the dictionary object</p></li>
+<li><p><strong>val</strong> – Strings object ot load from the symbol table</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject">ParameterObject</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject._build_list_param">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_list_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject"><span class="pre">ParameterObject</span></a></span></span><a class="headerlink" href="#arkouda.message.ParameterObject._build_list_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ParameterObject from a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key from the dictionary object</p></li>
+<li><p><strong>val</strong> (<em>list</em>) – list object to format as string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject">ParameterObject</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject._build_gen_param">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_gen_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject"><span class="pre">ParameterObject</span></a></span></span><a class="headerlink" href="#arkouda.message.ParameterObject._build_gen_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ParameterObject from a single value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key from the dictionary object</p></li>
+<li><p><strong>val</strong> – singular value to use. This could be str, int, float, etc</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject">ParameterObject</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject.generate_dispatch">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_dispatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#arkouda.message.ParameterObject.generate_dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds and returns the dispatch table used to build parameter object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary - mapping the parameter type to the build function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.message.ParameterObject.factory">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ParameterObject" title="arkouda.message.ParameterObject"><span class="pre">ParameterObject</span></a></span></span><a class="headerlink" href="#arkouda.message.ParameterObject.factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method used to build ParameterObject given a key value pair</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – key from the dictionary object</p></li>
+<li><p><strong>val</strong> – the value corresponding to the provided key from the dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ParameterObject - The parameter object formatted to be parsed by the chapel server</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
