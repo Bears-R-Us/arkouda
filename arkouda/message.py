@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
+
+from typeguard import typechecked
 
 
 class ObjectType(Enum):
@@ -32,6 +35,7 @@ class ObjectType(Enum):
 
 
 class ParameterObject:
+
     __slots = ("key", "objType", "dtype", "val")
 
     key: str
@@ -53,6 +57,129 @@ class ParameterObject:
             "dtype": self.dtype,
             "val": self.val,
         }
+
+    @staticmethod
+    @typechecked
+    def _build_pdarray_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a pdarray value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            pdarray object ot load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        return ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
+
+    @staticmethod
+    @typechecked
+    def _build_strings_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a Strings value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            Strings object ot load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        # empty string if name of String obj is none
+        name = val.name if val.name else ""
+        return ParameterObject(key, ObjectType.STRINGS, "str", name)
+
+    @staticmethod
+    @typechecked
+    def _build_list_param(key: str, val: list) -> ParameterObject:
+        """
+        Create a ParameterObject from a list
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val : list
+            list object to format as string
+
+        Returns
+        -------
+        ParameterObject
+        """
+        dtypes = set([p.dtype if hasattr(p, "dtype") else type(p).__name__ for p in val])
+        if len(dtypes) > 1:
+            t_str = ", ".join(dtypes)
+            raise TypeError(f"List values must be of the same type. Found {t_str}")
+        return ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
+
+    @staticmethod
+    @typechecked
+    def _build_gen_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a single value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            singular value to use. This could be str, int, float, etc
+
+        Returns
+        -------
+        ParameterObject
+        """
+        v = val if isinstance(val, str) else str(val)
+        return ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
+
+    @staticmethod
+    def generate_dispatch() -> Dict:
+        """
+        Builds and returns the dispatch table used to build parameter object.
+
+        Returns
+        -------
+        Dictionary - mapping the parameter type to the build function
+        """
+        from arkouda.pdarrayclass import pdarray
+        from arkouda.strings import Strings
+
+        return {
+            pdarray.__name__: ParameterObject._build_pdarray_param,
+            Strings.__name__: ParameterObject._build_strings_param,
+            list.__name__: ParameterObject._build_list_param,
+        }
+
+    @staticmethod
+    def factory(key: str, val) -> ParameterObject:
+        """
+        Factory method used to build ParameterObject given a key value pair
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            the value corresponding to the provided key from the dictionary
+
+        Returns
+        --------
+        ParameterObject - The parameter object formatted to be parsed by the chapel server
+        """
+        dispatch = ParameterObject.generate_dispatch()
+        if (f := dispatch.get(type(val).__name__)) is not None:
+            return f(key, val)
+        else:
+            return ParameterObject._build_gen_param(key, val)
 
 
 """
