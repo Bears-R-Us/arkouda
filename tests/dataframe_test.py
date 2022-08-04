@@ -5,6 +5,7 @@ import string
 from shutil import rmtree
 
 import pandas as pd  # type: ignore
+import numpy as np # type: ignore
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -216,14 +217,14 @@ class DataFrameTest(ArkoudaTest):
         df = build_ak_df()
 
         slice_df = df[ak.array([1, 3, 5])]
-        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+        self.assertListEqual(slice_df.index.to_list(), [1, 3, 5])
 
         df_reset = slice_df.reset_index()
-        self.assertTrue((df_reset.index == ak.array([0, 1, 2])).all())
-        self.assertTrue((slice_df.index == ak.array([1, 3, 5])).all())
+        self.assertListEqual(df_reset.index.to_list(), [0, 1, 2])
+        self.assertListEqual(slice_df.index.to_list(), [1, 3, 5])
 
         slice_df.reset_index(inplace=True)
-        self.assertTrue((slice_df.index == ak.array([0, 1, 2])).all())
+        self.assertListEqual(slice_df.index.to_list(), [0, 1, 2])
 
     def test_rename(self):
         df = build_ak_df()
@@ -248,20 +249,20 @@ class DataFrameTest(ArkoudaTest):
         self.assertNotIn("userName", df.columns)
         self.assertNotIn("userID", df.columns)
 
-        #prep for index renaming
-        rename_idx = {1:17, 2:93}
+        # prep for index renaming
+        rename_idx = {1: 17, 2: 93}
         conf = list(range(6))
         conf[1] = 17
         conf[2] = 93
 
         # Test out of Place - index
         df_rename = df.rename(rename_idx)
-        self.assertListEqual(df_rename.index.values.to_ndarray().tolist(), conf)
-        self.assertListEqual(df.index.values.to_ndarray().tolist(), list(range(6)))
+        self.assertListEqual(df_rename.index.values.to_list(), conf)
+        self.assertListEqual(df.index.values.to_list(), list(range(6)))
 
         # Test in place - index
         df.rename(index=rename_idx, inplace=True)
-        self.assertListEqual(df.index.values.to_ndarray().tolist(), conf)
+        self.assertListEqual(df.index.values.to_list(), conf)
 
     def test_append(self):
         df = build_ak_df()
@@ -273,6 +274,9 @@ class DataFrameTest(ArkoudaTest):
 
         # dataframe equality returns series with bool result for each row.
         self.assertTrue(ref_df.equals(df.to_pandas()))
+
+        idx = np.arange(8)
+        self.assertListEqual(idx.tolist(), df.index.index.to_list())
 
         df_keyerror = build_ak_keyerror()
         with self.assertRaises(KeyError):
@@ -322,16 +326,16 @@ class DataFrameTest(ArkoudaTest):
 
         gb = df.GroupBy("userName")
         keys, count = gb.count()
-        self.assertTrue(keys.to_ndarray().tolist(), ["Alice", "Carol", "Bob"])
-        self.assertListEqual(count.to_ndarray().tolist(), [3, 1, 2])
-        self.assertListEqual(gb.permutation.to_ndarray().tolist(), [0, 2, 5, 3, 1, 4])
+        self.assertTrue(keys.to_list(), ["Alice", "Carol", "Bob"])
+        self.assertListEqual(count.to_list(), [3, 1, 2])
+        self.assertListEqual(gb.permutation.to_list(), [0, 2, 5, 3, 1, 4])
 
         gb = df.GroupBy(["userName", "userID"])
         keys, count = gb.count()
         self.assertEqual(len(keys), 2)
-        self.assertListEqual(keys[0].to_ndarray().tolist(), ["Carol", "Alice", "Bob"])
-        self.assertTrue(keys[1].to_ndarray().tolist(), [111, 333, 222])
-        self.assertTrue(count.to_ndarray().tolist(), [3, 1, 2])
+        self.assertListEqual(keys[0].to_list(), ["Carol", "Alice", "Bob"])
+        self.assertTrue(keys[1].to_list(), [111, 333, 222])
+        self.assertTrue(count.to_list(), [3, 1, 2])
 
     def test_gb_series(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
@@ -347,8 +351,8 @@ class DataFrameTest(ArkoudaTest):
 
         c = gb.count()
         self.assertIsInstance(c, ak.Series)
-        self.assertListEqual(c.index.to_ndarray().tolist(), ['Alice', 'Carol', 'Bob'])
-        self.assertListEqual(c.values.to_ndarray().tolist(), [3, 1, 2])
+        self.assertListEqual(c.index.to_list(), ["Alice", "Carol", "Bob"])
+        self.assertListEqual(c.values.to_list(), [3, 1, 2])
 
     def test_to_pandas(self):
         df = build_ak_df()
@@ -367,19 +371,19 @@ class DataFrameTest(ArkoudaTest):
         df = build_ak_df()
 
         p = df.argsort(key="userName")
-        self.assertListEqual(p.to_ndarray().tolist(), [0, 2, 5, 1, 4, 3])
+        self.assertListEqual(p.to_list(), [0, 2, 5, 1, 4, 3])
 
         p = df.argsort(key="userName", ascending=False)
-        self.assertListEqual(p.to_ndarray().tolist(), [3, 4, 1, 5, 2, 0])
+        self.assertListEqual(p.to_list(), [3, 4, 1, 5, 2, 0])
 
     def test_coargsort(self):
         df = build_ak_df()
 
         p = df.coargsort(keys=["userID", "amount"])
-        self.assertListEqual(p.to_ndarray().tolist(), [0, 5, 2, 1, 4, 3])
+        self.assertListEqual(p.to_list(), [0, 5, 2, 1, 4, 3])
 
         p = df.coargsort(keys=["userID", "amount"], ascending=False)
-        self.assertListEqual(p.to_ndarray().tolist(), [3, 4, 1, 2, 5, 0])
+        self.assertListEqual(p.to_list(), [3, 4, 1, 2, 5, 0])
 
     def test_sort_values(self):
         userid = [111, 222, 111, 333, 222, 111]
@@ -418,7 +422,7 @@ class DataFrameTest(ArkoudaTest):
         df_2 = ak.DataFrame({"user_name": username, "user_id": userid})
 
         rows = ak.intx(df_1, df_2)
-        self.assertListEqual(rows.to_ndarray().tolist(), [False, True, False, False, True, False])
+        self.assertListEqual(rows.to_list(), [False, True, False, False, True, False])
 
         df_3 = ak.DataFrame({"user_name": username, "user_number": userid})
         with self.assertRaises(ValueError):
@@ -493,12 +497,12 @@ class DataFrameTest(ArkoudaTest):
 
         # test save with index true
         akdf.save(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
-        self.assertTrue(len(glob.glob(f"{d}/testName_with_index*.pq")) == ak.get_config()["numLocales"])
+        self.assertEqual(len(glob.glob(f"{d}/testName_with_index*.pq")), ak.get_config()["numLocales"])
 
         # Test for df having seg array col
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
         df.save(f"{d}/seg_test.h5")
-        self.assertTrue(len(glob.glob(f"{d}/seg_test*.h5")) == ak.get_config()["numLocales"])
+        self.assertEqual(len(glob.glob(f"{d}/seg_test*.h5")), ak.get_config()["numLocales"])
         ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
         self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
@@ -510,28 +514,28 @@ class DataFrameTest(ArkoudaTest):
 
         # test against pdarray
         test_df = df.isin(ak.array([0, 1]))
-        self.assertListEqual(test_df["col_A"].to_ndarray().tolist(), [False, False])
-        self.assertListEqual(test_df["col_B"].to_ndarray().tolist(), [True, False])
+        self.assertListEqual(test_df["col_A"].to_list(), [False, False])
+        self.assertListEqual(test_df["col_B"].to_list(), [True, False])
 
         # Test against dict
         test_df = df.isin({"col_A": ak.array([0, 3])})
-        self.assertListEqual(test_df["col_A"].to_ndarray().tolist(), [False, True])
-        self.assertListEqual(test_df["col_B"].to_ndarray().tolist(), [False, False])
+        self.assertListEqual(test_df["col_A"].to_list(), [False, True])
+        self.assertListEqual(test_df["col_B"].to_list(), [False, False])
 
         # test against series
         i = ak.Index(ak.arange(2))
         s = ak.Series(data=ak.array([3, 9]), index=i.index)
         test_df = df.isin(s)
-        self.assertListEqual(test_df["col_A"].to_ndarray().tolist(), [False, False])
-        self.assertListEqual(test_df["col_B"].to_ndarray().tolist(), [False, True])
+        self.assertListEqual(test_df["col_A"].to_list(), [False, False])
+        self.assertListEqual(test_df["col_B"].to_list(), [False, True])
 
         # test against another dataframe
         other_df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_C": ak.array([0, 9])})
         test_df = df.isin(other_df)
-        self.assertListEqual(test_df["col_A"].to_ndarray().tolist(), [True, True])
-        self.assertListEqual(test_df["col_B"].to_ndarray().tolist(), [False, False])
+        self.assertListEqual(test_df["col_A"].to_list(), [True, True])
+        self.assertListEqual(test_df["col_B"].to_list(), [False, False])
 
     def test_multiindex_compat(self):
         # Added for testing Issue #1505
-        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
-        df.groupby(['a', 'b']).sum('c')
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
+        df.groupby(["a", "b"]).sum("c")

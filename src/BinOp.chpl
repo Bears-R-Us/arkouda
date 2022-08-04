@@ -13,6 +13,21 @@ module BinOp
   const omLogger = new Logger(logLevel);
 
   /*
+  Helper function to ensure that floor division cases are handled in accordance with numpy
+  */
+  inline proc floorDivisionHelper(numerator: ?t, denom: ?t2): real {
+    if (numerator == 0 && denom == 0) || (isinf(numerator) && (denom != 0 || isinf(denom))){
+      return NAN;
+    }
+    else if (numerator > 0 && denom == -INFINITY) || (numerator < 0 && denom == INFINITY){
+      return -1:real;
+    }
+    else {
+      return floor(numerator/denom);
+    }
+  }
+
+  /*
   Generic function to execute a binary operation on pdarray entries 
   in the symbol table
 
@@ -283,10 +298,41 @@ module BinOp
             ref ea = e.a;
             ref la = l.a;
             ref ra = r.a;
-            [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri) else NAN;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
           }
           when "**" { 
             e.a= l.a**r.a;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && r.etype == real) || (l.etype == real && r.etype == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a:real + r.a:real;
+          }
+          when "-" {
+            e.a = l.a:real - r.a:real;
+          }
+          when "*" {
+            e.a = l.a:real * r.a:real;
+          }
+          when "/" { // truediv
+            e.a = l.a:real / r.a:real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li, ri);
+          }
+          when "**" { 
+            e.a= l.a:real**r.a:real;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -570,10 +616,40 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref la = l.a;
-            [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li/val) else NAN;
+            [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);
           }
           when "**" { 
             e.a= l.a**val;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && val.type == real) || (l.etype == real && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a: real + val: real;
+          }
+          when "-" {
+            e.a = l.a: real - val: real;
+          }
+          when "*" {
+            e.a = l.a: real * val: real;
+          }
+          when "/" { // truediv
+            e.a = l.a: real / val: real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref la = l.a;
+            [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li, val);
+          }
+          when "**" { 
+            e.a= l.a: real**val: real;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -860,10 +936,40 @@ module BinOp
           when "//" { // floordiv
             ref ea = e.a;
             ref ra = r.a;
-            [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real/ri) else NAN;
+            [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
           }
           when "**" { 
             e.a= val**r.a;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((r.etype == uint && val.type == real) || (r.etype == real && val.type == uint)) {
+      select op {
+          when "+" {
+            e.a = val:real + r.a:real;
+          }
+          when "-" {
+            e.a = val:real - r.a:real;
+          }
+          when "*" {
+            e.a = val:real * r.a:real;
+          }
+          when "/" { // truediv
+            e.a = val:real / r.a:real;
+          } 
+          when "//" { // floordiv
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val:real, ri);
+          }
+          when "**" { 
+            e.a= val:real**r.a:real;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);

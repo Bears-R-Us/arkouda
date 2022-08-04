@@ -1046,7 +1046,8 @@ class pdarray:
 
         See Also
         --------
-        array
+        array()
+        to_list()
 
         Examples
         --------
@@ -1088,6 +1089,48 @@ class pdarray:
             return np.frombuffer(data, dt).copy()
         else:
             return np.frombuffer(data, dt)
+
+    def to_list(self) -> List:
+        """
+        Convert the array to a list, transferring array data from the
+        Arkouda server to client-side Python. Note: if the pdarray size exceeds
+        client.maxTransferBytes, a RuntimeError is raised.
+
+        Returns
+        -------
+        list
+            A list with the same data as the pdarray
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown, if the pdarray size
+            exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+            received does not match expected number of bytes
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting client.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        to_ndarray()
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 5, 1)
+        >>> a.to_list()
+        [0, 1, 2, 3, 4]
+
+        >>> type(a.to_list())
+        list
+        """
+        return self.to_ndarray().tolist()
 
     def to_cuda(self):
         """

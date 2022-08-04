@@ -47,9 +47,7 @@ class ArkoudaTest(unittest.TestCase):
                 ArkoudaTest.server, _, _ = start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
                 print(
                     "Started arkouda_server in TEST_CLASS mode with "
-                    "host: {} port: {} locales: {}".format(
-                        ArkoudaTest.server, ArkoudaTest.port, nl
-                    )
+                    "host: {} port: {} locales: {}".format(ArkoudaTest.server, ArkoudaTest.port, nl)
                 )
             except Exception as e:
                 raise RuntimeError(
