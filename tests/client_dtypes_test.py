@@ -19,23 +19,23 @@ class ClientDTypeTests(ArkoudaTest):
         arr = ak.arange(4)
         bv = ak.BitVector(arr, width=3)
         self.assertIsInstance(bv, client_dtypes.BitVector)
-        self.assertListEqual(bv.to_ndarray().tolist(), ["...", "..|", ".|.", ".||"])
-        self.assertTrue(bv.dtype == ak.bitType)
+        self.assertListEqual(bv.to_list(), ["...", "..|", ".|.", ".||"])
+        self.assertEqual(bv.dtype, ak.bitType)
 
         # Test reversed
         arr = ak.arange(4, dtype=ak.uint64)  # Also test with uint64 input
         bv = ak.BitVector(arr, width=3, reverse=True)
         self.assertIsInstance(bv, client_dtypes.BitVector)
-        self.assertListEqual(bv.to_ndarray().tolist(), ["...", "|..", ".|.", "||."])
-        self.assertTrue(bv.dtype == ak.bitType)
+        self.assertListEqual(bv.to_list(), ["...", "|..", ".|.", "||."])
+        self.assertEqual(bv.dtype, ak.bitType)
 
         # test use of vectorizer function
         arr = ak.arange(4)
         bvectorizer = ak.BitVectorizer(3)
         bv = bvectorizer(arr)
         self.assertIsInstance(bv, client_dtypes.BitVector)
-        self.assertListEqual(bv.to_ndarray().tolist(), ["...", "..|", ".|.", ".||"])
-        self.assertTrue(bv.dtype == ak.bitType)
+        self.assertListEqual(bv.to_list(), ["...", "..|", ".|.", ".||"])
+        self.assertEqual(bv.dtype, ak.bitType)
 
         # fail on argument types
         with self.assertRaises(TypeError):
@@ -49,8 +49,8 @@ class ClientDTypeTests(ArkoudaTest):
         names = ["8", "4", "2", "1"]
         f = ak.Fields(values, names)
         self.assertIsInstance(f, ak.Fields)
-        self.assertListEqual(f.to_ndarray().tolist(), ["---- (0)", "---1 (1)", "--2- (2)", "--21 (3)"])
-        self.assertTrue(f.dtype == ak.bitType)
+        self.assertListEqual(f.to_list(), ["---- (0)", "---1 (1)", "--2- (2)", "--21 (3)"])
+        self.assertEqual(f.dtype, ak.bitType)
 
         # Named fields with reversed bit order
         values = ak.array([0, 1, 5, 8, 12])
@@ -63,7 +63,7 @@ class ClientDTypeTests(ArkoudaTest):
             "----//----//----//Bit4// (8)",
             "----//----//Bit3//Bit4// (12)",
         ]
-        self.assertListEqual(f.to_ndarray().tolist(), expected)
+        self.assertListEqual(f.to_list(), expected)
 
         values = ak.arange(8, dtype=ak.uint64)
         names = [f"Bit{x}" for x in range(65)]
@@ -94,16 +94,16 @@ class ClientDTypeTests(ArkoudaTest):
         ipv4 = ak.IPv4(ip_list)
 
         self.assertIsInstance(ipv4, ak.IPv4)
-        self.assertListEqual(ipv4.to_ndarray().tolist(), ["192.168.1.1"])
-        self.assertTrue(ipv4.dtype == ak.bitType)
+        self.assertListEqual(ipv4.to_list(), ["192.168.1.1"])
+        self.assertEqual(ipv4.dtype, ak.bitType)
 
         # Test handling of uint64 input
         ip_list = ak.array([3232235777], dtype=ak.uint64)
         ipv4 = ak.IPv4(ip_list)
 
         self.assertIsInstance(ipv4, ak.IPv4)
-        self.assertListEqual(ipv4.to_ndarray().tolist(), ["192.168.1.1"])
-        self.assertTrue(ipv4.dtype == ak.bitType)
+        self.assertListEqual(ipv4.to_list(), ["192.168.1.1"])
+        self.assertEqual(ipv4.dtype, ak.bitType)
 
         with self.assertRaises(TypeError):
             ipv4 = ak.IPv4("3232235777")
@@ -113,8 +113,8 @@ class ClientDTypeTests(ArkoudaTest):
         # Test handling of python dotted-quad input
         ipv4 = ak.ip_address(["192.168.1.1"])
         self.assertIsInstance(ipv4, ak.IPv4)
-        self.assertListEqual(ipv4.to_ndarray().tolist(), ["192.168.1.1"])
-        self.assertTrue(ipv4.dtype == ak.bitType)
+        self.assertListEqual(ipv4.to_list(), ["192.168.1.1"])
+        self.assertEqual(ipv4.dtype, ak.bitType)
 
     def test_ipv4_normalization(self):
         ip_list = ak.array([3232235777])
@@ -126,15 +126,14 @@ class ClientDTypeTests(ArkoudaTest):
         x = [random.getrandbits(32) for i in range(100)]
 
         ans = ak.is_ipv4(ak.array(x, dtype=ak.uint64))
-        self.assertListEqual(ans.to_ndarray().tolist(), [True]*100)
+        self.assertListEqual(ans.to_list(), [True] * 100)
 
         ipv4 = ak.IPv4(ak.array(x))
-        ans = ak.is_ipv4(ipv4)
-        self.assertListEqual(ans.to_ndarray().tolist(), [True] * 100)
+        self.assertListEqual(ak.is_ipv4(ipv4).to_list(), [True] * 100)
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv4(ak.array(x, ak.uint64))
-        self.assertListEqual(ans.to_ndarray().tolist(), [i >= 5 for i in range(10)])
+        self.assertListEqual(ans.to_list(), [i >= 5 for i in range(10)])
 
         with self.assertRaises(TypeError):
             ak.is_ipv4(ak.array(x, ak.float64))
@@ -144,15 +143,14 @@ class ClientDTypeTests(ArkoudaTest):
 
     def test_is_ipv6(self):
         x = [random.getrandbits(128) for i in range(100)]
-        low = ak.array([i & (2 ** 64 - 1) for i in x], dtype=ak.uint64)
+        low = ak.array([i & (2**64 - 1) for i in x], dtype=ak.uint64)
         high = ak.array([i >> 64 for i in x], dtype=ak.uint64)
 
-        ans = ak.is_ipv6(high, low)
-        self.assertListEqual(ans.to_ndarray().tolist(), [True] * 100)
+        self.assertListEqual(ak.is_ipv6(high, low).to_list(), [True] * 100)
 
         x = [random.getrandbits(64) if i < 5 else random.getrandbits(32) for i in range(10)]
         ans = ak.is_ipv6(ak.array(x, ak.uint64))
-        self.assertListEqual(ans.to_ndarray().tolist(), [i < 5 for i in range(10)])
+        self.assertListEqual(ans.to_list(), [i < 5 for i in range(10)])
 
         with self.assertRaises(TypeError):
             ak.is_ipv6(ak.array(x, ak.float64))

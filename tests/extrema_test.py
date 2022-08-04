@@ -87,7 +87,7 @@ class MinKTest(ArkoudaTest):
             ak.mink(list(range(0, 10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.mink(testArray, '1')
+            ak.mink(testArray, "1")
 
         with self.assertRaises(ValueError):
             ak.mink(testArray, -1)
@@ -110,11 +110,11 @@ class MaxKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.maxk(list(range(0,10)), 1)
+            ak.maxk(list(range(0, 10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.maxk(testArray, '1')
-            
+            ak.maxk(testArray, "1")
+
         with self.assertRaises(ValueError):
             ak.maxk(testArray, -1)
 
@@ -136,10 +136,10 @@ class ArgMinKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.argmink(list(range(0,10)), 1)
+            ak.argmink(list(range(0, 10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.argmink(testArray, '1')
+            ak.argmink(testArray, "1")
 
         with self.assertRaises(ValueError):
             ak.argmink(testArray, -1)
@@ -162,10 +162,10 @@ class ArgMaxKTest(ArkoudaTest):
         testArray = ak.randint(0, 100, 100)
 
         with self.assertRaises(TypeError):
-            ak.argmaxk(list(range(0,10)), 1)
+            ak.argmaxk(list(range(0, 10)), 1)
 
         with self.assertRaises(TypeError):
-            ak.argmaxk(testArray, '1')
+            ak.argmaxk(testArray, "1")
 
         with self.assertRaises(ValueError):
             ak.argmaxk(testArray, -1)
@@ -173,14 +173,16 @@ class ArgMaxKTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.argmaxk(ak.array([]), 1)
 
+
 class ArgMinTest(ArkoudaTest):
     def test_argmin(self):
         np_arr = np.array([False, False, True, True, False])
         ak_arr = ak.array(np_arr)
-        self.assertTrue(np_arr.argmin() == ak_arr.argmin())
+        self.assertEqual(np_arr.argmin(), ak_arr.argmin())
+
 
 class ArgMaxTest(ArkoudaTest):
     def test_argmax(self):
         np_arr = np.array([False, False, True, True, False])
         ak_arr = ak.array(np_arr)
-        self.assertTrue(np_arr.argmax() == ak_arr.argmax())
+        self.assertEqual(np_arr.argmax(), ak_arr.argmax())

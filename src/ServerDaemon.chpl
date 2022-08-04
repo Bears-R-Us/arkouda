@@ -20,19 +20,20 @@ module ServerDaemon {
     use ServerErrorStrings;
     use Message;
     use CommandMap;
+    use Errors;
+    use List;
     use ExternalIntegration;
     use MetricsMsg;
-    use Errors;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
 
-    private config const daemonType = ServerDaemonType.DEFAULT;
+    private config const daemonTypes = 'ServerDaemonType.DEFAULT';
     
     private config const externalSystem = SystemType.NONE;
-
+    
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
@@ -64,10 +65,10 @@ module ServerDaemon {
     }
 
     /**
-     * The BaseServerDaemon class serves as the base Arkouda server
+     * The DefaultServerDaemon class serves as the default Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class BaseServerDaemon : ArkoudaServerDaemon {
+    class DefaultServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -352,6 +353,18 @@ module ServerDaemon {
                     cmd    = msg.cmd;
                     var format = msg.format;
                     var args   = msg.args;
+                    var size: int;
+                    try {
+                            size = msg.size: int;
+                    }
+                    catch e {
+                        // while size is not being used, we will default it to -1 for now. Error message commented out 
+                        size = -1;
+                        // asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                        //        "Argument List size is not an integer. %s cannot be cast".format(msg.size));
+                        // sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
+                        //                                  msgFormat=MsgFormat.STRING, user="Unknown"));
+                    }
 
                     /*
                      * If authentication is enabled with the --authenticate flag, authenticate
@@ -548,24 +561,43 @@ module ServerDaemon {
         }
     }
 
-    proc getServerDaemons() throws {
+    proc getServerDaemon(daemonType: ServerDaemonType) : shared ArkoudaServerDaemon throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return [new BaseServerDaemon():ArkoudaServerDaemon];
+                 return new DefaultServerDaemon():ArkoudaServerDaemon;
             }
             when ServerDaemonType.METRICS {
-               return [new BaseServerDaemon():ArkoudaServerDaemon, 
-                                       new MetricsServerDaemon():ArkoudaServerDaemon];
+               return new MetricsServerDaemon():ArkoudaServerDaemon;
             }
             otherwise {
                 throw getErrorWithContext(
-                           msg="Unrecognized ServerDaemonType: %t".format(daemonType),
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(),
-                           moduleName=getModuleName(),
-                           errorClass="ArgumentError"
-                           );
+                      msg="Unsupported ServerDaemonType: %t".format(daemonType),
+                      lineNumber=getLineNumber(),
+                      routineName=getRoutineName(),
+                      moduleName=getModuleName(),
+                      errorClass="IllegalArgumentError");
             }
         }
+    }
+
+    proc getServerDaemons() throws {
+        var rawTypes = daemonTypes.split(',');
+        var daemons = new list(shared ArkoudaServerDaemon);
+
+        for (rt,i) in zip(rawTypes,0..rawTypes.size-1) {
+            var daemonType: ServerDaemonType;
+            try {
+                daemonType = rt: ServerDaemonType;
+            } catch e: Error {
+                throw getErrorWithContext(
+                      msg="Invalid ServerDaemonType: %t".format(daemonType),
+                      lineNumber=getLineNumber(),
+                      routineName=getRoutineName(),
+                      moduleName=getModuleName(),
+                      errorClass="ArgumentError");                  
+            }
+            daemons.append(getServerDaemon(daemonType));
+        }
+        return daemons;
     }
 }

@@ -16,10 +16,6 @@ const asLogger = new Logger(logLevel);
  * method on the configured list of ArkoudaServerDaemon objects
  */
 proc main() {
-    asLogger.info(getModuleName(), 
-                  getRoutineName(), 
-                  getLineNumber(),
-                  'Starting Arkouda Server Daemons');
     coforall daemon in getServerDaemons() {
         daemon.run();
     }

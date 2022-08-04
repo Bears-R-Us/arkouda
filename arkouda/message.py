@@ -1,8 +1,186 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
+
+from typeguard import typechecked
+
+
+class ObjectType(Enum):
+    """
+    Class used for assigning object types in the JSON string
+    sent to the server for processing
+    """
+
+    PDARRAY = "PDARRAY"
+    STRINGS = "SEGSTRING"
+    LIST = "LIST"
+    VALUE = "VALUE"
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+
+class ParameterObject:
+
+    __slots = ("key", "objType", "dtype", "val")
+
+    key: str
+    objType: MessageFormat
+    dtype: str
+    val: str
+
+    def __init__(self, key, objType, dtype, val):
+        object.__setattr__(self, "key", key)
+        object.__setattr__(self, "objType", objType)
+        object.__setattr__(self, "dtype", dtype)
+        object.__setattr__(self, "val", val)
+
+    @property
+    def dict(self):
+        return {
+            "key": self.key,
+            "objType": str(self.objType),
+            "dtype": self.dtype,
+            "val": self.val,
+        }
+
+    @staticmethod
+    @typechecked
+    def _build_pdarray_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a pdarray value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            pdarray object ot load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        return ParameterObject(key, ObjectType.PDARRAY, str(val.dtype), val.name)
+
+    @staticmethod
+    @typechecked
+    def _build_strings_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a Strings value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            Strings object ot load from the symbol table
+
+        Returns
+        -------
+        ParameterObject
+        """
+        # empty string if name of String obj is none
+        name = val.name if val.name else ""
+        return ParameterObject(key, ObjectType.STRINGS, "str", name)
+
+    @staticmethod
+    @typechecked
+    def _build_list_param(key: str, val: list) -> ParameterObject:
+        """
+        Create a ParameterObject from a list
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val : list
+            list object to format as string
+
+        Returns
+        -------
+        ParameterObject
+        """
+        dtypes = set([p.dtype if hasattr(p, "dtype") else type(p).__name__ for p in val])
+        if len(dtypes) > 1:
+            t_str = ", ".join(dtypes)
+            raise TypeError(f"List values must be of the same type. Found {t_str}")
+        return ParameterObject(key, ObjectType.LIST, dtypes.pop(), json.dumps(val))
+
+    @staticmethod
+    @typechecked
+    def _build_gen_param(key: str, val) -> ParameterObject:
+        """
+        Create a ParameterObject from a single value
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            singular value to use. This could be str, int, float, etc
+
+        Returns
+        -------
+        ParameterObject
+        """
+        v = val if isinstance(val, str) else str(val)
+        return ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
+
+    @staticmethod
+    def generate_dispatch() -> Dict:
+        """
+        Builds and returns the dispatch table used to build parameter object.
+
+        Returns
+        -------
+        Dictionary - mapping the parameter type to the build function
+        """
+        from arkouda.pdarrayclass import pdarray
+        from arkouda.strings import Strings
+
+        return {
+            pdarray.__name__: ParameterObject._build_pdarray_param,
+            Strings.__name__: ParameterObject._build_strings_param,
+            list.__name__: ParameterObject._build_list_param,
+        }
+
+    @staticmethod
+    def factory(key: str, val) -> ParameterObject:
+        """
+        Factory method used to build ParameterObject given a key value pair
+
+        Parameters
+        ----------
+        key : str
+            key from the dictionary object
+        val
+            the value corresponding to the provided key from the dictionary
+
+        Returns
+        --------
+        ParameterObject - The parameter object formatted to be parsed by the chapel server
+        """
+        dispatch = ParameterObject.generate_dispatch()
+        if (f := dispatch.get(type(val).__name__)) is not None:
+            return f(key, val)
+        else:
+            return ParameterObject._build_gen_param(key, val)
+
 
 """
 The MessageFormat enum provides controlled vocabulary for the message
@@ -64,13 +242,14 @@ context of an Arkouda server request.
 @dataclass(frozen=True)
 class RequestMessage:
 
-    __slots = ("user", "token", "cmd", "format", "args")
+    __slots = ("user", "token", "cmd", "format", "args", "size")
 
     user: str
     token: str
     cmd: str
     format: MessageFormat
     args: str
+    size: str
 
     def __init__(
         self,
@@ -79,6 +258,7 @@ class RequestMessage:
         token: str = None,
         format: MessageFormat = MessageFormat.STRING,
         args: str = None,
+        size: int = -1,
     ) -> None:
         """
         Overridden __init__ method sets instance attributes to
@@ -97,6 +277,9 @@ class RequestMessage:
             The request message format
         args : str
             The delimited string containing the command arguments
+        size : int
+            Value indicating the number of parameters in args
+            -1 if args is not json
 
         Returns
         -------
@@ -107,6 +290,7 @@ class RequestMessage:
         object.__setattr__(self, "cmd", cmd)
         object.__setattr__(self, "format", format)
         object.__setattr__(self, "args", args)
+        object.__setattr__(self, "size", size)
 
     def asdict(self) -> Dict:
         """
@@ -129,6 +313,7 @@ class RequestMessage:
             "cmd": self.cmd,
             "format": str(self.format),
             "args": args,
+            "size": self.size,
         }
 
 

@@ -17,44 +17,46 @@ class NumericTest(ArkoudaTest):
         numericdtypes = [ak.int64, ak.float64, ak.bool, ak.uint64]
         for dt in numericdtypes:
             # Make sure unseeded runs differ
-            a = ak.randint(0, 2 ** 32, N, dtype=dt)
-            b = ak.randint(0, 2 ** 32, N, dtype=dt)
+            a = ak.randint(0, 2**32, N, dtype=dt)
+            b = ak.randint(0, 2**32, N, dtype=dt)
             self.assertFalse((a == b).all())
             # Make sure seeded results are same
-            a = ak.randint(0, 2 ** 32, N, dtype=dt, seed=seed)
-            b = ak.randint(0, 2 ** 32, N, dtype=dt, seed=seed)
-            self.assertTrue((a == b).all())
+            a = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
+            b = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
+            self.assertListEqual(a.to_list(), b.to_list())
         # Uniform
         self.assertFalse((ak.uniform(N) == ak.uniform(N)).all())
-        self.assertTrue((ak.uniform(N, seed=seed) == ak.uniform(N, seed=seed)).all())
+        self.assertListEqual(
+            ak.uniform(N, seed=seed).to_list(),
+            ak.uniform(N, seed=seed).to_list(),
+        )
         # Standard Normal
         self.assertFalse((ak.standard_normal(N) == ak.standard_normal(N)).all())
-        self.assertTrue((ak.standard_normal(N, seed=seed) == ak.standard_normal(N, seed=seed)).all())
+        self.assertListEqual(
+            ak.standard_normal(N, seed=seed).to_list(),
+            ak.standard_normal(N, seed=seed).to_list(),
+        )
         # Strings (uniformly distributed length)
         self.assertFalse(
             (ak.random_strings_uniform(1, 10, N) == ak.random_strings_uniform(1, 10, N)).all()
         )
-        self.assertTrue(
-            (
-                ak.random_strings_uniform(1, 10, N, seed=seed)
-                == ak.random_strings_uniform(1, 10, N, seed=seed)
-            ).all()
+        self.assertListEqual(
+            ak.random_strings_uniform(1, 10, N, seed=seed).to_list(),
+            ak.random_strings_uniform(1, 10, N, seed=seed).to_list(),
         )
         # Strings (log-normally distributed length)
         self.assertFalse(
             (ak.random_strings_lognormal(2, 1, N) == ak.random_strings_lognormal(2, 1, N)).all()
         )
-        self.assertTrue(
-            (
-                ak.random_strings_lognormal(2, 1, N, seed=seed)
-                == ak.random_strings_lognormal(2, 1, N, seed=seed)
-            ).all()
+        self.assertListEqual(
+            ak.random_strings_lognormal(2, 1, N, seed=seed).to_list(),
+            ak.random_strings_lognormal(2, 1, N, seed=seed).to_list(),
         )
 
     def testCast(self):
         N = 100
         arrays = {
-            ak.int64: ak.randint(-(2 ** 48), 2 ** 48, N),
+            ak.int64: ak.randint(-(2**48), 2**48, N),
             ak.float64: ak.randint(0, 1, N, dtype=ak.float64),
             ak.bool: ak.randint(0, 2, N, dtype=ak.bool),
         }
@@ -82,16 +84,18 @@ class NumericTest(ArkoudaTest):
                         (orig == roundtrip).all(), f"{t1}: {orig[:5]}, {t2}: {roundtrip[:5]}"
                     )
 
-        self.assertTrue((ak.array([1, 2, 3, 4, 5]) == ak.cast(ak.linspace(1, 5, 5), dt=ak.int64)).all())
+        self.assertListEqual(
+            [1, 2, 3, 4, 5],
+            ak.cast(ak.linspace(1, 5, 5), dt=ak.int64).to_list(),
+        )
         self.assertEqual(ak.cast(ak.arange(0, 5), dt=ak.float64).dtype, ak.float64)
-        self.assertTrue(
-            (
-                ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0, 4, 5), dt=ak.bool)
-            ).all()
+        self.assertListEqual(
+            [False, True, True, True, True],
+            ak.cast(ak.linspace(0, 4, 5), dt=ak.bool).to_list(),
         )
 
     def testStrCastErrors(self):
-        intNAN = -(2 ** 63)
+        intNAN = -(2**63)
         intstr = ak.array(["1", "2 ", "3?", "!4", "  5", "-45", "0b101", "0x30", "N/A"])
         intans = np.array([1, 2, intNAN, intNAN, 5, -45, 0b101, 0x30, intNAN])
         uintNAN = 0
@@ -115,7 +119,7 @@ class NumericTest(ArkoudaTest):
             res = ak.cast(arg, dt, errors=ak.ErrorMode.ignore)
             self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
             res, valid = ak.cast(arg, dt, errors=ak.ErrorMode.return_validity)
-            self.assertTrue((valid == validans).all())
+            self.assertListEqual(valid.to_list(), validans.to_list())
             self.assertTrue(np.allclose(ans, res.to_ndarray(), equal_nan=True))
 
     def testHistogram(self):
@@ -157,8 +161,11 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
 
         self.assertTrue(np.allclose(np.abs(na), ak.abs(pda).to_ndarray()))
-        self.assertTrue((ak.arange(5, 1, -1) == ak.abs(ak.arange(-5, -1))).all())
-        self.assertTrue((ak.array([5, 4, 3, 2, 1]) == ak.abs(ak.linspace(-5, -1, 5))).all())
+        self.assertListEqual(ak.arange(5, 1, -1).to_list(), ak.abs(ak.arange(-5, -1)).to_list())
+        self.assertListEqual(
+            [5, 4, 3, 2, 1],
+            ak.abs(ak.linspace(-5, -1, 5)).to_list(),
+        )
 
         with self.assertRaises(TypeError):
             ak.abs([range(0, 10)])
@@ -206,14 +213,16 @@ class NumericTest(ArkoudaTest):
         h1, h2 = ak.hash(ak.arange(10))
         rev = ak.arange(9, -1, -1)
         h3, h4 = ak.hash(rev)
-        self.assertTrue((h1 == h3[rev]).all() and (h2 == h4[rev]).all())
+        self.assertListEqual(h1.to_list(), h3[rev].to_list())
+        self.assertListEqual(h2.to_list(), h4[rev].to_list())
 
         h1 = ak.hash(ak.arange(10), full=False)
         h3 = ak.hash(rev, full=False)
-        self.assertTrue((h1 == h3[rev]).all())
+        self.assertListEqual(h1.to_list(), h3[rev].to_list())
 
         h = ak.hash(ak.linspace(0, 10, 10))
-        self.assertTrue((h[0].dtype == ak.uint64) and (h[1].dtype == ak.uint64))
+        self.assertEqual(h[0].dtype, ak.uint64)
+        self.assertEqual(h[1].dtype, ak.uint64)
 
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
@@ -239,8 +248,7 @@ class NumericTest(ArkoudaTest):
         ark_s_float64 = ak.array(npa)
         ark_isna_float64 = ak.isnan(ark_s_float64)
         actual = ark_isna_float64.to_ndarray()
-        expected = np.isnan(npa)
-        self.assertTrue(np.array_equal(expected, actual))
+        self.assertTrue(np.array_equal(np.isnan(npa), actual))
 
         # Currently we can't make an int64 array with a NaN in it so verify that we throw an Exception
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
@@ -251,9 +259,9 @@ class NumericTest(ArkoudaTest):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
         # Grouped sum was exacerbating floating point errors
         # This test verifies the fix
-        N = 10 ** 6
+        N = 10**6
         G = N // 10
-        ub = 2 ** 63 // N
+        ub = 2**63 // N
         groupnum = ak.randint(0, G, N, seed=1)
         intval = ak.randint(0, ub, N, seed=2)
         floatval = ak.cast(intval, ak.float64)

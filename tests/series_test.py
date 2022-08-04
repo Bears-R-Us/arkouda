@@ -10,12 +10,12 @@ class SeriesTest(ArkoudaTest):
         s = ak.Series(ar_tuple)
         self.assertIsInstance(s, ak.Series)
 
-        ar_tuple = ak.array(['A', 'B', 'C']), ak.arange(3)
+        ar_tuple = ak.array(["A", "B", "C"]), ak.arange(3)
         s = ak.Series(ar_tuple)
         self.assertIsInstance(s, ak.Series)
 
         # Both data and index are supplied
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -32,7 +32,7 @@ class SeriesTest(ArkoudaTest):
             s = ak.Series(index=i)
 
         # Just data is supplied (positional argument)
-        s = ak.Series(ak.array(['A', 'B', 'C']))
+        s = ak.Series(ak.array(["A", "B", "C"]))
         self.assertIsInstance(s, ak.Series)
 
         # Just index is supplied (ar_tuple argument)
@@ -48,7 +48,7 @@ class SeriesTest(ArkoudaTest):
             s = ak.Series(data=ak.arange(3), index=ak.arange(6))
 
     def test_lookup(self):
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -65,7 +65,7 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(lk.values[1], "C")
 
     def test_shape(self):
-        v = ak.array(['A', 'B', 'C'])
+        v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
         s = ak.Series(data=v, index=i)
 
@@ -85,7 +85,7 @@ class SeriesTest(ArkoudaTest):
         added = s.add(s_add)
 
         idx_list = added.index.to_pandas().tolist()
-        val_list = added.values.to_ndarray().tolist()
+        val_list = added.values.to_list()
         for i in range(6):
             self.assertIn(i, idx_list)
             self.assertIn(i, val_list)
@@ -97,7 +97,7 @@ class SeriesTest(ArkoudaTest):
 
         top = s.topn(2)
         self.assertListEqual(top.index.to_pandas().tolist(), [2, 1])
-        self.assertListEqual(top.values.to_ndarray().tolist(), [2, 1])
+        self.assertListEqual(top.values.to_list(), [2, 1])
 
     def test_sort_idx(self):
         v = ak.arange(5)
@@ -106,7 +106,7 @@ class SeriesTest(ArkoudaTest):
 
         sorted = s.sort_index()
         self.assertListEqual(sorted.index.to_pandas().tolist(), [i for i in range(5)])
-        self.assertListEqual(sorted.values.to_ndarray().tolist(), [3, 1, 4, 0, 2])
+        self.assertListEqual(sorted.values.to_list(), [3, 1, 4, 0, 2])
 
     def test_sort_value(self):
         v = ak.array([3, 1, 4, 0, 2])
@@ -115,7 +115,7 @@ class SeriesTest(ArkoudaTest):
 
         sorted = s.sort_values()
         self.assertListEqual(sorted.index.to_pandas().tolist(), [3, 1, 4, 0, 2])
-        self.assertListEqual(sorted.values.to_ndarray().tolist(), [i for i in range(5)])
+        self.assertListEqual(sorted.values.to_list(), [i for i in range(5)])
 
     def test_head_tail(self):
         v = ak.arange(5)
@@ -124,11 +124,11 @@ class SeriesTest(ArkoudaTest):
 
         head = s.head(2)
         self.assertListEqual(head.index.to_pandas().tolist(), [0, 1])
-        self.assertListEqual(head.values.to_ndarray().tolist(), [0, 1])
+        self.assertListEqual(head.values.to_list(), [0, 1])
 
         tail = s.tail(3)
         self.assertListEqual(tail.index.to_pandas().tolist(), [2, 3, 4])
-        self.assertListEqual(tail.values.to_ndarray().tolist(), [2, 3, 4])
+        self.assertListEqual(tail.values.to_list(), [2, 3, 4])
 
     def test_value_counts(self):
         v = ak.array([0, 0, 1, 2, 2])
@@ -137,11 +137,11 @@ class SeriesTest(ArkoudaTest):
 
         c = s.value_counts()
         self.assertListEqual(c.index.to_pandas().tolist(), [0, 2, 1])
-        self.assertListEqual(c.values.to_ndarray().tolist(), [2, 2, 1])
+        self.assertListEqual(c.values.to_list(), [2, 2, 1])
 
         c = s.value_counts(sort=True)
         self.assertListEqual(c.index.to_pandas().tolist(), [0, 2, 1])
-        self.assertListEqual(c.values.to_ndarray().tolist(), [2, 2, 1])
+        self.assertListEqual(c.values.to_list(), [2, 2, 1])
 
     def test_concat(self):
         v = ak.arange(5)
@@ -154,7 +154,7 @@ class SeriesTest(ArkoudaTest):
 
         c = ak.Series.concat([s, s2])
         self.assertListEqual(c.index.to_pandas().tolist(), [i for i in range(11)])
-        self.assertListEqual(c.values.to_ndarray().tolist(), [i for i in range(11)])
+        self.assertListEqual(c.values.to_list(), [i for i in range(11)])
 
         df = ak.Series.concat([s, s2], axis=1)
         self.assertIsInstance(df, ak.DataFrame)
@@ -194,6 +194,6 @@ class SeriesTest(ArkoudaTest):
 
     def test_index_as_index_compat(self):
         # added to validate functionality for issue #1506
-        df = ak.DataFrame({'a': ak.arange(10), 'b': ak.arange(10), 'c': ak.arange(10)})
-        g = df.groupby(['a', 'b'])
-        g.broadcast(g.sum('c'))
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
+        g = df.groupby(["a", "b"])
+        g.broadcast(g.sum("c"))

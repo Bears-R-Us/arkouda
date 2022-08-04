@@ -1,4 +1,4 @@
-#!/usr/bin/env python3                                                         
+#!/usr/bin/env python3
 
 import importlib
 import numpy as np
@@ -15,14 +15,13 @@ else:
     ak.connect()
 
 N = 10**9
-a = ak.ones(N,dtype='int64')
-b = ak.ones(N,dtype='int64')
-print(a,b)
+a = ak.ones(N, dtype="int64")
+b = ak.ones(N, dtype="int64")
+print(a, b)
 
-c = a+b
-d = a-b
+c = a + b
+d = a - b
 print(c)
 print(d)
 
 ak.shutdown()
-

@@ -47,17 +47,17 @@ class MessageTest(unittest.TestCase):
         self.assertNotEqual(msg, msgNonDupe)
 
         self.assertEqual(
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None)",
+            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)",
             str(msg),
         )
 
         self.assertEqual(
-            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None)",
+            "RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None, size=-1)",
             repr(msg),
         )
 
         self.assertEqual(
-            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": ""}',
+            '{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": "", "size": -1}',
             json.dumps(msg.asdict()),
         )
 
@@ -66,16 +66,16 @@ class MessageTest(unittest.TestCase):
         minMsg = RequestMessage(user="user1", cmd="connect")
 
         self.assertEqual(
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None)",
+            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)",
             str(minMsg),
         )
 
         self.assertEqual(
-            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None)",
+            "RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None, size=-1)",
             repr(minMsg),
         )
         self.assertEqual(
-            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": ""}',
+            '{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": "", "size": -1}',
             json.dumps(minMsg.asdict()),
         )
 

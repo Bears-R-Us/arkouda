@@ -609,7 +609,7 @@ class DataFrame(UserDict):
         Return ascii-formatted version of the dataframe.
         """
 
-        prt = self._get_head_tail()
+        prt = self._get_head_tail_server()
         with pd.option_context("display.show_dimensions", False):
             retval = prt.__repr__()
         retval += " (" + self._shape_str() + ")"
@@ -619,7 +619,7 @@ class DataFrame(UserDict):
         """
         Return html-formatted version of the dataframe.
         """
-        prt = self._get_head_tail()
+        prt = self._get_head_tail_server()
 
         with pd.option_context("display.show_dimensions", False):
             retval = prt._repr_html_()
@@ -1166,7 +1166,7 @@ class DataFrame(UserDict):
             self.data = tmp_data
 
         # Clean up
-        self.reset_index()
+        self.reset_index(inplace=True)
         self.update_size()
         self._empty = False
         return self
@@ -1402,9 +1402,7 @@ class DataFrame(UserDict):
             try:
                 # in order for proper pandas functionality, SegArrays must be seen as 1d
                 # and therefore need to be converted to list
-                pandas_data[key] = (
-                    val.to_ndarray() if not isinstance(val, SegArray) else val.to_ndarray().tolist()
-                )
+                pandas_data[key] = val.to_ndarray() if not isinstance(val, SegArray) else val.to_list()
             except TypeError:
                 raise IndexError("Bad index type or format.")
 

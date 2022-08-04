@@ -82,8 +82,8 @@ class JoinTest(ArkoudaTest):
         end = ak.array([10, 20, 30])
 
         segs, ranges = ak.join.gen_ranges(start, end)
-        self.assertListEqual(segs.to_ndarray().tolist(), [0, 10, 20])
-        self.assertListEqual(ranges.to_ndarray().tolist(), list(range(30)))
+        self.assertListEqual(segs.to_list(), [0, 10, 20])
+        self.assertListEqual(ranges.to_list(), list(range(30)))
 
         with self.assertRaises(ValueError):
             segs, ranges = ak.join.gen_ranges(ak.array([11, 12, 41]), end)
@@ -93,7 +93,7 @@ class JoinTest(ArkoudaTest):
         right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
 
         l, r = ak.join.inner_join(left, right)
-        self.assertTrue((left[l] == right[r]).all())
+        self.assertListEqual(left[l].to_list(), right[r].to_list())
 
         with self.assertRaises(ValueError):
             l, r = ak.join.inner_join(left, right, wherefunc=ak.unique)
@@ -115,19 +115,19 @@ class JoinTest(ArkoudaTest):
         keys = ak.arange(5)
         values = 10 * keys
         args = ak.array([5, 3, 1, 4, 2, 3, 1, 0])
-        ans = np.array([-1, 30, 10, 40, 20, 30, 10, 0])
+        ans = [-1, 30, 10, 40, 20, 30, 10, 0]
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
         res = ak.lookup(keys, values, args, fillvalue=-1)
-        self.assertTrue((res.to_ndarray() == ans).all())
+        self.assertListEqual(res.to_list(), ans)
         # Compound lookup with (str, int) keys
         res2 = ak.lookup(
             (ak.cast(keys, ak.str_), keys), values, (ak.cast(args, ak.str_), args), fillvalue=-1
         )
-        self.assertTrue((res2.to_ndarray() == ans).all())
+        self.assertListEqual(res2.to_list(), ans)
         # Keys not in uniqued order
         res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
-        self.assertTrue((res3.to_ndarray() == ans).all())
+        self.assertListEqual(res3.to_list(), ans)
         # Non-unique keys should raise error
         with self.assertWarns(UserWarning):
             keys = ak.arange(10) % 5
