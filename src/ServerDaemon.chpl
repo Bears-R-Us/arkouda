@@ -21,6 +21,7 @@ module ServerDaemon {
     use Message;
     use CommandMap;
     use Errors;
+    use List;
     use ExternalIntegration;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
@@ -28,7 +29,7 @@ module ServerDaemon {
     private config const logLevel = ServerConfig.logLevel;
     const sdLogger = new Logger(logLevel);
 
-    private config const daemonType = ServerDaemonType.DEFAULT;
+    private config const daemonTypes = 'ServerDaemonType.DEFAULT';
     
     private config const externalSystem = SystemType.NONE;
 
@@ -63,10 +64,10 @@ module ServerDaemon {
     }
 
     /**
-     * The BaseServerDaemon class serves as the base Arkouda server
+     * The DefaultServerDaemon class serves as the default Arkouda server
      * daemon which is run within the arkouda_server driver
      */
-    class BaseServerDaemon : ArkoudaServerDaemon {
+    class DefaultServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
         var serverMessage : string;
@@ -501,7 +502,7 @@ module ServerDaemon {
         }
     }
     
-    class ExternalIntegrationServerDaemon : BaseServerDaemon {
+    class ExternalIntegrationServerDaemon : DefaultServerDaemon {
 
         override proc run() throws {
             on Locales[0] {
@@ -566,23 +567,43 @@ module ServerDaemon {
         }
     }
 
-    proc getServerDaemons() throws {
+    proc getServerDaemon(daemonType: ServerDaemonType) : shared ArkoudaServerDaemon throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-               return [new BaseServerDaemon():ArkoudaServerDaemon];
+                return new DefaultServerDaemon():ArkoudaServerDaemon;
             }
             when ServerDaemonType.INTEGRATION {
-               return [new ExternalIntegrationServerDaemon():ArkoudaServerDaemon];
+                return new ExternalIntegrationServerDaemon():ArkoudaServerDaemon;
             }
             otherwise {
                 throw getErrorWithContext(
-                           msg="Unrecognized ServerDaemonType: %t".format(daemonType),
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(),
-                           moduleName=getModuleName(),
-                           errorClass="ArgumentError"
-                           );
+                      msg="Unsupported ServerDaemonType: %t".format(daemonType),
+                      lineNumber=getLineNumber(),
+                      routineName=getRoutineName(),
+                      moduleName=getModuleName(),
+                      errorClass="IllegalArgumentError");
             }
         }
+    }
+
+    proc getServerDaemons() throws {
+        var rawTypes = daemonTypes.split(',');
+        var daemons = new list(shared ArkoudaServerDaemon);
+
+        for (rt,i) in zip(rawTypes,0..rawTypes.size-1) {
+            var daemonType: ServerDaemonType;
+            try {
+                daemonType = rt: ServerDaemonType;
+            } catch e: Error {
+                throw getErrorWithContext(
+                      msg="Invalid ServerDaemonType: %t".format(daemonType),
+                      lineNumber=getLineNumber(),
+                      routineName=getRoutineName(),
+                      moduleName=getModuleName(),
+                      errorClass="ArgumentError");                  
+            }
+            daemons.append(getServerDaemon(daemonType));
+        }
+        return daemons;
     }
 }
