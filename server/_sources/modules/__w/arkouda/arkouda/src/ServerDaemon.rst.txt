@@ -45,10 +45,10 @@ or
       * Converts the incoming request JSON string into RequestMsg object.
       
 
-.. class:: BaseServerDaemon : ArkoudaServerDaemon
+.. class:: DefaultServerDaemon : ArkoudaServerDaemon
 
    *
-   * The BaseServerDaemon class serves as the base Arkouda server
+   * The DefaultServerDaemon class serves as the default Arkouda server
    * daemon which is run within the arkouda_server driver
    
 
@@ -120,6 +120,8 @@ or
    .. method:: proc initArkoudaDirectory() throws
 
    .. method:: override proc run() throws
+
+.. function:: proc getServerDaemon(daemonType: ServerDaemonType): shared ArkoudaServerDaemon throws
 
 .. function:: proc getServerDaemons() throws
 

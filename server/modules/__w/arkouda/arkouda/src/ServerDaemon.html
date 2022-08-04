@@ -160,73 +160,73 @@
 </dd></dl>
 
 <dl class="chpl class">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BaseServerDaemon</span></span><span class="pre">:</span> <span class="pre">ArkoudaServerDaemon</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DefaultServerDaemon</span></span><span class="pre">:</span> <span class="pre">ArkoudaServerDaemon</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
-<li><p>The BaseServerDaemon class serves as the base Arkouda server</p></li>
+<li><p>The DefaultServerDaemon class serves as the default Arkouda server</p></li>
 <li><p>daemon which is run within the arkouda_server driver</p></li>
 </ul>
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.serverToken">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverToken</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.serverToken" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverToken">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverToken</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverToken" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.arkDirectory">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">arkDirectory</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.arkDirectory" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.arkDirectory">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">arkDirectory</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.arkDirectory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.serverMessage">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverMessage</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.serverMessage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverMessage">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverMessage</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverMessage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.reqCount">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">reqCount</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.reqCount" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.reqCount">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">reqCount</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.reqCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.repCount">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">repCount</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.repCount" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.repCount">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">repCount</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.repCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.context">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">context</span></span><span class="pre">:</span> <span class="pre">ZMQ.Context</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.context" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.context">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">context</span></span><span class="pre">:</span> <span class="pre">ZMQ.Context</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.socket">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">socket</span></span><span class="pre">:</span> <span class="pre">ZMQ.Socket</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.socket" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.socket">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">socket</span></span><span class="pre">:</span> <span class="pre">ZMQ.Socket</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.socket" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.init" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.printServerSplashMessage">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printServerSplashMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">arkDirectory:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.printServerSplashMessage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.printServerSplashMessage">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printServerSplashMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">arkDirectory:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.printServerSplashMessage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.createServerConnectionInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.createServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.createServerConnectionInfo">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.createServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the serverConnectionInfo file on arkouda_server startup</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.deleteServerConnectionInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.deleteServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.deleteServerConnectionInfo">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.deleteServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes the serverConnetionFile on arkouda_server shutdown</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.sendRepMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sendRepMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">repMsg:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.sendRepMsg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.sendRepMsg">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sendRepMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">repMsg:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.sendRepMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Following processing of incoming message, sends a message back to the client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -236,8 +236,8 @@
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.authenticateUser">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">authenticateUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.authenticateUser" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.authenticateUser">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">authenticateUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.authenticateUser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares the token submitted by the user with the arkouda_server token. If the
 tokens do not match, or the user did not submit a token, an ErrorWithMsg is thrown.</p>
 <dl class="field-list simple">
@@ -248,15 +248,15 @@ tokens do not match, or the user did not submit a token, an ErrorWithMsg is thro
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.shutdown">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.shutdown">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
 which stops the arkouda_server listener thread and closes socket.</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.registerServerCommands">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerServerCommands</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.registerServerCommands" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.registerServerCommands">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerServerCommands</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.registerServerCommands" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Register our server commands in the CommandMap</p></li>
@@ -277,16 +277,21 @@ which stops the arkouda_server listener thread and closes socket.</p>
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.initArkoudaDirectory">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initArkoudaDirectory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.initArkoudaDirectory" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.initArkoudaDirectory">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initArkoudaDirectory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.initArkoudaDirectory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.BaseServerDaemon.run">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.BaseServerDaemon.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.run">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerDaemon.getServerDaemon">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getServerDaemon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">daemonType:</span> <span class="pre">ServerDaemonType</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">ArkoudaServerDaemon</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.getServerDaemon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerDaemon.getServerDaemons">
