@@ -145,10 +145,10 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 2)
         for a in json.loads(args):
             p = json.loads(a)
-            self.assertRegexpMatches(p["key"], "^pd(1|2)$")
+            self.assertRegex(p["key"], "^pd(1|2)$")
             self.assertEqual(p["objType"], "PDARRAY")
             self.assertEqual(p["dtype"], "int64")
-            self.assertRegexpMatches(p["val"], "^id_\w{7}_\d$")
+            self.assertRegex(p["val"], "^id_[a-zA-Z0-9]{7}_[0-9]$")
 
         # test list of Strings
         str1 = array(["abc", "def"])
@@ -157,7 +157,7 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 2)
         for a in json.loads(args):
             p = json.loads(a)
-            self.assertRegexpMatches(p["key"], "^str(1|2)$")
+            self.assertRegex(p["key"], "^str(1|2)$")
             self.assertEqual(p["objType"], "SEGSTRING")
             self.assertEqual(p["dtype"], "str")
-            self.assertRegexpMatches(p["val"], "^id_\w{7}_\d$")
+            self.assertRegex(p["val"], "^id_[a-zA-Z0-9]{7}_[0-9]$")
