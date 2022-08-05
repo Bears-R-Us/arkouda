@@ -286,8 +286,6 @@ module StatsMsg {
         var dataNames = args.get("data_names").getList(size);
 
         var corrDict = new map(keyType=string, valType=string);
-        // TODO CORRELATION MATRIX IS SYMMETRIC, WE CAN USE THAT!
-        // would this be easy to do with a 2D chapel matrix?
         for (col, d1, i) in zip(columns, dataNames, 0..) {
             var corrPdarray = makeDistArray(size, real);
             var d1gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(d1, st);

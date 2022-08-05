@@ -1826,23 +1826,20 @@ class DataFrame(UserDict):
 
         Attempts to convert to numeric values where possible for inclusion in the matrix.
         """
-        # TODO converting Strings to Categorical goes out of scope, i don't love registering it
-        unregister_names: List = []
 
         def numeric_help(d):
             if isinstance(d, Strings):
-                d = Categorical(d).register(f"keep_{len(unregister_names)}")
-                unregister_names.append(d.name)
+                d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
 
+        numeric_cols = [numeric_help(self[c]) for c in self.columns]
         args = {
             "size": len(self.columns),
             "columns": self.columns,
-            "data_names": [numeric_help(self[c]).name for c in self.columns],
+            "data_names": [col.name for col in numeric_cols],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
-        [Categorical.unregister_categorical_by_name(name) for name in unregister_names]
         return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
 
 

@@ -8,15 +8,20 @@ class StatsTest(ArkoudaTest):
     def setUp(self):
         ArkoudaTest.setUp(self)
         self.x = ak.arange(10, 20)
-        self.pdx = pd.Series(np.arange(10, 20))
+        self.npx = np.arange(10, 20)
+        self.pdx = pd.Series(self.npx)
         self.y = ak.array([2, 1, 4, 5, 8, 12, 18, 25, 96, 48])
-        self.pdy = pd.Series(np.array([2, 1, 4, 5, 8, 12, 18, 25, 96, 48]))
+        self.npy = np.array([2, 1, 4, 5, 8, 12, 18, 25, 96, 48])
+        self.pdy = pd.Series(self.npy)
         self.u = ak.cast(self.y, ak.uint64)
-        self.pdu = pd.Series(np.array([2, 1, 4, 5, 8, 12, 18, 25, 96, 48], dtype=np.uint64))
+        self.npu = np.array([2, 1, 4, 5, 8, 12, 18, 25, 96, 48], dtype=np.uint64)
+        self.pdu = pd.Series(self.npu)
         self.b = ak.arange(10) % 2 == 0
-        self.pdb = pd.Series(np.arange(10) % 2 == 0)
+        self.npb = np.arange(10) % 2 == 0
+        self.pdb = pd.Series(self.npb)
         self.f = ak.array([i**2 for i in range(10)], dtype=ak.float64)
-        self.pdf = pd.Series(np.array([i**2 for i in range(10)], dtype=np.float64))
+        self.npf = np.array([i**2 for i in range(10)], dtype=np.float64)
+        self.pdf = pd.Series(self.npf)
         self.s = ak.array([f"string {i}" for i in range(10)])
         self.c = ak.Categorical(self.s)
 
@@ -29,6 +34,12 @@ class StatsTest(ArkoudaTest):
 
     def test_var(self):
         # Note the numpy and pandas var/std differ, we follow numpy by default
+        self.assertEqual(self.x.var(), self.npx.var())
+        self.assertAlmostEqual(self.y.var(), self.npy.var())
+        self.assertAlmostEqual(self.u.var(), self.npu.var())
+        self.assertEqual(self.b.var(), self.npb.var())
+        self.assertEqual(self.f.var(), self.npf.var())
+
         # The pandas version requires ddof = 1
         self.assertEqual(self.x.var(ddof=1), self.pdx.var())
         self.assertAlmostEqual(self.y.var(ddof=1), self.pdy.var())
@@ -38,6 +49,12 @@ class StatsTest(ArkoudaTest):
 
     def test_std(self):
         # Note the numpy and pandas var/std differ, we follow numpy by default
+        self.assertEqual(self.x.std(), self.npx.std())
+        self.assertAlmostEqual(self.y.std(), self.npy.std())
+        self.assertAlmostEqual(self.u.std(), self.npu.std())
+        self.assertEqual(self.b.std(), self.npb.std())
+        self.assertEqual(self.f.std(), self.npf.std())
+
         # The pandas version requires ddof = 1
         self.assertEqual(self.x.std(ddof=1), self.pdx.std())
         self.assertEqual(self.y.std(ddof=1), self.pdy.std())
@@ -102,7 +119,7 @@ class StatsTest(ArkoudaTest):
         # is there a better way to compare to pandas dataframe when the index doesn't match
         [self.assertTrue(np.allclose(ak_df[c].to_list(), pd_df[c].to_list())) for c in ak_df.columns]
 
-        # verify this doesn't error
+        # verify this doesn't have scoping issues with numeric conversion
         ak.DataFrame(
             {"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f, "s": self.s, "c": self.c}
         ).corr()
