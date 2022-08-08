@@ -1,4 +1,6 @@
 import datetime as dt
+import math
+import statistics
 from collections import deque
 
 import numpy as np
@@ -811,3 +813,37 @@ class PdarrayCreationTest(ArkoudaTest):
             npa += 1
             self.assertTrue(np.all(a == i + 1))
             self.assertTrue(np.all(npa == i + 1))
+
+    def test_randint_randomness(self):
+        minVal = 0
+        maxVal = 2**32
+        size = 250
+        passed = 0
+        trials = 20
+
+        for x in range(trials):
+            l = ak.randint(minVal, maxVal, size)
+            l_median = statistics.median(l.to_ndarray())
+
+            runs, n1, n2 = 0, 0, 0
+
+            # Checking for start of new run
+            for i in range(len(l)):
+                # no. of runs
+                if (l[i] >= l_median > l[i - 1]) or (l[i] < l_median <= l[i - 1]):
+                    runs += 1
+
+                # no. of positive values
+                if (l[i]) >= l_median:
+                    n1 += 1
+                # no. of negative values
+                else:
+                    n2 += 1
+
+            runs_exp = ((2 * n1 * n2) / (n1 + n2)) + 1
+            stan_dev = math.sqrt((2 * n1 * n2 * (2 * n1 * n2 - n1 - n2)) / (((n1 + n2) ** 2) * (n1 + n2 - 1)))
+
+            if abs((runs - runs_exp) / stan_dev) < 1.9:
+                passed += 1
+
+        self.assertGreaterEqual(passed, trials * 0.8)
