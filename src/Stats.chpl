@@ -9,7 +9,7 @@ module Stats {
         return (+ reduce ((ar:real - mean(ar)) ** 2)) / (aD.size - ddof):real;
     }
 
-    proc std(ar: [?aD] ?t1, ddof: int): real throws {
+    proc std(ar: [?aD] ?t, ddof: int): real throws {
         return sqrt(variance(ar, ddof));
     }
 

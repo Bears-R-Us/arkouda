@@ -1832,11 +1832,10 @@ class DataFrame(UserDict):
                 d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
 
-        numeric_cols = [numeric_help(self[c]) for c in self.columns]
         args = {
             "size": len(self.columns),
             "columns": self.columns,
-            "data_names": [col.name for col in numeric_cols],
+            "data_names": [numeric_help(self[c]) for c in self.columns],
         }
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
