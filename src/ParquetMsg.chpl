@@ -654,7 +654,7 @@ module ParquetMsg {
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
-        } else if ty == ArrowTypes.uint64 {
+        } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = new shared SymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
