@@ -33,15 +33,16 @@ module ParquetMsg {
   extern var ARROWINT64: c_int;
   extern var ARROWINT32: c_int;
   extern var ARROWUINT64: c_int;
+  extern var ARROWUINT32: c_int;
   extern var ARROWBOOLEAN: c_int;
   extern var ARROWSTRING: c_int;
   extern var ARROWFLOAT: c_int;
   extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
 
-  enum ArrowTypes { int64, int32, uint64, stringArr,
-                    timestamp, boolean, double,
-                    float, notimplemented };
+  enum ArrowTypes { int64, int32, uint64, uint32,
+                    stringArr, timestamp, boolean,
+                    double, float, notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -259,6 +260,7 @@ module ParquetMsg {
     
     if arrType == ARROWINT64 then return ArrowTypes.int64;
     else if arrType == ARROWINT32 then return ArrowTypes.int32;
+    else if arrType == ARROWUINT32 then return ArrowTypes.uint32;
     else if arrType == ARROWUINT64 then return ArrowTypes.uint64;
     else if arrType == ARROWBOOLEAN then return ArrowTypes.boolean;
     else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
@@ -277,6 +279,8 @@ module ParquetMsg {
     select dtype {
       when 'int64' {
         return ARROWINT64;
+      } when 'uint32' {
+        return ARROWUINT32;
       } when 'uint64' {
         return ARROWUINT64;
       } when 'bool' {
@@ -650,7 +654,7 @@ module ParquetMsg {
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
-        } else if ty == ArrowTypes.uint64 {
+        } else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
           var entryVal = new shared SymEntry(len, uint);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
