@@ -368,7 +368,7 @@ git push --tags
 <a id="external-integration"></a>
 ## External Systems Integration <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-Integrating Arkouda with cloud environments enables users to access Arkouda from machine learning (ML) and deep learning (DL) workflows deployed to Kubernetes as an example. Detailed discussions regarding Arkouda systems integration and specific instructions for registering/deregistering Arkouda with Kubernetes are located in [EXTERNAL INTEGRATION](EXTERNAL_INTEGRATION)
+Integrating Arkouda with cloud environments enables users to access Arkouda from machine learning (ML) and deep learning (DL) workflows deployed to Kubernetes as an example. Detailed discussions regarding Arkouda systems integration and specific instructions for registering/deregistering Arkouda with Kubernetes are located in [EXTERNAL INTEGRATION](EXTERNAL_INTEGRATION.md)
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
