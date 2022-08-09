@@ -29,6 +29,7 @@ module MultiTypeSymEntry
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
                 GroupBySymEntry,      // GroupBy
+                SegArraySymEntry,     // Segmented Array
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -302,10 +303,21 @@ module MultiTypeSymEntry
      * of other entry types.
      */
     class CompositeSymEntry:AbstractSymEntry {
-        proc init() {
+        var dtype: DType; // answer to numpy dtype
+        var itemsize: int; // answer to numpy itemsize = num bytes per elt
+        var size: int = 0; // answer to numpy size == num elts
+        var ndim: int = 1; // answer to numpy ndim == 1-axis for now
+        var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
+
+        proc init(type etype, len: int = 0) {
             super.init();
             this.entryType = SymbolEntryType.CompositeSymEntry;
             assignableTypes.add(this.entryType);
+            
+            this.dtype = whichDtype(etype);
+            this.itemsize = dtypeSize(this.dtype);
+            this.size = len;
+            this.shape = (len,);
         }
     }
 
@@ -328,14 +340,8 @@ module MultiTypeSymEntry
         var offsetsEntry: shared SymEntry(int);
         var bytesEntry: shared SymEntry(uint(8));
 
-        var dtype: DType; // answer to numpy dtype
-        var itemsize: int; // answer to numpy itemsize = num bytes per elt
-        var size: int; // answer to numpy size == num elts
-        var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
-
         proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
-            super.init();
+            super.init(etype, bytesSymEntry.size);
             this.entryType = SymbolEntryType.SegStringSymEntry;
             assignableTypes.add(this.entryType);
 
@@ -379,6 +385,32 @@ module MultiTypeSymEntry
         }
     }
 
+    class SegArraySymEntry:CompositeSymEntry {
+        type etype;
+
+        var segmentsEntry: shared SymEntry(int);
+        var valuesEntry: shared SymEntry(etype);
+
+        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype){
+            super.init(etype, valuesSymEntry.size);
+            this.entryType = SymbolEntryType.SegArraySymEntry;
+            assignableTypes.add(this.entryType);
+            this.etype = etype;
+            this.segmentsEntry = segmentsSymEntry;
+            this.valuesEntry = valuesSymEntry;
+
+            this.dtype = whichDtype(etype);
+            this.itemsize = this.valuesEntry.itemsize;
+            this.size = this.segmentsEntry.size;
+            this.ndim = this.segmentsEntry.ndim;
+            this.shape = this.segmentsEntry.shape;
+        }
+
+        override proc getSizeEstimate(): int {
+            return this.segmentsEntry.getSizeEstimate() + this.valuesEntry.getSizeEstimate();
+        }
+    }
+
     /**
      * Helper proc to cast AbstrcatSymEntry to GenSymEntry
      */
@@ -391,6 +423,11 @@ module MultiTypeSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
+    }
+
+    proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
+        // TODO - need a way to manipulate this to give the type
+        return (entry: borrowed CompositeSymEntry);
     }
 
     /**

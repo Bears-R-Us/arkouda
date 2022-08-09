@@ -390,6 +390,12 @@ module MultiTypeSymbolTable
                 var g:SegStringSymEntry = toSegStringSymEntry(entry);
                 return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
             }
+            else if entry.isAssignableTo(SymbolEntryType.SegArraySymEntry) {
+                var g:CompositeSymEntry = toCompositeSymEntry(entry);
+                // Note - as SegArray functionality is moved, we may need to adjust this
+                // to provide more data. Though this will depend upon how the calculation is configured
+                return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+            }
             
             throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
         }

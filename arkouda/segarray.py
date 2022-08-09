@@ -4,6 +4,7 @@ from warnings import warn
 
 import numpy as np  # type: ignore
 
+from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_
@@ -13,6 +14,7 @@ from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdar
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
 from arkouda.pdarraysetops import concatenate
+from arkouda.strings import Strings
 
 
 def gen_ranges(starts, ends, stride=1):
@@ -84,8 +86,9 @@ class SegArray:
             Start index of each sub-array in the flattened values array
         values : pdarray
             The flattened values of all sub-arrays
-        copy : bool
+        copy : bool (Deprecated)
             If True, make a copy of the input arrays; otherwise, just store a reference.
+            Moving the object to the server has resulted in this being deprecated.
 
         Returns
         -------
@@ -97,6 +100,7 @@ class SegArray:
         Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
         attach method.
         """
+        # validate inputs
         if not isinstance(segments, pdarray) or segments.dtype != akint64:
             raise TypeError("Segments must be int64 pdarray")
         if not is_sorted(segments):
@@ -106,23 +110,47 @@ class SegArray:
                 raise ValueError("Segments must start at zero and be less than values.size")
         elif values.size > 0:
             raise ValueError("Cannot have non-empty values with empty segments")
-        if copy:
-            self.segments = segments[:]
-            self.values = values[:]
-        else:
-            self.segments = segments
-            self.values = values
-        self.size = segments.size
-        self.valsize = values.size
+
+        # create the server message
+        rep_msg = generic_msg(
+            cmd="segArr-assemble",
+            args={
+                "segments": segments,
+                "values": values,
+            },
+        )
+
+        try:
+            # parse the return message from building the server object
+            fields = rep_msg.split()
+            self.name = fields[1]
+            self.dtype = fields[2]
+            self.size = int(fields[3])
+            self.ndim = int(fields[4])
+
+            # remove comma from 1 tuple with trailing comma
+            if fields[5][len(fields[5]) - 2] == ",":
+                fields[5] = fields[5].replace(",", "")
+            self.shape = [int(el) for el in fields[5][1:-1].split(",")]
+            self.itemsize = int(fields[6])
+        except Exception as e:
+            raise ValueError(e)
+
+        # Caching vars until all functionality is moved to server - these probably won't be
+        # needed once all functionality is moved to the server
+        self._values = None  # cache - use .values to access/set
+        self._segments = None  # cache - use .segments to access/set
+        self._valsize = None  # cache - use .valsize to access/set
+
+        # Compute the lengths/empty segments (This will need to be moved to the server)
         if lengths is None:
             self.lengths = self._get_lengths()
         else:
             self.lengths = lengths
-        self.dtype = values.dtype
-
         self._non_empty = self.lengths > 0
         self._non_empty_count = self._non_empty.sum()
 
+        # grouping object computation. (This will need to be moved to the server)
         if grouping is None:
             if self.size == 0 or self._non_empty_count == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
@@ -135,6 +163,64 @@ class SegArray:
                 )
         else:
             self.grouping = grouping
+
+    @property
+    def segments(self):
+        """
+         Return the pdarray containing the segments.
+         This is configured to prevent the need to move all functionality to server at once.
+
+         Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._segments is None:
+            rep_msg = generic_msg(
+                cmd="segArr-getSegments",
+                args={
+                    "name": self.name,
+                },
+            )
+            self._segments = create_pdarray(rep_msg)
+        return self._segments
+
+    @property
+    def values(self):
+        """
+        Return the pdarray containing the values of the segarray.
+        This is configured to prevent the need to move all functionality to server at once.
+
+        Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._values is None:
+            rep_msg = generic_msg(
+                cmd="segArr-getValues",
+                args={
+                    "name": self.name,
+                },
+            )
+            self._values = (
+                Strings.from_return_msg(rep_msg)
+                if rep_msg.split()[2] == "str"
+                else create_pdarray(rep_msg)
+            )
+        return self._values
+
+    @property
+    def valsize(self):
+        """
+        Return the size of the values array.
+        This is configured to prevent the need to move all functionality to server at once.
+
+        Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._valsize is None:
+            self._valsize = self.values.size
+        return self._valsize
 
     @classmethod
     def from_multi_array(cls, m):

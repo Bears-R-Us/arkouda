@@ -4,6 +4,7 @@ module SegmentedMsg {
   use ServerErrors;
   use Logging;
   use Message;
+  use SegmentedArray;
   use SegmentedString;
   use ServerErrorStrings;
   use ServerConfig;
@@ -12,9 +13,166 @@ module SegmentedMsg {
   use RandArray;
   use IO;
   use Map;
+  use GenSymIO;
 
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
+
+  /**
+  * Build a Segmented Array object based on the segments/values specified.
+  **/
+  proc assembleSegArrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var msgArgs = parseMessageArgs(payload, 2);
+    var segName = msgArgs.getValueOf("segments");
+    var valName = msgArgs.getValueOf("values"); 
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s segmentsname: %s valuesName: %s".format(cmd, segName, valName));
+
+    var repMsg: string;
+    var segments = getGenericTypedArrayEntry(segName, st);
+    var segs = toSymEntry(segments, int);
+
+    var valEntry = st.tab.getBorrowed(valName);
+    if valEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry){ //SegString
+      var vals = getSegString(valName, st);
+      var segArray = getSegArray(segs.a, vals.values.a, st);
+      repMsg = "created " + st.attrib(segArray.name);
+    } 
+    else { // pdarray
+      var values = getGenericTypedArrayEntry(valName, st);
+      select values.dtype {
+        when (DType.Int64) {
+          var vals = toSymEntry(values, int);
+          var segArray = getSegArray(segs.a, vals.a, st);
+          repMsg = "created " + st.attrib(segArray.name);
+        }
+        when (DType.UInt64) {
+          var vals = toSymEntry(values, uint);
+          var segArray = getSegArray(segs.a, vals.a, st);
+          repMsg = "created " + st.attrib(segArray.name);
+        }
+        when (DType.Float64) {
+          var vals = toSymEntry(values, real);
+          var segArray = getSegArray(segs.a, vals.a, st);
+          repMsg = "created " + st.attrib(segArray.name);
+        }
+        when (DType.Bool) {
+          var vals = toSymEntry(values, bool);
+          var segArray = getSegArray(segs.a, vals.a, st);
+          repMsg = "created " + st.attrib(segArray.name);
+        }
+        otherwise {
+            throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(values.dtype:string),
+                                        getLineNumber(),
+                                        getRoutineName(),
+                                        getModuleName(),
+                                        "TypeError");
+        }
+      }
+    }
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  /**
+  * Procedure to access the Segments of a Segmented Array
+  * This may not be needed once all functionality is server side
+  **/
+  proc getSASegmentsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string = "";
+    var msgArgs = parseMessageArgs(payload, 1);
+    var name = msgArgs.getValueOf("name"): string;
+    var entry = st.tab.getBorrowed(name);
+    var compEntry: CompositeSymEntry = toCompositeSymEntry(entry);
+    var segName = st.nextName();
+    select compEntry.dtype {
+      when (DType.Int64) {
+        var segArr = getSegArray(name, st, int);
+        st.addEntry(segName, segArr.segments);
+        repMsg = "created " + st.attrib(segName);
+      }
+      when (DType.UInt64) {
+        var segArr = getSegArray(name, st, uint);
+        st.addEntry(segName, segArr.segments);
+        repMsg = "created " + st.attrib(segName);
+      }
+      when (DType.Float64) {
+        var segArr = getSegArray(name, st, real);
+        st.addEntry(segName, segArr.segments);
+        repMsg = "created " + st.attrib(segName);
+      }
+      when (DType.Bool) {
+        var segArr = getSegArray(name, st, bool);
+        st.addEntry(segName, segArr.segments);
+        repMsg = "created " + st.attrib(segName);
+      }
+      when (DType.UInt8){
+        var segArr = getSegArray(name, st, uint(8));
+        st.addEntry(segName, segArr.segments);
+        repMsg = "created " + st.attrib(segName);
+      }
+      otherwise {
+        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(compEntry.dtype:string),
+                                      getLineNumber(),
+                                      getRoutineName(),
+                                      getModuleName(),
+                                      "TypeError");
+      }
+    }
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  /**
+  * Procedure to access the Segments of a Segmented Array
+  * This may not be needed once all functionality is moved server side
+  **/
+  proc getSAValuesMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string = "";
+    var msgArgs = parseMessageArgs(payload, 1);
+    var name = msgArgs.getValueOf("name"): string;
+    var entry = st.tab.getBorrowed(name);
+    var compEntry: CompositeSymEntry = toCompositeSymEntry(entry);
+    var valName = st.nextName();
+    select compEntry.dtype {
+      when (DType.Int64) {
+        var segArr = getSegArray(name, st, int);
+        st.addEntry(valName, segArr.values);
+        repMsg = "created " + st.attrib(valName);
+      }
+      when (DType.UInt64) {
+        var segArr = getSegArray(name, st, uint);
+        st.addEntry(valName, segArr.values);
+        repMsg = "created " + st.attrib(valName);
+      }
+      when (DType.Float64) {
+        var segArr = getSegArray(name, st, real);
+        st.addEntry(valName, segArr.values);
+        repMsg = "created " + st.attrib(valName);
+      }
+      when (DType.Bool) {
+        var segArr = getSegArray(name, st, bool);
+        st.addEntry(valName, segArr.values);
+        repMsg = "created " + st.attrib(valName);
+      }
+      when (DType.UInt8){
+        var segArr = getSegArray(name, st, uint(8));
+        var offsets = segmentedCalcOffsets(segArr.values.a, segArr.values.aD);
+        var valsSegString = getSegString(offsets, segArr.values.a, st);
+        repMsg = "created " + st.attrib(valsSegString.name) + "+created bytes.size %t".format(valsSegString.nBytes);
+      }
+      otherwise {
+        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(compEntry.dtype:string),
+                                      getLineNumber(),
+                                      getRoutineName(),
+                                      getModuleName(),
+                                      "TypeError");
+      }
+    }
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
 
   /**
    * Procedure for assembling disjoint Strings-object / SegString parts
@@ -1038,6 +1196,9 @@ module SegmentedMsg {
   registerFunction("segmentedGroup", segGroupMsg, getModuleName());
   registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
   registerFunction("randomStrings", randomStringsMsg, getModuleName());
+  registerFunction("segArr-assemble", assembleSegArrayMsg, getModuleName());
+  registerFunction("segArr-getSegments", getSASegmentsMsg, getModuleName());
+  registerFunction("segArr-getValues", getSAValuesMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
 }

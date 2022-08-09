@@ -19,7 +19,7 @@ module SegmentedString {
   use SegmentedComputation;
 
   private config const logLevel = ServerConfig.logLevel;
-  const saLogger = new Logger(logLevel);
+  const ssLogger = new Logger(logLevel);
 
   private config param useHash = true;
   param SegmentedStringUseHash = useHash;
@@ -32,7 +32,7 @@ module SegmentedString {
       var abstractEntry = st.lookup(name);
       if !abstractEntry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
           var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
-          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new Error(errorMsg);
       }
       var entry:SegStringSymEntry = abstractEntry: borrowed SegStringSymEntry;
@@ -122,14 +122,14 @@ module SegmentedString {
     proc show(n: int = 3) throws {
       if (size >= 2*n) {
         for i in 0..#n {
-            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            ssLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
         for i in size-n..#n {
-            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            ssLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       } else {
         for i in 0..#size {
-            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            ssLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       }
     }
@@ -158,7 +158,7 @@ module SegmentedString {
        Returns arrays for the segment offsets and bytes of the slice.*/
     proc this(const slice: range(stridable=false)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
-          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
           "Array is out of bounds");
           throw new owned OutOfBoundsError();
       }
@@ -208,11 +208,11 @@ module SegmentedString {
       var ivMin = min reduce iv;
       var ivMax = max reduce iv;
       if (ivMin < 0) || (ivMax >= offsets.size) {
-          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                               "Array out of bounds");
           throw new owned OutOfBoundsError();
       }
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
@@ -239,9 +239,9 @@ module SegmentedString {
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
       
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                 "aggregation in %i seconds".format(getCurrentTime() - t1));
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if logLevel == LogLevel.DEBUG {
           t1 = getCurrentTime();
       }
@@ -296,7 +296,7 @@ module SegmentedString {
           }
         }
       }
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Gathered offsets and vals in %i seconds".format(
                                            getCurrentTime() -t1));
       return (gatheredOffsets, gatheredVals);
@@ -306,11 +306,11 @@ module SegmentedString {
     proc this(iv: [?D] bool) throws {
       // Index vector must be same domain as array
       if (D != offsets.aD) {
-          saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "Array out of bounds");
           throw new owned OutOfBoundsError();
       }
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                  "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
@@ -347,13 +347,13 @@ module SegmentedString {
       var t = new Timer();
       if useHash {
         // Hash all strings
-        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
+        ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
         if logLevel == LogLevel.DEBUG { t.start(); }
         var hashes = this.siphash();
 
         if logLevel == LogLevel.DEBUG { 
             t.stop();    
-            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "hashing took %t seconds\nSorting hashes".format(t.elapsed())); 
             t.clear(); t.start(); 
         }
@@ -362,7 +362,7 @@ module SegmentedString {
         var iv = radixSortLSD_ranks(hashes);
         if logLevel == LogLevel.DEBUG { 
             t.stop(); 
-            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                             "sorting took %t seconds".format(t.elapsed())); 
         }
         if logLevel == LogLevel.DEBUG {
@@ -371,7 +371,7 @@ module SegmentedString {
                                                  sortedHashes[(iv.domain.low)..#(iv.size-1)];
           printAry("diffs = ", diffs);
           var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
-          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "Are hashes sorted? %i".format(&& reduce nonDecreasing));
         }
         return iv;
@@ -731,7 +731,7 @@ module SegmentedString {
       ref origVals = this.values.a;
       const lengths = this.getLengths();
 
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                              "chars: %s - origOffsets: %t - origVals: %t"
                                              .format(chars, origOffsets, origVals:bytes));
 
@@ -1105,7 +1105,7 @@ module SegmentedString {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
-          saLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
                                                    "argsort called on already sorted array");
           var ranks: [D] int = [i in D] i;
           return ranks;
@@ -1262,7 +1262,7 @@ module SegmentedString {
     }
     catch {
       var errorMsg = "re2 could not compile pattern: %s".format(pattern);
-      saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       throw new owned IllegalArgumentError(errorMsg);
     }
   }
@@ -1345,7 +1345,7 @@ module SegmentedString {
       const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
       const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
            "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(
                                              uoMain.size, uoTest.size, segs.size));
       var st = new owned SymTab();
@@ -1354,7 +1354,7 @@ module SegmentedString {
       const (sortedSegs, sortedVals) = ar[order];
       const sar = new owned SegString(sortedSegs, sortedVals, st);
       if logLevel == LogLevel.DEBUG { 
-          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "Sorted concatenated unique strings:"); 
           sar.show(10); 
           stdout.flush(); 
@@ -1384,7 +1384,7 @@ module SegmentedString {
         }
       }
       
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                              "Flag pop: %t".format(+ reduce flag));
 
       // Now flag contains true for both elements of duplicate pairs
@@ -1395,7 +1395,7 @@ module SegmentedString {
         agg.copy(ret[o], f);
       }
       if logLevel == LogLevel.DEBUG {
-          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "Ret pop: %t".format(+ reduce ret));
       }
       // Broadcast back to original (pre-unique) order
