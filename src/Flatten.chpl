@@ -7,7 +7,7 @@ module Flatten {
   use SymArrayDmap;
   use CommAggregation;
   use Reflection;
-  use ArkoudaRegexCompat;
+  use Regex;
   use CTypes;
 
   config const NULL_STRINGS_VALUE = 0:uint(8);
