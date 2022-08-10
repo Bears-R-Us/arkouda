@@ -117,7 +117,7 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue(isinstance(df.day, ak.Series))
         self.assertTrue(isinstance(df.amount, ak.Series))
         for col in ("userName", "userID", "item", "day", "amount"):
-            self.assertTrue(isinstance(df["userName"], (ak.pdarray, ak.Strings, ak.Categorical)))
+            self.assertTrue(isinstance(df[col], (ak.pdarray, ak.Strings, ak.Categorical)))
         self.assertTrue(isinstance(df[["userName", "amount"]], ak.DataFrame))
         self.assertTrue(isinstance(df[("userID", "item", "day")], ak.DataFrame))
         self.assertTrue(isinstance(df.index, ak.Index))

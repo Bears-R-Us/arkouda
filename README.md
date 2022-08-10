@@ -93,18 +93,16 @@ This yielded a >20TB dataframe in Arkouda.
 1. [Prerequisites](#prereqs)
 2. [Building Arkouda](#build-ak)
 3. [Testing Arkouda](#test-ak)
-4. [Installing Arkouda Python libs and deps](#install-ak)
-5. [Running arkouda_server](#run-ak)
+4. [Running arkouda_server](#run-ak)
    - [Sanity check](#run-ak-sanity)
    - [Token-Based Authentication](#run-ak-token-auth)
    - [Connecting to Arkouda](#run-ak-connect)
-6. [Logging](#log-ak)
-7. [Type Checking in Arkouda](#typecheck-ak)
-8. [Environment Variables](#env-vars-ak)
-9. [Versioning](#versioning-ak)
-10. [External Systems Integration](#external-integration)
-11. [Contributing](#contrib-ak)
-
+5. [Logging](#log-ak)
+6. [Type Checking in Arkouda](#typecheck-ak)
+7. [Environment Variables](#env-vars-ak)
+8. [Versioning](#versioning-ak)
+9. [External Systems Integration](#external-integration)
+10. [Contributing](#contrib-ak)
 
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

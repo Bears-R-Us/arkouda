@@ -1802,6 +1802,45 @@ class DataFrame(UserDict):
 
         return DataFrame(df_def, index=self.index)
 
+    def corr(self) -> DataFrame:
+        """
+        Return new DataFrame with pairwise correlation of columns
+
+        Returns
+        -------
+        DataFrame
+            Arkouda DataFrame containing correlation matrix of all columns
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+
+        See Also
+        --------
+        pdarray.corr
+
+        Notes
+        -----
+        Generates the correlation matrix using Pearson R for all columns
+
+        Attempts to convert to numeric values where possible for inclusion in the matrix.
+        """
+
+        def numeric_help(d):
+            if isinstance(d, Strings):
+                d = Categorical(d)
+            return d if isinstance(d, pdarray) else d.codes
+
+        args = {
+            "size": len(self.columns),
+            "columns": self.columns,
+            "data_names": [numeric_help(self[c]) for c in self.columns],
+        }
+
+        ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
+        return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
+
 
 def sorted(df, column=False):
     """

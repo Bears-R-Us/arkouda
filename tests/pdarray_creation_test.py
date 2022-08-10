@@ -814,7 +814,9 @@ class PdarrayCreationTest(ArkoudaTest):
             self.assertTrue(np.all(a == i + 1))
             self.assertTrue(np.all(npa == i + 1))
 
-    def test_randint_randomness(self):
+    def randint_randomness(self):
+        # THIS TEST DOES NOT RUN, see Issue #1672
+        # To run rename to `test_randint_randomness`
         minVal = 0
         maxVal = 2**32
         size = 250
