@@ -770,18 +770,14 @@ class GroupBy:
         unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
         if hasattr(values, "_get_grouping_keys"):
             # All single-array groupable types must have a _get_grouping_keys method
-            if isinstance(values, pdarray) and cast(pdarray, values).dtype == akfloat64:
+            if isinstance(values, pdarray) and values.dtype == akfloat64:
                 raise TypeError("grouping/uniquing unsupported for float64 arrays")
             togroup = [unique_key_idx, values]
         else:
             # Treat as a sequence of groupable arrays
             for v in values:
-                if (
-                    isinstance(values, pdarray)
-                    and cast(pdarray, values).dtype != akint64
-                    and cast(pdarray, values).dtype != akuint64
-                ):
-                    raise TypeError("nunique unsupported for this dtype")
+                if isinstance(v, pdarray) and v.dtype not in [akint64, akuint64]:
+                    raise TypeError("grouping/uniquing unsupported for this dtype")
             togroup = [unique_key_idx] + list(values)
         return togroup
 
