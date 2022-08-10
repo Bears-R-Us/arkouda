@@ -6,13 +6,11 @@ module ExternalIntegration {
     use Logging;
     use ServerConfig;
     use ServerErrors;
-    use ServerDaemon;
 
     private config const logLevel = ServerConfig.logLevel;
-    const esLogger = new Logger(logLevel);
-    
-    private config const serviceType = ServiceType.INTERNAL;
-    private config const externalSystem = SystemType.NONE;
+    const eiLogger = new Logger(logLevel);
+
+    private config const systemType = SystemType.NONE;
     
     /*
      * libcurl C constants required to configure the Curl core
@@ -37,7 +35,7 @@ module ExternalIntegration {
     extern const CURLOPT_SSL_VERIFYPEER:CURLoption;
 
     /*
-     * Enum specifies the type of external system Arkouda will connect to.
+     * Enum specifies the type of external system Arkouda will integrate with.
      */
     enum SystemType{KUBERNETES,REDIS,CONSUL,NONE};
 
@@ -48,11 +46,10 @@ module ExternalIntegration {
     enum ChannelType{STDOUT,FILE,HTTP};
        
     /*
-     * Enum specifies if the service endpoint is internal (Arkouda is 
-     * within the external system) or external (Arkouda is deployed outside 
-     * of the external system
+     * Enum specifies if the service endpoint is the Arkouda client or metrics
+     * socket 
      */
-    enum ServiceType{INTERNAL,EXTERNAL,METRICS};
+    enum ServiceEndpoint{ARKOUDA_CLIENT,METRICS};
     
     /*
      * Enum specifies the request type used to write to an external system 
@@ -207,17 +204,17 @@ module ExternalIntegration {
             Curl.curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
             Curl.curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this.requestType:string);
 
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "Configured HttpChannel for type %s format %s".format(
                       this.requestType, this.requestFormat));
 
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "Executing Http request with payload %s".format(payload));
 
             var ret = Curl.curl_easy_perform(curl);
             
             if ret == 0 {
-                esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "Successfully executed Http request with payload %s".format(payload));
             } else {
                 if ret == 22 {
@@ -235,7 +232,7 @@ module ExternalIntegration {
             args.free();
             Curl.curl_easy_cleanup(curl);     
             
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "Closed HttpChannel");      
         }
     }    
@@ -323,7 +320,7 @@ module ExternalIntegration {
      */
     proc registerWithKubernetes(appName: string, serviceName: string, 
                                          servicePort: int, targetServicePort: int) throws {
-        if serviceType == ServiceType.INTERNAL {
+        if deployment == Deployment.KUBERNETES {
             registerAsInternalService(appName, serviceName, servicePort, targetServicePort);
         } else {
             registerAsExternalService(serviceName, servicePort, targetServicePort);
@@ -360,7 +357,7 @@ module ExternalIntegration {
                                     targetPort,
                                     appName);
 
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering internal service via payload %s and url %s".format(
                                          servicePayload,serviceUrl));
 
@@ -378,7 +375,7 @@ module ExternalIntegration {
 
             channel.write(servicePayload);
         
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registered internal service via payload %s and url %s".format(
                                          servicePayload,serviceUrl));  
         }
@@ -398,7 +395,7 @@ module ExternalIntegration {
                                     serviceName,
                                     servicePort,
                                     serviceTargetPort);
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering external service via payload %s and url %s".format(
                                          servicePayload,serviceUrl));
 
@@ -415,7 +412,7 @@ module ExternalIntegration {
                                          sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
 
             channel.write(servicePayload);
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registered external service via payload %s and url %s".format(
                                          servicePayload,serviceUrl));       
             
@@ -441,12 +438,12 @@ module ExternalIntegration {
                                          sslCapath='',
                                          sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
 
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registering endpoint via payload %s and url %s".format(
                                          endpointPayload,endpointUrl));
 
             channel.write(endpointPayload);      
-            esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Registered endpoint via payload %s and endpointUrl %s".format(
                                          endpointPayload,endpointUrl)); 
         }
@@ -477,35 +474,72 @@ module ExternalIntegration {
                                          sslCapath='',
                                          sslKeyPasswd=ServerConfig.getEnv('KEY_PASSWD')));
         channel.write('{}');
-        esLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                      "Deregistered service %s from Kubernetes via url %s".format(serviceName, 
                                                                                  url));
     }
     
-    proc getKubernetesRegistrationParameters(serviceType: ServiceType) throws {
+    proc getKubernetesRegistrationParameters(serviceEndpoint: ServiceEndpoint) throws {
         var serviceName: string;
         var servicePort: int;
         var targetServicePort: int;
 
-        if serviceType == ServiceType.METRICS {
+        if serviceEndpoint == ServiceEndpoint.METRICS {
             serviceName = ServerConfig.getEnv('METRICS_SERVICE_NAME');
-            servicePort = ServerConfig.getEnv('METRICS_SERVICE_PORT'):int;
-            targetServicePort =
-                           ServerConfig.getEnv('METRICS_SERVICE_TARGET_PORT'):int;
+            servicePort = ServerConfig.getEnv('METRICS_SERVICE_PORT', 
+                                               default='5556'):int;
+            servicePort = ServerConfig.getEnv('METRICS_SERVICE_TARGET_PORT', 
+                                               default='5556'):int;
         } else {
             serviceName = ServerConfig.getEnv('EXTERNAL_SERVICE_NAME');
-            servicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_PORT'):int;
-            targetServicePort =
-                           ServerConfig.getEnv('EXTERNAL_SERVICE_TARGET_PORT'):int;
+            servicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_PORT', 
+                                               default='5555'):int;
+            targetServicePort = ServerConfig.getEnv('EXTERNAL_SERVICE_TARGET_PORT', 
+                                                     default='5555'):int;
         }
         return (serviceName,servicePort,targetServicePort);
     } 
 
-    proc getKubernetesDeregisterParameters(serviceType: ServiceType) {
-        if serviceType == ServiceType.METRICS {
+    proc getKubernetesDeregisterParameters(serviceEndpoint: ServiceEndpoint) {
+        if serviceEndpoint == ServiceEndpoint.METRICS {
             return ServerConfig.getEnv('METRICS_SERVICE_NAME');
         } else {
             return ServerConfig.getEnv('EXTERNAL_SERVICE_NAME');
+        }
+    }
+    
+    /*
+     * Registers Arkouda with an external system on startup, defaulting to none.
+     */
+    proc registerWithExternalSystem(appName: string, serviceName: string, 
+                                           servicePort: int, targetServicePort: int) throws {   
+        select systemType {
+            when SystemType.KUBERNETES {
+                registerWithKubernetes(appName, serviceName, servicePort, targetServicePort);
+                eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Registered Arkouda with Kubernetes");
+            }
+            otherwise {
+                eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Did not register Arkouda with any external systems");            
+            }
+        }
+    }
+        
+    /*
+     * Deregisters Arkouda from an external system upon receipt of shutdown command
+     */
+    proc deregisterFromExternalSystem(serviceName: string) throws {
+        select systemType {
+            when SystemType.KUBERNETES {
+                deregisterFromKubernetes(serviceName);
+                eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Deregistered service %s from Kubernetes".format(serviceName));
+            }
+            otherwise {
+                eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Did not deregister Arkouda from any external system");
+            }
         }
     }
 }

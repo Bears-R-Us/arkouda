@@ -30,8 +30,6 @@ module ServerDaemon {
     const sdLogger = new Logger(logLevel);
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
-    
-    private config const externalSystem = SystemType.NONE;
 
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
@@ -515,7 +513,7 @@ module ServerDaemon {
                 }
 
                 var params: (string,int,int) = getKubernetesRegistrationParameters(
-                                                          ServiceType.EXTERNAL);
+                                                          ServiceEndpoint.ARKOUDA_CLIENT);
                 registerWithExternalSystem(appName, params(0), params(1), params(2));
             }
             super.run();
@@ -524,46 +522,11 @@ module ServerDaemon {
         override proc shutdown(user: string) throws {
             on Locales[here.id] {
                 var serviceName = getKubernetesDeregisterParameters(
-                                                          ServiceType.EXTERNAL); 
+                                                          ServiceEndpoint.ARKOUDA_CLIENT); 
                 deregisterFromExternalSystem(serviceName);
             }
 
             super.shutdown(user);
-        }
-
-        /*
-         * Registers Arkouda with an external system on startup, defaulting to none.
-         */
-        proc registerWithExternalSystem(appName: string, serviceName: string, 
-                                           servicePort: int, targetServicePort: int) throws {   
-            select externalSystem {
-                when SystemType.KUBERNETES {
-                    registerWithKubernetes(appName, serviceName, servicePort, targetServicePort);
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Registered Arkouda with Kubernetes");
-                }
-                otherwise {
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Did not register Arkouda with any external systems");            
-                }
-            }
-        }
-        
-        /*
-         * Deregisters Arkouda from an external system upon receipt of shutdown command
-         */
-        proc deregisterFromExternalSystem(serviceName: string) throws {
-            select externalSystem {
-                when SystemType.KUBERNETES {
-                    deregisterFromKubernetes(serviceName);
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Deregistered service %s from Kubernetes".format(serviceName));
-                }
-                otherwise {
-                    sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Did not deregister Arkouda from any external system");
-                }
-            }
         }
     }
 
