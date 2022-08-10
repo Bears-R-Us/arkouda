@@ -19,6 +19,7 @@ module RadixSortLSD
     use IO;
     use CTypes;
     use Reflection;
+    use RangeChunk;
     use Logging;
     use ServerConfig;
 
@@ -78,28 +79,30 @@ module RadixSortLSD
             // count digits
             coforall loc in Locales {
                 on loc {
+                    // allocate counts
+                    var tasksBucketCounts: [Tasks] [0..#numBuckets] int;
                     coforall task in Tasks {
-                        // bucket domain
-                        var bD = {0..#numBuckets};
-                        // allocate counts
-                        var taskBucketCounts: [bD] int;
+                        ref taskBucketCounts = tasksBucketCounts[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
                             const key = comparator.key(temp.localAccess[i]);
                             var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
-                        // write counts in to global counts in transposed order
+                    }//coforall task
+                    // write counts in to global counts in transposed order
+                    coforall tid in Tasks {
                         var aggregator = newDstAggregator(int);
-                        for bucket in bD {
-                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], 
-                                                         taskBucketCounts[bucket]);
+                        for task in Tasks {
+                            ref taskBucketCounts = tasksBucketCounts[task];
+                            for bucket in chunk(0..#numBuckets, numTasks, tid) {
+                                aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)],
+                                                             taskBucketCounts[bucket]);
+                            }
                         }
                         aggregator.flush();
                     }//coforall task
@@ -116,24 +119,26 @@ module RadixSortLSD
             // calc new positions and permute
             coforall loc in Locales {
                 on loc {
+                    // allocate counts
+                    var tasksBucketPos: [Tasks] [0..#numBuckets] int;
+                    // read start pos in to globalStarts back from transposed order
+                    coforall tid in Tasks {
+                        var aggregator = newSrcAggregator(int);
+                        for task in Tasks {
+                            ref taskBucketPos = tasksBucketPos[task];
+                            for bucket in chunk(0..#numBuckets, numTasks, tid) {
+                              aggregator.copy(taskBucketPos[bucket],
+                                         globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+                            }
+                        }
+                        aggregator.flush();
+                    }//coforall task
                     coforall task in Tasks {
-                        // bucket domain
-                        var bD = {0..#numBuckets};
-                        // allocate counts
-                        var taskBucketPos: [bD] int;
+                        ref taskBucketPos = tasksBucketPos[task];
                         // get local domain's indices
                         var lD = aD.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        // read start pos in to globalStarts back from transposed order
-                        {
-                            var aggregator = newSrcAggregator(int);
-                            for bucket in bD {
-                                aggregator.copy(taskBucketPos[bucket], 
-                                           globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
-                            }
-                            aggregator.flush();
-                        }
                         // calc new position and put data there in temp
                         {
                             var aggregator = newDstAggregator(t);
