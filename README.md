@@ -101,8 +101,8 @@ This yielded a >20TB dataframe in Arkouda.
 6. [Type Checking in Arkouda](#typecheck-ak)
 7. [Environment Variables](#env-vars-ak)
 8. [Versioning](#versioning-ak)
-9. [Contributing](#contrib-ak)
-
+9. [External Systems Integration](#external-integration)
+10. [Contributing](#contrib-ak)
 
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -363,6 +363,10 @@ python -m arkouda |tail -n 2
 git push --tags
 ```
 
+<a id="external-integration"></a>
+## External Systems Integration <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+Integrating Arkouda with cloud environments enables users to access Arkouda from machine learning (ML) and deep learning (DL) workflows deployed to Kubernetes as an example. Detailed discussions regarding Arkouda systems integration and specific instructions for registering/deregistering Arkouda with Kubernetes are located in [EXTERNAL INTEGRATION](EXTERNAL_INTEGRATION.md)
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 

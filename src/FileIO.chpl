@@ -22,12 +22,12 @@ module FileIO {
     proc appendFile(filePath : string, line : string) throws {
         var writer : channel;
         if exists(filePath) {
-            var aFile = try! open(filePath, iomode.rw);
-            writer = try! aFile.writer(start=aFile.size);
+            var aFile = open(filePath, iomode.rw);
+            writer = aFile.writer(start=aFile.size);
 
         } else {
-              var aFile = try! open(filePath, iomode.cwr);
-              writer = try! aFile.writer();
+              var aFile = open(filePath, iomode.cwr);
+              writer = aFile.writer();
         }
 
         writer.writeln(line);
@@ -35,9 +35,31 @@ module FileIO {
         writer.close();
     }
 
+    proc writeToFile(filePath : string, line : string) throws {
+        var writer : channel;
+        var aFile = open(filePath, iomode.cwr);
+        writer = aFile.writer();
+
+        writer.writeln(line);
+        writer.flush();
+        writer.close();
+    }
+    
+    proc writeLinesToFile(filePath : string, lines : string) throws {
+        var writer : channel;
+        var aFile = open(filePath, iomode.cwr);
+        writer = aFile.writer();
+
+        for line in lines {
+            writer.writeln(line);
+        }
+        writer.flush();
+        writer.close();
+    }
+
     proc getLineFromFile(filePath : string, lineIndex : int=-1) : string throws {
-        var aFile = try! open(filePath, iomode.rw);
-        var lines = try! aFile.lines();
+        var aFile = open(filePath, iomode.rw);
+        var lines = aFile.lines();
         var line : string;
         var returnLine : string;
         var i = 1;
@@ -52,6 +74,24 @@ module FileIO {
         }
 
         return returnLine.strip();
+    }
+    
+    proc getLineFromFile(path: string, match: string) throws {
+        var aFile = open(path, iomode.r);
+        var reader: channel = aFile.reader();
+        var returnLine: string;
+
+        for line in reader.lines() {
+            if line.find(match) >= 0 {
+                returnLine = line;
+                break;
+            }
+        }
+
+        reader.flush();
+        reader.close();
+
+        return returnLine;
     }
 
     proc delimitedFileToMap(filePath : string, delimiter : string=',') : map {

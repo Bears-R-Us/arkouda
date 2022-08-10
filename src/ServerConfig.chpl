@@ -12,6 +12,15 @@ module ServerConfig
     use Reflection;
     use ServerErrors;
     use Logging;
+    
+    enum Deployment {STANDARD,KUBERNETES}
+    
+    /*
+    Type of deployment, which currently is either STANDARD, meaning
+    that Arkouda is deployed bare-metal or within an HPC environment, 
+    or on Kubernetes, defaults to Deployment.STANDARD
+    */
+    config const deployment = Deployment.STANDARD;
 
     /*
     Trace logging flag
@@ -55,6 +64,18 @@ module ServerConfig
 
     proc get_hostname(): string {
       return here.hostname;
+    }
+
+    /*
+     * Retrieves the hostname of the locale 0 arkouda_server process, which is useful for 
+     * registering Arkouda with cloud environments such as Kubernetes.
+     */
+    proc getConnectHostname() throws {
+        var hostname: string;
+        on Locales[0] {
+            hostname = here.name.strip('-0');
+        }
+        return hostname;
     }
 
     /*
