@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.gec0c55d documentation</title>
+    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.gc89c1a4 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -91,6 +91,12 @@
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.std" title="arkouda.pdarrayclass.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the standard deviation of values in the array. The standard</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.cov" title="arkouda.pdarrayclass.cov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cov</span></code></a>(→ numpy.float64)</p></td>
+<td><p>Return the covariance of x and y</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.corr" title="arkouda.pdarrayclass.corr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">corr</span></code></a>(→ numpy.float64)</p></td>
+<td><p>Return the correlation between x and y</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
@@ -769,6 +775,52 @@ always a np.float64 or np.int64.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.cov">
+<span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.float64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the covariance between self and y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>y</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Other pdarray used to calculate covariance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scalar covariance of the two arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if y is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.corr">
+<span class="sig-name descname"><span class="pre">corr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.float64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the correlation between self and y using pearson correlation coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>y</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – Other pdarray used to calculate correlation</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scalar correlation of the two arrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if y is not a pdarray instance</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
 </ul>
 </dd>
@@ -1708,6 +1760,72 @@ estimate of the variance for normally distributed variables. The
 standard deviation computed in this function is the square root of
 the estimated variance, so even with <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>, it will not be an
 unbiased estimate of the standard deviation per se.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.cov">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.float64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the covariance of x and y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – One of the pdarrays used to calculate covariance</p></li>
+<li><p><strong>y</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – One of the pdarrays used to calculate covariance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scalar covariance of the two pdarrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if x or y is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayclass.mean" title="arkouda.pdarrayclass.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayclass.var" title="arkouda.pdarrayclass.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The covariance is calculated by
+<code class="docutils literal notranslate"><span class="pre">cov</span> <span class="pre">=</span> <span class="pre">((x</span> <span class="pre">-</span> <span class="pre">x.mean())</span> <span class="pre">*</span> <span class="pre">(y</span> <span class="pre">-</span> <span class="pre">y.mean())).sum()</span> <span class="pre">/</span> <span class="pre">(x.size</span> <span class="pre">-</span> <span class="pre">1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.corr">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">corr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.float64</span></span></span><a class="headerlink" href="#arkouda.pdarrayclass.corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the correlation between x and y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – One of the pdarrays used to calculate correlation</p></li>
+<li><p><strong>y</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – One of the pdarrays used to calculate correlation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scalar correlation of the two pdarrays</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if x or y is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayclass.std" title="arkouda.pdarrayclass.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayclass.cov" title="arkouda.pdarrayclass.cov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cov</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The correlation is calculated by
+cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 </dd></dl>
 
 <dl class="py function">

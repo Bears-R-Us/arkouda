@@ -146,7 +146,7 @@ or
       * Return the value as the provided type
       
 
-   .. method:: proc getList(size: int)
+   .. method:: proc getList(size: int) throws
 
       
       Parse value as a list of strings.

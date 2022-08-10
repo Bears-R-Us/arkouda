@@ -664,6 +664,24 @@ Functions
       1   True  False (2 rows x 2 columns)
 
 
+   .. py:method:: corr() -> DataFrame
+
+      Return new DataFrame with pairwise correlation of columns
+
+      :returns: Arkouda DataFrame containing correlation matrix of all columns
+      :rtype: DataFrame
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+      .. seealso:: :obj:`pdarray.corr`
+
+      .. rubric:: Notes
+
+      Generates the correlation matrix using Pearson R for all columns
+
+      Attempts to convert to numeric values where possible for inclusion in the matrix.
+
+
 
 .. py:function:: sorted(df, column=False)
 

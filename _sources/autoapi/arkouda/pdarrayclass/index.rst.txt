@@ -34,6 +34,8 @@ Functions
    arkouda.pdarrayclass.mean
    arkouda.pdarrayclass.var
    arkouda.pdarrayclass.std
+   arkouda.pdarrayclass.cov
+   arkouda.pdarrayclass.corr
    arkouda.pdarrayclass.mink
    arkouda.pdarrayclass.maxk
    arkouda.pdarrayclass.argmink
@@ -473,6 +475,34 @@ Functions
       :rtype: np.float64
 
       :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: cov(y: pdarray) -> numpy.float64
+
+      Compute the covariance between self and y.
+
+      :param y: Other pdarray used to calculate covariance
+      :type y: pdarray
+
+      :returns: The scalar covariance of the two arrays
+      :rtype: np.float64
+
+      :raises TypeError: Raised if y is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. py:method:: corr(y: pdarray) -> numpy.float64
+
+      Compute the correlation between self and y using pearson correlation coefficient.
+
+      :param y: Other pdarray used to calculate correlation
+      :type y: pdarray
+
+      :returns: The scalar correlation of the two arrays
+      :rtype: np.float64
+
+      :raises TypeError: Raised if y is not a pdarray instance
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
@@ -1192,6 +1222,52 @@ Functions
    standard deviation computed in this function is the square root of
    the estimated variance, so even with ``ddof=1``, it will not be an
    unbiased estimate of the standard deviation per se.
+
+
+.. py:function:: cov(x: pdarray, y: pdarray) -> numpy.float64
+
+   Return the covariance of x and y
+
+   :param x: One of the pdarrays used to calculate covariance
+   :type x: pdarray
+   :param y: One of the pdarrays used to calculate covariance
+   :type y: pdarray
+
+   :returns: The scalar covariance of the two pdarrays
+   :rtype: np.float64
+
+   :raises TypeError: Raised if x or y is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`mean`, :obj:`var`
+
+   .. rubric:: Notes
+
+   The covariance is calculated by
+   ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
+
+
+.. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
+
+   Return the correlation between x and y
+
+   :param x: One of the pdarrays used to calculate correlation
+   :type x: pdarray
+   :param y: One of the pdarrays used to calculate correlation
+   :type y: pdarray
+
+   :returns: The scalar correlation of the two pdarrays
+   :rtype: np.float64
+
+   :raises TypeError: Raised if x or y is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`std`, :obj:`cov`
+
+   .. rubric:: Notes
+
+   The correlation is calculated by
+   cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
 
 
 .. py:function:: mink(pda: pdarray, k: arkouda.dtypes.int_scalars) -> pdarray
