@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="GenSymIO" href="GenSymIO.html" />
-    <link rel="prev" title="CommandMap" href="CommandMap.html" /> 
+    <link rel="prev" title="ExternalIntegration" href="ExternalIntegration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
@@ -122,8 +123,23 @@
 <dd></dd></dl>
 
 <dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.writeToFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.writeToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="FileIO.writeLinesToFile">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeLinesToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lines:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.writeLinesToFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getLineFromFile">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineIndex:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#FileIO.getLineFromFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">match:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -254,7 +270,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CommandMap.html" class="btn btn-neutral float-left" title="CommandMap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ExternalIntegration.html" class="btn btn-neutral float-left" title="ExternalIntegration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="GenSymIO.html" class="btn btn-neutral float-right" title="GenSymIO" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

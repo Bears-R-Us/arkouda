@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
@@ -107,6 +108,19 @@
 </pre></div>
 </div>
 <p>arkouda server config param and config const</p>
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="ServerConfig.Deployment">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Deployment</span></span> <span class="pre">{</span> <span class="pre">STANDARD,</span> <span class="pre">KUBERNETES</span> <span class="pre">}</span><a class="headerlink" href="#ServerConfig.Deployment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.deployment">
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">deployment</span></span> <span class="pre">=</span> <span class="pre">Deployment.STANDARD</span><a class="headerlink" href="#ServerConfig.deployment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of deployment, which currently is either STANDARD, meaning
+that Arkouda is deployed bare-metal or within an HPC environment,
+or on Kubernetes, defaults to Deployment.STANDARD</p>
+</dd></dl>
+
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.trace">
 <em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">trace</span></span> <span class="pre">=</span> <span class="pre">true</span><a class="headerlink" href="#ServerConfig.trace" title="Permalink to this definition">¶</a></dt>
@@ -159,6 +173,15 @@
 <dt class="sig sig-object chpl" id="ServerConfig.get_hostname">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_hostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerConfig.get_hostname" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerConfig.getConnectHostname">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectHostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerConfig.getConnectHostname" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Retrieves the hostname of the locale 0 arkouda_server process, which is useful for</p></li>
+<li><p>registering Arkouda with cloud environments such as Kubernetes.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.authenticate">

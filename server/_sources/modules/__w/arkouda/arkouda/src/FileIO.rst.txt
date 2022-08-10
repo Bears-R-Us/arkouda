@@ -23,7 +23,13 @@ or
 
 .. function:: proc appendFile(filePath: string, line: string) throws
 
+.. function:: proc writeToFile(filePath: string, line: string) throws
+
+.. function:: proc writeLinesToFile(filePath: string, lines: string) throws
+
 .. function:: proc getLineFromFile(filePath: string, lineIndex: int = -1): string throws
+
+.. function:: proc getLineFromFile(path: string, match: string) throws
 
 .. function:: proc delimitedFileToMap(filePath: string, delimiter: string = ","): map
 

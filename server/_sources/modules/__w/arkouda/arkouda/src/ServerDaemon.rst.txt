@@ -121,6 +121,18 @@ or
 
    .. method:: override proc run() throws
 
+.. class:: ExternalIntegrationServerDaemon : DefaultServerDaemon
+
+   *
+   * The ExternalIntegrationServerDaemon class registers Arkouda with the
+   * configured external system and then invokes ArkoudaServerDeamon.run()
+   
+
+
+   .. method:: override proc run() throws
+
+   .. method:: override proc shutdown(user: string) throws
+
 .. function:: proc getServerDaemon(daemonType: ServerDaemonType): shared ArkoudaServerDaemon throws
 
 .. function:: proc getServerDaemons() throws
