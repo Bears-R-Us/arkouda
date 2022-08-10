@@ -330,9 +330,6 @@ class GroupByTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             gb.broadcast([])
 
-        # with self.assertRaises(TypeError):
-        #     self.igb.nunique(ak.randint(0, 1, 10, dtype=bool))
-
         with self.assertRaises(TypeError):
             self.igb.nunique(ak.randint(0, 1, 10, dtype=float64))
 
@@ -445,7 +442,7 @@ class GroupByTest(ArkoudaTest):
         ans = [9, 8]
         g = ak.GroupBy(keys)
         _, res = g.first(vals)
-        self.assertListEqual(ans, res.to_ndarray().tolist())
+        self.assertListEqual(ans, res.to_list())
 
     def test_mode_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
@@ -453,11 +450,11 @@ class GroupByTest(ArkoudaTest):
         ans = [5, 3]
         g = ak.GroupBy(keys)
         _, res = g.mode(vals)
-        self.assertListEqual(ans, res.to_ndarray().tolist())
+        self.assertListEqual(ans, res.to_list())
         # Test with multi-array values
         _, res2 = g.mode([vals, vals])
-        self.assertListEqual(ans, res2[0].to_ndarray().tolist())
-        self.assertListEqual(ans, res2[1].to_ndarray().tolist())
+        self.assertListEqual(ans, res2[0].to_list())
+        self.assertListEqual(ans, res2[1].to_list())
 
     def test_unique_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
@@ -465,14 +462,14 @@ class GroupByTest(ArkoudaTest):
         ans = [[4, 5, 6], [2, 3]]
         g = ak.GroupBy(keys)
         _, res = g.unique(vals)
-        for a, r in zip(ans, res.to_ndarray().tolist()):
-            self.assertListEqual(a, r.tolist())
+        for a, r in zip(ans, res.to_list()):
+            self.assertListEqual(a, r)
         # Test with multi-array values
         _, res2 = g.unique([vals, vals])
-        for a, r in zip(ans, res2[0].to_ndarray().tolist()):
-            self.assertListEqual(a, r.tolist())
-        for a, r in zip(ans, res2[1].to_ndarray().tolist()):
-            self.assertListEqual(a, r.tolist())
+        for a, r in zip(ans, res2[0].to_list()):
+            self.assertListEqual(a, r)
+        for a, r in zip(ans, res2[1].to_list()):
+            self.assertListEqual(a, r)
 
 
 def to_tuple_dict(labels, values):
