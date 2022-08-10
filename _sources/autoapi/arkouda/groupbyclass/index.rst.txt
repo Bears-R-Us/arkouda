@@ -199,7 +199,7 @@ Attributes
       array([1, 2, 4, 3])
 
 
-   .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+   .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True) -> Tuple[groupable, groupable]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and apply a reduction to each group's values.
@@ -480,6 +480,9 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
+   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
+
+
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -613,6 +616,40 @@ Attributes
       :raises ValueError: Raised if the key array size does not match the values size or
           if the operator is not in the GroupBy.Reductions array
       :raises RuntimeError: Raised if all is not supported for the values dtype
+
+
+   .. py:method:: first(values: groupable_element_type) -> Tuple[groupable, groupable_element_type]
+
+      First value in each group.
+
+      :param values: The values from which to take the first of each group
+      :type values: pdarray-like
+
+      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
+                * **result** (*pdarray-like*) -- The first value of each group
+
+
+   .. py:method:: mode(values: groupable) -> Tuple[groupable, groupable]
+
+      Most common value in each group. If a group is multi-modal, return the
+      modal value that occurs first.
+
+      :param values: The values from which to take the mode of each group
+      :type values: (list of) pdarray-like
+
+      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
+                * **result** (*(list of) pdarray-like*) -- The most common value of each group
+
+
+   .. py:method:: unique(values: groupable)
+
+      Return the set of unique values in each group, as a SegArray.
+
+      :param values: The values to unique
+      :type values: (list of) pdarray-like
+
+      :returns: * **unique_keys** (*(list of) pdarray-like*) -- The unique keys, in grouped order
+                * **result** (*(list of) SegArray*) -- The unique values of each group
 
 
    .. py:method:: broadcast(values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
