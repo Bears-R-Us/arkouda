@@ -511,11 +511,12 @@ module ExternalIntegration {
     /*
      * Registers Arkouda with an external system on startup, defaulting to none.
      */
-    proc registerWithExternalSystem(appName: string, serviceName: string, 
-                                           servicePort: int, targetServicePort: int) throws {   
+    proc registerWithExternalSystem(appName: string, endpoint: ServiceEndpoint) throws {                                                       
         select systemType {
             when SystemType.KUBERNETES {
-                registerWithKubernetes(appName, serviceName, servicePort, targetServicePort);
+                var params: (string,int,int) = getKubernetesRegistrationParameters(endpoint); 
+
+                registerWithKubernetes(appName, params(0), params(1), params(2));
                 eiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Registered Arkouda with Kubernetes");
             }
@@ -529,7 +530,9 @@ module ExternalIntegration {
     /*
      * Deregisters Arkouda from an external system upon receipt of shutdown command
      */
-    proc deregisterFromExternalSystem(serviceName: string) throws {
+    proc deregisterFromExternalSystem(endpoint: ServiceEndpoint) throws {
+        var serviceName = getKubernetesDeregisterParameters(endpoint); 
+
         select systemType {
             when SystemType.KUBERNETES {
                 deregisterFromKubernetes(serviceName);

@@ -499,7 +499,11 @@ module ServerDaemon {
                                                                                  t1.elapsed()));
         }
     }
-    
+
+    /**
+     * The ExternalIntegrationServerDaemon class registers Arkouda with the
+     * configured external system and then invokes ArkoudaServerDeamon.run()
+     */    
     class ExternalIntegrationServerDaemon : DefaultServerDaemon {
 
         override proc run() throws {
@@ -512,18 +516,14 @@ module ServerDaemon {
                     appName = 'arkouda-server';
                 }
 
-                var params: (string,int,int) = getKubernetesRegistrationParameters(
-                                                          ServiceEndpoint.ARKOUDA_CLIENT);
-                registerWithExternalSystem(appName, params(0), params(1), params(2));
+                registerWithExternalSystem(appName, ServiceEndpoint.ARKOUDA_CLIENT);
             }
             super.run();
         }
         
         override proc shutdown(user: string) throws {
             on Locales[here.id] {
-                var serviceName = getKubernetesDeregisterParameters(
-                                                          ServiceEndpoint.ARKOUDA_CLIENT); 
-                deregisterFromExternalSystem(serviceName);
+                deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
             }
 
             super.shutdown(user);
