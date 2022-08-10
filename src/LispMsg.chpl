@@ -22,6 +22,10 @@ module LispMsg
     use Logging;
     use Message;
 
+    use LisExprData;
+    use LisExprInterp;
+    use TestLisExpr;
+
     private config const logLevel = ServerConfig.logLevel;
     const asLogger = new Logger(logLevel);
 
@@ -44,11 +48,38 @@ module LispMsg
 
         var x = toSymEntry(gEnt, real);
         var y = toSymEntry(gEnt2, real);
-        writeln(x);
-        writeln(y);
+
+        evalLisp(code, 5, x.a, y.a);
 
         repMsg = "applesauce and spaghetti";
         return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc evalLisp(prog: string, val: int, arr1, arr2) {
+        try {
+            var A = arr1;
+            var B = arr2;
+            
+            for (a,b) in zip(A,B) {
+                var ast = parse(prog); // parse and check the program
+                var env = new owned Env(); // allocate the env for variables
+                // addEnrtry redefines values for already existing entries
+                env.addEntry("elt",a); // add a symbol called "elt" and value for a
+                
+                // this version does the eval the in the enviroment which creates the symbol "ans"
+                //var ans = env.lookup("ans").toValue(int).v; // retrieve value for ans
+                //b = ans;
+
+                // this version just returns the GenValue from the eval call
+                var ans = eval(ast,env);
+                b = ans.toValue(int).v; // put answer into b
+            }
+            writeln(A);
+            writeln(B);
+        }
+        catch e: Error {
+            writeln(e.message());
+        }
     }
     
     use CommandMap;
