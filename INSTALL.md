@@ -180,7 +180,7 @@ to our `~/.bashrc` file to get the display correctly forwarded.
 <a id="mac"></a>
 ## MacOS <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-Prerequisites for Arkouda can be installed using `Homebrew` or manually. Both installation methods have variances to account for the chipset being run. *Please Note: At this time, Chapel cannot being installed on machines with Apple Silicon using `Homebrew`.*
+Prerequisites for Arkouda can be installed using `Homebrew` or manually. Both installation methods have variances to account for the chipset being run. *Please Note: At this time, Chapel cannot be installed on machines with Apple Silicon using `Homebrew`.*
 
 <a id="mac-chapel"></a>
 ### Install Chapel <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -196,7 +196,7 @@ brew install chapel
 
 #### Build from Source
 *Required for machines with Apple Silicon* <br>
-For convience, the steps to install Chapel from source are detailed here. If you need more information, please visit the [Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html). <br><br>
+For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the [Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html). <br><br>
 1) Download the current version of Chapel from [here](https://chapel-lang.org/download.html).
 
 2) Unpack the release
@@ -275,6 +275,7 @@ pip install -e .[dev]
 
 Anaconda Installs - Apple Silicon Compatible
 - [Miniforge arm64](https://github.com/conda-forge/miniforge/releases#:~:text=Miniforge3%2DMacOSX%2Darm64.sh
+- [Anaconda3 arm64](https://repo.anaconda.com/archive/Anaconda3-2022.05-MacOSX-arm64.pkg)
 )
 
 Anaconda Installs - x86 Chipsets 
