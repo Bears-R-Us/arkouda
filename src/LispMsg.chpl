@@ -50,22 +50,27 @@ module LispMsg
         var x = toSymEntry(gEnt, real);
         var y = toSymEntry(gEnt2, real);
 
-        evalLisp(code, 5, x.a, y.a);
+        var ret = evalLisp(code, 5, x.a, y.a);
+        writeln(ret);
 
         repMsg = "applesauce and spaghetti";
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     proc evalLisp(prog: string, val: int, arr1, arr2) {
+      var ret: [0..#10] real;
         try {
             var A = arr1;
             var B = arr2;
             
-            for (a,b) in zip(A,B) {
+            for (a,b,r) in zip(A,B,ret) {
                 var ast = parse(prog); // parse and check the program
                 var env = new owned Env(); // allocate the env for variables
                 // addEnrtry redefines values for already existing entries
-                env.addEntry("elt",a); // add a symbol called "elt" and value for a
+                env.addEntry("a",val); // add a symbol called "elt" and value for a
+
+                env.addEntry("x",a);
+                env.addEntry("y",b);
                 
                 // this version does the eval the in the enviroment which creates the symbol "ans"
                 //var ans = env.lookup("ans").toValue(int).v; // retrieve value for ans
@@ -73,7 +78,7 @@ module LispMsg
 
                 // this version just returns the GenValue from the eval call
                 var ans = eval(ast,env);
-                b = ans.toValue(int).v; // put answer into b
+                r = ans.toValue(real).v; // put answer into b
             }
             writeln(A);
             writeln(B);
@@ -81,6 +86,7 @@ module LispMsg
         catch e: Error {
             writeln(e.message());
         }
+        return ret;
     }
     
     use CommandMap;
