@@ -680,7 +680,7 @@ class DataFrame(UserDict):
         inplace: bool = False,
     ) -> Union[None, DataFrame]:
         """
-        Drop column/s or row/s from the dataframe, in-place.
+        Drop column/s or row/s from the dataframe.
 
         Parameters
         ----------
