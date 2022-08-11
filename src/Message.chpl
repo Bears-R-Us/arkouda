@@ -7,7 +7,7 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
-    enum ObjectType {PDARRAY, SEGSTRING, LIST, VALUE}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE}
 
     /*
      * Encapsulates the message string and message type.
@@ -191,6 +191,11 @@ module Message {
                                     "TypeError");
             }
             return jsonToPdArray(this.val, size);
+        }
+
+        proc getJSON(size: int) throws {
+            // TODO - add error if not right type
+            return parseMessageArgs(this.val, size);
         }
     }
 
