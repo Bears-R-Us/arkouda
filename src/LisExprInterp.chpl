@@ -138,6 +138,14 @@ module LisExprInterp
                         checkEqLstSize(lst,4);
                         if isTrue(eval(lst[1], env)) {return eval(lst[2], env);} else {return eval(lst[3], env);}
                     }
+                    when "begin" {
+                        writeln("found begin");
+                        return eval(lst[1], env);
+                    }
+                    when "return" {
+                        writeln("found return");
+                        return eval(lst[1], env);
+                    }
                     otherwise {
                         throw new owned Error("op not implemented " + op);
                     }

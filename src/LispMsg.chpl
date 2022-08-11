@@ -42,6 +42,7 @@ module LispMsg
         var repMsg: string; // response message
         var (avalStr, xId, yId, code) = payload.splitMsgToTuple(4);
         writeln(avalStr, xId, yId, code);
+        //code = "( + ( * a x ) y )";
         // Received: {'bindings': "{'a': {'type': 'float64', 'value': '5.0'}, 'x': {'type': 'pdarray', 'name': 'id_ej8Pi4s_1'}, 'y': {'type': 'pdarray', 'name': 'id_ej8Pi4s_2'}}", 'code': "'( begin ( return ( + ( * a x ) y ) ) )'"}
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(xId, st);
         var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(yId, st);
