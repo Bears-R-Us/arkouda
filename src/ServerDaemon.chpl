@@ -32,6 +32,26 @@ module ServerDaemon {
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
 
+    proc getDaemonTypes() {
+        var types = new list(ServerDaemonType);
+        var rawTypes = daemonTypes.split(',');
+
+        for rt in rawTypes {
+            var daemonType: ServerDaemonType;
+            try {
+                daemonType = rt: ServerDaemonType;
+                types.append(daemonType);
+            } catch {
+                
+            }
+        }
+        return types;
+    }    
+
+    proc metricsEnabled() {
+        return getDaemonTypes().contains(ServerDaemonType.METRICS);
+    }
+
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
@@ -496,7 +516,7 @@ module ServerDaemon {
         deleteServerConnectionInfo();
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,                                                              t1.elapsed()));   
+               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));   
         exit(0);
         }
     }
@@ -523,6 +543,18 @@ module ServerDaemon {
         }
 
         override proc run() throws {
+            on Locales[0] {
+                var appName: string;
+
+                if serverHostname.count('arkouda-locale') > 0 {
+                    appName = 'arkouda-locale';
+                } else {
+                    appName = 'arkouda-server';
+                }
+
+                registerWithExternalSystem(appName, ServiceEndpoint.METRICS);
+            }
+
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "awaiting message on port %i".format(this.port));
@@ -554,7 +586,8 @@ module ServerDaemon {
                 this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
                                                 msgFormat=MsgFormat.STRING, user=user));
             }
-        
+            
+            deregisterFromExternalSystem(ServiceEndpoint.METRICS);
             return;
         }
     }
@@ -583,6 +616,9 @@ module ServerDaemon {
         override proc shutdown(user: string) throws {
             on Locales[here.id] {
                 deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
+                if metricsEnabled() {
+                    deregisterFromExternalSystem(ServiceEndpoint.METRICS);
+                }
             }
 
             super.shutdown(user);
