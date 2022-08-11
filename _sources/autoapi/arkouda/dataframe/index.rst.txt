@@ -160,7 +160,7 @@ Functions
 
    .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
 
-      Drop column/s or row/s from the dataframe, in-place.
+      Drop column/s or row/s from the dataframe.
 
       :param keys: The labels to be dropped on the given axis
       :type keys: str, int or list
