@@ -52,6 +52,10 @@ module ServerDaemon {
         return getDaemonTypes().contains(ServerDaemonType.METRICS);
     }
 
+    proc integrationEnabled() {
+        return getDaemonTypes().contains(ServerDaemonType.INTEGRATION);
+    }
+
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
@@ -543,16 +547,18 @@ module ServerDaemon {
         }
 
         override proc run() throws {
-            on Locales[0] {
-                var appName: string;
+            if integrationEnabled() {
+                on Locales[0] {
+                    var appName: string;
 
-                if serverHostname.count('arkouda-locale') > 0 {
-                    appName = 'arkouda-locale';
-                } else {
-                    appName = 'arkouda-server';
+                    if serverHostname.count('arkouda-locale') > 0 {
+                        appName = 'arkouda-locale';
+                    } else {
+                        appName = 'arkouda-server';
+                    }
+
+                    registerWithExternalSystem(appName, ServiceEndpoint.METRICS);
                 }
-
-                registerWithExternalSystem(appName, ServiceEndpoint.METRICS);
             }
 
             while !this.shutdownDaemon {
@@ -586,8 +592,10 @@ module ServerDaemon {
                 this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
                                                 msgFormat=MsgFormat.STRING, user=user));
             }
-            
-            deregisterFromExternalSystem(ServiceEndpoint.METRICS);
+
+            if integrationEnabled() {
+                deregisterFromExternalSystem(ServiceEndpoint.METRICS);
+            }
             return;
         }
     }
