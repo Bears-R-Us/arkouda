@@ -42,7 +42,6 @@ module LispMsg
         var repMsg: string; // response message
         var (avalStr, xId, yId, code) = payload.splitMsgToTuple(4);
         writeln(avalStr, xId, yId, code);
-        //code = "( + ( * a x ) y )";
         // Received: {'bindings': "{'a': {'type': 'float64', 'value': '5.0'}, 'x': {'type': 'pdarray', 'name': 'id_ej8Pi4s_1'}, 'y': {'type': 'pdarray', 'name': 'id_ej8Pi4s_2'}}", 'code': "'( begin ( return ( + ( * a x ) y ) ) )'"}
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(xId, st);
         var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(yId, st);
@@ -50,39 +49,29 @@ module LispMsg
         var x = toSymEntry(gEnt, real);
         var y = toSymEntry(gEnt2, real);
 
-        var ret = evalLisp(code, 5, x.a, y.a);
+        var ret = evalLisp(code, x.a, "x", y.a, "y");
         writeln(ret);
 
         repMsg = "applesauce and spaghetti";
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc evalLisp(prog: string, val: int, arr1, arr2) {
-      var ret: [0..#10] real;
-        try {
-            var A = arr1;
-            var B = arr2;
-            
-            for (a,b,r) in zip(A,B,ret) {
-                var ast = parse(prog); // parse and check the program
-                var env = new owned Env(); // allocate the env for variables
-                // addEnrtry redefines values for already existing entries
-                env.addEntry("a",val); // add a symbol called "elt" and value for a
+    proc evalLisp(prog: string, arrs ...?n) {
+      // arrs is a list of arrays and their corresponding names
+      var ret: [0..#arrs[0].size] real;
+      try {
+        for i in 0..#arrs[0].size {
+          var ast = parse(prog);
+          var env = new owned Env();
 
-                env.addEntry("x",a);
-                env.addEntry("y",b);
-                
-                // this version does the eval the in the enviroment which creates the symbol "ans"
-                //var ans = env.lookup("ans").toValue(int).v; // retrieve value for ans
-                //b = ans;
-
-                // this version just returns the GenValue from the eval call
-                var ans = eval(ast,env);
-                r = ans.toValue(real).v; // put answer into b
-            }
-            writeln(A);
-            writeln(B);
+          for param j in 0..#n by 2{
+            // arrs[j+1] is name, arrs[j][i] is val at current index of current array
+            env.addEntry(arrs[j+1], arrs[j][i]);
+          }
+          var ans = eval(ast, env);
+          ret[i] = ans.toValue(real).v;
         }
+      }
         catch e: Error {
             writeln(e.message());
         }
