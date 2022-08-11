@@ -194,7 +194,13 @@ module Message {
         }
 
         proc getJSON(size: int) throws {
-            // TODO - add error if not right type
+            if this.objType != ObjectType.DICT {
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".format(this.key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
             return parseMessageArgs(this.val, size);
         }
     }

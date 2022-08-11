@@ -25,7 +25,6 @@ __all__ = [
     "get_server_commands",
     "print_server_commands",
     "ruok",
-    "_json_args_to_str",
 ]
 
 # stuff for zmq connection
@@ -572,8 +571,6 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
     for key, val in json_obj.items():
         if not isinstance(key, str):
             raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
-        # if isinstance(val, dict):
-        #     raise TypeError("Nested JSON is not currently supported for server messages.")
 
         param = ParameterObject.factory(key, val)
         j.append(json.dumps(param.dict))
