@@ -122,7 +122,8 @@ def run_test(levels, verbose=False):
                     print("ak: ", akextrema)
                     failures += 1
             else:
-                failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
+                if op != "unique":
+                    failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
     print(
         f"{tests - failures - not_impl} / {tests - not_impl} passed, "
         f"{failures} errors, {not_impl} not implemented"
@@ -330,9 +331,6 @@ class GroupByTest(ArkoudaTest):
             gb.broadcast([])
 
         with self.assertRaises(TypeError):
-            self.igb.nunique(ak.randint(0, 1, 10, dtype=bool))
-
-        with self.assertRaises(TypeError):
             self.igb.nunique(ak.randint(0, 1, 10, dtype=float64))
 
         with self.assertRaises(TypeError):
@@ -437,6 +435,41 @@ class GroupByTest(ArkoudaTest):
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
+
+    def test_first_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1])
+        vals = ak.array([9, 8, 7, 6, 5, 4])
+        ans = [9, 8]
+        g = ak.GroupBy(keys)
+        _, res = g.first(vals)
+        self.assertListEqual(ans, res.to_list())
+
+    def test_mode_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
+        vals = ak.array([4, 3, 5, 3, 5, 2, 6, 2])
+        ans = [5, 3]
+        g = ak.GroupBy(keys)
+        _, res = g.mode(vals)
+        self.assertListEqual(ans, res.to_list())
+        # Test with multi-array values
+        _, res2 = g.mode([vals, vals])
+        self.assertListEqual(ans, res2[0].to_list())
+        self.assertListEqual(ans, res2[1].to_list())
+
+    def test_unique_aggregation(self):
+        keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
+        vals = ak.array([4, 3, 5, 3, 5, 2, 6, 2])
+        ans = [[4, 5, 6], [2, 3]]
+        g = ak.GroupBy(keys)
+        _, res = g.unique(vals)
+        for a, r in zip(ans, res.to_list()):
+            self.assertListEqual(a, r)
+        # Test with multi-array values
+        _, res2 = g.unique([vals, vals])
+        for a, r in zip(ans, res2[0].to_list()):
+            self.assertListEqual(a, r)
+        for a, r in zip(ans, res2[1].to_list()):
+            self.assertListEqual(a, r)
 
 
 def to_tuple_dict(labels, values):

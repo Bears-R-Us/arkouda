@@ -1,7 +1,11 @@
 import json
 import unittest
 
+from base_test import ArkoudaTest
+
+from arkouda.client import _json_args_to_str
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
+from arkouda.pdarraycreation import arange, array
 
 
 class MessageTest(unittest.TestCase):
@@ -98,3 +102,62 @@ class MessageTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ReplyMessage.fromdict({"msg": "normal result", "msgType": "NORMAL"})
+
+
+class JSONArgs(ArkoudaTest):
+    def testJSONArgs(self):
+        # test single value args
+        size, args = _json_args_to_str({"arg1": "Test", "arg2": 5})
+        self.assertEqual(size, 2)
+        self.assertListEqual(
+            [
+                '{"key": "arg1", "objType": "VALUE", "dtype": "str", "val": "Test"}',
+                '{"key": "arg2", "objType": "VALUE", "dtype": "int", "val": "5"}',
+            ],
+            json.loads(args),
+        )
+
+        # test list arg of numerics
+        size, args = _json_args_to_str({"list1": [3, 2, 4]})
+        self.assertEqual(size, 1)
+        self.assertListEqual(
+            [
+                '{"key": "list1", "objType": "LIST", "dtype": "int", "val": "[\\"3\\", \\"2\\", \\"4\\"]"}'
+            ],
+            json.loads(args),
+        )
+
+        # test list of str
+        size, args = _json_args_to_str({"list1": ["a", "b", "c"], "list2": ["d", "e", "f"]})
+        self.assertEqual(size, 2)
+        self.assertListEqual(
+            [
+                '{"key": "list1", "objType": "LIST", "dtype": "str", "val": "[\\"a\\", \\"b\\", \\"c\\"]"}',
+                '{"key": "list2", "objType": "LIST", "dtype": "str", "val": "[\\"d\\", \\"e\\", \\"f\\"]"}',
+            ],
+            json.loads(args),
+        )
+
+        # test list of pdarray
+        pd1 = arange(3)
+        pd2 = arange(4)
+        size, args = _json_args_to_str({"pd1": pd1, "pd2": pd2})
+        self.assertEqual(size, 2)
+        for a in json.loads(args):
+            p = json.loads(a)
+            self.assertRegex(p["key"], "^pd(1|2)$")
+            self.assertEqual(p["objType"], "PDARRAY")
+            self.assertEqual(p["dtype"], "int64")
+            self.assertRegex(p["val"], "^id_\\w{7}_\\d$")
+
+        # test list of Strings
+        str1 = array(["abc", "def"])
+        str2 = array(["Test", "Test2"])
+        size, args = _json_args_to_str({"str1": str1, "str2": str2})
+        self.assertEqual(size, 2)
+        for a in json.loads(args):
+            p = json.loads(a)
+            self.assertRegex(p["key"], "^str(1|2)$")
+            self.assertEqual(p["objType"], "SEGSTRING")
+            self.assertEqual(p["dtype"], "str")
+            self.assertRegex(p["val"], "^id_\\w{7}_\\d$")

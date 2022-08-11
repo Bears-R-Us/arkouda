@@ -13,16 +13,8 @@ This guide will walk you through the environment configuration for Arkouda to op
    3. [Python Envrionment](#l-python)
 4. [Windows](#windows)
 5. [MacOS](#mac)
-   1. [Homebrew Installation](#mac-brew)
-      1. [Install Chapel](#mac-brew-chapel)
-      2. [Python Environment](#mac-brew-python)
-         1. [Anaconda](#mac-brew-conda)
-         2. [Python Only](#mac-brew-pyonly)
-   2. [Manual Installation](#mac-manual)
-      1. [Install Chapel](#mac-manual-chapel)
-      2. [Python Environment](#mac-manual-python)
-         1. [Anaconda](#mac-manual-conda)
-         2. [Python Only](#mac-manual-pyonly)
+   1. [Install Chapel](#mac-chapel)
+   2. [Python Environment](#mac-python)
 6. [Updating Environment](#env-upd)
    1. [Conda](#env-upd-conda)
    2. [pip](#env-upd-pip)
@@ -188,25 +180,58 @@ to our `~/.bashrc` file to get the display correctly forwarded.
 <a id="mac"></a>
 ## MacOS <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-Prerequisites for Arkouda can be installed using `Homebrew` or manually. Both installation methods have variances to account for the chipset being run.
+Prerequisites for Arkouda can be installed using `Homebrew` or manually. Both installation methods have variances to account for the chipset being run. *Please Note: At this time, Chapel cannot be installed on machines with Apple Silicon using `Homebrew`.*
 
-<a id="mac-brew"></a>
-### Homebrew Installation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+<a id="mac-chapel"></a>
+### Install Chapel <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+Chapel can be installed via `Homebrew` or can be compiled from source. Both of these methods function on machines with x86 architecture. However, machines running Apple Silicon (arm64) must build Chapel from source. Chapel dependencies can still be installed using `Homebrew` or you can leverage the bundled dependencies.
 
-<a id="mac-brew-chapel"></a>
-#### Chapel Installation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+#### Homebrew
+*Not functional for Apple Silicon at this time.*
+Chapel and all supporting dependencies will be installed.<br>
 
 ```bash
 brew install chapel
 ```
 
-<a id="mac-brew-python"></a>
-#### Python Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+#### Build from Source
+*Required for machines with Apple Silicon* <br>
+For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the [Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html). <br><br>
+1) Download the current version of Chapel from [here](https://chapel-lang.org/download.html).
+
+2) Unpack the release
+```bash
+tar xzf chapel-1.27.0.tar.gz
+```
+3) Access the directory created when the release was unpacked
+```bash
+cd chapel-1.27.0
+```
+4) Configure environment variables. *Please Note: This command assumes the use of `bash` or `zsh`. Please refer to the [Chapel Documentation](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells) if you are using another shell.*
+```bash
+source util/quickstart/setchplenv.bash
+```
+5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.* You may want to add this to your `rc` file as well.
+```bash
+export CHPL_LLVM=system
+export CHPL_RE2=bundled
+```
+6) Use GNU make to build Chapel
+```bash
+make
+```
+7) Ensure that Chapel was built successfully
+```bash
+chpl examples/hello3-datapar.chpl
+./hello3-datapar
+```
+
+<a id="mac-python"></a>
+### Python Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python3 environment and manage Python dependencies. It is important to note that the install will vary slightly if your Mac is equiped with Apple Silicon. Otherwise, python can be installed via Homebrew and additional dependencies via pip. 
 
-<a id="mac-brew-conda"></a>
-##### Anaconda *(Recommended)* <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+##### Homebrew - Anaconda *(Recommended)*
 
 Arkouda provides 2 `.yml` files for configuration, one for users and one for developers. The `.yml` files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the `-n` or `--name` parameters when calling `conda env create`
 ```bash
@@ -233,8 +258,7 @@ conda install jupyter
 pip install -e . --no-deps
 ```
 
-<a id="mac-brew-conda"></a>
-##### Python Only <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+##### Homebrew - Python Only
 ```bash
 brew install python3
 #Add /opt/homebrew/Cellar/python@3.9/3.9.10/bin as the first line in /etc/paths
@@ -247,47 +271,11 @@ pip install -e .
 pip install -e .[dev] 
 ```
 
-<a id="mac-manual"></a>
-### Manual Installation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
-<a id="mac-manual-chapel"></a>
-#### Chapel Installation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
-```bash
-# build chapel in the user home directory with these settings...
-export CHPL_HOME=~/chapel/chapel-1.27.0
-source $CHPL_HOME/util/setchplenv.bash
-export CHPL_COMM=gasnet
-export CHPL_COMM_SUBSTRATE=smp
-export CHPL_TARGET_CPU=native
-export GASNET_QUIET=Y
-export CHPL_RT_OVERSUBSCRIBED=yes
-export CHPL_RE2=bundled
-cd $CHPL_HOME
-make
-
-# Build chpldoc to enable generation of Arkouda docs
-make chpldoc
-
-# Add the Chapel and Chapel Doc executables (chpl and chpldoc, respectiveley) to 
-# PATH either in ~/.bashrc (single user) or /etc/environment (all users):
-
-#If on Apple Silicon
-export PATH=$CHPL_HOME/bin/darwin-arm64:$PATH
-#Otherwise
-export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
-```
-
-<a id="mac-manual-python"></a>
-#### Python Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
-While not required, it is highly recommended to install Anaconda to provide a Python3 environment and manage Python dependencies. It is important to note that the install will vary slightly if your Mac is equiped with Apple Silicon.
-
-<a id="mac-manual-conda"></a>
-##### Anaconda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+##### Manual Install - Anaconda
 
 Anaconda Installs - Apple Silicon Compatible
 - [Miniforge arm64](https://github.com/conda-forge/miniforge/releases#:~:text=Miniforge3%2DMacOSX%2Darm64.sh
+- [Anaconda3 arm64](https://repo.anaconda.com/archive/Anaconda3-2022.05-MacOSX-arm64.pkg)
 )
 
 Anaconda Installs - x86 Chipsets 
@@ -297,14 +285,6 @@ Anaconda Installs - x86 Chipsets
 
 Ensure Requirements are Installed:
 ```bash
-#Works with all Chipsets (including Apple Silicon)
-brew install miniforge
-#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths
-
-#works with only x86 Architecture (excludes Apple Silicon)
-brew install anaconda3
-#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths
-
 # User conda env
 conda env create -f arkouda-env.yml
 conda activate arkouda
@@ -320,9 +300,7 @@ conda install jupyter
 pip install -e . --no-deps
 ```
 
-<a id="mac-manual-pyonly"></a>
-##### Python Only <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-
+##### Manual Install - Python Only
 - Apple Silicon Compatible - [Python3](https://www.python.org/ftp/python/3.9.10/python-3.9.10-macos11.pkg)
 - x86 Compatible Only - [Python3](https://www.python.org/ftp/python/3.9.10/python-3.9.10-macosx10.9.pkg)
 
@@ -341,7 +319,7 @@ pip install -e .[dev]
 As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool. 
 
 <a id="env-upd-conda"></a>
-### Conda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### Anaconda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 *If you provided a different name when creating the environment, replace `arkouda-dev` or `arkouda` with the name of your Conda environment.*
 ```bash
 # developer environment update
@@ -353,7 +331,7 @@ conda env update -n arkouda -f arkouda-env.yml
 
 
 <a id="env-upd-pip"></a>
-### PIP <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+### pip (Python Only) <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 ```bash
 # without developer dependencies
 pip install -U -e .

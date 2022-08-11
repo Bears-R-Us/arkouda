@@ -31,9 +31,7 @@ module ServerDaemon {
     const sdLogger = new Logger(logLevel);
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
-    
-    private config const externalSystem = SystemType.NONE;
-    
+
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
      * functions all derived classes must override
@@ -561,10 +559,43 @@ module ServerDaemon {
         }
     }
 
+    /**
+     * The ExternalIntegrationServerDaemon class registers Arkouda with the
+     * configured external system and then invokes ArkoudaServerDeamon.run()
+     */    
+    class ExternalIntegrationServerDaemon : DefaultServerDaemon {
+
+        override proc run() throws {
+            on Locales[0] {
+                var appName: string;
+
+                if serverHostname.count('arkouda-locale') > 0 {
+                    appName = 'arkouda-locale';
+                } else {
+                    appName = 'arkouda-server';
+                }
+
+                registerWithExternalSystem(appName, ServiceEndpoint.ARKOUDA_CLIENT);
+            }
+            super.run();
+        }
+        
+        override proc shutdown(user: string) throws {
+            on Locales[here.id] {
+                deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
+            }
+
+            super.shutdown(user);
+        }
+    }
+
     proc getServerDaemon(daemonType: ServerDaemonType) : shared ArkoudaServerDaemon throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-                 return new DefaultServerDaemon():ArkoudaServerDaemon;
+                return new DefaultServerDaemon():ArkoudaServerDaemon;
+            }
+            when ServerDaemonType.INTEGRATION {
+                return new ExternalIntegrationServerDaemon():ArkoudaServerDaemon;
             }
             when ServerDaemonType.METRICS {
                return new MetricsServerDaemon():ArkoudaServerDaemon;

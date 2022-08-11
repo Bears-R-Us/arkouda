@@ -12,6 +12,15 @@ module ServerConfig
     use Reflection;
     use ServerErrors;
     use Logging;
+    
+    enum Deployment {STANDARD,KUBERNETES}
+    
+    /*
+    Type of deployment, which currently is either STANDARD, meaning
+    that Arkouda is deployed bare-metal or within an HPC environment, 
+    or on Kubernetes, defaults to Deployment.STANDARD
+    */
+    config const deployment = Deployment.STANDARD;
 
     /*
     Trace logging flag
