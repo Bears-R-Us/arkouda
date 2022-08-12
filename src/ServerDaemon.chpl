@@ -32,6 +32,11 @@ module ServerDaemon {
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
 
+    /**
+     * Retrieves a list of 1..n ServerDaemonType objects generated 
+     * from the comma-delimited list of ServerDaemonType strings
+     * provided in the daemonTypes command-line parameter
+     */
     proc getDaemonTypes() {
         var types = new list(ServerDaemonType);
         var rawTypes = daemonTypes.split(',');
@@ -48,12 +53,37 @@ module ServerDaemon {
         return types;
     }    
 
+    /**
+     * Returns a boolean indicating if Arkouda is configured to generate and
+     * make available metrics via a dedicated metrics socket
+     */
     proc metricsEnabled() {
         return getDaemonTypes().contains(ServerDaemonType.METRICS);
     }
 
+    /**
+     * Returns a boolean indicating whether Arkouda is configured to 
+     * register/deregister with an external system such as Kubernetes.
+     */
     proc integrationEnabled() {
         return getDaemonTypes().contains(ServerDaemonType.INTEGRATION);
+    }
+
+    /**
+     * Generates the Kubernetes app name for Arkouda, which varies based
+     * upon which pod corresponds to Locale 0.
+     */
+    proc register(endpoint: ServiceEndpoint) throws {
+        on Locales[0] {
+            var appName: string;
+
+            if serverHostname.count('arkouda-locale') > 0 {
+                appName = 'arkouda-locale';
+            } else {
+                appName = 'arkouda-server';
+            }
+            registerWithExternalSystem(appName, endpoint);
+        }
     }
 
     /**
@@ -548,17 +578,7 @@ module ServerDaemon {
 
         override proc run() throws {
             if integrationEnabled() {
-                on Locales[0] {
-                    var appName: string;
-
-                    if serverHostname.count('arkouda-locale') > 0 {
-                        appName = 'arkouda-locale';
-                    } else {
-                        appName = 'arkouda-server';
-                    }
-
-                    registerWithExternalSystem(appName, ServiceEndpoint.METRICS);
-                }
+                register(ServiceEndpoint.METRICS);
             }
 
             while !this.shutdownDaemon {
@@ -607,23 +627,14 @@ module ServerDaemon {
     class ExternalIntegrationServerDaemon : DefaultServerDaemon {
 
         override proc run() throws {
-            on Locales[0] {
-                var appName: string;
-
-                if serverHostname.count('arkouda-locale') > 0 {
-                    appName = 'arkouda-locale';
-                } else {
-                    appName = 'arkouda-server';
-                }
-
-                registerWithExternalSystem(appName, ServiceEndpoint.ARKOUDA_CLIENT);
-            }
+            register(ServiceEndpoint.ARKOUDA_CLIENT);
             super.run();
         }
-        
+
         override proc shutdown(user: string) throws {
             on Locales[here.id] {
                 deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
+                // if metrics is enabled, deregister the metrics socket
                 if metricsEnabled() {
                     deregisterFromExternalSystem(ServiceEndpoint.METRICS);
                 }
