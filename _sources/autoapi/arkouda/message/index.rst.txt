@@ -44,6 +44,11 @@ Classes
 
       
 
+   .. py:attribute:: DICT
+      :annotation: = DICT
+
+      
+
    .. py:attribute:: VALUE
       :annotation: = VALUE
 
@@ -128,6 +133,10 @@ Classes
       :type val: list
 
       :rtype: ParameterObject
+
+
+   .. py:method:: _build_dict_param(key: str, val: Dict) -> ParameterObject
+      :staticmethod:
 
 
    .. py:method:: _build_gen_param(key: str, val) -> ParameterObject

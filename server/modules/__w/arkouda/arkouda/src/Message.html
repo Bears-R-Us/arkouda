@@ -119,7 +119,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Message.ObjectType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjectType</span></span> <span class="pre">{</span> <span class="pre">PDARRAY,</span> <span class="pre">SEGSTRING,</span> <span class="pre">LIST,</span> <span class="pre">VALUE</span> <span class="pre">}</span><a class="headerlink" href="#Message.ObjectType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjectType</span></span> <span class="pre">{</span> <span class="pre">PDARRAY,</span> <span class="pre">SEGSTRING,</span> <span class="pre">LIST,</span> <span class="pre">DICT,</span> <span class="pre">VALUE</span> <span class="pre">}</span><a class="headerlink" href="#Message.ObjectType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
@@ -324,6 +324,11 @@
 :size: int: number of values in the list
 Note - not yet able to handle list of pdarray or SegString names</p>
 </dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getJSON">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getJSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
