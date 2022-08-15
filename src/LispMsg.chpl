@@ -48,14 +48,64 @@ module LispMsg
 
         var x = toSymEntry(gEnt, real);
         var y = toSymEntry(gEnt2, real);
-
-        var ret = evalLisp(code, x.a, "x", y.a, "y");
+        
+        var ret = evalLisp(code, arrs=(x.a, y.a), arrNames=("x","y"),
+                           vals=(avalStr:real,), valNames=("a",));
         writeln(ret);
 
         repMsg = "applesauce and spaghetti";
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    // arrs is a tuple of the incoming arrays
+    // arrNames is a list of names corresponding to arrs (so is same length as arrs)
+    // vals are the values passed in
+    // valNames are the names of those values (so is same length as vals)
+    proc evalLisp(prog: string, arrs, arrNames, vals, valNames) {
+      var ret: [0..#arrs[0].size] real;
+
+      try {
+        if arrs.size == 1 {
+          for (val, r) in zip(arrs[0], ret) do {
+            var ast = parse(prog);
+            var env = new owned Env();
+          
+            // Add array values to environment
+            env.addEntry(arrNames[0], val);
+
+            // Add values to environment
+            for (val, name) in zip(vals,valNames) do
+              env.addEntry(name, val);
+
+            // Evaluate for this index
+            var ans = eval(ast, env);
+            r = ans.toValue(real).v;
+          }
+        } else if arrs.size == 2 {
+          for (val1, val2, r) in zip(arrs[0], arrs[1], ret) {
+            var ast = parse(prog);
+            var env = new owned Env();
+          
+            // Add array values to environment
+            env.addEntry(arrNames[0], val1);
+            env.addEntry(arrNames[1], val2);
+
+            // Add values to environment
+            for (val, name) in zip(vals,valNames) do
+              env.addEntry(name, val);
+
+            // Evaluate for this index
+            var ans = eval(ast, env);
+            r = ans.toValue(real).v;
+          }
+        }
+      } catch e {
+        writeln(e!.message());
+      }
+      return ret;
+    }
+
+    /*
     proc evalLisp(prog: string, arrs ...?n) {
       // arrs is a list of arrays and their corresponding names
       var ret: [0..#arrs[0].size] real;
@@ -76,7 +126,7 @@ module LispMsg
             writeln(e.message());
         }
         return ret;
-    }
+        } */
     
     use CommandMap;
     registerFunction("lispCode", lispMsg, getModuleName());
