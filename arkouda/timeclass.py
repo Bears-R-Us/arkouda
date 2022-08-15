@@ -1,4 +1,5 @@
 import datetime
+import json
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -9,10 +10,11 @@ from pandas import date_range as pd_date_range  # type: ignore
 from pandas import timedelta_range as pd_timedelta_range  # type: ignore
 from pandas import to_datetime, to_timedelta  # type: ignore
 
+from arkouda.client import generic_msg
 from arkouda.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numeric import abs as akabs
 from arkouda.numeric import cast
-from arkouda.pdarrayclass import pdarray
+from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import from_series
 
 _BASE_UNIT = "ns"
@@ -33,13 +35,13 @@ _unit2normunit = {
 }
 
 _unit2factor = {
-    "w": 7 * 24 * 60 * 60 * 10 ** 9,
-    "d": 24 * 60 * 60 * 10 ** 9,
-    "h": 60 * 60 * 10 ** 9,
-    "m": 60 * 10 ** 9,
-    "s": 10 ** 9,
-    "ms": 10 ** 6,
-    "us": 10 ** 3,
+    "w": 7 * 24 * 60 * 60 * 10**9,
+    "d": 24 * 60 * 60 * 10**9,
+    "h": 60 * 60 * 10**9,
+    "m": 60 * 10**9,
+    "s": 10**9,
+    "ms": 10**6,
+    "us": 10**3,
     "ns": 1,
 }
 
@@ -65,9 +67,7 @@ class _Timescalar:
     def __init__(self, scalar):
         if isinstance(scalar, np.datetime64) or isinstance(scalar, datetime.datetime):
             scalar = to_datetime(scalar).to_numpy()
-        elif isinstance(scalar, np.timedelta64) or isinstance(
-            scalar, datetime.timedelta
-        ):
+        elif isinstance(scalar, np.timedelta64) or isinstance(scalar, datetime.timedelta):
             scalar = to_timedelta(scalar).to_numpy()
         self.unit = np.datetime_data(scalar.dtype)[0]
         self._factor = _get_factor(self.unit)
@@ -84,54 +84,50 @@ class _AbstractBaseTime(pdarray):
     so that all resulting operations are transparent.
     """
 
-    def __init__(self, array, unit: str = _BASE_UNIT):  # type: ignore
+    def __init__(self, pda, unit: str = _BASE_UNIT):  # type: ignore
 
-        if isinstance(array, Datetime) or isinstance(array, Timedelta):
-            self.unit: str = array.unit
-            self._factor: int = array._factor
+        if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
+            self.unit: str = pda.unit
+            self._factor: int = pda._factor
             # Make a copy to avoid unknown symbol errors
-            self.values: pdarray = cast(array.values, int64)
+            self.values: pdarray = cast(pda.values, int64)
         # Convert the input to int64 pdarray of nanoseconds
-        elif isinstance(array, pdarray):
-            if array.dtype not in intTypes:
-                raise TypeError(
-                    f"{self.__class__.__name__} array must have int64 dtype"
-                )
+        elif isinstance(pda, pdarray):
+            if pda.dtype not in intTypes:
+                raise TypeError(f"{self.__class__.__name__} array must have int64 dtype")
             # Already int64 pdarray, just scale
             self.unit = unit
             self._factor = _get_factor(self.unit)
             # This makes a copy of the input array, to leave input unchanged
-            self.values = cast(
-                self._factor * array, int64
-            )  # Mimics a datetime64[ns] array
-        elif hasattr(array, "dtype"):
+            self.values = cast(self._factor * pda, int64)  # Mimics a datetime64[ns] array
+        elif hasattr(pda, "dtype"):
             # Handles all pandas and numpy datetime/timedelta arrays
-            if array.dtype.kind not in ("M", "m"):
+            if pda.dtype.kind not in ("M", "m"):
                 # M = datetime64, m = timedelta64
-                raise TypeError(f"Invalid dtype: {array.dtype.name}")
-            if isinstance(array, Series):
+                raise TypeError(f"Invalid dtype: {pda.dtype.name}")
+            if isinstance(pda, Series):
                 # Pandas Datetime and Timedelta
                 # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(array.values.dtype)[0]
+                self.unit = np.datetime_data(pda.values.dtype)[0]
                 self._factor = _get_factor(self.unit)
                 # Create pdarray
-                self.values = from_series(array)
+                self.values = from_series(pda)
                 # Scale if necessary
                 # This is futureproofing; it will not be used unless pandas
                 # changes its Datetime implementation
                 if self._factor != 1:
                     # Scale inplace because we already created a copy
                     self.values *= self._factor
-            elif isinstance(array, np.ndarray):
+            elif isinstance(pda, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
-                self.__init__(to_datetime(array).to_series())  # type: ignore
-            elif hasattr(array, "to_series"):
+                self.__init__(to_datetime(pda).to_series())  # type: ignore
+            elif hasattr(pda, "to_series"):
                 # Pandas DatetimeIndex
                 # Force through pandas.Series
-                self.__init__(array.to_series())  # type: ignore
+                self.__init__(pda.to_series())  # type: ignore
         else:
-            raise TypeError(f"Unsupported type: {type(array)}")
+            raise TypeError(f"Unsupported type: {type(pda)}")
         # Now that self.values is correct, init self with same metadata
         super().__init__(
             self.values.name,
@@ -141,7 +137,6 @@ class _AbstractBaseTime(pdarray):
             self.values.shape,
             self.values.itemsize,
         )
-        # Deprecated
         self._data = self.values
 
     @classmethod
@@ -241,9 +236,7 @@ class _AbstractBaseTime(pdarray):
         #  2) Get other's int64 data to combine with self's data
         if isinstance(other, Datetime) or self._is_datetime_scalar(other):
             if op not in self.supported_with_datetime:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and Datetime"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and Datetime")
             otherclass = "Datetime"
             if self._is_datetime_scalar(other):
                 otherdata = _Timescalar(other).value
@@ -251,21 +244,15 @@ class _AbstractBaseTime(pdarray):
                 otherdata = other.values
         elif isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_with_timedelta:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and Timedelta"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and Timedelta")
             otherclass = "Timedelta"
             if self._is_timedelta_scalar(other):
                 otherdata = _Timescalar(other).value
             else:
                 otherdata = other.values
-        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(
-            other
-        ):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
             if op not in self.supported_with_pdarray:
-                raise TypeError(
-                    f"{op} not supported between {self.__class__.__name__} and integer"
-                )
+                raise TypeError(f"{op} not supported between {self.__class__.__name__} and integer")
             otherclass = "pdarray"
             otherdata = other
         else:
@@ -283,9 +270,7 @@ class _AbstractBaseTime(pdarray):
         # First case is pdarray <op> self
         if isinstance(other, pdarray) and other.dtype in intTypes:
             if op not in self.supported_with_r_pdarray:
-                raise TypeError(
-                    f"{op} not supported between int64 and {self.__class__.__name__}"
-                )
+                raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             callback = self._get_callback("pdarray", op)
             # Need to use other._binop because self.values._r_binop can only handle scalars
             return callback(other._binop(self.values, op))
@@ -306,9 +291,7 @@ class _AbstractBaseTime(pdarray):
             otherdata = _Timescalar(other).value
         elif isSupportedInt(other):
             if op not in self.supported_with_r_pdarray:
-                raise TypeError(
-                    f"{op} not supported between int64 and {self.__class__.__name__}"
-                )
+                raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             otherclass = "pdarray"
             otherdata = other
         else:
@@ -320,9 +303,7 @@ class _AbstractBaseTime(pdarray):
     def opeq(self, other, op):
         if isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_opeq:
-                raise TypeError(
-                    f"{self.__class__.__name__} {op} Timedelta not supported"
-                )
+                raise TypeError(f"{self.__class__.__name__} {op} Timedelta not supported")
             if self._is_timedelta_scalar(other):
                 otherdata = _Timescalar(other).value
             else:
@@ -403,8 +384,8 @@ class Datetime(_AbstractBaseTime):
 
     Parameters
     ----------
-    array : int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
-    uint : str, default 'ns'
+    pda : int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
+    unit : str, default 'ns'
         For int64 pdarray, denotes the unit of the input. Ignored for pandas
         and numpy arrays, which carry their own unit. Not case-sensitive;
         prefixes of full names (like 'sec') are accepted.
@@ -434,6 +415,146 @@ class Datetime(_AbstractBaseTime):
     supported_opeq = frozenset(("+=", "-="))
     supported_with_pdarray = frozenset(())  # type: ignore
     supported_with_r_pdarray = frozenset(())  # type: ignore
+
+    def __init__(self, pda, unit=_BASE_UNIT):
+        super().__init__(pda, unit=unit)
+        self._ns = None
+        self._us = None
+        self._ms = None
+        self._s = None
+        self._min = None
+        self._hour = None
+        self._day = None
+        self._month = None
+        self._year = None
+        self._iso_year = None
+        self._day_of_year = None
+        self._day_of_week = None
+        self._week_of_year = None
+        self._is_leap_year = None
+        self._date = None
+        self._is_populated = False
+
+    def _ensure_components(self):
+        if self._is_populated:
+            return
+        # lazy initialize all attributes in one server call
+        args = {"values": self.values.name}
+        attributes_dict = json.loads(generic_msg(cmd="dateTimeAttributes", args=args))
+        self._ns = create_pdarray(attributes_dict["nanosecond"])
+        self._us = create_pdarray(attributes_dict["microsecond"])
+        self._ms = create_pdarray(attributes_dict["millisecond"])
+        self._s = create_pdarray(attributes_dict["second"])
+        self._min = create_pdarray(attributes_dict["minute"])
+        self._hour = create_pdarray(attributes_dict["hour"])
+        self._day = create_pdarray(attributes_dict["day"])
+        self._month = create_pdarray(attributes_dict["month"])
+        self._year = create_pdarray(attributes_dict["year"])
+        self._iso_year = create_pdarray(attributes_dict["isoYear"])
+        self._day_of_week = create_pdarray(attributes_dict["dayOfWeek"])
+        self._week_of_year = create_pdarray(attributes_dict["weekOfYear"])
+        self._day_of_year = create_pdarray(attributes_dict["dayOfYear"])
+        self._is_leap_year = create_pdarray(attributes_dict["isLeapYear"])
+        self._date = self.floor('d')
+        self._is_populated = True
+
+    @property
+    def nanosecond(self):
+        self._ensure_components()
+        return self._ns
+
+    @property
+    def microsecond(self):
+        self._ensure_components()
+        return self._us
+
+    @property
+    def millisecond(self):
+        self._ensure_components()
+        return self._ms
+
+    @property
+    def second(self):
+        self._ensure_components()
+        return self._s
+
+    @property
+    def minute(self):
+        self._ensure_components()
+        return self._min
+
+    @property
+    def hour(self):
+        self._ensure_components()
+        return self._hour
+
+    @property
+    def day(self):
+        self._ensure_components()
+        return self._day
+
+    @property
+    def month(self):
+        self._ensure_components()
+        return self._month
+
+    @property
+    def year(self):
+        self._ensure_components()
+        return self._year
+
+    @property
+    def day_of_year(self):
+        self._ensure_components()
+        return self._day_of_year
+
+    @property
+    def dayofyear(self):
+        return self.day_of_year
+
+    @property
+    def day_of_week(self):
+        self._ensure_components()
+        return self._day_of_week
+
+    @property
+    def dayofweek(self):
+        return self.day_of_week
+
+    @property
+    def weekday(self):
+        return self.day_of_week
+
+    @property
+    def week(self):
+        self._ensure_components()
+        return self._week_of_year
+
+    @property
+    def weekofyear(self):
+        return self.week
+
+    @property
+    def date(self):
+        self._ensure_components()
+        return self._date
+
+    @property
+    def is_leap_year(self):
+        self._ensure_components()
+        return self._is_leap_year
+
+    def isocalendar(self):
+        from arkouda import DataFrame
+
+        self._ensure_components()
+        return DataFrame(
+            {
+                "year": self._iso_year,
+                "week": self._week_of_year,
+                "day": self._day_of_week + 1,
+            }
+        )
 
     @classmethod
     def _get_callback(cls, otherclass, op):
@@ -476,7 +597,7 @@ class Timedelta(_AbstractBaseTime):
 
     Parameters
     ----------
-    array : int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+    pda : int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
     unit : str, default 'ns'
         For int64 pdarray, denotes the unit of the input. Ignored for pandas
         and numpy arrays, which carry their own unit. Not case-sensitive;
@@ -502,15 +623,86 @@ class Timedelta(_AbstractBaseTime):
 
     supported_with_datetime = frozenset(("+"))
     supported_with_r_datetime = frozenset(("+", "-", "/", "//", "%"))
-    supported_with_timedelta = frozenset(
-        ("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%")
-    )
-    supported_with_r_timedelta = frozenset(
-        ("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%")
-    )
+    supported_with_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
+    supported_with_r_timedelta = frozenset(("==", "!=", "<", "<=", ">", ">=", "+", "-", "/", "//", "%"))
     supported_opeq = frozenset(("+=", "-=", "%="))
     supported_with_pdarray = frozenset(("*", "//"))
     supported_with_r_pdarray = frozenset(("*"))
+
+    def __init__(self, pda, unit=_BASE_UNIT):
+        super().__init__(pda, unit=unit)
+        self._ms = None
+        self._s = None
+        self._m = None
+        self._h = None
+        self._d = None
+        self._nanoseconds = None
+        self._microseconds = None
+        self._seconds = None
+        self._days = None
+        self._total_seconds = None
+        self._is_populated = False
+
+    def _ensure_components(self):
+        if self._is_populated:
+            return
+        # lazy initialize all attributes in one server call
+        args = {"values": self.values.name}
+        attributes_dict = json.loads(generic_msg(cmd="timeDeltaAttributes", args=args))
+        self._ns = create_pdarray(attributes_dict["nanosecond"])
+        self._us = create_pdarray(attributes_dict["microsecond"])
+        self._ms = create_pdarray(attributes_dict["millisecond"])
+        self._s = create_pdarray(attributes_dict["second"])
+        self._m = create_pdarray(attributes_dict["minute"])
+        self._h = create_pdarray(attributes_dict["hour"])
+        self._d = create_pdarray(attributes_dict["day"])
+        self._nanoseconds = self._ns
+        self._microseconds = self._ms * 1000 + self._us
+        self._seconds = self._h * 3600 + self._m * 60 + self._s
+        self._days = self._d
+        self._total_seconds = self._days * (24 * 3600) + self._seconds + (self._microseconds / 10**6)
+        self._is_populated = True
+
+    @property
+    def nanoseconds(self):
+        self._ensure_components()
+        return self._nanoseconds
+
+    @property
+    def microseconds(self):
+        self._ensure_components()
+        return self._microseconds
+
+    @property
+    def seconds(self):
+        self._ensure_components()
+        return self._seconds
+
+    @property
+    def days(self):
+        self._ensure_components()
+        return self._days
+
+    def total_seconds(self):
+        self._ensure_components()
+        return self._total_seconds
+
+    @property
+    def components(self):
+        from arkouda import DataFrame
+
+        self._ensure_components()
+        return DataFrame(
+            {
+                "days": self._d,
+                "hours": self._h,
+                "minutes": self._m,
+                "seconds": self._s,
+                "milliseconds": self._ms,
+                "microseconds": self._us,
+                "nanoseconds": self._ns,
+            }
+        )
 
     @classmethod
     def _get_callback(cls, otherclass, op):
@@ -641,9 +833,7 @@ def date_range(
     )
 
 
-def timedelta_range(
-    start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs
-):
+def timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs):
     """Return a fixed frequency TimedeltaIndex, with day as the default
     frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
     Subject to size limit imposed by client.maxTransferBytes.
@@ -678,6 +868,4 @@ def timedelta_range(
     To learn more about the frequency strings, please see `this link
     <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
     """
-    return Timedelta(
-        pd_timedelta_range(start, end, periods, freq, name, closed, **kwargs)
-    )
+    return Timedelta(pd_timedelta_range(start, end, periods, freq, name, closed, **kwargs))
