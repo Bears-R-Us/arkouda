@@ -17,7 +17,7 @@ class RegexTest(ArkoudaTest):
                 s2.startswith(pattern, regex=True).to_list(),
                 [re.search("^" + pattern, si) is not None for si in s],
             )
-            if pattern is not "":
+            if pattern != "":
                 self.assertListEqual(
                     s2.endswith(pattern, regex=True).to_list(),
                     [re.search(pattern + "$", si) is not None for si in s],

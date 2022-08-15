@@ -580,6 +580,14 @@ class Strings:
         """
         self._regex_dict = dict()
 
+    def _empty_pattern_verification(self, pattern):
+        if pattern == "$" or (pattern == "" and (self == "").any()):  # type: ignore
+            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
+            raise ValueError(
+                "regex operations not currently supported with a pattern='$' or pattern='' when "
+                "the empty string is contained in Strings"
+            )
+
     def _get_matcher(self, pattern: Union[bytes, str_scalars], create: bool = True):
         """
         internal function to fetch cached Matcher objects
@@ -592,12 +600,7 @@ class Strings:
             re.compile(pattern)
         except Exception as e:
             raise ValueError(e)
-        if pattern == "$" or (pattern == "" and (self == "").any()):  # type: ignore
-            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
-            raise ValueError(
-                "regex operations not currently supported with a pattern=$ or pattern='' when "
-                "the empty string is contained in Strings"
-            )
+        self._empty_pattern_verification(pattern)
         matcher = None
         if pattern in self._regex_dict:
             matcher = self._regex_dict[pattern]
@@ -950,12 +953,7 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
-        if substr == "$" or (substr == "" and (self == "").any()):  # type: ignore
-            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
-            raise ValueError(
-                "regex operations not currently supported with a pattern=$ or pattern='' when "
-                "the empty string is contained in Strings"
-            )
+        self._empty_pattern_verification(substr)
         matcher = self._get_matcher(substr, create=False)
         if matcher is not None:
             return matcher.get_match(MatchType.SEARCH, self).matched()
@@ -1012,12 +1010,7 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
-        if substr == "$" or (substr == "" and (self == "").any()):  # type: ignore
-            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
-            raise ValueError(
-                "regex operations not currently supported with a pattern=$ or pattern='' when "
-                "the empty string is contained in Strings"
-            )
+        self._empty_pattern_verification(substr)
         matcher = self._get_matcher(substr, create=False)
         if matcher is not None:
             return matcher.get_match(MatchType.MATCH, self).matched()
@@ -1073,13 +1066,7 @@ class Strings:
             substr = substr.decode()
         if not regex:
             substr = re.escape(substr)
-        if substr == "$":
-            # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
-            # no need to add "" case because it will be caught in contains
-            raise ValueError(
-                "regex operations not currently supported with a pattern=$ or pattern='' when "
-                "the empty string is contained in Strings"
-            )
+        self._empty_pattern_verification(substr)
         return self.contains(substr + "$", regex=True)
 
     def flatten(
