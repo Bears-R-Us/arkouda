@@ -406,6 +406,7 @@ module ServerDaemon {
                     var format = msg.format;
                     var args   = msg.args;
                     var size: int;
+                    
                     try {
                             size = msg.size: int;
                     }
@@ -518,6 +519,10 @@ module ServerDaemon {
                 if (trace && memTrack) {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                         "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
+                }
+                if metricsEnabled() {
+                    userMetrics.incrementPerUserRequestMetrics(user,cmd);
+                    requestMetrics.increment(cmd);
                 }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string

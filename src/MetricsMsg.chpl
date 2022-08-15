@@ -378,7 +378,7 @@ module MetricsMsg {
             this.number_of_locales = this.locales.size;
         }
     }
-    
+
     class LocaleMetric : Metric {
         var locale_num: int;
         var locale_name: string;
@@ -433,8 +433,6 @@ module MetricsMsg {
         return new MsgTuple(metrics, MsgType.NORMAL);        
     }
 
-    proc registerMe() {
-      use CommandMap;
-      registerFunction("metrics", metricsMsg, getModuleName());
-    }
+    use CommandMap;
+    registerFunction("metrics", metricsMsg, getModuleName());
 }
