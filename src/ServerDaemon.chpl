@@ -23,6 +23,7 @@ module ServerDaemon {
     use Errors;
     use List;
     use ExternalIntegration;
+    use MetricsMsg;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -30,6 +31,60 @@ module ServerDaemon {
     const sdLogger = new Logger(logLevel);
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
+
+    /**
+     * Retrieves a list of 1..n ServerDaemonType objects generated 
+     * from the comma-delimited list of ServerDaemonType strings
+     * provided in the daemonTypes command-line parameter
+     */
+    proc getDaemonTypes() {
+        var types = new list(ServerDaemonType);
+        var rawTypes = daemonTypes.split(',');
+
+        for rt in rawTypes {
+            var daemonType: ServerDaemonType;
+            try {
+                daemonType = rt: ServerDaemonType;
+                types.append(daemonType);
+            } catch {
+                
+            }
+        }
+        return types;
+    }    
+
+    /**
+     * Returns a boolean indicating if Arkouda is configured to generate and
+     * make available metrics via a dedicated metrics socket
+     */
+    proc metricsEnabled() {
+        return getDaemonTypes().contains(ServerDaemonType.METRICS);
+    }
+
+    /**
+     * Returns a boolean indicating whether Arkouda is configured to 
+     * register/deregister with an external system such as Kubernetes.
+     */
+    proc integrationEnabled() {
+        return getDaemonTypes().contains(ServerDaemonType.INTEGRATION);
+    }
+
+    /**
+     * Generates the Kubernetes app name for Arkouda, which varies based
+     * upon which pod corresponds to Locale 0.
+     */
+    proc register(endpoint: ServiceEndpoint) throws {
+        on Locales[0] {
+            var appName: string;
+
+            if serverHostname.count('arkouda-locale') > 0 {
+                appName = 'arkouda-locale';
+            } else {
+                appName = 'arkouda-server';
+            }
+            registerWithExternalSystem(appName, endpoint);
+        }
+    }
 
     /**
      * The ArkoudaServerDaemon class defines the run and shutdown 
@@ -351,6 +406,7 @@ module ServerDaemon {
                     var format = msg.format;
                     var args   = msg.args;
                     var size: int;
+                    
                     try {
                             size = msg.size: int;
                     }
@@ -464,6 +520,10 @@ module ServerDaemon {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                         "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
                 }
+                if metricsEnabled() {
+                    userMetrics.incrementPerUserRequestMetrics(user,cmd);
+                    requestMetrics.increment(cmd);
+                }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
                 sendRepMsg(serialize(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
@@ -495,8 +555,73 @@ module ServerDaemon {
         deleteServerConnectionInfo();
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
-                                                                                 t1.elapsed()));
+               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));   
+        exit(0);
+        }
+    }
+
+    /**
+     * The MetricsServerDaemon provides an endpoint for gathering user, 
+     * request, locale, and server-scoped metrics
+     */
+    class MetricsServerDaemon : ArkoudaServerDaemon {
+    
+        var context: ZMQ.Context;
+        var socket : ZMQ.Socket;      
+        
+        proc init() {
+            this.socket = this.context.socket(ZMQ.REP); 
+            this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
+
+            try! this.socket.bind("tcp://*:%t".format(this.port));
+            try! sdLogger.debug(getModuleName(), 
+                                getRoutineName(), 
+                                getLineNumber(),
+                                "initialized and listening in port %i".format(
+                                this.port));
+        }
+
+        override proc run() throws {
+            if integrationEnabled() {
+                register(ServiceEndpoint.METRICS);
+            }
+
+            while !this.shutdownDaemon {
+                sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                               "awaiting message on port %i".format(this.port));
+                var req = this.socket.recv(bytes).decode();
+
+                var msg: RequestMsg = extractRequest(req);
+                var user   = msg.user;
+                var token  = msg.token;
+                var cmd    = msg.cmd;
+                var format = msg.format;
+                var args   = msg.args;
+
+                var repTuple: MsgTuple;
+
+                select cmd {
+                    when "metrics" {repTuple = metricsMsg(cmd, args, st);}        
+                    when "connect" {
+                        if authenticate {
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
+                                                "%s with token %s".format(this.port,user,token), MsgType.NORMAL);
+                        } else {
+                            repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i".format(this.port), 
+                                                                                    MsgType.NORMAL);
+                        }
+                    }
+                    when "getconfig" {repTuple = getconfigMsg(cmd, args, st);}
+                }           
+
+                this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                                                msgFormat=MsgFormat.STRING, user=user));
+            }
+
+            if integrationEnabled() {
+                deregisterFromExternalSystem(ServiceEndpoint.METRICS);
+            }
+            return;
         }
     }
 
@@ -507,23 +632,17 @@ module ServerDaemon {
     class ExternalIntegrationServerDaemon : DefaultServerDaemon {
 
         override proc run() throws {
-            on Locales[0] {
-                var appName: string;
-
-                if serverHostname.count('arkouda-locale') > 0 {
-                    appName = 'arkouda-locale';
-                } else {
-                    appName = 'arkouda-server';
-                }
-
-                registerWithExternalSystem(appName, ServiceEndpoint.ARKOUDA_CLIENT);
-            }
+            register(ServiceEndpoint.ARKOUDA_CLIENT);
             super.run();
         }
-        
+
         override proc shutdown(user: string) throws {
             on Locales[here.id] {
                 deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
+                // if metrics is enabled, deregister the metrics socket
+                if metricsEnabled() {
+                    deregisterFromExternalSystem(ServiceEndpoint.METRICS);
+                }
             }
 
             super.shutdown(user);
@@ -537,6 +656,9 @@ module ServerDaemon {
             }
             when ServerDaemonType.INTEGRATION {
                 return new ExternalIntegrationServerDaemon():ArkoudaServerDaemon;
+            }
+            when ServerDaemonType.METRICS {
+               return new MetricsServerDaemon():ArkoudaServerDaemon;
             }
             otherwise {
                 throw getErrorWithContext(
