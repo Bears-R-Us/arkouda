@@ -138,7 +138,7 @@ class ParameterObject:
         j = []
         for k, v in val.items():
             if not isinstance(k, str):
-                raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
+                raise TypeError(f"Argument keys are required to be str. Found {type(k)}")
             param = ParameterObject.factory(k, v)
             j.append(json.dumps(param.dict))
         return ParameterObject(key, ObjectType.DICT, str(dict.__name__), json.dumps(j))
