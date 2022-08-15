@@ -21,6 +21,35 @@ or
 
 .. data:: const sdLogger = new Logger(logLevel)
 
+.. function:: proc getDaemonTypes()
+
+   *
+   * Retrieves a list of 1..n ServerDaemonType objects generated 
+   * from the comma-delimited list of ServerDaemonType strings
+   * provided in the daemonTypes command-line parameter
+   
+
+.. function:: proc metricsEnabled()
+
+   *
+   * Returns a boolean indicating if Arkouda is configured to generate and
+   * make available metrics via a dedicated metrics socket
+   
+
+.. function:: proc integrationEnabled()
+
+   *
+   * Returns a boolean indicating whether Arkouda is configured to 
+   * register/deregister with an external system such as Kubernetes.
+   
+
+.. function:: proc register(endpoint: ServiceEndpoint) throws
+
+   *
+   * Generates the Kubernetes app name for Arkouda, which varies based
+   * upon which pod corresponds to Locale 0.
+   
+
 .. class:: ArkoudaServerDaemon
 
    *
@@ -118,6 +147,22 @@ or
       
 
    .. method:: proc initArkoudaDirectory() throws
+
+   .. method:: override proc run() throws
+
+.. class:: MetricsServerDaemon : ArkoudaServerDaemon
+
+   *
+   * The MetricsServerDaemon provides an endpoint for gathering user, 
+   * request, locale, and server-scoped metrics
+   
+
+
+   .. attribute:: var context: ZMQ.Context
+
+   .. attribute:: var socket: ZMQ.Socket
+
+   .. method:: proc init()
 
    .. method:: override proc run() throws
 

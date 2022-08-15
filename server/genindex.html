@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/In1d.html">In1d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MetricsMsg.html">MetricsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MsgProcessing.html">MsgProcessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
@@ -292,6 +293,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Cast.html#Cast.castStringToSymEntry">castStringToSymEntry() (in module Cast)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.category">category (MetricsMsg.Metric attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.Channel">Channel (class in ExternalIntegration)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.ChannelParams">ChannelParams (class in ExternalIntegration)</a>
@@ -334,16 +337,20 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.concat">concat() (in module SegmentedString)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.concatArrays">concatArrays() (in module AryUtil)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.configureSsl">configureSsl() (ExternalIntegration.HttpChannel method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.contains">contains() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.context">context (ServerDaemon.DefaultServerDaemon attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon.context">(ServerDaemon.MetricsServerDaemon attribute)</a>
 </li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.contiguousIndices">contiguousIndices() (in module AryUtil)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.DstAggregator.copy">copy() (CommAggregation.DstAggregator method)</a>
@@ -352,6 +359,10 @@
         <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.SrcAggregator.copy">(CommAggregation.SrcAggregator method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable">CounterTable (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.counts">counts (MetricsMsg.CounterTable attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.createConfig">createConfig() (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.createMsg">createMsg() (in module MsgProcessing)</a>
@@ -415,6 +426,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.datastr">datastr() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.debug">debug() (Logging.Logger method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.decrement">decrement() (MetricsMsg.CounterTable method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.defaultBuffSize">defaultBuffSize (in module CommAggregation)</a>
 </li>
@@ -528,6 +541,8 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.executeCommand">executeCommand() (in module CommandMap)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.exportAllMetrics">exportAllMetrics() (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#module-ExternalIntegration">ExternalIntegration (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ExternalIntegrationServerDaemon">ExternalIntegrationServerDaemon (class in ServerDaemon)</a>
@@ -611,10 +626,18 @@
 </li>
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.get">get() (Message.MessageArgs method)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.get">(MetricsMsg.CounterTable method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.get">(MetricsMsg.MeasurementTable method)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.get_hostname">get_hostname() (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommPrimitives.html#CommPrimitives.getAddr">getAddr() (in module CommPrimitives)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getAllUserRequestMetrics">getAllUserRequestMetrics() (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Security.html#Security.getArkoudaToken">getArkoudaToken() (in module Security)</a>
 </li>
@@ -636,6 +659,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.getConnectHostname">getConnectHostname() (in module ServerConfig)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.getDaemonTypes">getDaemonTypes() (in module ServerDaemon)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">getDigit() (in module AryUtil)</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getDigit">[4]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getDType">getDType() (Message.ParameterObj method)</a>
@@ -650,8 +675,6 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.getExternalChannel">getExternalChannel() (in module ExternalIntegration)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getFileMetadata">getFileMetadata() (in module FileIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getFileType">getFileType() (in module FileIO)</a>
@@ -660,6 +683,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getFileTypeMsg">getFileTypeMsg() (in module FileIO)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.getFirstEightBytesFromFile">getFirstEightBytesFromFile() (in module FileIO)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.getGenericTypedArrayEntry">getGenericTypedArrayEntry() (in module MultiTypeSymbolTable)</a>
@@ -688,13 +713,23 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.getNumDigitsNumericArrays">getNumDigitsNumericArrays() (in module AryUtil)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getNumRequestMetrics">getNumRequestMetrics() (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getObjType">getObjType() (Message.ParameterObj method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getPerUserNumRequestMetrics">getPerUserNumRequestMetrics() (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandForAllUsersMetrics">getPerUserNumRequestsPerCommandForAllUsersMetrics() (MetricsMsg.UserMetrics method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandMetrics">getPerUserNumRequestsPerCommandMetrics() (MetricsMsg.UserMetrics method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.getPhysicalMemHere">getPhysicalMemHere() (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegStringSort.html#SegStringSort.getPivot">getPivot() (in module SegStringSort)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getRealValue">getRealValue() (Message.ParameterObj method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getResponseTimeMetrics">getResponseTimeMetrics() (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.getSegString">getSegString() (in module SegmentedString)</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.getSegString">[1]</a>
 </li>
@@ -704,6 +739,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.getServerDaemons">getServerDaemons() (in module ServerDaemon)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getServerInfo">getServerInfo() (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getServerMetrics">getServerMetrics() (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.AbstractSymEntry.getSizeEstimate">getSizeEstimate() (MultiTypeSymEntry.AbstractSymEntry method)</a>
 
       <ul>
@@ -712,7 +751,19 @@
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SegStringSymEntry.getSizeEstimate">(MultiTypeSymEntry.SegStringSymEntry method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getSystemMetrics">getSystemMetrics() (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getUIntValue">getUIntValue() (Message.ParameterObj method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users.getUser">getUser() (MetricsMsg.Users method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.getUserMetrics">getUserMetrics() (MetricsMsg.UserMetrics method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users.getUserNames">getUserNames() (MetricsMsg.Users method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.getUserRequestMetrics">getUserRequestMetrics() (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users.getUsers">getUsers() (MetricsMsg.Users method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.getValue">getValue() (Message.ParameterObj method)</a>
 </li>
@@ -730,10 +781,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.HDF5FileFormatError">HDF5FileFormatError (class in ServerErrors)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel">HttpChannel (class in ExternalIntegration)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.hostname">hostname (MetricsMsg.LocaleInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.hostname">(MetricsMsg.ServerInfo attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel">HttpChannel (class in ExternalIntegration)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannelParams">HttpChannelParams (class in ExternalIntegration)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpRequestFormat">HttpRequestFormat (in module ExternalIntegration)</a>
@@ -746,6 +803,8 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.id">id (MetricsMsg.LocaleInfo attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/In1d.html#module-In1d">In1d (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/In1d.html#In1d.in1d">in1d() (in module In1d)</a>
@@ -759,6 +818,14 @@
       <li><a href="modules/__w/arkouda/arkouda/src/In1d.html#In1d.in1dSort">in1dSort() (in module In1d)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.incompatibleArgumentsError">incompatibleArgumentsError() (in module ServerErrorStrings)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.increment">increment() (MetricsMsg.CounterTable method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.incrementNumRequestsPerCommand">incrementNumRequestsPerCommand() (MetricsMsg.UserMetrics method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.incrementPerUserRequestMetrics">incrementPerUserRequestMetrics() (MetricsMsg.UserMetrics method)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.incrementTotalNumRequests">incrementTotalNumRequests() (MetricsMsg.UserMetrics method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.info">info() (Logging.Logger method)</a>
 
@@ -787,6 +854,14 @@
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.init">(Message.ParameterObj method)</a>, <a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ParameterObj.init">[1]</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.init">(MetricsMsg.LocaleMetric method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.init">(MetricsMsg.Metric method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.init">(MetricsMsg.ServerInfo method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetric.init">(MetricsMsg.UserMetric method)</a>
+</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.AbstractSymEntry.init">(MultiTypeSymEntry.AbstractSymEntry method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.CompositeSymEntry.init">(MultiTypeSymEntry.CompositeSymEntry method)</a>
@@ -800,6 +875,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.init">(SegmentedString.SegString method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.init">(ServerDaemon.DefaultServerDaemon method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon.init">(ServerDaemon.MetricsServerDaemon method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError.init">(ServerErrors.ArgumentError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError.init">[1]</a>
 </li>
@@ -828,6 +905,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/FileIO.html#FileIO.initDirectory">initDirectory() (in module FileIO)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.integrationEnabled">integrationEnabled() (in module ServerDaemon)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.interpretAsBytes">interpretAsBytes() (in module SegmentedString)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.interpretAsString">interpretAsString() (in module SegmentedString)</a>
@@ -851,7 +930,13 @@
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.isUpper">isUpper() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.items">items() (Message.MessageArgs method)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.items">(MetricsMsg.CounterTable method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.items">(MetricsMsg.MeasurementTable method)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GenSymEntry.itemsize">itemsize (MultiTypeSymEntry.GenSymEntry attribute)</a>
 
       <ul>
@@ -904,16 +989,28 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.loc">loc (CommAggregation.remoteBuffer attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_hostname">locale_hostname (MetricsMsg.LocaleMetric attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_name">locale_name (MetricsMsg.LocaleMetric attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric.locale_num">locale_num (MetricsMsg.LocaleMetric attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo">LocaleInfo (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleMetric">LocaleMetric (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.locales">locales (MetricsMsg.ServerInfo attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localFree">localFree() (CommAggregation.remoteBuffer method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.localIter">localIter() (CommAggregation.remoteBuffer iterator)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger">Logger (class in Logging)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#module-Logging">Logging (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.LogLevel">LogLevel (in module Logging)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.logLevel">logLevel (in module ServerConfig)</a>
@@ -952,6 +1049,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.markFreed">markFreed() (CommAggregation.remoteBuffer method)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.max_number_of_tasks">max_number_of_tasks (MetricsMsg.LocaleInfo attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.measurements">measurements (MetricsMsg.MeasurementTable attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable">MeasurementTable (class in MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.memcmp">memcmp() (in module SegmentedString)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.memHighWater">memHighWater (in module ServerConfig)</a>
@@ -964,14 +1067,34 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs">MessageArgs (class in Message)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric">Metric (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MetricCategory">MetricCategory (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.metrics">metrics (MetricsMsg.UserMetrics attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MetricScope">MetricScope (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.metricScope">metricScope (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.metricsEnabled">metricsEnabled() (in module ServerDaemon)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#module-MetricsMsg">MetricsMsg (module)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.metricsMsg">metricsMsg() (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon">MetricsServerDaemon (class in ServerDaemon)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.MismatchedAppendError">MismatchedAppendError (class in ServerErrors)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.mLogger">mLogger (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.moduleMap">moduleMap (in module CommandMap)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.moduleName">moduleName (ServerErrors.ErrorWithContext attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.mpLogger">mpLogger (in module MsgProcessing)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MsgTuple.msg">msg (Message.MsgTuple attribute)</a>
@@ -1018,8 +1141,16 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.name">name (SegmentedString.SegString attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.name">name (MetricsMsg.LocaleInfo attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.name">(MetricsMsg.Metric attribute)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.User.name">(MetricsMsg.User attribute)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.name">(SegmentedString.SegString attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.nBytes">nBytes (SegmentedString.SegString attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GenSymEntry.ndim">ndim (MultiTypeSymEntry.GenSymEntry attribute)</a>
@@ -1032,10 +1163,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.newSrcAggregator">newSrcAggregator() (in module CommAggregation)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.nextName">nextName() (MultiTypeSymbolTable.SymTab method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.nextName">nextName() (MultiTypeSymbolTable.SymTab method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.nid">nid (MultiTypeSymbolTable.SymTab attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotHDF5FileError">NotHDF5FileError (class in ServerErrors)</a>
@@ -1045,6 +1176,10 @@
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">notImplementedError() (in module ServerErrorStrings)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[4]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[5]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.NULL_STRINGS_VALUE">NULL_STRINGS_VALUE (in module GenSymIO)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.number_of_locales">number_of_locales (MetricsMsg.ServerInfo attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.number_of_processing_units">number_of_processing_units (MetricsMsg.LocaleInfo attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/NumPyDType.html#module-NumPyDType">NumPyDType (module)</a>
 </li>
@@ -1105,6 +1240,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.peelRegex">peelRegex() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.perLocaleMemLimit">perLocaleMemLimit (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.LocaleInfo.physical_memory">physical_memory (MetricsMsg.LocaleInfo attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ArkoudaServerDaemon.port">port (ServerDaemon.ArkoudaServerDaemon attribute)</a>
 </li>
@@ -1180,6 +1317,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.regexMaxCaptures">regexMaxCaptures (in module ServerConfig)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.register">register() (in module ServerDaemon)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.registerBinaryFunction">registerBinaryFunction() (in module CommandMap)</a>, <a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.registerBinaryFunction">[1]</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.registerFunction">registerFunction() (in module CommandMap)</a>, <a href="modules/__w/arkouda/arkouda/src/CommandMap.html#CommandMap.registerFunction">[1]</a>
@@ -1198,10 +1337,10 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.repCount">repCount (ServerDaemon.DefaultServerDaemon attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.ReplyMsg">ReplyMsg (class in Message)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.reprMsg">reprMsg() (in module MsgProcessing)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.reqCount">reqCount (ServerDaemon.DefaultServerDaemon attribute)</a>
@@ -1212,6 +1351,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannelParams.requestFormat">(ExternalIntegration.HttpChannelParams attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.requestMetrics">requestMetrics (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.RequestMsg">RequestMsg (record in Message)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.requestType">requestType (ExternalIntegration.HttpChannel attribute)</a>
@@ -1220,6 +1361,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannelParams.requestType">(ExternalIntegration.HttpChannelParams attribute)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.responseTimeMetrics">responseTimeMetrics (in module MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.ROTL">ROTL() (in module SipHash)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.routineName">routineName (ServerErrors.ErrorWithContext attribute)</a>
@@ -1243,6 +1386,8 @@
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.ExternalIntegrationServerDaemon.run">(ServerDaemon.ExternalIntegrationServerDaemon method)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon.run">(ServerDaemon.MetricsServerDaemon method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -1255,6 +1400,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.saveUsedModules">saveUsedModules (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.scLogger">scLogger (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.scope">scope (MetricsMsg.Metric attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.sdLogger">sdLogger (in module ServerDaemon)</a>
 </li>
@@ -1282,6 +1429,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.serialize">serialize() (in module Message)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.server_port">server_port (MetricsMsg.ServerInfo attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#module-ServerConfig">ServerConfig (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.serverConnectionInfo">serverConnectionInfo (in module ServerConfig)</a>
@@ -1298,7 +1447,11 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.serverid">serverid (MultiTypeSymbolTable.SymTab attribute)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo">ServerInfo (class in MetricsMsg)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.serverMessage">serverMessage (ServerDaemon.DefaultServerDaemon attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.serverMetrics">serverMetrics (in module MetricsMsg)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.ServerPort">ServerPort (in module ServerConfig)</a>
 </li>
@@ -1306,6 +1459,12 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.ServiceEndpoint">ServiceEndpoint (in module ExternalIntegration)</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.set">set() (MetricsMsg.CounterTable method)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.set">(MetricsMsg.MeasurementTable method)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Security.html#Security.setArkoudaToken">setArkoudaToken() (in module Security)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.setMsg">setMsg() (in module MsgProcessing)</a>
@@ -1338,6 +1497,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash64">sipHash64() (in module SipHash)</a>, <a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.sipHash64">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/CommAggregation.html#CommAggregation.remoteBuffer.size">size (CommAggregation.remoteBuffer attribute)</a>
 
       <ul>
@@ -1352,10 +1513,18 @@
         <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.size">(SegmentedString.SegString attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.socket">socket (ServerDaemon.DefaultServerDaemon attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.size">size() (MetricsMsg.CounterTable method)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.MeasurementTable.size">(MetricsMsg.MeasurementTable method)</a>
 </li>
+      </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.DefaultServerDaemon.socket">socket (ServerDaemon.DefaultServerDaemon attribute)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerDaemon.html#ServerDaemon.MetricsServerDaemon.socket">(ServerDaemon.MetricsServerDaemon attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.bytes.splitMsgToTuple">splitMsgToTuple() (ServerConfig.bytes method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.bytes.splitMsgToTuple">[1]</a>
 
       <ul>
@@ -1460,6 +1629,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">this() (SegmentedString.SegString method)</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.this">[3]</a>
 </li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.timestamp">timestamp (MetricsMsg.Metric attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.title">title() (SegmentedString.SegString method)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.toGenSymEntry">toGenSymEntry() (in module MultiTypeSymEntry)</a>
@@ -1478,6 +1649,8 @@
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GenSymEntry.toSymEntry">(MultiTypeSymEntry.GenSymEntry method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.CounterTable.total">total() (MetricsMsg.CounterTable method)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.trace">trace (in module ServerConfig)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegStringSort.html#SegStringSort.twoPhaseStringSort">twoPhaseStringSort() (in module SegStringSort)</a>
@@ -1506,8 +1679,6 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnknownSymbolError">UnknownSymbolError (class in ServerErrors)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.unknownSymbolError">unknownSymbolError() (in module ServerErrorStrings)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.unrecognizedTypeError">unrecognizedTypeError() (in module ServerErrorStrings)</a>
@@ -1516,6 +1687,8 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.upper">upper() (SegmentedString.SegString method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/ExternalIntegration.html#ExternalIntegration.HttpChannel.url">url (ExternalIntegration.HttpChannel attribute)</a>
 
       <ul>
@@ -1529,6 +1702,26 @@
       <ul>
         <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.RequestMsg.user">(Message.RequestMsg attribute)</a>
 </li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetric.user">(MetricsMsg.UserMetric attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.User">User (record in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetric">UserMetric (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics">UserMetrics (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.userMetrics">userMetrics (in module MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users">Users (class in MetricsMsg)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.users">users (in module MetricsMsg)</a>
+
+      <ul>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.UserMetrics.users">(MetricsMsg.UserMetrics attribute)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Users.users">(MetricsMsg.Users attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -1540,11 +1733,15 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/AryUtil.html#AryUtil.validateArraysSameLength">validateArraysSameLength() (in module AryUtil)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Message.html#Message.MessageArgs.vals">vals() (Message.MessageArgs method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.Metric.value">value (MetricsMsg.Metric attribute)</a>
+</li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedString.html#SegmentedString.SegString.values">values (SegmentedString.SegString attribute)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/MetricsMsg.html#MetricsMsg.ServerInfo.version">version (MetricsMsg.ServerInfo attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.vv">vv (in module RadixSortLSD)</a>
 </li>
