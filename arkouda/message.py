@@ -17,6 +17,7 @@ class ObjectType(Enum):
     PDARRAY = "PDARRAY"
     STRINGS = "SEGSTRING"
     LIST = "LIST"
+    DICT = "DICT"
     VALUE = "VALUE"
 
     def __str__(self) -> str:
@@ -133,6 +134,17 @@ class ParameterObject:
 
     @staticmethod
     @typechecked
+    def _build_dict_param(key: str, val: Dict) -> ParameterObject:
+        j = []
+        for k, v in val.items():
+            if not isinstance(k, str):
+                raise TypeError(f"Argument keys are required to be str. Found {type(k)}")
+            param = ParameterObject.factory(k, v)
+            j.append(json.dumps(param.dict))
+        return ParameterObject(key, ObjectType.DICT, str(dict.__name__), json.dumps(j))
+
+    @staticmethod
+    @typechecked
     def _build_gen_param(key: str, val) -> ParameterObject:
         """
         Create a ParameterObject from a single value
@@ -167,6 +179,7 @@ class ParameterObject:
             pdarray.__name__: ParameterObject._build_pdarray_param,
             Strings.__name__: ParameterObject._build_strings_param,
             list.__name__: ParameterObject._build_list_param,
+            dict.__name__: ParameterObject._build_dict_param,
         }
 
     @staticmethod

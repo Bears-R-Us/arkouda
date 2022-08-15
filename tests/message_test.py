@@ -161,3 +161,34 @@ class JSONArgs(ArkoudaTest):
             self.assertEqual(p["objType"], "SEGSTRING")
             self.assertEqual(p["dtype"], "str")
             self.assertRegex(p["val"], "^id_\\w{7}_\\d$")
+
+        # test nested json
+        size, args = _json_args_to_str({
+            "json_1": {
+                "param1": 1,
+                "param2": "abc",
+                "param3": [1, 2, 3],
+            }
+        })
+        self.assertEqual(size, 1)
+        j = json.loads(json.loads(args)[0])
+        self.assertEqual(j["key"], "json_1")
+        self.assertEqual(j["objType"], "DICT")
+        self.assertEqual(j["dtype"], "dict")
+        for i, a in enumerate(json.loads(j["val"])):
+            p = json.loads(a)
+            self.assertEqual(p["key"], f"param{i+1}")
+            if i == 0:
+                self.assertEqual(p["objType"], "VALUE")
+                self.assertEqual(p["dtype"], "int")
+                self.assertEqual(p["val"], "1")
+            elif i == 1:
+                self.assertEqual(p["objType"], "VALUE")
+                self.assertEqual(p["dtype"], "str")
+                self.assertEqual(p["val"], "abc")
+            else:
+                self.assertEqual(p["objType"], "LIST")
+                self.assertEqual(p["dtype"], "int")
+                self.assertListEqual(json.loads(p["val"]), ["1", "2", "3"])
+
+

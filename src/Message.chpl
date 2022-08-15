@@ -7,7 +7,7 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
-    enum ObjectType {PDARRAY, SEGSTRING, LIST, VALUE}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE}
 
     /*
      * Encapsulates the message string and message type.
@@ -191,6 +191,17 @@ module Message {
                                     "TypeError");
             }
             return jsonToPdArray(this.val, size);
+        }
+
+        proc getJSON(size: int) throws {
+            if this.objType != ObjectType.DICT {
+                throw new owned ErrorWithContext("Parameter with key, %s, is not a JSON obj.".format(this.key),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+            return parseMessageArgs(this.val, size);
         }
     }
 
