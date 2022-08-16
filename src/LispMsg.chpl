@@ -26,6 +26,9 @@ module LispMsg
     use LisExprInterp;
     use TestLisExpr;
 
+    use GenSymIO;
+    use Message;
+
     private config const logLevel = ServerConfig.logLevel;
     const asLogger = new Logger(logLevel);
 
@@ -40,7 +43,21 @@ module LispMsg
     proc lispMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (avalStr, xId, yId, code) = payload.splitMsgToTuple(4);
+        var (jsonTypes, jsonVals, sizeStr, pdaCountStr, code) = payload.splitMsgToTuple("|", 5);
+        if (!checkCast(sizeStr, int)) {
+          var errMsg = "Number of values:`%s` could not be cast to an integer".format(sizeStr);
+          return new MsgTuple(errMsg, MsgType.ERROR);
+        }
+        if (!checkCast(pdaCountStr, int)) {
+          var errMsg = "Number of values:`%s` could not be cast to an integer".format(sizeStr);
+          return new MsgTuple(errMsg, MsgType.ERROR);
+        }
+        var size = sizeStr: int;
+        var pdaCount = pdaCountStr: int;
+        var argTypes: [0..#size] string = jsonToPdArray(jsonTypes, size);
+        var argNames: [0..#size] string = jsonToPdArray(jsonVals, size);
+        
+        /*
         writeln(avalStr, xId, yId, code);
         // Received: {'bindings': "{'a': {'type': 'float64', 'value': '5.0'}, 'x': {'type': 'pdarray', 'name': 'id_ej8Pi4s_1'}, 'y': {'type': 'pdarray', 'name': 'id_ej8Pi4s_2'}}", 'code': "'( begin ( return ( + ( * a x ) y ) ) )'"}
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(xId, st);
@@ -52,8 +69,7 @@ module LispMsg
         var ret = evalLisp(code, arrs=(x.a, y.a), arrNames=("x","y"),
                            vals=(avalStr:real,), valNames=("a",));
         writeln(ret);
-
-        repMsg = "applesauce and spaghetti";
+        */
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
