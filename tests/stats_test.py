@@ -49,11 +49,11 @@ class StatsTest(ArkoudaTest):
 
     def test_std(self):
         # Note the numpy and pandas var/std differ, we follow numpy by default
-        self.assertEqual(self.x.std(), self.npx.std())
+        self.assertAlmostEqual(self.x.std(), self.npx.std())
         self.assertAlmostEqual(self.y.std(), self.npy.std())
         self.assertAlmostEqual(self.u.std(), self.npu.std())
-        self.assertEqual(self.b.std(), self.npb.std())
-        self.assertEqual(self.f.std(), self.npf.std())
+        self.assertAlmostEqual(self.b.std(), self.npb.std())
+        self.assertAlmostEqual(self.f.std(), self.npf.std())
 
         # The pandas version requires ddof = 1
         self.assertEqual(self.x.std(ddof=1), self.pdx.std())
