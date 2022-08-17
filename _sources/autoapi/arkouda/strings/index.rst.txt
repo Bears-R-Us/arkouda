@@ -362,6 +362,9 @@ Classes
       purges cached regex patterns
 
 
+   .. py:method:: _empty_pattern_verification(pattern)
+
+
    .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
 
       internal function to fetch cached Matcher objects
