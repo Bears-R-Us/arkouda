@@ -146,6 +146,7 @@ module LisExprInterp
                         if isTrue(eval(lst[1], env, st)) {return eval(lst[2], env, st);} else {return eval(lst[3], env, st);}
                     }
                     when "begin" {
+                      checkGEqLstSize(lst, 1);
                       // setup the environment
                       for i in 1..#lst.size-1 do
                         eval(lst[i], env, st);

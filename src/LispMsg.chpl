@@ -45,12 +45,11 @@ module LispMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // TODO: If we support `|` in lisp, we don't want that to be delimeter
-        var (lispCode, sizeStr) = payload.splitMsgToTuple("|", 2);
+        var (retTypeStr, sizeStr, lispCode) = payload.splitMsgToTuple("|", 3);
         var size = sizeStr: int;
-        var ret = evalLisp(lispCode, size, st);
-        var vname = st.nextName();
-        st.addEntry(vname, new shared SymEntry(ret));
-        repMsg = "created " + st.attrib(vname);
+
+        var newPdaName = evalLisp(lispCode, size, st);
+        repMsg = "created " + st.attrib(newPdaName);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
@@ -61,12 +60,13 @@ module LispMsg
     proc evalLisp(prog: string, size: int, st) {
       // TOOD: How do we want to construct ret?
       //       need size and type to know
-      var ret: [0..#size] real;
+      var retName = st.nextName();
+      var ret = st.addEntry(retName, size, real);
       try {
         coforall loc in Locales {
             on loc {
                 coforall task in Tasks {
-                    var lD = ret.domain.localSubdomain();
+                    var lD = ret.a.domain.localSubdomain();
                     var tD = calcBlock(task, lD.low, lD.high);
                     var ast = parse(prog);
                     for i in tD {
@@ -74,7 +74,7 @@ module LispMsg
                         env.addEntry("i", i);
                         
                         // Evaluate for this index
-                        ret[i] = eval(ast, env, st).toValue(real).v;
+                        ret.a[i] = eval(ast, env, st).toValue(real).v;
                     }
                 }
             }
@@ -82,7 +82,7 @@ module LispMsg
       } catch e {
         writeln(e!.message());
       }
-      return ret;
+      return retName;
     }
     use CommandMap;
     registerFunction("lispCode", lispMsg, getModuleName());
