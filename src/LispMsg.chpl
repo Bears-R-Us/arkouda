@@ -44,8 +44,10 @@ module LispMsg
     proc lispMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (lispCode) = payload.splitMsgToTuple(1);
-        var ret = evalLisp(lispCode, st);
+        // TODO: If we support `|` in lisp, we don't want that to be delimeter
+        var (lispCode, sizeStr) = payload.splitMsgToTuple("|", 2);
+        var size = sizeStr: int;
+        var ret = evalLisp(lispCode, size, st);
         var vname = st.nextName();
         st.addEntry(vname, new shared SymEntry(ret));
         repMsg = "created " + st.attrib(vname);
@@ -56,10 +58,10 @@ module LispMsg
     // arrNames is a list of names corresponding to arrs (so is same length as arrs)
     // vals are the values passed in
     // valNames are the names of those values (so is same length as vals)
-    proc evalLisp(prog: string, st) {
+    proc evalLisp(prog: string, size: int, st) {
       // TOOD: How do we want to construct ret?
       //       need size and type to know
-      var ret: [0..#10] real;
+      var ret: [0..#size] real;
       try {
         coforall loc in Locales {
             on loc {
