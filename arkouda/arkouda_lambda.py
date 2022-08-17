@@ -200,7 +200,7 @@ def arkouda_func(func):
         num_elems = -1
         elem_dtypes = []
         for arg in args:
-            if isinstance(arg, ak.pdarray):
+            if isinstance(arg, pdarray):
                 if num_elems == -1:
                     num_elems = arg.size
                     elem_dtypes.append(arg.dtype)
