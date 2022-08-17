@@ -31,6 +31,7 @@ module LispMsg
 
     private config const logLevel = ServerConfig.logLevel;
     const asLogger = new Logger(logLevel);
+    const Tasks = {0..#numTasks};
 
     /*
     Parse, execute, and respond to a setdiff1d message
@@ -50,52 +51,37 @@ module LispMsg
         repMsg = "created " + st.attrib(vname);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-
+    
     // arrs is a tuple of the incoming arrays
     // arrNames is a list of names corresponding to arrs (so is same length as arrs)
     // vals are the values passed in
     // valNames are the names of those values (so is same length as vals)
     proc evalLisp(prog: string, st) {
+      // TOOD: How do we want to construct ret?
+      //       need size and type to know
       var ret: [0..#10] real;
       try {
-        for i in ret.domain {
-          var ast = parse(prog);
-          var env = new owned Env();
-          env.addEntry("i", i);
-
-          // Evaluate for this index
-          var ans = eval(ast, env, st);
-          ret[i] = ans.toValue(real).v;
+        coforall loc in Locales {
+            on loc {
+                coforall task in Tasks {
+                    var lD = ret.domain.localSubdomain();
+                    var tD = calcBlock(task, lD.low, lD.high);
+                    var ast = parse(prog);
+                    for i in tD {
+                        var env = new owned Env();
+                        env.addEntry("i", i);
+                        
+                        // Evaluate for this index
+                        ret[i] = eval(ast, env, st).toValue(real).v;
+                    }
+                }
+            }
         }
       } catch e {
         writeln(e!.message());
       }
       return ret;
     }
-
-    /*
-    proc evalLisp(prog: string, arrs ...?n) {
-      // arrs is a list of arrays and their corresponding names
-      var ret: [0..#arrs[0].size] real;
-      try {
-        for i in 0..#arrs[0].size {
-          var ast = parse(prog);
-          var env = new owned Env();
-
-          for param j in 0..#n by 2{
-            // arrs[j+1] is name, arrs[j][i] is val at current index of current array
-            env.addEntry(arrs[j+1], arrs[j][i]);
-          }
-          var ans = eval(ast, env);
-          ret[i] = ans.toValue(real).v;
-        }
-      }
-        catch e: Error {
-            writeln(e.message());
-        }
-        return ret;
-        } */
-    
     use CommandMap;
     registerFunction("lispCode", lispMsg, getModuleName());
 }
