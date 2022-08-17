@@ -31,3 +31,4 @@ from arkouda.series import *
 from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
+from arkouda.arkouda_lambda import *
