@@ -43,33 +43,11 @@ module LispMsg
     proc lispMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (jsonTypes, jsonVals, sizeStr, pdaCountStr, code) = payload.splitMsgToTuple("|", 5);
-        if (!checkCast(sizeStr, int)) {
-          var errMsg = "Number of values:`%s` could not be cast to an integer".format(sizeStr);
-          return new MsgTuple(errMsg, MsgType.ERROR);
-        }
-        if (!checkCast(pdaCountStr, int)) {
-          var errMsg = "Number of values:`%s` could not be cast to an integer".format(sizeStr);
-          return new MsgTuple(errMsg, MsgType.ERROR);
-        }
-        var size = sizeStr: int;
-        var pdaCount = pdaCountStr: int;
-        var argTypes: [0..#size] string = jsonToPdArray(jsonTypes, size);
-        var argNames: [0..#size] string = jsonToPdArray(jsonVals, size);
-        
-        /*
-        writeln(avalStr, xId, yId, code);
-        // Received: {'bindings': "{'a': {'type': 'float64', 'value': '5.0'}, 'x': {'type': 'pdarray', 'name': 'id_ej8Pi4s_1'}, 'y': {'type': 'pdarray', 'name': 'id_ej8Pi4s_2'}}", 'code': "'( begin ( return ( + ( * a x ) y ) ) )'"}
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(xId, st);
-        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(yId, st);
-
-        var x = toSymEntry(gEnt, real);
-        var y = toSymEntry(gEnt2, real);
-        
-        var ret = evalLisp(code, arrs=(x.a, y.a), arrNames=("x","y"),
-                           vals=(avalStr:real,), valNames=("a",));
-        writeln(ret);
-        */
+        var (lispCode) = payload.splitMsgToTuple(1);
+        var ret = evalLisp(lispCode, st);
+        var vname = st.nextName();
+        st.addEntry(vname, new shared SymEntry(ret));
+        repMsg = "created " + st.attrib(vname);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
@@ -77,43 +55,17 @@ module LispMsg
     // arrNames is a list of names corresponding to arrs (so is same length as arrs)
     // vals are the values passed in
     // valNames are the names of those values (so is same length as vals)
-    proc evalLisp(prog: string, arrs, arrNames, vals, valNames) {
-      var ret: [0..#arrs[0].size] real;
-
+    proc evalLisp(prog: string, st) {
+      var ret: [0..#10] real;
       try {
-        if arrs.size == 1 {
-          for (val, r) in zip(arrs[0], ret) do {
-            var ast = parse(prog);
-            var env = new owned Env();
-          
-            // Add array values to environment
-            env.addEntry(arrNames[0], val);
+        for i in ret.domain {
+          var ast = parse(prog);
+          var env = new owned Env();
+          env.addEntry("i", i);
 
-            // Add values to environment
-            for (val, name) in zip(vals,valNames) do
-              env.addEntry(name, val);
-
-            // Evaluate for this index
-            var ans = eval(ast, env);
-            r = ans.toValue(real).v;
-          }
-        } else if arrs.size == 2 {
-          for (val1, val2, r) in zip(arrs[0], arrs[1], ret) {
-            var ast = parse(prog);
-            var env = new owned Env();
-          
-            // Add array values to environment
-            env.addEntry(arrNames[0], val1);
-            env.addEntry(arrNames[1], val2);
-
-            // Add values to environment
-            for (val, name) in zip(vals,valNames) do
-              env.addEntry(name, val);
-
-            // Evaluate for this index
-            var ans = eval(ast, env);
-            r = ans.toValue(real).v;
-          }
+          // Evaluate for this index
+          var ans = eval(ast, env, st);
+          ret[i] = ans.toValue(real).v;
         }
       } catch e {
         writeln(e!.message());
