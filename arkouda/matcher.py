@@ -32,12 +32,6 @@ class Matcher:
             re.compile(self.pattern)
         except Exception as e:
             raise ValueError(e)
-        if re.search(self.pattern, ""):
-            # TODO remove once changes from chapel issue #18639 are in arkouda
-            raise ValueError(
-                "regex operations with a pattern that matches the empty string are"
-                "not currently supported"
-            )
         self.parent_entry_name = parent_entry_name
         self.num_matches: pdarray
         self.starts: pdarray
@@ -116,6 +110,8 @@ class Matcher:
         """
         from arkouda.strings import Strings
 
+        if re.search(self.pattern, ""):
+            raise ValueError("Cannot split or flatten with a pattern that matches the empty string")
         cmd = "segmentedSplit"
         args = "{} {} {} {} {}".format(
             self.objtype, self.parent_entry_name, maxsplit, return_segments, json.dumps([self.pattern])
