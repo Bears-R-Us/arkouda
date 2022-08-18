@@ -114,7 +114,7 @@ module LisExprInterp
                 checkSymbol(lst[0]);
                 var op = lst[0].toListValue(Symbol).lv;
                 select (op) {
-                when "+"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) + eval(lst[2], env, st);}
+                    when "+"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) + eval(lst[2], env, st);}
                     when "-"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) - eval(lst[2], env, st);}
                     when "*"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) * eval(lst[2], env, st);}
                     when "=="  {checkEqLstSize(lst,3); return eval(lst[1], env, st) == eval(lst[2], env, st);}
