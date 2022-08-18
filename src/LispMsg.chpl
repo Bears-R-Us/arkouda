@@ -57,7 +57,7 @@ module LispMsg
     // arrNames is a list of names corresponding to arrs (so is same length as arrs)
     // vals are the values passed in
     // valNames are the names of those values (so is same length as vals)
-    proc evalLisp(prog: string, size: int, st) {
+    proc evalLisp(prog: string, size: int, st) throws {
       // TOOD: How do we want to construct ret?
       //       need size and type to know
       var retName = st.nextName();
