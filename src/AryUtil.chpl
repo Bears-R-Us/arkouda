@@ -140,10 +140,10 @@ module AryUtil
      *
      * :returns: (length, hasStr, names, objtypes)
      */
-    proc validateArraysSameLength(n:int, fields:[] string, st: borrowed SymTab) throws {
+    proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
-      if (fields.size != 2*n) { 
-          var errorMsg = "Expected %i arrays but got %i".format(n, fields.size/2 - 1);
+      if (names.size != n) { 
+          var errorMsg = "Expected %i arrays but got %i".format(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
                                            getLineNumber(),
@@ -151,9 +151,15 @@ module AryUtil
                                            getModuleName(),
                                            "ArgumentError");
       }
-      const low = fields.domain.low;
-      var names = fields[low..#n];
-      var types = fields[low+n..#n];
+      if (types.size != n) { 
+          var errorMsg = "Expected %i types but got %i".format(n, types.size);
+          auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          throw new owned ErrorWithContext(errorMsg,
+                                           getLineNumber(),
+                                           getRoutineName(),
+                                           getModuleName(),
+                                           "ArgumentError");
+      }
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size

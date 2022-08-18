@@ -33,9 +33,9 @@ module UniqueMsg
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
 
-    proc assumeSortedShortcut(n, fields, st) throws {
+    proc assumeSortedShortcut(n, namesList: [] string, typesList: [] string, st) throws {
       // very similar to uniqueAndCount but skips sort
-      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+      var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
       if (size == 0) {
         return (new shared SymEntry(0, int), new shared SymEntry(0, int));
       }
@@ -66,15 +66,16 @@ module UniqueMsg
     }
 
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (returnGroupsStr, assumeSortedStr, nstr, rest) = payload.splitMsgToTuple(4);
+        var msgArgs = parseMessageArgs(payload, 5);
         // flag to return segments and permutation for GroupBy
-        const returnGroups = if (returnGroupsStr == "True") then true else false;
-        const assumeSorted = if (assumeSortedStr == "True") then true else false;
+        const returnGroups = if msgArgs.getValueOf("returnGroupStr") == "True" then true else false;
+        const assumeSorted = if msgArgs.getValueOf("assumeSortedStr") == "True" then true else false;
         var repMsg: string = "";
         // number of arrays
-        var n = nstr:int;
-        var fields = rest.split();
-        var (permutation, segments) = if assumeSorted then assumeSortedShortcut(n, fields, st) else uniqueAndCount(n, fields, st);
+        var n = msgArgs.get("nstr").getIntValue();
+        var keynames = msgArgs.get("keynames").getList(n);
+        var keytypes = msgArgs.get("keytypes").getList(n);
+        var (permutation, segments) = if assumeSorted then assumeSortedShortcut(n, keynames, keytypes, st) else uniqueAndCount(n, keynames, keytypes, st);
         
         // If returning grouping info, add to SymTab and prepend to repMsg
         if returnGroups {
@@ -105,15 +106,12 @@ module UniqueMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc storeUniqueKeys(n, fields, gatherInds, st): string throws {
+    proc storeUniqueKeys(n, names: [] string, types: [] string, gatherInds, st): string throws {
       // Number of unique keys
       const size = gatherInds.size;
       // An underestimate for strings, unfortunately
       overMemLimit(n*size*numBytes(int));
       var repMsg: string;
-      const low = fields.domain.low;
-      var names = fields[low..#n];
-      var types = fields[low+n..#n];
       // For each input array, gather unique values
       for (name, objtype, i) in zip(names, types, 0..) {
         var newName = st.nextName();
@@ -160,7 +158,7 @@ module UniqueMsg
       return repMsg;
     }
 
-    proc uniqueAndCount(n, fields, st) throws {
+    proc uniqueAndCount(n, namesList: [] string, typesList: [] string, st) throws {
       if (n > 128) {
         throw new owned ErrorWithContext("Cannot hash more than 128 arrays",
                                          getLineNumber(),
@@ -168,7 +166,7 @@ module UniqueMsg
                                          getModuleName(),
                                          "ArgumentError");
       }
-      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+      var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
       if (size == 0) {
         return (new shared SymEntry(0, int), new shared SymEntry(0, int));
       }

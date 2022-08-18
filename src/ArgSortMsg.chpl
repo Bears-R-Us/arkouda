@@ -210,7 +210,8 @@ module ArgSortMsg
     proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (algoName, nstr, rest) = payload.splitMsgToTuple(3);
+      var msgArgs = parseMessageArgs(payload, 4);
+      var algoName = msgArgs.getValueOf("algoName");
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
@@ -225,11 +226,12 @@ module ArgSortMsg
                                     );
         }
       }
-      var n = nstr:int; // number of arrays to sort
-      var fields = rest.split();
+      var n = msgArgs.get("nstr").getIntValue();  // number of arrays to sort
+      var arrNames = msgArgs.get("arr_names").getList(n);
+      var arrTypes = msgArgs.get("arr_types").getList(n);
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                  "number of arrays: %i fields: %t".format(n,fields));
-      var (size, hasStr, names, types) = validateArraysSameLength(n, fields, st);
+                                   "number of arrays: %i arrNames: %t, arrTypes: %t".format(n,arrNames, arrTypes));
+      var (size, hasStr, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead
@@ -326,8 +328,9 @@ module ArgSortMsg
     proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (algoName, objtype, name) = payload.splitMsgToTuple(3);
+        var msgArgs = parseMessageArgs(payload, 3);
+        var name = msgArgs.getValueOf("name");
+        var algoName = msgArgs.getValueOf("algoName");
         var algorithm: SortingAlgorithm = defaultSortAlgorithm;
         if algoName != "" {
           try {
@@ -347,6 +350,7 @@ module ArgSortMsg
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "cmd: %s name: %s ivname: %s".format(cmd, name, ivname));
 
+        var objtype = msgArgs.getValueOf("objType");
         select objtype {
           when "pdarray" {
             var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);

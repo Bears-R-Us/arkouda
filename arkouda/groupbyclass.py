@@ -111,13 +111,13 @@ def unique(
     effectiveKeys = len(grouping_keys)
     repMsg = generic_msg(
         cmd="unique",
-        args="{} {} {:n} {} {}".format(
-            return_groups,
-            assume_sorted,
-            effectiveKeys,
-            " ".join(keynames),
-            " ".join(keytypes),
-        ),
+        args={
+            "returnGroupStr": return_groups,
+            "assumeSortedStr": assume_sorted,
+            "nstr": effectiveKeys,
+            "keynames": keynames,
+            "keytypes": keytypes,
+        },
     )
     if return_groups:
         parts = cast(str, repMsg).split("+")
