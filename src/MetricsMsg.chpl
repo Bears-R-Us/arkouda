@@ -91,7 +91,7 @@ module MetricsMsg {
         proc getPerUserNumRequestsPerCommandForAllUsersMetrics() {
             var metrics = new list(owned UserMetric?);
             for userName in this.users.getUserNames() {
-                metrics.extend(this.getPerUserNumRequestsPerCommandMetrics(userName));
+                metrics.append(this.getPerUserNumRequestsPerCommandMetrics(userName));
             }
 
             return metrics;
@@ -191,10 +191,10 @@ module MetricsMsg {
     proc exportAllMetrics() throws {        
         var metrics = new list(owned Metric?);
 
-        metrics.extend(getNumRequestMetrics());
-        metrics.extend(getResponseTimeMetrics());
-        metrics.extend(getSystemMetrics());
-        metrics.extend(getServerMetrics());
+        metrics.append(getNumRequestMetrics());
+        metrics.append(getResponseTimeMetrics());
+        metrics.append(getSystemMetrics());
+        metrics.append(getServerMetrics());
 
         for userMetric in getAllUserRequestMetrics() {
             metrics.append(userMetric: owned Metric);
