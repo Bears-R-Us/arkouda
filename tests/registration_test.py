@@ -644,8 +644,7 @@ class RegistrationTest(ArkoudaTest):
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
         index = ak.Index.factory(ak.array(["One", "Two", "Three", "Four", "Five", "Six"]))
         df = ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount},
-            index
+            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}, index
         )
 
         # Register DataFrame with name 'DataFrame_test'

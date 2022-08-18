@@ -1809,7 +1809,6 @@ class DataFrame(UserDict):
 
         return DataFrame(df_def, index=self.index)
 
-
     def corr(self) -> DataFrame:
         """
         Return new DataFrame with pairwise correlation of columns
