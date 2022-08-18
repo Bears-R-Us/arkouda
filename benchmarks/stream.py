@@ -38,6 +38,37 @@ def time_ak_stream(N_per_locale, trials, alpha, dtype, random, seed):
     bytes_per_sec = (c.size * c.itemsize * 3) / tavg
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec / 2**30))
 
+@arkouda_func
+def my_axpy(a: ak.float64, x : ak.pdarray, y: ak.pdarray) -> ak.pdarray:
+    return a * x + y
+    
+def time_lisp_stream(N_per_locale, trials, alpha, dtype, random, seed):
+    print(">>> arkouda {} lisp stream".format(dtype))
+    cfg = ak.get_config()
+    N = N_per_locale * cfg["numLocales"]
+    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    if random or seed is not None:
+        if dtype == "int64":
+            a = ak.randint(0, 2**32, N, seed=seed)
+            b = ak.randint(0, 2**32, N, seed=seed)
+        elif dtype == "float64":
+            a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+            b = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+    else:
+        a = ak.ones(N, dtype=dtype)
+        b = ak.ones(N, dtype=dtype)
+
+    timings = []
+    for i in range(trials):
+        start = time.time()
+        c = my_axpy(alpha, a, b)
+        end = time.time()
+        timings.append(end - start)
+    tavg = sum(timings) / trials
+
+    print("Average time = {:.4f} sec".format(tavg))
+    bytes_per_sec = (c.size * c.itemsize * 3) / tavg
+    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec / 2**30))
 
 def time_np_stream(N, trials, alpha, dtype, random, seed):
     print(">>> numpy {} stream".format(dtype))
@@ -115,6 +146,12 @@ def create_parser():
         help="Run the same operation in NumPy to compare performance.",
     )
     parser.add_argument(
+        "--lisp",
+        default=False,
+        action="store_true",
+        help="Run the same operation using Arkouda lambda to compare performance.",
+    )
+    parser.add_argument(
         "--correctness-only",
         default=False,
         action="store_true",
@@ -151,5 +188,7 @@ if __name__ == "__main__":
         print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
         check_correctness(args.alpha, args.dtype, args.randomize, args.seed)
         print("CORRECT")
+    if args.lisp:
+        time_lisp_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize, args.seed)
 
     sys.exit(0)
