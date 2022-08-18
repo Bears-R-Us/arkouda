@@ -201,13 +201,17 @@ def arkouda_func(func):
         elem_dtypes = []
         for arg in args:
             if isinstance(arg, pdarray):
+                elem_dtypes.append(arg.dtype)
                 if num_elems == -1:
                     num_elems = arg.size
-                    elem_dtypes.append(arg.dtype)
                 else:
                     if arg.size != num_elems:
                         raise Exception("size mismatch exception; all pdarrays must be same size")
-        
+            else:
+                elem_dtypes.append(type(arg).__name__)
+
+        ret_type = "float64" if (elem_dtypes.count("float") + elem_dtypes.count("float64")) > 0 else "int64"
+                
          # get source code for function
         source_code = inspect.getsource(func)
         # print("source_code :\n" + source_code)
@@ -224,7 +228,7 @@ def arkouda_func(func):
         # send it
         # get result
         # return pdarray of result
-        repMsg = generic_msg(cmd="lispCode", args=f"float64 | {num_elems} | {visitor.ret}")
+        repMsg = generic_msg(cmd="lispCode", args=f"{ret_type} | {num_elems} | {visitor.ret}")
         
         # return a dummy pdarray
         return create_pdarray(repMsg)
