@@ -4,6 +4,7 @@ from warnings import warn
 
 import numpy as np  # type: ignore
 
+from arkouda import objtypedec
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
@@ -75,6 +76,7 @@ def _aggregator(func):
     return update_doc
 
 
+@objtypedec
 class SegArray:
     def __init__(self, segments, values, copy=False, lengths=None, grouping=None):
         """
@@ -163,6 +165,10 @@ class SegArray:
                 )
         else:
             self.grouping = grouping
+
+    @property
+    def objtype(self):
+        return self.objtype
 
     @property
     def segments(self):

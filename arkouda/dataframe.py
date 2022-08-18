@@ -4,6 +4,7 @@ import json
 import os
 import random
 from collections import UserDict
+from re import compile, match
 from typing import Callable, Dict, List, Optional, Union, cast
 from warnings import warn
 
@@ -11,6 +12,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
+from arkouda import list_registry
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import bool as akbool
@@ -23,7 +25,7 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
 from arkouda.numeric import where
-from arkouda.pdarrayclass import pdarray
+from arkouda.pdarrayclass import RegistrationError, pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarrayIO import get_filetype, load_all, save_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -282,6 +284,7 @@ class DataFrame(UserDict):
         self._size = 0
         self._bytes = 0
         self._empty = True
+        self.name: Optional[str] = None
 
         # Initial attempts to keep an order on the columns
         self._columns = []
@@ -1806,6 +1809,7 @@ class DataFrame(UserDict):
 
         return DataFrame(df_def, index=self.index)
 
+
     def corr(self) -> DataFrame:
         """
         Return new DataFrame with pairwise correlation of columns
@@ -1844,6 +1848,269 @@ class DataFrame(UserDict):
 
         ret_dict = json.loads(generic_msg(cmd="corrMatrix", args=args))
         return DataFrame({c: create_pdarray(ret_dict[c]) for c in self.columns})
+
+    @typechecked
+    def register(self, user_defined_name: str) -> DataFrame:
+        """
+        Register this DataFrame object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the DataFrame is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        DataFrame
+            The same DataFrame which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a
+            fluid programming style.
+            Please note you cannot register two different DataFrames with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the DataFrame with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, unregister_dataframe_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+
+        self.index.register(f"df_index_{user_defined_name}")
+        array(self.columns).register(f"df_columns_{user_defined_name}")
+
+        for col, data in self.data.items():
+            data.register(f"df_data_{col}_{data.objtype}_{user_defined_name}")
+
+        self.name = user_defined_name
+        return self
+
+    def unregister(self):
+        """
+        Unregister this DataFrame object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, unregister_dataframe_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+
+        if not self.name:
+            raise RegistrationError(
+                "This DataFrame does not have a name and does not appear to be registered."
+            )
+
+        DataFrame.unregister_dataframe_by_name(self.name)
+
+        self.name = None  # Clear our internal DataFrame object name
+
+    def is_registered(self) -> bool:
+        """
+        Return True if the object is contained in the registry
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mismatch of registered components
+
+        See Also
+        --------
+        register, attach, unregister, unregister_dataframe_by_name
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+
+        if self.name is None:
+            return False
+
+        # Total number of registered parts should equal number of columns plus an entry
+        # for the index and the column order
+        total = len(self.data) + 2
+        registered = 0
+
+        for col, data in self.data.items():
+            if data.is_registered():
+                registered += 1
+
+        if self.index.values.is_registered():
+            registered += 1
+        if f"df_columns_{self.name}" in list_registry():
+            registered += 1
+
+        if 0 < registered < total:
+            warn(
+                f"WARNING: DataFrame {self.name} expected {total} components to be registered,"
+                f" but only located {registered}."
+            )
+            return False
+        else:
+            return registered == total
+
+    @staticmethod
+    def attach(user_defined_name: str) -> DataFrame:
+        """
+        Function to return a DataFrame object attached to the registered name in the
+        arkouda server which was registered using register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which DataFrame object was registered under
+
+        Returns
+        -------
+        DataFrame
+               The DataFrame object created by re-attaching to the corresponding server components
+
+        Raises
+        ------
+        RegistrationError
+            if user_defined_name is not registered
+
+        See Also
+        --------
+        register, is_registered, unregister, unregister_groupby_by_name
+        """
+
+        registry = list_registry()
+
+        col_resp = cast(str, generic_msg(cmd="attach", args=f"df_columns_{user_defined_name}"))
+        cols = Strings.from_return_msg(col_resp)
+        columns = dict.fromkeys(cols.to_list())
+        matches: List[str] = []
+        regEx = compile(
+            f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
+            f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
+        )
+        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
+        for name in registry:
+            x = match(regEx, name)
+            if x is not None:
+                matches.append(x.group())
+        matches.sort()
+
+        if len(matches) == 0:
+            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
+
+        # Remove duplicates caused by multiple components in Categorical or SegArray
+        dedupe = list(dict.fromkeys(matches))
+
+        for name in dedupe:
+            colName = name.split("_")[2]
+            if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
+                cols_resp = cast(str, generic_msg(cmd="attach", args=name))
+                dtype = cols_resp.split()[2]
+                if dtype == Strings.objtype:
+                    columns[colName] = Strings.from_return_msg(cols_resp)
+                else:  # pdarray
+                    columns[colName] = create_pdarray(cols_resp)
+            elif f"_{Categorical.objtype}_" in name:
+                columns[colName] = Categorical.attach(name)
+            elif f"_{SegArray.objtype}_" in name:
+                columns[colName] = SegArray.attach(name)
+
+        index_resp = cast(str, generic_msg(cmd="attach", args=f"df_index_{user_defined_name}_key"))
+        dtype = index_resp.split()[2]
+        if dtype == Strings.objtype:
+            ind = Strings.from_return_msg(index_resp)
+        else:  # pdarray
+            ind = create_pdarray(index_resp)
+
+        index = Index.factory(ind)
+
+        df = DataFrame(columns, index)
+        df.name = user_defined_name
+        return df
+
+    @staticmethod
+    @typechecked
+    def unregister_dataframe_by_name(user_defined_name: str) -> None:
+        """
+        Function to unregister DataFrame object by name which was registered
+        with the arkouda server via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            Name under which the DataFrame object was registered
+
+        Raises
+        -------
+        TypeError
+            if user_defined_name is not a string
+        RegistrationError
+            if there is an issue attempting to unregister any underlying components
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
+
+        registry = list_registry()
+        matches = []
+        regEx = compile(
+            f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
+            f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
+        )
+        # Using the regex, cycle through the registered items and find all the columns in the DataFrame
+        for name in registry:
+            x = match(regEx, name)
+            if x is not None:
+                matches.append(x.group())
+        matches.sort()
+
+        if len(matches) == 0:
+            raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
+
+        # Remove duplicates caused by multiple components in categorical or segarray
+        dedupe = list(dict.fromkeys(matches))
+
+        for name in dedupe:
+            if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
+                cols_resp = cast(str, generic_msg(cmd="attach", args=name))
+                dtype = cols_resp.split()[2]
+                if dtype == Strings.objtype:
+                    Strings.unregister_strings_by_name(name)
+                else:  # pdarray
+                    unregister_pdarray_by_name(name)
+            elif f"_{Categorical.objtype}_" in name:
+                Categorical.unregister_categorical_by_name(name)
+            elif f"_{SegArray.objtype}_" in name:
+                # SegArray does not have an unregister_by_name function. By attaching and using
+                # unregister() it prevents unregistering the components individually here
+                segarray = SegArray.attach(name)
+                segarray.unregister()
+
+        unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
+        Strings.unregister_strings_by_name(f"df_columns_{user_defined_name}")
 
 
 def sorted(df, column=False):
