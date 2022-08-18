@@ -63,12 +63,11 @@ def argsort(
         return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
-    args = {
+    repMsg = generic_msg(cmd="argsort", args={
         "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
         "algoName": algorithm.name,
         "objType": pda.objtype,
-    }
-    repMsg = generic_msg(cmd="argsort", args=args)
+    })
     return create_pdarray(cast(str, repMsg))
 
 
@@ -149,16 +148,15 @@ def coargsort(
             raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
     if size == 0:
         return zeros(0, dtype=arrays[0].dtype)
-    args = {
-        "algoName": algorithm.name,
-        "nstr": len(arrays),
-        "arr_names": anames,
-        "arr_types": atypes,
-    }
 
     repMsg = generic_msg(
         cmd="coargsort",
-        args=args,
+        args={
+            "algoName": algorithm.name,
+            "nstr": len(arrays),
+            "arr_names": anames,
+            "arr_types": atypes,
+        },
     )
     return create_pdarray(cast(str, repMsg))
 
