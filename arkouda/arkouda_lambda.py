@@ -150,7 +150,7 @@ class ArkoudaVisitor(ast.NodeVisitor):
     def visit_arg(self, node, i):
         self.formal_arg[node.arg] = node.annotation.attr
         if isinstance(self.args[i],pdarray): # need to have same size for all
-            self.ret += " ( := " + node.arg + " ( lookup_and_index " + self.args[i].name + " i ) ) "
+            self.ret += f" ( := {node.arg} ( lookup_and_index_{self.args[i].dtype} {self.args[i].name} i ) ) "
         elif isinstance(self.args[i], numeric_scalars):
             self.ret += " ( := " + node.arg + " " + str(self.args[i]) + " ) "
         else:

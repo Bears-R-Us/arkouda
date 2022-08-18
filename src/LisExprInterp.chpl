@@ -135,11 +135,17 @@ module LisExprInterp
                         //TODO: how to continue evaling after an assignment?
                         return gv.copy(); // return value assigned to symbol
                     }
-                    when "lookup_and_index" {
-                      var entry = st.lookup(lst[1].toListValue(Symbol).lv);
-                      var e = toSymEntry(toGenSymEntry(entry), real);
-                      var i = eval(lst[2],env,st).toValue(int).v;
-                      return new Value(e.a[i]);
+                    when "lookup_and_index_float64" {
+                        var entry = st.lookup(lst[1].toListValue(Symbol).lv);
+                        var e = toSymEntry(toGenSymEntry(entry), real);
+                        var i = eval(lst[2],env,st).toValue(int).v;
+                        return new Value(e.a[i]);
+                    }
+                    when "lookup_and_index_int64" {
+                        var entry = st.lookup(lst[1].toListValue(Symbol).lv);
+                        var e = toSymEntry(toGenSymEntry(entry), int);
+                        var i = eval(lst[2],env,st).toValue(int).v;
+                        return new Value(e.a[i]);
                     }
                     when "if" {
                         checkEqLstSize(lst,4);

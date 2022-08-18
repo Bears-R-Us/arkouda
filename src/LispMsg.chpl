@@ -60,7 +60,7 @@ module LispMsg
 
         var retName = st.nextName();
 
-        if retTypeStr == "int" {
+        if retTypeStr == "int64" {
           var ret = st.addEntry(retName, size, int);
           evalLisp(lispCode, ret.a, st);
         } else if retTypeStr == "float64" {
