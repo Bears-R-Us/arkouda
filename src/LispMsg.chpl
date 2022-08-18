@@ -1,7 +1,10 @@
-/* Array set operations
- includes intersection, union, xor, and diff
-
- currently, only performs operations with integer arrays 
+/* Processing of Arkouda lambda functions
+   This allows users to write simple operations
+   involving pdarrays and scalars to be computed
+   in a single operation on the server side. This
+   works by parsing the code, converting it to an
+   AST, generating lisp code, then executing that
+   lisp code on the server.
  */
 
 module LispMsg
@@ -46,27 +49,34 @@ module LispMsg
         var repMsg: string; // response message
         // TODO: If we support `|` in lisp, we don't want that to be delimeter
         var (retTypeStr, sizeStr, lispCode) = payload.splitMsgToTuple("|", 3);
+
+        writeln("Ret type: ", retTypeStr);
+        writeln("Size: ", sizeStr);
+        writeln("Lisp code: ", lispCode);
+
+        retTypeStr = retTypeStr.strip(" ");
+        
         var size = sizeStr: int;
 
-        var newPdaName = evalLisp(lispCode, size, st);
-        repMsg = "created " + st.attrib(newPdaName);
+        var retName = st.nextName();
+
+        if retTypeStr == "int" {
+          var ret = st.addEntry(retName, size, int);
+          evalLisp(lispCode, ret.a, st);
+        } else if retTypeStr == "float64" {
+          var ret = st.addEntry(retName, size, real);
+          evalLisp(lispCode, ret.a, st);
+        }
+        repMsg = "created " + st.attrib(retName);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    // arrs is a tuple of the incoming arrays
-    // arrNames is a list of names corresponding to arrs (so is same length as arrs)
-    // vals are the values passed in
-    // valNames are the names of those values (so is same length as vals)
-    proc evalLisp(prog: string, size: int, st) throws {
-      // TOOD: How do we want to construct ret?
-      //       need size and type to know
-      var retName = st.nextName();
-      var ret = st.addEntry(retName, size, real);
+    proc evalLisp(prog: string, ret: [] ?t, st) throws {
       try {
         coforall loc in Locales {
             on loc {
                 coforall task in Tasks {
-                    var lD = ret.a.domain.localSubdomain();
+                    var lD = ret.domain.localSubdomain();
                     var tD = calcBlock(task, lD.low, lD.high);
                     var ast = parse(prog);
                     for i in tD {
@@ -74,7 +84,7 @@ module LispMsg
                         env.addEntry("i", i);
                         
                         // Evaluate for this index
-                        ret.a[i] = eval(ast, env, st).toValue(real).v;
+                        ret[i] = eval(ast, env, st).toValue(t).v;
                     }
                 }
             }
@@ -82,7 +92,6 @@ module LispMsg
       } catch e {
         writeln(e!.message());
       }
-      return retName;
     }
     use CommandMap;
     registerFunction("lispCode", lispMsg, getModuleName());
