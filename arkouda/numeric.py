@@ -107,8 +107,15 @@ def cast(
 
     dt = _as_dtype(dt)
     cmd = "cast"
-    args = "{} {} {} {}".format(name, objtype, dt.name, errors.name)
-    repMsg = generic_msg(cmd=cmd, args=args)
+    repMsg = generic_msg(
+        cmd=cmd,
+        args={
+            "name": name,
+            "objType": objtype,
+            "targetDtype": dt.name,
+            "opt": errors.name,
+        },
+    )
     if dt.name.startswith("str"):
         return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
     else:
