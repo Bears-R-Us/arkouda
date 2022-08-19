@@ -18,9 +18,10 @@ module BroadcastMsg {
    */
   proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var (permName, segName, valName, usePermStr, sizeStr) = payload.splitMsgToTuple(5);
-    const size = sizeStr: int;
+    var msgArgs = parseMessageArgs(payload, 5);
+    const size = msgArgs.get("size").getIntValue();
     // Segments must be an int64 array
-    const gs = getGenericTypedArrayEntry(segName, st);
+    const gs = getGenericTypedArrayEntry(msgArgs.getValueOf("segName"), st);
     if gs.dtype != DType.Int64 {
       throw new owned ErrorWithContext("Segments array must have dtype int64",
                                        getLineNumber(),
@@ -30,15 +31,15 @@ module BroadcastMsg {
     }
     const segs = toSymEntry(gs, int);
     // Check that values exists (can be any dtype)
-    const gv = getGenericTypedArrayEntry(valName, st);
+    const gv = getGenericTypedArrayEntry(msgArgs.getValueOf("valName"), st);
     // Name of result array
     const rname = st.nextName();
     // This operation has two modes: one uses a permutation to reorder the answer,
     // while the other does not
-    const usePerm: bool = usePermStr.toLower() == 'true';
+    const usePerm: bool = msgArgs.getValueOf("permute").toLower() == 'true';
     if usePerm {
       // If using a permutation, the array must be int64 and same size as the size parameter
-      const gp = getGenericTypedArrayEntry(permName, st);
+      const gp = getGenericTypedArrayEntry(msgArgs.getValueOf("permName"), st);
       if gp.dtype != DType.Int64 {
         throw new owned ErrorWithContext("Permutation array must have dtype int64",
                                          getLineNumber(),
