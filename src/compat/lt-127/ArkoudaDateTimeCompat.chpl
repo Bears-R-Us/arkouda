@@ -4,4 +4,8 @@ module ArkoudaDateTimeCompat {
     proc date.isoCalendar() {
       return this.isocalendar();
     }
+
+    proc type date.fromTimestamp(timestamp) {
+      return date.fromtimestamp(timestamp);
+    }
 }

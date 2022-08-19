@@ -138,6 +138,7 @@ class _AbstractBaseTime(pdarray):
             self.values.itemsize,
         )
         self._data = self.values
+        self._is_populated = False
 
     @classmethod
     def _get_callback(cls, other, op):
@@ -416,25 +417,6 @@ class Datetime(_AbstractBaseTime):
     supported_with_pdarray = frozenset(())  # type: ignore
     supported_with_r_pdarray = frozenset(())  # type: ignore
 
-    def __init__(self, pda, unit=_BASE_UNIT):
-        super().__init__(pda, unit=unit)
-        self._ns = None
-        self._us = None
-        self._ms = None
-        self._s = None
-        self._min = None
-        self._hour = None
-        self._day = None
-        self._month = None
-        self._year = None
-        self._iso_year = None
-        self._day_of_year = None
-        self._day_of_week = None
-        self._week_of_year = None
-        self._is_leap_year = None
-        self._date = None
-        self._is_populated = False
-
     def _ensure_components(self):
         if self._is_populated:
             return
@@ -455,7 +437,7 @@ class Datetime(_AbstractBaseTime):
         self._week_of_year = create_pdarray(attributes_dict["weekOfYear"])
         self._day_of_year = create_pdarray(attributes_dict["dayOfYear"])
         self._is_leap_year = create_pdarray(attributes_dict["isLeapYear"])
-        self._date = self.floor('d')
+        self._date = self.floor("d")
         self._is_populated = True
 
     @property
@@ -628,20 +610,6 @@ class Timedelta(_AbstractBaseTime):
     supported_opeq = frozenset(("+=", "-=", "%="))
     supported_with_pdarray = frozenset(("*", "//"))
     supported_with_r_pdarray = frozenset(("*"))
-
-    def __init__(self, pda, unit=_BASE_UNIT):
-        super().__init__(pda, unit=unit)
-        self._ms = None
-        self._s = None
-        self._m = None
-        self._h = None
-        self._d = None
-        self._nanoseconds = None
-        self._microseconds = None
-        self._seconds = None
-        self._days = None
-        self._total_seconds = None
-        self._is_populated = False
 
     def _ensure_components(self):
         if self._is_populated:
