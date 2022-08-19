@@ -26,26 +26,26 @@ class StatsTest(ArkoudaTest):
         self.c = ak.Categorical(self.s)
 
     def test_mean(self):
-        self.assertEqual(self.x.mean(), self.pdx.mean())
-        self.assertEqual(self.y.mean(), self.pdy.mean())
-        self.assertEqual(self.u.mean(), self.pdu.mean())
-        self.assertEqual(self.b.mean(), self.pdb.mean())
-        self.assertEqual(self.f.mean(), self.pdf.mean())
+        self.assertAlmostEqual(self.x.mean(), self.pdx.mean())
+        self.assertAlmostEqual(self.y.mean(), self.pdy.mean())
+        self.assertAlmostEqual(self.u.mean(), self.pdu.mean())
+        self.assertAlmostEqual(self.b.mean(), self.pdb.mean())
+        self.assertAlmostEqual(self.f.mean(), self.pdf.mean())
 
     def test_var(self):
         # Note the numpy and pandas var/std differ, we follow numpy by default
-        self.assertEqual(self.x.var(), self.npx.var())
+        self.assertAlmostEqual(self.x.var(), self.npx.var())
         self.assertAlmostEqual(self.y.var(), self.npy.var())
         self.assertAlmostEqual(self.u.var(), self.npu.var())
-        self.assertEqual(self.b.var(), self.npb.var())
-        self.assertEqual(self.f.var(), self.npf.var())
+        self.assertAlmostEqual(self.b.var(), self.npb.var())
+        self.assertAlmostEqual(self.f.var(), self.npf.var())
 
         # The pandas version requires ddof = 1
-        self.assertEqual(self.x.var(ddof=1), self.pdx.var())
+        self.assertAlmostEqual(self.x.var(ddof=1), self.pdx.var())
         self.assertAlmostEqual(self.y.var(ddof=1), self.pdy.var())
         self.assertAlmostEqual(self.u.var(ddof=1), self.pdu.var())
-        self.assertEqual(self.b.var(ddof=1), self.pdb.var())
-        self.assertEqual(self.f.var(ddof=1), self.pdf.var())
+        self.assertAlmostEqual(self.b.var(ddof=1), self.pdb.var())
+        self.assertAlmostEqual(self.f.var(ddof=1), self.pdf.var())
 
     def test_std(self):
         # Note the numpy and pandas var/std differ, we follow numpy by default
@@ -56,11 +56,11 @@ class StatsTest(ArkoudaTest):
         self.assertAlmostEqual(self.f.std(), self.npf.std())
 
         # The pandas version requires ddof = 1
-        self.assertEqual(self.x.std(ddof=1), self.pdx.std())
-        self.assertEqual(self.y.std(ddof=1), self.pdy.std())
-        self.assertEqual(self.u.std(ddof=1), self.pdu.std())
-        self.assertEqual(self.b.std(ddof=1), self.pdb.std())
-        self.assertEqual(self.f.std(ddof=1), self.pdf.std())
+        self.assertAlmostEqual(self.x.std(ddof=1), self.pdx.std())
+        self.assertAlmostEqual(self.y.std(ddof=1), self.pdy.std())
+        self.assertAlmostEqual(self.u.std(ddof=1), self.pdu.std())
+        self.assertAlmostEqual(self.b.std(ddof=1), self.pdb.std())
+        self.assertAlmostEqual(self.f.std(ddof=1), self.pdf.std())
 
     def test_cov(self):
         # test that variations are equivalent
@@ -71,16 +71,16 @@ class StatsTest(ArkoudaTest):
 
         # test int with other types
         self.assertAlmostEqual(self.x.cov(self.u), self.pdx.cov(self.pdu))
-        self.assertEqual(self.x.cov(self.b), self.pdx.cov(self.pdb))
-        self.assertEqual(self.x.cov(self.f), self.pdx.cov(self.pdf))
+        self.assertAlmostEqual(self.x.cov(self.b), self.pdx.cov(self.pdb))
+        self.assertAlmostEqual(self.x.cov(self.f), self.pdx.cov(self.pdf))
 
         # test bool with other types
-        self.assertEqual(self.b.cov(self.b), self.pdb.cov(self.pdb))
+        self.assertAlmostEqual(self.b.cov(self.b), self.pdb.cov(self.pdb))
         self.assertAlmostEqual(self.b.cov(self.u), self.pdb.cov(self.pdu))
-        self.assertEqual(self.b.cov(self.f), self.pdb.cov(self.pdf))
+        self.assertAlmostEqual(self.b.cov(self.f), self.pdb.cov(self.pdf))
 
         # test float with other types
-        self.assertEqual(self.f.cov(self.f), self.pdf.cov(self.pdf))
+        self.assertAlmostEqual(self.f.cov(self.f), self.pdf.cov(self.pdf))
         self.assertAlmostEqual(self.f.cov(self.u), self.pdf.cov(self.pdu))
 
         # test uint with self (other cases covered above)
@@ -95,16 +95,16 @@ class StatsTest(ArkoudaTest):
 
         # test int with other types
         self.assertAlmostEqual(self.x.corr(self.u), self.pdx.corr(self.pdu))
-        self.assertEqual(self.x.corr(self.b), self.pdx.corr(self.pdb))
+        self.assertAlmostEqual(self.x.corr(self.b), self.pdx.corr(self.pdb))
         self.assertAlmostEqual(self.x.corr(self.f), self.pdx.corr(self.pdf))
 
         # test bool with other types
-        self.assertEqual(self.b.corr(self.b), self.pdb.corr(self.pdb))
+        self.assertAlmostEqual(self.b.corr(self.b), self.pdb.corr(self.pdb))
         self.assertAlmostEqual(self.b.corr(self.u), self.pdb.corr(self.pdu))
-        self.assertEqual(self.b.corr(self.f), self.pdb.corr(self.pdf))
+        self.assertAlmostEqual(self.b.corr(self.f), self.pdb.corr(self.pdf))
 
         # test float with other types
-        self.assertEqual(self.f.corr(self.f), self.pdf.corr(self.pdf))
+        self.assertAlmostEqual(self.f.corr(self.f), self.pdf.corr(self.pdf))
         self.assertAlmostEqual(self.f.corr(self.u), self.pdf.corr(self.pdu))
 
         # test uint with self (other cases covered above)
