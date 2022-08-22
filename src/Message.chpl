@@ -142,7 +142,7 @@ module Message {
         */
         proc getBoolValue(): bool throws {
             try {
-                return this.val:bool;
+                return this.val.toLower():bool;
             }
             catch {
                 throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
