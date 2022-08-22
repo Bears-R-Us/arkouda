@@ -32,10 +32,9 @@ module ConcatenateMsg
         var mode = msgArgs.getValueOf("mode");
         var n = msgArgs.get("nstr").getIntValue(); // number of arrays to sort
         var names = msgArgs.get("names").getList(n);
-        const low = names.domain.low;
         
         cmLogger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
-              "number of arrays: %i low: %t names: %t".format(n,low,names));
+              "number of arrays: %i names: %t".format(n,names));
 
         // Check that fields contains the stated number of arrays
         if (n != names.size) { 
