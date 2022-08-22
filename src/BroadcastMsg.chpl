@@ -36,7 +36,7 @@ module BroadcastMsg {
     const rname = st.nextName();
     // This operation has two modes: one uses a permutation to reorder the answer,
     // while the other does not
-    const usePerm: bool = msgArgs.getValueOf("permute").toLower() == 'true';
+    const usePerm: bool = msgArgs.get("permute").getBoolValue();
     if usePerm {
       // If using a permutation, the array must be int64 and same size as the size parameter
       const gp = getGenericTypedArrayEntry(msgArgs.getValueOf("permName"), st);
