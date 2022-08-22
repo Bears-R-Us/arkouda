@@ -215,31 +215,31 @@ In situations where Arkouda is not registered with an external system such as Ku
 ```
 export METRICS_SERVICE_PORT=6556
 
-./arkouda_server -nl 3 --ServerDaemon.daemonTypes=ServerDaemonType.DEFAULT,ServerDaemonType.METRICS
+./arkouda_server -nl 3 --memTrack=true --ServerDaemon.daemonTypes=ServerDaemonType.DEFAULT,ServerDaemonType.METRICS
 ```
 
 ### Integration-Enabled Arkouda Deployment
 
-In situations where Arkouda is registered with an external system, in this case Kubernetes, the ServerDaemonType is switched to INTEGRATION and extra environment variables are added as needed:
+In situations where Arkouda is registered with an external system, in this case Kubernetes, the ServerDaemonType is switched to INTEGRATION and extra environment variables are added as needed.
 
 ```
 export NAMESPACE=arkouda
+export EXTERNAL_SERVICE_NAME=arkouda-external
+export EXTERNAL_SERVICE_PORT=5555
 export METRICS_SERVICE_NAME=arkouda-metrics
-export METRICS_SERVICE_PORT=6556
-export METRICS_SERVICE_TARGET_PORT=6556
+export METRICS_SERVICE_PORT=5556
 export K8S_HOST=https://localhost:6443 #result from kubectl cluster-info command
 export KEY_FILE=/opt/arkouda/arkouda.key #on all bare metal hosts
 export CERT_FILE=/opt/arkouda/arkouda.crt #on all bare metal hosts
 
-./arkouda_server -nl 3 --ExternalIntegration.systemType=SystemType.KUBERNETES \
+./arkouda_server -nl 3 --memTrack=true --ExternalIntegration.systemType=SystemType.KUBERNETES \
                        --ServerDaemon.daemonTypes=ServerDaemonType.INTEGRATION,ServerDaemonType.METRICS \
                        --logLevel=LogLevel.DEBUG
 ```
 
-
 ## Arkouda Prometheus Exporter
 
-The Arkouda monitoring module contains a simple Arkouda Prometheus exporter composed of the ArkoudaMetrics class and an http_server that serves as the Prometheus scrape target. The Arkouda implementation is based upon an excellent [example](https://trstringer.com/quick-and-easy-prometheus-exporter/) developed and documented by Thomas Stringer. Important Note: the Arkouda monitoring module will be made available in the arkouda-contrib project. For the time being, it is located in the [k8s-enterprise](https://github.com/hokiegeek2/arkouda/blob/k8s-enterprise/arkouda/monitoring.py) branch of the hokiegeek2 [fork](https://github.com/hokiegeek2/arkouda).
+The [arkouda_metrics_exporter](https://github.com/Bears-R-Us/arkouda-contrib/tree/main/arkouda_metrics_exporter) project is located in the [arkouda-contrib](https://github.com/Bears-R-Us/arkouda-contrib) repository. The arkouda_metrics_exporter [metrics](https://github.com/Bears-R-Us/arkouda-contrib/blob/main/arkouda_metrics_exporter/client/arkouda_metrics_exporter/metrics.py) module contains a simple Arkouda Prometheus exporter composed of the ArkoudaMetrics class and an http_server that serves as the Prometheus scrape target. The Arkouda implementation is based upon an excellent [example](https://trstringer.com/quick-and-easy-prometheus-exporter/) developed and documented by Thomas Stringer.
 
 ### Core Logic of Arkouda Prometheus Exporter
 

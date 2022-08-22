@@ -156,7 +156,7 @@ export SSH_SERVERS='server1 server2 server3'
 export GASNET_SPAWNFN=S
 
 export NAMESPACE=arkouda
-export K8S_HOST=https://ace:6443 #result from kubectl cluster-info command
+export K8S_HOST=https://localhost:6443 #result from kubectl cluster-info command
 export EXTERNAL_SERVICE_NAME=arkouda-external
 export EXTERNAL_SERVICE_PORT=5555
 export KEY_FILE=/opt/arkouda/tls.key #on all slurm hosts
@@ -179,7 +179,7 @@ export SSH_SERVERS='server1 server2 server3'
 export NAMESPACE=arkouda
 export EXTERNAL_SERVICE_NAME=arkouda-external
 export EXTERNAL_SERVICE_PORT=5555 
-export K8S_HOST=https://ace:6443 #result from kubectl cluster-info command
+export K8S_HOST=https://localhost:6443 #result from kubectl cluster-info command
 export KEY_FILE=/opt/arkouda.key #on all bare metal hosts
 export CERT_FILE=/opt/arkouda.crt #on all bare metal hosts
 
