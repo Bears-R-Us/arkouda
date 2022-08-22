@@ -68,8 +68,8 @@ module UniqueMsg
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         var msgArgs = parseMessageArgs(payload, 5);
         // flag to return segments and permutation for GroupBy
-        const returnGroups = msgArgs.get("returnGroupStr").getBoolValue(); // == "True" then true else false;
-        const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue(); // == "True" then true else false;
+        const returnGroups = msgArgs.get("returnGroupStr").getBoolValue();
+        const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue();
         var repMsg: string = "";
         // number of arrays
         var n = msgArgs.get("nstr").getIntValue();
