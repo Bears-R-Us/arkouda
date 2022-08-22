@@ -1525,7 +1525,7 @@ class Strings:
         # Compute lengths, discounting null terminators
         lengths = np.diff(npoffsets) - 1
         # Numpy dtype is based on max string length
-        dt = f"<U{lengths.max()}"
+        dt = f"<U{lengths.max() if len(lengths) > 0 else 1}"
         res = np.empty(self.size, dtype=dt)
         # Form a string from each segment and store in numpy array
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):

@@ -1,5 +1,7 @@
 import re
 
+import numpy as np
+
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -10,7 +12,7 @@ class RegexTest(ArkoudaTest):
         s = ["0 String 0", "^", " "]
         s2 = ak.array(s)
         for pattern in ["", "|", "^"]:
-            self.test_match_objects(pattern, s, find_matches=False)
+            self.test_match_objects(pattern, s)
             self.sub_help(pattern, s, "repl", 100)
             self.assertTrue(s2.contains(pattern, regex=True).all())
             self.assertListEqual(
@@ -22,10 +24,10 @@ class RegexTest(ArkoudaTest):
                     s2.endswith(pattern, regex=True).to_list(),
                     [re.search(pattern + "$", si) is not None for si in s],
                 )
-            # findall can result in empty Strings arrays, which will break when calling to_ndarray
-            # This captured in Issue #1676. For now just verify it doesn't error
-            s2.findall(pattern)
-
+            self.assertListEqual(
+                s2.findall(pattern).to_list(),
+                np.concatenate([re.findall(pattern, si) for si in s]).tolist(),
+            )
             # peel is broken on one char strings with patterns that match empty string
             # str split and non-regex flatten don't work with empty separator, so
             # it makes sense for the regex versions to return a value error
@@ -67,7 +69,6 @@ class RegexTest(ArkoudaTest):
         self,
         pattern="_+",
         s=["", "____", "_1_2____", "3___4___", "5", "__6__", "___7", "__8___9____10____11"],
-        find_matches=True,
     ):
         strings = ak.array(s)
         ak_search = strings.search(pattern)
@@ -100,36 +101,33 @@ class RegexTest(ArkoudaTest):
         self.assertEqual(ak_match.match_type(), "MATCH")
         self.assertEqual(ak_fullmatch.match_type(), "FULLMATCH")
 
-        if find_matches:
-            # Find matches can result in empty Strings arrays, which will break when calling to_ndarray
-            # This captured in Issue #1676
-            search_matches, search_origins = ak_search.find_matches(return_match_origins=True)
-            match_matches, match_origins = ak_match.find_matches(return_match_origins=True)
-            fullmatch_matches, fullmatch_origins = ak_fullmatch.find_matches(return_match_origins=True)
-            self.assertListEqual(
-                search_matches.to_list(),
-                [m.string[m.start() : m.end()] for m in re_search if m is not None],
-            )
-            self.assertListEqual(
-                search_origins.to_list(),
-                [i for i in range(len(re_search)) if re_search[i] is not None],
-            )
-            self.assertListEqual(
-                match_matches.to_list(),
-                [m.string[m.start() : m.end()] for m in re_match if m is not None],
-            )
-            self.assertListEqual(
-                match_origins.to_list(),
-                [i for i in range(len(re_match)) if re_match[i] is not None],
-            )
-            self.assertListEqual(
-                fullmatch_matches.to_list(),
-                [m.string[m.start() : m.end()] for m in re_fullmatch if m is not None],
-            )
-            self.assertListEqual(
-                fullmatch_origins.to_list(),
-                [i for i in range(len(re_fullmatch)) if re_fullmatch[i] is not None],
-            )
+        search_matches, search_origins = ak_search.find_matches(return_match_origins=True)
+        match_matches, match_origins = ak_match.find_matches(return_match_origins=True)
+        fullmatch_matches, fullmatch_origins = ak_fullmatch.find_matches(return_match_origins=True)
+        self.assertListEqual(
+            search_matches.to_list(),
+            [m.string[m.start() : m.end()] for m in re_search if m is not None],
+        )
+        self.assertListEqual(
+            search_origins.to_list(),
+            [i for i in range(len(re_search)) if re_search[i] is not None],
+        )
+        self.assertListEqual(
+            match_matches.to_list(),
+            [m.string[m.start() : m.end()] for m in re_match if m is not None],
+        )
+        self.assertListEqual(
+            match_origins.to_list(),
+            [i for i in range(len(re_match)) if re_match[i] is not None],
+        )
+        self.assertListEqual(
+            fullmatch_matches.to_list(),
+            [m.string[m.start() : m.end()] for m in re_fullmatch if m is not None],
+        )
+        self.assertListEqual(
+            fullmatch_origins.to_list(),
+            [i for i in range(len(re_fullmatch)) if re_fullmatch[i] is not None],
+        )
 
     def test_caputure_groups(self):
         tug_of_war = ak.array(
