@@ -324,8 +324,13 @@ def concatenate(
             return arrays[0]
 
     repMsg = generic_msg(
-        cmd="concatenate", args="{} {} {} {}".format(len(arrays), objtype, mode, " ".join(names))
-    )
+        cmd="concatenate",
+        args={
+            "nstr": len(arrays),
+            "objType": objtype,
+            "mode": mode,
+            "names": names,
+        })
     if objtype == "pdarray":
         return callback(create_pdarray(cast(str, repMsg)))
     elif objtype == "str":
