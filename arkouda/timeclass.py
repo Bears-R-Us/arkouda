@@ -421,22 +421,21 @@ class Datetime(_AbstractBaseTime):
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
-        args = {"values": self.values.name}
-        attributes_dict = json.loads(generic_msg(cmd="dateTimeAttributes", args=args))
-        self._ns = create_pdarray(attributes_dict["nanosecond"])
-        self._us = create_pdarray(attributes_dict["microsecond"])
-        self._ms = create_pdarray(attributes_dict["millisecond"])
-        self._s = create_pdarray(attributes_dict["second"])
-        self._min = create_pdarray(attributes_dict["minute"])
-        self._hour = create_pdarray(attributes_dict["hour"])
-        self._day = create_pdarray(attributes_dict["day"])
-        self._month = create_pdarray(attributes_dict["month"])
-        self._year = create_pdarray(attributes_dict["year"])
-        self._iso_year = create_pdarray(attributes_dict["isoYear"])
-        self._day_of_week = create_pdarray(attributes_dict["dayOfWeek"])
-        self._week_of_year = create_pdarray(attributes_dict["weekOfYear"])
-        self._day_of_year = create_pdarray(attributes_dict["dayOfYear"])
-        self._is_leap_year = create_pdarray(attributes_dict["isLeapYear"])
+        attribute_dict = json.loads(generic_msg(cmd="dateTimeAttributes", args={"values": self.values}))
+        self._ns = create_pdarray(attribute_dict["nanosecond"])
+        self._us = create_pdarray(attribute_dict["microsecond"])
+        self._ms = create_pdarray(attribute_dict["millisecond"])
+        self._s = create_pdarray(attribute_dict["second"])
+        self._min = create_pdarray(attribute_dict["minute"])
+        self._hour = create_pdarray(attribute_dict["hour"])
+        self._day = create_pdarray(attribute_dict["day"])
+        self._month = create_pdarray(attribute_dict["month"])
+        self._year = create_pdarray(attribute_dict["year"])
+        self._iso_year = create_pdarray(attribute_dict["isoYear"])
+        self._day_of_week = create_pdarray(attribute_dict["dayOfWeek"])
+        self._week_of_year = create_pdarray(attribute_dict["weekOfYear"])
+        self._day_of_year = create_pdarray(attribute_dict["dayOfYear"])
+        self._is_leap_year = create_pdarray(attribute_dict["isLeapYear"])
         self._date = self.floor("d")
         self._is_populated = True
 
@@ -615,15 +614,14 @@ class Timedelta(_AbstractBaseTime):
         if self._is_populated:
             return
         # lazy initialize all attributes in one server call
-        args = {"values": self.values.name}
-        attributes_dict = json.loads(generic_msg(cmd="timeDeltaAttributes", args=args))
-        self._ns = create_pdarray(attributes_dict["nanosecond"])
-        self._us = create_pdarray(attributes_dict["microsecond"])
-        self._ms = create_pdarray(attributes_dict["millisecond"])
-        self._s = create_pdarray(attributes_dict["second"])
-        self._m = create_pdarray(attributes_dict["minute"])
-        self._h = create_pdarray(attributes_dict["hour"])
-        self._d = create_pdarray(attributes_dict["day"])
+        attribute_dict = json.loads(generic_msg(cmd="timeDeltaAttributes", args={"values": self.values}))
+        self._ns = create_pdarray(attribute_dict["nanosecond"])
+        self._us = create_pdarray(attribute_dict["microsecond"])
+        self._ms = create_pdarray(attribute_dict["millisecond"])
+        self._s = create_pdarray(attribute_dict["second"])
+        self._m = create_pdarray(attribute_dict["minute"])
+        self._h = create_pdarray(attribute_dict["hour"])
+        self._d = create_pdarray(attribute_dict["day"])
         self._nanoseconds = self._ns
         self._microseconds = self._ms * 1000 + self._us
         self._seconds = self._h * 3600 + self._m * 60 + self._s
