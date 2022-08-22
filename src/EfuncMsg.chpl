@@ -39,8 +39,9 @@ module EfuncMsg
     proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message; attributes of returned array(s) will be appended to this string
-        // split request into fields
-        var (efunc, name) = payload.splitMsgToTuple(2);
+        var msgArgs = parseMessageArgs(payload, 2);
+        var name = msgArgs.getValueOf("array");
+        var efunc = msgArgs.getValueOf("func");
         var rname = st.nextName();
         
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -313,12 +314,13 @@ module EfuncMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (efunc, name1, name2, name3) = payload.splitMsgToTuple(4);
+        var msgArgs = parseMessageArgs(payload, 4);
         var rname = st.nextName();
-
-        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
-        var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
-        var g3: borrowed GenSymEntry = getGenericTypedArrayEntry(name3, st);
+        
+        var efunc = msgArgs.getValueOf("func");
+        var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("condition"), st);
+        var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("a"), st);
+        var g3: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("b"), st);
         if !((g1.size == g2.size) && (g2.size == g3.size)) {
             var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
@@ -420,14 +422,16 @@ module EfuncMsg
     proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (efunc, name1, name2, dtypestr, value)
-              = payload.splitMsgToTuple(5); // split request into fields
-        var dtype = str2dtype(dtypestr);
+        var msgArgs = parseMessageArgs(payload, 5);
+        var efunc = msgArgs.getValueOf("func");
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var rname = st.nextName();
 
+        var name1 = msgArgs.getValueOf("condition");
+        var name2 = msgArgs.getValueOf("a");
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
-             cmd,efunc,value,dtype,name1,name2,rname));
+             cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
@@ -440,7 +444,7 @@ module EfuncMsg
             when (DType.Bool, DType.Int64, DType.Int64) {
                var e1 = toSymEntry(g1, bool);
                var e2 = toSymEntry(g2, int);
-               var val = try! value:int;
+               var val = msgArgs.get("scalar").getIntValue();
                select efunc {
                   when "where" {
                       var a = where_helper(e1.a, e2.a, val, 1);
@@ -457,7 +461,7 @@ module EfuncMsg
             when (DType.Bool, DType.UInt64, DType.UInt64) {
                var e1 = toSymEntry(g1, bool);
                var e2 = toSymEntry(g2, uint);
-               var val = try! value:uint;
+               var val = msgArgs.get("scalar").getUIntValue();
                select efunc {
                   when "where" {
                       var a = where_helper(e1.a, e2.a, val, 1);
@@ -474,7 +478,7 @@ module EfuncMsg
             when (DType.Bool, DType.Float64, DType.Float64) {
                 var e1 = toSymEntry(g1, bool);
                 var e2 = toSymEntry(g2, real);
-                var val = try! value:real;
+                var val = msgArgs.get("scalar").getRealValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, val, 1);
@@ -491,7 +495,7 @@ module EfuncMsg
             when (DType.Bool, DType.Bool, DType.Bool) {
                 var e1 = toSymEntry(g1, bool);
                 var e2 = toSymEntry(g2, bool);
-                var val = try! value.toLower():bool;
+                var val = msgArgs.get("scalar").getBoolValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, e2.a, val, 1);
@@ -533,14 +537,16 @@ module EfuncMsg
     proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (efunc, name1, dtypestr, value, name2)
-              = payload.splitMsgToTuple(5); // split request into fields
-        var dtype = str2dtype(dtypestr);
+        var msgArgs = parseMessageArgs(payload, 5);
+        var efunc = msgArgs.getValueOf("func");
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var rname = st.nextName();
 
+        var name1 = msgArgs.getValueOf("condition");
+        var name2 = msgArgs.getValueOf("b");
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
-             cmd,efunc,value,dtype,name1,name2,rname));
+             cmd,efunc,msgArgs.getValueOf("scalar"),dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
         var g2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
@@ -552,7 +558,7 @@ module EfuncMsg
         select (g1.dtype, dtype, g2.dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
                 var e1 = toSymEntry(g1, bool);
-                var val = try! value:int;
+                var val = msgArgs.get("scalar").getIntValue();
                 var e2 = toSymEntry(g2, int);
                 select efunc {
                     when "where" {
@@ -569,7 +575,7 @@ module EfuncMsg
             }
             when (DType.Bool, DType.UInt64, DType.UInt64) {
                 var e1 = toSymEntry(g1, bool);
-                var val = try! value:uint;
+                var val = msgArgs.get("scalar").getUIntValue();
                 var e2 = toSymEntry(g2, uint);
                 select efunc {
                     when "where" {
@@ -586,7 +592,7 @@ module EfuncMsg
             }
             when (DType.Bool, DType.Float64, DType.Float64) {
                 var e1 = toSymEntry(g1, bool);
-                var val = try! value:real;
+                var val = msgArgs.get("scalar").getRealValue();
                 var e2 = toSymEntry(g2, real);
                 select efunc {
                     when "where" {
@@ -603,7 +609,7 @@ module EfuncMsg
             }
             when (DType.Bool, DType.Bool, DType.Bool) {
                 var e1 = toSymEntry(g1, bool);
-                var val = try! value.toLower():bool;
+                var val = msgArgs.get("scalar").getBoolValue();
                 var e2 = toSymEntry(g2, bool);
                 select efunc {
                     when "where" {
@@ -646,22 +652,23 @@ module EfuncMsg
     proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (efunc, name1, dtype1str, value1, dtype2str, value2)
-              = payload.splitMsgToTuple(6); // split request into fields
-        var dtype1 = str2dtype(dtype1str);
-        var dtype2 = str2dtype(dtype2str);
+        var msgArgs = parseMessageArgs(payload, 5);
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
+        var efunc = msgArgs.getValueOf("func");
         var rname = st.nextName();
         
+        var name1 = msgArgs.getValueOf("condition");
+
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s dtype2: %s name: %s rname: %s".format(
-             cmd,efunc,value1,dtype1,value2,dtype2,name1,rname));
+            "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s name: %s rname: %s".format(
+             cmd,efunc,msgArgs.getValueOf("a"),dtype,msgArgs.getValueOf("b"),name1,rname));
 
         var g1: borrowed GenSymEntry = getGenericTypedArrayEntry(name1, st);
-        select (g1.dtype, dtype1, dtype1) {
-            when (DType.Bool, DType.Int64, DType.Int64) {
+        select (g1.dtype, dtype) {
+            when (DType.Bool, DType.Int64) {
                 var e1 = toSymEntry(g1, bool);
-                var val1 = try! value1:int;
-                var val2 = try! value2:int;
+                var val1 = msgArgs.get("a").getIntValue();
+                var val2 = msgArgs.get("b").getIntValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val1, val2, 3);
@@ -669,16 +676,16 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
-                                                      dtype1,dtype2);
+                                                      dtype, dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
-            when (DType.Bool, DType.UInt64, DType.UInt64) {
+            when (DType.Bool, DType.UInt64) {
                 var e1 = toSymEntry(g1, bool);
-                var val1 = try! value1:uint;
-                var val2 = try! value2:uint;
+                var val1 = msgArgs.get("a").getUIntValue();
+                var val2 = msgArgs.get("b").getUIntValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val1, val2, 3);
@@ -686,16 +693,16 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
-                                                      dtype1,dtype2);
+                                                      dtype, dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
-            when (DType.Bool, DType.Float64, DType.Float64) {
+            when (DType.Bool, DType.Float64) {
                 var e1 = toSymEntry(g1, bool);
-                var val1 = try! value1:real;
-                var val2 = try! value2:real;
+                var val1 = msgArgs.get("a").getRealValue();
+                var val2 = msgArgs.get("b").getRealValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val1, val2, 3);
@@ -703,16 +710,16 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
-                                                        dtype1,dtype2);
+                                                        dtype, dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return new MsgTuple(errorMsg, MsgType.ERROR);                                                     
                     }
                 } 
             }
-            when (DType.Bool, DType.Bool, DType.Bool) {
+            when (DType.Bool, DType.Bool) {
                 var e1 = toSymEntry(g1, bool);
-                var val1 = try! value1.toLower():bool;
-                var val2 = try! value2.toLower():bool;
+                var val1 = msgArgs.get("a").getBoolValue();
+                var val2 = msgArgs.get("b").getBoolValue();
                 select efunc {
                     when "where" {
                         var a = where_helper(e1.a, val1, val2, 3);
@@ -720,7 +727,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
-                                                       dtype1,dtype2);
+                                                       dtype, dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return new MsgTuple(errorMsg, MsgType.ERROR);      
                    }
@@ -728,7 +735,7 @@ module EfuncMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
-                                               dtype1,dtype2);
+                                               dtype, dtype);
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return new MsgTuple(errorMsg, MsgType.ERROR);                                             
             }

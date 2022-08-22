@@ -2400,7 +2400,13 @@ def popcount(pda: pdarray) -> pdarray:
     """
     if pda.dtype not in [akint64, akuint64]:
         raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(cmd="efunc", args="{} {}".format("popcount", pda.name))
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "popcount",
+            "array": pda,
+        },
+    )
     return create_pdarray(repMsg)
 
 
@@ -2431,7 +2437,13 @@ def parity(pda: pdarray) -> pdarray:
     """
     if pda.dtype not in [akint64, akuint64]:
         raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(cmd="efunc", args="{} {}".format("parity", pda.name))
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "parity",
+            "array": pda,
+        },
+    )
     return create_pdarray(repMsg)
 
 
@@ -2462,7 +2474,13 @@ def clz(pda: pdarray) -> pdarray:
     """
     if pda.dtype not in [akint64, akuint64]:
         raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(cmd="efunc", args="{} {}".format("clz", pda.name))
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "clz",
+            "array": pda,
+        },
+    )
     return create_pdarray(repMsg)
 
 
@@ -2497,7 +2515,13 @@ def ctz(pda: pdarray) -> pdarray:
     """
     if pda.dtype not in [akint64, akuint64]:
         raise TypeError("BitOps only supported on int64 and uint64 arrays")
-    repMsg = generic_msg(cmd="efunc", args="{} {}".format("ctz", pda.name))
+    repMsg = generic_msg(
+        cmd="efunc",
+        args={
+            "func": "ctz",
+            "array": pda,
+        },
+    )
     return create_pdarray(repMsg)
 
 
