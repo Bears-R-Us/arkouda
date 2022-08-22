@@ -91,7 +91,7 @@ or
    :arg A: array to check
    
 
-.. function:: proc validateArraysSameLength(n: int, fields: [] string, st: borrowed SymTab) throws
+.. function:: proc validateArraysSameLength(n: int, names: [] string, types: [] string, st: borrowed SymTab) throws
 
    
    * Takes a variable number of array names from a command message and
