@@ -15,9 +15,12 @@ module CastMsg {
   const castLogger = new Logger(logLevel);
 
   proc castMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    use ServerConfig; // for string.splitMsgToTuple
     param pn = Reflection.getRoutineName();
-    var (name, objtype, targetDtype, opt) = payload.splitMsgToTuple(4);
+    var msgArgs = parseMessageArgs(payload, 4);
+    var name = msgArgs.getValueOf("name");
+    var objtype = msgArgs.getValueOf("objType");
+    var targetDtype = msgArgs.getValueOf("targetDtype");
+    var opt = msgArgs.getValueOf("opt");
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
           "name: %s obgtype: %t targetDtype: %t opt: %t".format(
                                                  name,objtype,targetDtype,opt));
