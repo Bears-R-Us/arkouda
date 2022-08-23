@@ -23,7 +23,7 @@ module SegmentedArray {
     }
 
     /*
-    * This version of the getSegString method takes segments and values arrays as
+    * This version of the getSegArray method takes segments and values arrays as
     * inputs, generates the SymEntry objects for each and passes the
     * offset and value SymTab lookup names to the alternate init method
     */
