@@ -37,20 +37,13 @@ module FindSegmentsMsg
         var repMsg: string; // response message
         // split request into fields
         var (pname, nkeysStr, rest) = payload.splitMsgToTuple(3);
-        var nkeys = nkeysStr:int; // number of key arrays
-        var fields = rest.split(); // split request into fields
-        if (fields.size != 2*nkeys) { 
-             var errorMsg = incompatibleArgumentsError(pn, 
-                       "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));
-             fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-             return new MsgTuple(errorMsg, MsgType.ERROR);                    
-        }
-        var low = fields.domain.low;
-        var knames = fields[low..#nkeys]; // key arrays
-        var ktypes = fields[low+nkeys..#nkeys]; // objtypes
+        var msgArgs = parseMessageArgs(payload, 4);
+        var nkeys = msgArgs.get("nkeys").getIntValue(); // number of key arrays
+        var knames = msgArgs.get("names").getList(nkeys); // key arrays
+        var ktypes = msgArgs.get("types").getList(nkeys); // objtypes
         var size: int;
         // Check all the argument arrays before doing anything
-        var gPerm = getGenericTypedArrayEntry(pname, st);
+        var gPerm = getGenericTypedArrayEntry(msgArgs.getValueOf("pname"), st);
         if (gPerm.dtype != DType.Int64) { 
             var errorMsg = notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); 
             fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
