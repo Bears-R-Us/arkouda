@@ -50,10 +50,6 @@ module LispMsg
         // TODO: If we support `|` in lisp, we don't want that to be delimeter
         var (retTypeStr, sizeStr, lispCode) = payload.splitMsgToTuple("|", 3);
 
-        writeln("Ret type: ", retTypeStr);
-        writeln("Size: ", sizeStr);
-        writeln("Lisp code: ", lispCode);
-
         retTypeStr = retTypeStr.strip(" ");
         
         var size = sizeStr: int;
