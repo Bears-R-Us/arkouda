@@ -426,7 +426,6 @@ module MultiTypeSymEntry
     }
 
     proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
-        // TODO - need a way to manipulate this to give the type
         return (entry: borrowed CompositeSymEntry);
     }
 
