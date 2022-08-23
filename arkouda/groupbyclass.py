@@ -1183,10 +1183,16 @@ class GroupBy:
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         cmd = "broadcast"
-        args = "{} {} {} {} {}".format(
-            self.permutation.name, self.segments.name, values.name, permute, self.length
+        repMsg = generic_msg(
+            cmd=cmd,
+            args={
+                "permName": self.permutation.name,
+                "segName": self.segments.name,
+                "valName": values.name,
+                "permute": permute,
+                "size": self.length,
+            },
         )
-        repMsg = generic_msg(cmd=cmd, args=args)
         return create_pdarray(repMsg)
 
     @staticmethod
@@ -1692,6 +1698,14 @@ def broadcast(
     if size < 1:
         raise ValueError("result size must be greater than zero")
     cmd = "broadcast"
-    args = "{} {} {} {} {}".format(pname, segments.name, values.name, permute, size)
-    repMsg = generic_msg(cmd=cmd, args=args)
+    repMsg = generic_msg(
+        cmd=cmd,
+        args={
+            "permName": pname,
+            "segName": segments.name,
+            "valName": values.name,
+            "permute": permute,
+            "size": size,
+        },
+    )
     return create_pdarray(repMsg)
