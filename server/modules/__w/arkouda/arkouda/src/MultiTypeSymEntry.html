@@ -115,7 +115,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CategoricalSymEntry,</span> <span class="pre">GroupBySymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CategoricalSymEntry,</span> <span class="pre">GroupBySymEntry,</span> <span class="pre">SegArraySymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Internal Types we can use to build our Symbol type hierarchy.</p></li>
@@ -462,9 +462,34 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 <li><p>The base parent class for SymbolEntries that are composites</p></li>
 <li><p>of other entry types.</p></li>
 </ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.dtype">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.itemsize">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.itemsize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.size">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.ndim">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.ndim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.shape">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="pre">:</span> <span class="pre">1*(int)</span> <span class="pre">=</span> <span class="pre">(0,)</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -519,31 +544,6 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.bytesEntry">
 <em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bytesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8))</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.bytesEntry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.dtype">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="pre">:</span> <span class="pre">DType</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.dtype" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.itemsize">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.itemsize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.ndim">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.ndim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.shape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="pre">:</span> <span class="pre">1*(int)</span> <span class="pre">=</span> <span class="pre">(0,)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -628,6 +628,36 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 </dd></dl>
 
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegArraySymEntry</span></span><span class="pre">:</span> <span class="pre">CompositeSymEntry</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.etype">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.etype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.segmentsEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segmentsEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.segmentsEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.valuesEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">valuesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(etype)</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.valuesEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segmentsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">valuesSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.getSizeEstimate">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.getSizeEstimate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGenSymEntry">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.toGenSymEntry" title="Permalink to this definition">¶</a></dt>
@@ -645,6 +675,11 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 <li><p>Helper proc to cast AbstrcatSymEntry to SegStringSymEntry</p></li>
 </ul>
 </dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.toCompositeSymEntry">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toCompositeSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#MultiTypeSymEntry.toCompositeSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.getArraySpecFromEntry">

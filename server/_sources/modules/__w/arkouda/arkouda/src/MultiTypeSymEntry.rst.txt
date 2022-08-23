@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, CompositeSymEntry, SegStringSymEntry, CategoricalSymEntry, GroupBySymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, CompositeSymEntry, SegStringSymEntry, CategoricalSymEntry, GroupBySymEntry, SegArraySymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -231,7 +231,17 @@ or
    
 
 
-   .. method:: proc init()
+   .. attribute:: var dtype: DType
+
+   .. attribute:: var itemsize: int
+
+   .. attribute:: var size: int = 0
+
+   .. attribute:: var ndim: int = 1
+
+   .. attribute:: var shape: 1*(int) = (0,)
+
+   .. method:: proc init(type etype, len: int = 0)
 
 .. function:: proc createTypedSymEntry(len: int, type t) throws
 
@@ -251,16 +261,6 @@ or
    .. attribute:: var offsetsEntry: shared SymEntry(int)
 
    .. attribute:: var bytesEntry: shared SymEntry(uint(8))
-
-   .. attribute:: var dtype: DType
-
-   .. attribute:: var itemsize: int
-
-   .. attribute:: var size: int
-
-   .. attribute:: var ndim: int = 1
-
-   .. attribute:: var shape: 1*(int) = (0,)
 
    .. method:: proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype)
 
@@ -288,6 +288,18 @@ or
       * :returns: s (string) containing the array data
       
 
+.. class:: SegArraySymEntry : CompositeSymEntry
+
+   .. attribute:: type etype
+
+   .. attribute:: var segmentsEntry: shared SymEntry(int)
+
+   .. attribute:: var valuesEntry: shared SymEntry(etype)
+
+   .. method:: proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype)
+
+   .. method:: override proc getSizeEstimate(): int
+
 .. function:: proc toGenSymEntry(entry: borrowed AbstractSymEntry) throws
 
    *
@@ -299,6 +311,8 @@ or
    *
    * Helper proc to cast AbstrcatSymEntry to SegStringSymEntry
    
+
+.. function:: proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws
 
 .. function:: proc getArraySpecFromEntry(entry: borrowed AbstractSymEntry) throws
 

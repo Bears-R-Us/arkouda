@@ -52,6 +52,39 @@ Functions
 
 .. py:class:: SegArray(segments, values, copy=False, lengths=None, grouping=None)
 
+   .. py:method:: segments()
+      :property:
+
+       Return the pdarray containing the segments.
+       This is configured to prevent the need to move all functionality to server at once.
+
+       Notes
+      ------
+      - Caches return value to prevent the need to recompute.
+
+
+   .. py:method:: values()
+      :property:
+
+      Return the pdarray containing the values of the segarray.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+
+   .. py:method:: valsize()
+      :property:
+
+      Return the size of the values array.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+
    .. py:method:: from_multi_array(m)
       :classmethod:
 
