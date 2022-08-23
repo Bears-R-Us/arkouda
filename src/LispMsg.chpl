@@ -75,8 +75,8 @@ module LispMsg
                     var lD = ret.domain.localSubdomain();
                     var tD = calcBlock(task, lD.low, lD.high);
                     var ast = parse(prog);
+                    var env = new owned Env();
                     for i in tD {
-                        var env = new owned Env();
                         env.addEntry("i", i);
                         
                         // Evaluate for this index
