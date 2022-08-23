@@ -13,17 +13,18 @@ module FlattenMsg {
   const fmLogger = new Logger(logLevel);
 
   proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (name, objtype, returnSegsStr, regexStr, delimJson) = payload.splitMsgToTuple(5);
-    const returnSegs: bool = returnSegsStr.toLower() == "true";
-    const regex: bool = regexStr.toLower() == "true";
-    const arr = jsonToPdArray(delimJson, 1);
+    var msgArgs = parseMessageArgs(payload, 5);
+    const objtype = msgArgs.getValueOf("objtype");
+    const returnSegs: bool = msgArgs.get("return_segs").getBoolValue();
+    const regex: bool = msgArgs.get("regex").getBoolValue();
+    const arr = msgArgs.get("delim").getList(1);
     const delim: string = arr[arr.domain.low];
     var repMsg: string;
     select objtype {
       when "str" {
         const rSegName = st.nextName();
         const rValName = st.nextName();
-        const strings = getSegString(name, st);
+        const strings = getSegString(msgArgs.getValueOf("values"), st);
         var (off, val, segs) = strings.flatten(delim, returnSegs, regex);
         var stringsObj = getSegString(off, val, st);
         repMsg = "created %s+created bytes.size %t".format(st.attrib(stringsObj.name), stringsObj.nBytes);
@@ -48,22 +49,17 @@ module FlattenMsg {
   proc segmentedSplitMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, maxsplitStr, returnSegsStr, patternJson) = payload.splitMsgToTuple(5);
-    const returnSegs: bool = returnSegsStr.toLower() == "true";
-    var maxsplit: int;
-    try {
-      maxsplit = maxsplitStr:int;
-    }
-    catch {
-      var errorMsg = "maxsplit could not be interpretted as an int: %s)".format(maxsplitStr);
-      fmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      throw new owned IllegalArgumentError(errorMsg);
-    }
+    var msgArgs = parseMessageArgs(payload, 5);
+
+    const objtype = msgArgs.getValueOf("objtype");
+    const name = msgArgs.getValueOf("parent_name");
+    const returnSegs = msgArgs.get("return_segs").getBoolValue();
+    var maxsplit: int = msgArgs.get("max").getIntValue();
 
     // check to make sure symbols defined
     st.checkTable(name);
 
-    const json = jsonToPdArray(patternJson, 1);
+    const json = msgArgs.get("pattern").getList(1);
     const pattern: string = json[json.domain.low];
 
     fmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
