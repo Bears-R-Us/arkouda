@@ -96,22 +96,12 @@
     proc dataframeBatchIndexingMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (jsonsize_str, iname, json_str) = payload.splitMsgToTuple(3);
+        var msgArgs = parseMessageArgs(payload, 3);
+        var jsonsize = msgArgs.get("size").getIntValue();
 
-        var jsonsize: int;
-        try{
-            jsonsize = jsonsize_str: int;
-        }
-        catch {
-            var errorMsg = "jsonsize could not be interpreted as an int. %s)".format(jsonsize_str);
-            dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            throw new owned IllegalArgumentError(errorMsg);
-        }
+        var eleList = msgArgs.get("columns").getList(jsonsize);
 
-        var eleList = jsonToPdArray(json_str, jsonsize);
-
-        var gIdx: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
+        var gIdx: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("idx_name"), st);
         var idx = toSymEntry(gIdx, int);
 
         var repMsgList: [0..#jsonsize] string;
@@ -143,7 +133,7 @@
                 }
                 when ("Strings") {
                     dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
-                    var args: [1..2] string = [ele_parts[2], iname];
+                    var args: [1..2] string = [ele_parts[2], msgArgs.getValueOf("idx_name")];
                     // When smallIdx is set to true, some localization work will
                     // be skipped and a localizing slice will instead be done,
                     // which can perform better by avoiding those overhead costs.

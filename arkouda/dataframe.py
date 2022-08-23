@@ -577,7 +577,11 @@ class DataFrame(UserDict):
             str,
             generic_msg(
                 cmd="dataframe_idx",
-                args="{} {} {}".format(len(msg_list), idx.name, json.dumps(msg_list)),
+                args={
+                    "size": len(msg_list),
+                    "idx_name": idx.name,
+                    "columns": msg_list,
+                },
             ),
         )
         msgList = json.loads(repMsg)
