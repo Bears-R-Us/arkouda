@@ -292,9 +292,9 @@ class Index:
                     "mode": m,
                     "prefix": prefix_path,
                     "dtype": self.dtype,
-                    "save_offsets": False, # this is only used by strings
+                    "save_offsets": False,  # this is only used by strings
                     "compressed": compressed,
-                }
+                },
             ),
         )
 

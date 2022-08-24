@@ -1321,14 +1321,14 @@ class pdarray:
             generic_msg(
                 cmd=cmd,
                 args={
-                    "values":self,
+                    "values": self,
                     "dset": dataset,
                     "mode": m,
                     "prefix": prefix_path,
                     "dtype": self.dtype,
                     "save_offsets": False,  # only used by strings
                     "compressed": compressed,
-                }
+                },
             ),
         )
 
