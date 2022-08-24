@@ -65,7 +65,7 @@ Attributes
 .. py:class:: _Timescalar(scalar)
 
 
-.. py:class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
+.. py:class:: _AbstractBaseTime(pda, unit: str = _BASE_UNIT)
 
    Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
 
@@ -286,7 +286,7 @@ Attributes
 
 
 
-.. py:class:: Datetime(array, unit: str = _BASE_UNIT)
+.. py:class:: Datetime(pda, unit: str = _BASE_UNIT)
 
    Bases: :py:obj:`_AbstractBaseTime`
 
@@ -295,100 +295,8 @@ Attributes
    Datetime is the Arkouda analog to pandas DatetimeIndex and
    other timeseries data types.
 
-   :param array:
-   :type array: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
-   :param uint: For int64 pdarray, denotes the unit of the input. Ignored for pandas
-                and numpy arrays, which carry their own unit. Not case-sensitive;
-                prefixes of full names (like 'sec') are accepted.
-
-                Possible values:
-
-                * 'weeks' or 'w'
-                * 'days' or 'd'
-                * 'hours' or 'h'
-                * 'minutes', 'm', or 't'
-                * 'seconds' or 's'
-                * 'milliseconds', 'ms', or 'l'
-                * 'microseconds', 'us', or 'u'
-                * 'nanoseconds', 'ns', or 'n'
-
-                Unlike in pandas, units cannot be combined or mixed with integers
-   :type uint: str, default 'ns'
-
-   .. rubric:: Notes
-
-   The ``.values`` attribute is always in nanoseconds with int64 dtype.
-
-   .. py:attribute:: supported_with_datetime
-      
-
-      
-
-   .. py:attribute:: supported_with_r_datetime
-      
-
-      
-
-   .. py:attribute:: supported_with_timedelta
-      
-
-      
-
-   .. py:attribute:: supported_with_r_timedelta
-      
-
-      
-
-   .. py:attribute:: supported_opeq
-      
-
-      
-
-   .. py:attribute:: supported_with_pdarray
-      
-
-      
-
-   .. py:attribute:: supported_with_r_pdarray
-      
-
-      
-
-   .. py:method:: _get_callback(otherclass, op)
-      :classmethod:
-
-
-   .. py:method:: _scalar_callback(scalar)
-
-
-   .. py:method:: _is_supported_scalar(self, scalar)
-      :staticmethod:
-
-
-   .. py:method:: to_pandas()
-
-      Convert array to a pandas DatetimeIndex. Note: if the array size
-      exceeds client.maxTransferBytes, a RuntimeError is raised.
-
-      .. seealso:: :obj:`to_ndarray`
-
-
-   .. py:method:: sum()
-
-      Return the sum of all elements in the array.
-
-
-
-.. py:class:: Timedelta(array, unit: str = _BASE_UNIT)
-
-   Bases: :py:obj:`_AbstractBaseTime`
-
-   Represents a duration, the difference between two dates or times.
-
-   Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.
-
-   :param array:
-   :type array: int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+   :param pda:
+   :type pda: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
    :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
                 and numpy arrays, which carry their own unit. Not case-sensitive;
                 prefixes of full names (like 'sec') are accepted.
@@ -445,6 +353,202 @@ Attributes
       
 
       
+
+   .. py:method:: _ensure_components()
+
+
+   .. py:method:: nanosecond()
+      :property:
+
+
+   .. py:method:: microsecond()
+      :property:
+
+
+   .. py:method:: millisecond()
+      :property:
+
+
+   .. py:method:: second()
+      :property:
+
+
+   .. py:method:: minute()
+      :property:
+
+
+   .. py:method:: hour()
+      :property:
+
+
+   .. py:method:: day()
+      :property:
+
+
+   .. py:method:: month()
+      :property:
+
+
+   .. py:method:: year()
+      :property:
+
+
+   .. py:method:: day_of_year()
+      :property:
+
+
+   .. py:method:: dayofyear()
+      :property:
+
+
+   .. py:method:: day_of_week()
+      :property:
+
+
+   .. py:method:: dayofweek()
+      :property:
+
+
+   .. py:method:: weekday()
+      :property:
+
+
+   .. py:method:: week()
+      :property:
+
+
+   .. py:method:: weekofyear()
+      :property:
+
+
+   .. py:method:: date()
+      :property:
+
+
+   .. py:method:: is_leap_year()
+      :property:
+
+
+   .. py:method:: isocalendar()
+
+
+   .. py:method:: _get_callback(otherclass, op)
+      :classmethod:
+
+
+   .. py:method:: _scalar_callback(scalar)
+
+
+   .. py:method:: _is_supported_scalar(self, scalar)
+      :staticmethod:
+
+
+   .. py:method:: to_pandas()
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. py:method:: sum()
+
+      Return the sum of all elements in the array.
+
+
+
+.. py:class:: Timedelta(pda, unit: str = _BASE_UNIT)
+
+   Bases: :py:obj:`_AbstractBaseTime`
+
+   Represents a duration, the difference between two dates or times.
+
+   Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.
+
+   :param pda:
+   :type pda: int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+   :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type unit: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``.values`` attribute is always in nanoseconds with int64 dtype.
+
+   .. py:attribute:: supported_with_datetime
+      
+
+      
+
+   .. py:attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. py:attribute:: supported_with_timedelta
+      
+
+      
+
+   .. py:attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. py:attribute:: supported_opeq
+      
+
+      
+
+   .. py:attribute:: supported_with_pdarray
+      
+
+      
+
+   .. py:attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. py:method:: _ensure_components()
+
+
+   .. py:method:: nanoseconds()
+      :property:
+
+
+   .. py:method:: microseconds()
+      :property:
+
+
+   .. py:method:: seconds()
+      :property:
+
+
+   .. py:method:: days()
+      :property:
+
+
+   .. py:method:: total_seconds()
+
+
+   .. py:method:: components()
+      :property:
+
 
    .. py:method:: _get_callback(otherclass, op)
       :classmethod:

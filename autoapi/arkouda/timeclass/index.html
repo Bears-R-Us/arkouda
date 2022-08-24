@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.timeclass &#8212; arkouda 0+untagged.1.g5ebad55 documentation</title>
+    <title>arkouda.timeclass &#8212; arkouda 0+untagged.1.g72ef16c documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -124,7 +124,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.timeclass._AbstractBaseTime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">_AbstractBaseTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass._AbstractBaseTime" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">_AbstractBaseTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass._AbstractBaseTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.pdarray</span></code></a></p>
 <p>Base class for Datetime and Timedelta; not user-facing. Arkouda handles
 time similar to Pandas (albeit with less functionality), in that all absolute
@@ -428,7 +428,7 @@ a supported dtype</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.timeclass.Datetime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">Datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">Datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_AbstractBaseTime</span></code></a></p>
 <p>Represents a date and/or time.</p>
 <p>Datetime is the Arkouda analog to pandas DatetimeIndex and
@@ -436,8 +436,8 @@ other timeseries data types.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>int64 pdarray</em><em>, </em><em>pd.DatetimeIndex</em><em>, </em><em>pd.Series</em><em>, or </em><em>np.datetime64 array</em>) – </p></li>
-<li><p><strong>uint</strong> (<em>str</em><em>, </em><em>default 'ns'</em>) – <p>For int64 pdarray, denotes the unit of the input. Ignored for pandas
+<li><p><strong>pda</strong> (<em>int64 pdarray</em><em>, </em><em>pd.DatetimeIndex</em><em>, </em><em>pd.Series</em><em>, or </em><em>np.datetime64 array</em>) – </p></li>
+<li><p><strong>unit</strong> (<em>str</em><em>, </em><em>default 'ns'</em>) – <p>For int64 pdarray, denotes the unit of the input. Ignored for pandas
 and numpy arrays, which carry their own unit. Not case-sensitive;
 prefixes of full names (like ‘sec’) are accepted.</p>
 <p>Possible values:</p>
@@ -494,6 +494,106 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime._ensure_components">
+<span class="sig-name descname"><span class="pre">_ensure_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime._ensure_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.nanosecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanosecond</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.nanosecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.microsecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.microsecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.millisecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">millisecond</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.millisecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.second">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.minute">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.minute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.hour">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.hour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.day">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.day" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.month">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.month" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.day_of_year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_year</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.day_of_year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.dayofyear">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofyear</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.dayofyear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.day_of_week">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_week</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.day_of_week" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.dayofweek">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofweek</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.dayofweek" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.weekday">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekday</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.weekday" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.week">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">week</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.week" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.weekofyear">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekofyear</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.weekofyear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.is_leap_year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_leap_year</span></span><a class="headerlink" href="#arkouda.timeclass.Datetime.is_leap_year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Datetime.isocalendar">
+<span class="sig-name descname"><span class="pre">isocalendar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime.isocalendar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.timeclass.Datetime._get_callback">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">otherclass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime._get_callback" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -529,14 +629,14 @@ exceeds client.maxTransferBytes, a RuntimeError is raised.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.timeclass.Timedelta">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">Timedelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></span><span class="sig-name descname"><span class="pre">Timedelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_AbstractBaseTime</span></code></a></p>
 <p>Represents a duration, the difference between two dates or times.</p>
 <p>Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>int64 pdarray</em><em>, </em><em>pd.TimedeltaIndex</em><em>, </em><em>pd.Series</em><em>, or </em><em>np.timedelta64 array</em>) – </p></li>
+<li><p><strong>pda</strong> (<em>int64 pdarray</em><em>, </em><em>pd.TimedeltaIndex</em><em>, </em><em>pd.Series</em><em>, or </em><em>np.timedelta64 array</em>) – </p></li>
 <li><p><strong>unit</strong> (<em>str</em><em>, </em><em>default 'ns'</em>) – <p>For int64 pdarray, denotes the unit of the input. Ignored for pandas
 and numpy arrays, which carry their own unit. Not case-sensitive;
 prefixes of full names (like ‘sec’) are accepted.</p>
@@ -591,6 +691,41 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.supported_with_r_pdarray">
 <span class="sig-name descname"><span class="pre">supported_with_r_pdarray</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.supported_with_r_pdarray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta._ensure_components">
+<span class="sig-name descname"><span class="pre">_ensure_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta._ensure_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.nanoseconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanoseconds</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.nanoseconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.microseconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microseconds</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.microseconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.seconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seconds</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.seconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">days</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.days" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.total_seconds">
+<span class="sig-name descname"><span class="pre">total_seconds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta.total_seconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.timeclass.Timedelta.components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components</span></span><a class="headerlink" href="#arkouda.timeclass.Timedelta.components" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
