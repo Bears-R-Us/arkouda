@@ -3,6 +3,7 @@ from base_test import ArkoudaTest
 import arkouda as ak
 
 import pandas as pd
+import numpy as np
 import logging
 
 
@@ -304,3 +305,111 @@ class DatetimeTest(ArkoudaTest):
             # check_equal(pdunit, pdunit)
             for akunit in (pdunit,) + aliases:
                 check_equal(pdunit, akunit)
+
+    def date_time_attribute_helper(self, pd_dt, ak_dt):
+        # date
+        self.assertTrue((pd_dt.date == ak_dt.date.to_pandas()).all())
+        # nanosecond
+        self.assertListEqual(pd_dt.nanosecond.to_list(), ak_dt.nanosecond.to_list())
+        # microsecond
+        self.assertListEqual(pd_dt.microsecond.to_list(), ak_dt.microsecond.to_list())
+        # second
+        self.assertListEqual(pd_dt.second.to_list(), ak_dt.second.to_list())
+        # minute
+        self.assertListEqual(pd_dt.minute.to_list(), ak_dt.minute.to_list())
+        # hour
+        self.assertListEqual(pd_dt.hour.to_list(), ak_dt.hour.to_list())
+        # day
+        self.assertListEqual(pd_dt.day.to_list(), ak_dt.day.to_list())
+        # month
+        self.assertListEqual(pd_dt.month.to_list(), ak_dt.month.to_list())
+        # year
+        self.assertListEqual(pd_dt.year.to_list(), ak_dt.year.to_list())
+        # day_of_week / dayofweek / weekday
+        self.assertListEqual(pd_dt.day_of_week.to_list(), ak_dt.day_of_week.to_list())
+        self.assertListEqual(pd_dt.dayofweek.to_list(), ak_dt.dayofweek.to_list())
+        self.assertListEqual(pd_dt.weekday.to_list(), ak_dt.weekday.to_list())
+        # week / weekofyear
+        self.assertListEqual(pd_dt.isocalendar().week.to_list(), ak_dt.week.to_list())
+        self.assertListEqual(pd_dt.isocalendar().week.to_list(), ak_dt.weekofyear.to_list())
+        # day_of_year / dayofyear
+        self.assertListEqual(pd_dt.day_of_year.to_list(), ak_dt.day_of_year.to_list())
+        self.assertListEqual(pd_dt.dayofyear.to_list(), ak_dt.dayofyear.to_list())
+        # is_leap_year
+        self.assertListEqual(pd_dt.is_leap_year.to_list(), ak_dt.is_leap_year.to_list())
+        # isocalendar()
+        self.assertTrue(((pd_dt.isocalendar() == ak_dt.isocalendar().to_pandas()).all()).all())
+
+    def time_delta_attribute_helper(self, pd_td, ak_td):
+        # components
+        self.assertTrue(((pd_td.components == ak_td.components.to_pandas()).all()).all())
+        # total_seconds
+        self.assertTrue(np.allclose(pd_td.total_seconds(), ak_td.total_seconds().to_ndarray()))
+        # nanoseconds
+        self.assertListEqual(pd_td.nanoseconds.to_list(), ak_td.nanoseconds.to_list())
+        # microseconds
+        self.assertListEqual(pd_td.microseconds.to_list(), ak_td.microseconds.to_list())
+        # seconds
+        self.assertListEqual(pd_td.seconds.to_list(), ak_td.seconds.to_list())
+        # days
+        self.assertListEqual(pd_td.days.to_list(), ak_td.days.to_list())
+
+    def test_date_time_accessors(self):
+        self.date_time_attribute_helper(
+            pd.Series(pd.date_range("2021-01-01 00:00:00", periods=100)).dt,
+            ak.Datetime(ak.date_range("2021-01-01 00:00:00", periods=100)),
+        )
+        self.date_time_attribute_helper(
+            pd.Series(pd.date_range("2000-01-01 12:00:00", periods=100, freq="d")).dt,
+            ak.Datetime(ak.date_range("2000-01-01 12:00:00", periods=100, freq="d")),
+        )
+        self.date_time_attribute_helper(
+            pd.Series(pd.date_range("1980-01-01 12:00:00", periods=100, freq="y")).dt,
+            ak.Datetime(ak.date_range("1980-01-01 12:00:00", periods=100, freq="y")),
+        )
+
+    def test_time_delta_accessors(self):
+        self.time_delta_attribute_helper(
+            pd.Series(pd.to_timedelta(np.arange(10**12 + 1000, (10**12 + 1100)), unit="us")).dt,
+            ak.Timedelta(ak.arange(10**12 + 1000, (10**12 + 1100)), unit="us"),
+        )
+        self.time_delta_attribute_helper(
+            pd.Series(pd.to_timedelta(np.arange(10**12 + 1000, (10**12 + 1100)), unit="ns")).dt,
+            ak.Timedelta(ak.arange(10**12 + 1000, (10**12 + 1100)), unit="ns"),
+        )
+        self.time_delta_attribute_helper(
+            pd.Series(pd.to_timedelta(np.arange(2000, 2100), unit="W")).dt,
+            ak.Timedelta(ak.arange(2000, 2100), unit="W"),
+        )
+
+    def test_woy_boundary(self):
+        # make sure weeks at year boundaries are correct, modified version of pandas test at
+        # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2013-12-31", periods=10, freq="w")).week.to_list(),
+            pd.Series(pd.date_range("2013-12-31", periods=10, freq="w")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2008-12-28", periods=10, freq="w")).week.to_list(),
+            pd.Series(pd.date_range("2008-12-28", periods=10, freq="w")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2009-12-31", periods=10, freq="w")).week.to_list(),
+            pd.Series(pd.date_range("2009-12-31", periods=10, freq="w")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2010-01-01", periods=10, freq="w")).week.to_list(),
+            pd.Series(pd.date_range("2010-01-01", periods=10, freq="w")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2010-01-03", periods=10, freq="w")).week.to_list(),
+            pd.Series(pd.date_range("2010-01-03", periods=10, freq="w")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2000-01-01", periods=10, freq="d")).week.to_list(),
+            pd.Series(pd.date_range("2000-01-01", periods=10, freq="d")).dt.isocalendar().week.to_list(),
+        )
+        self.assertListEqual(
+            ak.Datetime(ak.date_range("2005-01-01", periods=10, freq="d")).week.to_list(),
+            pd.Series(pd.date_range("2005-01-01", periods=10, freq="d")).dt.isocalendar().week.to_list(),
+        )
