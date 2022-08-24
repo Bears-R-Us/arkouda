@@ -282,22 +282,19 @@ class Index:
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
 
-        """
-        If offsets are provided, add to the json_array as the offsets will be used to
-        retrieve the array elements from the hdf5 files.
-        """
-        try:
-            json_array = json.dumps([prefix_path])
-        except Exception as e:
-            raise ValueError(e)
-        strings_placeholder = False
-
         return typecast(
             str,
             generic_msg(
                 cmd=cmd,
-                args=f"{self.values.name} {dataset} {m} {json_array} "
-                f"{self.dtype} {strings_placeholder} {compressed}",
+                args={
+                    "values": self.values,
+                    "dset": dataset,
+                    "mode": m,
+                    "prefix": prefix_path,
+                    "dtype": self.dtype,
+                    "save_offsets": False, # this is only used by strings
+                    "compressed": compressed,
+                }
             ),
         )
 

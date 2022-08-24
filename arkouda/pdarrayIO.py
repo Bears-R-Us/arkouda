@@ -63,7 +63,9 @@ def ls(filename: str) -> List[str]:
         raise ValueError("filename cannot be an empty string")
 
     cmd = "lsany"
-    return json.loads(cast(str, generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
+    return json.loads(cast(str, generic_msg(cmd=cmd, args={
+        "filename": filename,
+    })))
 
 
 def read(
@@ -196,8 +198,15 @@ def read(
     else:
         rep_msg = generic_msg(
             cmd=cmd,
-            args=f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} "
-            f"{json.dumps(datasets)} | {json.dumps(filenames)}",
+            args={
+                "strict_types": strictTypes,
+                "dset_size": len(datasets),
+                "filename_size": len(filenames),
+                "allow_errors": allow_errors,
+                "calc_string_offsets": calc_string_offsets,
+                "dsets": datasets,
+                "filenames": filenames,
+            },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
         items = rep["items"] if "items" in rep else []
@@ -273,7 +282,12 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str, pdarray
         datasets = [datasets]
     rep_msg = generic_msg(
         cmd="getnullparquet",
-        args=f"{len(datasets)} {len(filenames)} {json.dumps(datasets)} | {json.dumps(filenames)}",
+        args={
+            "dset_size": len(datasets),
+            "filename_size": len(filenames),
+            "dsets": datasets,
+            "filenames": filenames
+        },
     )
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
     items = rep["items"] if "items" in rep else []

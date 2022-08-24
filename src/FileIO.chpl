@@ -308,18 +308,12 @@ module FileIO {
 
     proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var (jsonfile) = payload.splitMsgToTuple(1);
+      var msgArgs = parseMessageArgs(payload, 1);
       
       // Retrieve filename from payload
-      var filename: string;
-      try {
-        filename = jsonToPdArray(jsonfile, 1)[0];
-        if filename.isEmpty() {
-          throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
-        }
-      } catch {
-        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
-                                                                                            1, jsonfile);
-        return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+      var filename: string = msgArgs.getValueOf("filename");
+      if filename.isEmpty() {
+        throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
       }
 
       // If the filename represents a glob pattern, retrieve the locale 0 filename
@@ -359,15 +353,12 @@ module FileIO {
       var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, calcStringOffsetsFlag, arraysStr) = payload.splitMsgToTuple(6);
       var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
 
-      if (!checkCast(nfilesStr, int)) {
-        var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
-        return new MsgTuple(errMsg, MsgType.ERROR);
-      }
-      var nfiles = nfilesStr:int; // Error checked above
+      var msgArgs = parseMessageArgs(payload, 7);
+      var nfiles = msgArgs.get("filename_size").getIntValue();
       var filelist: [0..#nfiles] string;
       
       try {
-        filelist = jsonToPdArray(jsonfiles, nfiles);
+        filelist = msgArgs.get("filenames").getList(nfiles);
       } catch {
         // limit length of file names to 2000 chars
         var n: int = 1000;

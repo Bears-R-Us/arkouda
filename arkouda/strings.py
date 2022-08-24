@@ -1736,7 +1736,15 @@ class Strings:
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
 
-        args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {save_offsets} {compressed}"
+        args = {
+            "values": self.entry,
+            "dset": dataset,
+            "mode": m,
+            "prefix": prefix_path,
+            "dtype": self.dtype,
+            "save_offsets": save_offsets,
+            "compressed": compressed,
+        }
         return cast(str, generic_msg(cmd, args))
 
     def save_parquet(
