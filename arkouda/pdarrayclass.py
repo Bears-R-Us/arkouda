@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import builtins
-import json
 from typing import List, Sequence, cast
 
 import numpy as np  # type: ignore

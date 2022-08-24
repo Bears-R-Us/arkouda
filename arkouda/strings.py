@@ -1724,11 +1724,6 @@ class Strings:
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
-        try:
-            json_array = json.dumps([prefix_path])
-        except Exception as e:
-            raise ValueError(e)
-
         if file_format.lower() == "hdf5":
             cmd = "tohdf"
         elif file_format.lower() == "parquet":
