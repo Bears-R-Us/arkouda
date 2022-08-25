@@ -31,24 +31,22 @@ module ServerDaemon {
     const sdLogger = new Logger(logLevel);
 
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
+    
+    var serverDaemonTypes = try! getDaemonTypes();
 
     /**
      * Retrieves a list of 1..n ServerDaemonType objects generated 
      * from the comma-delimited list of ServerDaemonType strings
      * provided in the daemonTypes command-line parameter
      */
-    proc getDaemonTypes() {
+    proc getDaemonTypes() throws {
         var types = new list(ServerDaemonType);
         var rawTypes = daemonTypes.split(',');
 
         for rt in rawTypes {
             var daemonType: ServerDaemonType;
-            try {
-                daemonType = rt: ServerDaemonType;
-                types.append(daemonType);
-            } catch {
-                
-            }
+            daemonType = rt: ServerDaemonType;
+            types.append(daemonType);
         }
         return types;
     }    
@@ -58,7 +56,7 @@ module ServerDaemon {
      * make available metrics via a dedicated metrics socket
      */
     proc metricsEnabled() {
-        return getDaemonTypes().contains(ServerDaemonType.METRICS);
+        return serverDaemonTypes.contains(ServerDaemonType.METRICS);
     }
 
     /**
@@ -66,7 +64,14 @@ module ServerDaemon {
      * register/deregister with an external system such as Kubernetes.
      */
     proc integrationEnabled() {
-        return getDaemonTypes().contains(ServerDaemonType.INTEGRATION);
+        return serverDaemonTypes.contains(ServerDaemonType.INTEGRATION);
+    }
+    
+    /**
+     * Returns a boolean indicating if there are multiple ServerDaemons
+     */
+    proc multipleServerDaemons() {
+        return serverDaemonTypes.size > 1;
     }
 
     /**
@@ -102,7 +107,13 @@ module ServerDaemon {
                                           getModuleName());
         }
         
-        proc shutdown(user: string) throws {
+        /**
+         * Prompts the ArkoudaServerDaemon to initiate a shutdown, triggering
+         * a change in state which will cause the derived ArkoudaServerDaemon
+         * to (1) exit the daemon loop within the run function and (2) execute 
+         * the shutdown function.
+         */
+        proc requestShutdown(user: string) throws {
             this.shutdownDaemon = true;
         }
         
@@ -113,6 +124,15 @@ module ServerDaemon {
             var rm = new RequestMsg();
             deserialize(rm, request);
             return rm;
+        }
+        
+        /**
+         * Encapsulates logic that is to be invoked once a ArkoduaSeverDaemon
+         * has exited the daemon loop.
+         */
+        proc shutdown() throws {
+            sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                              "shutdown sequence complete");   
         }
     }
 
@@ -295,10 +315,10 @@ module ServerDaemon {
         Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
         which stops the arkouda_server listener thread and closes socket.
         */
-        override proc shutdown(user: string) throws {
+        override proc requestShutdown(user: string) throws {
             if saveUsedModules then
                 writeUsedModules();
-            this.shutdownDaemon = true;
+            super.requestShutdown(user);
             this.repCount += 1;
             this.socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
@@ -342,6 +362,19 @@ module ServerDaemon {
             var arkDirectory = '%s%s%s'.format(here.cwd(), pathSep,'.arkouda');
             initDirectory(arkDirectory);
             return arkDirectory;
+        }
+
+
+        /**
+         * The overridden shutdown function calls exit(0) if there are multiple 
+         * ServerDaemons configured for this Arkouda instance.
+         */
+        override proc shutdown() throws {        
+            if multipleServerDaemons() {
+                sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "multiple ServerDaemons, invoking exit(0)");  
+                exit(0);
+            }
         }
 
         override proc run() throws {
@@ -444,7 +477,7 @@ module ServerDaemon {
 
                 // If cmd is shutdown, don't bother generating a repMsg
                 if cmd == "shutdown" {
-                    shutdown(user=user);
+                    requestShutdown(user=user);
                     if (trace) {
                         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                          "<<< shutdown initiated by %s took %.17r sec".format(user, 
@@ -555,14 +588,16 @@ module ServerDaemon {
         deleteServerConnectionInfo();
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));   
-        exit(0);
+            "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,
+                                                                       repCount,
+                                                                       t1.elapsed()));
+        this.shutdown(); 
         }
     }
 
     /**
-     * The MetricsServerDaemon provides an endpoint for gathering user, 
-     * request, locale, and server-scoped metrics
+     * The MetricsServerDaemon provides an endpoint for gathering user, request, 
+     * locale, and server-scoped metrics
      */
     class MetricsServerDaemon : ArkoudaServerDaemon {
     
@@ -631,12 +666,20 @@ module ServerDaemon {
      */    
     class ExternalIntegrationServerDaemon : DefaultServerDaemon {
 
+        /**
+         * Overridden run function registers the ServerDaemon with an 
+         * external system and then invokes the parent run function.
+         */
         override proc run() throws {
             register(ServiceEndpoint.ARKOUDA_CLIENT);
             super.run();
         }
 
-        override proc shutdown(user: string) throws {
+        /**
+         * Overridden shutdown function deregisters Arkouda from an external
+         * system and then invokes the parent shutdown() function.
+         */
+        override proc shutdown() throws {
             on Locales[here.id] {
                 deregisterFromExternalSystem(ServiceEndpoint.ARKOUDA_CLIENT);
                 // if metrics is enabled, deregister the metrics socket
@@ -645,7 +688,7 @@ module ServerDaemon {
                 }
             }
 
-            super.shutdown(user);
+            super.shutdown();
         }
     }
 
@@ -672,21 +715,9 @@ module ServerDaemon {
     }
 
     proc getServerDaemons() throws {
-        var rawTypes = daemonTypes.split(',');
         var daemons = new list(shared ArkoudaServerDaemon);
 
-        for (rt,i) in zip(rawTypes,0..rawTypes.size-1) {
-            var daemonType: ServerDaemonType;
-            try {
-                daemonType = rt: ServerDaemonType;
-            } catch e: Error {
-                throw getErrorWithContext(
-                      msg="Invalid ServerDaemonType: %t".format(daemonType),
-                      lineNumber=getLineNumber(),
-                      routineName=getRoutineName(),
-                      moduleName=getModuleName(),
-                      errorClass="ArgumentError");                  
-            }
+        for (daemonType,i) in zip(serverDaemonTypes,0..serverDaemonTypes.size-1) {
             daemons.append(getServerDaemon(daemonType));
         }
         return daemons;
