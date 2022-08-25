@@ -1969,9 +1969,8 @@ class DataFrame(UserDict):
                 f"WARNING: DataFrame {self.name} expected {total} components to be registered,"
                 f" but only located {registered}."
             )
-            return False
-        else:
-            return registered == total
+
+        return registered == total
 
     @staticmethod
     def attach(user_defined_name: str) -> DataFrame:
@@ -1999,18 +1998,15 @@ class DataFrame(UserDict):
         register, is_registered, unregister, unregister_groupby_by_name
         """
 
-        registry = list_registry()
-
-        col_resp = cast(str, generic_msg(cmd="attach", args=f"df_columns_{user_defined_name}"))
-        cols = Strings.from_return_msg(col_resp)
-        columns = dict.fromkeys(cols.to_list())
+        col_resp = cast(str, generic_msg(cmd="stringsToJSON", args=f"df_columns_{user_defined_name}"))
+        columns = dict.fromkeys(json.loads(col_resp))
         matches: List[str] = []
         regEx = compile(
             f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
             f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in registry:
+        for name in list_registry():
             x = match(regEx, name)
             if x is not None:
                 matches.append(x.group())
@@ -2020,7 +2016,7 @@ class DataFrame(UserDict):
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
         # Remove duplicates caused by multiple components in Categorical or SegArray
-        dedupe = list(dict.fromkeys(matches))
+        dedupe = set(matches)
 
         for name in dedupe:
             colName = name.split("_")[2]
@@ -2073,14 +2069,13 @@ class DataFrame(UserDict):
         register, unregister, attach, is_registered
         """
 
-        registry = list_registry()
         matches = []
         regEx = compile(
             f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
             f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
-        for name in registry:
+        for name in list_registry():
             x = match(regEx, name)
             if x is not None:
                 matches.append(x.group())
@@ -2090,16 +2085,13 @@ class DataFrame(UserDict):
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
         # Remove duplicates caused by multiple components in categorical or segarray
-        dedupe = list(dict.fromkeys(matches))
+        dedupe = set(matches)
 
         for name in dedupe:
-            if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
-                cols_resp = cast(str, generic_msg(cmd="attach", args=name))
-                dtype = cols_resp.split()[2]
-                if dtype == Strings.objtype:
-                    Strings.unregister_strings_by_name(name)
-                else:  # pdarray
-                    unregister_pdarray_by_name(name)
+            if f"_{Strings.objtype}_" in name:
+                Strings.unregister_strings_by_name(name)
+            elif f"_{pdarray.objtype}_" in name:
+                unregister_pdarray_by_name(name)
             elif f"_{Categorical.objtype}_" in name:
                 Categorical.unregister_categorical_by_name(name)
             elif f"_{SegArray.objtype}_" in name:

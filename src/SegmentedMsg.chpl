@@ -1178,6 +1178,19 @@ module SegmentedMsg {
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+
+  proc stringsToJSONMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
+    var strings = getSegString(name, st);
+    var size = strings.size;
+    var rtn: [0..#size] string;
+
+    for i in 0..#size {
+      rtn[i] = strings[i];
+    }
+
+    var repMsg = "%jt".format(rtn);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
   
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
@@ -1200,5 +1213,6 @@ module SegmentedMsg {
   registerFunction("segArr-getSegments", getSASegmentsMsg, getModuleName());
   registerFunction("segArr-getValues", getSAValuesMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
+  registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
 }
