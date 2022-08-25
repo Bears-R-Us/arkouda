@@ -118,9 +118,14 @@
 <em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">sdLogger</span></span> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span><a class="headerlink" href="#ServerDaemon.sdLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerDaemon.serverDaemonTypes">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverDaemonTypes</span></span> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getDaemonTypes()</span><a class="headerlink" href="#ServerDaemon.serverDaemonTypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerDaemon.getDaemonTypes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDaemonTypes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.getDaemonTypes" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDaemonTypes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.getDaemonTypes" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Retrieves a list of 1..n ServerDaemonType objects generated</p></li>
@@ -146,6 +151,15 @@
 <li></li>
 <li><p>Returns a boolean indicating whether Arkouda is configured to</p></li>
 <li><p>register/deregister with an external system such as Kubernetes.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerDaemon.multipleServerDaemons">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">multipleServerDaemons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.multipleServerDaemons" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Returns a boolean indicating if there are multiple ServerDaemons</p></li>
 </ul>
 </dd></dl>
 
@@ -188,15 +202,32 @@
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.ArkoudaServerDaemon.shutdown">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ArkoudaServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object chpl" id="ServerDaemon.ArkoudaServerDaemon.requestShutdown">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">requestShutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ArkoudaServerDaemon.requestShutdown" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Prompts the ArkoudaServerDaemon to initiate a shutdown, triggering</p></li>
+<li><p>a change in state which will cause the derived ArkoudaServerDaemon</p></li>
+<li><p>to (1) exit the daemon loop within the run function and (2) execute</p></li>
+<li><p>the shutdown function.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.ArkoudaServerDaemon.extractRequest">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">extractRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">request:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">RequestMsg</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ArkoudaServerDaemon.extractRequest" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Converts the incoming request JSON string into RequestMsg object.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.ArkoudaServerDaemon.shutdown">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ArkoudaServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Encapsulates logic that is to be invoked once a ArkoduaSeverDaemon</p></li>
+<li><p>has exited the daemon loop.</p></li>
 </ul>
 </dd></dl>
 
@@ -291,8 +322,8 @@ tokens do not match, or the user did not submit a token, an ErrorWithMsg is thro
 </dd></dl>
 
 <dl class="chpl method">
-<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.shutdown">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.requestShutdown">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">requestShutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.requestShutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
 which stops the arkouda_server listener thread and closes socket.</p>
 </dd></dl>
@@ -325,6 +356,16 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <dd></dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.shutdown">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>The overridden shutdown function calls exit(0) if there are multiple</p></li>
+<li><p>ServerDaemons configured for this Arkouda instance.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.run">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -336,8 +377,8 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MetricsServerDaemon</span></span><span class="pre">:</span> <span class="pre">ArkoudaServerDaemon</span><a class="headerlink" href="#ServerDaemon.MetricsServerDaemon" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
-<li><p>The MetricsServerDaemon provides an endpoint for gathering user,</p></li>
-<li><p>request, locale, and server-scoped metrics</p></li>
+<li><p>The MetricsServerDaemon provides an endpoint for gathering user, request,</p></li>
+<li><p>locale, and server-scoped metrics</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerDaemon.MetricsServerDaemon.context">
@@ -372,12 +413,22 @@ which stops the arkouda_server listener thread and closes socket.</p>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.ExternalIntegrationServerDaemon.run">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ExternalIntegrationServerDaemon.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><ul class="simple">
+<li></li>
+<li><p>Overridden run function registers the ServerDaemon with an</p></li>
+<li><p>external system and then invokes the parent run function.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.ExternalIntegrationServerDaemon.shutdown">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ExternalIntegrationServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.ExternalIntegrationServerDaemon.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Overridden shutdown function deregisters Arkouda from an external</p></li>
+<li><p>system and then invokes the parent shutdown() function.</p></li>
+</ul>
+</dd></dl>
 
 </dd></dl>
 

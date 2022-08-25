@@ -21,7 +21,9 @@ or
 
 .. data:: const sdLogger = new Logger(logLevel)
 
-.. function:: proc getDaemonTypes()
+.. data:: var serverDaemonTypes = try! getDaemonTypes()
+
+.. function:: proc getDaemonTypes() throws
 
    *
    * Retrieves a list of 1..n ServerDaemonType objects generated 
@@ -41,6 +43,12 @@ or
    *
    * Returns a boolean indicating whether Arkouda is configured to 
    * register/deregister with an external system such as Kubernetes.
+   
+
+.. function:: proc multipleServerDaemons()
+
+   *
+   * Returns a boolean indicating if there are multiple ServerDaemons
    
 
 .. function:: proc register(endpoint: ServiceEndpoint) throws
@@ -66,12 +74,26 @@ or
 
    .. method:: proc run() throws
 
-   .. method:: proc shutdown(user: string) throws
+   .. method:: proc requestShutdown(user: string) throws
+
+      *
+      * Prompts the ArkoudaServerDaemon to initiate a shutdown, triggering
+      * a change in state which will cause the derived ArkoudaServerDaemon
+      * to (1) exit the daemon loop within the run function and (2) execute 
+      * the shutdown function.
+      
 
    .. method:: proc extractRequest(request: string): RequestMsg throws
 
       
       * Converts the incoming request JSON string into RequestMsg object.
+      
+
+   .. method:: proc shutdown() throws
+
+      *
+      * Encapsulates logic that is to be invoked once a ArkoduaSeverDaemon
+      * has exited the daemon loop.
       
 
 .. class:: DefaultServerDaemon : ArkoudaServerDaemon
@@ -129,7 +151,7 @@ or
       :arg token: the submitted token string
       
 
-   .. method:: override proc shutdown(user: string) throws
+   .. method:: override proc requestShutdown(user: string) throws
 
       
       Sets the shutdownDaemon boolean to true and sends the shutdown command to socket,
@@ -148,13 +170,20 @@ or
 
    .. method:: proc initArkoudaDirectory() throws
 
+   .. method:: override proc shutdown() throws
+
+      *
+      * The overridden shutdown function calls exit(0) if there are multiple 
+      * ServerDaemons configured for this Arkouda instance.
+      
+
    .. method:: override proc run() throws
 
 .. class:: MetricsServerDaemon : ArkoudaServerDaemon
 
    *
-   * The MetricsServerDaemon provides an endpoint for gathering user, 
-   * request, locale, and server-scoped metrics
+   * The MetricsServerDaemon provides an endpoint for gathering user, request, 
+   * locale, and server-scoped metrics
    
 
 
@@ -176,7 +205,17 @@ or
 
    .. method:: override proc run() throws
 
-   .. method:: override proc shutdown(user: string) throws
+      *
+      * Overridden run function registers the ServerDaemon with an 
+      * external system and then invokes the parent run function.
+      
+
+   .. method:: override proc shutdown() throws
+
+      *
+      * Overridden shutdown function deregisters Arkouda from an external
+      * system and then invokes the parent shutdown() function.
+      
 
 .. function:: proc getServerDaemon(daemonType: ServerDaemonType): shared ArkoudaServerDaemon throws
 
