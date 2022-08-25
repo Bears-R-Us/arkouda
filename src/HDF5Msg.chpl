@@ -55,7 +55,9 @@ module HDF5Msg {
         // Retrieve filename from payload
         var filename: string = msgArgs.getValueOf("filename");
         if filename.isEmpty() {
-            throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+            var errorMsg = "Filename was Empty";
+            h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         // If the filename represents a glob pattern, retrieve the locale 0 filename
@@ -1777,7 +1779,7 @@ module HDF5Msg {
         var msgArgs = parseMessageArgs(payload, 7);
         var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
-        var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default if false
+        var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
         if allowErrors {
             h5Logger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
         }

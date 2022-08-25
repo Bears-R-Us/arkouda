@@ -307,13 +307,14 @@ module FileIO {
     }
 
     proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var (jsonfile) = payload.splitMsgToTuple(1);
       var msgArgs = parseMessageArgs(payload, 1);
       
       // Retrieve filename from payload
       var filename: string = msgArgs.getValueOf("filename");
       if filename.isEmpty() {
-        throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+        var errorMsg = "Empty Filename Provided.";
+        fioLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(errorMsg, MsgType.ERROR);
       }
 
       // If the filename represents a glob pattern, retrieve the locale 0 filename
@@ -350,9 +351,6 @@ module FileIO {
     }
 
     proc readAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, calcStringOffsetsFlag, arraysStr) = payload.splitMsgToTuple(6);
-      var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
-
       var msgArgs = parseMessageArgs(payload, 7);
       var nfiles = msgArgs.get("filename_size").getIntValue();
       var filelist: [0..#nfiles] string;
@@ -362,6 +360,7 @@ module FileIO {
       } catch {
         // limit length of file names to 2000 chars
         var n: int = 1000;
+        var jsonfiles = msgArgs.getValueOf("filenames");
         var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
         var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
         return new MsgTuple(errorMsg, MsgType.ERROR);

@@ -779,7 +779,9 @@ module ParquetMsg {
     // Retrieve filename from payload
     var filename: string = msgArgs.getValueOf("filename");
     if filename.isEmpty() {
-      throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
+      var errorMsg = "Filename was Empty";
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
     // If the filename represents a glob pattern, retrieve the locale 0 filename
