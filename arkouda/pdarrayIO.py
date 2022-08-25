@@ -63,7 +63,17 @@ def ls(filename: str) -> List[str]:
         raise ValueError("filename cannot be an empty string")
 
     cmd = "lsany"
-    return json.loads(cast(str, generic_msg(cmd=cmd, args="{}".format(json.dumps([filename])))))
+    return json.loads(
+        cast(
+            str,
+            generic_msg(
+                cmd=cmd,
+                args={
+                    "filename": filename,
+                },
+            ),
+        )
+    )
 
 
 def read(
@@ -196,8 +206,15 @@ def read(
     else:
         rep_msg = generic_msg(
             cmd=cmd,
-            args=f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} "
-            f"{json.dumps(datasets)} | {json.dumps(filenames)}",
+            args={
+                "strict_types": strictTypes,
+                "dset_size": len(datasets),
+                "filename_size": len(filenames),
+                "allow_errors": allow_errors,
+                "calc_string_offsets": calc_string_offsets,
+                "dsets": datasets,
+                "filenames": filenames,
+            },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
         items = rep["items"] if "items" in rep else []
@@ -273,7 +290,12 @@ def get_null_indices(filenames, datasets) -> Union[pdarray, Mapping[str, pdarray
         datasets = [datasets]
     rep_msg = generic_msg(
         cmd="getnullparquet",
-        args=f"{len(datasets)} {len(filenames)} {json.dumps(datasets)} | {json.dumps(filenames)}",
+        args={
+            "dset_size": len(datasets),
+            "filename_size": len(filenames),
+            "dsets": datasets,
+            "filenames": filenames,
+        },
     )
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
     items = rep["items"] if "items" in rep else []
@@ -824,10 +846,7 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
         - file_path will need to support list[str] and str for glob
         - Currently, order is always assumed to be row major
     """
-    args = {
-        "filename": file_path,
-        "dset": dset
-    }
+    args = {"filename": file_path, "dset": dset}
     rep_msg = cast(
         str,
         generic_msg(
@@ -948,7 +967,7 @@ def write_hdf5_multi_dim(
         "filename": file_path,
         "dset": dset,
         "mode": mode_int,
-        "method": storage_int
+        "method": storage_int,
     }
 
     generic_msg(

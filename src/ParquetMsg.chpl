@@ -530,41 +530,25 @@ module ParquetMsg {
 
   proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
-    // May need a more robust delimiter then " | "
-    var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, hdfArgPlaceholder, arraysStr) = payload.splitMsgToTuple(6);
-    var strictTypes: bool = true;
-    if (strictFlag.toLower().strip() == "false") {
-      strictTypes = false;
-    }
+    var msgArgs = parseMessageArgs(payload, 7);
+    var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
-    var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
+    var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
     if allowErrors {
         pqLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
     }
-
-    // Test arg casting so we can send error message instead of failing
-    if (!checkCast(ndsetsStr, int)) {
-        var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
-        pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
-        return new MsgTuple(errMsg, MsgType.ERROR);
-    }
-    if (!checkCast(nfilesStr, int)) {
-      var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
-      pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
-      return new MsgTuple(errMsg, MsgType.ERROR);
-    }
-
-    var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
-    var ndsets = ndsetsStr:int; // Error checked above
-    var nfiles = nfilesStr:int; // Error checked above
+    
+    var ndsets = msgArgs.get("dset_size").getIntValue();
+    var nfiles = msgArgs.get("filename_size").getIntValue();
     var dsetlist: [0..#ndsets] string;
     var filelist: [0..#nfiles] string;
 
     try {
-        dsetlist = jsonToPdArray(jsondsets, ndsets);
+        dsetlist = msgArgs.get("dsets").getList(ndsets);
     } catch {
         // limit length of dataset names to 2000 chars
         var n: int = 1000;
+        var jsondsets = msgArgs.getValueOf("dsets");
         var dsets: string = if jsondsets.size > 2*n then jsondsets[0..#n]+'...'+jsondsets[jsondsets.size-n..#n] else jsondsets;
         var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
                                             ndsets, dsets);
@@ -573,10 +557,11 @@ module ParquetMsg {
     }
 
     try {
-        filelist = jsonToPdArray(jsonfiles, nfiles);
+        filelist = msgArgs.get("filenames").getList(nfiles);
     } catch {
         // limit length of file names to 2000 chars
         var n: int = 1000;
+        var jsonfiles = msgArgs.getValueOf("filenames");
         var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
         var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -713,10 +698,12 @@ module ParquetMsg {
   }
   
   proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (arrayName, dsetname, modeStr, jsonfile, dataType, hdfPlaceholder, isCompressed)= payload.splitMsgToTuple(7);
-    var mode = try! modeStr: int;
-    var filename: string;
-    var entry = st.lookup(arrayName);
+    var msgArgs = parseMessageArgs(payload, 7);
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = msgArgs.getValueOf("dtype");
     
     var entryDtype = DType.UNDEF;
     if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
@@ -728,16 +715,7 @@ module ParquetMsg {
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
-    var compressed = try! isCompressed.toLower():bool;
-
-    try {
-      filename = jsonToPdArray(jsonfile, 1)[0];
-    } catch {
-      var errorMsg = "Could not decode json filenames via tempfile " +
-        "(%i files: %s)".format(1, jsonfile);
-      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      return new MsgTuple(errorMsg, MsgType.ERROR);
-    }
+    var compressed = msgArgs.get("compressed").getBoolValue();
 
     var warnFlag: bool;
 
@@ -796,19 +774,14 @@ module ParquetMsg {
   proc lspqMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     // reqMsg: "lshdf [<json_filename>]"
     var repMsg: string;
-    var (jsonfile) = payload.splitMsgToTuple(1);
+    var msgArgs = parseMessageArgs(payload, 1);
 
     // Retrieve filename from payload
-    var filename: string;
-    try {
-      filename = jsonToPdArray(jsonfile, 1)[0];
-      if filename.isEmpty() {
-        throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
-      }
-    } catch {
-      var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
-                                                                                          1, jsonfile);
-      return new MsgTuple(errorMsg, MsgType.ERROR);                                    
+    var filename: string = msgArgs.getValueOf("filename");
+    if filename.isEmpty() {
+      var errorMsg = "Filename was Empty";
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
     // If the filename represents a glob pattern, retrieve the locale 0 filename
@@ -858,41 +831,28 @@ module ParquetMsg {
 
   proc nullIndicesMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
-    // May need a more robust delimiter then " | "
-    var (ndsetsStr, nfilesStr, arraysStr) = payload.splitMsgToTuple(3);
+    var msgArgs = parseMessageArgs(payload, 4);
 
-    // Test arg casting so we can send error message instead of failing
-    if (!checkCast(ndsetsStr, int)) {
-      var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
-      pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
-      return new MsgTuple(errMsg, MsgType.ERROR);
-    }
-    if (!checkCast(nfilesStr, int)) {
-      var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
-      pqLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
-      return new MsgTuple(errMsg, MsgType.ERROR);
-    }
-
-    var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
-    var ndsets = ndsetsStr:int; // Error checked above
-    var nfiles = nfilesStr:int; // Error checked above
+    var ndsets = msgArgs.get("dset_size").getIntValue();
+    var nfiles = msgArgs.get("filename_size").getIntValue();
     var dsetlist: [0..#ndsets] string;
     var filelist: [0..#nfiles] string;
 
     try {
-      dsetlist = jsonToPdArray(jsondsets, ndsets);
+      dsetlist = msgArgs.get("dsets").getList(ndsets);
     } catch {
       var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
-                                                                                              1, jsondsets);
+                                                                                              1, msgArgs.getValueOf("dsets"));
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
 
     try {
-      filelist = jsonToPdArray(jsonfiles, nfiles);
+      filelist = msgArgs.get("filenames").getList(nfiles);
     } catch {
       // limit length of file names to 2000 chars
       var n: int = 1000;
+      var jsonfiles = msgArgs.getValueOf("filenames");
       var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
       var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

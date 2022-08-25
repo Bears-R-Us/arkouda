@@ -1724,11 +1724,6 @@ class Strings:
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
-        try:
-            json_array = json.dumps([prefix_path])
-        except Exception as e:
-            raise ValueError(e)
-
         if file_format.lower() == "hdf5":
             cmd = "tohdf"
         elif file_format.lower() == "parquet":
@@ -1736,7 +1731,15 @@ class Strings:
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
 
-        args = f"{self.entry.name} {dataset} {m} {json_array} {self.dtype} {save_offsets} {compressed}"
+        args = {
+            "values": self.entry,
+            "dset": dataset,
+            "mode": m,
+            "prefix": prefix_path,
+            "dtype": self.dtype,
+            "save_offsets": save_offsets,
+            "compressed": compressed,
+        }
         return cast(str, generic_msg(cmd, args))
 
     def save_parquet(
