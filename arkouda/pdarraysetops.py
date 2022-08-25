@@ -96,7 +96,14 @@ def _in1d_single(
     if hasattr(pda1, "categories"):
         return cast(Categorical_, pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg(cmd="in1d", args="{} {} {}".format(pda1.name, pda2.name, invert))
+        repMsg = generic_msg(
+            cmd="in1d",
+            args={
+                "pda1": pda1,
+                "pda2": pda2,
+                "invert": invert,
+            },
+        )
         return create_pdarray(repMsg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
         repMsg = generic_msg(

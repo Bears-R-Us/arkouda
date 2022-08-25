@@ -27,20 +27,14 @@ module In1dMsg
     proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, sname, flag) = payload.splitMsgToTuple(3);
-        var invert: bool;
-        
-        if flag == "True" {invert = true;}
-        else if flag == "False" {invert = false;}
-        else {
-            var errorMsg = "Error: %s: %s".format(pn,flag);
-            iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);         
-        }
+        var msgArgs = parseMessageArgs(payload, 3);
+        var invert: bool = msgArgs.get("invert").getBoolValue();
 
         // get next symbol name
         var rname = st.nextName();
+
+        const name: string = msgArgs.getValueOf("pda1");
+        const sname: string = msgArgs.getValueOf("pda2");
 
         var gAr1: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gAr2: borrowed GenSymEntry = getGenericTypedArrayEntry(sname, st);
