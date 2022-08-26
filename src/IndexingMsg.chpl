@@ -16,6 +16,8 @@ module IndexingMsg
     use FileIO;
     use List;
 
+    use Map;
+
     private config const logLevel = ServerConfig.logLevel;
     const imLogger = new Logger(logLevel);
 
@@ -32,10 +34,13 @@ module IndexingMsg
     }
 
     proc arrayViewMixedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (pdaName, indexDimName, ndimStr, dimProdName, coords) = payload.splitMsgToTuple(5);
-        var ndim = try! ndimStr:int;
+        var msgArgs = parseMessageArgs(payload, 5);
+        var ndim = msgArgs.get("ndim").getIntValue();
+        const pdaName = msgArgs.getValueOf("base");
+        const indexDimName = msgArgs.getValueOf("index_dim");
+        const dimProdName = msgArgs.getValueOf("dim_prod");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "%s %s %i %s %s".format(cmd, pdaName, ndim, dimProdName, coords));
+                                                    "%s %s %i %s %s".format(cmd, pdaName, ndim, dimProdName, msgArgs.getValueOf("coords")));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
@@ -45,7 +50,7 @@ module IndexingMsg
         ref dims = indexDimEntry.a;
 
         // String array containing the type of the following value at even indicies then the value ex. ["int", "7", "slice", "(0,5,-1)", "pdarray", "id_4"]
-        var typeCoords: [0..#(ndim*2)] string = jsonToPdArray(coords, ndim*2);
+        var typeCoords: [0..#(ndim*2)] string = msgArgs.get("coords").getList(ndim*2);
 
         var scaledCoords: [makeDistDom(+ reduce dims)] int;
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -108,18 +113,48 @@ module IndexingMsg
             }
         }
 
-        return pdarrayIndexMsg(cmd, "%s %s".format(pdaName, indiciesName), st);
+        // map used to generate the "array" key for intIndexMsg
+        var arrayMap = new map(string, string);
+        arrayMap.add("key", "array");
+        arrayMap.add("val", pdaName);
+        arrayMap.add("objType", "PDARRAY");
+        arrayMap.add("dtype", "");
+
+        // map used to generate the "idx" key for intIndexMsg
+        var idxMap = new map(string, string);
+        idxMap.add("key", "idx");
+        idxMap.add("val", indiciesName);
+        idxMap.add("objType", "PDARRAY");
+        idxMap.add("dtype", "int");
+
+        var json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
+        return pdarrayIndexMsg(cmd, "%jt".format(json), st);
     }
 
     /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
     proc arrayViewIntIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var (pdaName, dimProdName, coordsName) = payload.splitMsgToTuple(3);
+        var msgArgs = parseMessageArgs(payload, 3);
+        const pdaName = msgArgs.getValueOf("base");
+        const dimProdName = msgArgs.getValueOf("dim_prod");
+        const coordsName = msgArgs.getValueOf("coords");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
+
+        // map used to generate the "array" key for intIndexMsg
+        var arrayMap = new map(string, string);
+        arrayMap.add("key", "array");
+        arrayMap.add("val", pdaName);
+        arrayMap.add("objType", "PDARRAY");
+        arrayMap.add("dtype", "");
+
+        // map used to generate the "idx" key for intIndexMsg
+        var idxMap = new map(string, string);
+        idxMap.add("key", "idx");
+        idxMap.add("objType", "VALUE");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -127,12 +162,18 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+                idxMap.add("dtype", "int");
+                idxMap.add("val", idx: string);
+                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
+                return intIndexMsg(cmd, "%jt".format(json), st);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-                return intIndexMsg(cmd, "%s %i".format(pdaName, idx), st);
+                idxMap.add("dtype", "uint");
+                idxMap.add("val", idx: string);
+                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
+                return intIndexMsg(cmd, "%jt".format(json), st);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -145,12 +186,44 @@ module IndexingMsg
     /* arrayViewIntIndexAssignMsg "av[int_list]=value" response to __getitem__(int_list) where av is an ArrayView */
     proc arrayViewIntIndexAssignMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var (pdaName, dtypeStr, dimProdName, coordsName, value) = payload.splitMsgToTuple(5);
+        var msgArgs = parseMessageArgs(payload, 5);
+        const pdaName = msgArgs.getValueOf("base");
+        const dimProdName = msgArgs.getValueOf("dim_prod");
+        const coordsName = msgArgs.getValueOf("coords");
+        const dtypeStr = msgArgs.getValueOf("dtype");
+        var value = msgArgs.getValueOf("value");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s %s %s %s".format(cmd, pdaName, dimProdName, coordsName));
 
         var dimProd: borrowed GenSymEntry = getGenericTypedArrayEntry(dimProdName, st);
         var dimProdEntry = toSymEntry(dimProd, int);
         var coords: borrowed GenSymEntry = getGenericTypedArrayEntry(coordsName, st);
+
+        // map used to generate the "array" key for intIndexMsg
+        var arrayMap = new map(string, string);
+        arrayMap.add("key", "array");
+        arrayMap.add("val", pdaName);
+        arrayMap.add("objType", "PDARRAY");
+        arrayMap.add("dtype", "");
+
+        // map used to generate the "dtypestr" key for intIndexMsg
+        //TODO - idk if we need this because the json format passes the dtype string
+        var dtypeMap = new map(string, string);
+        dtypeMap.add("key", "dtype");
+        dtypeMap.add("val", dtypeStr);
+        dtypeMap.add("objType", "VALUE");
+        dtypeMap.add("dtype", "str");
+
+        // map used to generate the "value" key for intIndexMsg
+        var valMap = new map(string, string);
+        valMap.add("key", "value");
+        valMap.add("val", value);
+        valMap.add("objType", "VALUE");
+        valMap.add("dtype", dtypeStr);
+
+        // map used to generate the "idx" key for intIndexMsg
+        var idxMap = new map(string, string);
+        idxMap.add("key", "idx");
+        idxMap.add("objType", "VALUE");
 
         // multi-dim to 1D address calculation
         // (dimProd and coords are reversed on python side to account for row_major vs column_major)
@@ -158,12 +231,18 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+                idxMap.add("val", idx:string);
+                idxMap.add("dtype", "int");
+                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
+                return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-                return setIntIndexToValueMsg(cmd, "%s %i %s %s".format(pdaName, idx, dtypeStr, value), st);
+                idxMap.add("val", idx:string);
+                idxMap.add("dtype", "uint");
+                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
+                return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -177,9 +256,9 @@ module IndexingMsg
     proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, idxStr) = payload.splitMsgToTuple(2);
-        var idx = try! idxStr:int;
+        var msgArgs = parseMessageArgs(payload, 2);
+        var idx = msgArgs.get("idx").getIntValue();
+        const name = msgArgs.getValueOf("array");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                     "%s %s %i".format(cmd, name, idx));
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
@@ -239,15 +318,15 @@ module IndexingMsg
     proc sliceIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (name, startStr, stopStr, strideStr)
-              = payload.splitMsgToTuple(4); // split request into fields
-        var start = try! startStr:int;
-        var stop = try! stopStr:int;
-        var stride = try! strideStr:int;
+        var msgArgs = parseMessageArgs(payload, 4);
+        const start = msgArgs.get("start").getIntValue();
+        const stop = msgArgs.get("stop").getIntValue();
+        const stride = msgArgs.get("stride").getIntValue();
         var slice: range(stridable=true) = convertSlice(start, stop, stride);
 
         // get next symbol name
         var rname = st.nextName();
+        const name = msgArgs.getValueOf("array");
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -292,8 +371,9 @@ module IndexingMsg
     proc pdarrayIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, iname) = payload.splitMsgToTuple(2);
+        var msgArgs = parseMessageArgs(payload, 2);
+        const name = msgArgs.getValueOf("array");
+        const iname = msgArgs.getValueOf("idx");
 
         // get next symbol name
         var rname = st.nextName();
@@ -461,105 +541,98 @@ module IndexingMsg
     proc setIntIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, idxStr, dtypeStr, value) = payload.splitMsgToTuple(4);
-        var idx = try! idxStr:int;
-        var dtype = str2dtype(dtypeStr);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const name = msgArgs.getValueOf("array");
+        const idx = msgArgs.get("idx").getIntValue();
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
+        var valueArg = msgArgs.get("value");
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));
+                               "%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), valueArg.getValue()));
 
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
 
         select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
                  var e = toSymEntry(gEnt,int);
-                 var val = try! value:int;
+                 var val = valueArg.getIntValue();
                  e.a[idx] = val;
              }
              when (DType.Int64, DType.UInt64) {
                  var e = toSymEntry(gEnt,int);
-                 var val = try! value:uint;
+                 var val = valueArg.getUIntValue();
                  e.a[idx] = val:int;
              }
              when (DType.Int64, DType.Float64) {
                  var e = toSymEntry(gEnt,int);
-                 var val = try! value:real;
+                 var val = valueArg.getRealValue();
                  e.a[idx] = val:int;
              }
              when (DType.Int64, DType.Bool) {
                  var e = toSymEntry(gEnt,int);
-                 value = value.replace("True","true");// chapel to python bool
-                 value = value.replace("False","false");// chapel to python bool
-                 var val = try! value:bool;
+                 var val = valueArg.getBoolValue();
                  e.a[idx] = val:int;
              }
              when (DType.UInt64, DType.Int64) {
                  var e = toSymEntry(gEnt,uint);
-                 var val = try! value:int;
+                 var val = valueArg.getIntValue();
                  e.a[idx] = val:uint;
              }
              when (DType.UInt64, DType.UInt64) {
                  var e = toSymEntry(gEnt,uint);
-                 var val = try! value:uint;
+                 var val = valueArg.getUIntValue();
                  e.a[idx] = val;
              }
              when (DType.UInt64, DType.Float64) {
                  var e = toSymEntry(gEnt,uint);
-                 var val = try! value:real;
+                 var val = valueArg.getRealValue();
                  e.a[idx] = val:uint;
              }
              when (DType.UInt64, DType.Bool) {
                  var e = toSymEntry(gEnt,uint);
-                 value = value.replace("True","true");// chapel to python bool
-                 value = value.replace("False","false");// chapel to python bool
-                 var val = try! value:bool;
+                 var val = valueArg.getBoolValue();
                  e.a[idx] = val:uint;
              }
              when (DType.Float64, DType.Int64) {
                  var e = toSymEntry(gEnt,real);
-                 var val = try! value:int;
+                 var val = valueArg.getIntValue();
                  e.a[idx] = val;
              }
              when (DType.Float64, DType.UInt64) {
                  var e = toSymEntry(gEnt,real);
-                 var val = try! value:uint;
+                 var val = valueArg.getUIntValue();
                  e.a[idx] = val:real;
              }
              when (DType.Float64, DType.Float64) {
                  var e = toSymEntry(gEnt,real);
-                 var val = try! value:real;
+                 var val = valueArg.getRealValue();
                  e.a[idx] = val;
              }
              when (DType.Float64, DType.Bool) {
                  var e = toSymEntry(gEnt,real);
-                 value = value.replace("True","true");// chapel to python bool
-                 value = value.replace("False","false");// chapel to python bool
-                 var b = try! value:bool;
+                 var b = valueArg.getBoolValue();
                  var val:real;
                  if b {val = 1.0;} else {val = 0.0;}
                  e.a[idx] = val;
              }
              when (DType.Bool, DType.Int64) {
                  var e = toSymEntry(gEnt,bool);
-                 var val = try! value:int;
+                 var val = valueArg.getIntValue();
                  e.a[idx] = val:bool;
              }
              when (DType.Bool, DType.UInt64) {
                  var e = toSymEntry(gEnt,bool);
-                 var val = try! value:uint;
+                 var val = valueArg.getUIntValue();
                  e.a[idx] = val:bool;
              }
              when (DType.Bool, DType.Float64) {
                  var e = toSymEntry(gEnt,bool);
-                 var val = try! value:real;
+                 var val = valueArg.getRealValue();
                  e.a[idx] = val:bool;
              }
              when (DType.Bool, DType.Bool) {
                  var e = toSymEntry(gEnt,bool);
-                 value = value.replace("True","true");// chapel to python bool
-                 value = value.replace("False","false");// chapel to python bool
-                 var val = try! value:bool;
+                 var val = valueArg.getBoolValue();
                  e.a[idx] = val;
              }
              otherwise {
@@ -579,9 +652,11 @@ module IndexingMsg
     proc setPdarrayIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, iname, dtypeStr, value) = payload.splitMsgToTuple(4);
-        var dtype = str2dtype(dtypeStr);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
+        const name = msgArgs.getValueOf("array");
+        const iname = msgArgs.getValueOf("idx");
+        var value = msgArgs.getValueOf("value");
 
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
@@ -733,8 +808,10 @@ module IndexingMsg
     proc setPdarrayIndexToPdarrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, iname, yname) = payload.splitMsgToTuple(3);
+        var msgArgs = parseMessageArgs(payload, 3);
+        const name = msgArgs.getValueOf("array");
+        const iname = msgArgs.getValueOf("idx");
+        const yname = msgArgs.getValueOf("value");
 
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
@@ -906,109 +983,102 @@ module IndexingMsg
     proc setSliceIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (name, startStr, stopStr, strideStr, dtypeStr, value)
-              = payload.splitMsgToTuple(6); // split request into fields
-        var start = try! startStr:int;
-        var stop = try! stopStr:int;
-        var stride = try! strideStr:int;
-        var dtype = str2dtype(dtypeStr);
+        var msgArgs = parseMessageArgs(payload, 6);
+        const name = msgArgs.getValueOf("array");
+        const start = msgArgs.get("start").getIntValue();
+        const stop = msgArgs.get("stop").getIntValue();
+        const stride = msgArgs.get("stride").getIntValue();
+        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var slice: range(stridable=true) = convertSlice(start, stop, stride);
+        var value = msgArgs.get("value");
 
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
-                                  dtype2str(dtype), value));
+                                  dtype2str(dtype), value.getValue()));
         
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-
+        
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 e.a[slice] = val;
             }
             when (DType.Int64, DType.UInt64) {
                 var e = toSymEntry(gEnt,int);
-                var val = try! value:uint;
+                var val = value.getUIntValue();
                 e.a[slice] = val:int;
             }
             when (DType.Int64, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
-                var val = try! value:real;
+                var val = value.getRealValue();
                 e.a[slice] = val:int;
             }
             when (DType.Int64, DType.Bool) {
                 var e = toSymEntry(gEnt,int);
-                value = value.replace("True","true");// chapel to python bool
-                value = value.replace("False","false");// chapel to python bool
-                var val = try! value:bool;
+                var val = value.getBoolValue();
                 e.a[slice] = val:int;
             }
             when (DType.UInt64, DType.Int64) {
                 var e = toSymEntry(gEnt,uint);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 e.a[slice] = val:uint;
             }
             when (DType.UInt64, DType.UInt64) {
                 var e = toSymEntry(gEnt,uint);
-                var val = try! value:uint;
+                var val = value.getUIntValue();
                 e.a[slice] = val:uint;
             }
             when (DType.UInt64, DType.Float64) {
                 var e = toSymEntry(gEnt,uint);
-                var val = try! value:real;
+                var val = value.getRealValue();
                 e.a[slice] = val:uint;
             }
             when (DType.UInt64, DType.Bool) {
                 var e = toSymEntry(gEnt,uint);
-                value = value.replace("True","true");// chapel to python bool
-                value = value.replace("False","false");// chapel to python bool
-                var val = try! value:bool;
+                var val = value.getBoolValue();
                 e.a[slice] = val:uint;
             }
             when (DType.Float64, DType.Int64) {
                 var e = toSymEntry(gEnt,real);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 e.a[slice] = val;
             }
             when (DType.Float64, DType.UInt64) {
                 var e = toSymEntry(gEnt,real);
-                var val = try! value:uint;
+                var val = value.getUIntValue();
                 e.a[slice] = val:real;
             }
             when (DType.Float64, DType.Float64) {
                 var e = toSymEntry(gEnt,real);
-                var val = try! value:real;
+                var val = value.getRealValue();
                 e.a[slice] = val;
             }
             when (DType.Float64, DType.Bool) {
                 var e = toSymEntry(gEnt,real);
-                value = value.replace("True","true");// chapel to python bool
-                value = value.replace("False","false");// chapel to python bool
-                var b = try! value:bool;
+                var b = value.getBoolValue();
                 var val:real;
                 if b {val = 1.0;} else {val = 0.0;}
                 e.a[slice] = val;
             }
             when (DType.Bool, DType.Int64) {
                 var e = toSymEntry(gEnt,bool);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 e.a[slice] = val:bool;
             }
             when (DType.Bool, DType.UInt64) {
                 var e = toSymEntry(gEnt,bool);
-                var val = try! value:uint;
+                var val = value.getUIntValue();
                 e.a[slice] = val:bool;
             }
             when (DType.Bool, DType.Float64) {
                 var e = toSymEntry(gEnt,bool);
-                var val = try! value:real;
+                var val = value.getRealValue();
                 e.a[slice] = val:bool;
             }
             when (DType.Bool, DType.Bool) {
                 var e = toSymEntry(gEnt,bool);
-                value = value.replace("True","true");// chapel to python bool
-                value = value.replace("False","false");// chapel to python bool
-                var val = try! value:bool;
+                var val = value.getBoolValue();
                 e.a[slice] = val;
             }
             otherwise {
@@ -1028,12 +1098,14 @@ module IndexingMsg
     proc setSliceIndexToPdarrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (name, startStr, stopStr, strideStr, yname)
-              = payload.splitMsgToTuple(5); // split request into fields
-        var start = try! startStr:int;
-        var stop = try! stopStr:int;
-        var stride = try! strideStr:int;
+        var msgArgs = parseMessageArgs(payload, 5);
+        const start = msgArgs.get("start").getIntValue();
+        const stop = msgArgs.get("stop").getIntValue();
+        const stride = msgArgs.get("stride").getIntValue();
         var slice: range(stridable=true);
+
+        const name = msgArgs.getValueOf("array");
+        const yname = msgArgs.getValueOf("value");
 
         // convert python slice to chapel slice
         // backwards iteration with negative stride

@@ -537,7 +537,13 @@ class pdarray:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                repMsg = generic_msg(cmd="[int]", args="{} {}".format(self.name, key))
+                repMsg = generic_msg(
+                    cmd="[int]",
+                    args={
+                        "array": self,
+                        "idx": key,
+                    },
+                )
                 fields = repMsg.split()
                 # value = fields[2]
                 return parse_single_value(" ".join(fields[1:]))
@@ -547,7 +553,13 @@ class pdarray:
             (start, stop, stride) = key.indices(self.size)
             logger.debug("start: {} stop: {} stride: {}".format(start, stop, stride))
             repMsg = generic_msg(
-                cmd="[slice]", args="{} {} {} {}".format(self.name, start, stop, stride)
+                cmd="[slice]",
+                args={
+                    "array": self,
+                    "start": start,
+                    "stop": stop,
+                    "stride": stride,
+                },
             )
             return create_pdarray(repMsg)
         if isinstance(key, pdarray):
@@ -556,7 +568,13 @@ class pdarray:
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if kind == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(cmd="[pdarray]", args="{} {}".format(self.name, key.name))
+            repMsg = generic_msg(
+                cmd="[pdarray]",
+                args={
+                    "array": self,
+                    "idx": key,
+                },
+            )
             return create_pdarray(repMsg)
         else:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
@@ -570,22 +588,27 @@ class pdarray:
             if key >= 0 and key < self.size:
                 generic_msg(
                     cmd="[int]=val",
-                    args="{} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)),
+                    args={
+                        "array": self,
+                        "idx": key,
+                        "dtype": self.dtype,
+                        "value": self.format_other(value),
+                    },
                 )
             else:
                 raise IndexError(f"index {orig_key} is out of bounds with size {self.size}")
         elif isinstance(key, pdarray):
             if isinstance(value, pdarray):
-                generic_msg(
-                    cmd="[pdarray]=pdarray",
-                    args="{} {} {}".format(self.name, key.name, value.name),
-                )
+                generic_msg(cmd="[pdarray]=pdarray", args={"array": self, "idx": key, "value": value})
             else:
                 generic_msg(
                     cmd="[pdarray]=val",
-                    args="{} {} {} {}".format(
-                        self.name, key.name, self.dtype.name, self.format_other(value)
-                    ),
+                    args={
+                        "array": self,
+                        "idx": key,
+                        "dtype": self.dtype,
+                        "value": self.format_other(value),
+                    },
                 )
         elif isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
@@ -593,19 +616,25 @@ class pdarray:
             if isinstance(value, pdarray):
                 generic_msg(
                     cmd="[slice]=pdarray",
-                    args="{} {} {} {} {}".format(self.name, start, stop, stride, value.name),
+                    args={
+                        "array": self,
+                        "start": start,
+                        "stop": stop,
+                        "stride": stride,
+                        "value": value,
+                    },
                 )
             else:
                 generic_msg(
                     cmd="[slice]=val",
-                    args="{} {} {} {} {} {}".format(
-                        self.name,
-                        start,
-                        stop,
-                        stride,
-                        self.dtype.name,
-                        self.format_other(value),
-                    ),
+                    args={
+                        "array": self,
+                        "start": start,
+                        "stop": stop,
+                        "stride": stride,
+                        "dtype": self.dtype,
+                        "value": self.format_other(value),
+                    },
                 )
         else:
             raise TypeError(f"Unhandled key type: {key} ({type(key)})")
