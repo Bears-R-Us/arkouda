@@ -32,6 +32,8 @@ module LispMsg
     use GenSymIO;
     use Message;
 
+    use ObjectPool;
+
     private config const logLevel = ServerConfig.logLevel;
     const asLogger = new Logger(logLevel);
     const Tasks = {0..#numTasks};
@@ -76,11 +78,13 @@ module LispMsg
                     var tD = calcBlock(task, lD.low, lD.high);
                     var ast = parse(prog);
                     var env = new owned Env();
+                    var p = new pool();
                     for i in tD {
                         env.addEntry("i", i);
                         
                         // Evaluate for this index
-                        ret[i] = eval(ast, env, st).toValue(t).v;
+                        ret[i] = eval(ast, env, st, p).toValue(t).v;
+                        p.freeAll();
                     }
                 }
             }

@@ -2,6 +2,7 @@ module LisExprInterp
 {
 
     use LisExprData;
+    use ObjectPool;
 
     /*
       tokenize the prog
@@ -92,7 +93,7 @@ module LisExprInterp
     /*
       evaluate the expression
     */
-    proc eval(ast: BGenListValue, env: borrowed Env, st): GenValue throws {
+    proc eval(ast: BGenListValue, env: borrowed Env, st, ref p: pool): GenValue throws {
         select (ast.lvt) {
             when (LVT.Sym) {
                 var gv = env.lookup(ast.toListValue(Symbol).lv);
@@ -100,11 +101,11 @@ module LisExprInterp
             }
             when (LVT.I) {
                 var ret: int = ast.toListValue(int).lv;
-                return new Value(ret);
+                return p.getInt(ret);
             }
             when (LVT.R) {
                 var ret: real = ast.toListValue(real).lv;
-                return new Value(ret);
+                return p.getReal(ret);
             }
             when (LVT.Lst) {
                 ref lst = ast.toListValue(GenList).lv;
@@ -114,53 +115,53 @@ module LisExprInterp
                 checkSymbol(lst[0]);
                 var op = lst[0].toListValue(Symbol).lv;
                 select (op) {
-                    when "+"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) + eval(lst[2], env, st);}
-                    when "-"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) - eval(lst[2], env, st);}
-                    when "*"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) * eval(lst[2], env, st);}
-                    when "=="  {checkEqLstSize(lst,3); return eval(lst[1], env, st) == eval(lst[2], env, st);}
-                    when "!="  {checkEqLstSize(lst,3); return eval(lst[1], env, st) != eval(lst[2], env, st);}
-                    when "<"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) < eval(lst[2], env, st);}
-                    when "<="  {checkEqLstSize(lst,3); return eval(lst[1], env, st) <= eval(lst[2], env, st);}
-                    when ">"   {checkEqLstSize(lst,3); return eval(lst[1], env, st) > eval(lst[2], env, st);}
-                    when ">="  {checkEqLstSize(lst,3); return eval(lst[1], env, st) >= eval(lst[2], env, st);}
-                    when "or"  {checkEqLstSize(lst,3); return or(eval(lst[1], env, st), eval(lst[2], env, st));}
-                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[1], env, st), eval(lst[2], env, st));}
-                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[1], env, st));}
+                    when "+"   {checkEqLstSize(lst,3); return poolAdd(eval(lst[1], env, st, p), eval(lst[2], env, st, p),p);}
+                    when "-"   {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) - eval(lst[2], env, st, p);}
+                    when "*"   {checkEqLstSize(lst,3); return poolMul(eval(lst[1], env, st, p), eval(lst[2], env, st, p),p);}
+                    when "=="  {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) == eval(lst[2], env, st, p);}
+                    when "!="  {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) != eval(lst[2], env, st, p);}
+                    when "<"   {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) < eval(lst[2], env, st, p);}
+                    when "<="  {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) <= eval(lst[2], env, st, p);}
+                    when ">"   {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) > eval(lst[2], env, st, p);}
+                    when ">="  {checkEqLstSize(lst,3); return eval(lst[1], env, st, p) >= eval(lst[2], env, st, p);}
+                    when "or"  {checkEqLstSize(lst,3); return or(eval(lst[1], env, st, p), eval(lst[2], env, st, p));}
+                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[1], env, st, p), eval(lst[2], env, st, p));}
+                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[1], env, st, p));}
                     when ":=" {
                         checkEqLstSize(lst,3);
                         checkSymbol(lst[1]);
                         var name = lst[1].toListValue(Symbol).lv;
                         // addEnrtry redefines values for already existing entries
-                        var gv = env.addEntry(name, eval(lst[2],env, st));
+                        var gv = env.addEntry(name, eval(lst[2],env, st, p));
                         //TODO: how to continue evaling after an assignment?
                         return gv.copy(); // return value assigned to symbol
                     }
                     when "lookup_and_index_float64" {
                         var entry = st.lookup(lst[1].toListValue(Symbol).lv);
                         var e = toSymEntry(toGenSymEntry(entry), real);
-                        var i = eval(lst[2],env,st).toValue(int).v;
-                        return new Value(e.a[i]);
+                        var i = eval(lst[2],env,st,p).toValue(int).v;
+                        return p.getReal(e.a[i]);
                     }
                     when "lookup_and_index_int64" {
                         var entry = st.lookup(lst[1].toListValue(Symbol).lv);
                         var e = toSymEntry(toGenSymEntry(entry), int);
-                        var i = eval(lst[2],env,st).toValue(int).v;
-                        return new Value(e.a[i]);
+                        var i = eval(lst[2],env,st,p).toValue(int).v;
+                        return p.getReal(e.a[i]);
                     }
                     when "if" {
                         checkEqLstSize(lst,4);
-                        if isTrue(eval(lst[1], env, st)) {return eval(lst[2], env, st);} else {return eval(lst[3], env, st);}
+                        if isTrue(eval(lst[1], env, st, p)) {return eval(lst[2], env, st, p);} else {return eval(lst[3], env, st, p);}
                     }
                     when "begin" {
                       checkGEqLstSize(lst, 1);
                       // setup the environment
                       for i in 1..#lst.size-1 do
-                        eval(lst[i], env, st);
+                        eval(lst[i], env, st, p);
                       // eval the return expression
-                      return eval(lst[lst.size-1], env, st);
+                      return eval(lst[lst.size-1], env, st, p);
                     }
                     when "return" { // for now, just eval the next line, in time, might want to coerce return value
-                        return eval(lst[1], env, st);
+                        return eval(lst[1], env, st, p);
                     }
                     otherwise {
                         throw new owned Error("op not implemented " + op);

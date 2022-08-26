@@ -24,10 +24,10 @@ module LisExprData
     type BGenlist = borrowed ListClass(GenListValue);
     
     /* type: generic values for eval */
-    type GenValue = owned GenValueClass;
-    type BGenValue = borrowed GenValueClass;
-    type Value = owned ValueClass;
-    type BValue = borrowed ValueClass;
+    type GenValue = unmanaged GenValueClass;
+    type BGenValue = unmanaged GenValueClass;
+    type Value = unmanaged ValueClass;
+    type BValue = unmanaged ValueClass;
 
     /*
       List Class wraps the standard List which is a record
@@ -149,6 +149,27 @@ module LisExprData
         }
     }
 
+    use ObjectPool;
+    inline proc poolAdd(l: BGenValue, r: BGenValue, ref p: pool): GenValue throws {
+        select (l.vt, r.vt) {
+            when (VT.I, VT.I) {return p.getInt(l.toValue(int).v + r.toValue(int).v);}
+            when (VT.I, VT.R) {return p.getReal(l.toValue(int).v + r.toValue(real).v);}
+            when (VT.R, VT.I) {return p.getReal(l.toValue(real).v + r.toValue(int).v);}
+            when (VT.R, VT.R) {return p.getReal(l.toValue(real).v + r.toValue(real).v);}
+            otherwise {throw new owned Error("not implemented");}
+        }
+    }
+
+    inline proc poolMul(l: BGenValue, r: BGenValue, ref p: pool): GenValue throws {
+        select (l.vt, r.vt) {
+            when (VT.I, VT.I) {return p.getInt(l.toValue(int).v * r.toValue(int).v);}
+            when (VT.I, VT.R) {return p.getReal(l.toValue(int).v * r.toValue(real).v);}
+            when (VT.R, VT.I) {return p.getReal(l.toValue(real).v * r.toValue(int).v);}
+            when (VT.R, VT.R) {return p.getReal(l.toValue(real).v * r.toValue(real).v);}
+            otherwise {throw new owned Error("not implemented");}
+        }
+    }
+
     inline operator -(l: BGenValue, r: BGenValue): GenValue throws {
         select (l.vt, r.vt) {
             when (VT.I, VT.I) {return new Value(l.toValue(int).v - r.toValue(int).v);}
@@ -259,13 +280,13 @@ module LisExprData
         proc addEntry(name:string, val: ?t): BValue(t) throws {
             var entry = new Value(val);
             tab.addOrSet(name, entry);
-            return tab.getBorrowed(name).toValue(t);
+            return tab.getReference(name).toValue(t);
         }
 
         /* add a new entry or set an entry to a new value */
         proc addEntry(name:string, in entry: GenValue): BGenValue throws {
             tab.addOrSet(name, entry);
-            return tab.getBorrowed(name);
+            return tab.getReference(name);
         }
 
         /* lookup symbol and throw error if not found */
@@ -273,7 +294,7 @@ module LisExprData
             if (!tab.contains(name)) {
               throw new owned Error("undefined symbol error " + name);
             }
-            return tab.getBorrowed(name);
+            return tab.getReference(name);
         }
 
         /* delete entry -- not sure if we need this */
