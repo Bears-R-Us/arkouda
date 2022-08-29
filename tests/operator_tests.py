@@ -454,7 +454,7 @@ class OperatorsTest(ArkoudaTest):
             equality_helper(a_vect // ak_edge_cases, n_vect // np_edge_cases)
 
     def test_pda_sqrt(self):
-        n = np.array([4, 16, -1, 0])
+        n = np.array([4, 16, -1, 0, np.inf])
         a = ak.array(n)
 
         s = ak.sqrt(a)
@@ -479,6 +479,15 @@ class OperatorsTest(ArkoudaTest):
         p = ak.power(a, ak.array([2, 3, 4]))
         ex = np.power(n, [2, 3, 4])
         self.assertListEqual(p.to_list(), ex.tolist())
+
+        n = np.array([-1.0, -3.0])
+        a = ak.array(n)
+
+        p = ak.power(a, 0.5)
+        ex = np.power(n, 0.5)
+        nan = ak.isnan(p)
+        npnan = np.isnan(ex)
+        self.assertListEqual(nan.to_list(), npnan.tolist())
 
     def testAllOperators(self):
         run_tests(verbose)

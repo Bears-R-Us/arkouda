@@ -2593,13 +2593,13 @@ def rotr(x, rot) -> pdarray:
 
 
 @typechecked
-def power(pda: pdarray, pwr: Union[int, pdarray]) -> pdarray:
+def power(pda: pdarray, pwr: Union[int, float, pdarray]) -> pdarray:
     return pda**pwr
 
 
 @typechecked
 def sqrt(pda: pdarray) -> pdarray:
-    return pda**0.5
+    return power(pda, 0.5)
 
 
 @typechecked
