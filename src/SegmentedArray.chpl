@@ -7,6 +7,7 @@ module SegmentedArray {
     use Reflection;
     use Logging;
     use ServerErrors;
+    use List;
 
     private config const logLevel = ServerConfig.logLevel;
     const saLogger = new Logger(logLevel);
@@ -46,6 +47,10 @@ module SegmentedArray {
         var size: int;
         var nBytes: int;
 
+        var lengths;
+        var non_empty;
+        var non_empty_count: int;
+
         proc init(entryName:string, entry:borrowed SegArraySymEntry, type eType) {
             name = entryName;
             composite = entry;
@@ -54,6 +59,46 @@ module SegmentedArray {
             
             size = segments.size;
             nBytes = values.size;
+
+            // Format the same as in Segmented string getLengths, but leave here so that we don't recompute each time we need
+            var lenHelp = new list(segments.a[1..]);
+            lenHelp.append(values.size);
+
+            lengths = lenHelp.toArray();
+
+            non_empty = lengths > 0;
+            non_empty_count = + reduce non_empty:int;
+
+            // Note - groupby remaining client side because groupby does not have server side object
+        }
+
+        proc getLengths() {
+            // Format the same as in SegmentedString
+            //Note that this logic may need to move into init when everything move to prevent recompute
+            var lengths: [segments.aD] int;
+            if (size == 0) {
+                return lengths;
+            }
+            ref sa = segments.a;
+            const low = segments.aD.low;
+            const high = segments.aD.high;
+            forall (i, s, l) in zip(segments.aD, sa, lengths) {
+                if (i == high) {
+                    l = values.size - s;
+                } else {
+                    l = sa[i+1] - s;
+                }
+            }
+            return lengths;
+        }
+
+        proc getNonEmpty() throws {
+            return getLengths() > 0;
+        }
+
+        proc getNonEmptyCount() throws {
+            var non_empty = getNonEmpty();
+            return + reduce non_empty:int;
         }
     }
 }
