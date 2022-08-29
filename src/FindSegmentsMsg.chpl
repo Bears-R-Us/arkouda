@@ -35,8 +35,6 @@ module FindSegmentsMsg
     proc findSegmentsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (pname, nkeysStr, rest) = payload.splitMsgToTuple(3);
         var msgArgs = parseMessageArgs(payload, 4);
         var nkeys = msgArgs.get("nkeys").getIntValue(); // number of key arrays
         var knames = msgArgs.get("names").getList(nkeys); // key arrays
