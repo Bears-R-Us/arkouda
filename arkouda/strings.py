@@ -1130,7 +1130,7 @@ class Strings:
                         "objtype": self.objtype,
                         "return_segs": return_segments,
                         "regex": regex,
-                        "delim": [delimiter],
+                        "delim": delimiter,
                     },
                 ),
             )

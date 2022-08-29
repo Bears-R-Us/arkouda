@@ -17,8 +17,7 @@ module FlattenMsg {
     const objtype = msgArgs.getValueOf("objtype");
     const returnSegs: bool = msgArgs.get("return_segs").getBoolValue();
     const regex: bool = msgArgs.get("regex").getBoolValue();
-    const arr = msgArgs.get("delim").getList(1);
-    const delim: string = arr[arr.domain.low];
+    const delim: string = msgArgs.getValueOf("delim");
     var repMsg: string;
     select objtype {
       when "str" {
@@ -59,8 +58,7 @@ module FlattenMsg {
     // check to make sure symbols defined
     st.checkTable(name);
 
-    const json = msgArgs.get("pattern").getList(1);
-    const pattern: string = json[json.domain.low];
+    const pattern: string = msgArgs.getValueOf("pattern");
 
     fmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                    "cmd: %s objtype: %t".format(cmd, objtype));

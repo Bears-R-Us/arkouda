@@ -122,7 +122,7 @@ class Matcher:
                     "objtype": self.objtype,
                     "max": maxsplit,
                     "return_segs": return_segments,
-                    "pattern": [self.pattern],
+                    "pattern": self.pattern,
                 },
             ),
         )
