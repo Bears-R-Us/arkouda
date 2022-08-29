@@ -73,19 +73,27 @@ module LispMsg
       try {
         coforall loc in Locales {
             on loc {
-                coforall task in Tasks {
+              coforall task in {0..#1} {
                     var lD = ret.domain.localSubdomain();
                     var tD = calcBlock(task, lD.low, lD.high);
                     var ast = parse(prog);
                     var env = new owned Env();
                     var p = new pool();
+                    env.addEntry("i", 1);
+                    var cp = eval(ast, env, st, p).toValue(t).v;
+                    writeln(cp);
+                    ret[1] = cp;
+                    p.freeAll();
+                    /*
                     for i in tD {
                         env.addEntry("i", i);
                         
                         // Evaluate for this index
-                        ret[i] = eval(ast, env, st, p).toValue(t).v;
+                        var cp = eval(ast, env, st, p).toValue(t).v;
+                        writeln(cp);
+                        ret[i] = cp;
                         p.freeAll();
-                    }
+                        }*/
                 }
             }
         }

@@ -101,7 +101,7 @@ module LisExprInterp
             }
             when (LVT.I) {
                 var ret: int = ast.toListValue(int).lv;
-                return p.getInt(ret);
+                return new Value(ret);
             }
             when (LVT.R) {
                 var ret: real = ast.toListValue(real).lv;
@@ -146,7 +146,7 @@ module LisExprInterp
                         var entry = st.lookup(lst[1].toListValue(Symbol).lv);
                         var e = toSymEntry(toGenSymEntry(entry), int);
                         var i = eval(lst[2],env,st,p).toValue(int).v;
-                        return p.getReal(e.a[i]);
+                        return new Value(e.a[i]);
                     }
                     when "if" {
                         checkEqLstSize(lst,4);
