@@ -140,7 +140,6 @@ module LisExprData
     //////////////////////////////////////////
     
     inline operator +(l: BGenValue, r: BGenValue): GenValue throws {
-      writeln("HERE");
         select (l.vt, r.vt) {
             when (VT.I, VT.I) {return new Value(l.toValue(int).v + r.toValue(int).v);}
             when (VT.I, VT.R) {return new Value(l.toValue(int).v + r.toValue(real).v);}
@@ -152,7 +151,6 @@ module LisExprData
 
     use ObjectPool;
     inline proc poolAdd(l: BGenValue, r: BGenValue, ref p: pool): GenValue throws {
-      writeln("ADD: ", l, r);
         select (l.vt, r.vt) {
             when (VT.I, VT.I) {return new Value(l.toValue(int).v + r.toValue(int).v);}
             when (VT.I, VT.R) {return p.getReal(l.toValue(int).v + r.toValue(real).v);}
@@ -163,7 +161,6 @@ module LisExprData
     }
 
     inline proc poolMul(l: BGenValue, r: BGenValue, ref p: pool): GenValue throws {
-      writeln("MUL ", l, r);
         select (l.vt, r.vt) {
             when (VT.I, VT.I) {return new Value(l.toValue(int).v * r.toValue(int).v);}
             when (VT.I, VT.R) {return p.getReal(l.toValue(int).v * r.toValue(real).v);}
@@ -184,7 +181,6 @@ module LisExprData
     }
 
     inline operator *(l: BGenValue, r: BGenValue): GenValue throws {
-      writeln("IN REAL MULTIPLY");
         select (l.vt, r.vt) {
             when (VT.I, VT.I) {return new Value(l.toValue(int).v * r.toValue(int).v);}
             when (VT.I, VT.R) {return new Value(l.toValue(int).v * r.toValue(real).v);}
