@@ -96,17 +96,17 @@ def join_on_eq_with_dt(
     # pass result into server joinEqWithDT operation
     repMsg = generic_msg(
         cmd="joinEqWithDT",
-        args="{} {} {} {} {} {} {} {} {}".format(
-            a1.name,
-            cast(pdarray, g2.segments).name,  # type: ignore
-            cast(pdarray, g2.unique_keys).name,  # type: ignore
-            g2.permutation.name,
-            t1.name,
-            t2.name,
-            dtstr,
-            predstr,
-            result_limitstr,
-        ),
+        args={
+            "a1": a1,
+            "g2seg": cast(pdarray, g2.segments),  # type: ignore
+            "g2keys": cast(pdarray, g2.unique_keys),  # type: ignore
+            "g2perm": g2.permutation,
+            "t1": t1,
+            "t2": t2,
+            "dt": dtstr,
+            "pred": predstr,
+            "resLimit": result_limitstr,
+        },
     )
     # create pdarrays for results
     resIAttr, resJAttr = cast(str, repMsg).split("+")

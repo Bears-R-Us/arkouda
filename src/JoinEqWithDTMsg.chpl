@@ -226,11 +226,17 @@ module JoinEqWithDTMsg
     proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (a1_name, g2Seg_name, g2Ukeys_name, g2Perm_name, t1_name,
-             t2_name, dtStr, predStr, resLimitStr) = payload.splitMsgToTuple(9);
-        var dt = try! dtStr:int;
-        var pred = predStr:int;
-        var resLimit = try! resLimitStr:int;
+        var msgArgs = parseMessageArgs(payload, 9);
+        const dt = msgArgs.get("dt").getIntValue();
+        const pred = msgArgs.get("pred").getIntValue();
+        const resLimit = msgArgs.get("resLimit").getIntValue();
+
+        const a1_name = msgArgs.getValueOf("a1");
+        const g2Seg_name = msgArgs.getValueOf("g2seg");
+        const g2Ukeys_name = msgArgs.getValueOf("g2keys");
+        const g2Perm_name = msgArgs.getValueOf("g2perm");
+        const t1_name = msgArgs.getValueOf("t1");
+        const t2_name = msgArgs.getValueOf("t2");
         
         // get next symbol names for results
         var resI_name = st.nextName();
