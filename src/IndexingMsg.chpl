@@ -206,7 +206,6 @@ module IndexingMsg
         arrayMap.add("dtype", "");
 
         // map used to generate the "dtypestr" key for intIndexMsg
-        //TODO - idk if we need this because the json format passes the dtype string
         var dtypeMap = new map(string, string);
         dtypeMap.add("key", "dtype");
         dtypeMap.add("val", dtypeStr);
