@@ -18,6 +18,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import (
     RegistrationError,
     create_pdarray,
+    is_sorted,
     pdarray,
     unregister_pdarray_by_name,
 )
@@ -834,9 +835,14 @@ class GroupBy:
         # Find unique pairs of (key, val)
         g = GroupBy(togroup)
         # Group unique pairs again by original key
-        g2 = GroupBy(g.unique_keys[0], assume_sorted=True)
+        g2 = GroupBy(g.unique_keys[0], assume_sorted=False)
         # Count number of unique values per key
-        _, nuniq = g2.count()
+        keyorder, nuniq = g2.count()
+        # The last GroupBy *should* result in sorted key indices, but in case it
+        # doesn't, we need to permute the answer to match the original key order
+        if not is_sorted(keyorder):
+            perm = argsort(keyorder)
+            nuniq = nuniq[perm]
         # Re-join unique counts with original keys (sorting guarantees same order)
         return self.unique_keys, nuniq
 
@@ -1600,32 +1606,9 @@ class GroupBy:
 
     def most_common(self, values):
         """
-        Find the most common value for each segment of a GroupBy object. This method only supports
-        array-like GroupBy key types.
-
-        Parameters
-        ----------
-        values : array-like
-            Values in which to find most common based on the GroupBy's segment indexes.
-            values.size must equal GroupBy.keys[0].size
-
-        Returns
-        -------
-        most_common_values : array-like
-            The most common value for each segment of the GroupBy
+        (Deprecated) See `GroupBy.mode()`.
         """
-        # Give each key an integer index
-        keyidx = self.broadcast(arange(self.unique_keys[0].size), permute=True)
-        # Annex values and group by (key, val)
-        bykeyval = GroupBy([keyidx, values])
-        # Count number of records for each (key, val)
-        (ki, uval), count = bykeyval.count()
-        # Group out value
-        bykey = GroupBy(ki, assume_sorted=True)
-        # Find the index of the most frequent value for each key
-        _, topidx = bykey.argmax(count)
-        # Gather the most frequent values
-        return uval[topidx]
+        return self.mode(values)
 
 
 def broadcast(

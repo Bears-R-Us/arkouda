@@ -471,6 +471,16 @@ class GroupByTest(ArkoudaTest):
         for a, r in zip(ans, res2[1].to_list()):
             self.assertListEqual(a, r)
 
+    def test_nunique_ordering_bug(self):
+        keys = ak.array(["1" for _ in range(8)] + ["2" for _ in range(3)])
+        vals = ak.array([str(i) for i in range(8)] + [str(i) for i in range(3)])
+        g = ak.GroupBy(keys)
+        unique_keys, nuniq = g.nunique(vals)
+        expected_unique_keys = ["2", "1"]
+        expected_nuniq = [3, 8]
+        self.assertListEqual(expected_unique_keys, unique_keys.to_list())
+        self.assertListEqual(expected_nuniq, nuniq.to_list())
+
 
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
