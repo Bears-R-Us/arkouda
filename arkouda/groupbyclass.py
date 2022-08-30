@@ -18,6 +18,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import (
     RegistrationError,
     create_pdarray,
+    is_sorted,
     pdarray,
     unregister_pdarray_by_name,
 )
@@ -834,9 +835,14 @@ class GroupBy:
         # Find unique pairs of (key, val)
         g = GroupBy(togroup)
         # Group unique pairs again by original key
-        g2 = GroupBy(g.unique_keys[0], assume_sorted=True)
+        g2 = GroupBy(g.unique_keys[0], assume_sorted=False)
         # Count number of unique values per key
-        _, nuniq = g2.count()
+        keyorder, nuniq = g2.count()
+        # The last GroupBy *should* result in sorted key indices, but in case it
+        # doesn't, we need to permute the answer to match the original key order
+        if not is_sorted(keyorder):
+            perm = argsort(keyorder)
+            nuniq = nuniq[perm]
         # Re-join unique counts with original keys (sorting guarantees same order)
         return self.unique_keys, nuniq
 
