@@ -820,15 +820,7 @@ Attributes
 
    .. py:method:: most_common(values)
 
-      Find the most common value for each segment of a GroupBy object. This method only supports
-      array-like GroupBy key types.
-
-      :param values: Values in which to find most common based on the GroupBy's segment indexes.
-                     values.size must equal GroupBy.keys[0].size
-      :type values: array-like
-
-      :returns: **most_common_values** -- The most common value for each segment of the GroupBy
-      :rtype: array-like
+      (Deprecated) See `GroupBy.mode()`.
 
 
 
