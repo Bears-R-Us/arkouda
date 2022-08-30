@@ -1184,7 +1184,7 @@ module SegmentedMsg {
     var size = strings.size;
     var rtn: [0..#size] string;
 
-    for i in 0..#size {
+    forall i in 0..#size {
       rtn[i] = strings[i];
     }
 

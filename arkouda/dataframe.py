@@ -1882,6 +1882,9 @@ class DataFrame(UserDict):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
+        Any changes made to a DataFrame object after registering with the server may not be reflected
+        in attached copies.
         """
 
         self.index.register(f"df_index_{user_defined_name}")
@@ -1953,11 +1956,7 @@ class DataFrame(UserDict):
         # Total number of registered parts should equal number of columns plus an entry
         # for the index and the column order
         total = len(self.data) + 2
-        registered = 0
-
-        for col, data in self.data.items():
-            if data.is_registered():
-                registered += 1
+        registered = sum([data.is_registered() for col, data in self.data.items()])
 
         if self.index.values.is_registered():
             registered += 1
@@ -2000,7 +1999,7 @@ class DataFrame(UserDict):
 
         col_resp = cast(str, generic_msg(cmd="stringsToJSON", args=f"df_columns_{user_defined_name}"))
         columns = dict.fromkeys(json.loads(col_resp))
-        matches: List[str] = []
+        matches = []
         regEx = compile(
             f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
             f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
@@ -2010,15 +2009,13 @@ class DataFrame(UserDict):
             x = match(regEx, name)
             if x is not None:
                 matches.append(x.group())
-        matches.sort()
 
         if len(matches) == 0:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
-        # Remove duplicates caused by multiple components in Categorical or SegArray
-        dedupe = set(matches)
-
-        for name in dedupe:
+        # Remove duplicates caused by multiple components in Categorical or SegArray and
+        # loop through
+        for name in set(matches):
             colName = name.split("_")[2]
             if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
                 cols_resp = cast(str, generic_msg(cmd="attach", args=name))
@@ -2079,15 +2076,13 @@ class DataFrame(UserDict):
             x = match(regEx, name)
             if x is not None:
                 matches.append(x.group())
-        matches.sort()
 
         if len(matches) == 0:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
-        # Remove duplicates caused by multiple components in categorical or segarray
-        dedupe = set(matches)
-
-        for name in dedupe:
+        # Remove duplicates caused by multiple components in categorical or segarray and
+        # loop through
+        for name in set(matches):
             if f"_{Strings.objtype}_" in name:
                 Strings.unregister_strings_by_name(name)
             elif f"_{pdarray.objtype}_" in name:
