@@ -52,6 +52,10 @@ Functions
 
 .. py:class:: SegArray(segments, values, copy=False, lengths=None, grouping=None)
 
+   .. py:method:: objtype()
+      :property:
+
+
    .. py:method:: segments()
       :property:
 

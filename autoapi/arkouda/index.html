@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda &#8212; arkouda 0+untagged.1.g642b969 documentation</title>
+    <title>arkouda &#8212; arkouda 0+untagged.1.gbe447b6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -22623,6 +22623,11 @@ start- and end-points.</p>
 <dt class="sig sig-object py" id="arkouda.SegArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">SegArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.SegArray" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.SegArray.objtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.SegArray.objtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.SegArray.segments">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.SegArray.segments" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
@@ -24160,6 +24165,133 @@ Note that 9 is not found because the column name does not match.
 <p class="rubric">Notes</p>
 <p>Generates the correlation matrix using Pearson R for all columns</p>
 <p>Attempts to convert to numeric values where possible for inclusion in the matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="headerlink" href="#arkouda.DataFrame.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register this DataFrame object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the DataFrame is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same DataFrame which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support a
+fluid programming style.
+Please note you cannot register two different DataFrames with the same name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.DataFrame.unregister" title="arkouda.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.attach" title="arkouda.DataFrame.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister_dataframe_by_name" title="arkouda.DataFrame.unregister_dataframe_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_dataframe_by_name</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.is_registered" title="arkouda.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+<p>Any changes made to a DataFrame object after registering with the server may not be reflected
+in attached copies.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.unregister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister this DataFrame object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.attach" title="arkouda.DataFrame.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister_dataframe_by_name" title="arkouda.DataFrame.unregister_dataframe_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_dataframe_by_name</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.is_registered" title="arkouda.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.is_registered">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.DataFrame.is_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.attach" title="arkouda.DataFrame.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister" title="arkouda.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister_dataframe_by_name" title="arkouda.DataFrame.unregister_dataframe_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_dataframe_by_name</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.attach">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="headerlink" href="#arkouda.DataFrame.attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to return a DataFrame object attached to the registered name in the
+arkouda server which was registered using register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which DataFrame object was registered under</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame object created by re-attaching to the corresponding server components</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.is_registered" title="arkouda.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister" title="arkouda.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.DataFrame.unregister_dataframe_by_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unregister_dataframe_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.DataFrame.unregister_dataframe_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to unregister DataFrame object by name which was registered
+with the arkouda server via register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – Name under which the DataFrame object was registered</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.register" title="arkouda.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.unregister" title="arkouda.DataFrame.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.attach" title="arkouda.DataFrame.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.DataFrame.is_registered" title="arkouda.DataFrame.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>

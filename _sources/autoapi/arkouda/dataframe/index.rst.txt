@@ -682,6 +682,99 @@ Functions
       Attempts to convert to numeric values where possible for inclusion in the matrix.
 
 
+   .. py:method:: register(user_defined_name: str) -> DataFrame
+
+      Register this DataFrame object and underlying components with the Arkouda server
+
+      :param user_defined_name: user defined name the DataFrame is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same DataFrame which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support a
+                fluid programming style.
+                Please note you cannot register two different DataFrames with the same name.
+      :rtype: DataFrame
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the DataFrame with the user_defined_name
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`unregister_dataframe_by_name`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+      Any changes made to a DataFrame object after registering with the server may not be reflected
+      in attached copies.
+
+
+   .. py:method:: unregister()
+
+      Unregister this DataFrame object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+      :raises RegistrationError: If the object is already unregistered or if there is a server error
+          when attempting to unregister
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister_dataframe_by_name`, :obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: is_registered() -> bool
+
+      Return True if the object is contained in the registry
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RegistrationError: Raised if there's a server-side error or a mismatch of registered components
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`unregister`, :obj:`unregister_dataframe_by_name`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+   .. py:method:: attach(user_defined_name: str) -> DataFrame
+      :staticmethod:
+
+      Function to return a DataFrame object attached to the registered name in the
+      arkouda server which was registered using register()
+
+      :param user_defined_name: user defined name which DataFrame object was registered under
+      :type user_defined_name: str
+
+      :returns: The DataFrame object created by re-attaching to the corresponding server components
+      :rtype: DataFrame
+
+      :raises RegistrationError: if user_defined_name is not registered
+
+      .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_groupby_by_name`
+
+
+   .. py:method:: unregister_dataframe_by_name(user_defined_name: str) -> None
+      :staticmethod:
+
+      Function to unregister DataFrame object by name which was registered
+      with the arkouda server via register()
+
+      :param user_defined_name: Name under which the DataFrame object was registered
+      :type user_defined_name: str
+
+      :raises TypeError: if user_defined_name is not a string
+      :raises RegistrationError: if there is an issue attempting to unregister any underlying components
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
 
 .. py:function:: sorted(df, column=False)
 
