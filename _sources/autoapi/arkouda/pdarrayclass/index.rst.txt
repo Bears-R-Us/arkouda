@@ -46,6 +46,8 @@ Functions
    arkouda.pdarrayclass.ctz
    arkouda.pdarrayclass.rotl
    arkouda.pdarrayclass.rotr
+   arkouda.pdarrayclass.power
+   arkouda.pdarrayclass.sqrt
    arkouda.pdarrayclass.attach_pdarray
    arkouda.pdarrayclass.unregister_pdarray_by_name
 
@@ -1540,6 +1542,12 @@ Functions
    >>> A = ak.arange(10)
    >>> ak.rotr(1024 * A, A)
    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
+
+
+.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray]) -> pdarray
+
+
+.. py:function:: sqrt(pda: pdarray) -> pdarray
 
 
 .. py:function:: attach_pdarray(user_defined_name: str) -> pdarray

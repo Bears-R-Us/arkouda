@@ -158,6 +158,8 @@ Functions
    arkouda.rotr
    arkouda.cov
    arkouda.corr
+   arkouda.sqrt
+   arkouda.power
    arkouda.attach_pdarray
    arkouda.unregister_pdarray_by_name
    arkouda.argsort
@@ -7090,6 +7092,12 @@ Attributes
 
    The correlation is calculated by
    cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))
+
+
+.. py:function:: sqrt(pda: pdarray) -> pdarray
+
+
+.. py:function:: power(pda: pdarray, pwr: Union[int, float, pdarray]) -> pdarray
 
 
 .. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
