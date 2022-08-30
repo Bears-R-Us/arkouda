@@ -74,7 +74,7 @@ class ClientMode(Enum):
 
 
 # Get ClientMode, defaulting to UI
-mode = ClientMode(os.getenv('ARKOUDA_CLIENT_MODE', 'UI'))
+mode = ClientMode(os.getenv('ARKOUDA_CLIENT_MODE', 'UI').upper())
 
 # Print splash message if in UI mode
 if mode == ClientMode.UI:
