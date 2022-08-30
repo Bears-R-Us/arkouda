@@ -79,6 +79,8 @@ module LispMsg
                     var ast = parse(prog);
                     var env = new owned Env();
                     var p = new pool();
+
+                    // start verbose mem
                     for i in tD {
                       env.addEntry("i", i);
                         
@@ -86,6 +88,8 @@ module LispMsg
                       ret[i] = eval(ast, env, st, p).toValue(t).v;
                       p.freeAll();
                     }
+                    // stop verbose mem
+                    // memtracking size = 0 in makefile 
                 }
             }
         }
