@@ -65,3 +65,4 @@ Also see the python tests [README](tests/README.md) for more information on Pyth
   - ARKOUDA_KEY_FILE : Client env var for keyfile when using ssh tunnel
   - ARKOUDA_PASSWORD : Client env var for password when using ssh tunnel
   - ARKOUDA_LOG_LEVEL : Client env var to control client side Logging Level
+  - ARKOUDA_CLIENT_MODE: Client env var controlling client mode (UI or API), where UI mode displays the Arkouda client splash message. 

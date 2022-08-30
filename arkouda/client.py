@@ -1,6 +1,7 @@
 import json
 import os
 import warnings
+from enum import Enum
 from typing import Dict, Mapping, Optional, Tuple, Union, cast
 
 import pyfiglet  # type: ignore
@@ -49,9 +50,36 @@ regexMaxCaptures: int = -1
 logger = getArkoudaLogger(name="Arkouda Client")
 clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
 
-# Print splash message
-print("{}".format(pyfiglet.figlet_format("Arkouda")))
-print(f"Client Version: {__version__}")  # type: ignore
+
+class ClientMode(Enum):
+    """
+    The ClientMode enum provides controlled vocabulary indicating whether the
+    Arkouda client is in UI mode or API mode. If in API mode, it is assumed the
+    Arkouda client is being used via an API call instead of a Python shell or notebook.
+    """
+    UI = 'UI'
+    API = 'API'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+
+# Get ClientMode, defaulting to UI
+mode = ClientMode(os.getenv('ARKOUDA_CLIENT_MODE', 'UI').upper())
+
+# Print splash message if in UI mode
+if mode == ClientMode.UI:
+    print("{}".format(pyfiglet.figlet_format("Arkouda")))
+    print(f"Client Version: {__version__}")  # type: ignore
 
 
 # reset settings to default values
