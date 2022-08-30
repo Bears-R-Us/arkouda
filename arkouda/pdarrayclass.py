@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import builtins
-from typing import List, Sequence, cast
+from typing import List, Sequence, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -53,6 +53,8 @@ __all__ = [
     "rotr",
     "cov",
     "corr",
+    "sqrt",
+    "power",
     "attach_pdarray",
     "unregister_pdarray_by_name",
     "RegistrationError",
@@ -2617,6 +2619,16 @@ def rotr(x, rot) -> pdarray:
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
+
+
+@typechecked
+def power(pda: pdarray, pwr: Union[int, float, pdarray]) -> pdarray:
+    return pda**pwr
+
+
+@typechecked
+def sqrt(pda: pdarray) -> pdarray:
+    return power(pda, 0.5)
 
 
 @typechecked

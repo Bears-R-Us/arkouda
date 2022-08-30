@@ -453,6 +453,42 @@ class OperatorsTest(ArkoudaTest):
             equality_helper(ak_edge_cases // a_vect, np_edge_cases // n_vect)
             equality_helper(a_vect // ak_edge_cases, n_vect // np_edge_cases)
 
+    def test_pda_sqrt(self):
+        n = np.array([4, 16, -1, 0, np.inf])
+        a = ak.array(n)
+
+        s = ak.sqrt(a)
+        ex = np.sqrt(n)
+
+        # id nans
+        nan = ak.isnan(s)
+        npnan = np.isnan(ex)
+        self.assertListEqual(nan.to_list(), npnan.tolist())
+
+        # check results are equal remove nans
+        self.assertListEqual(s[~nan].to_list(), ex[~npnan].tolist())
+
+    def test_pda_power(self):
+        n = np.array([10, 5, 2])
+        a = ak.array(n)
+
+        p = ak.power(a, 2)
+        ex = np.power(n, 2)
+        self.assertListEqual(p.to_list(), ex.tolist())
+
+        p = ak.power(a, ak.array([2, 3, 4]))
+        ex = np.power(n, [2, 3, 4])
+        self.assertListEqual(p.to_list(), ex.tolist())
+
+        n = np.array([-1.0, -3.0])
+        a = ak.array(n)
+
+        p = ak.power(a, 0.5)
+        ex = np.power(n, 0.5)
+        nan = ak.isnan(p)
+        npnan = np.isnan(ex)
+        self.assertListEqual(nan.to_list(), npnan.tolist())
+
     def testAllOperators(self):
         run_tests(verbose)
 
