@@ -1121,10 +1121,19 @@ class Strings:
             return self.split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
-            args = "{} {} {} {} {}".format(
-                self.entry.name, self.objtype, return_segments, regex, json.dumps([delimiter])
+            repMsg = cast(
+                str,
+                generic_msg(
+                    cmd=cmd,
+                    args={
+                        "values": self.entry,
+                        "objtype": self.objtype,
+                        "return_segs": return_segments,
+                        "regex": regex,
+                        "delim": delimiter,
+                    },
+                ),
             )
-            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
             if return_segments:
                 arrays = repMsg.split("+", maxsplit=2)
                 return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])

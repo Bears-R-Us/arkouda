@@ -113,10 +113,19 @@ class Matcher:
         if re.search(self.pattern, ""):
             raise ValueError("Cannot split or flatten with a pattern that matches the empty string")
         cmd = "segmentedSplit"
-        args = "{} {} {} {} {}".format(
-            self.objtype, self.parent_entry_name, maxsplit, return_segments, json.dumps([self.pattern])
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd=cmd,
+                args={
+                    "parent_name": self.parent_entry_name,
+                    "objtype": self.objtype,
+                    "max": maxsplit,
+                    "return_segs": return_segments,
+                    "pattern": self.pattern,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_segments:
             arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
