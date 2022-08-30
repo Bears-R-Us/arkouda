@@ -149,7 +149,12 @@ class ArrayView:
                 )
             coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
             repMsg = generic_msg(
-                cmd="arrayViewIntIndex", args=f"{self.base.name} {self._dim_prod.name} {coords.name}"
+                cmd="arrayViewIntIndex",
+                args={
+                    "base": self.base,
+                    "dim_prod": self._dim_prod,
+                    "coords": coords,
+                },
             )
             fields = repMsg.split()
             return parse_single_value(" ".join(fields[1:]))
@@ -200,9 +205,13 @@ class ArrayView:
             index_dim = array(index_dim_list)
             repMsg = generic_msg(
                 cmd="arrayViewMixedIndex",
-                args="{} {} {} {} {}".format(
-                    self.base.name, index_dim.name, self.ndim, self._dim_prod.name, json.dumps(indices)
-                ),
+                args={
+                    "base": self.base,
+                    "index_dim": index_dim,
+                    "ndim": self.ndim,
+                    "dim_prod": self._dim_prod,
+                    "coords": indices,
+                },
             )
             reshape_dim = (
                 reshape_dim_list if self.order is OrderType.COLUMN_MAJOR else reshape_dim_list[::-1]
@@ -254,13 +263,13 @@ class ArrayView:
                 coords = key if self.order is OrderType.COLUMN_MAJOR else key[::-1]
                 generic_msg(
                     cmd="arrayViewIntIndexAssign",
-                    args="{} {} {} {} {}".format(
-                        self.base.name,
-                        self.dtype.name,
-                        self._dim_prod.name,
-                        coords.name,
-                        self.base.format_other(value),
-                    ),
+                    args={
+                        "base": self.base,
+                        "dtype": self.dtype,
+                        "dim_prod": self._dim_prod,
+                        "coords": coords,
+                        "value": self.base.format_other(value),
+                    },
                 )
         elif isinstance(key, list):
             raise NotImplementedError("Setting via slicing and advanced indexing is not yet supported")
