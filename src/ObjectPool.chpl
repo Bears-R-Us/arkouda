@@ -1,5 +1,4 @@
 module ObjectPool {
-  use List;
   use LisExprData;
   
   record pool {
