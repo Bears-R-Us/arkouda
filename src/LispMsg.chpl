@@ -82,10 +82,8 @@ module LispMsg
 
                     // start verbose mem
                     for i in tD {
-                      env.addEntry("i", i);
-                        
                       // Evaluate for this index
-                      ret[i] = eval(ast, env, st, p).toValue(t).v;
+                      ret[i] = eval(ast, env, st, p, i).toValue(t).v;
                       p.freeAll();
                     }
                     // stop verbose mem
