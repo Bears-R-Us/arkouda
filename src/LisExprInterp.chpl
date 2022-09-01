@@ -153,7 +153,7 @@ module LisExprInterp
                     when "begin" {
                       checkGEqLstSize(lst, 1);
                       // setup the environment
-                      for i in 1..#lst.size-1 do
+                      for i in 1..#lst.size-2 do
                         eval(lst[i], env, st, p, idx);
                       // eval the return expression
                       return eval(lst[lst.size-1], env, st, p, idx);
@@ -171,6 +171,4 @@ module LisExprInterp
             }
         }
     }
-
-
 }
