@@ -143,7 +143,7 @@ module ServerDaemon {
     class DefaultServerDaemon : ArkoudaServerDaemon {
         var serverToken : string;
         var arkDirectory : string;
-        var serverMessage : string;
+        var connectUrl : string;
         var reqCount: int = 0;
         var repCount: int = 0;
         
@@ -155,6 +155,17 @@ module ServerDaemon {
             try! this.socket.bind("tcp://*:%t".format(ServerPort));
         }
         
+        proc getConnectUrl(token: string) throws {
+            if token.isEmpty() {
+                return "tcp://%s:%t".format(serverHostname, 
+                                            ServerPort);
+            } else {
+                return "tcp://%s:%i?token=%s".format(serverHostname,
+                                                     ServerPort,
+                                                     token);
+            }
+        }
+
         proc printServerSplashMessage(token: string, arkDirectory: string) throws {
             var verMessage = "arkouda server version = %s".format(arkoudaVersion);
             var dirMessage = ".arkouda directory %s".format(arkDirectory);
@@ -183,15 +194,8 @@ module ServerDaemon {
                 }           
                 return buffer;
             }
-    
-            if token.isEmpty() {
-                serverMessage = "server listening on tcp://%s:%t".format(serverHostname, 
-                                                                 ServerPort);
-            } else {
-                serverMessage = "server listening on tcp://%s:%i?token=%s".format(serverHostname, 
-                                                                 ServerPort, token);
-            }
-        
+
+            serverMessage = "server listening on %s".format(this.connectUrl);
             serverMessage = adjustMsg(serverMessage);      
             serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         
@@ -249,12 +253,15 @@ module ServerDaemon {
         /*
         Creates the serverConnectionInfo file on arkouda_server startup
         */
-        proc createServerConnectionInfo() {
+        proc createServerConnectionInfo() throws {
             use IO;
             if !serverConnectionInfo.isEmpty() {
+                sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               'writing serverConnectionInfo to %t'.format(serverConnectionInfo));
                 try! {
                     var w = open(serverConnectionInfo, iomode.cw).writer();
-                    w.writef("%s %t\n", serverHostname, ServerPort);
+                    w.writef("host: %s port: %t connect_url: %s\n", serverHostname, 
+                              ServerPort, this.connectUrl);
                 }
             }
         }
@@ -379,16 +386,19 @@ module ServerDaemon {
 
         override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
+            var token: string;
 
             if authenticate {
-                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
+                token = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
             }
 
             sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "initialized the .arkouda directory %s".format(this.arkDirectory));
     
+            this.connectUrl = this.getConnectUrl(token);
+            this.serverToken = token;
             this.createServerConnectionInfo();
-            this.printServerSplashMessage(this.serverToken, this.arkDirectory);
+            this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             this.registerServerCommands();
                     
             var t1 = new Time.Timer();
