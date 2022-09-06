@@ -79,6 +79,21 @@ module ServerConfig
     }
 
     /*
+     * Returns the version of Chapel arkouda was built with
+     */
+    proc getChplVersion() throws {
+        use Version;
+        var ver = chplVersion:string;
+        var verArray = ver.split('version');
+        return verArray[1];
+    }
+
+    /*
+    Indicates the version of Chapel Arkouda was built with
+    */
+    const chplVersion = try! getChplVersion();
+
+    /*
     Indicates whether token authentication is being used for Akrouda server requests
     */
     config const authenticate : bool = false;

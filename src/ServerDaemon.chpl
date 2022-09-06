@@ -168,6 +168,7 @@ module ServerDaemon {
 
         proc printServerSplashMessage(token: string, arkDirectory: string) throws {
             var verMessage = "arkouda server version = %s".format(arkoudaVersion);
+            var chplVerMessage = "built with chapel version%s".format(chplVersion);
             var dirMessage = ".arkouda directory %s".format(arkDirectory);
             var memLimMessage =  "memory limit = %i".format(getMemLimit());
             var memUsedMessage = "bytes of memory used = %i".format(getMemUsed());
@@ -202,6 +203,10 @@ module ServerDaemon {
             var vBuff = generateBuffer(serverMessage,verMessage);
             verMessage = adjustMsg(verMessage);
             verMessage = "*%s %s %s*".format(vBuff,verMessage,vBuff);
+            
+            var cvBuff = generateBuffer(serverMessage,chplVerMessage);
+            chplVerMessage = adjustMsg(chplVerMessage);
+            chplVerMessage = "*%s %s %s*".format(cvBuff,chplVerMessage,cvBuff);
 
             var mlBuff = generateBuffer(serverMessage,memLimMessage);
             memLimMessage = adjustMsg(memLimMessage);
@@ -236,6 +241,7 @@ module ServerDaemon {
             writeln(blankLine);
             writeln('*%s*'.format(serverMessage));
             writeln(verMessage);
+            writeln(chplVerMessage);
 
             if (memTrack) {
                 writeln(memLimMessage);
