@@ -144,11 +144,14 @@ class SegArray:
         self._segments = None  # cache - use .segments to access/set
         self._valsize = None  # cache - use .valsize to access/set
         """
-        Note - if lengths is provided, it will need to be sent to the server in the future (or deprecated).
-        Since no computation is currently done on the server, we will not be sending lengths right now
+        Note - if lengths is provided, it will need to be sent to the
+        server in the future (or deprecated).
+        Since no computation is currently done on the server,
+        we will not be sending lengths right now
         """
         self._lengths = lengths  # cache - use .lengths to access/set. If passed, do not recompute
-        # the following is to maintain support for lengths being passed in (since not currently passed to server)
+        # the following is to maintain support for lengths being passed in
+        # (since not currently passed to server)
         if self._lengths is not None:
             self._non_empty = lengths > 0
             self._non_empty_count = self._non_empty.sum()

@@ -7,7 +7,6 @@ module SegmentedArray {
     use Reflection;
     use Logging;
     use ServerErrors;
-    use List;
 
     private config const logLevel = ServerConfig.logLevel;
     const saLogger = new Logger(logLevel);
