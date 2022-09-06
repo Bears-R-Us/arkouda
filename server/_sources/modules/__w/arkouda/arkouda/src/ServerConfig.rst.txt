@@ -87,6 +87,18 @@ arkouda server config param and config const
    * registering Arkouda with cloud environments such as Kubernetes.
    
 
+.. function:: proc getChplVersion() throws
+
+   
+   * Returns the version of Chapel arkouda was built with
+   
+
+.. data:: const chplVersion = try! getChplVersion()
+
+   
+   Indicates the version of Chapel Arkouda was built with
+   
+
 .. data:: config const authenticate: bool = false
 
    

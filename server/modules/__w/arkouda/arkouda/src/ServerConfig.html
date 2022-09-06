@@ -184,6 +184,20 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 </ul>
 </dd></dl>
 
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="ServerConfig.getChplVersion">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getChplVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerConfig.getChplVersion" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Returns the version of Chapel arkouda was built with</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="ServerConfig.chplVersion">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">chplVersion</span></span> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getChplVersion()</span><a class="headerlink" href="#ServerConfig.chplVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates the version of Chapel Arkouda was built with</p>
+</dd></dl>
+
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.authenticate">
 <em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">authenticate</span></span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span><a class="headerlink" href="#ServerConfig.authenticate" title="Permalink to this definition">¶</a></dt>
