@@ -143,9 +143,18 @@ class SegArray:
         self._values = None  # cache - use .values to access/set
         self._segments = None  # cache - use .segments to access/set
         self._valsize = None  # cache - use .valsize to access/set
-        self._lengths = None  # cache - use .lengths to access/set
-        self._non_empty = None  # cache - use .non_empty to access/set
-        self._non_empty_count = None  # cache - use .non_empty_count to access/set
+        """
+        Note - if lengths is provided, it will need to be sent to the server in the future (or deprecated).
+        Since no computation is currently done on the server, we will not be sending lengths right now
+        """
+        self._lengths = lengths  # cache - use .lengths to access/set. If passed, do not recompute
+        # the following is to maintain support for lengths being passed in (since not currently passed to server)
+        if self._lengths is not None:
+            self._non_empty = lengths > 0
+            self._non_empty_count = self._non_empty.sum()
+        else:
+            self._non_empty = None  # cache - use .non_empty to access/set
+            self._non_empty_count = None  # cache - use .non_empty_count to access/set
 
         # grouping object computation. (This will need to be moved to the server)
         # GroupBy computation left here because of lack of server obj. May need to move in Future
@@ -424,14 +433,6 @@ class SegArray:
         """
         return SegArray(self.segments, self.values, copy=True)
 
-    def _get_lengths(self):
-        if self.size == 0:
-            return zeros(0, dtype=akint64)
-        elif self.size == 1:
-            return array([self.valsize])
-        else:
-            return concatenate((self.segments[1:], array([self.valsize]))) - self.segments
-
     def __getitem__(self, i):
         if isSupportedInt(i):
             start = self.segments[i]
@@ -571,7 +572,7 @@ class SegArray:
         origin_indices : pdarray, int
             The index of the sub-array from which the corresponding n-gram originated
         """
-        if n > self._get_lengths().max():
+        if n > self.lengths.max():
             raise ValueError("n must be <= the maximum length of the sub-arrays")
 
         ngrams = []

@@ -47,10 +47,6 @@ module SegmentedArray {
         var size: int;
         var nBytes: int;
 
-        var lengths;
-        var non_empty;
-        var non_empty_count: int;
-
         proc init(entryName:string, entry:borrowed SegArraySymEntry, type eType) {
             name = entryName;
             composite = entry;
@@ -59,15 +55,6 @@ module SegmentedArray {
             
             size = segments.size;
             nBytes = values.size;
-
-            // Format the same as in Segmented string getLengths, but leave here so that we don't recompute each time we need
-            var lenHelp = new list(segments.a[1..]);
-            lenHelp.append(values.size);
-
-            lengths = lenHelp.toArray();
-
-            non_empty = lengths > 0;
-            non_empty_count = + reduce non_empty:int;
 
             // Note - groupby remaining client side because groupby does not have server side object
         }
