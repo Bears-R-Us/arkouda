@@ -1,8 +1,8 @@
 <p align="center">
   <img src="pictures/arkouda_wide_marker1.png"
 />
-<h1 align="center">Arkouda (αρκούδα)</h1>
-<h2 align="center">Interactive Data Analytics at Supercomputing Scale -- </br>a Python API powered by Chapel :bear:</h2>
+<h1 align="center">Arkouda (αρκούδα) :bear:</h1>
+<h2 align="center">Interactive Data Analytics at Supercomputing Scale</br>a Python API powered by Chapel</h2>
 
 <p align="center">
 <a href="https://github.com/Bears-R-Us/arkouda/actions/workflows/CI.yml"><img alt="Actions Status" src="https://github.com/Bears-R-Us/arkouda/workflows/CI/badge.svg"></a>
