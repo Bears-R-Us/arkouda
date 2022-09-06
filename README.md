@@ -1,7 +1,15 @@
-![Arkouda logo](pictures/arkouda_wide_marker1.png)
+<p align="center">
+  <img src="pictures/arkouda_wide_marker1.png"
+/>
+<h1 align="center">Arkouda (αρκούδα)</h1>
+<h2 align="center">Interactive Data Analytics at Supercomputing Scale -- </br>a Python API powered by Chapel :bear:</h2>
 
-# Arkouda (αρκούδα): NumPy-like arrays at massive scale backed by Chapel.
-## _NOTE_: Arkouda is under the MIT license.
+<p align="center">
+<a href="https://github.com/Bears-R-Us/arkouda/actions/workflows/CI.yml"><img alt="Actions Status" src="https://github.com/Bears-R-Us/arkouda/workflows/CI/badge.svg"></a>
+<a href="https://bears-r-us.github.io/arkouda/"><img alt="Documentation Status" src="https://github.com/Bears-R-Us/arkouda/workflows/docs/badge.svg"></a>
+<a href="https://github.com/Bears-R-Us/arkouda/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
 
 ## Online Documentation
 [Arkouda docs at Github Pages](https://bears-r-us.github.io/arkouda/)

@@ -1,4 +1,4 @@
-name: docs-gh-pages
+name: docs
 
 # Only publish docs when master changes
 on:
