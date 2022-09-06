@@ -276,9 +276,7 @@ class pdarray:
         if isinstance(other, pdarray):
             if self.size != other.size:
                 raise ValueError(f"size mismatch {self.size} {other.size}")
-            cmd = "binopvv"
-            args = "{} {} {}".format(op, self.name, other.name)
-            repMsg = generic_msg(cmd=cmd, args=args)
+            repMsg = generic_msg(cmd="binopvv", args={"op": op, "a": self, "b": other})
             return create_pdarray(repMsg)
         # pdarray binop scalar
         if np.can_cast(other, self.dtype):
@@ -291,9 +289,10 @@ class pdarray:
             dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
-        cmd = "binopvs"
-        args = "{} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
-        repMsg = generic_msg(cmd=cmd, args=args)
+        repMsg = generic_msg(
+            cmd="binopvs",
+            args={"op": op, "a": self, "dtype": dt, "value": NUMBER_FORMAT_STRINGS[dt].format(other)},
+        )
         return create_pdarray(repMsg)
 
     # reverse binary operators
@@ -336,9 +335,10 @@ class pdarray:
             dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
-        cmd = "binopsv"
-        args = "{} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
-        repMsg = generic_msg(cmd=cmd, args=args)
+        repMsg = generic_msg(
+            cmd="binopsv",
+            args={"op": op, "dtype": dt, "value": NUMBER_FORMAT_STRINGS[dt].format(other), "a": self},
+        )
         return create_pdarray(repMsg)
 
     # overload + for pdarray, other can be {pdarray, int, float}
@@ -468,7 +468,7 @@ class pdarray:
         if isinstance(other, pdarray):
             if self.size != other.size:
                 raise ValueError(f"size mismatch {self.size} {other.size}")
-            generic_msg(cmd="opeqvv", args="{} {} {}".format(op, self.name, other.name))
+            generic_msg(cmd="opeqvv", args={"op": op, "a": self, "b": other})
             return self
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype
@@ -478,9 +478,10 @@ class pdarray:
             # Can't cast other as dtype of pdarray
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
 
-        cmd = "opeqvs"
-        args = "{} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
-        generic_msg(cmd=cmd, args=args)
+        generic_msg(
+            cmd="opeqvs",
+            args={"op": op, "a": self, "dtype": self.dtype.name, "value": self.format_other(other)},
+        )
         return self
 
     # overload += pdarray, other can be {pdarray, int, float}

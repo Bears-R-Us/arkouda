@@ -36,9 +36,11 @@ module OperatorMsg
     proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-
-        // split request into fields
-        var (op, aname, bname) = payload.splitMsgToTuple(3);
+        
+        var msgArgs = parseMessageArgs(payload, 3);
+        const op = msgArgs.getValueOf("op");
+        const aname = msgArgs.getValueOf("a");
+        const bname = msgArgs.getValueOf("b");
 
         var rname = st.nextName();
         var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
@@ -265,16 +267,18 @@ module OperatorMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
 
-        // split request into fields
-        var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const aname = msgArgs.getValueOf("a");
+        const op = msgArgs.getValueOf("op");
+        const value = msgArgs.get("value");
 
-        var dtype = str2dtype(dtypeStr);
+        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var rname = st.nextName();
         var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "op: %s dtype: %t pdarray: %t scalar: %t".format(
-                                                     op,dtype,st.attrib(aname),value));
+                                                     op,dtype,st.attrib(aname),value.getValue()));
 
         use Set;
         // This boolOps set is a filter to determine the output type for the operation.
@@ -291,7 +295,7 @@ module OperatorMsg
         select (left.dtype, dtype) {
           when (DType.Int64, DType.Int64) {
             var l = toSymEntry(left,int);
-            var val = try! value:int;
+            var val = value.getIntValue();
             
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
@@ -307,7 +311,7 @@ module OperatorMsg
           }
           when (DType.Int64, DType.Float64) {
             var l = toSymEntry(left,int);
-            var val = try! value:real;
+            var val = value.getRealValue();
             // Only two possible resultant types are `bool` and `real`
             // for this case
             if boolOps.contains(op) {
@@ -319,7 +323,7 @@ module OperatorMsg
           }
           when (DType.Float64, DType.Int64) {
             var l = toSymEntry(left,real);
-            var val = try! value:int;
+            var val = value.getIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -329,7 +333,7 @@ module OperatorMsg
           }
           when (DType.UInt64, DType.Float64) {
             var l = toSymEntry(left,uint);
-            var val = try! value:real;
+            var val = value.getRealValue();
             // Only two possible resultant types are `bool` and `real`
             // for this case
             if boolOps.contains(op) {
@@ -341,7 +345,7 @@ module OperatorMsg
           }
           when (DType.Float64, DType.UInt64) {
             var l = toSymEntry(left,real);
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -351,7 +355,7 @@ module OperatorMsg
           }
           when (DType.Float64, DType.Float64) {
             var l = toSymEntry(left,real);
-            var val = try! value:real;
+            var val = value.getRealValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -363,13 +367,13 @@ module OperatorMsg
           // possible resultant type is `bool`
           when (DType.Bool, DType.Bool) {
             var l = toSymEntry(left,bool);
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             var e = st.addEntry(rname, l.size, bool);
             return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.Int64) {
             var l = toSymEntry(left,bool);
-            var val = try! value:int;
+            var val = value.getIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -379,7 +383,7 @@ module OperatorMsg
           }
           when (DType.Int64, DType.Bool) {
             var l = toSymEntry(left,int);
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -389,7 +393,7 @@ module OperatorMsg
           }
           when (DType.Bool, DType.Float64) {
             var l = toSymEntry(left,bool);
-            var val = try! value:real;
+            var val = value.getRealValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -399,7 +403,7 @@ module OperatorMsg
           }
           when (DType.Float64, DType.Bool) {
             var l = toSymEntry(left,real);
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -409,7 +413,7 @@ module OperatorMsg
           }
           when (DType.Bool, DType.UInt64) {
             var l = toSymEntry(left,bool);
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -419,7 +423,7 @@ module OperatorMsg
           }
           when (DType.UInt64, DType.Bool) {
             var l = toSymEntry(left,uint);
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -429,7 +433,7 @@ module OperatorMsg
           }
           when (DType.UInt64, DType.UInt64) {
             var l = toSymEntry(left,uint);
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -439,7 +443,7 @@ module OperatorMsg
           }
           when (DType.UInt64, DType.Int64) {
             var l = toSymEntry(left,uint);
-            var val = try! value:int;
+            var val = value.getIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -450,7 +454,7 @@ module OperatorMsg
           }
           when (DType.Int64, DType.UInt64) {
             var l = toSymEntry(left,int);
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             if boolOps.contains(op) {
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvs(l, val, e, op, dtype, rname, pn, st);
@@ -481,10 +485,12 @@ module OperatorMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
 
-        // split request into fields
-        var (op, dtypeStr, value, aname) = payload.splitMsgToTuple(4);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const op = msgArgs.getValueOf("op");
+        const aname = msgArgs.getValueOf("a");
+        const value = msgArgs.get("value");
 
-        var dtype = str2dtype(dtypeStr);
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var rname = st.nextName();
         var right: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
         
@@ -506,7 +512,7 @@ module OperatorMsg
         
         select (dtype, right.dtype) {
           when (DType.Int64, DType.Int64) {
-            var val = try! value:int;
+            var val = value.getIntValue();
             var r = toSymEntry(right,int);
             
             if boolOps.contains(op) {
@@ -522,7 +528,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Int64, DType.Float64) {
-            var val = try! value:int;
+            var val = value.getIntValue();
             var r = toSymEntry(right,real);
             // Only two possible resultant types are `bool` and `real`
             // for this case
@@ -534,7 +540,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.Int64) {
-            var val = try! value:real;
+            var val = value.getRealValue();
             var r = toSymEntry(right,int);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -544,7 +550,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.Float64) {
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             var r = toSymEntry(right,real);
             // Only two possible resultant types are `bool` and `real`
             // for this case
@@ -556,7 +562,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.UInt64) {
-            var val = try! value:real;
+            var val = value.getRealValue();
             var r = toSymEntry(right,uint);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -566,7 +572,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.Float64) {
-            var val = try! value:real;
+            var val = value.getRealValue();
             var r = toSymEntry(right,real);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -578,13 +584,13 @@ module OperatorMsg
           // For cases where a boolean operand is involved, the only
           // possible resultant type is `bool`
           when (DType.Bool, DType.Bool) {
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             var r = toSymEntry(right,bool);
             var e = st.addEntry(rname, r.size, bool);
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.Int64) {
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             var r = toSymEntry(right,int);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -594,7 +600,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Int64, DType.Bool) {
-            var val = try! value:int;
+            var val = value.getIntValue();
             var r = toSymEntry(right,bool);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -604,7 +610,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.Float64) {
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             var r = toSymEntry(right,real);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -614,7 +620,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Float64, DType.Bool) {
-            var val = try! value:real;
+            var val = value.getRealValue();
             var r = toSymEntry(right,bool);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -624,7 +630,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.Bool, DType.UInt64) {
-            var val = try! value.toLower():bool;
+            var val = value.getBoolValue();
             var r = toSymEntry(right,uint);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -634,7 +640,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.Bool) {
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             var r = toSymEntry(right,bool);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -644,7 +650,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.UInt64) {
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             var r = toSymEntry(right,uint);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -654,7 +660,7 @@ module OperatorMsg
             return doBinOpsv(val, r, e, op, dtype, rname, pn, st);
           }
           when (DType.UInt64, DType.Int64) {
-            var val = try! value:uint;
+            var val = value.getUIntValue();
             var r = toSymEntry(right,int);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -671,7 +677,7 @@ module OperatorMsg
             }
           }
           when (DType.Int64, DType.UInt64) {
-            var val = try! value:int;
+            var val = value.getIntValue();
             var r = toSymEntry(right,uint);
             if boolOps.contains(op) {
               var e = st.addEntry(rname, r.size, bool);
@@ -703,8 +709,10 @@ module OperatorMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
 
-        // split request into fields
-        var (op, aname, bname) = payload.splitMsgToTuple(3);
+        var msgArgs = parseMessageArgs(payload, 3);
+        const op = msgArgs.getValueOf("op");
+        const aname = msgArgs.getValueOf("a");
+        const bname = msgArgs.getValueOf("b");
 
         // retrieve left and right pdarray objects      
         var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
@@ -877,22 +885,24 @@ module OperatorMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
 
-        // split request into fields
-        var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
-        var dtype = str2dtype(dtypeStr);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const op = msgArgs.getValueOf("op");
+        const aname = msgArgs.getValueOf("a");
+        const value = msgArgs.get("value");
+        var dtype = str2dtype(msgArgs.getValueOf("dtype"));
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "cmd: %s op: %s aname: %s dtype: %s scalar: %s".format(
-                                                 cmd,op,aname,dtype2str(dtype),value));
+                                                 cmd,op,aname,dtype2str(dtype),value.getValue()));
 
         var left: borrowed GenSymEntry = getGenericTypedArrayEntry(aname, st);
  
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "op: %t pdarray: %t scalar: %t".format(op,st.attrib(aname),value));
+                         "op: %t pdarray: %t scalar: %t".format(op,st.attrib(aname),value.getValue()));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 select op
                 {
                     when "+=" { l.a += val; }
@@ -928,7 +938,7 @@ module OperatorMsg
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
-                var val = try! value:int;
+                var val = value.getIntValue();
                 select op
                 {
                     when "+=" {l.a += val;}
@@ -948,7 +958,7 @@ module OperatorMsg
             }
             when (DType.Float64, DType.Float64) {
                 var l = toSymEntry(left,real);
-                var val = try! value:real;
+                var val = value.getRealValue();
                 select op
                 {
                     when "+=" {l.a += val;}
@@ -968,7 +978,7 @@ module OperatorMsg
             }
             when (DType.Int64, DType.Bool) {
                 var l = toSymEntry(left, int);
-                var val = try! value: bool;
+                var val = value.getBoolValue();
                 select op {
                     when "+=" {l.a += val:int;}
                     when "-=" {l.a -= val:int;}
@@ -982,7 +992,7 @@ module OperatorMsg
             }
             when (DType.Float64, DType.Bool) {
                 var l = toSymEntry(left, real);
-                var val = try! value: bool;
+                var val = value.getBoolValue();
                 select op {
                     when "+=" {l.a += val:real;}
                     when "-=" {l.a -= val:real;}
