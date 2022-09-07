@@ -117,11 +117,11 @@ def read_server_and_port_from_file(server_connection_info):
     while True:
         try:
             with open(server_connection_info, "r") as f:
-                (hostname, port) = f.readline().split(" ")
+                (hostname,port,connect_url) = f.readline().split(" ")
                 port = int(port)
                 if hostname == socket.gethostname():
                     hostname = "localhost"
-                return (hostname, port)
+                return (hostname,port,connect_url)
         except (ValueError, FileNotFoundError) as e:
             time.sleep(1)
             continue
@@ -217,7 +217,7 @@ def start_arkouda_server(numlocales, trace=False, port=5555, host=None, server_a
         If host is None, this means the host and port are to be retrieved
         via the read_server_and_port_from_file method
         """
-        host, port = read_server_and_port_from_file(connection_file)
+        host, port, connect_url = read_server_and_port_from_file(connection_file)
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
