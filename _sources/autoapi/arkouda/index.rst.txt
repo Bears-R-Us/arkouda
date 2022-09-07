@@ -16746,6 +16746,14 @@ Attributes
 
 .. py:class:: SegArray(segments, values, copy=False, lengths=None, grouping=None)
 
+   .. py:attribute:: _valsize
+      
+
+      Note - if lengths is provided, it will need to be sent to the
+      server in the future (or deprecated).
+      Since no computation is currently done on the server,
+      we will not be sending lengths right now
+
    .. py:method:: objtype()
       :property:
 
@@ -16776,6 +16784,42 @@ Attributes
       :property:
 
       Return the size of the values array.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+
+   .. py:method:: lengths()
+      :property:
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+
+   .. py:method:: _compute_non_empty()
+
+
+   .. py:method:: non_empty()
+      :property:
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+
+   .. py:method:: non_empty_count()
+      :property:
+
+      Return the pdarray containing the lengths of the segments.
       This is configured to prevent the need to move all functionality to server at once.
 
       .. rubric:: Notes
@@ -16833,9 +16877,6 @@ Attributes
    .. py:method:: copy()
 
       Return a deep copy.
-
-
-   .. py:method:: _get_lengths()
 
 
    .. py:method:: __getitem__(i)
