@@ -173,6 +173,96 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc getSALengthsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string = "";
+    var msgArgs = parseMessageArgs(payload, 1);
+    var name = msgArgs.getValueOf("name"): string;
+    var entry = st.tab.getBorrowed(name);
+    var compEntry: CompositeSymEntry = toCompositeSymEntry(entry);
+    var lenName = st.nextName();
+    select compEntry.dtype {
+      when (DType.Int64) {
+        var segArr = getSegArray(name, st, int);
+        st.addEntry(lenName, new shared SymEntry(segArr.getLengths()));
+        repMsg = "created " + st.attrib(lenName);
+      }
+      when (DType.UInt64) {
+        var segArr = getSegArray(name, st, uint);
+        st.addEntry(lenName, new shared SymEntry(segArr.getLengths()));
+        repMsg = "created " + st.attrib(lenName);
+      }
+      when (DType.Float64) {
+        var segArr = getSegArray(name, st, real);
+        st.addEntry(lenName, new shared SymEntry(segArr.getLengths()));
+        repMsg = "created " + st.attrib(lenName);
+      }
+      when (DType.Bool) {
+        var segArr = getSegArray(name, st, bool);
+        st.addEntry(lenName, new shared SymEntry(segArr.getLengths()));
+        repMsg = "created " + st.attrib(lenName);
+      }
+      when (DType.UInt8){
+        var segArr = getSegArray(name, st, uint(8));
+        st.addEntry(lenName, new shared SymEntry(segArr.getLengths()));
+        repMsg = "created " + st.attrib(lenName);
+      }
+      otherwise {
+        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(compEntry.dtype:string),
+                                      getLineNumber(),
+                                      getRoutineName(),
+                                      getModuleName(),
+                                      "TypeError");
+      }
+    }
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc getSANonEmptyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var repMsg: string = "";
+    var msgArgs = parseMessageArgs(payload, 1);
+    var name = msgArgs.getValueOf("name"): string;
+    var entry = st.tab.getBorrowed(name);
+    var compEntry: CompositeSymEntry = toCompositeSymEntry(entry);
+    var neName = st.nextName();
+    select compEntry.dtype {
+      when (DType.Int64) {
+        var segArr = getSegArray(name, st, int);
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      when (DType.UInt64) {
+        var segArr = getSegArray(name, st, uint);
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      when (DType.Float64) {
+        var segArr = getSegArray(name, st, real);
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      when (DType.Bool) {
+        var segArr = getSegArray(name, st, bool);
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      when (DType.UInt8){
+        var segArr = getSegArray(name, st, uint(8));
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      otherwise {
+        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(compEntry.dtype:string),
+                                      getLineNumber(),
+                                      getRoutineName(),
+                                      getModuleName(),
+                                      "TypeError");
+      }
+    }
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
 
   /**
    * Procedure for assembling disjoint Strings-object / SegString parts
@@ -1212,6 +1302,8 @@ module SegmentedMsg {
   registerFunction("segArr-assemble", assembleSegArrayMsg, getModuleName());
   registerFunction("segArr-getSegments", getSASegmentsMsg, getModuleName());
   registerFunction("segArr-getValues", getSAValuesMsg, getModuleName());
+  registerFunction("segArr-getLengths", getSALengthsMsg, getModuleName());
+  registerFunction("segArr-getNonEmpty", getSANonEmptyMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());

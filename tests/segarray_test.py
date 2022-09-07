@@ -14,7 +14,7 @@ class SegArrayTest(ArkoudaTest):
         segarr = ak.SegArray(segments, akflat)
 
         self.assertIsInstance(segarr, ak.SegArray)
-        self.assertListEqual(segarr._get_lengths().to_list(), [6, 2, 4])
+        self.assertListEqual(segarr.lengths.to_list(), [6, 2, 4])
         self.assertEqual(segarr.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
         self.assertEqual(segarr.__getitem__(1).__str__(), str(b).replace(",", ""))
         self.assertEqual(

@@ -143,25 +143,31 @@ class SegArray:
         self._values = None  # cache - use .values to access/set
         self._segments = None  # cache - use .segments to access/set
         self._valsize = None  # cache - use .valsize to access/set
-
-        # Compute the lengths/empty segments (This will need to be moved to the server)
-        if lengths is None:
-            self.lengths = self._get_lengths()
+        """
+        Note - if lengths is provided, it will need to be sent to the
+        server in the future (or deprecated).
+        Since no computation is currently done on the server,
+        we will not be sending lengths right now
+        """
+        self._lengths = lengths  # cache - use .lengths to access/set. If passed, do not recompute
+        # the following is to maintain support for lengths being passed in
+        # (since not currently passed to server)
+        if self._lengths is not None:
+            self._non_empty = lengths > 0
+            self._non_empty_count = self._non_empty.sum()
         else:
-            self.lengths = lengths
-        self._non_empty = self.lengths > 0
-        self._non_empty_count = self._non_empty.sum()
+            self._non_empty = None  # cache - use .non_empty to access/set
+            self._non_empty_count = None  # cache - use .non_empty_count to access/set
 
         # grouping object computation. (This will need to be moved to the server)
+        # GroupBy computation left here because of lack of server obj. May need to move in Future
         if grouping is None:
-            if self.size == 0 or self._non_empty_count == 0:
+            if self.size == 0 or self.non_empty_count == 0:
                 self.grouping = GroupBy(zeros(0, dtype=akint64))
             else:
                 # Treat each sub-array as a group, for grouped aggregations
                 self.grouping = GroupBy(
-                    broadcast(
-                        self.segments[self._non_empty], arange(self._non_empty_count), self.valsize
-                    )
+                    broadcast(self.segments[self.non_empty], arange(self.non_empty_count), self.valsize)
                 )
         else:
             self.grouping = grouping
@@ -227,6 +233,65 @@ class SegArray:
         if self._valsize is None:
             self._valsize = self.values.size
         return self._valsize
+
+    @property
+    def lengths(self):
+        """
+        Return the pdarray containing the lengths of the segments.
+        This is configured to prevent the need to move all functionality to server at once.
+
+        Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._lengths is None:
+            rep_msg = generic_msg(
+                cmd="segArr-getLengths",
+                args={
+                    "name": self.name,
+                },
+            )
+            self._lengths = create_pdarray(rep_msg)
+        return self._lengths
+
+    def _compute_non_empty(self):
+        rep_msg = generic_msg(
+            cmd="segArr-getNonEmpty",
+            args={
+                "name": self.name,
+            },
+        )
+        parts = rep_msg.split("+")
+        self._non_empty = create_pdarray(parts[0])
+        self._non_empty_count = int(parts[1])
+
+    @property
+    def non_empty(self):
+        """
+        Return the pdarray containing the lengths of the segments.
+        This is configured to prevent the need to move all functionality to server at once.
+
+        Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._non_empty is None:
+            self._compute_non_empty()
+        return self._non_empty
+
+    @property
+    def non_empty_count(self):
+        """
+        Return the pdarray containing the lengths of the segments.
+        This is configured to prevent the need to move all functionality to server at once.
+
+        Notes
+        ------
+        - Caches return value to prevent the need to recompute.
+        """
+        if self._non_empty_count is None:
+            self._compute_non_empty()
+        return self._non_empty_count
 
     @classmethod
     def from_multi_array(cls, m):
@@ -371,14 +436,6 @@ class SegArray:
         """
         return SegArray(self.segments, self.values, copy=True)
 
-    def _get_lengths(self):
-        if self.size == 0:
-            return zeros(0, dtype=akint64)
-        elif self.size == 1:
-            return array([self.valsize])
-        else:
-            return concatenate((self.segments[1:], array([self.valsize]))) - self.segments
-
     def __getitem__(self, i):
         if isSupportedInt(i):
             start = self.segments[i]
@@ -518,12 +575,12 @@ class SegArray:
         origin_indices : pdarray, int
             The index of the sub-array from which the corresponding n-gram originated
         """
-        if n > self._get_lengths().max():
+        if n > self.lengths.max():
             raise ValueError("n must be <= the maximum length of the sub-arrays")
 
         ngrams = []
         notsegstart = ones(self.valsize, dtype=akbool)
-        notsegstart[self.segments[self._non_empty]] = False
+        notsegstart[self.segments[self.non_empty]] = False
         valid = ones(self.valsize - n + 1, dtype=akbool)
         for i in range(n):
             end = self.valsize - n + i + 1
@@ -533,7 +590,7 @@ class SegArray:
         ngrams = [char[valid] for char in ngrams]
         if return_origins:
             # set the proper indexes for broadcasting. Needed to alot for empty segments
-            seg_idx = arange(self.size)[self._non_empty]
+            seg_idx = arange(self.size)[self.non_empty]
             origin_indices = self.grouping.broadcast(seg_idx, permute=True)[: valid.size][valid]
             return ngrams, origin_indices
         else:
@@ -702,7 +759,7 @@ class SegArray:
             lastscatter = newsegs + newlens - 1
         newvals[lastscatter] = x
         origscatter = arange(self.valsize) + self.grouping.broadcast(
-            arange(self._non_empty_count), permute=True
+            arange(self.non_empty_count), permute=True
         )
         if prepend:
             origscatter += 1
@@ -731,20 +788,20 @@ class SegArray:
         """
         isrepeat = zeros(self.values.size, dtype=akbool)
         isrepeat[1:] = self.values[:-1] == self.values[1:]
-        isrepeat[self.segments[self._non_empty]] = False
+        isrepeat[self.segments[self.non_empty]] = False
         truepaths = self.values[~isrepeat]
         nhops = self.grouping.sum(~isrepeat)[1]
         truesegs = cumsum(nhops) - nhops
         # Correct segments to properly assign empty lists - prevents dropping empty segments
-        if not self._non_empty.all():
+        if not self.non_empty.all():
             truelens = concatenate((truesegs[1:], array([truepaths.size]))) - truesegs
-            len_diff = self.lengths[self._non_empty] - truelens
+            len_diff = self.lengths[self.non_empty] - truelens
 
             x = 0  # tracking which non-empty segment length we need
             truesegs = zeros(self.size, dtype=akint64)
             for i in range(1, self.size):
                 truesegs[i] = self.segments[i] - len_diff[: x + 1].sum()
-                if self._non_empty[i]:
+                if self.non_empty[i]:
                     x += 1
 
         norepeats = SegArray(truesegs, truepaths)
@@ -1018,8 +1075,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import intersect1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = intersect1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1072,8 +1129,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import union1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = union1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1126,8 +1183,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import setdiff1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = setdiff1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments
@@ -1180,8 +1237,8 @@ class SegArray:
         """
         from arkouda.pdarraysetops import setxor1d
 
-        a_seg_inds = self.grouping.broadcast(arange(self.size)[self._non_empty])
-        b_seg_inds = other.grouping.broadcast(arange(other.size)[other._non_empty])
+        a_seg_inds = self.grouping.broadcast(arange(self.size)[self.non_empty])
+        b_seg_inds = other.grouping.broadcast(arange(other.size)[other.non_empty])
         (new_seg_inds, new_values) = setxor1d([a_seg_inds, self.values], [b_seg_inds, other.values])
         g = GroupBy(new_seg_inds)
         # This method does not return any empty resulting segments

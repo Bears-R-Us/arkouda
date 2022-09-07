@@ -54,6 +54,37 @@ module SegmentedArray {
             
             size = segments.size;
             nBytes = values.size;
+
+            // Note - groupby remaining client side because groupby does not have server side object
+        }
+
+        proc getLengths() {
+            // Format the same as in SegmentedString
+            //Note that this logic may need to move into init when everything move to prevent recompute
+            var lengths: [segments.aD] int;
+            if (size == 0) {
+                return lengths;
+            }
+            ref sa = segments.a;
+            const low = segments.aD.low;
+            const high = segments.aD.high;
+            forall (i, s, l) in zip(segments.aD, sa, lengths) {
+                if (i == high) {
+                    l = values.size - s;
+                } else {
+                    l = sa[i+1] - s;
+                }
+            }
+            return lengths;
+        }
+
+        proc getNonEmpty() throws {
+            return getLengths() > 0;
+        }
+
+        proc getNonEmptyCount() throws {
+            var non_empty = getNonEmpty();
+            return + reduce non_empty:int;
         }
     }
 }
