@@ -339,7 +339,8 @@ class GroupBy:
         array([1, 2, 4, 3])
         """
         repMsg = generic_msg(
-            cmd="countReduction", args={"segments": cast(pdarray, self.segments).name, "size": self.length}
+            cmd="countReduction",
+            args={"segments": cast(pdarray, self.segments).name, "size": self.length},
         )
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
