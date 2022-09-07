@@ -399,8 +399,9 @@ module MetricsMsg {
         }
     }
 
-    proc metricsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
-        var category = payload.splitMsgToTuple(1)[0]:MetricCategory;
+    proc metricsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {    
+        var msgArgs = parseMessageArgs(payload, 1);   
+        var category = msgArgs.getValueOf("category"):MetricCategory;
             
         mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             'category: %s'.format(category));
