@@ -1,9 +1,8 @@
 <p align="center">
-  <img src="pictures/arkouda_wide_marker1.png"
-/>
+  <img src="pictures/arkouda_wide_marker1.png"/>
+
 <h2 align="center">Arkouda (αρκούδα) :bear:</br>Interactive Data Analytics at Supercomputing Scale</br>a Python API powered by Chapel</h2>
 
-<p align="center">
 <a href="https://github.com/Bears-R-Us/arkouda/actions/workflows/CI.yml"><img alt="Actions Status" src="https://github.com/Bears-R-Us/arkouda/workflows/CI/badge.svg"></a>
 <a href="https://bears-r-us.github.io/arkouda/"><img alt="Documentation Status" src="https://github.com/Bears-R-Us/arkouda/workflows/docs/badge.svg"></a>
 <a href="https://github.com/Bears-R-Us/arkouda/blob/master/LICENSE"><img alt="License: MIT" src="https://black.readthedocs.io/en/stable/_static/license.svg"></a>
