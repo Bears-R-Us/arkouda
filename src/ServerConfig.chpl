@@ -131,6 +131,7 @@ module ServerConfig
 
         class Config {
             const arkoudaVersion: string;
+            const chplVersion: string;
             const ZMQVersion: string;
             const HDF5Version: string;
             const serverHostname: string;
@@ -153,6 +154,7 @@ module ServerConfig
         
         const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
+            chplVersion = chplVersion,
             ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
             HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
             serverHostname = serverHostname,
