@@ -266,8 +266,7 @@ module ServerDaemon {
                                'writing serverConnectionInfo to %t'.format(serverConnectionInfo));
                 try! {
                     var w = open(serverConnectionInfo, iomode.cw).writer();
-                    w.writef("host: %s port: %t connect_url: %s\n", serverHostname, 
-                              ServerPort, this.connectUrl);
+                    w.writef("%s %t %s\n",serverHostname,ServerPort,this.connectUrl);
                 }
             }
         }
@@ -392,17 +391,15 @@ module ServerDaemon {
 
         override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
-            var token: string;
 
             if authenticate {
-                token = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
+                this.serverToken = getArkoudaToken('%s%s%s'.format(this.arkDirectory, pathSep, 'tokens.txt'));
             }
 
             sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "initialized the .arkouda directory %s".format(this.arkDirectory));
     
-            this.connectUrl = this.getConnectUrl(token);
-            this.serverToken = token;
+            this.connectUrl = this.getConnectUrl(this.serverToken);
             this.createServerConnectionInfo();
             this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             this.registerServerCommands();
