@@ -771,9 +771,6 @@ def randint(
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
-    highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
-    sizestr = NUMBER_FORMAT_STRINGS["int64"].format(size)
 
     repMsg = generic_msg(
         cmd="randint",
