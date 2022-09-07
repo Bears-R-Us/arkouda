@@ -252,8 +252,8 @@
 <dd></dd></dl>
 
 <dl class="chpl attribute">
-<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.serverMessage">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverMessage</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.serverMessage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.connectUrl">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">connectUrl</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.connectUrl" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
@@ -282,13 +282,18 @@
 <dd></dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.getConnectUrl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectUrl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.getConnectUrl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.printServerSplashMessage">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printServerSplashMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">arkDirectory:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.printServerSplashMessage" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerDaemon.DefaultServerDaemon.createServerConnectionInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.createServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createServerConnectionInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#ServerDaemon.DefaultServerDaemon.createServerConnectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the serverConnectionInfo file on arkouda_server startup</p>
 </dd></dl>
 

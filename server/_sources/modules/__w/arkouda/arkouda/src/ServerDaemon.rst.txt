@@ -108,7 +108,7 @@ or
 
    .. attribute:: var arkDirectory: string
 
-   .. attribute:: var serverMessage: string
+   .. attribute:: var connectUrl: string
 
    .. attribute:: var reqCount: int = 0
 
@@ -120,9 +120,11 @@ or
 
    .. method:: proc init()
 
+   .. method:: proc getConnectUrl(token: string) throws
+
    .. method:: proc printServerSplashMessage(token: string, arkDirectory: string) throws
 
-   .. method:: proc createServerConnectionInfo()
+   .. method:: proc createServerConnectionInfo() throws
 
       
       Creates the serverConnectionInfo file on arkouda_server startup
