@@ -776,7 +776,14 @@ def randint(
     sizestr = NUMBER_FORMAT_STRINGS["int64"].format(size)
 
     repMsg = generic_msg(
-        cmd="randint", args="{} {} {} {} {}".format(sizestr, dtype.name, lowstr, highstr, seed)
+        cmd="randint",
+        args={
+            "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
+            "dtype": dtype.name,
+            "low": NUMBER_FORMAT_STRINGS[dtype.name].format(low),
+            "high": NUMBER_FORMAT_STRINGS[dtype.name].format(high),
+            "seed": seed,
+        },
     )
     return create_pdarray(repMsg)
 
@@ -875,7 +882,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
         raise ValueError("The size parameter must be > 0")
     return create_pdarray(
         generic_msg(
-            cmd="randomNormal", args="{} {}".format(NUMBER_FORMAT_STRINGS["int64"].format(size), seed)
+            cmd="randomNormal", args={"size": NUMBER_FORMAT_STRINGS["int64"].format(size), "seed": seed}
         )
     )
 
