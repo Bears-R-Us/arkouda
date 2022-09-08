@@ -2018,7 +2018,7 @@ class DataFrame(UserDict):
         for name in set(matches):
             colName = name.split("_")[2]
             if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
-                cols_resp = cast(str, generic_msg(cmd="attach", args=name))
+                cols_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
                 dtype = cols_resp.split()[2]
                 if dtype == Strings.objtype:
                     columns[colName] = Strings.from_return_msg(cols_resp)
@@ -2029,7 +2029,9 @@ class DataFrame(UserDict):
             elif f"_{SegArray.objtype}_" in name:
                 columns[colName] = SegArray.attach(name)
 
-        index_resp = cast(str, generic_msg(cmd="attach", args=f"df_index_{user_defined_name}_key"))
+        index_resp = cast(
+            str, generic_msg(cmd="attach", args={"name": f"df_index_{user_defined_name}_key"})
+        )
         dtype = index_resp.split()[2]
         if dtype == Strings.objtype:
             ind = Strings.from_return_msg(index_resp)

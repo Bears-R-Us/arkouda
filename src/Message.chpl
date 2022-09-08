@@ -4,6 +4,7 @@ module Message {
     use Reflection;
     use ServerErrors;
     use NumPyDType;
+    use Map;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -59,6 +60,19 @@ module Message {
             this.val = val;
             this.objType = objType;
             this.dtype = dtype;
+        }
+
+        proc asMap() throws {
+            var m = new map(string, string);
+            m.add("key", this.key);
+            m.add("val", this.val);
+            m.add("objType", this.objType:string);
+            m.add("dtype", this.dtype);
+            return m;
+        }
+
+        proc getJSON() throws {
+            return "%jt".format(this);
         }
 
         /*
