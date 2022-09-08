@@ -353,7 +353,6 @@ module RegistrationMsg
 
         select (dtype.toLower()) {
             when ("simple") {
-                // var json_base = ;
                 var json: [0..#1] string = [msgArgs.get("name").getJSON()];
                 // pdarray and strings can use the attachMsg method
                 return attachMsg(cmd, "%jt".format(json), st);
@@ -507,8 +506,8 @@ module RegistrationMsg
 
                 // Convert the string back into an array for looping
                 var nameList = nameStr.split("+");
-                forall n in nameList with (+ reduce status) {
-                    var base_json = msgArgs.get("name").asMap();
+                var base_json = msgArgs.get("name").asMap();
+                forall n in nameList with (in base_json, + reduce status) {
                     base_json.set("val", n);
                     var json: [0..#1] string = ["%jt".format(base_json)];
                     var resp = unregisterMsg(cmd, "%jt".format(json), st);
@@ -531,7 +530,7 @@ module RegistrationMsg
 
         var repMsg = status;
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple("TEST", MsgType.NORMAL);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     use CommandMap;
