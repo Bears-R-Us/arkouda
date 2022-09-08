@@ -933,14 +933,14 @@ def random_strings_uniform(
 
     repMsg = generic_msg(
         cmd="randomStrings",
-        args="{} {} {} {} {} {}".format(
-            NUMBER_FORMAT_STRINGS["int64"].format(size),
-            "uniform",
-            characters,
-            NUMBER_FORMAT_STRINGS["int64"].format(minlen),
-            NUMBER_FORMAT_STRINGS["int64"].format(maxlen),
-            seed,
-        ),
+        args={
+            "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
+            "dist": "uniform",
+            "chars": characters,
+            "min": NUMBER_FORMAT_STRINGS["int64"].format(minlen),
+            "max": NUMBER_FORMAT_STRINGS["int64"].format(maxlen),
+            "seed": seed,
+        },
     )
     return Strings.from_return_msg(cast(str, repMsg))
 
@@ -1009,13 +1009,13 @@ def random_strings_lognormal(
 
     repMsg = generic_msg(
         cmd="randomStrings",
-        args="{} {} {} {} {} {}".format(
-            NUMBER_FORMAT_STRINGS["int64"].format(size),
-            "lognormal",
-            characters,
-            NUMBER_FORMAT_STRINGS["float64"].format(logmean),
-            NUMBER_FORMAT_STRINGS["float64"].format(logstd),
-            seed,
-        ),
+        args={
+            "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
+            "dist": "lognormal",
+            "chars": characters,
+            "min": NUMBER_FORMAT_STRINGS["float64"].format(logmean),
+            "max": NUMBER_FORMAT_STRINGS["float64"].format(logstd),
+            "seed": seed,
+        },
     )
     return Strings.from_return_msg(cast(str, repMsg))

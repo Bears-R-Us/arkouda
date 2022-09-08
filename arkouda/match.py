@@ -150,17 +150,21 @@ class Match:
         """
         from arkouda.strings import Strings
 
-        cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(
-            self._objtype,
-            self._parent_entry_name,
-            self._matched.name,
-            self._starts.name,
-            self._lengths.name,
-            self._indices.name,
-            return_match_origins,
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedFindAll",
+                args={
+                    "objType": self._objtype,
+                    "parent_name": self._parent_entry_name,
+                    "num_matches": self._matched,
+                    "starts": self._starts,
+                    "lengths": self._lengths,
+                    "indices": self._indices,
+                    "rtn_origins": return_match_origins,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
             arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
@@ -212,11 +216,18 @@ class Match:
             raise ValueError(e)
 
         # We don't cache the locations of groups, find the location info and call findAll
-        cmd = "segmentedFindLoc"
-        args = "{} {} {} {}".format(
-            self._objtype, self._parent_entry_name, group_num, json.dumps([self.re])
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedFindLoc",
+                args={
+                    "objType": self._objtype,
+                    "parent_name": self._parent_entry_name,
+                    "groupNum": group_num,
+                    "pattern": self.re,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         created_map = json.loads(repMsg)
         global_starts = create_pdarray(created_map["Starts"])
         global_lengths = create_pdarray(created_map["Lens"])
@@ -234,17 +245,21 @@ class Match:
             raise ValueError(f"{self._match_type} is not a MatchType")
         starts = global_starts[global_indices[matched]]
         lengths = global_lengths[global_indices[matched]]
-        cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(
-            self._objtype,
-            self._parent_entry_name,
-            matched.name,
-            starts.name,
-            lengths.name,
-            indices.name,
-            return_group_origins,
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedFindAll",
+                args={
+                    "objType": self._objtype,
+                    "parent_name": self._parent_entry_name,
+                    "num_matches": matched,
+                    "starts": starts,
+                    "lengths": lengths,
+                    "indices": indices,
+                    "rtn_origins": return_group_origins,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_group_origins:
             arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])

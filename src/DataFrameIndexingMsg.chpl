@@ -119,11 +119,10 @@
                     var code_vals = toSymEntry(gCode, int);
                     var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, true);
                     
-                    var args: [1..2] string = [categories_name, idxCodeName];
                     // When smallIdx is set to true, some localization work will
                     // be skipped and a localizing slice will instead be done,
                     // which can perform better by avoiding those overhead costs.
-                    var repTup = segPdarrayIndex("str", args, st, smallIdx=true);
+                    var repTup = segPdarrayIndex("str", categories_name, idxCodeName, st, smallIdx=true);
                     
                     if repTup.msgType == MsgType.ERROR {
                         throw new IllegalArgumentError(repTup.msg);
@@ -133,11 +132,10 @@
                 }
                 when ("Strings") {
                     dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
-                    var args: [1..2] string = [ele_parts[2], msgArgs.getValueOf("idx_name")];
                     // When smallIdx is set to true, some localization work will
                     // be skipped and a localizing slice will instead be done,
                     // which can perform better by avoiding those overhead costs.
-                    var repTup = segPdarrayIndex("str", args, st, smallIdx=true);
+                    var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), st, smallIdx=true);
                     
                     if repTup.msgType == MsgType.ERROR {
                         throw new IllegalArgumentError(repTup.msg);

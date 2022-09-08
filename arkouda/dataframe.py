@@ -1997,7 +1997,9 @@ class DataFrame(UserDict):
         register, is_registered, unregister, unregister_groupby_by_name
         """
 
-        col_resp = cast(str, generic_msg(cmd="stringsToJSON", args=f"df_columns_{user_defined_name}"))
+        col_resp = cast(
+            str, generic_msg(cmd="stringsToJSON", args={"name": f"df_columns_{user_defined_name}"})
+        )
         columns = dict.fromkeys(json.loads(col_resp))
         matches = []
         regEx = compile(

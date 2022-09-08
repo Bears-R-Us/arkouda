@@ -272,7 +272,9 @@ module SegmentedMsg {
    * parsing and offsets construction on the server.
   */
   proc assembleStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (offsetsName, valuesName) = payload.splitMsgToTuple(2);
+    var msgArgs = parseMessageArgs(payload, 2);
+    const offsetsName = msgArgs.getValueOf("offsets");
+    const valuesName = msgArgs.getValueOf("values");
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s offsetsName: %s valuesName: %s".format(cmd, offsetsName, valuesName));
     st.checkTable(offsetsName);
@@ -293,8 +295,9 @@ module SegmentedMsg {
   }
 
   proc segStrTondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws {
-      var (name, comp) = payload.splitMsgToTuple(2);
-      var entry = getSegString(name, st);
+      var msgArgs = parseMessageArgs(payload, 2);
+      var entry = getSegString(msgArgs.getValueOf("obj"), st);
+      const comp = msgArgs.getValueOf("comp");
       if comp == "offsets" {
           return _tondarrayMsg(entry.offsets);
       } else if (comp == "values") {
@@ -340,15 +343,16 @@ module SegmentedMsg {
 
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)
-          = payload.splitMsgToTuple(6);
-      var len = lenStr: int;
-      var charset = str2CharSet(charsetStr);
+      var msgArgs = parseMessageArgs(payload, 6);
+      const dist = msgArgs.getValueOf("dist");
+      const len = msgArgs.get("size").getIntValue();
+      const charset = str2CharSet(msgArgs.getValueOf("chars"));
+      const seedStr = msgArgs.getValueOf("seed");
       var repMsg: string;
       select dist.toLower() {
           when "uniform" {
-              var minLen = arg1str:int;
-              var maxLen = arg2str:int;
+              var minLen = msgArgs.get("min").getIntValue();
+              var maxLen = msgArgs.get("max").getIntValue();
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
               var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
@@ -356,8 +360,8 @@ module SegmentedMsg {
               repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
           }
           when "lognormal" {
-              var logMean = arg1str:real;
-              var logStd = arg2str:real;
+              var logMean = msgArgs.get("min").getRealValue();
+              var logStd = msgArgs.get("max").getRealValue();
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
               var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
@@ -378,7 +382,9 @@ module SegmentedMsg {
   proc segmentLengthsMsg(cmd: string, payload: string, 
                                           st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
-    var (objtype, name) = payload.splitMsgToTuple(2);
+    var msgArgs = parseMessageArgs(payload, 2);
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -410,7 +416,11 @@ module SegmentedMsg {
   proc caseChangeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (subcmd, objtype, name) = payload.splitMsgToTuple(3);
+    var msgArgs = parseMessageArgs(payload, 3);
+    const subcmd = msgArgs.getValueOf("subcmd");
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
+
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -457,7 +467,10 @@ module SegmentedMsg {
   proc checkCharsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (subcmd, objtype, name) = payload.splitMsgToTuple(3);
+    var msgArgs = parseMessageArgs(payload, 3);
+    const subcmd = msgArgs.getValueOf("subcmd");
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -502,13 +515,14 @@ module SegmentedMsg {
   proc segmentedSearchMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (objtype, name, valtype, valStr) = payload.splitMsgToTuple(4);
+      var msgArgs = parseMessageArgs(payload, 4);
+      const objtype = msgArgs.getValueOf("objType");
+      const name = msgArgs.getValueOf("obj");
+      const valtype = msgArgs.getValueOf("valType");
+      const val = msgArgs.getValueOf("val");
 
       // check to make sure symbols defined
       st.checkTable(name);
-
-      var json = jsonToPdArray(valStr, 1);
-      var val = json[json.domain.low];
       var rname = st.nextName();
     
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -549,22 +563,14 @@ module SegmentedMsg {
   proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, groupNumStr, patternJson) = payload.splitMsgToTuple(4);
-    var groupNum: int;
-    try {
-      groupNum = groupNumStr:int;
-    }
-    catch {
-      var errorMsg = "groupNum could not be interpretted as an int: %s)".format(groupNumStr);
-      saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      throw new owned IllegalArgumentError(errorMsg);
-    }
+    var msgArgs = parseMessageArgs(payload, 4);
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("parent_name");
+    const groupNum = msgArgs.get("groupNum").getIntValue();
+    const pattern = msgArgs.getValueOf("pattern");
 
     // check to make sure symbols defined
     checkMatchStrings(name, st);
-
-    const json = jsonToPdArray(patternJson, 1);
-    const pattern: string = json[json.domain.low];
 
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                    "cmd: %s objtype: %t".format(cmd, objtype));
@@ -619,8 +625,14 @@ module SegmentedMsg {
   proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, numMatchesName, startsName, lensName, indicesName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
-    const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
+    var msgArgs = parseMessageArgs(payload, 7);
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("parent_name");
+    const numMatchesName = msgArgs.getValueOf("num_matches");
+    const startsName = msgArgs.getValueOf("starts");
+    const lensName = msgArgs.getValueOf("lengths");
+    const indicesName = msgArgs.getValueOf("indices");
+    const returnMatchOrig = msgArgs.get("rtn_origins").getBoolValue();
 
     // check to make sure symbols defined
     checkMatchStrings(name, st);
@@ -681,23 +693,16 @@ module SegmentedMsg {
   proc segmentedSubMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name, repl, countStr, returnNumSubsStr, patternJson) = payload.splitMsgToTuple(6);
-    const returnNumSubs: bool = returnNumSubsStr.toLower() == "true";
-    var count: int;
-    try {
-      count = countStr:int;
-    }
-    catch {
-      var errorMsg = "Count could not be interpretted as an int: %s)".format(countStr);
-      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-      throw new owned IllegalArgumentError(errorMsg);
-    }
+    var msgArgs = parseMessageArgs(payload, 6);
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
+    const repl = msgArgs.getValueOf("repl");
+    const returnNumSubs: bool = msgArgs.get("rtn_num_subs").getBoolValue();
+    const count = msgArgs.get("count").getIntValue();
+    const pattern = msgArgs.getValueOf("pattern");
 
     // check to make sure symbols defined
     st.checkTable(name);
-
-    const json = jsonToPdArray(patternJson, 1);
-    const pattern: string = json[json.domain.low];
 
     smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                    "cmd: %s objtype: %t".format(cmd, objtype));
@@ -760,8 +765,18 @@ module SegmentedMsg {
   proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (subcmd, objtype, name, valtype, valStr,
-         idStr, kpStr, lStr, regexStr, jsonStr) = payload.splitMsgToTuple(10);
+    var msgArgs = parseMessageArgs(payload, 10);
+    const subcmd = msgArgs.getValueOf("subcmd");
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
+    const valtype = msgArgs.getValueOf("valType");
+    const times = msgArgs.get("val").getIntValue();
+    const includeDelimiter = msgArgs.get("id").getBoolValue();
+    const keepPartial = msgArgs.get("keepPartial").getBoolValue();
+    const left = msgArgs.get("lStr").getBoolValue();
+    const regex = msgArgs.get("regex").getBoolValue();
+    const val = msgArgs.getValueOf("delim");
+
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -775,14 +790,6 @@ module SegmentedMsg {
       var strings = getSegString(name, st);
       select subcmd {
         when "peel" {
-          var times = valStr:int;
-          var regex: bool = (regexStr.toLower() == "true");
-          var includeDelimiter = (idStr.toLower() == "true");
-          var keepPartial = (kpStr.toLower() == "true");
-          var left = (lStr.toLower() == "true");
-          var json = jsonToPdArray(jsonStr, 1);
-          var val = json[json.domain.low];
-
           var leftName = "";
           var rightName = "";
           if regex {
@@ -855,7 +862,9 @@ module SegmentedMsg {
   proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, name) = payload.splitMsgToTuple(2);
+    var msgArgs = parseMessageArgs(payload, 2);
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
 
     // check to make sure symbols defined
     st.checkTable(name);
@@ -899,21 +908,23 @@ module SegmentedMsg {
     var repMsg: string;
     // 'subcmd' is the type of indexing to perform
     // 'objtype' is the type of segmented array
-    var (subcmd, objtype, rest) = payload.splitMsgToTuple(3);
-    var fields = rest.split();
-    var args: [1..#fields.size] string = fields; // parsed by subroutines
+    var msgArgs = parseMessageArgs(payload, 4);
+    const subcmd = msgArgs.getValueOf("subcmd");
+    const objtype = msgArgs.getValueOf("objType");
+    const name = msgArgs.getValueOf("obj");
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
+                            "subcmd: %s objtype: %s".format(subcmd,objtype));
     try {
         select subcmd {
             when "intIndex" {
-                return segIntIndex(objtype, args, st);
+                return segIntIndex(objtype, name, msgArgs.getValueOf("key"), st);
             }
             when "sliceIndex" {
-                return segSliceIndex(objtype, args, st);
+                var slice = msgArgs.get("key").getList(3);
+                return segSliceIndex(objtype, name, slice, st);
             }
             when "pdarrayIndex" {
-                return segPdarrayIndex(objtype, args, st);
+                return segPdarrayIndex(objtype, name, msgArgs.getValueOf("key"), st);
             }
             otherwise {
                 var errorMsg = "Error in %s, unknown subcommand %s".format(pn, subcmd);
@@ -935,21 +946,20 @@ module SegmentedMsg {
   /*
   Returns the object corresponding to the index
   */ 
-  proc segIntIndex(objtype: string, args: [] string, 
+  proc segIntIndex(objtype: string, objName: string, key: string, 
                                          st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
-      var strName = args[1];
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "strName: %s".format(strName));
-      st.checkTable(args[1]); // TODO move to single name
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "strName: %s".format(objName));
+      st.checkTable(objName);
       
       select objtype {
           when "str" {
               // Make a temporary strings array
-              var strings = getSegString(strName, st);
+              var strings = getSegString(objName, st);
               // Parse the index
-              var idx = args[2]:int;
+              var idx = key:int;
               // TO DO: in the future, we will force the client to handle this
               idx = convertPythonIndexToChapel(idx, strings.size);
               var s = strings[idx];
@@ -977,22 +987,22 @@ module SegmentedMsg {
     return chplIdx;
   }
 
-  proc segSliceIndex(objtype: string, args: [] string, 
+  proc segSliceIndex(objtype: string, objName: string, key: [] string,
                                          st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);
+    st.checkTable(objName);
 
     select objtype {
         when "str" {
             // Make a temporary string array
-            var strings = getSegString(args[1], st);
+            var strings = getSegString(objName, st);
 
             // Parse the slice parameters
-            var start = args[2]:int;
-            var stop = args[3]:int;
-            var stride = args[4]:int;
+            var start = key[0]:int;
+            var stop = key[1]:int;
+            var stride = key[2]:int;
 
             // Only stride-1 slices are allowed for now
             if (stride != 1) { 
@@ -1026,12 +1036,12 @@ module SegmentedMsg {
     }
   }
 
-  proc segPdarrayIndex(objtype: string, args: [] string, 
+  proc segPdarrayIndex(objtype: string, objName: string, iname: string,
                        st: borrowed SymTab, smallIdx=false): MsgTuple throws {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);
+    st.checkTable(objName);
 
     var newStringsName = "";
     var nBytes = 0;
@@ -1041,8 +1051,7 @@ module SegmentedMsg {
     
     select objtype {
         when "str" {
-            var strings = getSegString(args[1], st);
-            var iname = args[2];
+            var strings = getSegString(objName, st);
             var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
             try {
                 select gIV.dtype {
@@ -1099,12 +1108,13 @@ module SegmentedMsg {
   proc segBinopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (op,
-         // Type and attrib names of left segmented array
-         ltype, leftName,
-         // Type and attrib names of right segmented array
-         rtype, rightName, leftStr, jsonStr)
-           = payload.splitMsgToTuple(7);
+
+    var msgArgs = parseMessageArgs(payload, 7);
+    const op = msgArgs.getValueOf("op");
+    const ltype = msgArgs.getValueOf("objType");
+    const leftName = msgArgs.getValueOf("obj");
+    const rtype = msgArgs.getValueOf("otherType");
+    const rightName = msgArgs.getValueOf("other");
 
     // check to make sure symbols defined
     st.checkTable(leftName);
@@ -1129,9 +1139,8 @@ module SegmentedMsg {
                     repMsg = "created " + st.attrib(rname);
                 }
                 when "stick" {
-                    var left = (leftStr.toLower() != "false");
-                    var json = jsonToPdArray(jsonStr, 1);
-                    const delim = json[json.domain.low];
+                    const left = msgArgs.get("left").getBoolValue();
+                    const delim = msgArgs.getValueOf("delim");
                     var strings:SegString;
                     if left {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
@@ -1163,14 +1172,16 @@ module SegmentedMsg {
   proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (op, objtype, name, valtype, encodedVal)
-          = payload.splitMsgToTuple(5);
+      var msgArgs = parseMessageArgs(payload, 5);
+      const op = msgArgs.getValueOf("op");
+      const objtype = msgArgs.getValueOf("objType");
+      const name = msgArgs.getValueOf("obj");
+      const valtype = msgArgs.getValueOf("otherType");
+      const value = msgArgs.getValueOf("other");
 
       // check to make sure symbols defined
       st.checkTable(name);
-
-      var json = jsonToPdArray(encodedVal, 1);
-      var value = json[json.domain.low];
+      
       var rname = st.nextName();
 
       select (objtype, valtype) {
@@ -1207,20 +1218,16 @@ module SegmentedMsg {
   proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (mainObjtype, mainName, testObjtype, testName, invertStr) = payload.splitMsgToTuple(5);
+      var msgArgs = parseMessageArgs(payload, 5);
+      const mainObjtype = msgArgs.getValueOf("objType");
+      const mainName = msgArgs.getValueOf("obj");
+      const testObjtype = msgArgs.getValueOf("otherType");
+      const testName = msgArgs.getValueOf("other");
+      const invert = msgArgs.get("invert").getBoolValue();
 
       // check to make sure symbols defined
       st.checkTable(mainName);
       st.checkTable(testName);
-
-      var invert: bool;
-      if invertStr == "True" {invert = true;
-      } else if invertStr == "False" {invert = false;
-      } else {
-          var errorMsg = "Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);
-          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
-      }
     
       var rname = st.nextName();
  
@@ -1245,7 +1252,9 @@ module SegmentedMsg {
 
   proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var (objtype, name) = payload.splitMsgToTuple(2);
+      var msgArgs = parseMessageArgs(payload, 2);
+      const objtype = msgArgs.getValueOf("objType");
+      const name = msgArgs.getValueOf("obj");
 
       // check to make sure symbols defined
       st.checkTable(name);
@@ -1269,8 +1278,9 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc stringsToJSONMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
-    var strings = getSegString(name, st);
+  proc stringsToJSONMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var msgArgs = parseMessageArgs(payload, 1);
+    var strings = getSegString(msgArgs.getValueOf("name"), st);
     var size = strings.size;
     var rtn: [0..#size] string;
 
