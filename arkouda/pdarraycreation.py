@@ -642,7 +642,7 @@ def arange(*args, **kwargs) -> pdarray:
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
         if stride < 0:
             stop = stop + 2
-        repMsg = generic_msg(cmd="arange", args="{} {} {}".format(start, stop, stride))
+        repMsg = generic_msg(cmd="arange", args={"start": start, "stop": stop, "stride": stride})
         return create_pdarray(repMsg) if dtype == int64 else akcast(create_pdarray(repMsg), dtype)
     else:
         raise TypeError(
@@ -698,7 +698,7 @@ def linspace(start: numeric_scalars, stop: numeric_scalars, length: int_scalars)
         raise TypeError("both start and stop must be an int, np.int64, float, or np.float64")
     if not isSupportedNumber(length):
         raise TypeError("length must be an int or int64")
-    repMsg = generic_msg(cmd="linspace", args="{} {} {}".format(start, stop, length))
+    repMsg = generic_msg(cmd="linspace", args={"start": start, "stop": stop, "len": length})
     return create_pdarray(repMsg)
 
 
