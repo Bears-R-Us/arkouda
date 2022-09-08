@@ -91,6 +91,10 @@ or
 
    .. method:: proc init(key: string, val: string, objType: string, dtype: string)
 
+   .. method:: proc asMap() throws
+
+   .. method:: proc getJSON() throws
+
    .. method:: proc getObjType()
 
       
