@@ -205,5 +205,8 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd="sort", args="{} {}".format(algorithm.name, pda.name))
+    repMsg = generic_msg(cmd="sort", args={
+        "alg": algorithm.name,
+        "array": pda
+    })
     return create_pdarray(cast(str, repMsg))

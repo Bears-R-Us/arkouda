@@ -30,7 +30,9 @@ module SortMsg
     proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var (algoName, name) = payload.splitMsgToTuple(2);
+      var msgArgs = parseMessageArgs(payload, 2);
+      const algoName = msgArgs.getValueOf("alg");
+      const name = msgArgs.getValueOf("array");
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
         try {
