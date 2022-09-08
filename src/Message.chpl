@@ -7,7 +7,7 @@ module Message {
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
-    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE}
+    enum ObjectType {PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME}
 
     /*
      * Encapsulates the message string and message type.
