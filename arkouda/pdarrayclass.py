@@ -1560,7 +1560,7 @@ class pdarray:
         >>> b.unregister()
         """
         try:
-            rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+            rep_msg = generic_msg(cmd="register", args={"array": self, "user_name": user_defined_name})
             if isinstance(rep_msg, bytes):
                 rep_msg = str(rep_msg, "UTF-8")
             if rep_msg != "success":
@@ -2671,7 +2671,7 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     >>> # ...other work...
     >>> b.unregister()
     """
-    repMsg = generic_msg(cmd="attach", args="{}".format(user_defined_name))
+    repMsg = generic_msg(cmd="attach", args={"name": user_defined_name})
     return create_pdarray(repMsg)
 
 
@@ -2713,7 +2713,7 @@ def unregister_pdarray_by_name(user_defined_name: str) -> None:
     >>> # ...other work...
     >>> ak.unregister_pdarray_by_name(b)
     """
-    generic_msg(cmd="unregister", args=user_defined_name)
+    generic_msg(cmd="unregister", args={"name": user_defined_name})
 
 
 # TODO In the future move this to a specific errors file

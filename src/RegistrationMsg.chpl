@@ -32,8 +32,9 @@ module RegistrationMsg
     proc registerMsg(cmd: string, payload: string,  
                                         st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
-        var (name, userDefinedName) = payload.splitMsgToTuple(2);
+        var msgArgs = parseMessageArgs(payload, 2);
+        const name = msgArgs.getValueOf("array");
+        const userDefinedName = msgArgs.getValueOf("user_name");
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -70,8 +71,8 @@ module RegistrationMsg
                                           st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
 
-        // split request into fields
-        var (name) = payload.splitMsgToTuple(1);
+        var msgArgs = parseMessageArgs(payload, 1);
+        const name = msgArgs.getValueOf("name");
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -336,10 +337,9 @@ module RegistrationMsg
     proc genAttachMsg(cmd: string, payload: string, 
                                             st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-
-        var ele_parts = payload.split("+");
-        var dtype = ele_parts[0];
-        var name = ele_parts[1];
+        var msgArgs = parseMessageArgs(payload, 2);
+        var dtype = msgArgs.getValueOf("dtype");
+        const name = msgArgs.getValueOf("name");
 
         if dtype == "infer" {
             dtype = findType(cmd, name, st);
@@ -353,8 +353,10 @@ module RegistrationMsg
 
         select (dtype.toLower()) {
             when ("simple") {
+                // var json_base = ;
+                var json: [0..#1] string = [msgArgs.get("name").getJSON()];
                 // pdarray and strings can use the attachMsg method
-                return attachMsg(cmd, name, st);
+                return attachMsg(cmd, "%jt".format(json), st);
             }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
@@ -406,7 +408,8 @@ module RegistrationMsg
                                       st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.splitMsgToTuple(1);
+        var msgArgs = parseMessageArgs(payload, 1);
+        const name = msgArgs.getValueOf("name");
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -420,10 +423,10 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc unregisterByName(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var ele_parts = payload.split("+");
-        var dtype = ele_parts[0];
-        var name = ele_parts[1];
+    proc unregisterByNameMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, 2);
+        var dtype = msgArgs.getValueOf("dtype");
+        const name = msgArgs.getValueOf("name");
         var status = "";
 
         if dtype == "infer" {
@@ -439,7 +442,8 @@ module RegistrationMsg
         select (dtype.toLower()) {
             when ("simple") {
                 // pdarray and strings can use the unregisterMsg method without any other processing
-                return unregisterMsg(cmd, name, st);
+                var json: [0..#1] string = [msgArgs.get("name").getJSON()];
+                return unregisterMsg(cmd, "%jt".format(json), st);
             }
             when ("categorical") {
                 // Create an array with 5 strings, one for each component of categorical, and assign the names
@@ -455,10 +459,14 @@ module RegistrationMsg
                     nameList[4] = "%s.segments".format(name);
                 }
 
+                var base_json = msgArgs.get("name").asMap();
+
                 for n in nameList {
                     // Check for "" in case optional components aren't found
                     if n != "" {
-                        var resp = unregisterMsg(cmd, n, st);
+                        base_json.set("val", n);
+                        var json: [0..#1] string = ["%jt".format(base_json)];
+                        var resp = unregisterMsg(cmd, "%jt".format(json), st);
                         status += " %s: %s ".format(n, resp.msg);
                     }
                 }
@@ -470,8 +478,12 @@ module RegistrationMsg
                 nameList[1] = "%s_values".format(name);
                 nameList[2] = "%s_lengths".format(name);
 
+                var base_json = msgArgs.get("name").asMap();
+
                 for n in nameList {
-                    var resp = unregisterMsg(cmd, n, st);
+                    base_json.set("val", n);
+                    var json: [0..#1] string = ["%jt".format(base_json)];
+                    var resp = unregisterMsg(cmd, "%jt".format(json), st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }
@@ -496,7 +508,10 @@ module RegistrationMsg
                 // Convert the string back into an array for looping
                 var nameList = nameStr.split("+");
                 forall n in nameList with (+ reduce status) {
-                    var resp = unregisterMsg(cmd, n, st);
+                    var base_json = msgArgs.get("name").asMap();
+                    base_json.set("val", n);
+                    var json: [0..#1] string = ["%jt".format(base_json)];
+                    var resp = unregisterMsg(cmd, "%jt".format(json), st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }
@@ -516,7 +531,7 @@ module RegistrationMsg
 
         var repMsg = status;
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        return new MsgTuple("TEST", MsgType.NORMAL);
     }
 
     use CommandMap;
@@ -524,5 +539,5 @@ module RegistrationMsg
     registerFunction("attach", attachMsg, getModuleName());
     registerFunction("genericAttach", genAttachMsg, getModuleName());
     registerFunction("unregister", unregisterMsg, getModuleName());
-    registerFunction("genericUnregisterByName", unregisterByName, getModuleName());
+    registerFunction("genericUnregisterByName", unregisterByNameMsg, getModuleName());
 }

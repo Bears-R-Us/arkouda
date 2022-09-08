@@ -1488,7 +1488,7 @@ class GroupBy:
         for name in matches:
             # Parse the name for the dtype and use the proper create method to create the element
             if f"_{Strings.objtype}." in name or f"_{pdarray.objtype}." in name:
-                keys_resp = cast(str, generic_msg(cmd="attach", args=name))
+                keys_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
                 dtype = keys_resp.split()[2]
                 if ".unique_keys" in name:
                     if dtype == Strings.objtype:
@@ -1534,8 +1534,8 @@ class GroupBy:
                 f" is not registered"
             )
 
-        perm_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.permutation")
-        segments_resp = generic_msg(cmd="attach", args=f"{user_defined_name}.segments")
+        perm_resp = generic_msg(cmd="attach", args={"name": f"{user_defined_name}.permutation"})
+        segments_resp = generic_msg(cmd="attach", args={"name": f"{user_defined_name}.segments"})
 
         parts = {
             "orig_keys": keys if len(keys) > 1 else keys[0],

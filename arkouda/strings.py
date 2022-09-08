@@ -2023,7 +2023,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        rep_msg: str = cast(str, generic_msg(cmd="attach", args="{}".format(user_defined_name)))
+        rep_msg: str = cast(str, generic_msg(cmd="attach", args={"name": user_defined_name}))
         s = Strings.from_return_msg(rep_msg)
         s.name = user_defined_name
         return s

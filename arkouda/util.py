@@ -281,7 +281,7 @@ def attach(name: str, dtype: str = "infer"):
     Attaches to a known element name. If a type is passed, the server will use that type
     to pull the corresponding parts, otherwise the server will try to infer the type
     """
-    repMsg = cast(str, generic_msg(cmd="genericAttach", args=f"{dtype}+{name}"))
+    repMsg = cast(str, generic_msg(cmd="genericAttach", args={"dtype": dtype, "name": name}))
 
     if repMsg.split("+")[0] == "categorical":
         return Categorical.from_return_msg(repMsg)
@@ -313,6 +313,6 @@ def unregister_by_name(name: str, dtype: str = "infer"):
         to identify the type based on registered symbols
         Supported types are: pdarray, strings, categorical, segarray, and series
     """
-    repMsg = cast(str, generic_msg(cmd="genericUnregisterByName", args=f"{dtype}+{name}"))
+    repMsg = cast(str, generic_msg(cmd="genericUnregisterByName", args={"dtype": dtype, "name": name}))
 
     return repMsg
