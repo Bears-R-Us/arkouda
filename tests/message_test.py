@@ -6,6 +6,7 @@ from base_test import ArkoudaTest
 from arkouda.client import _json_args_to_str
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 from arkouda.pdarraycreation import arange, array
+from arkouda.timeclass import date_range
 
 
 class MessageTest(unittest.TestCase):
@@ -137,6 +138,16 @@ class JSONArgs(ArkoudaTest):
             ],
             json.loads(args),
         )
+
+        # test Datetime arg
+        dt = date_range(start="2021-01-01 12:00:00", periods=100, freq="s")
+        size, args = _json_args_to_str({"datetime": dt})
+        self.assertEqual(size, 1)
+        msgArgs = json.loads(json.loads(args)[0])
+        self.assertEqual(msgArgs["key"], "datetime")
+        self.assertEqual(msgArgs["objType"], "DATETIME")
+        self.assertEqual(msgArgs["dtype"], "int64")
+        self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d$")
 
         # test list of pdarray
         pd1 = arange(3)
