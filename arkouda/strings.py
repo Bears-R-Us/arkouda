@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import itertools
-import json
 import re
 from typing import Dict, List, Optional, Tuple, Union, cast
 
@@ -143,8 +142,9 @@ class Strings:
             except Exception as e:
                 raise RuntimeError(e)
         # Now we have two pdarray objects
-        args = f"{offset_attrib.name} {bytes_attrib.name}"  # type: ignore
-        response = cast(str, generic_msg(cmd=CMD_ASSEMBLE, args=args))
+        response = cast(
+            str, generic_msg(cmd=CMD_ASSEMBLE, args={"offsets": offset_attrib, "values": bytes_attrib})
+        )
         return Strings.from_return_msg(response)
 
     def __init__(self, strings_pdarray: pdarray, bytes_size: int_scalars) -> None:
@@ -253,14 +253,24 @@ class Strings:
             if self.size != other.size:
                 raise ValueError(f"Strings: size mismatch {self.size} {other.size}")
             cmd = "segmentedBinopvv"
-            args = "{} {} {} {} {} {}".format(
-                op, self.objtype, self.entry.name, other.objtype, other.entry.name, other.entry.name
-            )
+            args = {
+                "op": op,
+                "objType": self.objtype,
+                "obj": self.entry,
+                "otherType": other.objtype,
+                "other": other.entry,
+                "left": False,  # placeholder for stick
+                "delim": "",  # placeholder for stick
+            }
         elif resolve_scalar_dtype(other) == "str":
             cmd = "segmentedBinopvs"
-            args = "{} {} {} {} {}".format(
-                op, self.objtype, self.entry.name, self.objtype, json.dumps([other])
-            )
+            args = {
+                "op": op,
+                "objType": self.objtype,
+                "obj": self.entry,
+                "otherType": self.objtype,
+                "other": other,
+            }
         else:
             raise ValueError(
                 f"Strings: {op} not supported between Strings and {other.__class__.__name__}"
@@ -280,9 +290,10 @@ class Strings:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                cmd = "segmentedIndex"
-                args = " {} {} {} {}".format("intIndex", self.objtype, self.entry.name, key)
-                repMsg = generic_msg(cmd=cmd, args=args)
+                repMsg = generic_msg(
+                    cmd="segmentedIndex",
+                    args={"subcmd": "intIndex", "objType": self.objtype, "obj": self.entry, "key": key},
+                )
                 _, value = repMsg.split(maxsplit=1)
                 return parse_single_value(value)
             else:
@@ -290,11 +301,15 @@ class Strings:
         elif isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
             self.logger.debug(f"start: {start}; stop: {stop}; stride: {stride}")
-            cmd = "segmentedIndex"
-            args = " {} {} {} {} {} {}".format(
-                "sliceIndex", self.objtype, self.entry.name, start, stop, stride
+            repMsg = generic_msg(
+                cmd="segmentedIndex",
+                args={
+                    "subcmd": "sliceIndex",
+                    "objType": self.objtype,
+                    "obj": self.entry,
+                    "key": [start, stop, stride],
+                },
             )
-            repMsg = generic_msg(cmd=cmd, args=args)
             return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
@@ -302,9 +317,10 @@ class Strings:
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if kind == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            cmd = "segmentedIndex"
-            args = "{} {} {} {}".format("pdarrayIndex", self.objtype, self.entry.name, key.name)
-            repMsg = generic_msg(cmd=cmd, args=args)
+            repMsg = generic_msg(
+                cmd="segmentedIndex",
+                args={"subcmd": "pdarrayIndex", "objType": self.objtype, "obj": self.entry, "key": key},
+            )
             return Strings.from_return_msg(repMsg)
         else:
             raise TypeError(f"unsupported pdarray index type {key.__class__.__name__}")
@@ -323,9 +339,9 @@ class Strings:
         RuntimeError
             Raised if there is a server-side error thrown
         """
-        cmd = "segmentLengths"
-        args = "{} {}".format(self.objtype, self.entry.name)
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        return create_pdarray(
+            generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
+        )
 
     @typechecked
     def to_lower(self) -> Strings:
@@ -356,7 +372,9 @@ class Strings:
         >>> strings.to_lower()
         array(['strings 0', 'strings 1', 'strings 2', 'strings 3', 'strings 4'])
         """
-        rep_msg = generic_msg(cmd="caseChange", args=f"toLower {self.objtype} {self.entry.name}")
+        rep_msg = generic_msg(
+            cmd="caseChange", args={"subcmd": "toLower", "objType": self.objtype, "obj": self.entry}
+        )
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
@@ -388,7 +406,9 @@ class Strings:
         >>> strings.to_upper()
         array(['STRINGS 0', 'STRINGS 1', 'STRINGS 2', 'STRINGS 3', 'STRINGS 4'])
         """
-        rep_msg = generic_msg(cmd="caseChange", args=f"toUpper {self.objtype} {self.entry.name}")
+        rep_msg = generic_msg(
+            cmd="caseChange", args={"subcmd": "toUpper", "objType": self.objtype, "obj": self.entry}
+        )
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
@@ -419,7 +439,9 @@ class Strings:
         >>> strings.to_title()
         array(['Strings 0', 'Strings 1', 'Strings 2', 'Strings 3', 'Strings 4'])
         """
-        rep_msg = generic_msg(cmd="caseChange", args=f"toTitle {self.objtype} {self.entry.name}")
+        rep_msg = generic_msg(
+            cmd="caseChange", args={"subcmd": "toTitle", "objType": self.objtype, "obj": self.entry}
+        )
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
@@ -453,7 +475,9 @@ class Strings:
         array([True True True False False False])
         """
         return create_pdarray(
-            generic_msg(cmd="checkChars", args=f"isLower {self.objtype} {self.entry.name}")
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isLower", "objType": self.objtype, "obj": self.entry}
+            )
         )
 
     @typechecked
@@ -487,7 +511,9 @@ class Strings:
         array([False False False True True True])
         """
         return create_pdarray(
-            generic_msg(cmd="checkChars", args=f"isUpper {self.objtype} {self.entry.name}")
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isUpper", "objType": self.objtype, "obj": self.entry}
+            )
         )
 
     @typechecked
@@ -522,7 +548,9 @@ class Strings:
         array([False False False True True True])
         """
         return create_pdarray(
-            generic_msg(cmd="checkChars", args=f"isTitle {self.objtype} {self.entry.name}")
+            generic_msg(
+                cmd="checkChars", args={"subcmd": "isTitle", "objType": self.objtype, "obj": self.entry}
+            )
         )
 
     @typechecked
@@ -562,8 +590,9 @@ class Strings:
         """
         if isinstance(chars, bytes):
             chars = chars.decode()
-        args = {"objType": self.objtype, "name": self.entry.name, "chars": chars}
-        rep_msg = generic_msg(cmd="segmentedStrip", args=args)
+        rep_msg = generic_msg(
+            cmd="segmentedStrip", args={"objType": self.objtype, "name": self.entry, "chars": chars}
+        )
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @typechecked
@@ -957,9 +986,12 @@ class Strings:
         matcher = self._get_matcher(substr, create=False)
         if matcher is not None:
             return matcher.get_match(MatchType.SEARCH, self).matched()
-        cmd = "segmentedSearch"
-        args = "{} {} {} {}".format(self.objtype, self.entry.name, "str", json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        return create_pdarray(
+            generic_msg(
+                cmd="segmentedSearch",
+                args={"objType": self.objtype, "obj": self.entry, "valType": "str", "val": substr},
+            )
+        )
 
     @typechecked
     def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
@@ -1227,20 +1259,21 @@ class Strings:
                 )
         if times < 1:
             raise ValueError("times must be >= 1")
-        cmd = "segmentedPeel"
-        args = "{} {} {} {} {} {} {} {} {} {}".format(
-            "peel",
-            self.objtype,
-            self.entry.name,
-            "str",
-            NUMBER_FORMAT_STRINGS["int64"].format(times),
-            NUMBER_FORMAT_STRINGS["bool"].format(includeDelimiter),
-            NUMBER_FORMAT_STRINGS["bool"].format(keepPartial),
-            NUMBER_FORMAT_STRINGS["bool"].format(not fromRight),
-            NUMBER_FORMAT_STRINGS["bool"].format(regex),
-            json.dumps([delimiter]),
+        repMsg = generic_msg(
+            cmd="segmentedPeel",
+            args={
+                "subcmd": "peel",
+                "objType": self.objtype,
+                "obj": self.entry,
+                "valType": "str",
+                "times": NUMBER_FORMAT_STRINGS["int64"].format(times),
+                "id": NUMBER_FORMAT_STRINGS["bool"].format(includeDelimiter),
+                "keepPartial": NUMBER_FORMAT_STRINGS["bool"].format(keepPartial),
+                "lStr": NUMBER_FORMAT_STRINGS["bool"].format(not fromRight),
+                "regex": NUMBER_FORMAT_STRINGS["bool"].format(regex),
+                "delim": delimiter,
+            },
         )
-        repMsg = generic_msg(cmd=cmd, args=args)
         arrays = cast(str, repMsg).split("+", maxsplit=3)
         # first two created are left Strings, last two are right strings
         left_str = Strings.from_return_msg("+".join(arrays[0:2]))
@@ -1367,17 +1400,18 @@ class Strings:
         """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
-        cmd = "segmentedBinopvv"
-        args = "{} {} {} {} {} {} {}".format(
-            "stick",
-            self.objtype,
-            self.entry.name,
-            other.objtype,
-            other.entry.name,
-            NUMBER_FORMAT_STRINGS["bool"].format(toLeft),
-            json.dumps([delimiter]),
+        rep_msg = generic_msg(
+            cmd="segmentedBinopvv",
+            args={
+                "op": "stick",
+                "objType": self.objtype,
+                "obj": self.entry,
+                "otherType": other.objtype,
+                "other": other.entry,
+                "left": NUMBER_FORMAT_STRINGS["bool"].format(toLeft),
+                "delim": delimiter,
+            },
         )
-        rep_msg = generic_msg(cmd=cmd, args=args)
         return Strings.from_return_msg(cast(str, rep_msg))
 
     def __add__(self, other: Strings) -> Strings:
@@ -1444,9 +1478,7 @@ class Strings:
         values is negligible.
         """
         # TODO fix this to return a single pdarray of hashes
-        cmd = "segmentedHash"
-        args = "{} {}".format(self.objtype, self.entry.name)
-        repMsg = generic_msg(cmd=cmd, args=args)
+        repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objtype, "obj": self.entry})
         h1, h2 = cast(str, repMsg).split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
@@ -1480,9 +1512,9 @@ class Strings:
             Raised if there is a server-side error in executing group request or
             creating the pdarray encapsulating the return message
         """
-        cmd = "segmentedGroup"
-        args = "{} {}".format(self.objtype, self.entry.name)
-        return create_pdarray(generic_msg(cmd=cmd, args=args))
+        return create_pdarray(
+            generic_msg(cmd="segmentedGroup", args={"objType": self.objtype, "obj": self.entry})
+        )
 
     def _get_grouping_keys(self) -> List[pdarray]:
         """
@@ -1623,7 +1655,7 @@ class Strings:
             )
         # The reply from the server will be a bytes object
         rep_msg = generic_msg(
-            cmd=CMD_TO_NDARRAY, args="{} {}".format(self.entry.name, comp), recv_binary=True
+            cmd=CMD_TO_NDARRAY, args={"obj": self.entry, "comp": comp}, recv_binary=True
         )
 
         # Make sure the received data has the expected length

@@ -108,9 +108,13 @@ def _in1d_single(
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
         repMsg = generic_msg(
             cmd="segmentedIn1d",
-            args="{} {} {} {} {}".format(
-                pda1.objtype, pda1.entry.name, pda2.objtype, pda2.entry.name, invert
-            ),
+            args={
+                "objType": pda1.objtype,
+                "obj": pda1.entry,
+                "otherType": pda2.objtype,
+                "other": pda2.entry,
+                "invert": invert,
+            },
         )
         return create_pdarray(cast(str, repMsg))
     else:

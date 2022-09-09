@@ -54,14 +54,18 @@ class Matcher:
         if not self.populated or any(
             [getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]
         ):
-            cmd = "segmentedFindLoc"
-            args = "{} {} {} {}".format(
-                self.objtype,
-                self.parent_entry_name,
-                0,  # groupNum is 0 for regular matches
-                json.dumps([self.pattern]),
+            repMsg = cast(
+                str,
+                generic_msg(
+                    cmd="segmentedFindLoc",
+                    args={
+                        "objType": self.objtype,
+                        "parent_name": self.parent_entry_name,
+                        "groupNum": 0,  # groupNum is 0 for regular matches
+                        "pattern": self.pattern,
+                    },
+                ),
             )
-            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
             created_map = json.loads(repMsg)
             self.num_matches = create_pdarray(created_map["NumMatches"])
             self.starts = create_pdarray(created_map["Starts"])
@@ -139,17 +143,21 @@ class Matcher:
         from arkouda.strings import Strings
 
         self.find_locations()
-        cmd = "segmentedFindAll"
-        args = "{} {} {} {} {} {} {}".format(
-            self.objtype,
-            self.parent_entry_name,
-            self.num_matches.name,
-            self.starts.name,
-            self.lengths.name,
-            self.indices.name,
-            return_match_origins,
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedFindAll",
+                args={
+                    "objType": self.objtype,
+                    "parent_name": self.parent_entry_name,
+                    "num_matches": self.num_matches,
+                    "starts": self.starts,
+                    "lengths": self.lengths,
+                    "indices": self.indices,
+                    "rtn_origins": return_match_origins,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_match_origins:
             arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
@@ -165,16 +173,20 @@ class Matcher:
         """
         from arkouda.strings import Strings
 
-        cmd = "segmentedSub"
-        args = "{} {} {} {} {} {}".format(
-            self.objtype,
-            self.parent_entry_name,
-            repl,
-            count,
-            return_num_subs,
-            json.dumps([self.pattern]),
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedSub",
+                args={
+                    "objType": self.objtype,
+                    "obj": self.parent_entry_name,
+                    "repl": repl,
+                    "count": count,
+                    "rtn_num_subs": return_num_subs,
+                    "pattern": self.pattern,
+                },
+            ),
         )
-        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_num_subs:
             arrays = repMsg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
