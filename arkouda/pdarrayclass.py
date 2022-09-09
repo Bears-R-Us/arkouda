@@ -1819,7 +1819,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "is_sorted", "array": pda.name})
+    repMsg = generic_msg(cmd="reduction", args={"op": "is_sorted", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1976,7 +1976,7 @@ def argmax(pda: pdarray) -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args={"op": "argmax", "array": pda.name})
+    repMsg = generic_msg(cmd="reduction", args={"op": "argmax", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
