@@ -223,23 +223,13 @@ or
           :returns: s (string) containing the array data
       
 
-.. class:: CompositeSymEntry : AbstractSymEntry
+.. class:: CompositeSymEntry : GenSymEntry
 
    *
    * The base parent class for SymbolEntries that are composites
    * of other entry types.
    
 
-
-   .. attribute:: var dtype: DType
-
-   .. attribute:: var itemsize: int
-
-   .. attribute:: var size: int = 0
-
-   .. attribute:: var ndim: int = 1
-
-   .. attribute:: var shape: 1*(int) = (0,)
 
    .. method:: proc init(type etype, len: int = 0)
 
