@@ -59,6 +59,11 @@ Classes
 
       
 
+   .. py:attribute:: TIMEDELTA
+      :annotation: = TIMEDELTA
+
+      
+
    .. py:method:: __str__() -> str
 
       Overridden method returns value, which is useful in outputting
@@ -135,6 +140,18 @@ Classes
       :param key: key from the dictionary object
       :type key: str
       :param val: Datetime object ot load from the symbol table
+
+      :rtype: ParameterObject
+
+
+   .. py:method:: _build_timedelta_param(key: str, val) -> ParameterObject
+      :staticmethod:
+
+      Create a ParameterObject from a Timedelta value
+
+      :param key: key from the dictionary object
+      :type key: str
+      :param val: Timedelta object ot load from the symbol table
 
       :rtype: ParameterObject
 

@@ -21,7 +21,7 @@ or
 
 .. enum:: enum MsgFormat { STRING, BINARY }
 
-.. enum:: enum ObjectType { PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME }
+.. enum:: enum ObjectType { PDARRAY, SEGSTRING, LIST, DICT, VALUE, DATETIME, TIMEDELTA }
 
 .. record:: MsgTuple
 
