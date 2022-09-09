@@ -1891,7 +1891,7 @@ class DataFrame(UserDict):
         array(self.columns).register(f"df_columns_{user_defined_name}")
 
         for col, data in self.data.items():
-            data.register(f"df_data_{col}_{data.objtype}_{user_defined_name}")
+            data.register(f"df_data_{data.objtype}_{col}_{user_defined_name}")
 
         self.name = user_defined_name
         return self
@@ -2003,8 +2003,8 @@ class DataFrame(UserDict):
         columns = dict.fromkeys(json.loads(col_resp))
         matches = []
         regEx = compile(
-            f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
-            f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
+            f"^df_data_({pdarray.objtype}|{Strings.objtype}|"
+            f"{Categorical.objtype}|{SegArray.objtype})_.*_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
         for name in list_registry():
@@ -2018,7 +2018,7 @@ class DataFrame(UserDict):
         # Remove duplicates caused by multiple components in Categorical or SegArray and
         # loop through
         for name in set(matches):
-            colName = name.split("_")[2]
+            colName = name.split("_")[3]
             if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
                 cols_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
                 dtype = cols_resp.split()[2]
@@ -2072,8 +2072,8 @@ class DataFrame(UserDict):
 
         matches = []
         regEx = compile(
-            f"^df_data_[a-zA-Z0-9]+_({pdarray.objtype}|{Strings.objtype}|"
-            f"{Categorical.objtype}|{SegArray.objtype})_{user_defined_name}"
+            f"^df_data_({pdarray.objtype}|{Strings.objtype}|"
+            f"{Categorical.objtype}|{SegArray.objtype})_.*_{user_defined_name}"
         )
         # Using the regex, cycle through the registered items and find all the columns in the DataFrame
         for name in list_registry():
@@ -2101,6 +2101,11 @@ class DataFrame(UserDict):
 
         unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
         Strings.unregister_strings_by_name(f"df_columns_{user_defined_name}")
+
+    @staticmethod
+    def from_return_msg(repMsg):
+        parts = repMsg.split("+")
+        print(parts)
 
 
 def sorted(df, column=False):

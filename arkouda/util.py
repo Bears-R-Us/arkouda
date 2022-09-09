@@ -282,15 +282,20 @@ def attach(name: str, dtype: str = "infer"):
     to pull the corresponding parts, otherwise the server will try to infer the type
     """
     repMsg = cast(str, generic_msg(cmd="genericAttach", args={"dtype": dtype, "name": name}))
+    repType = repMsg.split("+")[0]
 
-    if repMsg.split("+")[0] == "categorical":
+    if repType == "categorical":
         return Categorical.from_return_msg(repMsg)
-    elif repMsg.split("+")[0] == "segarray":
-        return SegArray._from_attach_return_msg(repMsg)
-    elif repMsg.split("+")[0] == "series":
+    elif repType == "segarray":
+        return SegArray.from_return_msg(repMsg)
+    elif repType == "series":
         from arkouda.series import Series
 
         return Series.from_return_msg(repMsg)
+    elif repType == "dataframe":
+        from arkouda.dataframe import DataFrame
+
+        return DataFrame.from_return_msg(repMsg)
     else:
         dtype = repMsg.split()[2]
 
