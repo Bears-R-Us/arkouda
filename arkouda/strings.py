@@ -591,7 +591,7 @@ class Strings:
         if isinstance(chars, bytes):
             chars = chars.decode()
         rep_msg = generic_msg(
-            cmd="segmentedStrip", args={"objType": self.objtype, "name": self.entry.name, "chars": chars}
+            cmd="segmentedStrip", args={"objType": self.objtype, "name": self.entry, "chars": chars}
         )
         return Strings.from_return_msg(cast(str, rep_msg))
 
@@ -1266,7 +1266,7 @@ class Strings:
                 "objType": self.objtype,
                 "obj": self.entry,
                 "valType": "str",
-                "val": NUMBER_FORMAT_STRINGS["int64"].format(times),
+                "times": NUMBER_FORMAT_STRINGS["int64"].format(times),
                 "id": NUMBER_FORMAT_STRINGS["bool"].format(includeDelimiter),
                 "keepPartial": NUMBER_FORMAT_STRINGS["bool"].format(keepPartial),
                 "lStr": NUMBER_FORMAT_STRINGS["bool"].format(not fromRight),

@@ -351,8 +351,8 @@ module SegmentedMsg {
       var repMsg: string;
       select dist.toLower() {
           when "uniform" {
-              var minLen = msgArgs.get("min").getIntValue();
-              var maxLen = msgArgs.get("max").getIntValue();
+              var minLen = msgArgs.get("arg1").getIntValue();
+              var maxLen = msgArgs.get("arg2").getIntValue();
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
               var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
@@ -360,8 +360,8 @@ module SegmentedMsg {
               repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
           }
           when "lognormal" {
-              var logMean = msgArgs.get("min").getRealValue();
-              var logStd = msgArgs.get("max").getRealValue();
+              var logMean = msgArgs.get("arg1").getRealValue();
+              var logStd = msgArgs.get("arg2").getRealValue();
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
               var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
@@ -770,7 +770,7 @@ module SegmentedMsg {
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
     const valtype = msgArgs.getValueOf("valType");
-    const times = msgArgs.get("val").getIntValue();
+    const times = msgArgs.get("times").getIntValue();
     const includeDelimiter = msgArgs.get("id").getBoolValue();
     const keepPartial = msgArgs.get("keepPartial").getBoolValue();
     const left = msgArgs.get("lStr").getBoolValue();

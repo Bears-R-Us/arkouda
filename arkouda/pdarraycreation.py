@@ -937,8 +937,8 @@ def random_strings_uniform(
             "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
             "dist": "uniform",
             "chars": characters,
-            "min": NUMBER_FORMAT_STRINGS["int64"].format(minlen),
-            "max": NUMBER_FORMAT_STRINGS["int64"].format(maxlen),
+            "arg1": NUMBER_FORMAT_STRINGS["int64"].format(minlen),
+            "arg2": NUMBER_FORMAT_STRINGS["int64"].format(maxlen),
             "seed": seed,
         },
     )
@@ -1013,8 +1013,8 @@ def random_strings_lognormal(
             "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
             "dist": "lognormal",
             "chars": characters,
-            "min": NUMBER_FORMAT_STRINGS["float64"].format(logmean),
-            "max": NUMBER_FORMAT_STRINGS["float64"].format(logstd),
+            "arg1": NUMBER_FORMAT_STRINGS["float64"].format(logmean),
+            "arg2": NUMBER_FORMAT_STRINGS["float64"].format(logstd),
             "seed": seed,
         },
     )
