@@ -26,10 +26,13 @@ module RandMsg
     proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (lenStr,dtypeStr,aMinStr,aMaxStr,seed) = payload.splitMsgToTuple(5);
-        var len = lenStr:int;
-        var dtype = str2dtype(dtypeStr);
+        
+        var msgArgs = parseMessageArgs(payload, 5);
+        const len = msgArgs.get("size").getIntValue();
+        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
+        const seed = msgArgs.getValueOf("seed");
+        const low = msgArgs.get("low");
+        const high = msgArgs.get("high");
 
         // get next symbol name
         var rname = st.nextName();
@@ -37,12 +40,12 @@ module RandMsg
         // if verbose print action
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
-                                           cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr));
+                                           cmd,len,dtype2str(dtype),rname,low.getValue(),high.getValue()));
         select (dtype) {
             when (DType.Int64) {
                 overMemLimit(8*len);
-                var aMin = aMinStr:int;
-                var aMax = aMaxStr:int;
+                var aMin = low.getIntValue();
+                var aMax = high.getIntValue();
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -55,8 +58,8 @@ module RandMsg
             }
             when (DType.UInt8) {
                 overMemLimit(len);
-                var aMin = aMinStr:uint(8);
-                var aMax = aMaxStr:uint(8);
+                var aMin = low.getUInt8Value();
+                var aMax = high.getUInt8Value();
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -69,8 +72,8 @@ module RandMsg
             }
             when (DType.UInt64) {
                 overMemLimit(len);
-                var aMin = aMinStr:uint;
-                var aMax = aMaxStr:uint;
+                var aMin = low.getUIntValue();
+                var aMax = high.getUIntValue();
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -83,8 +86,8 @@ module RandMsg
             }
             when (DType.Float64) {
                 overMemLimit(8*len);
-                var aMin = aMinStr:real;
-                var aMax = aMaxStr:real;
+                var aMin = low.getRealValue();
+                var aMax = high.getRealValue();
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
                 randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -121,13 +124,13 @@ module RandMsg
 
     proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         var pn = Reflection.getRoutineName();
-        var (lenStr, seed) = payload.splitMsgToTuple(2);
-        var len = lenStr:int;
+        var msgArgs = parseMessageArgs(payload, 2);
+        const len = msgArgs.get("size").getIntValue();
         // Result + 2 scratch arrays
         overMemLimit(3*8*len);
         var rname = st.nextName();
         var entry = new shared SymEntry(len, real);
-        fillNormal(entry.a, seed);
+        fillNormal(entry.a, msgArgs.getValueOf("seed"));
         st.addEntry(rname, entry);
 
         var repMsg = "created " + st.attrib(rname);
