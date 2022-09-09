@@ -302,23 +302,13 @@ module MultiTypeSymEntry
      * The base parent class for SymbolEntries that are composites
      * of other entry types.
      */
-    class CompositeSymEntry:AbstractSymEntry {
-        var dtype: DType; // answer to numpy dtype
-        var itemsize: int; // answer to numpy itemsize = num bytes per elt
-        var size: int = 0; // answer to numpy size == num elts
-        var ndim: int = 1; // answer to numpy ndim == 1-axis for now
-        var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
-
+    class CompositeSymEntry:GenSymEntry {
+        // This class is functionally equivalent to GenSymEntry, but used to denote
+        // a Symbol Table Entry made up of multiple components.
         proc init(type etype, len: int = 0) {
-            super.init();
-            this.entryType = SymbolEntryType.CompositeSymEntry;
-            assignableTypes.add(this.entryType);
-            
-            this.dtype = whichDtype(etype);
-            this.itemsize = dtypeSize(this.dtype);
-            this.size = len;
-            this.shape = (len,);
+            super.init(etype, len);
         }
+
     }
 
     /**
