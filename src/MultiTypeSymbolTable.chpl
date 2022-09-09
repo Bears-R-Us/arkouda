@@ -383,14 +383,10 @@ module MultiTypeSymbolTable
             checkTable(name, "attrib");
 
             var entry = tab.getBorrowed(name);
-            if entry.isAssignableTo(SymbolEntryType.SegStringSymEntry) {
-                var g:SegStringSymEntry = toSegStringSymEntry(entry);
-                return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
-            } else if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) || 
+            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) || 
                     entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
                 var g:GenSymEntry = toGenSymEntry(entry);
                 return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
-
             }
             
             throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));
