@@ -124,7 +124,7 @@ module Message {
                 return this.val:uint(8);
             }
             catch {
-                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint failed".format(this.val),
+                throw new owned ErrorWithContext("Parameter cannot be cast as uint(8). Attempting to cast %s as type uint(8) failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),
