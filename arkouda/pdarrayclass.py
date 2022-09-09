@@ -1949,7 +1949,6 @@ def argmin(pda: pdarray) -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    # using .name due to issues with Datetime
     repMsg = generic_msg(cmd="reduction", args={"op": "argmin", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
