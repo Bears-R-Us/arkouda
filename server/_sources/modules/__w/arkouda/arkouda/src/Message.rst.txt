@@ -130,6 +130,8 @@ or
       * Returns uint
       
 
+   .. method:: proc getUInt8Value(): uint(8) throws
+
    .. method:: proc getRealValue(): real throws
 
       
