@@ -39,7 +39,7 @@ When reporting a bug, please be sure to include the following information:
   - Please provide code that will reproduce the problem if possible.
 Providing simplified programs demonstrating the problem will be appreciated.
 - Configuration Information
-  - What's the output of `ak.get_config()['arkoudaVersion']`?
+  - What's the output of `ak.get_config()`? This includes information like the `ArkoudaVersion` and the version of Chapel the server was built with.
 
 <a id="feature-requests"></a>
 ### Feature Requests <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
