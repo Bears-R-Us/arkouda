@@ -338,9 +338,10 @@ class GroupBy:
         >>> counts
         array([1, 2, 4, 3])
         """
-        cmd = "countReduction"
-        args = "{} {}".format(cast(pdarray, self.segments).name, self.length)
-        repMsg = generic_msg(cmd=cmd, args=args)
+        repMsg = generic_msg(
+            cmd="countReduction",
+            args={"segments": cast(pdarray, self.segments), "size": self.length},
+        )
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
 
@@ -415,9 +416,15 @@ class GroupBy:
         else:
             permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
 
-        cmd = "segmentedReduction"
-        args = "{} {} {} {}".format(permuted_values.name, self.segments.name, operator, skipna)
-        repMsg = generic_msg(cmd=cmd, args=args)
+        repMsg = generic_msg(
+            cmd="segmentedReduction",
+            args={
+                "values": permuted_values,
+                "segments": self.segments,
+                "op": operator,
+                "skip_nan": skipna,
+            },
+        )
         self.logger.debug(repMsg)
         if operator.startswith("arg"):
             return (

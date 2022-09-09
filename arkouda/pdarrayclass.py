@@ -1767,7 +1767,7 @@ def any(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("any", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "any", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1793,7 +1793,7 @@ def all(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("all", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "all", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1819,7 +1819,7 @@ def is_sorted(pda: pdarray) -> np.bool_:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("is_sorted", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "is_sorted", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1845,7 +1845,7 @@ def sum(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("sum", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "sum", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1872,7 +1872,7 @@ def prod(pda: pdarray) -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("prod", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "prod", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1897,7 +1897,7 @@ def min(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("min", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "min", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1923,7 +1923,7 @@ def max(pda: pdarray) -> numpy_scalars:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("max", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "max", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1949,7 +1949,7 @@ def argmin(pda: pdarray) -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("argmin", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "argmin", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 
@@ -1975,7 +1975,7 @@ def argmax(pda: pdarray) -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    repMsg = generic_msg(cmd="reduction", args="{} {}".format("argmax", pda.name))
+    repMsg = generic_msg(cmd="reduction", args={"op": "argmax", "array": pda})
     return parse_single_value(cast(str, repMsg))
 
 

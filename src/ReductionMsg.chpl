@@ -30,8 +30,9 @@ module ReductionMsg
     proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
-        // split request into fields
-        var (reductionop, name) = payload.splitMsgToTuple(2);
+        var msgArgs = parseMessageArgs(payload, 2);
+        const reductionop = msgArgs.getValueOf("op");
+        const name = msgArgs.getValueOf("array");
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "cmd: %s reductionop: %s name: %s".format(cmd,reductionop,name));
 
@@ -270,8 +271,9 @@ module ReductionMsg
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'segments_name' describes the segment offsets
-      var (segments_name, sizeStr) = payload.splitMsgToTuple(2);
-      var size = try! sizeStr:int;
+      var msgArgs = parseMessageArgs(payload, 2);
+      const segments_name = msgArgs.getValueOf("segments");
+      const size = msgArgs.get("size").getIntValue();
       var rname = st.nextName();
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "cmd: %s segments_name: %s size: %s".format(cmd,segments_name, size));
@@ -312,8 +314,11 @@ module ReductionMsg
         // 'values_name' is the segmented array of values to be reduced
         // 'segments_name' is the sement offsets
         // 'op' is the reduction operator
-        var (values_name, segments_name, op, skip_nan) = payload.splitMsgToTuple(4);
-        var skipNan = stringtobool(skip_nan);
+        var msgArgs = parseMessageArgs(payload, 4);
+        const skipNan = msgArgs.get("skip_nan").getBoolValue();
+        const values_name = msgArgs.getValueOf("values");
+        const segments_name = msgArgs.getValueOf("segments");
+        const op = msgArgs.getValueOf("op");
       
         var rname = st.nextName();
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
