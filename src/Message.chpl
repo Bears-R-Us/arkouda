@@ -5,6 +5,7 @@ module Message {
     use ServerErrors;
     use NumPyDType;
     use Map;
+    use List;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -55,7 +56,7 @@ module Message {
 
         proc init() {}
 
-        proc init(key: string, val: string, objType: string, dtype: string) {
+        proc init(key: string, val: string, objType: ObjectType, dtype: string) {
             this.key = key;
             this.val = val;
             this.objType = objType;
@@ -73,6 +74,22 @@ module Message {
 
         proc getJSON() throws {
             return "%jt".format(this);
+        }
+
+        proc setKey(value: string) {
+            this.key = value;
+        }
+
+        proc setVal(value: string) {
+            this.val = value;
+        }
+
+        proc setObjType(value: ObjectType) {
+            this.ObjectType = value;
+        }
+
+        proc setDType(value: string) {
+            this.dtype = value;
         }
 
         /*
@@ -243,6 +260,22 @@ module Message {
         proc init(param_list: [?aD] ?t) {
             this.param_list = param_list;
             this.size = param_list.size;
+        }
+
+        proc getJSON(keys: list(string) = list(string)): string throws {
+            var s: int = if keys.isEmpty() then this.size else keys.size;
+            var json: [0..#s] string;
+            var idx: int = 0;
+            for p in this.param_list {
+                if (keys.isEmpty() || keys.contains(p.key)) {
+                    json[idx] = p.getJSON();
+                    idx += 1;
+                }
+                if idx > s {
+                    break;
+                }
+            }
+            return "%jt".format(json);
         }
 
         /*
