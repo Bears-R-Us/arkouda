@@ -263,11 +263,12 @@ module Message {
         }
 
         proc getJSON(keys: list(string) = list(string)): string throws {
-            var s: int = if keys.isEmpty() then this.size else keys.size;
+            const noKeys: bool = keys.isEmpty();
+            var s: int = if noKeys then this.size else keys.size;
             var json: [0..#s] string;
             var idx: int = 0;
             for p in this.param_list {
-                if (keys.isEmpty() || keys.contains(p.key)) {
+                if (noKeys || keys.contains(p.key)) {
                     json[idx] = p.getJSON();
                     idx += 1;
                 }
