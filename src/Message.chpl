@@ -377,7 +377,7 @@ module Message {
         var w = f.writer();
         w.write(json);
         w.close();
-        var r = f.reader(start=0);
+        var r = f.reader();
         var array: [0..#size] string;
         r.readf("%jt", array);
         r.close();
