@@ -39,7 +39,7 @@ module GenSymIO {
         try {
             dtype = str2dtype(msgArgs.getValueOf("dtype"));
             size = msgArgs.get("size").getIntValue();
-            asSegStr = msgArgs.get("asSegStr").getBoolValue();
+            asSegStr = msgArgs.get("seg_string").getBoolValue();
         } catch {
             var errorMsg = "Error parsing/decoding either dtypeBytes or size";
             gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
@@ -71,7 +71,7 @@ module GenSymIO {
         } else if dtype == DType.UInt8 {
             rname = bytesToSymEntry(size, uint(8), st, data);
         } else {
-            msg = "Unhandled data type %s".format(dtypeBytes);
+            msg = "Unhandled data type %s".format(msgArgs.getValueOf("dtype"));
             msgType = MsgType.ERROR;
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
         }
