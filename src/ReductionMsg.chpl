@@ -536,7 +536,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, t); // = [v in values] (false, v);
-      if isFloatType(t) && skipNan {
+      if isRealType(t) && skipNan {
         forall (fv, val) in zip(flagvalues, values) {
           fv = if isnan(val) then (false, 0.0) else (false, val);
         }
@@ -645,7 +645,7 @@ module ReductionMsg
       // Take absolute value, replacing zeros with ones
       // Ones will become zeros in log-domain and not affect + scan
       var magnitudes: [values.domain] real;
-      if (isFloatType(t) && skipNan) {
+      if (isRealType(t) && skipNan) {
         forall (m, v, z) in zip(magnitudes, values, isZero) {
           if isnan(v) {
             m = 1.0;
@@ -679,7 +679,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var sums;
       var counts;
-      if (isFloatType(t) && skipNan) {
+      if (isRealType(t) && skipNan) {
         // count cumulative nans over all values
         var cumnans = isnan(values):int;
         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -722,7 +722,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
-      if (isFloatType(t) && skipNan) {
+      if (isRealType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
       } else {
@@ -750,7 +750,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
-      if (isFloatType(t) && skipNan) {
+      if (isRealType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       } else {
