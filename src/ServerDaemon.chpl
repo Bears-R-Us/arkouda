@@ -708,13 +708,13 @@ module ServerDaemon {
     proc getServerDaemon(daemonType: ServerDaemonType) : shared ArkoudaServerDaemon throws {
         select daemonType {
             when ServerDaemonType.DEFAULT {
-                return new DefaultServerDaemon():ArkoudaServerDaemon;
+                return new shared DefaultServerDaemon();
             }
             when ServerDaemonType.INTEGRATION {
-                return new ExternalIntegrationServerDaemon():ArkoudaServerDaemon;
+                return new shared ExternalIntegrationServerDaemon();
             }
             when ServerDaemonType.METRICS {
-               return new MetricsServerDaemon():ArkoudaServerDaemon;
+               return new shared MetricsServerDaemon();
             }
             otherwise {
                 throw getErrorWithContext(
