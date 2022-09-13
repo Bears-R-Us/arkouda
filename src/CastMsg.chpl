@@ -6,7 +6,6 @@ module CastMsg {
   use ServerErrors;
   use Logging;
   use Message;
-  use SysError;
   use ServerErrorStrings;
   use ServerConfig;
   use Cast;
