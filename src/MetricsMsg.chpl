@@ -10,7 +10,7 @@ module MetricsMsg {
     use MultiTypeSymEntry;
     use Message;
     use Memory.Diagnostics;
-    use DateTime;
+    use ArkoudaDateTimeCompat;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
