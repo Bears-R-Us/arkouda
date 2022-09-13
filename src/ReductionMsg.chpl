@@ -348,6 +348,10 @@ module ReductionMsg
                         var res = segMean(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
+                    when "median" {
+                        var res = segMedian(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "min" {
                         var res = segMin(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -400,6 +404,10 @@ module ReductionMsg
                     }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "median" {
+                        var res = segMedian(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
                     when "min" {
@@ -456,6 +464,10 @@ module ReductionMsg
                         var res = segMean(values.a, segments.a, skipNan);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
+                    when "median" {
+                        var res = segMedian(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "min" {
                         var res = segMin(values.a, segments.a, skipNan);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -478,27 +490,31 @@ module ReductionMsg
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                }
-           }
-           when (DType.Bool) {
-               var values = toSymEntry(gVal, bool);
-               select op {
-                   when "sum" {
-                      var res = segSum(values.a, segments.a);
-                      st.addEntry(rname, new shared SymEntry(res));
-                   }
-                   when "any" {
-                      var res = segAny(values.a, segments.a);
-                      st.addEntry(rname, new shared SymEntry(res));
-                   }
-                   when "all" {
-                      var res = segAll(values.a, segments.a);
-                      st.addEntry(rname, new shared SymEntry(res));
-                   }
-                   when "mean" {
-                      var res = segMean(values.a, segments.a);
-                      st.addEntry(rname, new shared SymEntry(res));
-                   }
-                   when "argmin" {
+            }
+            when (DType.Bool) {
+                var values = toSymEntry(gVal, bool);
+                select op {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "any" {
+                        var res = segAny(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "all" {
+                        var res = segAll(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "mean" {
+                        var res = segMean(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "median" {
+                        var res = segMedian(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "argmin" {
                         var (vals, locs) = segArgmin(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(locs));
                     }
@@ -506,18 +522,18 @@ module ReductionMsg
                         var (vals, locs) = segArgmax(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(locs));
                     }
-                   otherwise {
-                       var errorMsg = notImplementedError(pn,op,gVal.dtype);
-                       rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                       return new MsgTuple(errorMsg, MsgType.ERROR);                 
-                   }
-               }
-           }
-           otherwise {
-               var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
-               rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-               return new MsgTuple(errorMsg, MsgType.ERROR);
-           }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+          otherwise {
+              var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
+              rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
        }
        var repMsg = "created " + st.attrib(rname);
        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -712,6 +728,75 @@ module ReductionMsg
       forall (r, s, c) in zip(res, sums, counts) {
         if (c > 0) {
           r = s:real / c:real;
+        }
+      }
+      return res;
+    }
+
+    proc segMedian(values:[?vD] ?intype, segments:[?D] int, skipNan=false): [D] real throws {
+      type t = if intype == bool then int else intype;
+      var res: [D] real;
+      if (D.size == 0) { return res; }
+
+      var counts = segCount(segments, values.size);
+      var noNanVals = values: t;
+      // First deal with any NANs
+      if isRealType(t) && skipNan {
+        // count cumulative nans over all values
+        var cumnans = isnan(values):int;
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * values.size);
+        cumnans = + scan cumnans;
+
+        // find cumulative nans at segment boundaries
+        var segnans: [D] int;
+        forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
+          if si == D.high {
+            agg.copy(sn, cumnans[cumnans.domain.high]);
+          } else {
+            agg.copy(sn, cumnans[segments[si+1]-1]);
+          }
+        }
+
+        // take diffs of adjacent segments to find nan count in each segment
+        var nancounts: [D] int;
+        nancounts[D.low] = segnans[D.low];
+        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
+
+        // calculate counts with nan values excluded and replace nan with max(real)
+        // this will force them at the very end of the sorted segment and since
+        // counts has been corrected, they won't affect the result
+        noNanVals = [elem in values] if isnan(elem) then max(real) else elem;
+        counts -= nancounts;
+      }
+
+      // then sort values within their segment (from segNumUnique)
+      // keys will indicate which segment we are in
+      const keys = expandKeys(vD, segments);
+      const firstIV = radixSortLSD_ranks(noNanVals);
+      var intermediate: [vD] int;
+      forall (ii, idx) in zip(intermediate, firstIV) with (var agg = newSrcAggregator(int)) {
+          agg.copy(ii, keys[idx]);
+      }
+      const deltaIV = radixSortLSD_ranks(intermediate);
+      var IV: [vD] int;
+      forall (IVi, idx) in zip(IV, deltaIV) with (var agg = newSrcAggregator(int)) {
+          agg.copy(IVi, firstIV[idx]);
+      }
+      var sortedVals: [vD] t;
+      forall (sv, idx) in zip(sortedVals, IV) with (var valsAgg = newSrcAggregator(t)) {
+        valsAgg.copy(sv, noNanVals[idx]);
+      }
+
+      // Now that we have sorted segments, grab the middle element
+      forall (s, c, r) in zip(segments, counts, res) with (var resAgg = newSrcAggregator(real)) {
+        if c % 2 != 0 {
+          // odd case: grab middle of sorted values
+          resAgg.copy(r, sortedVals[s + (c + 1)/2 - 1]:real);
+        }
+        else {
+          // even case: average the 2 middles of the sorted values
+          resAgg.copy(r, (sortedVals[s + c/2 - 1]:real + sortedVals[s + c/2]:real) / 2.0 );
         }
       }
       return res;
@@ -1142,12 +1227,6 @@ module ReductionMsg
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                    "time = %i".format(Time.getCurrentTime() - t1));
       return res;
-    }
-
-    proc stringtobool(str: string): bool throws {
-      if str == "True" then return true;
-      else if str == "False" then return false;
-      throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
 
     use CommandMap;

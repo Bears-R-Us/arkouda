@@ -142,6 +142,7 @@ class GroupByReductionType(enum.Enum):
     SUM = "sum"
     PROD = "prod"
     MEAN = "mean"
+    MEDIAN = "median"
     MIN = "min"
     MAX = "max"
     ARGMIN = "argmin"
@@ -574,6 +575,53 @@ class GroupBy:
         (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
         """
         k, v = self.aggregate(values, "mean", skipna)
+        return k, cast(pdarray, v)
+
+    def median(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
+        """
+        Using the permutation stored in the GroupBy instance, group
+        another array of values and compute the median of each group's
+        values.
+
+        Parameters
+        ----------
+        values : pdarray
+            The values to group and find median
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        group_means : pdarray, float64
+            One median value per unique key in the GroupBy instance
+
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
+        Notes
+        -----
+        The return dtype is always float64.
+
+        Examples
+        --------
+        >>> a = ak.randint(1,5,9)
+        >>> a
+        array([4 1 4 3 2 2 2 3 3])
+        >>> g = ak.GroupBy(a)
+        >>> g.keys
+        array([4 1 4 3 2 2 2 3 3])
+        >>> b = ak.linspace(-5,5,9)
+        >>> b
+        array([-5 -3.75 -2.5 -1.25 0 1.25 2.5 3.75 5])
+        >>> g.median(b)
+        (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
+        """
+        k, v = self.aggregate(values, "median", skipna)
         return k, cast(pdarray, v)
 
     def min(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
