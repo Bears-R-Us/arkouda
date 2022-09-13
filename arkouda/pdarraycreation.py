@@ -226,9 +226,11 @@ def array(
                 f"allowed transfer size. Increase ak.maxTransferBytes to force."
             )
         encoded_np = np.array(encoded, dtype=np.uint8)
-        args = f"{encoded_np.dtype.name} {encoded_np.size} seg_string={True}"
         rep_msg = generic_msg(
-            cmd="array", args=args, payload=_array_memview(encoded_np), send_binary=True
+            cmd="array",
+            args={"dtype": encoded_np.dtype.name, "size": encoded_np.size, "seg_string": True},
+            payload=_array_memview(encoded_np),
+            send_binary=True,
         )
         parts = cast(str, rep_msg).split("+", maxsplit=3)
         return (
@@ -249,8 +251,12 @@ def array(
     # than our numpy array we need to swap to match since the server expects
     # native endian bytes
     aview = _array_memview(a)
-    args = f"{a.dtype.name} {size} seg_strings={False}"
-    rep_msg = generic_msg(cmd="array", args=args, payload=aview, send_binary=True)
+    rep_msg = generic_msg(
+        cmd="array",
+        args={"dtype": a.dtype.name, "size": size, "seg_string": False},
+        payload=aview,
+        send_binary=True,
+    )
     return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
 
 
@@ -307,7 +313,7 @@ def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = flo
     # check dtype for error
     if cast(np.dtype, dtype).name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args="{} {}".format(cast(np.dtype, dtype).name, str(size)))
+    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
 
     return create_pdarray(repMsg)
 
@@ -356,7 +362,7 @@ def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = floa
     # check dtype for error
     if cast(np.dtype, dtype).name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args="{} {}".format(cast(np.dtype, dtype).name, str(size)))
+    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(1)
     return a
@@ -410,7 +416,7 @@ def full(
     # check dtype for error
     if cast(np.dtype, dtype).name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args="{} {}".format(cast(np.dtype, dtype).name, str(size)))
+    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(fill_value)
     return a

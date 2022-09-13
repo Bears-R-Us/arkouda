@@ -29,10 +29,10 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc registerMsg(cmd: string, payload: string,  
+    proc registerMsg(cmd: string, payload: string, argSize: int,
                                         st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 2);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const userDefinedName = msgArgs.getValueOf("user_name");
 
@@ -67,11 +67,11 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc attachMsg(cmd: string, payload: string, 
+    proc attachMsg(cmd: string, payload: string, argSize: int,
                                           st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
 
-        var msgArgs = parseMessageArgs(payload, 1);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name");
 
         // if verbose print action
@@ -334,10 +334,10 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc genAttachMsg(cmd: string, payload: string, 
+    proc genAttachMsg(cmd: string, payload: string, argSize: int,
                                             st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 2);
+        var msgArgs = parseMessageArgs(payload, argSize);
         var dtype = msgArgs.getValueOf("dtype");
         const name = msgArgs.getValueOf("name");
 
@@ -355,7 +355,7 @@ module RegistrationMsg
             when ("simple") {
                 var json: [0..#1] string = [msgArgs.get("name").getJSON()];
                 // pdarray and strings can use the attachMsg method
-                return attachMsg(cmd, "%jt".format(json), st);
+                return attachMsg(cmd, "%jt".format(json), json.size, st);
             }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
@@ -403,11 +403,11 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc unregisterMsg(cmd: string, payload: string, 
+    proc unregisterMsg(cmd: string, payload: string, argSize: int,
                                       st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         // split request into fields
-        var msgArgs = parseMessageArgs(payload, 1);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name");
 
         // if verbose print action
@@ -422,8 +422,8 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc unregisterByNameMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, 2);
+    proc unregisterByNameMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, argSize);
         var dtype = msgArgs.getValueOf("dtype");
         const name = msgArgs.getValueOf("name");
         var status = "";
@@ -442,7 +442,7 @@ module RegistrationMsg
             when ("simple") {
                 // pdarray and strings can use the unregisterMsg method without any other processing
                 var json: [0..#1] string = [msgArgs.get("name").getJSON()];
-                return unregisterMsg(cmd, "%jt".format(json), st);
+                return unregisterMsg(cmd, "%jt".format(json), json.size, st);
             }
             when ("categorical") {
                 // Create an array with 5 strings, one for each component of categorical, and assign the names
@@ -465,7 +465,7 @@ module RegistrationMsg
                     if n != "" {
                         base_json.set("val", n);
                         var json: [0..#1] string = ["%jt".format(base_json)];
-                        var resp = unregisterMsg(cmd, "%jt".format(json), st);
+                        var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
                         status += " %s: %s ".format(n, resp.msg);
                     }
                 }
@@ -482,7 +482,7 @@ module RegistrationMsg
                 for n in nameList {
                     base_json.set("val", n);
                     var json: [0..#1] string = ["%jt".format(base_json)];
-                    var resp = unregisterMsg(cmd, "%jt".format(json), st);
+                    var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }
@@ -510,7 +510,7 @@ module RegistrationMsg
                 forall n in nameList with (in base_json, + reduce status) {
                     base_json.set("val", n);
                     var json: [0..#1] string = ["%jt".format(base_json)];
-                    var resp = unregisterMsg(cmd, "%jt".format(json), st);
+                    var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }

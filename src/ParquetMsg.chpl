@@ -528,9 +528,9 @@ module ParquetMsg {
     return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS, compressed, mode);
   }
 
-  proc readAllParquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc readAllParquetMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, 7);
+    var msgArgs = parseMessageArgs(payload, argSize);
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
     var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
@@ -697,8 +697,8 @@ module ParquetMsg {
     return new list(datasets.split(","));
   }
   
-  proc toparquetMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var msgArgs = parseMessageArgs(payload, 7);
+  proc toparquetMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    var msgArgs = parseMessageArgs(payload, argSize);
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
     var entry = st.lookup(msgArgs.getValueOf("values"));
@@ -771,10 +771,10 @@ module ParquetMsg {
     }
   }
 
-  proc lspqMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc lspqMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
     // reqMsg: "lshdf [<json_filename>]"
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, 1);
+    var msgArgs = parseMessageArgs(payload, argSize);
 
     // Retrieve filename from payload
     var filename: string = msgArgs.getValueOf("filename");
@@ -829,9 +829,9 @@ module ParquetMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc nullIndicesMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc nullIndicesMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, 4);
+    var msgArgs = parseMessageArgs(payload, argSize);
 
     var ndsets = msgArgs.get("dset_size").getIntValue();
     var nfiles = msgArgs.get("filename_size").getIntValue();

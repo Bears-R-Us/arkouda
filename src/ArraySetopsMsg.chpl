@@ -36,17 +36,16 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc intersect1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc intersect1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
-        var isUnique = stringtobool(assume_unique);
+        var msgArgs = parseMessageArgs(payload, argSize);
+        var isUnique = msgArgs.get("assume_unique").getBoolValue();
         
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg1"), st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg2"), st);
         
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -92,17 +91,16 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc setxor1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setxor1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
-        var isUnique = stringtobool(assume_unique);
+        var msgArgs = parseMessageArgs(payload, argSize);
+        var isUnique = msgArgs.get("assume_unique").getBoolValue();
 
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg1"), st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg2"), st);
 
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -148,17 +146,16 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc setdiff1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setdiff1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
-        var isUnique = stringtobool(assume_unique);
+        var msgArgs = parseMessageArgs(payload, argSize);
+        var isUnique = msgArgs.get("assume_unique").getBoolValue();
 
         var vname = st.nextName();
 
-        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
+        var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg1"), st);
+        var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg2"), st);
 
         var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
         var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
@@ -204,16 +201,15 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc union1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc union1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-        // split request into fields
-      var (name, name2) = payload.splitMsgToTuple(2);
+      var msgArgs = parseMessageArgs(payload, argSize);
 
       var vname = st.nextName();
 
-      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(name2, st);
+      var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg1"), st);
+      var gEnt2: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("arg2"), st);
       
       var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
       var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);

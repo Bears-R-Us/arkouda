@@ -33,11 +33,11 @@ module OperatorMsg
       :returns: (MsgTuple) 
       :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
+    proc binopvvMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const op = msgArgs.getValueOf("op");
         const aname = msgArgs.getValueOf("a");
         const bname = msgArgs.getValueOf("b");
@@ -263,11 +263,11 @@ module OperatorMsg
       :returns: (MsgTuple) 
       :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc binopvsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
 
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const aname = msgArgs.getValueOf("a");
         const op = msgArgs.getValueOf("op");
         const value = msgArgs.get("value");
@@ -481,11 +481,11 @@ module OperatorMsg
       :returns: (MsgTuple) 
       :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc binopsvMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
 
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const op = msgArgs.getValueOf("op");
         const aname = msgArgs.getValueOf("a");
         const value = msgArgs.get("value");
@@ -705,11 +705,11 @@ module OperatorMsg
     :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc opeqvvMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
 
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const op = msgArgs.getValueOf("op");
         const aname = msgArgs.getValueOf("a");
         const bname = msgArgs.getValueOf("b");
@@ -881,11 +881,11 @@ module OperatorMsg
     :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc opeqvsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
 
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const op = msgArgs.getValueOf("op");
         const aname = msgArgs.getValueOf("a");
         const value = msgArgs.get("value");

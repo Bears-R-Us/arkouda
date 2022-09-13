@@ -33,8 +33,8 @@ module IndexingMsg
         return tup;
     }
 
-    proc arrayViewMixedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, 5);
+    proc arrayViewMixedIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, argSize);
         var ndim = msgArgs.get("ndim").getIntValue();
         const pdaName = msgArgs.getValueOf("base");
         const indexDimName = msgArgs.getValueOf("index_dim");
@@ -122,9 +122,9 @@ module IndexingMsg
     }
 
     /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
-    proc arrayViewIntIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc arrayViewIntIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const pdaName = msgArgs.getValueOf("base");
         const dimProdName = msgArgs.getValueOf("dim_prod");
         const coordsName = msgArgs.getValueOf("coords");
@@ -144,18 +144,32 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 const json: [0..#2] string = [arrParam.getJSON(), idxParam.getJSON()];
                 return intIndexMsg(cmd, "%jt".format(json), st);
+=======
+                idxMap.add("dtype", "int");
+                idxMap.add("val", idx: string);
+                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
+                return intIndexMsg(cmd, "%jt".format(json), json.size, st);
+>>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 const json: [0..#2] string = [arrParam.getJSON(), idxParam.getJSON()];
                 return intIndexMsg(cmd, "%jt".format(json), st);
+=======
+                idxMap.add("dtype", "uint");
+                idxMap.add("val", idx: string);
+                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
+                return intIndexMsg(cmd, "%jt".format(json), json.size, st);
+>>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -166,9 +180,9 @@ module IndexingMsg
     }
 
     /* arrayViewIntIndexAssignMsg "av[int_list]=value" response to __getitem__(int_list) where av is an ArrayView */
-    proc arrayViewIntIndexAssignMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc arrayViewIntIndexAssignMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var msgArgs = parseMessageArgs(payload, 5);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const pdaName = msgArgs.getValueOf("base");
         const dimProdName = msgArgs.getValueOf("dim_prod");
         const coordsName = msgArgs.getValueOf("coords");
@@ -192,18 +206,32 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
+<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var json: [0..#4] string = [arrParam.getJSON(), valJSON, dtypeJSON, idxParam.getJSON()];
                 return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
+=======
+                idxMap.add("val", idx:string);
+                idxMap.add("dtype", "int");
+                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
+                return setIntIndexToValueMsg(cmd, "%jt".format(json), json.size, st);
+>>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
+<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 var json: [0..#4] string = [arrParam.getJSON(), valJSON, dtypeJSON, idxParam.getJSON()];
                 return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
+=======
+                idxMap.add("val", idx:string);
+                idxMap.add("dtype", "uint");
+                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
+                return setIntIndexToValueMsg(cmd, "%jt".format(json), json.size, st);
+>>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -214,10 +242,10 @@ module IndexingMsg
     }
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc intIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 2);
+        var msgArgs = parseMessageArgs(payload, argSize);
         var idx = msgArgs.get("idx").getIntValue();
         const name = msgArgs.getValueOf("array");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -276,10 +304,10 @@ module IndexingMsg
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    proc sliceIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc sliceIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const start = msgArgs.get("start").getIntValue();
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();
@@ -329,10 +357,10 @@ module IndexingMsg
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
-    proc pdarrayIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc pdarrayIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 2);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const iname = msgArgs.getValueOf("idx");
 
@@ -499,10 +527,10 @@ module IndexingMsg
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    proc setIntIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setIntIndexToValueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const idx = msgArgs.get("idx").getIntValue();
         var dtype = str2dtype(msgArgs.getValueOf("dtype"));
@@ -610,10 +638,10 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
-    proc setPdarrayIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setPdarrayIndexToValueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 4);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         const name = msgArgs.getValueOf("array");
         const iname = msgArgs.getValueOf("idx");
@@ -766,10 +794,10 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
-    proc setPdarrayIndexToPdarrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setPdarrayIndexToPdarrayMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const iname = msgArgs.getValueOf("idx");
         const yname = msgArgs.getValueOf("value");
@@ -941,10 +969,10 @@ module IndexingMsg
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    proc setSliceIndexToValueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setSliceIndexToValueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 6);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const start = msgArgs.get("start").getIntValue();
         const stop = msgArgs.get("stop").getIntValue();
@@ -1056,10 +1084,10 @@ module IndexingMsg
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc setSliceIndexToPdarrayMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 5);
+        var msgArgs = parseMessageArgs(payload, argSize);
         const start = msgArgs.get("start").getIntValue();
         const stop = msgArgs.get("stop").getIntValue();
         const stride = msgArgs.get("stride").getIntValue();

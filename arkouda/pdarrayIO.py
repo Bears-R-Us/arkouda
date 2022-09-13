@@ -464,7 +464,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     if not (fname and fname.strip()):
         raise ValueError("filename cannot be an empty string")
 
-    return cast(str, generic_msg(cmd="getfiletype", args="{}".format(json.dumps([fname]))))
+    return cast(str, generic_msg(cmd="getfiletype", args={"filename": fname}))
 
 
 @typechecked

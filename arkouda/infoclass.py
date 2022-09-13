@@ -68,10 +68,10 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
     """
     if isinstance(names, str):
         if names in [AllSymbols, RegisteredSymbols]:
-            return cast(str, generic_msg(cmd="info", args="{}".format(names)))
+            return cast(str, generic_msg(cmd="info", args={"names": names}))
         else:
             names = [names]  # allows user to call ak.information(pda.name)
-    return cast(str, generic_msg(cmd="info", args=json.dumps(names)))
+    return cast(str, generic_msg(cmd="info", args={"names": json.dumps(names)}))
 
 
 def list_registry() -> List[str]:

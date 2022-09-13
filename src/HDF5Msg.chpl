@@ -47,10 +47,10 @@ module HDF5Msg {
      * :returns: string formatted as json list
      * i.e. ["_arkouda_metadata", "pda1", "s1"]
      */
-    proc lshdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc lshdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         // reqMsg: "lshdf [<json_filename>]"
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, 1);
+        var msgArgs = parseMessageArgs(payload, argSize);
 
         // Retrieve filename from payload
         var filename: string = msgArgs.getValueOf("filename");
@@ -1774,9 +1774,9 @@ module HDF5Msg {
     /**
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
-    proc readAllHdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc readAllHdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, 7);
+        var msgArgs = parseMessageArgs(payload, argSize);
         var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
         var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false
@@ -2054,8 +2054,8 @@ module HDF5Msg {
         return new MsgTuple(repMsg,MsgType.NORMAL);
     }
 
-    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, 7);
+    proc tohdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, argSize);
         var mode = msgArgs.get("mode").getIntValue();
         var filename: string = msgArgs.getValueOf("prefix");
         var entry = st.lookup(msgArgs.getValueOf("values"));

@@ -403,17 +403,17 @@ class RegistrationTest(ArkoudaTest):
         # registered objects are not deleted from symbol table
         a.register("keep")
         self.assertEqual(
-            ak.client.generic_msg(cmd="delete", args=a.name), f"registered symbol, {a.name}, not deleted"
+            ak.client.generic_msg(cmd="delete", args={"name": a.name}), f"registered symbol, {a.name}, not deleted"
         )
         self.assertTrue(a.name in ak.list_symbol_table())
 
         # non-registered objects are deleted from symbol table
-        self.assertEqual(ak.client.generic_msg(cmd="delete", args=b.name), "deleted " + b.name)
+        self.assertEqual(ak.client.generic_msg(cmd="delete", args={"name": b.name}), "deleted " + b.name)
         self.assertTrue(b.name not in ak.list_symbol_table())
 
         # RuntimeError when calling delete on an object not in the symbol table
         with self.assertRaises(RuntimeError):
-            ak.client.generic_msg(cmd="delete", args="not_in_table")
+            ak.client.generic_msg(cmd="delete", args={"name": "not_in_table"})
 
     def test_categorical_registration_suite(self):
         """

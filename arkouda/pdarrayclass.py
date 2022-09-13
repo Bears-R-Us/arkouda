@@ -184,7 +184,7 @@ class pdarray:
     def __del__(self):
         try:
             logger.debug(f"deleting pdarray with name {self.name}")
-            generic_msg(cmd="delete", args="{}".format(self.name))
+            generic_msg(cmd="delete", args={"name": self.name})
         except RuntimeError:
             pass
 
@@ -202,12 +202,12 @@ class pdarray:
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
 
-        return generic_msg(cmd="str", args="{} {}".format(self.name, pdarrayIterThresh))
+        return generic_msg(cmd="str", args={"array": self, "printThresh": pdarrayIterThresh})
 
     def __repr__(self):
         from arkouda.client import pdarrayIterThresh
 
-        return generic_msg(cmd="repr", args="{} {}".format(self.name, pdarrayIterThresh))
+        return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
     def format_other(self, other: object) -> str:
         """
@@ -657,8 +657,7 @@ class pdarray:
             Raised if value is not an int, int64, float, or float64
         """
         generic_msg(
-            cmd="set",
-            args="{} {} {}".format(self.name, self.dtype.name, self.format_other(value)),
+            cmd="set", args={"array": self, "dtype": self.dtype.name, "val": self.format_other(value)}
         )
 
     def any(self) -> np.bool_:
@@ -1123,7 +1122,7 @@ class pdarray:
         # The reply from the server will be binary data
         data = cast(
             memoryview,
-            generic_msg(cmd="tondarray", args="{}".format(self.name), recv_binary=True),
+            generic_msg(cmd="tondarray", args={"array": self}, recv_binary=True),
         )
         # Make sure the received data has the expected length
         if len(data) != self.size * self.dtype.itemsize:

@@ -16,9 +16,8 @@ module BroadcastMsg {
    * full size of the array, optionally applying a permutation
    * to return the result in the order of the original array.
    */
-  proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (permName, segName, valName, usePermStr, sizeStr) = payload.splitMsgToTuple(5);
-    var msgArgs = parseMessageArgs(payload, 5);
+  proc broadcastMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    var msgArgs = parseMessageArgs(payload, argSize);
     const size = msgArgs.get("size").getIntValue();
     // Segments must be an int64 array
     const gs = getGenericTypedArrayEntry(msgArgs.getValueOf("segName"), st);

@@ -9,7 +9,7 @@ module CommandMap {
    * construct the FCF type, but there is no way to generate a
    * FCF that throws using `func()` today.
    */
-  proc akMsgSign(a: string, b: string, c: borrowed SymTab): MsgTuple throws {
+  proc akMsgSign(a: string, b: string, c: int, d: borrowed SymTab): MsgTuple throws {
     var rep = new MsgTuple("dummy-msg", MsgType.NORMAL);
     return rep;
   }
@@ -18,7 +18,7 @@ module CommandMap {
    * Just like akMsgSign, but Messages which have a binary return
    * require a different signature
    */
-  proc akBinMsgSign(a: string, b: string, c: borrowed SymTab): bytes throws {
+  proc akBinMsgSign(a: string, b: string, c: int, d: borrowed SymTab): bytes throws {
     var nb = b"\x00";
     return nb;
   }
@@ -79,11 +79,11 @@ module CommandMap {
     return cm1(0..idx_close-1) + ", " + cm2(1..cm2.size-1);
   }
 
-  proc executeCommand(cmd: string, args, st) throws {
+  proc executeCommand(cmd: string, args, argSize, st) throws {
     var repTuple: MsgTuple;
     if commandMap.contains(cmd) {
       usedModules.add(moduleMap[cmd]);
-      repTuple = commandMap.getBorrowed(cmd)(cmd, args, st);
+      repTuple = commandMap.getBorrowed(cmd)(cmd, args, argSize, st);
     } else {
       repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
     }
