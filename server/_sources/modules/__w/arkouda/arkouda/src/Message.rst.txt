@@ -89,11 +89,19 @@ or
 
    .. method:: proc init()
 
-   .. method:: proc init(key: string, val: string, objType: string, dtype: string)
+   .. method:: proc init(key: string, val: string, objType: ObjectType, dtype: string)
 
    .. method:: proc asMap() throws
 
    .. method:: proc getJSON() throws
+
+   .. method:: proc setKey(value: string)
+
+   .. method:: proc setVal(value: string)
+
+   .. method:: proc setObjType(value: ObjectType)
+
+   .. method:: proc setDType(value: string)
 
    .. method:: proc getObjType()
 
@@ -176,6 +184,8 @@ or
    .. attribute:: var size: int
 
    .. method:: proc init(param_list: [?aD] ?t)
+
+   .. method:: proc getJSON(keys = list(string)): string throws
 
    .. method:: proc get(key: string) throws
 
