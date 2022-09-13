@@ -57,8 +57,9 @@ class ClientMode(Enum):
     Arkouda client is in UI mode or API mode. If in API mode, it is assumed the
     Arkouda client is being used via an API call instead of a Python shell or notebook.
     """
-    UI = 'UI'
-    API = 'API'
+
+    UI = "UI"
+    API = "API"
 
     def __str__(self) -> str:
         """
@@ -74,7 +75,7 @@ class ClientMode(Enum):
 
 
 # Get ClientMode, defaulting to UI
-mode = ClientMode(os.getenv('ARKOUDA_CLIENT_MODE', 'UI').upper())
+mode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
 
 # Print splash message if in UI mode
 if mode == ClientMode.UI:
@@ -661,7 +662,9 @@ def generic_msg(
     try:
         if send_binary:
             assert payload is not None
-            return _send_binary_message(cmd=cmd, payload=payload, recv_binary=recv_binary, args=args, size=size)
+            return _send_binary_message(
+                cmd=cmd, payload=payload, recv_binary=recv_binary, args=args, size=size
+            )
         else:
             assert payload is None
             return _send_string_message(cmd=cmd, args=args, size=size, recv_binary=recv_binary)
