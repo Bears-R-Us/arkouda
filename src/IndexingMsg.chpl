@@ -118,7 +118,7 @@ module IndexingMsg
         var idxParam = new ParameterObj("idx", indiciesName, ObjectType.PDARRAY, "int");
 
         var json: [0..#2] string = [arrParam.getJSON(), idxParam.getJSON()];
-        return pdarrayIndexMsg(cmd, "%jt".format(json), st);
+        return pdarrayIndexMsg(cmd, "%jt".format(json), json.size, st);
     }
 
     /* arrayViewIntIndexMsg "av[int_list]" response to __getitem__(int_list) where av is an ArrayView */
@@ -144,32 +144,18 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 const json: [0..#2] string = [arrParam.getJSON(), idxParam.getJSON()];
-                return intIndexMsg(cmd, "%jt".format(json), st);
-=======
-                idxMap.add("dtype", "int");
-                idxMap.add("val", idx: string);
-                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
                 return intIndexMsg(cmd, "%jt".format(json), json.size, st);
->>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 const json: [0..#2] string = [arrParam.getJSON(), idxParam.getJSON()];
-                return intIndexMsg(cmd, "%jt".format(json), st);
-=======
-                idxMap.add("dtype", "uint");
-                idxMap.add("val", idx: string);
-                const json: [0..#2] string = ["%jt".format(arrayMap), "%jt".format(idxMap)];
                 return intIndexMsg(cmd, "%jt".format(json), json.size, st);
->>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
@@ -206,32 +192,18 @@ module IndexingMsg
             when (DType.Int64) {
                 var coordsEntry = toSymEntry(coords, int);
                 var idx = + reduce (dimProdEntry.a * coordsEntry.a);
-<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("int");
                 var json: [0..#4] string = [arrParam.getJSON(), valJSON, dtypeJSON, idxParam.getJSON()];
-                return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
-=======
-                idxMap.add("val", idx:string);
-                idxMap.add("dtype", "int");
-                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
                 return setIntIndexToValueMsg(cmd, "%jt".format(json), json.size, st);
->>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             when (DType.UInt64) {
                 var coordsEntry = toSymEntry(coords, uint);
                 var idx = + reduce (dimProdEntry.a: uint * coordsEntry.a);
-<<<<<<< HEAD
                 idxParam.setVal(idx:string);
                 idxParam.setDType("uint");
                 var json: [0..#4] string = [arrParam.getJSON(), valJSON, dtypeJSON, idxParam.getJSON()];
-                return setIntIndexToValueMsg(cmd, "%jt".format(json), st);
-=======
-                idxMap.add("val", idx:string);
-                idxMap.add("dtype", "uint");
-                var json: [0..#4] string = ["%jt".format(arrayMap), "%jt".format(valMap), "%jt".format(dtypeMap), "%jt".format(idxMap)];
                 return setIntIndexToValueMsg(cmd, "%jt".format(json), json.size, st);
->>>>>>> 802c5977 (Updated message parsing to use argSize parameter. Updated any messages that were still parsing strings.)
             }
             otherwise {
                  var errorMsg = notImplementedError(pn, "("+dtype2str(coords.dtype)+")");
