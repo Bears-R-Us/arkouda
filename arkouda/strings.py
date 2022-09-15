@@ -1482,7 +1482,7 @@ class Strings:
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
         """
-        return list(self.hash())
+        return [self]
 
     def to_ndarray(self) -> np.ndarray:
         """
