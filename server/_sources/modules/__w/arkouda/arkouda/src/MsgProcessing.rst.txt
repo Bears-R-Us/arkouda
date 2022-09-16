@@ -19,7 +19,7 @@ or
 
 .. data:: const mpLogger = new Logger(logLevel)
 
-.. function:: proc createMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc createMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Parse, execute, and respond to a create message 
@@ -33,7 +33,7 @@ or
    :returns: (MsgTuple) response message
    
 
-.. function:: proc deleteMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc deleteMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Parse, execute, and respond to a delete message 
@@ -47,7 +47,7 @@ or
    :returns: MsgTuple
    
 
-.. function:: proc clearMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc clearMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Clear all unregistered symbols and associated data from sym table
@@ -61,7 +61,7 @@ or
    :returns: MsgTuple
     
 
-.. function:: proc infoMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc infoMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Takes the name of data referenced in a msg and searches for the name in the provided sym table.
@@ -76,7 +76,7 @@ or
    :returns: MsgTuple
     
 
-.. function:: proc getconfigMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc getconfigMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    query server configuration...
@@ -90,7 +90,7 @@ or
    :returns: MsgTuple
     
 
-.. function:: proc getmemusedMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc getmemusedMsg(cmd: string, payload: string, size: int, st: borrowed SymTab): MsgTuple throws
 
    
    query server total memory allocated or symbol table data memory
@@ -104,7 +104,7 @@ or
    :returns: MsgTuple
     
 
-.. function:: proc getCommandMapMsg(cmd: string, payload: string, st: borrowed SymTab) throws
+.. function:: proc getCommandMapMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab) throws
 
    *
    * Generate the mapping of server command to function as JSON
@@ -125,7 +125,7 @@ or
    * :returns: MsgTuple containing JSON formatted string of cmd -> function mapping
    
 
-.. function:: proc strMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc strMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Response to __str__ method in python str convert array data to string 
@@ -139,7 +139,7 @@ or
    :returns: (string,MsgType)
    
 
-.. function:: proc reprMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc reprMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    Response to __repr__ method in python.
    Repr convert array data to string 
@@ -153,7 +153,7 @@ or
    :returns: MsgTuple
    
 
-.. function:: proc setMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc setMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    
    Sets all elements in array to a value (broadcast) 

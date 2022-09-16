@@ -177,5 +177,5 @@ or
 
    .. method:: proc init(name: string, category: MetricCategory, scope: MetricScope = MetricScope.LOCALE, timestamp: datetime = datetime.now(), value: real, locale_num: int, locale_name: string, locale_hostname: string)
 
-.. function:: proc metricsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+.. function:: proc metricsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 

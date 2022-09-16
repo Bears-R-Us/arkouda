@@ -21,7 +21,7 @@ or
 
 .. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
 
-.. function:: proc arrayMsg(cmd: string, args: string, ref data: bytes, st: borrowed SymTab): MsgTuple throws
+.. function:: proc arrayMsg(cmd: string, args: string, argSize: int, ref data: bytes, st: borrowed SymTab): MsgTuple throws
 
    
    * Creates a pdarray server-side and returns the SymTab name used to
@@ -36,7 +36,7 @@ or
    * converted to uint8
    
 
-.. function:: proc tondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws
+.. function:: proc tondarrayMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): bytes throws
 
    
    * Outputs the pdarray as a Numpy ndarray in the form of a 
