@@ -25,8 +25,6 @@ module SegmentedString {
   param SegmentedStringUseHash = useHash;
 
   private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
-  
-  class OutOfBoundsError: Error {}
 
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
       var abstractEntry = st.lookup(name);
