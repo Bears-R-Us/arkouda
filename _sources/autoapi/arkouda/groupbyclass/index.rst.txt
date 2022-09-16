@@ -339,6 +339,41 @@ Attributes
       (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
 
 
+   .. py:method:: median(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and compute the median of each group's
+      values.
+
+      :param values: The values to group and find median
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_means** (*pdarray, float64*) -- One median value per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object
+      :raises ValueError: Raised if the key array size does not match the values size
+          or if the operator is not in the GroupBy.Reductions array
+
+      .. rubric:: Notes
+
+      The return dtype is always float64.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,9)
+      >>> a
+      array([4 1 4 3 2 2 2 3 3])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([4 1 4 3 2 2 2 3 3])
+      >>> b = ak.linspace(-5,5,9)
+      >>> b
+      array([-5 -3.75 -2.5 -1.25 0 1.25 2.5 3.75 5])
+      >>> g.median(b)
+      (array([1 2 3 4]), array([-3.75 1.25 3.75 -3.75]))
+
+
    .. py:method:: min(values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
