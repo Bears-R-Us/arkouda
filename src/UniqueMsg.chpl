@@ -65,8 +65,8 @@ module UniqueMsg
       return skipSortHelper(2*uint(64), hashArrays(size, names, types, st));
     }
 
-    proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, 5);
+    proc uniqueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, argSize);
         // flag to return segments and permutation for GroupBy
         const returnGroups = msgArgs.get("returnGroupStr").getBoolValue();
         const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue();

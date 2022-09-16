@@ -93,10 +93,10 @@
         return "SegArray+%s+created %s+created %s".format(col, st.attrib(s_name), st.attrib(v_name));
     }
 
-    proc dataframeBatchIndexingMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc dataframeBatchIndexingMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         var jsonsize = msgArgs.get("size").getIntValue();
 
         var eleList = msgArgs.get("columns").getList(jsonsize);

@@ -34,10 +34,10 @@ module KExtremeMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc minkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc minkMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
 
         var vname = st.nextName();
 
@@ -97,10 +97,10 @@ module KExtremeMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc maxkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc maxkMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
 
         var vname = st.nextName();
         var gEnt: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("array"), st);

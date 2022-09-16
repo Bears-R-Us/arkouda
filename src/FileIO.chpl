@@ -258,21 +258,9 @@ module FileIO {
       return getFileTypeByMagic(getFirstEightBytesFromFile(filename));
     }
 
-    proc getFileTypeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var (jsonfile) = payload.splitMsgToTuple(1);
-      
-      // Retrieve filename from payload
-      var filename: string;
-      try {
-        filename = jsonToPdArray(jsonfile, 1)[0];
-        if filename.isEmpty() {
-          throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
-        }
-      } catch {
-        var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
-                                                                                            1, jsonfile);
-        return new MsgTuple(errorMsg, MsgType.ERROR);                                    
-      }
+    proc getFileTypeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+      var msgArgs = parseMessageArgs(payload, argSize);
+      var filename = msgArgs.getValueOf("filename");
 
       // If the filename represents a glob pattern, retrieve the locale 0 filename
       if isGlobPattern(filename) {
@@ -306,8 +294,8 @@ module FileIO {
       }
     }
 
-    proc lsAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var msgArgs = parseMessageArgs(payload, 1);
+    proc lsAnyMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+      var msgArgs = parseMessageArgs(payload, argSize);
       
       // Retrieve filename from payload
       var filename: string = msgArgs.getValueOf("filename");
@@ -339,10 +327,10 @@ module FileIO {
 
       select getFileType(filename) {
         when FileType.HDF5 {
-          return executeCommand("lshdf", payload, st);
+          return executeCommand("lshdf", payload, argSize, st);
         }
         when FileType.PARQUET {
-          return executeCommand("lspq", payload, st);
+          return executeCommand("lspq", payload, argSize, st);
         } otherwise {
           var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -350,8 +338,8 @@ module FileIO {
       }
     }
 
-    proc readAnyMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-      var msgArgs = parseMessageArgs(payload, 7);
+    proc readAnyMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+      var msgArgs = parseMessageArgs(payload, argSize);
       var nfiles = msgArgs.get("filename_size").getIntValue();
       var filelist: [0..#nfiles] string;
       
@@ -394,10 +382,10 @@ module FileIO {
 
       select getFileType(filenames[0]) {
         when FileType.HDF5 {
-          return executeCommand("readAllHdf", payload, st);
+          return executeCommand("readAllHdf", payload, argSize, st);
         }
         when FileType.PARQUET {
-          return executeCommand("readAllParquet", payload, st);
+          return executeCommand("readAllParquet", payload, argSize, st);
         } otherwise {
           var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);

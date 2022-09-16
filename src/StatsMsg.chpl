@@ -15,10 +15,10 @@ module StatsMsg {
     private config const logLevel = ServerConfig.logLevel;
     const sLogger = new Logger(logLevel);
 
-    proc meanMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc meanMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, 1);
+        var args = parseMessageArgs(payload, argSize);
 
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
 
@@ -45,10 +45,10 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc varMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc varMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, 2);
+        var args = parseMessageArgs(payload, argSize);
 
         var ddof = args.get("ddof").getIntValue();
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
@@ -76,10 +76,10 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc stdMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc stdMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, 2);
+        var args = parseMessageArgs(payload, argSize);
 
         var ddof = args.get("ddof").getIntValue();
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
@@ -107,10 +107,10 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc covMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc covMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, 2);
+        var args = parseMessageArgs(payload, argSize);
 
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
         var y: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("y"), st);
@@ -206,9 +206,9 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc corrMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc corrMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var args = parseMessageArgs(payload, 2);
+        var args = parseMessageArgs(payload, argSize);
 
         var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
         var y: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("y"), st);
@@ -277,9 +277,9 @@ module StatsMsg {
         }
     }
 
-    proc corrMatrixMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc corrMatrixMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var args = parseMessageArgs(payload, 3);
+        var args = parseMessageArgs(payload, argSize);
 
         var size = args.get("size").getIntValue();
         var columns = args.get("columns").getList(size);

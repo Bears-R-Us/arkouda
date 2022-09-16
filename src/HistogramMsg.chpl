@@ -12,6 +12,7 @@ module HistogramMsg
     use ServerErrorStrings;
 
     use Histogram;
+    use Message;
  
     private config const logLevel = ServerConfig.logLevel;
     const hgmLogger = new Logger(logLevel);
@@ -20,12 +21,12 @@ module HistogramMsg
     private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
-    proc histogramMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc histogramMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        // split request into fields
-        var (name, binsStr) = payload.splitMsgToTuple(2);
-        var bins = try! binsStr:int;
+        var msgArgs = parseMessageArgs(payload, argSize);
+        const bins = msgArgs.get("bins").getIntValue();
+        const name = msgArgs.getValueOf("array");
         
         // get next symbol name
         var rname = st.nextName();

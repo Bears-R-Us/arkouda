@@ -26,21 +26,20 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
      */
-    proc arrayMsg(cmd: string, args: string, ref data: bytes, st: borrowed SymTab): MsgTuple throws {
+    proc arrayMsg(cmd: string, args: string, argSize: int, ref data: bytes, st: borrowed SymTab): MsgTuple throws {
         // Set up our return items
         var msgType = MsgType.NORMAL;
         var msg:string = "";
         var rname:string = "";
-
-        var (dtypeBytes, sizeBytes, segStr) = args.splitMsgToTuple(" ", 3);
+        var msgArgs = parseMessageArgs(args, argSize);
         var dtype = DType.UNDEF;
         var size:int;
         var asSegStr = false;
         
         try {
-            dtype = str2dtype(dtypeBytes);
-            size = sizeBytes:int;
-            asSegStr = "seg_string=True" == segStr.strip();
+            dtype = str2dtype(msgArgs.getValueOf("dtype"));
+            size = msgArgs.get("size").getIntValue();
+            asSegStr = msgArgs.get("seg_string").getBoolValue();
         } catch {
             var errorMsg = "Error parsing/decoding either dtypeBytes or size";
             gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
@@ -72,7 +71,7 @@ module GenSymIO {
         } else if dtype == DType.UInt8 {
             rname = bytesToSymEntry(size, uint(8), st, data);
         } else {
-            msg = "Unhandled data type %s".format(dtypeBytes);
+            msg = "Unhandled data type %s".format(msgArgs.getValueOf("dtype"));
             msgType = MsgType.ERROR;
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
         }
@@ -129,10 +128,11 @@ module GenSymIO {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    proc tondarrayMsg(cmd: string, payload: string, st: 
+    proc tondarrayMsg(cmd: string, payload: string, argSize: int, st: 
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
-        var abstractEntry = st.lookup(payload);
+        var msgArgs = parseMessageArgs(payload, argSize);
+        var abstractEntry = st.lookup(msgArgs.getValueOf("array"));
         if !abstractEntry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
             var errorMsg = "Error: Unhandled SymbolEntryType %s".format(abstractEntry.entryType);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

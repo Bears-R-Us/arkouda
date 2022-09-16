@@ -207,10 +207,10 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc coargsortMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var msgArgs = parseMessageArgs(payload, 4);
+      var msgArgs = parseMessageArgs(payload, argSize);
       var algoName = msgArgs.getValueOf("algoName");
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
@@ -231,7 +231,7 @@ module ArgSortMsg
       var arrTypes = msgArgs.get("arr_types").getList(n);
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                    "number of arrays: %i arrNames: %t, arrTypes: %t".format(n,arrNames, arrTypes));
-      var (size, hasStr, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
+      var (arrSize, hasStr, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead
@@ -251,10 +251,10 @@ module ArgSortMsg
 
           // check mem limit for merged array and sort on merged array
           const itemsize = numDigits * bitsPerDigit / 8;
-          overMemLimit(size*itemsize + radixSortLSD_memEst(size, itemsize));
+          overMemLimit(arrSize*itemsize + radixSortLSD_memEst(arrSize, itemsize));
 
           var ivname = st.nextName();
-          var merged = mergeNumericArrays(numDigits, size, totalDigits, bitWidths, negs, names, st);
+          var merged = mergeNumericArrays(numDigits, arrSize, totalDigits, bitWidths, negs, names, st);
 
           var iv = argsortDefault(merged, algorithm=algorithm);
           st.addEntry(ivname, new shared SymEntry(iv));
@@ -273,13 +273,13 @@ module ArgSortMsg
 
       // check mem limit for permutation vectors and sort
       const itemsize = numBytes(int);
-      overMemLimit(2*size*itemsize + radixSortLSD_memEst(size, itemsize));
+      overMemLimit(2*arrSize*itemsize + radixSortLSD_memEst(arrSize, itemsize));
       
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
-      st.addEntry(rname, size, int);
+      st.addEntry(rname, arrSize, int);
       var iv = toSymEntry(getGenericTypedArrayEntry(rname, st), int);
-      iv.a = 0..#size;
+      iv.a = 0..#arrSize;
       // Starting with the last array, incrementally permute the IV by sorting each array
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
@@ -325,10 +325,10 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    proc argsortMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 3);
+        var msgArgs = parseMessageArgs(payload, argSize);
         var name = msgArgs.getValueOf("name");
         var algoName = msgArgs.getValueOf("algoName");
         var algorithm: SortingAlgorithm = defaultSortAlgorithm;
