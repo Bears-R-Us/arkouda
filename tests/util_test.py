@@ -52,7 +52,7 @@ class utilTest(ArkoudaTest):
         flat = a + b + c
         akflat = ak.array(flat)
         segments = ak.array([0, len(a), len(a) + len(b)])
-        segarr = ak.SegArray(segments, akflat)
+        segarr = ak.segarray(segments, akflat)
         segarr.register("segTest")
 
         attached = attach("segTest")

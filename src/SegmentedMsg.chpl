@@ -28,7 +28,6 @@ module SegmentedMsg {
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
             "cmd: %s segmentsname: %s valuesName: %s".format(cmd, segName, valName));
 
-    // var repMsg: string;
     var segments = getGenericTypedArrayEntry(segName, st);
     var segs = toSymEntry(segments, int);
 
@@ -1045,13 +1044,13 @@ module SegmentedMsg {
                   var iv = toSymEntry(gIV, uint);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.Bool {
                   var iv = toSymEntry(gIV, bool);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 otherwise {
                     var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -1071,19 +1070,19 @@ module SegmentedMsg {
                   // which can perform better by avoiding those overhead costs.
                   var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.UInt64 {
                   var iv = toSymEntry(gIV, uint);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.Bool {
                   var iv = toSymEntry(gIV, bool);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 otherwise {
                     var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -1103,19 +1102,19 @@ module SegmentedMsg {
                   // which can perform better by avoiding those overhead costs.
                   var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.UInt64 {
                   var iv = toSymEntry(gIV, uint);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.Bool {
                   var iv = toSymEntry(gIV, bool);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 otherwise {
                     var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -1135,19 +1134,19 @@ module SegmentedMsg {
                   // which can perform better by avoiding those overhead costs.
                   var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.UInt64 {
                   var iv = toSymEntry(gIV, uint);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 when DType.Bool {
                   var iv = toSymEntry(gIV, bool);
                   var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
-                  repMsg = "created " + st.attrib(newSegArr.name);
+                  newSegArr.buildReturnMap(rtnmap, st);
                 }
                 otherwise {
                     var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -1381,9 +1380,6 @@ module SegmentedMsg {
   registerFunction("segmentedIn1d", segIn1dMsg, getModuleName());
   registerFunction("randomStrings", randomStringsMsg, getModuleName());
   registerFunction("segArr-assemble", assembleSegArrayMsg, getModuleName());
-  // registerFunction("segArr-getSegments", getSASegmentsMsg, getModuleName());
-  // registerFunction("segArr-getValues", getSAValuesMsg, getModuleName());
-  // registerFunction("segArr-getLengths", getSALengthsMsg, getModuleName());
   registerFunction("segArr-getNonEmpty", getSANonEmptyMsg, getModuleName());
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());

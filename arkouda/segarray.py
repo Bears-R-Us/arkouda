@@ -234,7 +234,7 @@ class SegArray:
         values = create_pdarray(parts[2])
         lengths = create_pdarray(parts[3])
 
-        return cls(segments, values, lengths=lengths)
+        return cls.from_parts(segments, values, lengths=lengths)
 
     @classmethod
     def from_multi_array(cls, m):
@@ -433,7 +433,7 @@ class SegArray:
                 ctr += xi.valsize
                 # Values can just be concatenated
                 vals.append(xi.values)
-            return cls(concatenate(segs), concatenate(vals))
+            return cls.from_parts(concatenate(segs), concatenate(vals))
         elif axis == 1:
             sizes = set(xi.size for xi in x)
             if len(sizes) != 1:
@@ -457,7 +457,7 @@ class SegArray:
                 fromself = cumsum(fromself[:-1]) == 1
                 newvals[fromself] = xi.values
                 nzsegs += nzlens
-            return cls(newsegs, newvals, copy=False)
+            return cls.from_parts(newsegs, newvals)
         else:
             raise ValueError(
                 "Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)"
@@ -838,7 +838,7 @@ class SegArray:
         if prepend:
             origscatter += 1
         newvals[origscatter] = self.values
-        return SegArray(newsegs, newvals)
+        return SegArray.from_parts(newsegs, newvals)
 
     def prepend_single(self, x):
         return self.append_single(x, prepend=True)
@@ -878,13 +878,13 @@ class SegArray:
                 if self.non_empty[i]:
                     x += 1
 
-        norepeats = SegArray(truesegs, truepaths)
+        norepeats = SegArray.from_parts(truesegs, truepaths)
         if return_multiplicity:
             truehopinds = arange(self.valsize)[~isrepeat]
             multiplicity = zeros(truepaths.size, dtype=akint64)
             multiplicity[:-1] = truehopinds[1:] - truehopinds[:-1]
             multiplicity[-1] = self.valsize - truehopinds[-1]
-            return norepeats, SegArray(truesegs, multiplicity)
+            return norepeats, SegArray.from_parts(truesegs, multiplicity)
         else:
             return norepeats
 
@@ -904,7 +904,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_ndarray()
         array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
         >>> type(segarr.to_ndarray())
@@ -932,7 +932,7 @@ class SegArray:
 
         Examples
         --------
-        >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+        >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
         >>> segarr.to_list()
         [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
         >>> type(segarr.to_list())
@@ -1032,7 +1032,7 @@ class SegArray:
         ukey, uval = GroupBy([keyidx, x]).unique_keys
         g = GroupBy(ukey, assume_sorted=True)
         _, lengths = g.count()
-        return SegArray(g.segments, uval, grouping=g, lengths=lengths)
+        return SegArray.from_parts(g.segments, uval, grouping=g, lengths=lengths)
 
     def save(
         self,
@@ -1139,8 +1139,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.intersect(seg_b)
         SegArray([
         [1, 3],
@@ -1156,7 +1156,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray(g.segments, new_values[g.permutation])
+            return SegArray.from_parts(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1167,7 +1167,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray(segments, new_values[g.permutation])
+            return SegArray.from_parts(segments, new_values[g.permutation])
 
     def union(self, other):
         """
@@ -1193,8 +1193,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.union(seg_b)
         SegArray([
         [1, 2, 3, 4, 5],
@@ -1210,7 +1210,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray(g.segments, new_values[g.permutation])
+            return SegArray.from_parts(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1221,7 +1221,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray(segments, new_values[g.permutation])
+            return SegArray.from_parts(segments, new_values[g.permutation])
 
     def setdiff(self, other):
         """
@@ -1247,8 +1247,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setdiff(seg_b)
         SegArray([
         [2, 4],
@@ -1264,7 +1264,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray(g.segments, new_values[g.permutation])
+            return SegArray.from_parts(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1275,7 +1275,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray(segments, new_values[g.permutation])
+            return SegArray.from_parts(segments, new_values[g.permutation])
 
     def setxor(self, other):
         """
@@ -1301,8 +1301,8 @@ class SegArray:
         >>> b = [3, 1, 4, 5]
         >>> c = [1, 3, 3, 5]
         >>> d = [2, 2, 4]
-        >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-        >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+        >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+        >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
         >>> seg_a.setxor(seg_b)
         SegArray([
         [2, 4, 5],
@@ -1318,7 +1318,7 @@ class SegArray:
         # This method does not return any empty resulting segments
         # We need to add these if they are missing
         if g.segments.size == self.size:
-            return SegArray(g.segments, new_values[g.permutation])
+            return SegArray.from_parts(g.segments, new_values[g.permutation])
         else:
             segments = zeros(self.size, dtype=akint64)
             truth = ones(self.size, dtype=akbool)
@@ -1329,7 +1329,7 @@ class SegArray:
                 segments[-1] = g.permutation.size
                 truth[-1] = False
             segments[truth] = segments[arange(self.size)[truth] + 1]
-            return SegArray(segments, new_values[g.permutation])
+            return SegArray.from_parts(segments, new_values[g.permutation])
 
     def register(
         self,
@@ -1366,7 +1366,7 @@ class SegArray:
         if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
             raise ValueError("Suffixes must all be different")
         # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
-        return cls(
+        return cls.from_parts(
             attach_pdarray(name + segment_suffix),
             attach_pdarray(name + value_suffix),
             lengths=attach_pdarray(name + length_suffix),

@@ -56,7 +56,6 @@ module SegmentedArray {
             segments = composite.segmentsEntry: shared SymEntry(int);
             values = composite.valuesEntry: shared SymEntry(eType);
 
-            
             size = segments.size;
             nBytes = values.size;
 
