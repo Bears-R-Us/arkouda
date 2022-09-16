@@ -102,7 +102,7 @@ class SegArray:
         # references to supporting pdarrays
         self.values = values
         self.segments = segments
-        self._valsize = None  # cache - use .valsize to access/set
+        self.valsize = values.size
 
         """
         Note - if lengths is provided, it will need to be sent to the
@@ -276,64 +276,6 @@ class SegArray:
     def objtype(self):
         return self.objtype
 
-    # @property
-    # def segments(self):
-    #     """
-    #      Return the pdarray containing the segments.
-    #      This is configured to prevent the need to move all functionality to server at once.
-    #
-    #      Notes
-    #     ------
-    #     - Caches return value to prevent the need to recompute.
-    #     """
-    #     if self._segments is None:
-    #         rep_msg = generic_msg(
-    #             cmd="segArr-getSegments",
-    #             args={
-    #                 "name": self.name,
-    #             },
-    #         )
-    #         self._segments = create_pdarray(rep_msg)
-    #     return self._segments
-    #
-    # @property
-    # def values(self):
-    #     """
-    #     Return the pdarray containing the values of the segarray.
-    #     This is configured to prevent the need to move all functionality to server at once.
-    #
-    #     Notes
-    #     ------
-    #     - Caches return value to prevent the need to recompute.
-    #     """
-    #     if self._values is None:
-    #         rep_msg = generic_msg(
-    #             cmd="segArr-getValues",
-    #             args={
-    #                 "name": self.name,
-    #             },
-    #         )
-    #         self._values = (
-    #             Strings.from_return_msg(rep_msg)
-    #             if rep_msg.split()[2] == "str"
-    #             else create_pdarray(rep_msg)
-    #         )
-    #     return self._values
-
-    @property
-    def valsize(self):
-        """
-        Return the size of the values array.
-        This is configured to prevent the need to move all functionality to server at once.
-
-        Notes
-        ------
-        - Caches return value to prevent the need to recompute.
-        """
-        if self._valsize is None:
-            self._valsize = self.values.size
-        return self._valsize
-
     @property
     def lengths(self):
         """
@@ -463,7 +405,6 @@ class SegArray:
                 "Supported values for axis are 0 (vertical concat) or 1 (horizontal concat)"
             )
 
-    # TODO - make sure this works as a deep copy still
     def copy(self):
         """
         Return a deep copy.
