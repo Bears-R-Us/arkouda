@@ -133,7 +133,7 @@ setup(
     install_requires=[
         'numpy>=1.22.2',
         'pandas>=1.4.0',
-        'pyzmq>=20.0.0,<24.0.0',
+        'pyzmq>=20.0.0',
         'typeguard==2.10.0',
         'tabulate',
         'pyfiglet',
