@@ -202,7 +202,7 @@ module ServerConfig
         var writeVal = 1, readVal = 0;
         var tmpf = openmem();
         tmpf.writer(kind=iobig).write(writeVal);
-        tmpf.reader(kind=ionative, start=0).read(readVal);
+        tmpf.reader(kind=ionative).read(readVal);
         return if writeVal == readVal then "big" else "little";
     }
 

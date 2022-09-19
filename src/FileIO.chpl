@@ -22,12 +22,16 @@ module FileIO {
     proc appendFile(filePath : string, line : string) throws {
         var writer : channel;
         if exists(filePath) {
+            use Version;
             var aFile = open(filePath, iomode.rw);
-            writer = aFile.writer(start=aFile.size);
-
+            if chplVersion >= createVersion(1,28) {
+              writer = aFile.writer(region=aFile.size..);
+            } else {
+              writer = aFile.writer(start=aFile.size);
+            }
         } else {
-              var aFile = open(filePath, iomode.cwr);
-              writer = aFile.writer();
+            var aFile = open(filePath, iomode.cwr);
+            writer = aFile.writer();
         }
 
         writer.writeln(line);

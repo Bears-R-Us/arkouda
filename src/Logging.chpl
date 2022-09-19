@@ -1,7 +1,7 @@
 module Logging {
     use Set;
     use IO;
-    use DateTime;
+    use ArkoudaDateTimeCompat;
     use Reflection;
     use ServerErrors;
 

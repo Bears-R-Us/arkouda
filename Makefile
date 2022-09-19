@@ -266,9 +266,14 @@ ifeq ($(shell expr $(CHPL_MINOR) \< 27),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-127
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 27),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-127
+ifeq ($(shell expr $(CHPL_MINOR) \= 27),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-127
 endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \>= 28),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-128
+endif
+
 
 MODULE_GENERATION_SCRIPT=$(ARKOUDA_SOURCE_DIR)/serverModuleGen.py
 # This is the main compilation statement section

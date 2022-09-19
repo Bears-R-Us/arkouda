@@ -1,6 +1,5 @@
 module ServerErrors {
 
-    use SysError;
     private use IO; // for string.format
 
     /*

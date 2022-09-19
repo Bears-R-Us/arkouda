@@ -1,4 +1,4 @@
 module ArkoudaDateTimeCompat {
-    // Chapel v1.27 or newer
+    // Chapel v1.27
     public use DateTime;
 }

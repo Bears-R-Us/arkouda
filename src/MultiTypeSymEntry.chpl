@@ -238,21 +238,21 @@ module MultiTypeSymEntry
           use Reflection;
           proc writeField(f, param i) throws {
             if !isArray(getField(this, i)) {
-              f <~> getFieldName(this.type, i) <~> " = " <~> getField(this, i):string;
+              f.write(getFieldName(this.type, i), " = ", getField(this, i):string);
             } else {
-              f <~> getFieldName(this.type, i) <~> " = " <~> formatAry(getField(this, i));
+              f.write(getFieldName(this.type, i), " = ", formatAry(getField(this, i)));
             }
           }
 
           super.writeThis(f);
-          f <~> " {";
+          f.write(" {");
           param nFields = numFields(this.type);
           for param i in 0..nFields-2 {
             writeField(f, i);
-            f <~> ", ";
+            f.write(", ");
           }
           writeField(f, nFields-1);
-          f <~> "}";
+          f.write("}");
         }
 
         /*

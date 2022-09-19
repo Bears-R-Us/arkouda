@@ -26,7 +26,7 @@ module IndexingMsg
         var w = f.writer();
         w.write(json);
         w.close();
-        var r = f.reader(start=0);
+        var r = f.reader();
         var tup: t;
         r.readf("%jt", tup);
         r.close();
