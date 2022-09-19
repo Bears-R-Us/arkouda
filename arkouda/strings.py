@@ -1475,7 +1475,7 @@ class Strings:
         args = "{} {}".format(self.objtype, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
-    def _get_grouping_keys(self) -> List[pdarray]:
+    def _get_grouping_keys(self) -> List[Strings]:
         """
         Private method for generating grouping keys used by GroupBy.
 
