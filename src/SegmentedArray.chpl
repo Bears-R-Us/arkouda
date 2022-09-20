@@ -59,17 +59,10 @@ module SegmentedArray {
             size = segments.size;
             nBytes = values.size;
 
-            lengths = makeDistArray(segments.size, int);
             ref sa = segments.a;
             const low = segments.aD.low;
             const high = segments.aD.high;
-            forall (i, s, l) in zip(segments.aD, sa, lengths) {
-                if (i == high) {
-                    l = values.size - s;
-                } else {
-                    l = sa[i+1] - s;
-                }
-            }
+            lengths = [(i, s) in zip (segments.aD, sa)] if i == high then values.size - s else sa[i+1] - s;
 
             // Note - groupby remaining client side because groupby does not have server side object
         }
@@ -104,7 +97,6 @@ module SegmentedArray {
 
             // Segment offsets of the new slice
             var newSegs = makeDistArray(slice.size, int);
-            // TODO - double check this aggregation
             forall (i, ns) in zip(newSegs.domain, newSegs) with (var agg = newSrcAggregator(int)) {
                 agg.copy(ns, sa[slice.low + i]);
             }
@@ -155,7 +147,7 @@ module SegmentedArray {
                 agg.copy(l, oa[idx:int]);
             }
 
-            // Lengths of segments including null bytes
+            // Lengths of segments
             var gatheredLengths: [D] int = right - left;
             // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
             overMemLimit(numBytes(int) * gatheredLengths.size);
@@ -197,9 +189,9 @@ module SegmentedArray {
                 diffs[D.low] = left[D.low]; // first offset is not affected by scan
 
                 forall idx in D {
-                if idx!=0 {
-                    diffs[idx] = left[idx] - (right[idx-1]-1);
-                }
+                    if idx!=0 {
+                        diffs[idx] = left[idx] - (right[idx-1]-1);
+                    }
                 }
                 // Set srcIdx to diffs at segment boundaries
                 forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
@@ -287,7 +279,7 @@ module SegmentedArray {
             return lname;
         }
 
-        proc buildReturnMap(ref rm: map(string, string), st: borrowed SymTab) throws {
+        proc fillReturnMap(ref rm: map(string, string), st: borrowed SymTab) throws {
             rm.add("segarray", "created " + st.attrib(this.name));
             rm.add("values", "created " + st.attrib(this.getValuesName(st)));
             rm.add("segments", "created " + st.attrib(this.getSegmentsName(st)));

@@ -146,7 +146,7 @@ class SegArray:
         ndim = int(fields[4])
 
         # remove comma from 1 tuple with trailing comma
-        if fields[5][len(fields[5]) - 2] == ",":
+        if fields[5][-2] == ",":
             fields[5] = fields[5].replace(",", "")
         shape = [int(el) for el in fields[5][1:-1].split(",")]
         itemsize = int(fields[6])
@@ -206,7 +206,7 @@ class SegArray:
         return cls.from_return_msg(rep_msg, lengths, grouping)
 
     @classmethod
-    def from_attach_return_msg(cls, repMsg) -> SegArray:
+    def _from_attach_return_msg(cls, repMsg) -> SegArray:
         """
         Return a SegArray instance pointing to components created by the arkouda server.
         The user should not call this function directly.
@@ -214,7 +214,7 @@ class SegArray:
         Parameters
         ----------
         repMsg : str
-            ; delimited string containing the segments, values, and lengths details
+            + delimited string containing the segments, values, and lengths details
 
         Returns
         -------
@@ -464,7 +464,7 @@ class SegArray:
             )
             return SegArray.from_return_msg(repMsg)
         else:
-            raise TypeError(f"unsupported pdarray index type {i.__class__.__name__}")
+            raise TypeError(f"unsupported segarray index type {i.__class__.__name__}")
 
     def __eq__(self, other):
         if not isinstance(other, SegArray):
