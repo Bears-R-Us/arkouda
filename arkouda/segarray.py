@@ -253,24 +253,17 @@ class SegArray:
             Array of rows of input
         """
         if isinstance(m, pdarray):
-            size = m.size
-            n = 1
-            dtype = m.dtype
+            return cls.from_parts(arange(m.size), m)
         else:
-            s = set(mi.size for mi in m)
-            if len(s) != 1:
-                raise ValueError("All columns must have same length")
-            size = s.pop()
+            sd = set((mi.size, mi.dtype) for mi in m)
+            if len(sd) != 1:
+                raise ValueError("All columns must have same length and dtype")
+            size, dtype = sd.pop()
             n = len(m)
-            d = set(mi.dtype for mi in m)
-            if len(d) != 1:
-                raise ValueError("All columns must have same dtype")
-            dtype = d.pop()
-        newsegs = arange(size) * n
-        newvals = zeros(size * n, dtype=dtype)
-        for j in range(len(m)):
-            newvals[j :: len(m)] = m[j]
-        return cls.from_parts(newsegs, newvals)
+            newvals = zeros(size * n, dtype=dtype)
+            for j in range(n):
+                newvals[j:: n] = m[j]
+            return cls.from_parts(arange(size) * n, newvals)
 
     @property
     def objtype(self):
