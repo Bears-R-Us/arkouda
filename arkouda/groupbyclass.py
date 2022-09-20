@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+import json
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union, cast
 
 if TYPE_CHECKING:
@@ -33,6 +34,29 @@ groupable_element_type = Union[pdarray, Strings, "Categorical"]
 groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 # Note: we won't be typechecking GroupBy until we can figure out a way to handle
 # the circular import with Categorical
+
+
+def _get_grouping_keys(pda: groupable):
+    nkeys = 1
+    if hasattr(pda, "_get_grouping_keys"):
+        # Single groupable array
+        grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
+    else:
+        # Sequence of groupable arrays
+        nkeys = len(pda)
+        grouping_keys = []
+        first = True
+        for k in pda:
+            if first:
+                size = k.size
+                first = False
+            elif k.size != size:
+                raise ValueError("Key arrays must all be same size")
+            if not hasattr(k, "_get_grouping_keys"):
+                raise TypeError(f"{type(k)} does not support grouping")
+            grouping_keys.extend(cast(list, k._get_grouping_keys()))
+
+    return grouping_keys, nkeys
 
 
 def unique(
@@ -90,24 +114,25 @@ def unique(
         return cast(Categorical_, pda).unique()
 
     # Get all grouping keys
-    if hasattr(pda, "_get_grouping_keys"):
-        # Single groupable array
-        nkeys = 1
-        grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
-    else:
-        # Sequence of groupable arrays
-        nkeys = len(pda)
-        grouping_keys = []
-        first = True
-        for k in pda:
-            if first:
-                size = k.size
-                first = False
-            elif k.size != size:
-                raise ValueError("Key arrays must all be same size")
-            if not hasattr(k, "_get_grouping_keys"):
-                raise TypeError(f"{type(k)} does not support grouping")
-            grouping_keys.extend(cast(list, k._get_grouping_keys()))
+    grouping_keys, nkeys = _get_grouping_keys(pda)
+    # if hasattr(pda, "_get_grouping_keys"):
+    #     # Single groupable array
+    #     nkeys = 1
+    #     grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
+    # else:
+    #     # Sequence of groupable arrays
+    #     nkeys = len(pda)
+    #     grouping_keys = []
+    #     first = True
+    #     for k in pda:
+    #         if first:
+    #             size = k.size
+    #             first = False
+    #         elif k.size != size:
+    #             raise ValueError("Key arrays must all be same size")
+    #         if not hasattr(k, "_get_grouping_keys"):
+    #             raise TypeError(f"{type(k)} does not support grouping")
+    #         grouping_keys.extend(cast(list, k._get_grouping_keys()))
     keynames = [k.name for k in grouping_keys]
     keytypes = [k.objtype for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
@@ -236,45 +261,59 @@ class GroupBy:
         self,
         keys: Optional[groupable],
         assume_sorted: bool = False,
-        hash_strings: bool = True,
         **kwargs,
-    ) -> None:
+    ):
         # Type Checks required because @typechecked was removed for causing other issues
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
         # See Issue #1267
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
-        if not isinstance(hash_strings, bool):
-            raise TypeError("hash_strings must be of type bool.")
 
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
-        self.hash_strings = hash_strings
-        self.permutation: pdarray
-        self.name: Optional[str] = None
-
         if (
             "orig_keys" in kwargs
             and "permutation" in kwargs
             and "unique_keys" in kwargs
             and "segments" in kwargs
         ):
+            # TODO - this will be updated in the future (Issue #1803)
             self.keys = cast(groupable, kwargs.get("orig_keys", None))
             self.unique_keys = kwargs.get("unique_keys", None)
             self.permutation = kwargs.get("permutation", None)
             self.segments = kwargs.get("segments", None)
             self.nkeys = len(self.keys)
+            self.length = self.permutation.size
+            self.ngroups = self.segments.size
         elif keys is None:
             raise ValueError("No keys passed to GroupBy.")
         else:
             self.keys = cast(groupable, keys)
-            self.unique_keys, self.permutation, self.segments, self.nkeys = unique(  # type: ignore
-                self.keys, return_groups=True, assume_sorted=self.assume_sorted
+            grouping_keys, self.nkeys = _get_grouping_keys(self.keys)
+            keynames = [k.name for k in grouping_keys]
+            keytypes = [k.objtype for k in grouping_keys]
+            repmsg = generic_msg(
+                cmd="createGroupBy",
+                args={
+                    "assumeSortedStr": assume_sorted,
+                    "nkeys": len(grouping_keys),
+                    "keynames": keynames,
+                    "keytypes": keytypes,
+                },
             )
-
-        self.length = self.permutation.size
-        self.ngroups = self.segments.size
+            rep_json = json.loads(repmsg)
+            fields = rep_json["groupby"].split()
+            self.name = fields[1]
+            self.length = int(fields[3])
+            self.ngroups = int(fields[4])
+            self.permutation = create_pdarray(rep_json["permutation"])
+            self.segments = create_pdarray(rep_json["segments"])
+            uki = create_pdarray(rep_json["uniqueKeyIdx"])
+            if self.nkeys == 1:
+                self.unique_keys = self.keys[uki]
+            else:
+                self.unique_keys = tuple([a[uki] for a in self.keys])
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
