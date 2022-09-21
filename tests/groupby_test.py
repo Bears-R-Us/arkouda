@@ -56,7 +56,13 @@ def compare_keys(pdkeys, akkeys, levels, pdvals, akvals) -> int:
             if not np.allclose(pdkeys[lvl], akkeys[lvl].to_ndarray()):
                 print("Different keys")
                 return 1
-    if not np.allclose(pdvals, akvals):
+
+    def equality_helper(a, n):
+        # verify NAN in the same locations and equal in the locations they are not NAN
+        # Note: we have to do this becasue NAN != NAN
+        return ((nin := np.isnan(n)) == (ain := np.isnan(a))).all() and np.allclose(n[~nin], a[~ain])
+
+    if not equality_helper(pdvals, akvals):
         print(f"Different values (abs diff = {np.abs(pdvals - akvals).sum()})")
         return 1
     return 0

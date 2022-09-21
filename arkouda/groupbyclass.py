@@ -12,6 +12,7 @@ from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import int_scalars
 from arkouda.dtypes import uint64 as akuint64
 from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
@@ -141,6 +142,8 @@ def unique(
 class GroupByReductionType(enum.Enum):
     SUM = "sum"
     PROD = "prod"
+    VAR = "var"
+    STD = "std"
     MEAN = "mean"
     MEDIAN = "median"
     MIN = "min"
@@ -347,7 +350,7 @@ class GroupBy:
         return self.unique_keys, create_pdarray(repMsg)
 
     def aggregate(
-        self, values: groupable, operator: str, skipna: bool = True
+        self, values: groupable, operator: str, skipna: bool = True, ddof: int_scalars = 1
     ) -> Tuple[groupable, groupable]:
         """
         Using the permutation stored in the GroupBy instance, group another
@@ -359,6 +362,10 @@ class GroupBy:
             The values to group and reduce
         operator: str
             The name of the reduction operator to use
+        skipna: bool
+            boolean which determines if NANs should be skipped
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating std
 
         Returns
         -------
@@ -393,7 +400,6 @@ class GroupBy:
         -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,
         0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
         """
-
         operator = operator.lower()
         if operator not in self.Reductions:
             raise ValueError(f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}")
@@ -424,6 +430,7 @@ class GroupBy:
                 "segments": self.segments,
                 "op": operator,
                 "skip_nan": skipna,
+                "ddof": ddof,
             },
         )
         self.logger.debug(repMsg)
@@ -451,6 +458,8 @@ class GroupBy:
             The unique keys, in grouped order
         group_sums : pdarray
             One sum per unique key in the GroupBy instance
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Raises
         ------
@@ -491,6 +500,8 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and multiply
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Returns
         -------
@@ -530,6 +541,135 @@ class GroupBy:
         k, v = self.aggregate(values, "prod", skipna)
         return k, cast(pdarray, v)
 
+    def var(
+        self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
+    ) -> Tuple[groupable, pdarray]:
+        """
+        Using the permutation stored in the GroupBy instance, group
+        another array of values and compute the variance of
+        each group's values.
+
+        Parameters
+        ----------
+        values : pdarray
+            The values to group and find variance
+        skipna: bool
+            boolean which determines if NANs should be skipped
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating var
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        group_vars : pdarray, float64
+            One var value per unique key in the GroupBy instance
+
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
+        Notes
+        -----
+        The return dtype is always float64.
+
+        The variance is the average of the squared deviations from the mean,
+        i.e.,  ``var = mean((x - x.mean())**2)``.
+
+        The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+        If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+        instead.  In standard statistical practice, ``ddof=1`` provides an
+        unbiased estimator of the variance of a hypothetical infinite population.
+        ``ddof=0`` provides a maximum likelihood estimate of the variance for
+        normally distributed variables.
+
+        Examples
+        --------
+        >>> a = ak.randint(1,5,10)
+        >>> a
+        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        >>> g = ak.GroupBy(a)
+        >>> g.keys
+        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        >>> b = ak.randint(1,5,10)
+        >>> b
+        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        >>> g.var(b)
+        (array([2 3 4]), array([2.333333333333333 1.2 0]))
+        """
+        k, v = self.aggregate(values, "var", skipna, ddof)
+        return k, cast(pdarray, v)
+
+    def std(
+        self, values: pdarray, skipna: bool = True, ddof: int_scalars = 1
+    ) -> Tuple[groupable, pdarray]:
+        """
+        Using the permutation stored in the GroupBy instance, group
+        another array of values and compute the standard deviation of
+        each group's values.
+
+        Parameters
+        ----------
+        values : pdarray
+            The values to group and find standard deviation
+        skipna: bool
+            boolean which determines if NANs should be skipped
+        ddof : int_scalars
+            "Delta Degrees of Freedom" used in calculating std
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        group_stds : pdarray, float64
+            One std value per unique key in the GroupBy instance
+
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
+        Notes
+        -----
+        The return dtype is always float64.
+
+        The standard deviation is the square root of the average of the squared
+        deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+        The average squared deviation is normally calculated as
+        ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+        the divisor ``N - ddof`` is used instead. In standard statistical
+        practice, ``ddof=1`` provides an unbiased estimator of the variance
+        of the infinite population. ``ddof=0`` provides a maximum likelihood
+        estimate of the variance for normally distributed variables. The
+        standard deviation computed in this function is the square root of
+        the estimated variance, so even with ``ddof=1``, it will not be an
+        unbiased estimate of the standard deviation per se.
+
+        Examples
+        --------
+        >>> a = ak.randint(1,5,10)
+        >>> a
+        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        >>> g = ak.GroupBy(a)
+        >>> g.keys
+        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+        >>> b = ak.randint(1,5,10)
+        >>> b
+        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+        >>> g.std(b)
+        (array([2 3 4]), array([1.5275252316519465 1.0954451150103321 0]))
+        """
+        k, v = self.aggregate(values, "std", skipna, ddof)
+        return k, cast(pdarray, v)
+
     def mean(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
@@ -540,6 +680,8 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and average
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Returns
         -------
@@ -587,12 +729,14 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and find median
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Returns
         -------
         unique_keys : (list of) pdarray or Strings
             The unique keys, in grouped order
-        group_means : pdarray, float64
+        group_medians : pdarray, float64
             One median value per unique key in the GroupBy instance
 
         Raises
@@ -634,6 +778,8 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and find minima
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Returns
         -------
@@ -682,6 +828,8 @@ class GroupBy:
         ----------
         values : pdarray
             The values to group and find maxima
+        skipna: bool
+            boolean which determines if NANs should be skipped
 
         Returns
         -------
@@ -768,7 +916,6 @@ class GroupBy:
         >>> g.argmin(b)
         (array([2, 3, 4]), array([5, 4, 2]))
         """
-
         k, v = self.aggregate(values, "argmin")
         return k, cast(pdarray, v)
 
@@ -818,7 +965,6 @@ class GroupBy:
         >>> g.argmax(b)
         (array([2, 3, 4]), array([9, 3, 2]))
         """
-
         k, v = self.aggregate(values, "argmax")
         return k, cast(pdarray, v)
 
@@ -885,7 +1031,6 @@ class GroupBy:
         """
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
         # return self.aggregate(values, "nunique")
-
         togroup = self._nested_grouping_helper(values)
         # Find unique pairs of (key, val)
         g = GroupBy(togroup)
@@ -1393,7 +1538,6 @@ class GroupBy:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-
         if not self.name:
             raise RegistrationError(
                 "This item does not have a name and does not appear to be registered."
@@ -1516,7 +1660,6 @@ class GroupBy:
         --------
         register, is_registered, unregister, unregister_groupby_by_name
         """
-
         from re import compile, match
 
         from arkouda.categorical import Categorical

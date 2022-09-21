@@ -307,6 +307,30 @@ module ReductionMsg
       }
       return counts;
     }
+
+    proc nanCounts(values:[] ?t, segments:[?D] int) throws {
+      // count cumulative nans over all values
+      var cumnans = isnan(values):int;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * values.size);
+      cumnans = + scan cumnans;
+
+      // find cumulative nans at segment boundaries
+      var segnans: [D] int;
+      forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
+        if si == D.high {
+          agg.copy(sn, cumnans[cumnans.domain.high]);
+        } else {
+          agg.copy(sn, cumnans[segments[si+1]-1]);
+        }
+      }
+
+      // take diffs of adjacent segments to find nan count in each segment
+      var nancounts: [D] int;
+      nancounts[D.low] = segnans[D.low];
+      nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
+      return nancounts;
+    }
     
     proc segmentedReductionMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -319,6 +343,7 @@ module ReductionMsg
         const values_name = msgArgs.getValueOf("values");
         const segments_name = msgArgs.getValueOf("segments");
         const op = msgArgs.getValueOf("op");
+        const ddof = msgArgs.get("ddof").getIntValue();
       
         var rname = st.nextName();
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -342,6 +367,14 @@ module ReductionMsg
                     }
                     when "prod" {
                         var res = segProduct(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "var" {
+                        var res = segVar(values.a, segments.a, ddof);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "std" {
+                        var res = segStd(values.a, segments.a, ddof);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
                     when "mean" {
@@ -402,6 +435,14 @@ module ReductionMsg
                         var res = segProduct(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
+                    when "var" {
+                        var res = segVar(values.a, segments.a, ddof);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "std" {
+                        var res = segStd(values.a, segments.a, ddof);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "mean" {
                         var res = segMean(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -460,6 +501,14 @@ module ReductionMsg
                         var res = segProduct(values.a, segments.a, skipNan);
                         st.addEntry(rname, new shared SymEntry(res));
                     } 
+                    when "var" {
+                        var res = segVar(values.a, segments.a, ddof, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "std" {
+                        var res = segStd(values.a, segments.a, ddof, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "mean" {
                         var res = segMean(values.a, segments.a, skipNan);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -504,6 +553,14 @@ module ReductionMsg
                     }
                     when "all" {
                         var res = segAll(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "var" {
+                        var res = segVar(values.a, segments.a, ddof);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "std" {
+                        var res = segStd(values.a, segments.a, ddof);
                         st.addEntry(rname, new shared SymEntry(res));
                     }
                     when "mean" {
@@ -690,37 +747,45 @@ module ReductionMsg
       return res;
     }
 
+    proc segVar(values:[?vD] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+      var res: [D] real;
+      if D.size == 0 { return res; }
+
+      var counts = segCount(segments, values.size);
+      const means = segMean(values, segments, skipNan);
+      // expand mean per segment to be size of values
+      const expandedMeans = [k in expandKeys(vD, segments)] means[k];
+      var squaredDiffs: [vD] real;
+      // First deal with any NANs and calculate squaredDiffs
+      if isRealType(t) && skipNan {
+        // calculate counts with nan values excluded and 0 out the NANs
+        squaredDiffs = [(v,m) in zip(values, expandedMeans)] if isnan(v) then 0:real else (v - m)**2;
+        counts -= nanCounts(values, segments);
+      }
+      else {
+        squaredDiffs = [(v,m) in zip(values, expandedMeans)] (v:real - m)**2;
+      }
+      forall (r, s, c) in zip(res, segSum(squaredDiffs, segments), counts) {
+        r = if c-ddof > 0 then s / (c-ddof):real else NAN;
+      }
+      return res;
+    }
+
+    proc segStd(values:[] ?t, segments:[?D] int, ddof:int, skipNan=false): [D] real throws {
+      if D.size == 0 { return [D] 0.0; }
+      return sqrt(segVar(values, segments, ddof, skipNan));
+    }
+
     proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
       var res: [D] real;
       if (D.size == 0) { return res; }
       var sums;
       var counts;
-      if (isRealType(t) && skipNan) {
-        // count cumulative nans over all values
-        var cumnans = isnan(values):int;
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(int) * cumnans.size);
-        cumnans = + scan cumnans;
-        
-        // find cumulative nans at segment boundaries
-        var segnans: [D] int;
-        forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
-          if si == D.high {
-            agg.copy(sn, cumnans[cumnans.domain.high]); 
-          } else {
-            agg.copy(sn, cumnans[segments[si+1]-1]);
-          }
-        }
-        
-        // take diffs of adjacent segments to find nan count in each segment
-        var nancounts: [D] int;
-        nancounts[D.low] = segnans[D.low];
-        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
-        
+      if isRealType(t) && skipNan {
         // calculate sum and counts with nan values replaced with 0.0
         var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
-        counts = segCount(segments, values.size) - nancounts;
+        counts = segCount(segments, values.size) - nanCounts(values, segments);
       } else {
         sums = segSum(values, segments);
         counts = segCount(segments, values.size);
@@ -742,32 +807,11 @@ module ReductionMsg
       var noNanVals = values: t;
       // First deal with any NANs
       if isRealType(t) && skipNan {
-        // count cumulative nans over all values
-        var cumnans = isnan(values):int;
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(int) * values.size);
-        cumnans = + scan cumnans;
-
-        // find cumulative nans at segment boundaries
-        var segnans: [D] int;
-        forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
-          if si == D.high {
-            agg.copy(sn, cumnans[cumnans.domain.high]);
-          } else {
-            agg.copy(sn, cumnans[segments[si+1]-1]);
-          }
-        }
-
-        // take diffs of adjacent segments to find nan count in each segment
-        var nancounts: [D] int;
-        nancounts[D.low] = segnans[D.low];
-        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
-
         // calculate counts with nan values excluded and replace nan with max(real)
         // this will force them at the very end of the sorted segment and since
         // counts has been corrected, they won't affect the result
         noNanVals = [elem in values] if isnan(elem) then max(real) else elem;
-        counts -= nancounts;
+        counts -= nanCounts(values, segments);
       }
 
       // then sort values within their segment (from segNumUnique)
