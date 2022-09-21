@@ -16,8 +16,6 @@ module RegistrationMsg
     use ServerErrorStrings;
     use SegmentedString;
     use SegmentedMsg;
-    use Unique;
-    use RadixSortLSD;
 
     private config const logLevel = ServerConfig.logLevel;
     const regLogger = new Logger(logLevel);
@@ -299,7 +297,8 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc attachDataFrameMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {        
+    proc attachDataFrameMsg(cmd: string, payload: string, argSize: int,
+                                 st: borrowed SymTab): MsgTuple throws {        
         var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name"); 
         var colName = "df_columns_%s".format(name);

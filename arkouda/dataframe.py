@@ -2177,13 +2177,16 @@ class DataFrame(UserDict):
                     i += 1
 
             elif parts[i] == "categorical":
-                colName = DataFrame._parse_col_name(parts[i+1], dfName)[0]
-                catMsg = f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}+{parts[i+4]}+{parts[i+5]}+{parts[i+6]}"
+                colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
+                catMsg = (
+                    f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}+"
+                    f"{parts[i+4]}+{parts[i+5]}+{parts[i+6]}"
+                )
                 cols[colName] = Categorical.from_return_msg(catMsg)
                 i += 6
 
             elif parts[i] == "segarray":
-                colName = DataFrame._parse_col_name(parts[i+1], dfName)[0]
+                colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
                 segMsg = f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}"
                 cols[colName] = SegArray.from_return_msg(segMsg)
                 i += 3

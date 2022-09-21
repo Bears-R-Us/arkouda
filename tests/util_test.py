@@ -102,7 +102,9 @@ class utilTest(ArkoudaTest):
         segments = ak.array([0, 4, 7, 10, 13, 16])
         segarr = ak.SegArray(segments, akflat)
 
-        df = ak.DataFrame({"cat": cat, "user_ID": userid, "item": item, "amount": amount, "visits": segarr}, ind)
+        df = ak.DataFrame(
+            {"username": cat, "user_ID": userid, "item": item, "amount": amount, "visits": segarr}, ind
+        )
         df.register("df_test")
 
         dfAtt = ak.util.attach("df_test")
