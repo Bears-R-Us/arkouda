@@ -82,6 +82,33 @@ class utilTest(ArkoudaTest):
         s2Eq = s2_attach.index == s2.index
         self.assertTrue(all(s2Eq.to_ndarray()))
 
+    def test_dataframe_attach(self):
+        ind = ak.Index.factory(ak.array(["a", "b", "c", "1", "2", "3"]))
+        item = ak.array([0, 0, 1, 1, 2, 0])
+        amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        userid = ak.array([111, 222, 111, 333, 222, 111])
+        username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
+        cat = ak.Categorical(username)
+
+        a = [2, 1, 2, 3]
+        b = [2, 2, 3]
+        c = [2, 1, 2]
+        d = [2, 1, 3]
+        e = [1, 2, 3]
+        f = [2, 3, 1]
+
+        flat = a + b + c + d + e + f
+        akflat = ak.array(flat)
+        segments = ak.array([0, 4, 7, 10, 13, 16])
+        segarr = ak.SegArray(segments, akflat)
+
+        df = ak.DataFrame({"cat": cat, "user_ID": userid, "item": item, "amount": amount, "visits": segarr}, ind)
+        df.register("df_test")
+
+        dfAtt = ak.util.attach("df_test")
+
+        self.assertTrue(df.to_pandas().equals(dfAtt.to_pandas()))
+
     def test_unregister_by_name(self):
         # Register the four supported object types
         # pdarray

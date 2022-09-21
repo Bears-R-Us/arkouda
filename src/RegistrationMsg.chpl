@@ -9,11 +9,15 @@ module RegistrationMsg
     use Logging;
     use Message;
     use List;
+    use Set;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use SegmentedString;
+    use SegmentedMsg;
+    use Unique;
+    use RadixSortLSD;
 
     private config const logLevel = ServerConfig.logLevel;
     const regLogger = new Logger(logLevel);
@@ -278,6 +282,115 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    /* 
+    Compile the component parts of a DataFrame attach message 
+
+    :arg cmd: calling command 
+    :type cmd: string 
+
+    :arg payload: name of SymTab element
+    :type payload: string
+
+    :arg argSize: number of arguments in payload
+    :type argSize: int
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: MsgTuple response message
+    */
+    proc attachDataFrameMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {        
+        var msgArgs = parseMessageArgs(payload, argSize);
+        const name = msgArgs.getValueOf("name"); 
+        var colName = "df_columns_%s".format(name);
+        var repMsg = "dataframe+%s".format(name);
+
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                            "%s: Collecting DataFrame components for '%s'".format(cmd, name));
+
+        var jsonParam = msgArgs.get("name");
+        jsonParam.setVal(colName);
+        var json: [0..#1] string = [jsonParam.getJSON()];
+
+        // Add columns as a json list
+        var cols = stringsToJSONMsg(cmd, "%jt".format(json), json.size, st).msg;
+        repMsg += "+json %s".format(cols);
+
+        // Get index 
+        var indParam = new ParameterObj("name", "df_index_%s_key".format(name), ObjectType.VALUE, "");
+        var indJSON: [0..#1] string = [indParam.getJSON()];
+        var ind = attachMsg(cmd, "%jt".format(indJSON), indJSON.size, st).msg;
+        if ind.startsWith("Error:") { 
+            var errorMsg = ind;
+            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
+        }
+        repMsg += "+%s".format(ind);
+
+        // Get column data
+        var nameList = st.findAll("df_data_(pdarray|str|SegArray|Categorical)_.*_%s".format(name));
+        
+        if nameList.size == 1 && nameList[0] == "" {
+            var errorMsg = "No data values found for DataFrame %s".format(name);
+            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        // Convert nameList to a Set to get unique values
+        var u : set(string) = new set(string, nameList);
+
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                            "%s: Data components found for dataframe: '%jt'".format(cmd, u));
+
+        // Use existing attach functionality to build the response message based on the objType of each data column
+        forall regName in u with (+ reduce repMsg) {
+            var parts = regName.split("_");
+            var objtype: string = parts[2];
+            var msg: string;
+            select (objtype){
+                when ("pdarray") {
+                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
+                    var attJSON: [0..#1] string = [attParam.getJSON()];
+                    msg = attachMsg(cmd, "%jt".format(attJSON), attJSON.size, st).msg;
+                }
+                when ("str") {
+                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
+                    var attJSON: [0..#1] string = [attParam.getJSON()];
+                    msg = attachMsg(cmd, "%jt".format(attJSON), attJSON.size, st).msg;
+                }
+                when ("SegArray") {
+                    msg = attachSegArrayMsg(cmd, regName, st).msg;
+                }
+                when ("Categorical") {
+                    msg = attachCategoricalMsg(cmd, regName, st).msg;
+                }
+                otherwise {
+                    regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
+                                "Unsupported column type found in DataFrame: '%s'. \
+                                Supported types are: pdarray, str, Categorical, and SegArray".format(objtype));
+                    
+                    throw getErrorWithContext(
+                                        msg="Unknown column type (%s) found in DataFrame: %s".format(objtype, name),
+                                        lineNumber=getLineNumber(),
+                                        routineName=getRoutineName(),
+                                        moduleName=getModuleName(),
+                                        errorClass="ValueError"
+                                        );
+                }
+            }
+
+            if (msg.startsWith("Error:")) {
+                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
+                repMsg = msg;
+            } else {
+                repMsg += "+%s".format(msg);
+            }
+        }
+
+        var msgType = if repMsg.startsWith("Error:") then MsgType.ERROR else MsgType.NORMAL;
+        return new MsgTuple(repMsg, msgType);
+    }
+
     /*
     Attempt to determine the type of object base on a given name
 
@@ -307,6 +420,8 @@ module RegistrationMsg
             dtype = "segarray";
         } else if st.contains("%s_value".format(name)) && (st.contains("%s_key".format(name)) || st.contains("%s_key_0".format(name))) {
             dtype = "series";
+        } else if st.contains("df_columns_%s".format(name)) && (st.contains("df_index_%s_key".format(name))) {
+            dtype = "dataframe";
         } else {
             throw getErrorWithContext(
                                 msg="Unable to determine type for given name: %s".format(name),
@@ -351,9 +466,10 @@ module RegistrationMsg
             dtype = "simple";
         }
 
+        var json: [0..#1] string = [msgArgs.get("name").getJSON()];
+
         select (dtype.toLower()) {
             when ("simple") {
-                var json: [0..#1] string = [msgArgs.get("name").getJSON()];
                 // pdarray and strings can use the attachMsg method
                 return attachMsg(cmd, "%jt".format(json), json.size, st);
             }
@@ -366,9 +482,12 @@ module RegistrationMsg
             when ("series") {
                 return attachSeriesMsg(cmd, name, st);
             }
+            when ("dataframe") {
+                return attachDataFrameMsg(cmd, "%jt".format(json), json.size, st);
+            }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, and series".format(dtype));
+                            "Unsupported type provided: '%s'. Supported types are: pdarray, strings, categorical, segarray, series, and dataframe".format(dtype));
                 
                 throw getErrorWithContext(
                                     msg="Unknown type (%s) supplied for given name: %s".format(dtype, name),
