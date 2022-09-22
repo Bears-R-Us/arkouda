@@ -132,7 +132,7 @@ class DataFrameTest(ArkoudaTest):
             "c_2": ak.arange(6, 9, 1),
             "c_3": str_arr,
             "c_4": ak.Categorical(str_arr),
-            "c_5": ak.SegArray(ak.array([0, 9, 14]), ak.arange(20)),
+            "c_5": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
         }
         akdf = ak.DataFrame(df_dict)
         self.assertEqual(len(akdf.columns), len(akdf.dtypes))
@@ -500,7 +500,7 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(len(glob.glob(f"{d}/testName_with_index*.pq")), ak.get_config()["numLocales"])
 
         # Test for df having seg array col
-        df = ak.DataFrame({"a": ak.arange(10), "b": ak.SegArray(ak.arange(10), ak.arange(10))})
+        df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
         df.save(f"{d}/seg_test.h5")
         self.assertEqual(len(glob.glob(f"{d}/seg_test*.h5")), ak.get_config()["numLocales"])
         ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")

@@ -122,7 +122,7 @@
                     // When smallIdx is set to true, some localization work will
                     // be skipped and a localizing slice will instead be done,
                     // which can perform better by avoiding those overhead costs.
-                    var repTup = segPdarrayIndex("str", categories_name, idxCodeName, st, smallIdx=true);
+                    var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st, smallIdx=true);
                     
                     if repTup.msgType == MsgType.ERROR {
                         throw new IllegalArgumentError(repTup.msg);
@@ -135,7 +135,7 @@
                     // When smallIdx is set to true, some localization work will
                     // be skipped and a localizing slice will instead be done,
                     // which can perform better by avoiding those overhead costs.
-                    var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), st, smallIdx=true);
+                    var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8,  st, smallIdx=true);
                     
                     if repTup.msgType == MsgType.ERROR {
                         throw new IllegalArgumentError(repTup.msg);

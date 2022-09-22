@@ -292,7 +292,13 @@ class Strings:
             if key >= 0 and key < self.size:
                 repMsg = generic_msg(
                     cmd="segmentedIndex",
-                    args={"subcmd": "intIndex", "objType": self.objtype, "obj": self.entry, "key": key},
+                    args={
+                        "subcmd": "intIndex",
+                        "objType": self.objtype,
+                        "dtype": self.entry.dtype,
+                        "obj": self.entry,
+                        "key": key,
+                    },
                 )
                 _, value = repMsg.split(maxsplit=1)
                 return parse_single_value(value)
@@ -307,6 +313,7 @@ class Strings:
                     "subcmd": "sliceIndex",
                     "objType": self.objtype,
                     "obj": self.entry,
+                    "dtype": self.entry.dtype,
                     "key": [start, stop, stride],
                 },
             )
@@ -319,7 +326,13 @@ class Strings:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
             repMsg = generic_msg(
                 cmd="segmentedIndex",
-                args={"subcmd": "pdarrayIndex", "objType": self.objtype, "obj": self.entry, "key": key},
+                args={
+                    "subcmd": "pdarrayIndex",
+                    "objType": self.objtype,
+                    "dtype": self.entry.dtype,
+                    "obj": self.entry,
+                    "key": key,
+                },
             )
             return Strings.from_return_msg(repMsg)
         else:

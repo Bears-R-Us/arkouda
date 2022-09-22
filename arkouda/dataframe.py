@@ -600,7 +600,7 @@ class DataFrame(UserDict):
             elif t == "SegArray":
                 # split creates for segments and values
                 eles = msg[2].split("+")
-                df_dict[msg[1]] = SegArray(create_pdarray(eles[0]), create_pdarray(eles[1]))
+                df_dict[msg[1]] = SegArray.from_parts(create_pdarray(eles[0]), create_pdarray(eles[1]))
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
@@ -1475,7 +1475,7 @@ class DataFrame(UserDict):
         # update dict to contain segarrays where applicable if any exist
         if len(seg_cols) > 0:
             df_dict = {
-                col: SegArray(df_dict[col + "_segments"], df_dict[col + "_values"])
+                col: SegArray.from_parts(df_dict[col + "_segments"], df_dict[col + "_values"])
                 if col in seg_cols
                 else df_dict[col]
                 for col in df_dict_keys

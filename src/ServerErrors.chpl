@@ -2,6 +2,8 @@ module ServerErrors {
 
     private use IO; // for string.format
 
+    class OutOfBoundsError: Error {}
+
     /*
      * Generates an error message that provides a fuller context to the error
      * by including the line number, proc name, and module name from which the 
