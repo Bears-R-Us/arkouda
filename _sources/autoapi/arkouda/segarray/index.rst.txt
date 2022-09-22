@@ -23,6 +23,7 @@ Functions
 
    arkouda.segarray.gen_ranges
    arkouda.segarray._aggregator
+   arkouda.segarray.segarray
 
 
 
@@ -50,9 +51,14 @@ Functions
 .. py:function:: _aggregator(func)
 
 
-.. py:class:: SegArray(segments, values, copy=False, lengths=None, grouping=None)
+.. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
 
-   .. py:attribute:: _valsize
+   Alias for the from_parts function. Prevents user from needing to call `ak.SegArray.from_parts`
+
+
+.. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
+
+   .. py:attribute:: valsize
       
 
       Note - if lengths is provided, it will need to be sent to the
@@ -60,41 +66,65 @@ Functions
       Since no computation is currently done on the server,
       we will not be sending lengths right now
 
+   .. py:method:: from_return_msg(rep_msg, lengths=None, grouping=None) -> SegArray
+      :classmethod:
+
+
+   .. py:method:: from_parts(segments, values, lengths=None, grouping=None) -> SegArray
+      :classmethod:
+
+      Construct a SegArray object from its parts
+
+      :param segments: Start index of each sub-array in the flattened values array
+      :type segments: pdarray, int64
+      :param values: The flattened values of all sub-arrays
+      :type values: pdarray
+      :param lengths: The length of each segment
+      :type lengths: pdarray
+      :param grouping: grouping of segments
+      :type grouping: GroupBy
+
+      :returns: Data structure representing an array whose elements are variable-length arrays.
+      :rtype: SegArray
+
+      .. rubric:: Notes
+
+      Keyword args 'lengths' and 'grouping' are not user-facing. They are used by the
+      attach method.
+
+
+   .. py:method:: _from_attach_return_msg(repMsg) -> SegArray
+      :classmethod:
+
+      Return a SegArray instance pointing to components created by the arkouda server.
+      The user should not call this function directly.
+
+      :param repMsg:
+                     + delimited string containing the segments, values, and lengths details
+      :type repMsg: str
+
+      :returns: A SegArray representing a set of pdarray components on the server
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the categorical instance
+
+
+   .. py:method:: from_multi_array(m)
+      :classmethod:
+
+      Construct a SegArray from a list of columns. This essentially transposes the input,
+      resulting in an array of rows.
+
+      :param m: List of columns, the rows of which will form the sub-arrays of the output
+      :type m: list of pdarray
+
+      :returns: Array of rows of input
+      :rtype: SegArray
+
+
    .. py:method:: objtype()
       :property:
-
-
-   .. py:method:: segments()
-      :property:
-
-       Return the pdarray containing the segments.
-       This is configured to prevent the need to move all functionality to server at once.
-
-       Notes
-      ------
-      - Caches return value to prevent the need to recompute.
-
-
-   .. py:method:: values()
-      :property:
-
-      Return the pdarray containing the values of the segarray.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
-
-
-   .. py:method:: valsize()
-      :property:
-
-      Return the size of the values array.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
 
 
    .. py:method:: lengths()
@@ -133,19 +163,6 @@ Functions
       - Caches return value to prevent the need to recompute.
 
 
-   .. py:method:: from_multi_array(m)
-      :classmethod:
-
-      Construct a SegArray from a list of columns. This essentially transposes the input,
-      resulting in an array of rows.
-
-      :param m: List of columns, the rows of which will form the sub-arrays of the output
-      :type m: list of pdarray
-
-      :returns: Array of rows of input
-      :rtype: SegArray
-
-
    .. py:method:: concat(x, axis=0, ordered=True)
       :classmethod:
 
@@ -162,22 +179,6 @@ Functions
 
       :returns: The input arrays joined into one SegArray
       :rtype: SegArray
-
-
-   .. py:method:: from_return_msg(repMsg) -> SegArray
-      :staticmethod:
-
-      Return a SegArray instance pointing to components created by the arkouda server.
-      The user should not call this function directly.
-
-      :param repMsg: ; delimited string containing the segments, values, and lengths details
-      :type repMsg: str
-
-      :returns: A SegArray representing a set of pdarray components on the server
-      :rtype: SegArray
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the categorical instance
 
 
    .. py:method:: copy()
@@ -369,7 +370,7 @@ Functions
 
       .. rubric:: Examples
 
-      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_ndarray()
       array([array([1, 2, 3, 4]), array([5, 6, 7]), array([8, 9, 10, 11, 12])])
       >>> type(segarr.to_ndarray())
@@ -387,7 +388,7 @@ Functions
 
       .. rubric:: Examples
 
-      >>> segarr = ak.SegArray(ak.array([0, 4, 7]), ak.arange(12))
+      >>> segarr = ak.segarray(ak.array([0, 4, 7]), ak.arange(12))
       >>> segarr.to_list()
       [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9, 10, 11]]
       >>> type(segarr.to_list())
@@ -512,8 +513,8 @@ Functions
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.intersect(seg_b)
       SegArray([
       [1, 3],
@@ -539,8 +540,8 @@ Functions
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.union(seg_b)
       SegArray([
       [1, 2, 3, 4, 5],
@@ -566,8 +567,8 @@ Functions
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.setdiff(seg_b)
       SegArray([
       [2, 4],
@@ -593,8 +594,8 @@ Functions
       >>> b = [3, 1, 4, 5]
       >>> c = [1, 3, 3, 5]
       >>> d = [2, 2, 4]
-      >>> seg_a = ak.SegArray(ak.array([0, len(a)]), ak.array(a+b))
-      >>> seg_b = ak.SegArray(ak.array([0, len(c)]), ak.array(c+d))
+      >>> seg_a = ak.segarray(ak.array([0, len(a)]), ak.array(a+b))
+      >>> seg_b = ak.segarray(ak.array([0, len(c)]), ak.array(c+d))
       >>> seg_a.setxor(seg_b)
       SegArray([
       [2, 4, 5],

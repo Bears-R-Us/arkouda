@@ -21,8 +21,6 @@ or
 
 .. data:: param SegmentedStringUseHash = useHash
 
-.. class:: OutOfBoundsError : Error
-
 .. function:: proc getSegString(name: string, st: borrowed SymTab): owned SegString throws
 
 .. function:: proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws
