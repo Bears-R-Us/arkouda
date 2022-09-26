@@ -1,5 +1,5 @@
 # Arkouda vs NumPy/Pandas
-This document compares and contrasts Arkouda with `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself - specially in the final section.
+This document compares and contrasts Arkouda with `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself &mdash; specially in the final section.
 
 <a id="toc"></a>
 ## Table of Contents
