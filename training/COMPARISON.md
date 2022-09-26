@@ -1,5 +1,5 @@
 # Arkouda vs NumPy/Pandas
-This document compares and contrasts Arkouda with `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself &mdash; specially in the final section.
+This document compares and contrasts Arkouda with `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself &mdash; especially in the final section.
 
 <a id="toc"></a>
 ## Table of Contents
@@ -280,17 +280,25 @@ for i in array:
 NotImplementedError: pdarray does not support iteration. To force data transfer from server, use to_ndarray
 ```
 
-Unfortunately, there is a way to iterate `pdarray` objects without raising an exception. This is for informational purposes only. If you find yourself writing code similar to what appears below or wanting to iterate a `pdarray`, here's likely a way to get the desired behavior with an array oriented method in arkouda or the functionality will need to be implemented in Chapel.
+Unfortunately, there is a way to iterate `pdarray` objects without raising an exception. This is for informational purposes only. If you find yourself writing code similar to what appears below or wanting to iterate a `pdarray`, there's likely a way to get the desired behavior with an array oriented method in arkouda or the functionality will need to be implemented in Chapel.
 
 ```python
 import arkouda as ak
 ak.connect()
 array = ak.arange(100)
 for i in array.to_list():
+    print(i)
+```
+
+```python
+import arkouda as ak
+ak.connect()
+array = ak.arange(100)
+for i in range(array.size):
     print(array[i])
 ```
 
-**NOTE: The above code will run. However, it is extremely inefficient and should NEVER be utilized.**
+**NOTE: The above 2 examples will run. However, it is extremely inefficient and should NEVER be utilized.**
 
 If you find yourself in one of the situations demonstrated above, please contact the Arkouda development team for assistance. It is likely that there is another way to handle what you need. If there is not, it can be done in Chapel and the team will assist with that as well.
 
