@@ -1,5 +1,5 @@
 # Arkouda vs NumPy/Pandas
-This document compares and contrasts Arkouda to the similar well known libraries, `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself. Especially, in the final section.
+This document compares and contrasts Arkouda with `NumPy` and `Pandas`. As you go through this document, we encourage you to try the code for yourself - specially in the final section.
 
 <a id="toc"></a>
 ## Table of Contents
@@ -22,35 +22,34 @@ This document compares and contrasts Arkouda to the similar well known libraries
 <a id="bg"></a>
 ## Background Information
 
-Arkouda began with the intention of allowing `NumPy` like functionality in an HPC setting. Overtime, it has evolved to support `Pandas` functionality and continues to expand. In order to make Arkouda approachable, the API is designed in way that mimics `NumPy` and `Pandas`. This allows for an easy transition for users that are already familiar with the Python packages, but want to run against larger datasets.
+Arkouda began with the intention of allowing `NumPy`-like functionality in an HPC setting. Over time, it has evolved to support `Pandas` functionality and continues to expand. The API mimics `NumPy` and `Pandas` to allow an easy transition for users familiar with these Python packages.
 
-So, what makes Arkouda special? The answer is simple, scalability. Where other packages run against compiled C/C++ code, Arkouda leverages Chapel. This allows Arkouda to run locally, but also allows it to gain significant performance benefits in an HPC setting. 
+So what makes Arkouda special? The answer is simple, scalability. Where other packages run against compiled C/C++ code, Arkouda leverages Chapel. This allows Arkouda to run locally and gain significant performance benefits in an HPC environment. 
 
 <a id="import"></a>
 ## Importing Arkouda
 This may seem like trivial step to highlight. However, Arkouda requires the user to connect to the server component before running commands.
 
 ### Local Connection
-When running the Arkouda server on the same machine as your python code, no parameters are required to connect. This uses the default settings of `server=localhost` and `port=5555`. During devlopment this is typically what is used.
+When running the Arkouda server on the same machine as your python code, no parameters are required to connect. This uses the default settings of `server=localhost` and `port=5555`. During development this is typically what is used.
 ```python
 import arkouda as ak
 ak.connect()
 ```
 
 ### Custom Connection
-Arkouda allows for custom connections as well. This allows for connection to remote servers. More information on connection parameters can be found [here](https://bears-r-us.github.io/arkouda/autoapi/arkouda/client/index.html?highlight=connect#arkouda.client.connect).
+Arkouda allows for custom connections as well. This is useful for connecting to remote servers. More information on connection parameters can be found [here](https://bears-r-us.github.io/arkouda/autoapi/arkouda/client/index.html?highlight=connect#arkouda.client.connect).
 
 <a id="discon"></a>
 ## Disconnecting From Arkouda Server
-Because you are connected to the Arkouda server, when you are done working you will need to disconnect from the server. There are 2 ways to do this.
+Because you are connected to the Arkouda server, when you are done working you will need to disconnect from the server. There are 2 ways to do this:
 
-The first is using `ak.disconnect()`. This will only disconnect the client from the server, but the server will remain running.
-
-The second is using `ak.shutdown()`. This will disconnect from the server AND shutdown the server.
+- `ak.disconnect()` - This will only disconnect the client from the server, but the server will remain running. 
+- `ak.shutdown()` - This will disconnect from the server AND shutdown the server.
 
 <a id="arrays"></a>
 ## Arrays
-Arkouda arrays, referred to as `pdarrays` are at the base of all Arkouda functionality. These are very similar to `NumPy` arrays. 
+Arkouda arrays, referred to as `pdarrays`, are at the base of all Arkouda functionality. These are very similar to `NumPy` arrays. 
 
 *It is important to note that arrays are immutable objects due to the configurations. However, there are functions that allow for updates to the array artificially. These functions will generate an entirely new array.*
 
@@ -105,7 +104,7 @@ array([0 1 2 3 4])
 
 <a id="ind"></a>
 ### Indexing
-Arkouda and `Numpy` support a wide range of indexing. The API here is virtually identical except for array indexing due to Arkouda requiring a `pdarray`. Indexing formats supported are `integer`, `slice`, `array`, and `boolean`.
+Arkouda and `Numpy` support a wide range of indexing. The API here is virtually identical except for array indexing due to Arkouda requiring a `pdarray`. Indexing formats supported are `integer`, `slice`, `integer array`, and `boolean array`.
 
 *NOTE: For `boolean` indexing the boolean array provided must be the same size as the array being indexed.*
 
@@ -154,7 +153,7 @@ array([0, 3, 4, 5, 7, 9])
 
 <a id="setops"></a>
 ### Set Operations
-Arkouda and `NumPy` support set operations. Just like array creation, These functions are very similar. Both packages support `in1d`, `intersect1d`, `union1d`, `setdiff1d`, and `setxor1d`. In this section we will only demonstrate utilization of `intersect1d`. Documentation on all set operations in Arkouda can be found below:
+Arkouda and `NumPy` support set operations. Just like array creation, these functions are very similar. Both packages support `in1d`, `intersect1d`, `union1d`, `setdiff1d`, and `setxor1d`. In this section we will only demonstrate utilization of `intersect1d`. Documentation on all set operations in Arkouda can be found below:
 
 - [in1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=in1d#arkouda.pdarraysetops.in1d)
 - [intersect1d](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarraysetops/index.html?highlight=intersect1d#arkouda.pdarraysetops.intersect1d)
@@ -182,7 +181,7 @@ ak_int
 array([4 5 6])
 ```
 
-Arkouda takes this one step further and allows set operations on sequences of `pdarray` objects.
+Arkouda takes this one step further and allows set operations on sequences of `pdarray` objects. This requires all `pdarrays` in the sequence to be the same size. 
 
 ```python
 import arkouda as ak
@@ -216,7 +215,7 @@ cts  # this represents the number of times each key occurs in the array
 array([2, 2, 1, 1, 1])
 ```
 
-Arkouda's `GroupBy` is a bit more advanced. Arkouda has a `GroupBy` class that leverages functionality similar to `np.unique` to compute its components. This class also includes `.permutaion` and `.segement` properties. `.permutation` is contains a pdarray whose values are the indexes of the original array in order by group. `.segments` contains a pdarray whose values are the starting index of each group (when `GroupBy.keys` is indexed by `GroupBy.permutation`).
+Arkouda's `GroupBy` is a bit more advanced. Arkouda has a `GroupBy` class that leverages functionality similar to `np.unique` to compute its components. This class also includes `.permutation` and `.segment` properties. `.permutation` contains a pdarray whose values are the indexes of the original array in order by group. `.segments` contains a pdarray whose values are the starting index of each group (when `GroupBy.keys` is indexed by `GroupBy.permutation`).
 ```python
 import arkouda as ak
 ak.connect()
@@ -265,12 +264,12 @@ array([0 1 1 2 2 3 3 3])
 g.keys[1][g.permutation]
 array([0 1 1 1 1 2 3 3])
 ```
-Notice that keys is a tuple of length equal to the number of elements grouped on. The corresponding indexes are the keys. For Example, key 0 is `(0, 0)`.
+Notice that keys is a tuple of length equal to the number of elements grouped on. The corresponding indexes are the keys. For example, key 0 is `(0, 0)`.
 
 ### Not Supported
 A common thing to do in Python is iterate over an object. This is not something that should be done (and is not directly supported) with Arkouda arrays.
 
-For example, attempting to interate directly on a pdarray will raise and exception.
+For example, attempting to iterate directly on a `pdarray` will raise and exception.
 ```python
 import arkouda as ak
 ak.connect()
@@ -281,13 +280,14 @@ for i in array:
 NotImplementedError: pdarray does not support iteration. To force data transfer from server, use to_ndarray
 ```
 
-Unfortunately, there is a way to iterate `pdarray` objects without raising an exception. This is for informational purposes only. If you find yourself writing code similar to what appears below or wanting to iterate a `pdarray`, you will most likely need Chapel.
+Unfortunately, there is a way to iterate `pdarray` objects without raising an exception. This is for informational purposes only. If you find yourself writing code similar to what appears below or wanting to iterate a `pdarray`, here's likely a way to get the desired behavior with an array oriented method in arkouda or the functionality will need to be implemented in Chapel.
+
 ```python
 import arkouda as ak
 ak.connect()
 array = ak.arange(100)
 for i in array.to_list():
-    print(i)
+    print(array[i])
 ```
 
 **NOTE: The above code will run. However, it is extremely inefficient and should NEVER be utilized.**
@@ -296,7 +296,7 @@ If you find yourself in one of the situations demonstrated above, please contact
 
 <a id="df"></a>
 ## DataFrames
-Arkouda and `Pandas` support `DataFrame` objects. Through this section, you will notice that there are some key differences. Arkouda DataFrame support is fairly new and is continually being updated. The most common way to construct a `DataFrame` in both packages is by using a dictionary. However, other methods exist. Links to the documentation are below if you would like to review alternative methods. For the purposes of this document, we will be using Python Dictionaries.
+Arkouda and `Pandas` support `DataFrame` objects. Throughout this section, you will notice that there are some key differences. Arkouda DataFrame support is fairly new and is continually being updated. The most common way to construct a `DataFrame` in both packages is by using a dictionary. However, other methods exist. Links to the documentation are below if you would like to review alternative methods. For the purposes of this document, we will be using Python Dictionaries.
 
 - [Pandas DataFrame Documentation](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)
 - [Arkouda DataFrame Documentation](https://bears-r-us.github.io/arkouda/usage/dataframe.html?highlight=dataframe#arkouda.DataFrame)
@@ -357,10 +357,10 @@ ak_df
 
 <a id="df_groupby"></a>
 ### GroupBy on DataFrames
-`GroupBy` on DataFrames is similar in concept to `GroupBy` on arrays. When calling `.count()` on the resulting `GroupBy` object there is some variance in the return from Arkouda and `Pandas`. 
+`GroupBy` on DataFrames is similar in concept to `GroupBy` on arrays. When calling `.count()` on the resulting `GroupBy` object there is some variation in the return from Arkouda and `Pandas`. 
 
 #### GroupBy on Pandas DataFrame
-One important note is that Pandas support grouping on both axes. Arkouda does not currently support this.
+One important note is that Pandas supports grouping on both axes. Arkouda does not currently support this.
 ```python
 import pandas as pd
 pd_df = pd.DataFrame({
@@ -380,7 +380,7 @@ John         2    2       2
 Notice that the return of count is a `DataFrame` object with each value representing the number of different values in a given column for the corresponding grouped column.
 
 #### GroupBy on Arkouda DataFrame
-Running `GroupBy` on and Arkouda `DataFrame` results in an Arkouda `GroupBy` object. This results in different output when running `.count()` on the result.
+Running `GroupBy` on an Arkouda `DataFrame` results in an Arkouda `GroupBy` object. This results in different output when running `.count()` on the result.
 ```python
 import arkouda as ak
 ak.connect()
@@ -394,11 +394,22 @@ ak_g = ak_df.GroupBy("F_Name")
 ak_g.count()
 (array(['John', 'Jane', 'Jake']), array([2 1 1]))
 ```
-Notice the return here is the unique keys found in the column requested to group on along with the number of time each of those keys occured in the column. 
+Notice the return here is the unique keys found in the column requested to group on along with the number of time each of those keys occurred in the column. 
 
 <a id="ex"></a>
 ## Example Application
 Now that we have highlighted some of Arkouda's key components, let's walk through an example of how to use them. A good example of this is walking through the code for a set operation on a sequence of `pdarray` objects. We will go through one of these functions, `setdiff1d`. The goal here is to identify the values only found in the first object provided.
+
+In case you are unfamiliar with `setdiff1d` (set difference), the goal is to compute the the difference between 2 sets. A brief example is shown below.
+
+```python
+# given set 1
+s1 = [1,2,3,4]
+s2 = [3,7,8,2]
+
+# set difference computes the values in s1 that are not found in s2
+s1 - s2 = [1, 4]
+```
 
 *NOTE: You will be using the `ak.concatenate()` function in these examples. This function creates a new array containing all values from the provided `pdarray`s.*
 
@@ -417,13 +428,13 @@ m2 =[
 ]
 ```
 
-First, import and connection to arkouda
+First, import and connect to Arkouda
 ```python
 import arkouda as ak
 ak.connect()
 ```
 
-Next, we will create a key to deinterleave the arrays. Using this to index into the concatenated arrays will return values from `m1`. We will also concatenate `m1` and `m2`. `ak.ones()` creates a `pdarray` with every value being `1`. `ak.zeros()` creates a `pdarray` with every value being `0`. 
+Next, we will create a key to de-interleave the arrays. Using this to index into the concatenated arrays will return values from `m1`. We will also concatenate `m1` and `m2`. `ak.ones()` creates a `pdarray` with every value being `1`. `ak.zeros()` creates a `pdarray` with every value being `0`. 
 ```python
 # Key for deinterleaving result
 isa = ak.concatenate(
@@ -446,14 +457,14 @@ This next step does a lot for us, so we are going to get in more detail here.
 ```python
 truth = g.broadcast(ct == 1, permute=True)
 ```
-We need to compute the unique keys that appear in the union only once, `ct == 1` provides that information. We then broadcast the resulting `True`/`False` value to the original keys the `GroupBy` was built from. Setting `permute=True` ensures that resulting boolean array is in the same order as the original keys, which is crucial to the next step.
+We need to compute the unique keys that appear in the union only once; `ct == 1` provides that information. We then broadcast the resulting `True`/`False` value to the original keys the `GroupBy` was built from. Setting `permute=True` ensures that resulting boolean array is in the same order as the original keys, which is crucial to the next step.
 
 Next, we will access the `truth` array only at indexes corresponding to `m1`.
 ```python
 rtnIndx = truth[isa]
 ```
 
-Finally, we iterate the sequnce of `pdarray` objects in `m1` and index each one by `rtnIndx`. This will give us the desired return of values in `m1` that are not in `m2`.
+Finally, we iterate the sequence of `pdarray` objects in `m1` and index each one by the boolean array `rtnIndx`. This will give us the desired return of values in `m1` that are not in `m2`.
 
 ```python
 result = [x[rtnIndx] for x in m1]
