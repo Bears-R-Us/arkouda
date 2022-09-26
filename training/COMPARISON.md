@@ -440,12 +440,20 @@ Next, we will create a key to de-interleave the arrays. Using this to index into
 isa = ak.concatenate(
    (ak.ones(m1[0].size, dtype=ak.bool), ak.zeros(m2[0].size, dtype=ak.bool)), ordered=False
 )
+# for instructional purposes, displaying the contents of isa (more details below)
+isa
+array([True True True True True True True False False False False False False])
+
 
 # concatenate m1 and m2
 c = [ak.concatenate(x, ordered=False) for x in zip(m1, m2)]
+
+#displaying c for clarity. More details below
+c
+[array([0 1 3 4 8 5 0 0 1 3 4 8 7]), array([0 9 5 1 8 5 0 0 2 5 9 8 5])]
 ```
 
-After this step, `isa` is a pdarray with `True` in the indexes where values are from `m1` and `False` in the indexes where values are from `m2`. This is because we cast the values from `1` and `0` to their equivalent boolean values using the `dtype=ak.bool` parameter.
+After this step, `isa` is a pdarray with `True` in the indexes where values are from `m1` and `False` in the indexes where values are from `m2`. This is because we cast the values from `1` and `0` to their equivalent boolean values using the `dtype=ak.bool` parameter. `c` is a sequence of 2 arrays. Notice that `c[0]` is equal to `[m1[0], m2[0]]` and `c[1]` is equal to `[m1[1], m2[1]]`. `c` is the result of concatenating the keys resulting in a sequence of equal length to `m1` and `m2` and where each value in the sequence is of `size[i] = m1[i].size + m2[i].size` 
 
 Now, we need to create a `GroupBy` object to get our unique keys. And the counts of those keys.
 ```python
@@ -456,10 +464,15 @@ k, ct = g.count()
 This next step does a lot for us, so we are going to get in more detail here. 
 ```python
 truth = g.broadcast(ct == 1, permute=True)
-```
-We need to compute the unique keys that appear in the union only once; `ct == 1` provides that information. We then broadcast the resulting `True`/`False` value to the original keys the `GroupBy` was built from. Setting `permute=True` ensures that resulting boolean array is in the same order as the original keys, which is crucial to the next step.
 
-Next, we will access the `truth` array only at indexes corresponding to `m1`.
+#displaying for context
+truth
+array([False True False True False True False False True False True False True])
+
+```
+We need to compute the unique keys that appear in the union only once; `ct == 1` provides that information. We then broadcast the resulting `True`/`False` value to the original keys the `GroupBy` was built from. Setting `permute=True` ensures that resulting boolean array is in the same order as the original keys, which is crucial to the next step. As a result, `truth` provides us with a boolean index to the keys that are found only once in the union of `m1` and `m2`. 
+
+Next, we will access the `truth` array only at indexes corresponding to `m1` because we wish to return the keys from `m1` that are not present in `m2`. Since `truth` is the boolean index to unique keys in the union, we will use `isa` to return on the values from `m1`. *Reminder - isa is the boolean index for values in `m1` in the concatenated keys.*
 ```python
 rtnIndx = truth[isa]
 ```
