@@ -103,48 +103,6 @@ class ParameterObject:
 
     @staticmethod
     @typechecked
-    def _build_datetime_param(key: str, val) -> ParameterObject:
-        """
-        Create a ParameterObject from a Datetime value
-
-        Parameters
-        ----------
-        key : str
-            key from the dictionary object
-        val
-            Datetime object ot load from the symbol table
-
-        Returns
-        -------
-        ParameterObject
-        """
-        # empty string if name of String obj is none
-        name = val.name if val.name else ""
-        return ParameterObject(key, ObjectType.DATETIME, str(val.values.dtype), name)
-
-    @staticmethod
-    @typechecked
-    def _build_timedelta_param(key: str, val) -> ParameterObject:
-        """
-        Create a ParameterObject from a Timedelta value
-
-        Parameters
-        ----------
-        key : str
-            key from the dictionary object
-        val
-            Timedelta object ot load from the symbol table
-
-        Returns
-        -------
-        ParameterObject
-        """
-        # empty string if name of String obj is none
-        name = val.name if val.name else ""
-        return ParameterObject(key, ObjectType.TIMEDELTA, str(val.values.dtype), name)
-
-    @staticmethod
-    @typechecked
     def _build_list_param(key: str, val: list) -> ParameterObject:
         """
         Create a ParameterObject from a list
@@ -216,21 +174,16 @@ class ParameterObject:
         -------
         Dictionary - mapping the parameter type to the build function
         """
-        from arkouda.pdarrayclass import pdarray
         from arkouda.strings import Strings
-        from arkouda.timeclass import Datetime, Timedelta
 
         return {
-            pdarray.__name__: ParameterObject._build_pdarray_param,
             Strings.__name__: ParameterObject._build_strings_param,
-            Datetime.__name__: ParameterObject._build_datetime_param,
-            Timedelta.__name__: ParameterObject._build_timedelta_param,
             list.__name__: ParameterObject._build_list_param,
             dict.__name__: ParameterObject._build_dict_param,
         }
 
-    @staticmethod
-    def factory(key: str, val) -> ParameterObject:
+    @classmethod
+    def factory(cls, key: str, val) -> ParameterObject:
         """
         Factory method used to build ParameterObject given a key value pair
 
@@ -245,8 +198,11 @@ class ParameterObject:
         --------
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
+        from arkouda.pdarrayclass import pdarray
         dispatch = ParameterObject.generate_dispatch()
-        if (f := dispatch.get(type(val).__name__)) is not None:
+        if isinstance(val, pdarray):  # this is done here to avoid multiple dispatch entries for the same type
+            return cls._build_pdarray_param(key, val)
+        elif (f := dispatch.get(type(val).__name__)) is not None:
             return f(key, val)
         else:
             return ParameterObject._build_gen_param(key, val)
