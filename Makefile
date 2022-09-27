@@ -168,7 +168,7 @@ ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.26.0 or newer is required)
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.27.0 or newer is recommended)
+	$(warning Chapel 1.28.0 or newer is recommended)
 endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl

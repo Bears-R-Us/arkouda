@@ -2,7 +2,7 @@
 
 The dependencies listed here have varying installation instructions depending upon your preferred operating system. Please use in the installation instructions provided in [INSTALL.md](INSTALL.md).
 
-- `Chapel 1.27.0 or later`
+- `Chapel 1.28.0 or later`
 - `cmake>=3.11.0`
 - `zeromq>=4.2.5`
 - `hdf5`
