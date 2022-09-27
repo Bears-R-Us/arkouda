@@ -145,7 +145,7 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "datetime")
-        self.assertEqual(msgArgs["objType"], "DATETIME")
+        self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "int64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d$")
 
