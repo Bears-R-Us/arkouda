@@ -129,7 +129,7 @@ jobs:
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.27.0
+      image: chapel/${{matrix.image}}:1.28.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
