@@ -461,7 +461,7 @@ c
 [array([0 1 3 4 8 5 0 0 1 3 4 8 7]), array([0 9 5 1 8 5 0 0 2 5 9 8 5])]
 ```
 
-After this step, `isa` is a pdarray with `True` in the indexes where values are from `m1` and `False` in the indexes where values are from `m2`. This is because we cast the values from `1` and `0` to their equivalent boolean values using the `dtype=ak.bool` parameter. `c` is a sequence of 2 arrays. Notice that `c[0]` is equal to `[m1[0], m2[0]]` and `c[1]` is equal to `[m1[1], m2[1]]`. `c` is the result of concatenating the keys resulting in a sequence of equal length to `m1` and `m2` and where each value in the sequence is of `size[i] = m1[i].size + m2[i].size` 
+After this step, `isa` is a pdarray with `True` in the indexes where values are from `m1` and `False` in the indexes where values are from `m2`. This is because we cast the values from `1` and `0` to their equivalent boolean values using the `dtype=ak.bool` parameter. `c` is a sequence of 2 arrays. Notice that `c[0]` is equal to `[m1[0], m2[0]]` and `c[1]` is equal to `[m1[1], m2[1]]`. `c` is the result of concatenating the keys resulting in a sequence of equal length to `m1` and `m2` and where each value in the sequence is of `size[i] = m1[i].size + m2[i].size`. It is important to note that these values may not always be in an obvious order. This is because we are using `ordered=False` which allows the system to return the concatenation in the order that makes the most sense. Here, we are running locally, which makes the order appear as expected. However, on a distributed system, the values corresponding to `m1` and `m2` may be interleaved, resulting in the need for this computation.
 
 Now, we need to create a `GroupBy` object to get our unique keys. And the counts of those keys.
 ```python
@@ -492,3 +492,5 @@ result = [x[rtnIndx] for x in m1]
 result
 [array([1 4 5]), array([9 1 5])]
 ```
+
+From more examples, visit the [ArkoudaNotebooks](https://github.com/Bears-R-Us/ArkoudaNotebooks) repository.
