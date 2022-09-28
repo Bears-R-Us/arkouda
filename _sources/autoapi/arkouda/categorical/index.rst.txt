@@ -77,6 +77,9 @@ Classes
 
       :type: tuple
 
+   .. py:property:: objtype
+
+
    .. py:attribute:: BinOps
       
 
@@ -101,10 +104,6 @@ Classes
       
 
       
-
-   .. py:method:: objtype()
-      :property:
-
 
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:

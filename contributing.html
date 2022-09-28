@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Contributing &#8212; arkouda 0+untagged.1.g2045093 documentation</title>
+    <title>Contributing &#8212; arkouda 0+untagged.1.gd16b08b documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -15,6 +15,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="autoapi/index.html" />
@@ -103,68 +104,68 @@
 <section id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <p>First, in the <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code> configuration file, add <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> to the list of included modules:</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">ArraySetopsMsg</span>
-<span class="nx">KExtremeMsg</span>
-<span class="nx">ArgSortMsg</span>
-<span class="o">..</span><span class="p">.</span>
-<span class="nx">FooMsg</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">ArraySetopsMsg</span><span class="w"></span>
+<span class="nx">KExtremeMsg</span><span class="w"></span>
+<span class="nx">ArgSortMsg</span><span class="w"></span>
+<span class="o">..</span><span class="p">.</span><span class="w"></span>
+<span class="nx">FooMsg</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Next, define your argument parsing and function logic in <code class="docutils literal notranslate"><span class="pre">src/FooMsg.chpl</span></code> in the following manner:</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">FooMsg</span>
-<span class="p">{</span>
-    <span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span><span class="w"> </span><span class="nc">FooMsg</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="nx">ServerConfig</span><span class="p">;</span><span class="w"></span>
 
-    <span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
-    <span class="k">use</span> <span class="nx">MultiTypeSymbolTable</span><span class="p">;</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="nx">MultiTypeSymEntry</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="nx">ServerErrorStrings</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="nx">MultiTypeSymbolTable</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// do foo on array a</span>
-    <span class="k">proc</span> <span class="nf">foo</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="p">[?</span><span class="nx">aD</span><span class="p">]</span> <span class="kt">int</span><span class="p">):</span> <span class="p">[</span><span class="nx">aD</span><span class="p">]</span> <span class="kt">int</span> <span class="p">{</span>
-       <span class="c1">//...</span>
-       <span class="k">return</span><span class="p">(</span><span class="nx">ret</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// do foo on array a</span>
+<span class="w">    </span><span class="k">proc</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span><span class="w"> </span><span class="p">[?</span><span class="nx">aD</span><span class="p">]</span><span class="w"> </span><span class="kt">int</span><span class="p">):</span><span class="w"> </span><span class="p">[</span><span class="nx">aD</span><span class="p">]</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">       </span><span class="c1">//...</span>
+<span class="w">       </span><span class="k">return</span><span class="p">(</span><span class="nx">ret</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="cm">/*</span>
+<span class="w">    </span><span class="cm">/*</span>
 <span class="cm">    Parse, execute, and respond to a foo message</span>
 <span class="cm">    :arg reqMsg: request containing (cmd,dtype,size)</span>
 <span class="cm">    :type reqMsg: string</span>
 <span class="cm">    :arg st: SymTab to act on</span>
 <span class="cm">    :type st: borrowed SymTab</span>
 <span class="cm">    :returns: (string) response message</span>
-<span class="cm">    */</span>
-    <span class="k">proc</span> <span class="nf">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">:</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">st</span><span class="p">:</span> <span class="k">borrowed</span> <span class="nx">SymTab</span><span class="p">):</span> <span class="kt">string</span> <span class="k">throws</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">repMsg</span><span class="p">:</span> <span class="kt">string</span><span class="p">;</span> <span class="c1">// response message</span>
-        <span class="c1">// split request into fields</span>
-        <span class="kd">var</span> <span class="p">(</span><span class="nx">cmd</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="o">=</span> <span class="nx">reqMsg</span><span class="p">.</span><span class="nx">splitMsgToTuple</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-        <span class="c1">// get next symbol name</span>
-        <span class="kd">var</span> <span class="nx">rname</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">nextName</span><span class="p">();</span>
+<span class="cm">    */</span><span class="w"></span>
+<span class="w">    </span><span class="k">proc</span><span class="w"> </span><span class="nf">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">st</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">SymTab</span><span class="p">):</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="k">throws</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">repMsg</span><span class="p">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// response message</span>
+<span class="w">        </span><span class="c1">// split request into fields</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">reqMsg</span><span class="p">.</span><span class="nx">splitMsgToTuple</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// get next symbol name</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">rname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">st</span><span class="p">.</span><span class="nx">nextName</span><span class="p">();</span><span class="w"></span>
 
-        <span class="kd">var</span> <span class="nx">gEnt</span><span class="p">:</span> <span class="k">borrowed</span> <span class="nx">GenSymEntry</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">lookup</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">gEnt</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="nx">unknownSymbolError</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="nx">name</span><span class="p">);}</span>
-        <span class="c1">// if verbose print action</span>
-        <span class="k">if</span> <span class="nx">v</span> <span class="p">{</span><span class="k">try</span><span class="o">!</span> <span class="nx">writeln</span><span class="p">(</span><span class="s">&quot;%s %s: %s&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="nx">name</span><span class="p">,</span><span class="nx">rname</span><span class="p">));</span> <span class="k">try</span><span class="o">!</span> <span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">();}</span>
-        <span class="k">select</span> <span class="p">(</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">when</span> <span class="p">(</span><span class="nx">DType</span><span class="p">.</span><span class="nx">Int64</span><span class="p">)</span> <span class="p">{</span>
-                <span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">toSymEntry</span><span class="p">(</span><span class="nx">gEnt</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span>
-                <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
-                <span class="nx">st</span><span class="p">.</span><span class="nx">addEntry</span><span class="p">(</span><span class="nx">rname</span><span class="p">,</span> <span class="nx">new</span> <span class="k">shared</span> <span class="nx">SymEntry</span><span class="p">(</span><span class="nx">ret</span><span class="p">));</span>
-            <span class="p">}</span>
-            <span class="k">otherwise</span> <span class="p">{</span><span class="k">return</span> <span class="nx">notImplementedError</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">);}</span>
-        <span class="p">}</span>
-        <span class="c1">// response message</span>
-        <span class="k">return</span> <span class="k">try</span><span class="o">!</span> <span class="s">&quot;created &quot;</span> <span class="o">+</span> <span class="nx">st</span><span class="p">.</span><span class="nx">attrib</span><span class="p">(</span><span class="nx">rname</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">gEnt</span><span class="p">:</span><span class="w"> </span><span class="k">borrowed</span><span class="w"> </span><span class="nx">GenSymEntry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">st</span><span class="p">.</span><span class="nx">lookup</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">gEnt</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="k">return</span><span class="w"> </span><span class="nx">unknownSymbolError</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="nx">name</span><span class="p">);}</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// if verbose print action</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="p">{</span><span class="k">try</span><span class="o">!</span><span class="w"> </span><span class="nx">writeln</span><span class="p">(</span><span class="s">&quot;%s %s: %s&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="nx">name</span><span class="p">,</span><span class="nx">rname</span><span class="p">));</span><span class="w"> </span><span class="k">try</span><span class="o">!</span><span class="w"> </span><span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">();}</span><span class="w"></span>
+<span class="w">        </span><span class="k">select</span><span class="w"> </span><span class="p">(</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nx">DType</span><span class="p">.</span><span class="nx">Int64</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">toSymEntry</span><span class="p">(</span><span class="nx">gEnt</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span><span class="w"></span>
+<span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nx">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">foo</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span><span class="w"></span>
+<span class="w">                </span><span class="nx">st</span><span class="p">.</span><span class="nx">addEntry</span><span class="p">(</span><span class="nx">rname</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="k">shared</span><span class="w"> </span><span class="nx">SymEntry</span><span class="p">(</span><span class="nx">ret</span><span class="p">));</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="k">otherwise</span><span class="w"> </span><span class="p">{</span><span class="k">return</span><span class="w"> </span><span class="nx">notImplementedError</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">);}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// response message</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">try</span><span class="o">!</span><span class="w"> </span><span class="s">&quot;created &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">st</span><span class="p">.</span><span class="nx">attrib</span><span class="p">(</span><span class="nx">rname</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Then, in <code class="docutils literal notranslate"><span class="pre">FooMsg.chpl</span></code>, add a <code class="docutils literal notranslate"><span class="pre">registerMe()</span></code> function to add the function to the <code class="docutils literal notranslate"><span class="pre">commandMap</span></code>:</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="o">..</span><span class="p">.</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="o">..</span><span class="p">.</span><span class="w"></span>
 <span class="c1">// add a mapping from command string to FCF</span>
-<span class="k">proc</span> <span class="nf">registerMe</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">use</span> <span class="nx">CommandMap</span><span class="p">;</span>
-  <span class="nx">registerFunction</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="nx">fooMsg</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="k">proc</span><span class="w"> </span><span class="nf">registerMe</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">use</span><span class="w"> </span><span class="nx">CommandMap</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="nx">registerFunction</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">fooMsg</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Now, the module <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> can be optionally included in each build. If the module name is found uncommented in <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg</span></code>, it will build into the server. If the module name is absent from <code class="docutils literal notranslate"><span class="pre">ServerModules.cfg`</span> <span class="pre">or</span> <span class="pre">commented</span> <span class="pre">out,</span> <span class="pre">which</span> <span class="pre">is</span> <span class="pre">done</span> <span class="pre">by</span> <span class="pre">putting</span> <span class="pre">a</span> <span class="pre">``#</span></code> as the first character of the line, it will be excluded from the build.</p>
@@ -241,7 +242,7 @@
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

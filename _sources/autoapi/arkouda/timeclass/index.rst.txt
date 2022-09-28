@@ -319,6 +319,60 @@ Attributes
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
+   .. py:property:: nanosecond
+
+
+   .. py:property:: microsecond
+
+
+   .. py:property:: millisecond
+
+
+   .. py:property:: second
+
+
+   .. py:property:: minute
+
+
+   .. py:property:: hour
+
+
+   .. py:property:: day
+
+
+   .. py:property:: month
+
+
+   .. py:property:: year
+
+
+   .. py:property:: day_of_year
+
+
+   .. py:property:: dayofyear
+
+
+   .. py:property:: day_of_week
+
+
+   .. py:property:: dayofweek
+
+
+   .. py:property:: weekday
+
+
+   .. py:property:: week
+
+
+   .. py:property:: weekofyear
+
+
+   .. py:property:: date
+
+
+   .. py:property:: is_leap_year
+
+
    .. py:attribute:: supported_with_datetime
       
 
@@ -355,78 +409,6 @@ Attributes
       
 
    .. py:method:: _ensure_components()
-
-
-   .. py:method:: nanosecond()
-      :property:
-
-
-   .. py:method:: microsecond()
-      :property:
-
-
-   .. py:method:: millisecond()
-      :property:
-
-
-   .. py:method:: second()
-      :property:
-
-
-   .. py:method:: minute()
-      :property:
-
-
-   .. py:method:: hour()
-      :property:
-
-
-   .. py:method:: day()
-      :property:
-
-
-   .. py:method:: month()
-      :property:
-
-
-   .. py:method:: year()
-      :property:
-
-
-   .. py:method:: day_of_year()
-      :property:
-
-
-   .. py:method:: dayofyear()
-      :property:
-
-
-   .. py:method:: day_of_week()
-      :property:
-
-
-   .. py:method:: dayofweek()
-      :property:
-
-
-   .. py:method:: weekday()
-      :property:
-
-
-   .. py:method:: week()
-      :property:
-
-
-   .. py:method:: weekofyear()
-      :property:
-
-
-   .. py:method:: date()
-      :property:
-
-
-   .. py:method:: is_leap_year()
-      :property:
 
 
    .. py:method:: isocalendar()
@@ -489,6 +471,21 @@ Attributes
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
+   .. py:property:: nanoseconds
+
+
+   .. py:property:: microseconds
+
+
+   .. py:property:: seconds
+
+
+   .. py:property:: days
+
+
+   .. py:property:: components
+
+
    .. py:attribute:: supported_with_datetime
       
 
@@ -527,27 +524,7 @@ Attributes
    .. py:method:: _ensure_components()
 
 
-   .. py:method:: nanoseconds()
-      :property:
-
-
-   .. py:method:: microseconds()
-      :property:
-
-
-   .. py:method:: seconds()
-      :property:
-
-
-   .. py:method:: days()
-      :property:
-
-
    .. py:method:: total_seconds()
-
-
-   .. py:method:: components()
-      :property:
 
 
    .. py:method:: _get_callback(otherclass, op)

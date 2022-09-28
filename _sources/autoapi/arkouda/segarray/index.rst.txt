@@ -58,6 +58,36 @@ Functions
 
 .. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
 
+   .. py:property:: objtype
+
+
+   .. py:property:: lengths
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+   .. py:property:: non_empty
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+   .. py:property:: non_empty_count
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
    .. py:attribute:: valsize
       
 
@@ -123,44 +153,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: objtype()
-      :property:
-
-
-   .. py:method:: lengths()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
-
-
    .. py:method:: _compute_non_empty()
-
-
-   .. py:method:: non_empty()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
-
-
-   .. py:method:: non_empty_count()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
 
 
    .. py:method:: concat(x, axis=0, ordered=True)

@@ -79,6 +79,9 @@ Classes
 
 .. py:class:: ParameterObject(key, objType, dtype, val)
 
+   .. py:property:: dict
+
+
    .. py:attribute:: __slots
       :annotation: = ['key', 'objType', 'dtype', 'val']
 
@@ -103,10 +106,6 @@ Classes
       :annotation: :str
 
       
-
-   .. py:method:: dict()
-      :property:
-
 
    .. py:method:: _build_pdarray_param(key: str, val) -> ParameterObject
       :staticmethod:

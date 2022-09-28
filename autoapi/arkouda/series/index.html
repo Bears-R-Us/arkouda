@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.series &#8212; arkouda 0+untagged.1.g2045093 documentation</title>
+    <title>arkouda.series &#8212; arkouda 0+untagged.1.gd16b08b documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -15,6 +15,7 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="arkouda.sorting" href="../sorting/index.html" />
@@ -88,6 +89,11 @@ If entering keywords,</p>
 <div><p>‘data’ (see Parameters)
 ‘index’ (optional) must match size of ‘data’</p>
 </div></blockquote>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.series.Series.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.series.Series.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.series.Series.dt">
 <span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#arkouda.series.Series.dt" title="Permalink to this definition">¶</a></dt>
@@ -112,11 +118,6 @@ If entering keywords,</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.__getitem__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.series.Series.shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -172,7 +173,7 @@ preserved with its values use as the key.</p>
 <dd><p>Return the top values of the series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>Number of values to return</em>) – </p>
+<dd class="field-odd"><p><strong>n</strong> (<em>Number</em><em> of </em><em>values to return</em>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series with the top values</p>
@@ -279,7 +280,7 @@ first element is the most frequently-occurring element.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>label</strong> (<em>name used to register the series</em>) – </p></li>
-<li><p><strong>nkeys</strong> (<em>number of keys</em><em>, </em><em>if a multi-index was registerd</em>) – </p></li>
+<li><p><strong>nkeys</strong> (<em>number</em><em> of </em><em>keys</em><em>, </em><em>if a multi-index was registerd</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -346,10 +347,10 @@ converted to a column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>The list of series/groupings to concat.</em>) – </p></li>
+<li><p><strong>arrays</strong> (<em>The list</em><em> of </em><em>series/groupings to concat.</em>) – </p></li>
 <li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>) – </p></li>
 <li><p><strong>index_labels</strong> (<em>column names</em><em>(</em><em>s</em><em>) </em><em>to label the index.</em>) – </p></li>
-<li><p><strong>value_labels</strong> (<em>column names to label values of each series.</em>) – </p></li>
+<li><p><strong>value_labels</strong> (<em>column names to label values</em><em> of </em><em>each series.</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -374,9 +375,9 @@ converted to a column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>The list of series/groupings to concat.</em>) – </p></li>
+<li><p><strong>arrays</strong> (<em>The list</em><em> of </em><em>series/groupings to concat.</em>) – </p></li>
 <li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>) – </p></li>
-<li><p><strong>labels</strong> (<em>names to give the columns of the data frame.</em>) – </p></li>
+<li><p><strong>labels</strong> (<em>names to give the columns</em><em> of </em><em>the data frame.</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -467,7 +468,7 @@ converted to a column.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

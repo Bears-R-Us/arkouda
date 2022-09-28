@@ -47,6 +47,9 @@ Classes
        'data' (see Parameters)
        'index' (optional) must match size of 'data'
 
+   .. py:property:: shape
+
+
    .. py:attribute:: dt
       
 
@@ -66,10 +69,6 @@ Classes
 
 
    .. py:method:: __getitem__(key)
-
-
-   .. py:method:: shape()
-      :property:
 
 
    .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series

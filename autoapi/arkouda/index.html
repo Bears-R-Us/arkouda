@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda &#8212; arkouda 0+untagged.1.g2045093 documentation</title>
+    <title>arkouda &#8212; arkouda 0+untagged.1.gd16b08b documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -15,6 +15,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -640,8 +641,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda._aggregator" title="arkouda._aggregator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_aggregator</span></code></a>(func)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="segarray/index.html#module-arkouda.segarray" title="arkouda.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
-<td><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray.from_parts</cite></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="segarray/index.html#module-arkouda.segarray" title="arkouda.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sorted" title="arkouda.sorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sorted</span></code></a>(df[, column])</p></td>
 <td><p>Analogous to other python 'sorted(obj)' functions in that it returns</p></td>
@@ -1954,7 +1955,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -4020,7 +4021,7 @@ array([3, 3, 3, 5, 5]</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
-<li><p><strong>kwargs</strong> (<em>dict Dictionary of components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
+<li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5188,7 +5189,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -6254,7 +6255,7 @@ If omitted, the chars argument defaults to removing whitespace. The chars argume
 prefix or suffix; rather, all combinations of its values are stripped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chars</strong> (<em>the set of characters to be removed</em>) – </p>
+<dd class="field-odd"><p><strong>chars</strong> (<em>the set</em><em> of </em><em>characters to be removed</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Strings object with the leading and trailing characters matching the set of characters in
@@ -7624,7 +7625,7 @@ a supported dtype</p></li>
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
-<li><p><strong>names</strong> (<em>str</em><em> or </em><em>sequence of str</em>) – The names of the fields, in order. A string will be treated as a list
+<li><p><strong>names</strong> (<em>str</em><em> or </em><em>sequence</em><em> of </em><em>str</em>) – The names of the fields, in order. A string will be treated as a list
 of single-character field names. Multi-character field names are allowed,
 but must be passed as a list or tuple and user must specify a separator.</p></li>
 <li><p><strong>MSB_left</strong> (<em>bool</em>) – Controls how field names are mapped to binary values. If True (default),
@@ -7903,13 +7904,13 @@ a supported dtype</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ip</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>) or </em><em>ak.IPv4</em>) – </p></li>
-<li><p><strong>in.</strong> (<em>IPv4 value. High Bits of IPv6 if IPv6 is passed</em>) – </p></li>
+<li><p><strong>in.</strong> (<em>IPv4 value. High Bits</em><em> of </em><em>IPv6 if IPv6 is passed</em>) – </p></li>
 <li><p><strong>ip2</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><em>int64</em><em>)</em><em>, </em><em>Optional</em>) – </p></li>
-<li><p><strong>well.</strong> (<em>Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as</em>) – </p></li>
+<li><p><strong>well.</strong> (<em>Low Bits</em><em> of </em><em>IPv6. This is added for support when dealing with data that contains IPv6 as</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray of bools indicating which indexes are IPv4.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv4.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -7932,7 +7933,7 @@ a supported dtype</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pdarray of bools indicating which indexes are IPv6.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv6.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -8919,7 +8920,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -10343,8 +10344,8 @@ where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwis
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
-<li><p><strong>b</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
+<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
+<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</p></li>
@@ -12049,9 +12050,9 @@ one or more of them</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>columns</strong> (<em>dict</em><em> or </em><em>list of pdarrays</em>) – Collection of arrays to save</p></li>
+<li><p><strong>columns</strong> (<em>dict</em><em> or </em><em>list</em><em> of </em><em>pdarrays</em>) – Collection of arrays to save</p></li>
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix for output files</p></li>
-<li><p><strong>names</strong> (<em>list of str</em>) – Dataset names for the pdarrays</p></li>
+<li><p><strong>names</strong> (<em>list</em><em> of </em><em>str</em>) – Dataset names for the pdarrays</p></li>
 <li><p><strong>file_format</strong> (<em>str</em>) – ‘HDF5’ or ‘Parquet’. Defaults to hdf5</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) the output files if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
@@ -13365,7 +13366,7 @@ array([3, 3, 3, 5, 5]</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
-<li><p><strong>kwargs</strong> (<em>dict Dictionary of components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
+<li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -14025,7 +14026,7 @@ If omitted, the chars argument defaults to removing whitespace. The chars argume
 prefix or suffix; rather, all combinations of its values are stripped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chars</strong> (<em>the set of characters to be removed</em>) – </p>
+<dd class="field-odd"><p><strong>chars</strong> (<em>the set</em><em> of </em><em>characters to be removed</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Strings object with the leading and trailing characters matching the set of characters in
@@ -15360,6 +15361,11 @@ work in initialization.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Categorical.objtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.Categorical.objtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Categorical.BinOps">
 <span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#arkouda.Categorical.BinOps" title="Permalink to this definition">¶</a></dt>
@@ -15383,11 +15389,6 @@ work in initialization.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id344">
 <span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#id344" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Categorical.objtype">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.Categorical.objtype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -15426,7 +15427,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>sequence of Categoricals</em>) – The Categoricals to standardize</p></li>
+<li><p><strong>arrays</strong> (<em>sequence</em><em> of </em><em>Categoricals</em>) – The Categoricals to standardize</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -16110,7 +16111,7 @@ constructed for the user.</p>
 <p>In general you should not call this method directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary of String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
+<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary</em><em> of </em><em>String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -17118,7 +17119,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -18019,6 +18020,96 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.values</span></code> attribute is always in nanoseconds with int64 dtype.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.nanosecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanosecond</span></span><a class="headerlink" href="#arkouda.Datetime.nanosecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.microsecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#arkouda.Datetime.microsecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.millisecond">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">millisecond</span></span><a class="headerlink" href="#arkouda.Datetime.millisecond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.second">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#arkouda.Datetime.second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.minute">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#arkouda.Datetime.minute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.hour">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#arkouda.Datetime.hour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.day">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#arkouda.Datetime.day" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.month">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#arkouda.Datetime.month" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#arkouda.Datetime.year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.day_of_year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_year</span></span><a class="headerlink" href="#arkouda.Datetime.day_of_year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.dayofyear">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofyear</span></span><a class="headerlink" href="#arkouda.Datetime.dayofyear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.day_of_week">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_week</span></span><a class="headerlink" href="#arkouda.Datetime.day_of_week" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.dayofweek">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofweek</span></span><a class="headerlink" href="#arkouda.Datetime.dayofweek" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.weekday">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekday</span></span><a class="headerlink" href="#arkouda.Datetime.weekday" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.week">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">week</span></span><a class="headerlink" href="#arkouda.Datetime.week" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.weekofyear">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekofyear</span></span><a class="headerlink" href="#arkouda.Datetime.weekofyear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#arkouda.Datetime.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Datetime.is_leap_year">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_leap_year</span></span><a class="headerlink" href="#arkouda.Datetime.is_leap_year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Datetime.supported_with_datetime">
 <span class="sig-name descname"><span class="pre">supported_with_datetime</span></span><a class="headerlink" href="#arkouda.Datetime.supported_with_datetime" title="Permalink to this definition">¶</a></dt>
@@ -18057,96 +18148,6 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Datetime._ensure_components">
 <span class="sig-name descname"><span class="pre">_ensure_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Datetime._ensure_components" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.nanosecond">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanosecond</span></span><a class="headerlink" href="#arkouda.Datetime.nanosecond" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.microsecond">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#arkouda.Datetime.microsecond" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.millisecond">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">millisecond</span></span><a class="headerlink" href="#arkouda.Datetime.millisecond" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.second">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#arkouda.Datetime.second" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.minute">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#arkouda.Datetime.minute" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.hour">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#arkouda.Datetime.hour" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.day">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#arkouda.Datetime.day" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.month">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#arkouda.Datetime.month" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.year">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#arkouda.Datetime.year" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.day_of_year">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_year</span></span><a class="headerlink" href="#arkouda.Datetime.day_of_year" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.dayofyear">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofyear</span></span><a class="headerlink" href="#arkouda.Datetime.dayofyear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.day_of_week">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_week</span></span><a class="headerlink" href="#arkouda.Datetime.day_of_week" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.dayofweek">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofweek</span></span><a class="headerlink" href="#arkouda.Datetime.dayofweek" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.weekday">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekday</span></span><a class="headerlink" href="#arkouda.Datetime.weekday" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.week">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">week</span></span><a class="headerlink" href="#arkouda.Datetime.week" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.weekofyear">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekofyear</span></span><a class="headerlink" href="#arkouda.Datetime.weekofyear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.date">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#arkouda.Datetime.date" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Datetime.is_leap_year">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_leap_year</span></span><a class="headerlink" href="#arkouda.Datetime.is_leap_year" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -18219,6 +18220,31 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.values</span></code> attribute is always in nanoseconds with int64 dtype.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Timedelta.nanoseconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanoseconds</span></span><a class="headerlink" href="#arkouda.Timedelta.nanoseconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Timedelta.microseconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microseconds</span></span><a class="headerlink" href="#arkouda.Timedelta.microseconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Timedelta.seconds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seconds</span></span><a class="headerlink" href="#arkouda.Timedelta.seconds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Timedelta.days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">days</span></span><a class="headerlink" href="#arkouda.Timedelta.days" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Timedelta.components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components</span></span><a class="headerlink" href="#arkouda.Timedelta.components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Timedelta.supported_with_datetime">
 <span class="sig-name descname"><span class="pre">supported_with_datetime</span></span><a class="headerlink" href="#arkouda.Timedelta.supported_with_datetime" title="Permalink to this definition">¶</a></dt>
@@ -18260,33 +18286,8 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Timedelta.nanoseconds">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanoseconds</span></span><a class="headerlink" href="#arkouda.Timedelta.nanoseconds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Timedelta.microseconds">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microseconds</span></span><a class="headerlink" href="#arkouda.Timedelta.microseconds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Timedelta.seconds">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seconds</span></span><a class="headerlink" href="#arkouda.Timedelta.seconds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Timedelta.days">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">days</span></span><a class="headerlink" href="#arkouda.Timedelta.days" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Timedelta.total_seconds">
 <span class="sig-name descname"><span class="pre">total_seconds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Timedelta.total_seconds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Timedelta.components">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components</span></span><a class="headerlink" href="#arkouda.Timedelta.components" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -19564,7 +19565,7 @@ array([3, 3, 3, 5, 5]</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
-<li><p><strong>kwargs</strong> (<em>dict Dictionary of components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
+<li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -20766,7 +20767,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -21544,7 +21545,7 @@ start- and end-points.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>starts</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – </p></li>
-<li><p><strong>range</strong> (<em>Difference between successive elements of each</em>) – </p></li>
+<li><p><strong>range</strong> (<em>Difference between successive elements</em><em> of </em><em>each</em>) – </p></li>
 <li><p><strong>ends</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – </p></li>
 <li><p><strong>range</strong> – </p></li>
 <li><p><strong>stride</strong> (<em>int</em>) – </p></li>
@@ -21577,7 +21578,45 @@ start- and end-points.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.SegArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">SegArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.SegArray" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py attribute">
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="arkouda.SegArray.objtype">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.SegArray.objtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.SegArray.lengths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lengths</span></span><a class="headerlink" href="#arkouda.SegArray.lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pdarray containing the lengths of the segments.
+This is configured to prevent the need to move all functionality to server at once.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Caches return value to prevent the need to recompute.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.SegArray.non_empty">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty</span></span><a class="headerlink" href="#arkouda.SegArray.non_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pdarray containing the lengths of the segments.
+This is configured to prevent the need to move all functionality to server at once.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Caches return value to prevent the need to recompute.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.SegArray.non_empty_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty_count</span></span><a class="headerlink" href="#arkouda.SegArray.non_empty_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pdarray containing the lengths of the segments.
+This is configured to prevent the need to move all functionality to server at once.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Caches return value to prevent the need to recompute.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.SegArray.valsize">
 <span class="sig-name descname"><span class="pre">valsize</span></span><a class="headerlink" href="#arkouda.SegArray.valsize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Note - if lengths is provided, it will need to be sent to the
@@ -21648,7 +21687,7 @@ the categorical instance</p>
 resulting in an array of rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>m</strong> (<em>list of pdarray</em>) – List of columns, the rows of which will form the sub-arrays of the output</p>
+<dd class="field-odd"><p><strong>m</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – List of columns, the rows of which will form the sub-arrays of the output</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of rows of input</p>
@@ -21660,47 +21699,9 @@ resulting in an array of rows.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.SegArray.objtype">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#arkouda.SegArray.objtype" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.SegArray.lengths">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lengths</span></span><a class="headerlink" href="#arkouda.SegArray.lengths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.SegArray._compute_non_empty">
 <span class="sig-name descname"><span class="pre">_compute_non_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.SegArray._compute_non_empty" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.SegArray.non_empty">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty</span></span><a class="headerlink" href="#arkouda.SegArray.non_empty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.SegArray.non_empty_count">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">non_empty_count</span></span><a class="headerlink" href="#arkouda.SegArray.non_empty_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the pdarray containing the lengths of the segments.
-This is configured to prevent the need to move all functionality to server at once.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Caches return value to prevent the need to recompute.</p></li>
-</ul>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.SegArray.concat">
@@ -21709,7 +21710,7 @@ This is configured to prevent the need to move all functionality to server at on
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>sequence of SegArray</em>) – The SegArrays to concatenate</p></li>
+<li><p><strong>x</strong> (<em>sequence</em><em> of </em><a class="reference internal" href="#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The SegArrays to concatenate</p></li>
 <li><p><strong>axis</strong> (<em>0</em><em> or </em><em>1</em>) – Select vertical (0) or horizontal (1) concatenation. If axis=1, all
 SegArrays must have same size.</p></li>
 <li><p><strong>ordered</strong> (<em>bool</em>) – Must be True. This option is present for compatibility only, because unordered
@@ -22382,6 +22383,43 @@ DataFrame([‘userName’, ‘userID’, ‘item’, ‘day’, ‘amount’] [4
 DataFrame([‘userName’, ‘userID’, ‘item’, ‘day’, ‘amount’] [3 rows : 112 B])
 &gt;&gt;&gt; df[[‘userID’, ‘day’]]
 DataFrame([‘userID’, ‘day’] [6 rows : 96 B])</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.DataFrame.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of bytes on the arkouda server.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.dtypes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtypes</span></span><a class="headerlink" href="#arkouda.DataFrame.dtypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.empty">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">empty</span></span><a class="headerlink" href="#arkouda.DataFrame.empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.DataFrame.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.columns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#arkouda.DataFrame.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.DataFrame.index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.DataFrame.info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#arkouda.DataFrame.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a summary string of this dataframe.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.DataFrame.COLUMN_CLASSES">
 <span class="sig-name descname"><span class="pre">COLUMN_CLASSES</span></span><a class="headerlink" href="#arkouda.DataFrame.COLUMN_CLASSES" title="Permalink to this definition">¶</a></dt>
@@ -22529,7 +22567,7 @@ duplicated row will be returned (keep determines which row).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subset</strong> (<em>Iterable of column names to use to dedupe.</em>) – </p></li>
+<li><p><strong>subset</strong> (<em>Iterable</em><em> of </em><em>column names to use to dedupe.</em>) – </p></li>
 <li><p><strong>keep</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>default 'first'</em>) – Determines which duplicates (if any) to keep.</p></li>
 </ul>
 </dd>
@@ -22541,37 +22579,6 @@ duplicated row will be returned (keep determines which row).</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.DataFrame.size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of bytes on the arkouda server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.dtypes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtypes</span></span><a class="headerlink" href="#arkouda.DataFrame.dtypes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.empty">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">empty</span></span><a class="headerlink" href="#arkouda.DataFrame.empty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.DataFrame.shape" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.columns">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#arkouda.DataFrame.columns" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.index">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.DataFrame.index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame._set_index">
@@ -22607,12 +22614,6 @@ When False, return a new object.</p></li>
 <p>Pandas adds a column ‘index’ to indicate the original index. Arkouda does not currently
 support this behavior.</p>
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.DataFrame.info">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#arkouda.DataFrame.info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a summary string of this dataframe.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -22969,7 +22970,7 @@ file_format needed for consistency with other load functions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>by</strong> (<em>str</em><em> or </em><em>list/tuple of str</em>) – The name(s) of the column(s) to sort by.</p></li>
+<li><p><strong>by</strong> (<em>str</em><em> or </em><em>list/tuple</em><em> of </em><em>str</em>) – The name(s) of the column(s) to sort by.</p></li>
 <li><p><strong>ascending</strong> (<em>bool</em>) – Sort values in ascending (default) or descending order.</p></li>
 </ul>
 </dd>
@@ -23058,7 +23059,7 @@ be reflected in the shallow copy, and vice versa.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list of column names</em>) – </p></li>
+<li><p><strong>keys</strong> (<em>a single column name</em><em> or </em><em>a list</em><em> of </em><em>column names</em>) – </p></li>
 <li><p><strong>use_series</strong> (<em>Change return type to Arkouda Groupby object.</em>) – </p></li>
 </ul>
 </dd>
@@ -24436,7 +24437,7 @@ array([3, 3, 3, 5, 5]</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
-<li><p><strong>kwargs</strong> (<em>dict Dictionary of components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
+<li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -25496,7 +25497,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -26165,8 +26166,8 @@ where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwis
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
-<li><p><strong>b</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
+<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
+<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</p></li>
@@ -26259,7 +26260,25 @@ with earlier arkouda versions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Index">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#id1113" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><span class="pre">Index</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Index.index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.Index.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is maintained to support older code</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Index.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.Index.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Index.is_unique">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_unique</span></span><a class="headerlink" href="#arkouda.Index.is_unique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property indicating if all values in the index are unique
+:rtype: bool - True if all values are unique, False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Index.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -26279,24 +26298,6 @@ with earlier arkouda versions.</p>
 <dt class="sig sig-object py" id="arkouda.Index.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.__eq__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self==value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Index.index">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.Index.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is maintained to support older code</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Index.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.Index.shape" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Index.is_unique">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_unique</span></span><a class="headerlink" href="#arkouda.Index.is_unique" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property indicating if all values in the index are unique
-:rtype: bool - True if all values are unique, False otherwise.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -26449,6 +26450,12 @@ file format.</p>
 <dt class="sig sig-object py" id="arkouda.MultiIndex">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">MultiIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../usage/Index.html#arkouda.Index" title="arkouda.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.MultiIndex.index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.MultiIndex.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is maintained to support older code</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.MultiIndex.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.__getitem__" title="Permalink to this definition">¶</a></dt>
@@ -26469,12 +26476,6 @@ file format.</p>
 <dt class="sig sig-object py" id="arkouda.MultiIndex.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.__eq__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self==value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.index">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.MultiIndex.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is maintained to support older code</p>
 </dd></dl>
 
 <dl class="py method">
@@ -26566,6 +26567,11 @@ If entering keywords,</p>
 <div><p>‘data’ (see Parameters)
 ‘index’ (optional) must match size of ‘data’</p>
 </div></blockquote>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.Series.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.Series.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Series.dt">
 <span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#arkouda.Series.dt" title="Permalink to this definition">¶</a></dt>
@@ -26590,11 +26596,6 @@ If entering keywords,</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Series.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Series.__getitem__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Series.shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.Series.shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -26650,7 +26651,7 @@ preserved with its values use as the key.</p>
 <dd><p>Return the top values of the series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>Number of values to return</em>) – </p>
+<dd class="field-odd"><p><strong>n</strong> (<em>Number</em><em> of </em><em>values to return</em>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series with the top values</p>
@@ -26757,7 +26758,7 @@ first element is the most frequently-occurring element.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>label</strong> (<em>name used to register the series</em>) – </p></li>
-<li><p><strong>nkeys</strong> (<em>number of keys</em><em>, </em><em>if a multi-index was registerd</em>) – </p></li>
+<li><p><strong>nkeys</strong> (<em>number</em><em> of </em><em>keys</em><em>, </em><em>if a multi-index was registerd</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -26824,10 +26825,10 @@ converted to a column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>The list of series/groupings to concat.</em>) – </p></li>
+<li><p><strong>arrays</strong> (<em>The list</em><em> of </em><em>series/groupings to concat.</em>) – </p></li>
 <li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>) – </p></li>
 <li><p><strong>index_labels</strong> (<em>column names</em><em>(</em><em>s</em><em>) </em><em>to label the index.</em>) – </p></li>
-<li><p><strong>value_labels</strong> (<em>column names to label values of each series.</em>) – </p></li>
+<li><p><strong>value_labels</strong> (<em>column names to label values</em><em> of </em><em>each series.</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -26852,9 +26853,9 @@ converted to a column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>The list of series/groupings to concat.</em>) – </p></li>
+<li><p><strong>arrays</strong> (<em>The list</em><em> of </em><em>series/groupings to concat.</em>) – </p></li>
 <li><p><strong>axis</strong> (<em>Whether</em><em> or </em><em>not to do a verticle</em><em> (</em><em>axis=0</em><em>) or </em><em>horizontal</em><em> (</em><em>axis=1</em><em>) </em><em>concatenation</em>) – </p></li>
-<li><p><strong>labels</strong> (<em>names to give the columns of the data frame.</em>) – </p></li>
+<li><p><strong>labels</strong> (<em>names to give the columns</em><em> of </em><em>the data frame.</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -26972,34 +26973,34 @@ work in initialization.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id788">
-<span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#id788" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#id788" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id789">
-<span class="sig-name descname"><span class="pre">RegisterablePieces</span></span><a class="headerlink" href="#id789" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#id789" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id790">
-<span class="sig-name descname"><span class="pre">RequiredPieces</span></span><a class="headerlink" href="#id790" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RegisterablePieces</span></span><a class="headerlink" href="#id790" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id791">
-<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#id791" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RequiredPieces</span></span><a class="headerlink" href="#id791" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id792">
-<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#id792" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#id792" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id793">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#id793" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#id793" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -27038,7 +27039,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>sequence of Categoricals</em>) – The Categoricals to standardize</p></li>
+<li><p><strong>arrays</strong> (<em>sequence</em><em> of </em><em>Categoricals</em>) – The Categoricals to standardize</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -27722,7 +27723,7 @@ constructed for the user.</p>
 <p>In general you should not call this method directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary of String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
+<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary</em><em> of </em><em>String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -28783,7 +28784,7 @@ array([3, 3, 3, 5, 5]</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
-<li><p><strong>kwargs</strong> (<em>dict Dictionary of components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
+<li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -29933,7 +29934,7 @@ always a np.float64 or np.int64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple of ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
+<li><p><strong>shape</strong> (<em>int</em><em>, </em><em>tuple</em><em> of </em><em>ints</em><em>, or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The new shape should be compatible with the original shape.</p></li>
 <li><p><strong>order</strong> (<em>str {'row_major'</em><em> | </em><em>'C'</em><em> | </em><em>'column_major'</em><em> | </em><em>'F'}</em>) – Read the elements of the pdarray in this index order
 By default, read the elements in row_major or C-like order where the last index
 changes the fastest
@@ -30638,8 +30639,8 @@ where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwis
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
-<li><p><strong>b</strong> (<em>list of pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
+<li><p><strong>a</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements for which to test membership in b</p></li>
+<li><p><strong>b</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#id1113" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Rows are elements of the set in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<em>bool</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – Return in1d(pda1, pda2), in1d(pda2, pda1) when pda1 and 2 are single items.</p></li>
@@ -31134,7 +31135,7 @@ If omitted, the chars argument defaults to removing whitespace. The chars argume
 prefix or suffix; rather, all combinations of its values are stripped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chars</strong> (<em>the set of characters to be removed</em>) – </p>
+<dd class="field-odd"><p><strong>chars</strong> (<em>the set</em><em> of </em><em>characters to be removed</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Strings object with the leading and trailing characters matching the set of characters in
@@ -32480,7 +32481,7 @@ intervals.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vals</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>float</em><em>)</em>) – Values to test for membership in intervals</p></li>
-<li><p><strong>intervals</strong> (<em>2-tuple of pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
+<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
 (lower_bounds_inclusive, upper_bounds_exclusive)</p></li>
 <li><p><strong>symmetric</strong> (<em>bool</em>) – If True, also return boolean pdarray indicating which intervals
 contained one or more query values.</p></li>
@@ -32525,7 +32526,7 @@ interval.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>uint</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
-<li><p><strong>intervals</strong> (<em>2-tuple of</em><em> (</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
+<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
 Must have same dtype(s) as vals.</p></li>
 <li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When a value is present in more than one interval, the interval with the
 lowest tiebreak value will be chosen. If no tiebreak is given, the
@@ -32557,7 +32558,7 @@ first containing interval will be chosen.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>2-tuple of</em><em> (</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
+<li><p><strong>keys</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
 Must have same dtype(s) as vals.</p></li>
 <li><p><strong>values</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Function value to return for each entry in keys.</p></li>
 <li><p><strong>arguments</strong> (<em>(</em><em>sequences of</em><em>) </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
@@ -32712,34 +32713,34 @@ work in initialization.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1069">
-<span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#id1069" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#id1069" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1070">
-<span class="sig-name descname"><span class="pre">RegisterablePieces</span></span><a class="headerlink" href="#id1070" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#id1070" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1071">
-<span class="sig-name descname"><span class="pre">RequiredPieces</span></span><a class="headerlink" href="#id1071" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RegisterablePieces</span></span><a class="headerlink" href="#id1071" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1072">
-<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#id1072" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RequiredPieces</span></span><a class="headerlink" href="#id1072" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1073">
-<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#id1073" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#id1073" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1074">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objtype</span></span><a class="headerlink" href="#id1074" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#id1074" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -32778,7 +32779,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>sequence of Categoricals</em>) – The Categoricals to standardize</p></li>
+<li><p><strong>arrays</strong> (<em>sequence</em><em> of </em><em>Categoricals</em>) – The Categoricals to standardize</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -33462,7 +33463,7 @@ constructed for the user.</p>
 <p>In general you should not call this method directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary of String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
+<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary</em><em> of </em><em>String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
@@ -33921,7 +33922,7 @@ If omitted, the chars argument defaults to removing whitespace. The chars argume
 prefix or suffix; rather, all combinations of its values are stripped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chars</strong> (<em>the set of characters to be removed</em>) – </p>
+<dd class="field-odd"><p><strong>chars</strong> (<em>the set</em><em> of </em><em>characters to be removed</em>) – </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Strings object with the leading and trailing characters matching the set of characters in
@@ -35150,134 +35151,134 @@ prefixes of full names (like ‘sec’) are accepted.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">.values</span></code> attribute is always in nanoseconds with int64 dtype.</p>
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1182">
-<span class="sig-name descname"><span class="pre">supported_with_datetime</span></span><a class="headerlink" href="#id1182" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanosecond</span></span><a class="headerlink" href="#id1182" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1183">
-<span class="sig-name descname"><span class="pre">supported_with_r_datetime</span></span><a class="headerlink" href="#id1183" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#id1183" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1184">
-<span class="sig-name descname"><span class="pre">supported_with_timedelta</span></span><a class="headerlink" href="#id1184" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">millisecond</span></span><a class="headerlink" href="#id1184" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1185">
-<span class="sig-name descname"><span class="pre">supported_with_r_timedelta</span></span><a class="headerlink" href="#id1185" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#id1185" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1186">
-<span class="sig-name descname"><span class="pre">supported_opeq</span></span><a class="headerlink" href="#id1186" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#id1186" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="id1187">
-<span class="sig-name descname"><span class="pre">supported_with_pdarray</span></span><a class="headerlink" href="#id1187" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#id1187" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1188">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#id1188" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1189">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#id1189" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1190">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#id1190" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1191">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_year</span></span><a class="headerlink" href="#id1191" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1192">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofyear</span></span><a class="headerlink" href="#id1192" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1193">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_week</span></span><a class="headerlink" href="#id1193" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1194">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofweek</span></span><a class="headerlink" href="#id1194" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1195">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekday</span></span><a class="headerlink" href="#id1195" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1196">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">week</span></span><a class="headerlink" href="#id1196" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1197">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekofyear</span></span><a class="headerlink" href="#id1197" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1198">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#id1198" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id1199">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_leap_year</span></span><a class="headerlink" href="#id1199" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id1188">
-<span class="sig-name descname"><span class="pre">supported_with_r_pdarray</span></span><a class="headerlink" href="#id1188" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1189">
-<span class="sig-name descname"><span class="pre">_ensure_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id1189" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1190">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nanosecond</span></span><a class="headerlink" href="#id1190" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1191">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">microsecond</span></span><a class="headerlink" href="#id1191" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1192">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">millisecond</span></span><a class="headerlink" href="#id1192" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1193">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">second</span></span><a class="headerlink" href="#id1193" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1194">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minute</span></span><a class="headerlink" href="#id1194" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1195">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hour</span></span><a class="headerlink" href="#id1195" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1196">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day</span></span><a class="headerlink" href="#id1196" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1197">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month</span></span><a class="headerlink" href="#id1197" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1198">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">year</span></span><a class="headerlink" href="#id1198" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1199">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_year</span></span><a class="headerlink" href="#id1199" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="id1200">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofyear</span></span><a class="headerlink" href="#id1200" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_datetime</span></span><a class="headerlink" href="#id1200" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1201">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_of_week</span></span><a class="headerlink" href="#id1201" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_r_datetime</span></span><a class="headerlink" href="#id1201" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1202">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dayofweek</span></span><a class="headerlink" href="#id1202" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_timedelta</span></span><a class="headerlink" href="#id1202" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1203">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekday</span></span><a class="headerlink" href="#id1203" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_r_timedelta</span></span><a class="headerlink" href="#id1203" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1204">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">week</span></span><a class="headerlink" href="#id1204" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_opeq</span></span><a class="headerlink" href="#id1204" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1205">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weekofyear</span></span><a class="headerlink" href="#id1205" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_pdarray</span></span><a class="headerlink" href="#id1205" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="id1206">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#id1206" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">supported_with_r_pdarray</span></span><a class="headerlink" href="#id1206" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id1207">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_leap_year</span></span><a class="headerlink" href="#id1207" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">_ensure_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id1207" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -35445,7 +35446,7 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

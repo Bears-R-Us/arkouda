@@ -77,6 +77,29 @@ Functions
    >>> df[['userID', 'day']]
    DataFrame(['userID', 'day'] [6 rows : 96 B])
 
+   .. py:property:: size
+
+      Returns the number of bytes on the arkouda server.
+
+   .. py:property:: dtypes
+
+
+   .. py:property:: empty
+
+
+   .. py:property:: shape
+
+
+   .. py:property:: columns
+
+
+   .. py:property:: index
+
+
+   .. py:property:: info
+
+      Returns a summary string of this dataframe.
+
    .. py:attribute:: COLUMN_CLASSES
       
 
@@ -200,32 +223,6 @@ Functions
       :rtype: DataFrame
 
 
-   .. py:method:: size()
-      :property:
-
-      Returns the number of bytes on the arkouda server.
-
-
-   .. py:method:: dtypes()
-      :property:
-
-
-   .. py:method:: empty()
-      :property:
-
-
-   .. py:method:: shape()
-      :property:
-
-
-   .. py:method:: columns()
-      :property:
-
-
-   .. py:method:: index()
-      :property:
-
-
    .. py:method:: _set_index(value)
 
 
@@ -251,12 +248,6 @@ Functions
 
          Pandas adds a column 'index' to indicate the original index. Arkouda does not currently
          support this behavior.
-
-
-   .. py:method:: info()
-      :property:
-
-      Returns a summary string of this dataframe.
 
 
    .. py:method:: update_size()

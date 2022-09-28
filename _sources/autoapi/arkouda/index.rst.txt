@@ -11295,6 +11295,9 @@ Attributes
 
       :type: tuple
 
+   .. py:property:: objtype
+
+
    .. py:attribute:: BinOps
       
 
@@ -11319,10 +11322,6 @@ Attributes
       
 
       
-
-   .. py:method:: objtype()
-      :property:
-
 
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
@@ -13283,6 +13282,60 @@ Attributes
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
+   .. py:property:: nanosecond
+
+
+   .. py:property:: microsecond
+
+
+   .. py:property:: millisecond
+
+
+   .. py:property:: second
+
+
+   .. py:property:: minute
+
+
+   .. py:property:: hour
+
+
+   .. py:property:: day
+
+
+   .. py:property:: month
+
+
+   .. py:property:: year
+
+
+   .. py:property:: day_of_year
+
+
+   .. py:property:: dayofyear
+
+
+   .. py:property:: day_of_week
+
+
+   .. py:property:: dayofweek
+
+
+   .. py:property:: weekday
+
+
+   .. py:property:: week
+
+
+   .. py:property:: weekofyear
+
+
+   .. py:property:: date
+
+
+   .. py:property:: is_leap_year
+
+
    .. py:attribute:: supported_with_datetime
       
 
@@ -13319,78 +13372,6 @@ Attributes
       
 
    .. py:method:: _ensure_components()
-
-
-   .. py:method:: nanosecond()
-      :property:
-
-
-   .. py:method:: microsecond()
-      :property:
-
-
-   .. py:method:: millisecond()
-      :property:
-
-
-   .. py:method:: second()
-      :property:
-
-
-   .. py:method:: minute()
-      :property:
-
-
-   .. py:method:: hour()
-      :property:
-
-
-   .. py:method:: day()
-      :property:
-
-
-   .. py:method:: month()
-      :property:
-
-
-   .. py:method:: year()
-      :property:
-
-
-   .. py:method:: day_of_year()
-      :property:
-
-
-   .. py:method:: dayofyear()
-      :property:
-
-
-   .. py:method:: day_of_week()
-      :property:
-
-
-   .. py:method:: dayofweek()
-      :property:
-
-
-   .. py:method:: weekday()
-      :property:
-
-
-   .. py:method:: week()
-      :property:
-
-
-   .. py:method:: weekofyear()
-      :property:
-
-
-   .. py:method:: date()
-      :property:
-
-
-   .. py:method:: is_leap_year()
-      :property:
 
 
    .. py:method:: isocalendar()
@@ -13453,6 +13434,21 @@ Attributes
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
+   .. py:property:: nanoseconds
+
+
+   .. py:property:: microseconds
+
+
+   .. py:property:: seconds
+
+
+   .. py:property:: days
+
+
+   .. py:property:: components
+
+
    .. py:attribute:: supported_with_datetime
       
 
@@ -13491,27 +13487,7 @@ Attributes
    .. py:method:: _ensure_components()
 
 
-   .. py:method:: nanoseconds()
-      :property:
-
-
-   .. py:method:: microseconds()
-      :property:
-
-
-   .. py:method:: seconds()
-      :property:
-
-
-   .. py:method:: days()
-      :property:
-
-
    .. py:method:: total_seconds()
-
-
-   .. py:method:: components()
-      :property:
 
 
    .. py:method:: _get_callback(otherclass, op)
@@ -16012,6 +15988,36 @@ Attributes
 
 .. py:class:: SegArray(name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None)
 
+   .. py:property:: objtype
+
+
+   .. py:property:: lengths
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+   .. py:property:: non_empty
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
+   .. py:property:: non_empty_count
+
+      Return the pdarray containing the lengths of the segments.
+      This is configured to prevent the need to move all functionality to server at once.
+
+      .. rubric:: Notes
+
+      - Caches return value to prevent the need to recompute.
+
    .. py:attribute:: valsize
       
 
@@ -16077,44 +16083,7 @@ Attributes
       :rtype: SegArray
 
 
-   .. py:method:: objtype()
-      :property:
-
-
-   .. py:method:: lengths()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
-
-
    .. py:method:: _compute_non_empty()
-
-
-   .. py:method:: non_empty()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
-
-
-   .. py:method:: non_empty_count()
-      :property:
-
-      Return the pdarray containing the lengths of the segments.
-      This is configured to prevent the need to move all functionality to server at once.
-
-      .. rubric:: Notes
-
-      - Caches return value to prevent the need to recompute.
 
 
    .. py:method:: concat(x, axis=0, ordered=True)
@@ -16627,6 +16596,29 @@ Attributes
    >>> df[['userID', 'day']]
    DataFrame(['userID', 'day'] [6 rows : 96 B])
 
+   .. py:property:: size
+
+      Returns the number of bytes on the arkouda server.
+
+   .. py:property:: dtypes
+
+
+   .. py:property:: empty
+
+
+   .. py:property:: shape
+
+
+   .. py:property:: columns
+
+
+   .. py:property:: index
+
+
+   .. py:property:: info
+
+      Returns a summary string of this dataframe.
+
    .. py:attribute:: COLUMN_CLASSES
       
 
@@ -16750,32 +16742,6 @@ Attributes
       :rtype: DataFrame
 
 
-   .. py:method:: size()
-      :property:
-
-      Returns the number of bytes on the arkouda server.
-
-
-   .. py:method:: dtypes()
-      :property:
-
-
-   .. py:method:: empty()
-      :property:
-
-
-   .. py:method:: shape()
-      :property:
-
-
-   .. py:method:: columns()
-      :property:
-
-
-   .. py:method:: index()
-      :property:
-
-
    .. py:method:: _set_index(value)
 
 
@@ -16801,12 +16767,6 @@ Attributes
 
          Pandas adds a column 'index' to indicate the original index. Arkouda does not currently
          support this behavior.
-
-
-   .. py:method:: info()
-      :property:
-
-      Returns a summary string of this dataframe.
 
 
    .. py:method:: update_size()
@@ -19573,6 +19533,18 @@ Attributes
 
 .. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
 
+   .. py:property:: index
+
+      This is maintained to support older code
+
+   .. py:property:: shape
+
+
+   .. py:property:: is_unique
+
+      Property indicating if all values in the index are unique
+      :rtype: bool - True if all values are unique, False otherwise.
+
    .. py:method:: __getitem__(key)
 
 
@@ -19587,23 +19559,6 @@ Attributes
    .. py:method:: __eq__(v)
 
       Return self==value.
-
-
-   .. py:method:: index()
-      :property:
-
-      This is maintained to support older code
-
-
-   .. py:method:: shape()
-      :property:
-
-
-   .. py:method:: is_unique()
-      :property:
-
-      Property indicating if all values in the index are unique
-      :rtype: bool - True if all values are unique, False otherwise.
 
 
    .. py:method:: factory(index)
@@ -19721,6 +19676,10 @@ Attributes
 
    Bases: :py:obj:`Index`
 
+   .. py:property:: index
+
+      This is maintained to support older code
+
    .. py:method:: __getitem__(key)
 
 
@@ -19735,12 +19694,6 @@ Attributes
    .. py:method:: __eq__(v)
 
       Return self==value.
-
-
-   .. py:method:: index()
-      :property:
-
-      This is maintained to support older code
 
 
    .. py:method:: to_pandas()
@@ -19805,6 +19758,9 @@ Attributes
        'data' (see Parameters)
        'index' (optional) must match size of 'data'
 
+   .. py:property:: shape
+
+
    .. py:attribute:: dt
       
 
@@ -19824,10 +19780,6 @@ Attributes
 
 
    .. py:method:: __getitem__(key)
-
-
-   .. py:method:: shape()
-      :property:
 
 
    .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
@@ -20099,6 +20051,9 @@ Attributes
 
       :type: tuple
 
+   .. py:property:: objtype
+
+
    .. py:attribute:: BinOps
       
 
@@ -20123,10 +20078,6 @@ Attributes
       
 
       
-
-   .. py:method:: objtype()
-      :property:
-
 
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
@@ -24428,6 +24379,9 @@ Attributes
 
       :type: tuple
 
+   .. py:property:: objtype
+
+
    .. py:attribute:: BinOps
       
 
@@ -24452,10 +24406,6 @@ Attributes
       
 
       
-
-   .. py:method:: objtype()
-      :property:
-
 
    .. py:method:: from_codes(codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None, **kwargs) -> Categorical
       :classmethod:
@@ -26268,6 +26218,60 @@ Attributes
 
    The ``.values`` attribute is always in nanoseconds with int64 dtype.
 
+   .. py:property:: nanosecond
+
+
+   .. py:property:: microsecond
+
+
+   .. py:property:: millisecond
+
+
+   .. py:property:: second
+
+
+   .. py:property:: minute
+
+
+   .. py:property:: hour
+
+
+   .. py:property:: day
+
+
+   .. py:property:: month
+
+
+   .. py:property:: year
+
+
+   .. py:property:: day_of_year
+
+
+   .. py:property:: dayofyear
+
+
+   .. py:property:: day_of_week
+
+
+   .. py:property:: dayofweek
+
+
+   .. py:property:: weekday
+
+
+   .. py:property:: week
+
+
+   .. py:property:: weekofyear
+
+
+   .. py:property:: date
+
+
+   .. py:property:: is_leap_year
+
+
    .. py:attribute:: supported_with_datetime
       
 
@@ -26304,78 +26308,6 @@ Attributes
       
 
    .. py:method:: _ensure_components()
-
-
-   .. py:method:: nanosecond()
-      :property:
-
-
-   .. py:method:: microsecond()
-      :property:
-
-
-   .. py:method:: millisecond()
-      :property:
-
-
-   .. py:method:: second()
-      :property:
-
-
-   .. py:method:: minute()
-      :property:
-
-
-   .. py:method:: hour()
-      :property:
-
-
-   .. py:method:: day()
-      :property:
-
-
-   .. py:method:: month()
-      :property:
-
-
-   .. py:method:: year()
-      :property:
-
-
-   .. py:method:: day_of_year()
-      :property:
-
-
-   .. py:method:: dayofyear()
-      :property:
-
-
-   .. py:method:: day_of_week()
-      :property:
-
-
-   .. py:method:: dayofweek()
-      :property:
-
-
-   .. py:method:: weekday()
-      :property:
-
-
-   .. py:method:: week()
-      :property:
-
-
-   .. py:method:: weekofyear()
-      :property:
-
-
-   .. py:method:: date()
-      :property:
-
-
-   .. py:method:: is_leap_year()
-      :property:
 
 
    .. py:method:: isocalendar()

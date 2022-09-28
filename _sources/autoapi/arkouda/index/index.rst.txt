@@ -20,6 +20,18 @@ Classes
 
 .. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
 
+   .. py:property:: index
+
+      This is maintained to support older code
+
+   .. py:property:: shape
+
+
+   .. py:property:: is_unique
+
+      Property indicating if all values in the index are unique
+      :rtype: bool - True if all values are unique, False otherwise.
+
    .. py:method:: __getitem__(key)
 
 
@@ -34,23 +46,6 @@ Classes
    .. py:method:: __eq__(v)
 
       Return self==value.
-
-
-   .. py:method:: index()
-      :property:
-
-      This is maintained to support older code
-
-
-   .. py:method:: shape()
-      :property:
-
-
-   .. py:method:: is_unique()
-      :property:
-
-      Property indicating if all values in the index are unique
-      :rtype: bool - True if all values are unique, False otherwise.
 
 
    .. py:method:: factory(index)
@@ -168,6 +163,10 @@ Classes
 
    Bases: :py:obj:`Index`
 
+   .. py:property:: index
+
+      This is maintained to support older code
+
    .. py:method:: __getitem__(key)
 
 
@@ -182,12 +181,6 @@ Classes
    .. py:method:: __eq__(v)
 
       Return self==value.
-
-
-   .. py:method:: index()
-      :property:
-
-      This is maintained to support older code
 
 
    .. py:method:: to_pandas()
