@@ -153,6 +153,7 @@ class JSONArgs(ArkoudaTest):
         a = arange(10)
         ip = ip_address(a)
         size, args = _json_args_to_str({"ip": ip})
+        self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "ip")
         self.assertEqual(msgArgs["objType"], "PDARRAY")
@@ -161,16 +162,13 @@ class JSONArgs(ArkoudaTest):
 
         f = Fields(a, names="ABCD")
         size, args = _json_args_to_str({"fields": f})
+        self.assertEqual(size, 1)
         msgArgs = json.loads(json.loads(args)[0])
         self.assertEqual(msgArgs["key"], "fields")
         self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "uint64")
         self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
 
-        # test ip_address
-        ip = ip_address(a)
-        size, args = _json_args_to_str({"ip": ip})
-        self.assertEqual(size, 1)
 
         # test list of pdarray
         pd1 = arange(3)
