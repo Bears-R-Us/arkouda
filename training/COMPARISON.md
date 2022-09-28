@@ -493,4 +493,4 @@ result
 [array([1 4 5]), array([9 1 5])]
 ```
 
-From more examples, visit the [ArkoudaNotebooks](https://github.com/Bears-R-Us/ArkoudaNotebooks) repository.
+For more examples, visit the [ArkoudaNotebooks](https://github.com/Bears-R-Us/ArkoudaNotebooks) repository.
