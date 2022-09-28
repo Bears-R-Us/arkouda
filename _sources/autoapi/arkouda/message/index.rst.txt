@@ -131,30 +131,6 @@ Classes
       :rtype: ParameterObject
 
 
-   .. py:method:: _build_datetime_param(key: str, val) -> ParameterObject
-      :staticmethod:
-
-      Create a ParameterObject from a Datetime value
-
-      :param key: key from the dictionary object
-      :type key: str
-      :param val: Datetime object ot load from the symbol table
-
-      :rtype: ParameterObject
-
-
-   .. py:method:: _build_timedelta_param(key: str, val) -> ParameterObject
-      :staticmethod:
-
-      Create a ParameterObject from a Timedelta value
-
-      :param key: key from the dictionary object
-      :type key: str
-      :param val: Timedelta object ot load from the symbol table
-
-      :rtype: ParameterObject
-
-
    .. py:method:: _build_list_param(key: str, val: list) -> ParameterObject
       :staticmethod:
 
@@ -193,7 +169,7 @@ Classes
 
 
    .. py:method:: factory(key: str, val) -> ParameterObject
-      :staticmethod:
+      :classmethod:
 
       Factory method used to build ParameterObject given a key value pair
 
