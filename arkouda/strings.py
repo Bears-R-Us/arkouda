@@ -1475,7 +1475,7 @@ class Strings:
 
     def get_prefixes(
         self, n: int_scalars, return_origins: bool = True, proper: bool = True
-    ) -> Union[Strings, Tuple[pdarray, Strings]]:
+    ) -> Union[Strings, Tuple[Strings, pdarray]]:
         """
         Return the n-long prefix of each string, where possible
 
@@ -1500,7 +1500,7 @@ class Strings:
             Boolean array that is True where the string was long enough to return
             an n-character prefix, False otherwise.
         """
-        repMsg = generic_msg(
+        repMsg = cast(str, generic_msg(
             cmd="segmentedSubstring",
             args={
                 "objType": self.objtype,
@@ -1510,18 +1510,18 @@ class Strings:
                 "kind": "prefixes",
                 "proper": str(proper).lower(),
             },
-        )
+        ))
         if return_origins:
             parts = repMsg.split("+")
             prefixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
-            return prefixes, longenough
+            return prefixes, cast(pdarray, longenough)
         else:
             return Strings.from_return_msg(repMsg)
 
     def get_suffixes(
         self, n: int_scalars, return_origins: bool = True, proper: bool = True
-    ) -> Union[Strings, Tuple[pdarray, Strings]]:
+    ) -> Union[Strings, Tuple[Strings, pdarray]]:
         """
         Return the n-long suffix of each string, where possible
 
@@ -1546,7 +1546,7 @@ class Strings:
             Boolean array that is True where the string was long enough to return
             an n-character suffix, False otherwise.
         """
-        repMsg = generic_msg(
+        repMsg = cast(str, generic_msg(
             cmd="segmentedSubstring",
             args={
                 "objType": self.objtype,
@@ -1556,12 +1556,12 @@ class Strings:
                 "kind": "suffixes",
                 "proper": str(proper).lower(),
             },
-        )
+        ))
         if return_origins:
             parts = repMsg.split("+")
             suffixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
-            return suffixes, longenough
+            return suffixes, cast(pdarray, longenough)
         else:
             return Strings.from_return_msg(repMsg)
 
