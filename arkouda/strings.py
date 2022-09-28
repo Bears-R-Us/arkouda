@@ -1473,7 +1473,9 @@ class Strings:
     def __radd__(self, other: Strings) -> Strings:
         return self.lstick(other)
 
-    def get_prefixes(self, n: integral, return_origins:bool=True, proper:bool=True) -> Union[Strings,Tuple[pdarray,Strings]]:
+    def get_prefixes(
+        self, n: int_scalars, return_origins: bool = True, proper: bool = True
+    ) -> Union[Strings, Tuple[pdarray, Strings]]:
         """
         Return the n-long prefix of each string, where possible
 
@@ -1492,18 +1494,23 @@ class Strings:
         Returns
         -------
         prefixes : Strings
-            The array of n-character prefixes; the number of elements is the number of 
+            The array of n-character prefixes; the number of elements is the number of
             True values in the returned mask.
         origin_indices : pdarray, bool
             Boolean array that is True where the string was long enough to return
             an n-character prefix, False otherwise.
         """
-        repMsg = generic_msg(cmd="segmentedSubstring", args={"objType": self.objtype,
-                                                             "name": self.name,
-                                                             "nChars": n,
-                                                             "returnOrigins": return_origins,
-                                                             "kind": "prefixes",
-                                                             "proper": str(proper).lower()})
+        repMsg = generic_msg(
+            cmd="segmentedSubstring",
+            args={
+                "objType": self.objtype,
+                "name": self.name,
+                "nChars": n,
+                "returnOrigins": return_origins,
+                "kind": "prefixes",
+                "proper": str(proper).lower(),
+            },
+        )
         if return_origins:
             parts = repMsg.split("+")
             prefixes = Strings.from_return_msg("+".join(parts[:2]))
@@ -1512,7 +1519,9 @@ class Strings:
         else:
             return Strings.from_return_msg(repMsg)
 
-    def get_suffixes(self, n: integral, return_origins:bool=True, proper:bool=True) -> Union[Strings,Tuple[pdarray,Strings]]:
+    def get_suffixes(
+        self, n: int_scalars, return_origins: bool = True, proper: bool = True
+    ) -> Union[Strings, Tuple[pdarray, Strings]]:
         """
         Return the n-long suffix of each string, where possible
 
@@ -1531,18 +1540,23 @@ class Strings:
         Returns
         -------
         suffixes : Strings
-            The array of n-character suffixes; the number of elements is the number of 
+            The array of n-character suffixes; the number of elements is the number of
             True values in the returned mask.
         origin_indices : pdarray, bool
             Boolean array that is True where the string was long enough to return
             an n-character suffix, False otherwise.
         """
-        repMsg = generic_msg(cmd="segmentedSubstring", args={"objType": self.objtype,
-                                                             "name": self.name,
-                                                             "nChars": n,
-                                                             "returnOrigins": return_origins,
-                                                             "kind": "suffixes",
-                                                             "proper": str(proper).lower()})
+        repMsg = generic_msg(
+            cmd="segmentedSubstring",
+            args={
+                "objType": self.objtype,
+                "name": self.name,
+                "nChars": n,
+                "returnOrigins": return_origins,
+                "kind": "suffixes",
+                "proper": str(proper).lower(),
+            },
+        )
         if return_origins:
             parts = repMsg.split("+")
             suffixes = Strings.from_return_msg("+".join(parts[:2]))
