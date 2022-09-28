@@ -971,6 +971,7 @@ def write_hdf5_multi_dim(
     }
 
     generic_msg(
-        cmd="writehdf_multi",
+        # cmd="writehdf_multi",
+        cmd = "writehdf_multi_dist",
         args=args,
     )

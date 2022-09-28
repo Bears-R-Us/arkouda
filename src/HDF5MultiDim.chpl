@@ -3,6 +3,7 @@ module HDF5MultiDim {
     use CTypes;
     use Reflection;
     use HDF5;
+    use HDF5Msg;  //won't be needed once everything is merged
     use FileIO;
     use FileSystem;
     use AryUtil;
@@ -379,7 +380,150 @@ module HDF5MultiDim {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    // TODO review functions for clean up
+    proc writeDistHDF5(A, filename: string, dsetName: string, shape: SymEntry, mode: int, dtype: DType) throws {
+        var prefix: string;
+        var extension: string;
+        (prefix,extension) = getFileMetadata(filename);
+
+        // Generate the filenames based upon the number of targetLocales.
+        var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+
+        //Generate a list of matching filenames to test against. 
+        var matchingFilenames = getMatchingFilenames(prefix, extension);
+
+        // Determine which files already exist
+        var filesExist = processFilenames(filenames, matchingFilenames, mode, A);
+
+        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+            const myFilename = filenames[idx];
+
+            h5tLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "%s exists? %t".format(myFilename, exists(myFilename)));
+
+            var file_id = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on scope exit
+                C_HDF5.H5Fclose(file_id);
+            }
+            const locDom = A.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+
+            use C_HDF5.HDF5_WAR;
+
+            var dType: C_HDF5.hid_t = getDataType(A);
+
+            /*
+             * Depending upon the datatype, write the local slice out to the top-level
+             * or nested, named group within the hdf5 file corresponding to the locale.
+             */
+            if locDom.size <= 0 {
+                H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), dType, nil);
+            } else {
+                H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
+            }
+
+            //open the created dset so we can add attributes.
+            var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+
+            // Create the attribute space
+            var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+            var attr_id: C_HDF5.hid_t;
+
+            // Create the objectType. This will be important when merging with other read/write functionality.
+            var objType: string = "ArrayView";
+            var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
+            C_HDF5.H5Tset_size(attrStringType, objType.size:uint(64) + 1); // ensure space for NULL terminator
+            C_HDF5.H5Tset_strpad(attrStringType, C_HDF5.H5T_STR_NULLTERM);
+            C_HDF5.H5Tset_cset(attrStringType, C_HDF5.H5T_CSET_UTF8);
+            attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), attrStringType, attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            var type_chars = c_calloc(c_char, objType.size+1);
+            for (c, i) in zip(objType.codepoints(), 0..<objType.size) {
+                type_chars[i] = c:c_char;
+            }
+            type_chars[objType.size] = 0:c_char; // ensure NULL termination
+            C_HDF5.H5Awrite(attr_id, attrStringType, type_chars);
+            C_HDF5.H5Aclose(attr_id);
+
+            // Store the rank of the dataset. Required to read so that shape can be built
+            attr_id = C_HDF5.H5Acreate2(dset_id, "Rank".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(shape.size));
+            C_HDF5.H5Aclose(attr_id);
+
+            // Indicates if the data is stored as Flat or Mutli-dimensional.
+            attr_id = C_HDF5.H5Acreate2(dset_id, "Format".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            var m = FLAT; // need due to coforall
+            C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(m));
+            C_HDF5.H5Aclose(attr_id);
+
+            C_HDF5.H5Sclose(attrSpaceId);
+            attrSpaceId= C_HDF5.H5Screate(C_HDF5.H5S_SIMPLE);
+            var adim: [0..#1] C_HDF5.hsize_t = shape.size:C_HDF5.hsize_t;
+            C_HDF5.H5Sset_extent_simple(attrSpaceId, 1, c_ptrTo(adim), c_ptrTo(adim));
+
+            attr_id = C_HDF5.H5Acreate2(dset_id, "Shape".c_str(), getHDF5Type(shape.a.eltType), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            var localShape = new lowLevelLocalizingSlice(shape.a, 0..#shape.size);
+            C_HDF5.H5Awrite(attr_id, getHDF5Type(shape.a.eltType), localShape.ptr);
+            C_HDF5.H5Aclose(attr_id);
+
+            // close the space and the dataset
+            C_HDF5.H5Sclose(attrSpaceId);
+            C_HDF5.H5Dclose(dset_id);
+        }
+    }
+
+    proc writeDistMultiDimMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+        var msgArgs = parseMessageArgs(payload, argSize);
+
+        // Note - this will always write the flattened array - don't need to access storage
+
+        var entry = st.lookup(msgArgs.getValueOf("flat"));
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+            entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+            entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+            var errorMsg = "writehdf_multi Unsupported SymbolEntryType:%t".format(entry.entryType);
+            h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
+        var shape_sym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("shape"), st);
+        var shape = toSymEntry(shape_sym, int);
+
+        var mode = msgArgs.get("mode").getIntValue();
+
+        // create the file if it does not exist or if we are truncating
+        var filename = msgArgs.getValueOf("filename");
+        var dset_name = msgArgs.getValueOf("dset");
+
+        select entryDtype {
+            when DType.Int64 {
+                var flat = toSymEntry(toGenSymEntry(entry), int);
+                writeDistHDF5(flat.a, filename, dset_name, shape, mode, DType.Int64);
+            }
+            when DType.UInt64 {
+                var flat = toSymEntry(toGenSymEntry(entry), uint);
+                writeDistHDF5(flat.a, filename, dset_name, shape, mode, DType.UInt64);
+            }
+            when DType.Float64 {
+                var flat = toSymEntry(toGenSymEntry(entry), real);
+                writeDistHDF5(flat.a, filename, dset_name, shape, mode, DType.Float64);
+            }
+            otherwise {
+                var errorMsg = unrecognizedTypeError("writehdf_multi", dtype2str(entryDtype));
+                h5tLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+        }
+
+        var repMsg: string = "Dataset written successfully!";
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
     use CommandMap;
     registerFunction("readhdf_multi", read_hdf_multi_msg, getModuleName());
     registerFunction("writehdf_multi", write_hdf_multi_msg, getModuleName());
+    registerFunction("writehdf_multi_dist", writeDistMultiDimMsg, getModuleName());
 }
