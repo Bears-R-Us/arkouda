@@ -199,8 +199,11 @@ class ParameterObject:
         ParameterObject - The parameter object formatted to be parsed by the chapel server
         """
         from arkouda.pdarrayclass import pdarray
+
         dispatch = ParameterObject.generate_dispatch()
-        if isinstance(val, pdarray):  # this is done here to avoid multiple dispatch entries for the same type
+        if isinstance(
+            val, pdarray
+        ):  # this is done here to avoid multiple dispatch entries for the same type
             return cls._build_pdarray_param(key, val)
         elif (f := dispatch.get(type(val).__name__)) is not None:
             return f(key, val)

@@ -4,6 +4,7 @@ import unittest
 from base_test import ArkoudaTest
 
 from arkouda.client import _json_args_to_str
+from arkouda.client_dtypes import Fields, ip_address
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 from arkouda.pdarraycreation import arange, array
 from arkouda.timeclass import date_range
@@ -147,7 +148,29 @@ class JSONArgs(ArkoudaTest):
         self.assertEqual(msgArgs["key"], "datetime")
         self.assertEqual(msgArgs["objType"], "PDARRAY")
         self.assertEqual(msgArgs["dtype"], "int64")
-        self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d$")
+        self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
+
+        a = arange(10)
+        ip = ip_address(a)
+        size, args = _json_args_to_str({"ip": ip})
+        msgArgs = json.loads(json.loads(args)[0])
+        self.assertEqual(msgArgs["key"], "ip")
+        self.assertEqual(msgArgs["objType"], "PDARRAY")
+        self.assertEqual(msgArgs["dtype"], "uint64")
+        self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
+
+        f = Fields(a, names="ABCD")
+        size, args = _json_args_to_str({"fields": f})
+        msgArgs = json.loads(json.loads(args)[0])
+        self.assertEqual(msgArgs["key"], "fields")
+        self.assertEqual(msgArgs["objType"], "PDARRAY")
+        self.assertEqual(msgArgs["dtype"], "uint64")
+        self.assertRegex(msgArgs["val"], "^id_\\w{7}_\\d+$")
+
+        # test ip_address
+        ip = ip_address(a)
+        size, args = _json_args_to_str({"ip": ip})
+        self.assertEqual(size, 1)
 
         # test list of pdarray
         pd1 = arange(3)
@@ -159,7 +182,7 @@ class JSONArgs(ArkoudaTest):
             self.assertRegex(p["key"], "^pd(1|2)$")
             self.assertEqual(p["objType"], "PDARRAY")
             self.assertEqual(p["dtype"], "int64")
-            self.assertRegex(p["val"], "^id_\\w{7}_\\d$")
+            self.assertRegex(p["val"], "^id_\\w{7}_\\d+$")
 
         # test list of Strings
         str1 = array(["abc", "def"])
@@ -171,16 +194,18 @@ class JSONArgs(ArkoudaTest):
             self.assertRegex(p["key"], "^str(1|2)$")
             self.assertEqual(p["objType"], "SEGSTRING")
             self.assertEqual(p["dtype"], "str")
-            self.assertRegex(p["val"], "^id_\\w{7}_\\d$")
+            self.assertRegex(p["val"], "^id_\\w{7}_\\d+$")
 
         # test nested json
-        size, args = _json_args_to_str({
-            "json_1": {
-                "param1": 1,
-                "param2": "abc",
-                "param3": [1, 2, 3],
+        size, args = _json_args_to_str(
+            {
+                "json_1": {
+                    "param1": 1,
+                    "param2": "abc",
+                    "param3": [1, 2, 3],
+                }
             }
-        })
+        )
         self.assertEqual(size, 1)
         j = json.loads(json.loads(args)[0])
         self.assertEqual(j["key"], "json_1")
@@ -201,5 +226,3 @@ class JSONArgs(ArkoudaTest):
                 self.assertEqual(p["objType"], "LIST")
                 self.assertEqual(p["dtype"], "int")
                 self.assertListEqual(json.loads(p["val"]), ["1", "2", "3"])
-
-

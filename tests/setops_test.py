@@ -318,6 +318,22 @@ class SetOpsTest(ArkoudaTest):
 
         self.assertListEqual([x < 2 for x in vals], ak.in1d(stringsOne, stringsTwo).to_list())
 
+        # adding tests for unique dtypes
+        a = ak.arange(10)
+        b = ak.arange(5, 15)
+
+        ip1 = ak.ip_address(a)
+        ip2 = ak.ip_address(b)
+        self.assertListEqual([x >= 5 for x in range(10)], ak.in1d(ip1, ip2).to_list())
+
+        dt1 = ak.Datetime(a)
+        dt2 = ak.Datetime(b)
+        self.assertListEqual([x >= 5 for x in range(10)], ak.in1d(dt1, dt2).to_list())
+
+        f1 = ak.Fields(a, names="ABCD")
+        f2 = ak.Fields(b, names="ABCD")
+        self.assertListEqual([x >= 5 for x in range(10)], ak.in1d(f1, f2).to_list())
+
     def test_multiarray_validation(self):
         x = [ak.arange(3), ak.arange(3), ak.arange(3)]
         y = [ak.arange(2), ak.arange(2)]
