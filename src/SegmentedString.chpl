@@ -1130,8 +1130,9 @@ module SegmentedString {
       forall (i, o) in zip(retOffsets.domain, retOffsets) {
         o = i * (n + 1);
       }
-      var retBytes = makeDistArray(nFound * (n + 1), uint(8));
-      var srcInds = makeDistArray(nFound * (n + 1), int);
+      const retDom = makeDistDom(nFound * (n + 1));
+      var retBytes: [retDom] uint(8);
+      var srcInds: [retDom] int;
       var dstInds = (+ scan longEnough) - longEnough;
       ref oa = offsets.a;
       if kind == Fixes.prefixes {
