@@ -307,8 +307,7 @@ module RegistrationMsg
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                             "%s: Collecting DataFrame components for '%s'".format(cmd, name));
 
-        var jsonParam = msgArgs.get("name");
-        jsonParam.setVal(colName);
+        var jsonParam = new ParameterObj("name", colName, ObjectType.VALUE, "str");
         var json: [0..#1] string = [jsonParam.getJSON()];
 
         // Add columns as a json list

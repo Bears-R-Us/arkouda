@@ -2188,7 +2188,7 @@ class DataFrame(UserDict):
             elif parts[i] == "segarray":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
                 segMsg = f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}"
-                cols[colName] = SegArray.from_return_msg(segMsg)
+                cols[colName] = SegArray._from_attach_return_msg(segMsg)
                 i += 3
 
             i += 1

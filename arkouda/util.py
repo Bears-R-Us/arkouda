@@ -287,7 +287,7 @@ def attach(name: str, dtype: str = "infer"):
     if repType == "categorical":
         return Categorical.from_return_msg(repMsg)
     elif repType == "segarray":
-        return SegArray.from_return_msg(repMsg)
+        return SegArray._from_attach_return_msg(repMsg)
     elif repType == "series":
         from arkouda.series import Series
 
