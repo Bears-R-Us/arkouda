@@ -1504,11 +1504,11 @@ class Strings:
             cmd="segmentedSubstring",
             args={
                 "objType": self.objtype,
-                "name": self.name,
+                "name": self,
                 "nChars": n,
                 "returnOrigins": return_origins,
                 "kind": "prefixes",
-                "proper": str(proper).lower(),
+                "proper": proper,
             },
         ))
         if return_origins:
@@ -1550,11 +1550,11 @@ class Strings:
             cmd="segmentedSubstring",
             args={
                 "objType": self.objtype,
-                "name": self.name,
+                "name": self,
                 "nChars": n,
                 "returnOrigins": return_origins,
                 "kind": "suffixes",
-                "proper": str(proper).lower(),
+                "proper": proper,
             },
         ))
         if return_origins:
