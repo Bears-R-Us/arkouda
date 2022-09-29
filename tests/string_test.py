@@ -613,3 +613,27 @@ class StringTest(ArkoudaTest):
         # Unordered (but still deterministic) concatenation
         # TODO: the unordered concatenation test is disabled per #710 #721
         # s12unord = ak.concatenate([s1, s2], ordered=False)
+
+    def test_get_fixes(self):
+        strings = ak.array(["abc", "d", "efghi"])
+        p, r = strings.get_prefixes(1, return_origins=True, proper=True)
+        self.assertListEqual(["a", "e"], p.to_list())
+        self.assertListEqual([True, False, True], r.to_list())
+
+        p, r = strings.get_prefixes(1, return_origins=True, proper=False)
+        self.assertListEqual(["a", "d", "e"], p.to_list())
+        self.assertListEqual([True, True, True], r.to_list())
+
+        p = strings.get_prefixes(1, return_origins=False, proper=False)
+        self.assertListEqual(["a", "d", "e"], p.to_list())
+
+        p, r = strings.get_suffixes(1, return_origins=True, proper=True)
+        self.assertListEqual(["c", "i"], p.to_list())
+        self.assertListEqual([True, False, True], r.to_list())
+
+        p, r = strings.get_suffixes(1, return_origins=True, proper=False)
+        self.assertListEqual(["c", "d", "i"], p.to_list())
+        self.assertListEqual([True, True, True], r.to_list())
+
+        p = strings.get_suffixes(1, return_origins=False, proper=False)
+        self.assertListEqual(["c", "d", "i"], p.to_list())

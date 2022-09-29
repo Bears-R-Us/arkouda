@@ -1368,6 +1368,41 @@ module SegmentedMsg {
     var repMsg = "%jt".format(rtn);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+
+  proc segmentedSubstringMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+
+    var msgArgs = parseMessageArgs(payload, argSize);
+    var objtype = msgArgs.getValueOf("objType");
+    var name = msgArgs.getValueOf("name");
+    
+    // check to make sure symbols defined
+    st.checkTable(name);
+
+    select (objtype) {
+      when ("str") {
+        var strings = getSegString(name, st);
+        var returnOrigins = msgArgs.get("returnOrigins").getBoolValue();
+        var (off, byt, longEnough) = strings.getFixes(msgArgs.get("nChars").getIntValue(),
+                                                      msgArgs.getValueOf("kind"): Fixes,
+                                                      msgArgs.get("proper").getBoolValue());
+        var retString = getSegString(off, byt, st);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
+        if returnOrigins {
+          var leName = st.nextName();
+          st.addEntry(leName, new shared SymEntry(longEnough));
+          repMsg += "+created " + st.attrib(leName);
+        } 
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+      }
+      otherwise {
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+  }
   
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
@@ -1391,4 +1426,5 @@ module SegmentedMsg {
   registerFunction("segStr-assemble", assembleStringsMsg, getModuleName());
   registerFunction("stringsToJSON", stringsToJSONMsg, getModuleName());
   registerBinaryFunction("segStr-tondarray", segStrTondarrayMsg, getModuleName());
+  registerFunction("segmentedSubstring", segmentedSubstringMsg, getModuleName());
 }

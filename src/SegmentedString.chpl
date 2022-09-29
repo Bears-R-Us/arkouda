@@ -24,6 +24,11 @@ module SegmentedString {
   private config param useHash = true;
   param SegmentedStringUseHash = useHash;
 
+  enum Fixes {
+    prefixes,
+    suffixes,
+  };  
+
   private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
 
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
@@ -1110,6 +1115,51 @@ module SegmentedString {
       }
       var ranks = twoPhaseStringSort(this);
       return ranks;
+    }
+
+    proc getFixes(n: int, kind: Fixes, proper: bool) {
+      const lengths = getLengths() - 1;
+      var longEnough = makeDistArray(size, bool);
+      if proper {
+        longEnough = (lengths > n);
+      } else {
+        longEnough = (lengths >= n);
+      }
+      var nFound = + reduce longEnough;
+      var retOffsets = makeDistArray(nFound, int);
+      forall (i, o) in zip(retOffsets.domain, retOffsets) {
+        o = i * (n + 1);
+      }
+      const retDom = makeDistDom(nFound * (n + 1));
+      var retBytes: [retDom] uint(8);
+      var srcInds: [retDom] int;
+      var dstInds = (+ scan longEnough) - longEnough;
+      ref oa = offsets.a;
+      if kind == Fixes.prefixes {
+        forall (d, o, le) in zip(dstInds, oa, longEnough) with (var agg = newDstAggregator(int)) {
+          if le {
+            const srcIndStart = d * (n + 1);
+            for j in 0..#(n+1) {
+              agg.copy(srcInds[srcIndStart + j], o + j);
+            }
+          }
+        }
+      } else if kind == Fixes.suffixes {
+        forall (d, o, l, le) in zip(dstInds, oa, lengths, longEnough) with (var agg = newDstAggregator(int)) {
+          if le {
+            const srcIndStart = d * (n + 1);
+            const byteStart = o + l - n;
+            for j in 0..#(n+1) {
+              agg.copy(srcInds[srcIndStart + j], byteStart + j);
+            }
+          }
+        }
+      }
+      ref va = values.a;
+      forall (b, i) in zip(retBytes, srcInds) with (var agg = newSrcAggregator(uint(8))) {
+        agg.copy(b, va[i]);
+      }
+      return (retOffsets, retBytes, longEnough);
     }
 
   } // class SegString
