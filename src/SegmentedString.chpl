@@ -1117,7 +1117,7 @@ module SegmentedString {
       return ranks;
     }
 
-    proc getFixesHelper(n: int, kind: Fixes, proper: bool) {
+    proc getFixes(n: int, kind: Fixes, proper: bool) {
       const lengths = getLengths() - 1;
       var longEnough = makeDistArray(size, bool);
       if proper {
@@ -1159,15 +1159,6 @@ module SegmentedString {
         agg.copy(b, va[i]);
       }
       return (retOffsets, retBytes, longEnough);
-    }
-
-    proc getFixes(n: int, kind: Fixes, proper: bool, param returnOrigins) where returnOrigins {
-      return getFixesHelper(n, kind, proper);
-    }
-
-    proc getFixes(n: int, kind: Fixes, proper: bool, param returnOrigins) where !returnOrigins {
-      var (off, byt, le) = getFixesHelper(n, kind, proper);
-      return (off, byt);
     }
 
   } // class SegString
