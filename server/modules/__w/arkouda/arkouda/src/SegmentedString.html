@@ -118,6 +118,11 @@
 <em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">SegmentedStringUseHash</span></span> <span class="pre">=</span> <span class="pre">useHash</span><a class="headerlink" href="#SegmentedString.SegmentedStringUseHash" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="SegmentedString.Fixes">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Fixes</span></span> <span class="pre">{</span> <span class="pre">prefixes,</span> <span class="pre">suffixes</span> <span class="pre">}</span><a class="headerlink" href="#SegmentedString.Fixes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.getSegString">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.getSegString" title="Permalink to this definition">¶</a></dt>
@@ -442,6 +447,11 @@ such strings are returned in the second array.</p></li>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.argsort">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">checkSorted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">[offsets.aD]</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#SegmentedString.SegString.argsort" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="SegmentedString.SegString.getFixes">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">kind:</span> <span class="pre">Fixes</span></em>, <em class="sig-param"><span class="pre">proper:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.SegString.getFixes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

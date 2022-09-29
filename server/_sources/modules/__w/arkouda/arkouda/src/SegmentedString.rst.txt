@@ -21,6 +21,8 @@ or
 
 .. data:: param SegmentedStringUseHash = useHash
 
+.. enum:: enum Fixes { prefixes, suffixes }
+
 .. function:: proc getSegString(name: string, st: borrowed SymTab): owned SegString throws
 
 .. function:: proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws
@@ -280,6 +282,8 @@ or
    .. method:: proc isSorted(): bool
 
    .. method:: proc argsort(checkSorted: bool = false): [offsets.aD] int throws
+
+   .. method:: proc getFixes(n: int, kind: Fixes, proper: bool)
 
 .. function:: proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int
 

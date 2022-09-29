@@ -4891,6 +4891,46 @@ Attributes
    .. py:method:: __radd__(other: Strings) -> Strings
 
 
+   .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long prefix of each string, where possible
+
+      :param n: Length of prefix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character prefix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long suffix of each string, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character suffix, False otherwise.
+
+
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
@@ -10833,6 +10873,46 @@ Attributes
 
 
    .. py:method:: __radd__(other: Strings) -> Strings
+
+
+   .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long prefix of each string, where possible
+
+      :param n: Length of prefix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character prefix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long suffix of each string, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character suffix, False otherwise.
 
 
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -23719,6 +23799,46 @@ Attributes
    .. py:method:: __radd__(other: Strings) -> Strings
 
 
+   .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long prefix of each string, where possible
+
+      :param n: Length of prefix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character prefix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long suffix of each string, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character suffix, False otherwise.
+
+
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
@@ -25812,6 +25932,46 @@ Attributes
 
 
    .. py:method:: __radd__(other: Strings) -> Strings
+
+
+   .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long prefix of each string, where possible
+
+      :param n: Length of prefix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-prefix
+      :type return_origins: bool
+      :param proper: If True, only return proper prefixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a prefix.
+      :type proper: bool
+
+      :returns: * **prefixes** (*Strings*) -- The array of n-character prefixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character prefix, False otherwise.
+
+
+   .. py:method:: get_suffixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
+
+      Return the n-long suffix of each string, where possible
+
+      :param n: Length of suffix
+      :type n: int
+      :param return_origins: If True, return a logical index indicating which strings
+                             were long enough to return an n-suffix
+      :type return_origins: bool
+      :param proper: If True, only return proper suffixes, i.e. from strings
+                     that are at least n+1 long. If False, allow the entire
+                     string to be returned as a suffix.
+      :type proper: bool
+
+      :returns: * **suffixes** (*Strings*) -- The array of n-character suffixes; the number of elements is the number of
+                  True values in the returned mask.
+                * **origin_indices** (*pdarray, bool*) -- Boolean array that is True where the string was long enough to return
+                  an n-character suffix, False otherwise.
 
 
    .. py:method:: hash() -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
