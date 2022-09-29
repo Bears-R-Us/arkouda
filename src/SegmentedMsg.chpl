@@ -1383,24 +1383,17 @@ module SegmentedMsg {
     select (objtype) {
       when ("str") {
         var strings = getSegString(name, st);
-        var returnOrigins = msgArgs.getValueOf("returnOrigins").toLower(): bool;
+        var returnOrigins = msgArgs.get("returnOrigins").getBoolValue();
+        var (off, byt, longEnough) = strings.getFixes(msgArgs.get("nChars").getIntValue(),
+                                                      msgArgs.getValueOf("kind"): Fixes,
+                                                      msgArgs.get("proper").getBoolValue());
+        var retString = getSegString(off, byt, st);
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
         if returnOrigins {
-          var (off, byt, longEnough) = strings.getFixes(msgArgs.getValueOf("nChars"): int,
-                                                        msgArgs.getValueOf("kind"): Fixes,
-                                                        msgArgs.getValueOf("proper").toLower(): bool,
-                                                        true);
-          var retString = getSegString(off, byt, st);
           var leName = st.nextName();
           st.addEntry(leName, new shared SymEntry(longEnough));
-          repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes) + "+created " + st.attrib(leName);
-        } else {
-          var (off, byt) = strings.getFixes(msgArgs.getValueOf("nChars"): int,
-                                            msgArgs.getValueOf("kind"): Fixes,
-                                            msgArgs.getValueOf("proper").toLower(): bool,
-                                            false);
-          var retString = getSegString(off, byt, st);
-          repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %t".format(retString.nBytes);
-        }
+          repMsg += "+created " + st.attrib(leName);
+        } 
         return new MsgTuple(repMsg, MsgType.NORMAL);
       }
       otherwise {
