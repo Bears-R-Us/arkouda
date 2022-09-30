@@ -90,7 +90,7 @@ or
    :returns: MsgTuple
     
 
-.. function:: proc getmemusedMsg(cmd: string, payload: string, size: int, st: borrowed SymTab): MsgTuple throws
+.. function:: proc getmemusedMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
     
    query server total memory allocated or symbol table data memory

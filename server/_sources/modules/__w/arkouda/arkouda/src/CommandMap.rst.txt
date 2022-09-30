@@ -17,7 +17,7 @@ or
 
    import CommandMap;
 
-.. function:: proc akMsgSign(a: string, b: string, c: int, d: borrowed SymTab): MsgTuple throws
+.. function:: proc akMsgSign(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
    *
    * This is a dummy function to get the signature of the Arkouda
@@ -26,7 +26,7 @@ or
    * FCF that throws using `func()` today.
    
 
-.. function:: proc akBinMsgSign(a: string, b: string, c: int, d: borrowed SymTab): bytes throws
+.. function:: proc akBinMsgSign(cmd: string, payload: string, argSize: int, st: borrowed SymTab): bytes throws
 
    *
    * Just like akMsgSign, but Messages which have a binary return
