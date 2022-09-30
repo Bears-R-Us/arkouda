@@ -1,7 +1,6 @@
 
 module Security {
     use Random;
-    use ArkoudaRandomCompat;
     use Random.PCGRandom only PCGRandomStream;
     use FileIO;
     use FileSystem;

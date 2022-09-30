@@ -3,7 +3,6 @@ module RandArray {
   use ServerErrors;
   use Logging;
   use Random;
-  use ArkoudaRandomCompat;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
   use Map;
