@@ -280,7 +280,7 @@ def in1d_intervals(vals, intervals, symmetric=False):
 
 def search_intervals(vals, intervals, tiebreak=None):
     """
-    Given an array of query vals and half-open (pythonic) intervals, return the index of the
+    Given an array of query vals and closed intervals, return the index of the
     best (see tiebreak) interval containing each query value, or -1 if not present in any
     interval.
 
@@ -289,7 +289,7 @@ def search_intervals(vals, intervals, tiebreak=None):
     vals : (sequence of) pdarray(int, uint, float)
         Values to search for in intervals. If multiple arrays, each "row" is an item.
     intervals : 2-tuple of (sequences of) pdarrays
-        Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
+        Closed (inclusive) intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_inclusive).
         Must have same dtype(s) as vals.
     tiebreak : (optional) pdarray, numeric
         When a value is present in more than one interval, the interval with the
@@ -306,16 +306,15 @@ def search_intervals(vals, intervals, tiebreak=None):
     The return idx satisfies the following condition:
         present = idx > -1
         ((intervals[0][idx[present]] <= vals[present]) &
-         (intervals[1][idx[present]] > vals[present])).all()
+         (intervals[1][idx[present]] >= vals[present])).all()
     """
     from arkouda.join import gen_ranges
 
     if len(intervals) != 2:
-        raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_exclusive)")
+        raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_inclusive)")
 
-    # Convert to closed (inclusive) intervals
     low = intervals[0]
-    high = intervals[1] - 1 if isinstance(intervals[1], pdarray) else [h - 1 for h in intervals[1]]
+    high = intervals[1]
     intervalsize = low.size if isinstance(low, pdarray) else low[0].size
     if tiebreak is None:
         tiebreak = arange(intervalsize)
@@ -469,7 +468,7 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None):
     Parameters
     ----------
     keys : 2-tuple of (sequences of) pdarrays
-        Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
+        Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
         Must have same dtype(s) as vals.
     values : pdarray
         Function value to return for each entry in keys.
