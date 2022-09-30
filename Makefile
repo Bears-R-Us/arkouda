@@ -264,10 +264,12 @@ ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 ifeq ($(shell expr $(CHPL_MINOR) \< 27),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/lt-127
+	CHPL_FLAGS += --instantiate-max 512
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \= 27),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/e-127
+	CHPL_FLAGS += --instantiate-max 512
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 28),1)
