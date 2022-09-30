@@ -9,7 +9,7 @@ module CommandMap {
    * construct the FCF type, but there is no way to generate a
    * FCF that throws using `func()` today.
    */
-  proc akMsgSign(a: string, b: string, c: int, d: borrowed SymTab): MsgTuple throws {
+  proc akMsgSign(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
     var rep = new MsgTuple("dummy-msg", MsgType.NORMAL);
     return rep;
   }
@@ -18,7 +18,7 @@ module CommandMap {
    * Just like akMsgSign, but Messages which have a binary return
    * require a different signature
    */
-  proc akBinMsgSign(a: string, b: string, c: int, d: borrowed SymTab): bytes throws {
+  proc akBinMsgSign(cmd: string, payload: string, argSize: int, st: borrowed SymTab): bytes throws {
     var nb = b"\x00";
     return nb;
   }
