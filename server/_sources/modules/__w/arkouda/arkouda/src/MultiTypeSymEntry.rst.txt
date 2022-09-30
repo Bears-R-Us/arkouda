@@ -125,7 +125,7 @@ or
 
    .. method:: override proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
-      
+       
       Formats and returns data in this entry up to the specified threshold. 
       Arrays of size less than threshold will be printed in their entirety. 
       Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements

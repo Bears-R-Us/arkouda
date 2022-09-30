@@ -33,9 +33,16 @@ or
 
 .. function:: proc makeDistDom(size: int)
 
+    
+   Makes a domain distributed according to :param:`MyDmap`.
+   
+   :arg size: size of domain
+   :type size: int
+   
+
 .. function:: proc makeDistArray(size: int, type etype)
 
-   
+    
    Makes an array of specified type over a distributed domain
    
    :arg size: size of the domain
@@ -49,7 +56,7 @@ or
 
 .. function:: proc makeDistDomType(size: int) type
 
-   
+    
    Returns the type of the distributed domain
    
    :arg size: size of domain

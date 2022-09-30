@@ -25,7 +25,7 @@ or
 
 .. function:: proc whichDtype(type etype) param: DType
 
-   
+    
    Take a chapel type and returns the matching DType 
    
    :arg etype: chapel type

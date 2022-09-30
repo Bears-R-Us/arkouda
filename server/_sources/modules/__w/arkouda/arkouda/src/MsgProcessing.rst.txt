@@ -21,7 +21,7 @@ or
 
 .. function:: proc createMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Parse, execute, and respond to a create message 
    
    :arg : payload
@@ -35,7 +35,7 @@ or
 
 .. function:: proc deleteMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Parse, execute, and respond to a delete message 
    
    :arg reqMsg: request containing (cmd,name)
@@ -49,7 +49,7 @@ or
 
 .. function:: proc clearMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Clear all unregistered symbols and associated data from sym table
    
    :arg reqMsg: request containing (cmd)
@@ -63,7 +63,7 @@ or
 
 .. function:: proc infoMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Takes the name of data referenced in a msg and searches for the name in the provided sym table.
    Returns a string of info for the sym entry that is mapped to the provided name.
    
@@ -78,7 +78,7 @@ or
 
 .. function:: proc getconfigMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    query server configuration...
    
    :arg reqMsg: request containing (cmd)
@@ -92,7 +92,7 @@ or
 
 .. function:: proc getmemusedMsg(cmd: string, payload: string, size: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    query server total memory allocated or symbol table data memory
    
    :arg reqMsg: request containing (cmd)
@@ -127,7 +127,7 @@ or
 
 .. function:: proc strMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Response to __str__ method in python str convert array data to string 
    
    :arg reqMsg: request containing (cmd,name)
@@ -155,7 +155,7 @@ or
 
 .. function:: proc setMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws
 
-   
+    
    Sets all elements in array to a value (broadcast) 
    
    :arg reqMsg: request containing (cmd,name,dtype,value)

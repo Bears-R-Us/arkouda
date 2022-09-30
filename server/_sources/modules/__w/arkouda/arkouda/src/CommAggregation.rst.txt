@@ -17,7 +17,7 @@ or
 
    import CommAggregation;
 
-.. data:: param defaultBuffSize = if CHPL_COMM == ugni then 4096 else 8192
+.. data:: param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8192
 
 .. function:: proc newDstAggregator(type elemType, param useUnorderedCopy = false)
 
@@ -42,7 +42,7 @@ or
 
    .. attribute:: const bufferSize = dstBuffSize
 
-   .. attribute:: const myLocaleSpace = 0..chpl__nudgeHighBound(numLocales)
+   .. attribute:: const myLocaleSpace = 0..<numLocales
 
    .. attribute:: var opsUntilYield = yieldFrequency
 
@@ -77,7 +77,7 @@ or
 
    .. attribute:: const bufferSize = srcBuffSize
 
-   .. attribute:: const myLocaleSpace = 0..chpl__nudgeHighBound(numLocales)
+   .. attribute:: const myLocaleSpace = 0..<numLocales
 
    .. attribute:: var opsUntilYield = yieldFrequency
 

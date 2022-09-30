@@ -23,7 +23,7 @@ or
 
 .. data:: const mLogger = new Logger(logLevel)
 
-.. data:: var metricScope = ServerConfig.getEnv(name = METRIC_SCOPE, default = MetricScope.REQUEST)
+.. data:: var metricScope = ServerConfig.getEnv(name = "METRIC_SCOPE", default = "MetricScope.REQUEST")
 
 .. data:: var serverMetrics = new CounterTable()
 
@@ -93,10 +93,6 @@ or
 
    .. method:: proc items()
 
-      
-      * Set new metric value to current minus the increment 
-      
-
    .. method:: proc size()
 
    .. method:: proc total()
@@ -161,7 +157,7 @@ or
 
    .. attribute:: var server_port: int
 
-   .. attribute:: var locales: [0..numLocales-1] owned nilable LocaleInfo
+   .. attribute:: var locales: [0..numLocales-1] owned LocaleInfo?
 
    .. attribute:: var number_of_locales: int
 

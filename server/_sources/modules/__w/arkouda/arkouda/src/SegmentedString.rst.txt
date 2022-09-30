@@ -83,7 +83,7 @@ or
 
    .. method:: proc init(entryName: string, entry: borrowed SegStringSymEntry)
 
-      
+       
       * This method should not be called directly. Instead, call one of the
       * getSegString factory methods.
       
@@ -287,22 +287,22 @@ or
 
 .. function:: proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int
 
-.. function:: proc ==(lss: SegString, rss: SegString) throws
+.. function:: operator ==(lss: SegString, rss: SegString) throws
 
    Test for equality between two same-length arrays of strings. Returns
    a boolean vector of the same length. 
 
-.. function:: proc !=(lss: SegString, rss: SegString) throws
+.. function:: operator !=(lss: SegString, rss: SegString) throws
 
    Test for inequality between two same-length arrays of strings. Returns
    a boolean vector of the same length. 
 
-.. function:: proc ==(ss: SegString, testStr: string) throws
+.. function:: operator ==(ss: SegString, testStr: string) throws
 
    Test an array of strings for equality against a constant string. Return a boolean
    vector the same size as the array. 
 
-.. function:: proc !=(ss: SegString, testStr: string) throws
+.. function:: operator !=(ss: SegString, testStr: string) throws
 
    Test an array of strings for inequality against a constant string. Return a boolean
    vector the same size as the array. 

@@ -21,7 +21,7 @@ or
 
 .. record:: StringIntComparator
 
-   .. method:: proc keyPart(chpl__tuple_arg_temp0: (string, int), in i: int)
+   .. method:: proc keyPart((a0, _): (string, int), in i: int)
 
 .. function:: proc twoPhaseStringSort(ss: SegString): [ss.offsets.aD] int throws
 
