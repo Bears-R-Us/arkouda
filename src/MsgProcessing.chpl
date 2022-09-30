@@ -161,7 +161,7 @@ module MsgProcessing
 
     :returns: MsgTuple
      */
-    proc getmemusedMsg(cmd: string, payload: string, size:int, st: borrowed SymTab): MsgTuple throws {
+    proc getmemusedMsg(cmd: string, payload: string, argSize:int, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
