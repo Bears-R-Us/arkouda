@@ -174,13 +174,13 @@ Functions
 
 .. py:function:: search_intervals(vals, intervals, tiebreak=None)
 
-   Given an array of query vals and half-open (pythonic) intervals, return the index of the
+   Given an array of query vals and closed intervals, return the index of the
    best (see tiebreak) interval containing each query value, or -1 if not present in any
    interval.
 
    :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
    :type vals: (sequence of) pdarray(int, uint, float)
-   :param intervals: Half-open intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_exclusive).
+   :param intervals: Closed (inclusive) intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_inclusive).
                      Must have same dtype(s) as vals.
    :type intervals: 2-tuple of (sequences of) pdarrays
    :param tiebreak: When a value is present in more than one interval, the interval with the
@@ -196,14 +196,14 @@ Functions
    The return idx satisfies the following condition:
        present = idx > -1
        ((intervals[0][idx[present]] <= vals[present]) &
-        (intervals[1][idx[present]] > vals[present])).all()
+        (intervals[1][idx[present]] >= vals[present])).all()
 
 
 .. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None)
 
    Apply a function defined over intervals to an array of arguments.
 
-   :param keys: Tuple of half-open intervals expressed as (lower_bounds_inclusive, upper_bounds_exclusive).
+   :param keys: Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
                 Must have same dtype(s) as vals.
    :type keys: 2-tuple of (sequences of) pdarrays
    :param values: Function value to return for each entry in keys.
