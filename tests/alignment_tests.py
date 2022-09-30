@@ -6,7 +6,7 @@ class DataFrameTest(ArkoudaTest):
     def test_search_interval(self):
         expected_result = [2, 5, 4, 0, 3, 1, 4, -1, -1]
         lb = [0, 10, 20, 30, 40, 50]
-        ub = [10, 20, 30, 40, 50, 60]
+        ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 44, 1, 38, 19, 40, 60, 100]
 
         # test int64
@@ -33,7 +33,7 @@ class DataFrameTest(ArkoudaTest):
     def test_multi_array_search_interval(self):
         # Added for Issue #1548
         starts = (ak.array([0, 10, 20]), ak.array([0, 10, 20]))
-        ends = (ak.array([5, 15, 25]), ak.array([5, 15, 25]))
+        ends = (ak.array([4, 14, 24]), ak.array([4, 14, 24]))
         vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
         ans = [-1, 1, -1]
         self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
@@ -52,7 +52,7 @@ class DataFrameTest(ArkoudaTest):
     def test_search_interval_nonunique(self):
         expected_result = [2, 5, 2, 1, 3, 1, 4, -1, -1]
         lb = [0, 10, 20, 30, 40, 50]
-        ub = [10, 20, 30, 40, 50, 60]
+        ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 22, 19, 38, 19, 40, 60, 100]
 
         # test int64
@@ -78,7 +78,7 @@ class DataFrameTest(ArkoudaTest):
 
     def test_error_handling(self):
         lb = [0, 10, 20, 30, 40, 50]
-        ub = [10, 20, 30, 40, 50, 60]
+        ub = [9, 19, 29, 39, 49, 59]
         v = [22, 51, 22, 19, 38, 19, 40, 60, 100]
 
         lower_bound = ak.array(lb, dtype=ak.int64)
@@ -122,8 +122,8 @@ class DataFrameTest(ArkoudaTest):
         x1, y1 = tuple(zip(*upperright))
         x0 = ak.array(x0)
         y0 = ak.array(y0)
-        x1 = ak.array(x1) + 1  # convert to half-open
-        y1 = ak.array(y1) + 1  # convert to half-open
+        x1 = ak.array(x1)
+        y1 = ak.array(y1)
         intervals = ((x0, y0), (x1, y1))
 
         testpoints = [
