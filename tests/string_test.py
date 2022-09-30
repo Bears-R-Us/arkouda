@@ -637,3 +637,15 @@ class StringTest(ArkoudaTest):
 
         p = strings.get_suffixes(1, return_origins=False, proper=False)
         self.assertListEqual(["c", "d", "i"], p.to_list())
+
+    def test_encoding(self):
+        a1 = ["münchen", "zürich"]
+        s1 = ak.array(a1)
+        result = s1.idna_encode()
+        self.assertListEqual([i.encode("idna").decode("ascii") for i in a1], result.to_list())
+
+        a2 = ['xn--mnchen-3ya', 'xn--zrich-kva', ' xn--zrich-boguscode', 'xn--!!']
+        s2 = ak.array(a2)
+        result = s2.idna_decode()
+        # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #
+        self.assertEqual("array(['münchen', 'zürich', '', ''])", result.__repr__())

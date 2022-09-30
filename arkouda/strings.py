@@ -356,6 +356,14 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
         )
 
+    def idna_encode(self):
+        rep_msg = generic_msg(cmd="encode", args={"encoding": "idna", "obj": self.entry})
+        return Strings.from_return_msg(rep_msg)
+
+    def idna_decode(self):
+        rep_msg = generic_msg(cmd="decode", args={"encoding": "idna", "obj": self.entry})
+        return Strings.from_return_msg(rep_msg)
+
     @typechecked
     def to_lower(self) -> Strings:
         """
@@ -1500,17 +1508,20 @@ class Strings:
             Boolean array that is True where the string was long enough to return
             an n-character prefix, False otherwise.
         """
-        repMsg = cast(str, generic_msg(
-            cmd="segmentedSubstring",
-            args={
-                "objType": self.objtype,
-                "name": self,
-                "nChars": n,
-                "returnOrigins": return_origins,
-                "kind": "prefixes",
-                "proper": proper,
-            },
-        ))
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedSubstring",
+                args={
+                    "objType": self.objtype,
+                    "name": self,
+                    "nChars": n,
+                    "returnOrigins": return_origins,
+                    "kind": "prefixes",
+                    "proper": proper,
+                },
+            ),
+        )
         if return_origins:
             parts = repMsg.split("+")
             prefixes = Strings.from_return_msg("+".join(parts[:2]))
@@ -1546,17 +1557,20 @@ class Strings:
             Boolean array that is True where the string was long enough to return
             an n-character suffix, False otherwise.
         """
-        repMsg = cast(str, generic_msg(
-            cmd="segmentedSubstring",
-            args={
-                "objType": self.objtype,
-                "name": self,
-                "nChars": n,
-                "returnOrigins": return_origins,
-                "kind": "suffixes",
-                "proper": proper,
-            },
-        ))
+        repMsg = cast(
+            str,
+            generic_msg(
+                cmd="segmentedSubstring",
+                args={
+                    "objType": self.objtype,
+                    "name": self,
+                    "nChars": n,
+                    "returnOrigins": return_origins,
+                    "kind": "suffixes",
+                    "proper": proper,
+                },
+            ),
+        )
         if return_origins:
             parts = repMsg.split("+")
             suffixes = Strings.from_return_msg("+".join(parts[:2]))
