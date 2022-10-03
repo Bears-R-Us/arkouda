@@ -84,7 +84,13 @@ def read(
     allow_errors: bool = False,
     calc_string_offsets=False,
     file_format: str = "infer",
-) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
+    legacyHDF5: bool = False,
+) -> Union[
+    pdarray,
+    Strings,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+]:
     """
     Read datasets from HDF5 or Parquet files.
 
@@ -116,12 +122,18 @@ def read(
         type checking will be skipped and will execute expecting all files in
         filenames to be of the specified type. Otherwise, will infer filetype
         based off of first file in filenames, expanded if a glob expression.
+    legacyHDF5: bool
+        Default False
+        Trigger reading an HDF5 file that was written before updates to
+        formatting (v2022.10.13 or earlier).
+        After using this, the object should be written again to update the correct formatting
+        Can only be used if file_format="hdf5".
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray or Arkouda Strings object
-    and for multiple datasets returns a dictionary of Arkouda pdarrays or
-    Arkouda Strings.
+    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
+    and for multiple datasets returns a dictionary of Arkouda pdarrays,
+    Arkouda Strings or Arkouda ArrayView.
         Dictionary of {datasetName: pdarray or String}
 
     Raises
@@ -185,7 +197,7 @@ def read(
     if file_format == "infer":
         cmd = "readany"
     elif file_format == "hdf5":
-        cmd = "readAllHdf"
+        cmd = "readAllHdf_LEGACY" if legacyHDF5 else "readAllHdf"
     elif file_format == "parquet":
         cmd = "readAllParquet"
     else:
@@ -238,6 +250,12 @@ def read(
                     d[item["dataset_name"]] = Strings.from_return_msg(item["created"])
                 elif "pdarray" == item["arkouda_type"]:
                     d[item["dataset_name"]] = create_pdarray(item["created"])
+                elif "ArrayView" == item["arkouda_type"]:
+                    objs = item["created"].split("+")
+                    flat = create_pdarray(objs[0])
+                    shape = create_pdarray(objs[1])
+
+                    return arkouda.array_view.ArrayView(flat, shape)
                 else:
                     raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
             return d
@@ -247,6 +265,12 @@ def read(
                 return create_pdarray(item["created"])
             elif "seg_string" == item["arkouda_type"]:
                 return Strings.from_return_msg(item["created"])
+            elif "ArrayView" == item["arkouda_type"]:
+                objs = item["created"].split("+")
+                flat = create_pdarray(objs[0])
+                shape = create_pdarray(objs[1])
+
+                return arkouda.array_view.ArrayView(flat, shape)
             else:
                 raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         else:
@@ -327,7 +351,13 @@ def load(
     file_format: str = "INFER",
     dataset: str = "array",
     calc_string_offsets: bool = False,
-) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
+    legacyHDF5: bool = False,
+) -> Union[
+    pdarray,
+    Strings,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -384,10 +414,16 @@ def load(
     the extension is not required to be a specific format.
     """
     prefix, extension = os.path.splitext(path_prefix)
-    globstr = f"{prefix}_LOCALE*{extension}"
+    globstr = f"{prefix}*{extension}"
 
     try:
-        return read(globstr, dataset, calc_string_offsets=calc_string_offsets, file_format=file_format)
+        return read(
+            globstr,
+            dataset,
+            calc_string_offsets=calc_string_offsets,
+            file_format=file_format,
+            legacyHDF5=legacyHDF5,
+        )
     except RuntimeError as re:
         if "does not exist" in str(re):
             raise ValueError(
@@ -592,6 +628,7 @@ def save_all(
     names: List[str] = None,
     file_format="HDF5",
     mode: str = "truncate",
+    file_type: str = "distribute",
 ) -> None:
     """
     Save multiple named pdarrays to HDF5 files.
@@ -609,6 +646,10 @@ def save_all(
     mode : {'truncate' | 'append'}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
+    file_type : str ("single" | "distribute")
+            Default: distribute
+            Single writes the dataset to a single file
+            Distribute writes the dataset to a file per locale
 
     Returns
     -------
@@ -662,7 +703,13 @@ def save_all(
         raise ValueError("Allowed modes are 'truncate' and 'append'")
 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        arr.save(prefix_path=prefix_path, dataset=name, file_format=file_format, mode=mode)
+        arr.save(
+            prefix_path=prefix_path,
+            dataset=name,
+            file_format=file_format,
+            mode=mode,
+            file_type=file_type,
+        )
         if mode.lower() == "truncate":
             mode = "append"
 
@@ -821,6 +868,9 @@ def export(
 @typechecked
 def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView:
     """
+    DEPRECATED
+    This function is being mantained to allow reading from files written in Arkouda v2022.10.13
+    or earlier. If used, save the object to update formatting.
     Read a multi-dimensional object from an HDF5 file
 
     Parameters
@@ -892,11 +942,22 @@ def _mode_str_to_int(mode: str) -> int:
 
 
 @typechecked
+def _file_type_to_int(file_type: str) -> int:
+    if file_type.lower() == "single":
+        return 0
+    elif file_type.lower() == "distribute":
+        return 1
+    else:
+        raise ValueError(f"File Type expected to be 'single' or 'distributed'. Got {file_type}")
+
+
+@typechecked
 def write_hdf5_multi_dim(
     obj: arkouda.array_view.ArrayView,
     file_path: str,
     dset: str,
     mode: str = "truncate",
+    file_type: str = "distribute",
 ):
     """
     Write a multi-dimensional ArrayView object to an HDF5 file
@@ -913,6 +974,10 @@ def write_hdf5_multi_dim(
         Default: truncate
         Mode to write the dataset in. Truncate will overwrite any existing files.
         Append will add the dataset to an existing file.
+    file_type: str (single|distribute)
+        Default: distribute
+        Indicates the format to save the file. Single will store in a single file.
+        Distribute will store the date in a file per locale.
 
     See Also
     --------
@@ -925,18 +990,18 @@ def write_hdf5_multi_dim(
     - This function is currently standalone functionality for multi-dimensional datasets
     - Error handling done on server to prevent multiple server calls
     """
-    # error handling is done in the conversion functions
-    mode_int = _mode_str_to_int(mode)
     args = {
-        "flat": obj.base,
+        "values": obj.base,
         "shape": obj.shape,
         "order": obj.order,
         "filename": file_path,
+        "file_format": _file_type_to_int(file_type),
         "dset": dset,
-        "mode": mode_int,
+        "write_mode": _mode_str_to_int(mode),
+        "objType": "ArrayView",
     }
 
     generic_msg(
-        cmd = "tohdf",
+        cmd="tohdf",
         args=args,
     )

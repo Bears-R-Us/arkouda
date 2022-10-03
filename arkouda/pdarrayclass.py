@@ -1251,6 +1251,7 @@ class pdarray:
         mode: str = "truncate",
         compressed: bool = False,
         file_format: str = "HDF5",
+        file_type: str = "distribute",
     ) -> str:
         """
         Save the pdarray to HDF5 or Parquet. The result is a collection of files,
@@ -1275,6 +1276,11 @@ class pdarray:
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
             is case insensitive.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
 
         Returns
         -------
@@ -1332,6 +1338,8 @@ class pdarray:
         Saves the array in numLocales Parquet files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
+        from arkouda.pdarrayIO import _file_type_to_int
+
         if mode.lower() in ["a", "app", "append"]:
             m = 1
         elif mode.lower() in ["t", "trunc", "truncate"]:
@@ -1340,27 +1348,39 @@ class pdarray:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
         if file_format.lower() == "hdf5":
-            cmd = "tohdf"
+            return cast(
+                str,
+                generic_msg(
+                    cmd="tohdf",
+                    args={
+                        "values": self,
+                        "dset": dataset,
+                        "write_mode": m,
+                        "filename": prefix_path,
+                        "dtype": self.dtype,
+                        "objType": "pdarray",
+                        "file_format": _file_type_to_int(file_type),
+                    },
+                ),
+            )
         elif file_format.lower() == "parquet":
-            cmd = "writeParquet"
+            return cast(
+                str,
+                generic_msg(
+                    cmd="writeParquet",
+                    args={
+                        "values": self,
+                        "dset": dataset,
+                        "mode": m,
+                        "prefix": prefix_path,
+                        "dtype": self.dtype,
+                        "save_offsets": False,  # only used by strings
+                        "compressed": compressed,
+                    },
+                ),
+            )
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
-
-        return cast(
-            str,
-            generic_msg(
-                cmd=cmd,
-                args={
-                    "values": self,
-                    "dset": dataset,
-                    "mode": m,
-                    "prefix": prefix_path,
-                    "dtype": self.dtype,
-                    "save_offsets": False,  # only used by strings
-                    "compressed": compressed,
-                },
-            ),
-        )
 
     @typechecked
     def save_parquet(
@@ -1440,7 +1460,13 @@ class pdarray:
         )
 
     @typechecked
-    def save_hdf(self, prefix_path: str, dataset: str = "array", mode: str = "truncate") -> str:
+    def save_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ) -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -1455,8 +1481,10 @@ class pdarray:
             Name of the dataset to create in HDF5 files (must not already exist)
         mode : str {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
-        compressed : bool
-            By default, write without Snappy compression and RLE encoding.
+        file_type : str ("single" | "distribute")
+            Default: distribute
+            Single writes the dataset to a single file
+            Distribute writes the dataset to a file per locale
 
         Returns
         -------
@@ -1508,6 +1536,7 @@ class pdarray:
             mode=mode,
             compressed=False,
             file_format="HDF5",
+            file_type=file_type,
         )
 
     @typechecked
@@ -1539,7 +1568,7 @@ class pdarray:
         RegistrationError
             If the server was unable to register the pdarray with the user_defined_name
             If the user is attempting to register more than one pdarray with the same name,
-            the former should be unregistered first to free up the registration name.
+            the former should be unregisterzed first to free up the registration name.
 
         See also
         --------

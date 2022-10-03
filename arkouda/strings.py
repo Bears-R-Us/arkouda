@@ -1826,6 +1826,7 @@ class Strings:
         save_offsets: bool = True,
         compressed: bool = False,
         file_format: str = "HDF5",
+        file_type: str = "distribute"
     ) -> str:
         """
         Save the Strings object to HDF5 or Parquet. The result is a collection of
@@ -1854,6 +1855,10 @@ class Strings:
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
             is case insensitive.
+        file_type: str ("single" | "distribute")
+            Default: Distribute
+            Distribute the dataset over a file per locale.
+            Single file will save the dataset to one file
 
         Returns
         -------
@@ -1878,6 +1883,7 @@ class Strings:
         segments corresponding to the start of each string, (2) the hdf5 group is named
         via the dataset parameter.
         """
+        from arkouda.pdarrayIO import _file_type_to_int
         if mode.lower() in ["a", "app", "append"]:
             m = 1
         elif mode.lower() in ["t", "trunc", "truncate"]:
@@ -1886,22 +1892,31 @@ class Strings:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
         if file_format.lower() == "hdf5":
-            cmd = "tohdf"
+            args = {
+                "values": self.entry,
+                "dset": dataset,
+                "write_mode": m,
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "save_offsets": save_offsets,
+                "compressed": compressed,
+                "objType": "strings",
+                "file_format": _file_type_to_int(file_type),
+            }
+            return cast(str, generic_msg("tohdf", args))
         elif file_format.lower() == "parquet":
-            cmd = "writeParquet"
+            args = {
+                "values": self.entry,
+                "dset": dataset,
+                "mode": m,
+                "prefix": prefix_path,
+                "dtype": self.dtype,
+                "save_offsets": save_offsets,
+                "compressed": compressed,
+            }
+            return cast(str, generic_msg("writeParquet", args))
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
-
-        args = {
-            "values": self.entry,
-            "dset": dataset,
-            "mode": m,
-            "prefix": prefix_path,
-            "dtype": self.dtype,
-            "save_offsets": save_offsets,
-            "compressed": compressed,
-        }
-        return cast(str, generic_msg(cmd, args))
 
     def save_parquet(
         self,
@@ -1960,6 +1975,7 @@ class Strings:
         dataset: str = "strings_array",
         mode: str = "truncate",
         save_offsets: bool = True,
+        file_type: str = ""
     ) -> str:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
@@ -2004,6 +2020,7 @@ class Strings:
             mode=mode,
             save_offsets=save_offsets,
             file_format="HDF5",
+            file_type=file_type,
         )
 
     def is_registered(self) -> np.bool_:

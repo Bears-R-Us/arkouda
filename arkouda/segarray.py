@@ -262,7 +262,7 @@ class SegArray:
             n = len(m)
             newvals = zeros(size * n, dtype=dtype)
             for j in range(n):
-                newvals[j:: n] = m[j]
+                newvals[j::n] = m[j]
             return cls.from_parts(arange(size) * n, newvals)
 
     @property
@@ -976,6 +976,7 @@ class SegArray:
         value_suffix="_values",
         mode="truncate",
         file_format="HDF5",
+        file_type="distribute",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
@@ -996,6 +997,11 @@ class SegArray:
             If 'append', add data as a new column to existing files.
         file_format : str {'HDF5' | 'Parquet'}
             Defaults to `'HDF5'`. Indicates the file format to use to store data.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
 
         Returns
         -------
@@ -1009,10 +1015,18 @@ class SegArray:
         if segment_suffix == value_suffix:
             raise ValueError("Segment suffix and value suffix must be different")
         self.segments.save(
-            prefix_path, dataset=dataset + segment_suffix, mode=mode, file_format=file_format
+            prefix_path,
+            dataset=dataset + segment_suffix,
+            mode=mode,
+            file_format=file_format,
+            file_type=file_type,
         )
         self.values.save(
-            prefix_path, dataset=dataset + value_suffix, mode="append", file_format=file_format
+            prefix_path,
+            dataset=dataset + value_suffix,
+            mode="append",
+            file_format=file_format,
+            file_type=file_type,
         )
 
     @classmethod

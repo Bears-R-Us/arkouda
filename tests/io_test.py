@@ -669,9 +669,11 @@ class IOTest(ArkoudaTest):
         for i, (it, ft) in enumerate(zip(inttypes, floattypes)):
             with h5py.File("{}-{}".format(prefix, i), "w") as f:
                 idata = np.arange(i * N, (i + 1) * N, dtype=it)
-                f.create_dataset("integers", data=idata)
+                id = f.create_dataset("integers", data=idata)
+                id.attrs["ObjType"] = 1
                 fdata = np.arange(i * N, (i + 1) * N, dtype=ft)
-                f.create_dataset("floats", data=fdata)
+                fd = f.create_dataset("floats", data=fdata)
+                fd.attrs["ObjType"] = 1
         with self.assertRaises(RuntimeError):
             ak.read(prefix + "*")
 
@@ -753,6 +755,7 @@ class IOTest(ArkoudaTest):
 
     def testInternalVersions(self):
         """
+        Deprecated - using legacy read
         Test loading internal arkouda hdf5 structuring by loading v0 and v1 files.
         v1 contains _arkouda_metadata group and attributes, v0 does not.
         Files are located under `test/resources` ... where server-side unit tests are located.
@@ -767,8 +770,8 @@ class IOTest(ArkoudaTest):
             cwd += "/test/resources"
 
         # Now that we've figured out our loading path, load the files and test the lengths
-        v0 = ak.load(cwd + "/array_v0.hdf5")
-        v1 = ak.load(cwd + "/array_v1.hdf5")
+        v0 = ak.load(cwd + "/array_v0.hdf5", file_format="hdf5", legacyHDF5=True)
+        v1 = ak.load(cwd + "/array_v1.hdf5", file_format="hdf5", legacyHDF5=True)
         self.assertEqual(50, v0.size)
         self.assertEqual(50, v1.size)
 
@@ -776,10 +779,10 @@ class IOTest(ArkoudaTest):
         arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
             ak.write_hdf5_multi_dim(
-                arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append", storage="flat"
+                arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append"
             )
             # load data back
-            read_arr = ak.read_hdf5_multi_dim(tmp_dirname + "/multi_dim_test", "MultiDimObj")
+            read_arr = ak.read(tmp_dirname + "/multi_dim_test*", "MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
 
     def tearDown(self):

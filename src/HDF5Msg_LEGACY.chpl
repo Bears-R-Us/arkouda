@@ -1,4 +1,4 @@
-module HDF5Msg {
+module HDF5Msg_LEGACY {
     use CTypes;
     use FileSystem;
     use HDF5;
@@ -2132,7 +2132,7 @@ module HDF5Msg {
     }
 
     use CommandMap;
-    registerFunction("lshdf", lshdfMsg, getModuleName());
-    registerFunction("readAllHdf", readAllHdfMsg, getModuleName());
-    registerFunction("tohdf", tohdfMsg, getModuleName());
+    // registerFunction("lshdf", lshdfMsg, getModuleName());
+    registerFunction("readAllHdf_LEGACY", readAllHdfMsg, getModuleName());
+    // registerFunction("tohdf", tohdfMsg, getModuleName());
 }

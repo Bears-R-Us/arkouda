@@ -6,6 +6,7 @@ from warnings import warn
 import h5py  # type: ignore
 import numpy as np  # type: ignore
 
+import arkouda
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
@@ -244,7 +245,12 @@ def arkouda_to_numpy(A: pdarray, tmp_dir: str = "") -> np.ndarray:
 
 def numpy_to_arkouda(
     A: np.ndarray, tmp_dir: str = ""
-) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]]]:
+) -> Union[
+    pdarray,
+    Strings,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+]:
     """
     Convert from numpy to arkouda using disk rather than sockets.
     """

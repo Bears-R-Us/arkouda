@@ -234,6 +234,10 @@ module GenSymIO {
             var item = "{" + Q + "dataset_name"+ QCQ + dsetName + Q +
                        "," + Q + "arkouda_type" + QCQ + akType + Q;
             select (akType) {
+                when ("ArrayView") {
+                    var (valName, segName) = id.splitMsgToTuple("+", 2);
+                    item += "," + Q + "created" + QCQ + "created " + st.attrib(valName) + "+created " + st.attrib(segName) + Q + "}";
+                }
                 when ("pdarray") {
                     item +="," + Q + "created" + QCQ + "created " + st.attrib(id) + Q + "}";
                 }
