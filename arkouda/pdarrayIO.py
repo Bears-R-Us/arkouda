@@ -865,33 +865,6 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
 
 
 @typechecked
-def _storage_str_to_int(method: str) -> int:
-    """
-    Convert string to integer representing the storage method
-
-    Parameters
-    ----------
-    method: str (flat | multi)
-        The string representation of the storage format to be converted to integer
-
-    Returns
-    -------
-    int representing the storage method
-
-    Raises
-    ------
-    ValueError
-        - If mode is not 'flat' or 'multi'
-    """
-    if method.lower() == "flat":
-        return 0
-    elif method.lower() == "multi":
-        return 1
-    else:
-        raise ValueError(f"Storage method expected to be 'flat' or 'multi'. Got {method}.")
-
-
-@typechecked
 def _mode_str_to_int(mode: str) -> int:
     """
     Convert string to integer representing the mode to write
@@ -924,7 +897,6 @@ def write_hdf5_multi_dim(
     file_path: str,
     dset: str,
     mode: str = "truncate",
-    storage: str = "Flat",
 ):
     """
     Write a multi-dimensional ArrayView object to an HDF5 file
@@ -941,11 +913,6 @@ def write_hdf5_multi_dim(
         Default: truncate
         Mode to write the dataset in. Truncate will overwrite any existing files.
         Append will add the dataset to an existing file.
-    storage: str (Flat | Multi)
-        Default: Flat
-        Method to use when storing the dataset.
-        Flat - flatten the multi-dimensional object into a 1-D array of values
-        Multi - Store the object in the multidimensional presentation.
 
     See Also
     --------
@@ -953,12 +920,12 @@ def write_hdf5_multi_dim(
 
     Notes
     -----
+    - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
     - If a file does not exist, it will be created regardless of the mode value
     - This function is currently standalone functionality for multi-dimensional datasets
     - Error handling done on server to prevent multiple server calls
     """
     # error handling is done in the conversion functions
-    storage_int = _storage_str_to_int(storage)
     mode_int = _mode_str_to_int(mode)
     args = {
         "flat": obj.base,
@@ -967,11 +934,9 @@ def write_hdf5_multi_dim(
         "filename": file_path,
         "dset": dset,
         "mode": mode_int,
-        "method": storage_int,
     }
 
     generic_msg(
-        # cmd="writehdf_multi",
-        cmd = "writehdf_multi_dist",
+        cmd = "tohdf",
         args=args,
     )

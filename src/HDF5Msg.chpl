@@ -42,6 +42,12 @@ module HDF5Msg {
     private extern proc c_incrementCounter(data:c_void_ptr);
     private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
 
+    /*
+        Validates that the provided write mode is valid
+        mode: int
+
+        If mode is not 1 (Append) or 0 (Truncate) error
+    */
     proc validateWriteMode(mode: int) throws {
         if (mode != APPEND && mode != TRUNCATE) {
             throw getErrorWithContext(
@@ -53,6 +59,9 @@ module HDF5Msg {
         }
     }
 
+    /*
+        Prepare the file for writing data to single file
+    */
     proc prepFiles_Single(filenames: [] string, matchingFilenames: [] string, mode: int) throws {
         // validate the write mode
         validateWriteMode(mode);
@@ -84,6 +93,9 @@ module HDF5Msg {
         }
     }
 
+    /*
+        Prepare the files required to write files distributed across locales
+    */
     proc prepFiles_Distributed(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws {
         // validate the write mode
         validateWriteMode(mode);
@@ -128,6 +140,10 @@ module HDF5Msg {
         }
     }
 
+    /*
+        Determines if writing a single file or distributing files across locales.
+        Prepares the necessary files and returns a string array of the filenames created/accessedß
+    */
     proc prepFiles(filename, mode: int, file_format: int, A): [] string throws {
         var prefix: string;
         var extension: string;
@@ -163,6 +179,9 @@ module HDF5Msg {
         }
     }
 
+    /*
+        Validate that the dataset name provided does not already exist
+    */
     proc validateDataset(file_id: C_HDF5.hid_t, filename: string, dset_name: string) throws {
         // validate that the dataset does not already exist
         var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
@@ -184,6 +203,7 @@ module HDF5Msg {
         }
     }
 
+    // TODO - should this be used for all single files
     proc writeMultiDimDset(file_id: C_HDF5.hid_t, dset_name: string, A, shape: SymEntry, method: int, arrType: DType) throws{
         // Convert the Chapel dtype to HDF5
         var dtype_id: C_HDF5.hid_t;
@@ -212,6 +232,13 @@ module HDF5Msg {
         C_HDF5.H5LTmake_dataset(file_id, dset_name.c_str(), 1:c_int, dims, dtype_id, A.ptr);
     }
 
+    /*
+        Writes Arkouda metadata to a given dataset.
+        Writing to the dataset allows this to be updated and correct for each dataset written instead of generalizing to the entire file.
+        Write the following:
+            - HDF5 Version
+            - Arkouda Version
+    */
     proc writeArkoudaVersionMeta(dset_id: C_HDF5.hid_t) {
         // Create the attribute space
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
@@ -257,6 +284,13 @@ module HDF5Msg {
         C_HDF5.H5Tclose(attrStringType);
     }
 
+    /*
+        Writes Attributes specific to a multidimensional array.
+            - objType = ArrayView
+            - Rank: int - rank of the dataset
+            - Shape: [] int - stores the shape of object.
+        Calls to writeArkoudaVersionMeta to write the arkouda metadata
+    */
     proc writeMultiDimArrayAttrs(file_id: C_HDF5.hid_t, dset_name: string, shape: SymEntry) {
         //open the created dset so we can add attributes.
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
@@ -303,6 +337,9 @@ module HDF5Msg {
         writeArkoudaVersionMeta(dset_id);
     }
 
+    /*
+        Process and write an Arkouda ArrayView to HDF5.
+    */
     proc multiDimArray_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
         // access integer representation of APPEND/TRUNCATE
         var mode: int = msgArgs.get("write_mode").getIntValue();
@@ -352,7 +389,8 @@ module HDF5Msg {
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
-                //TODO - write the attributes to the dataset
+                // write attributes for multi-dim array
+                writeMultiDimArrayAttrs(file_id, dset_name, shape);
             }
             when MULTI_FILE {
                 coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
@@ -385,7 +423,8 @@ module HDF5Msg {
                     } else {
                         H5LTmake_dataset_WAR(file_id, dset_name.c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
                     }
-                    // TODO - write the attributes to the dataset
+                    // write attributes for multi-dim array
+                    writeMultiDimArrayAttrs(file_id, dset_name, shape);
                 }
             }
             otherwise {
@@ -400,6 +439,34 @@ module HDF5Msg {
 
     }
 
+    /*
+        Process and write an Arkouda pdarray to HDF5.
+    */
+    proc pdarray_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+        throw getErrorWithContext(
+                           msg="Saving pdarray to HDF5 not yet implemented",
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="NotImplementedError");
+    }
+
+    /*
+        Process and write an Arkouda Strings (SegmentedString) object to HDF5.
+    */
+    proc strings_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+        throw getErrorWithContext(
+                           msg="Saving Strings to HDF5 not yet implemented",
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="NotImplementedError");
+    }
+
+    /*
+        Parse and exectue tohdf message.
+        Determines the type of the object to be written and calls the corresponding write functionality.
+    */
     proc tohdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         var msgArgs = parseMessageArgs(payload, argSize);
 
