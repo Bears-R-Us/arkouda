@@ -169,7 +169,7 @@
   Example 15: Zippered Interation in Arkouda
   based on `getLengths` in `SegmentedString`
 */
-// const values: [0..#12] string = ['\x00', 's', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2'];
+// const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'];
 // const offsets = [0, 5, 9];
 // const size = 3;
 
@@ -236,21 +236,10 @@
   and `getLengths` from example 15.
 
   Expected output:
-   S s s 0  S s 1  S 2
+  S s s 0  S s 1  S 2
 */
-// use CopyAggregation;
-
 // proc title() throws {
-//   var titleVals: [values.domain] string;
-//   const lengths = getLengths();
-//   forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
-//     var i = 0;
-//     for char in ''.join(values[off..#len]).toTitle() {
-//       valAgg.copy(titleVals[off+i], char);
-//       i += 1;
-//     }
-//   }
-//   return titleVals;
+//   // your code here!
 // }
 // writeln(title());
 

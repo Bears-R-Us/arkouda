@@ -113,6 +113,10 @@ A domain’s indices may be distributed across multiple locales.
 When iterating through two arrays with the same domain,
 you are guaranteed that index `i` of one array will be local to index `i` of the other.
 
+In Arkouda, pdarrays (which stand for parallel, distributed arrays), are Chapel arrays stored in
+[block-distributed domains](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics),
+meaning that the elements are split evenly across all locales.
+
 The syntax for declaring an array with domain `D` and type `t` is:
 ```Chapel 
 var myArray: [D] t;
@@ -138,9 +142,12 @@ Note: `makeDistDom` is a helper function in Arkouda and not part of Chapel.
 
 <a id="init_fact"></a>
 ## Initial Factorial
-Let's write a function to calculate the factorial of a given integer `n`. Where factorial is 
+Let's start our chapel journey by writing a function to calculate the factorial of a given integer `n`.
+Where factorial is
 
 $$ n! = \prod_{i=1}^n i = 1 \cdot 2 \cdot\ldots\cdot (n-1) \cdot n$$
+
+This will introduce the syntax for `proc` and `for` loops!
 
 <a id="ex3"></a>
 #### Example 3: Initial Factorial
@@ -163,6 +170,7 @@ $ ./tutorial
 
 Excellent! Now let's write this loop in parallel.
 Our parallelism comes from the data parallel [`forall`](https://chapel-lang.org/docs/users-guide/datapar/forall.html) loop.
+The `forall` loop basically handles the parallelism for you!
 
 <a id="ex4"></a>
 #### Example 4: Parallel Factorial Attempt
@@ -241,7 +249,8 @@ Reductions and scans are defined for [many operations](https://chapel-lang.org/d
 ## `forall` Loops
 <a id="ex6"></a>
 #### Example 6: Factorial with must-parallel `forall` and Reduction
-Back to parallel factorial, let's use `reduce` to combine the results of each task. 
+Back to parallel factorial, let's use `reduce` to combine the results of each task.
+This a [task intent](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables) as signified by the `with` keyword.
 ```Chapel
 proc factorial(n: int) {
   var fact: int = 1;
@@ -411,8 +420,9 @@ Expected Output:
 <a id="introspection"></a>
 ## Introspection
 Introspection is determining properties of a function argument at runtime.
-This is often used to determine the type and/or domain of a function argument. 
-Using introspection can avoid duplicating a `proc` for multiple types when none of the logic has changed.
+This is often used to determine the type and/or domain of a function argument.
+Introspection can avoid duplicating a `proc` for multiple types when none of the logic has changed.
+Using introspection will result in a [generic](https://chapel-lang.org/docs/language/spec/generics.html#generics) function.
 
 The syntax for this is:
 ```Chapel
@@ -493,6 +503,9 @@ writeln(A);
 ```console
 1.0 1.0 3.0 16.0 625.0
 ```
+Notice we have an [unbounded range](https://chapel-lang.org/docs/primers/ranges.html#variations-on-basic-ranges), `1..`,
+so the end bound is determined by the size of the iterables.
+Since in this case the other iterables are length 5, `1..` is equivalent to `1..5`.
 
 <a id="ex15"></a>
 #### Example 15: Zippered Iteration in Arkouda
@@ -515,13 +528,13 @@ On the server, a SegString is made up of two distributed array components:
 
 For the sake of simplicity, we'll treat values as a string array. So for our `s` above, these components look something like
 ```
-values = ['\x00', 's', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2']
+values = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00']
 offsets = [0, 5, 9]
 ```
 For `getLengths`, we want to calculate the length of each individual string including the null terminator.
 
 ```chapel
-const values: [0..#12] string = ['\x00', 's', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2'];
+const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'];
 const offsets = [0, 5, 9];
 const size = 3;
 
@@ -560,8 +573,9 @@ Nice! We'll use `getLengths`, `values`, and `offsets` in the next section as wel
 <a id="aggregation"></a>
 ### Aggregation
 
-[Aggregation](https://chapel-lang.org/docs/modules/packages/CopyAggregation.html#copyaggregation) is used to copy a
-local value into a remote array or copy a value from a remote array into a local variable. This provides a significant speed up when doing batch assignments.
+[Aggregation](https://chapel-lang.org/docs/modules/packages/CopyAggregation.html#copyaggregation) is used to copy
+local values into a remote array (`DstAggregator`) or copy values from a remote array into local variables (`SrcAggregator`).
+This provides a significant speed up when doing batch assignments.
 
 Syntax:
 ```chapel
@@ -609,8 +623,8 @@ var (newOffs, newVals) = upper();
 writeln("New Vals:", newVals);
 ```
 ```console
-Old Vals: s s s 0  s s 1  s 2
-New Vals: S S S 0  S S 1  S 2
+Old Vals:s s s 0  s s 1  s 2
+New Vals:S S S 0  S S 1  S 2
 ```
 This function uses our previous `getLengths` function as well as the chapel builtins
 [`toUpper`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=totitle#String.string.toUpper)
@@ -648,7 +662,7 @@ writeln(title());
 Expected Output:
 
 ```console
- S s s 0  S s 1  S 2
+S s s 0  S s 1  S 2
 ```
 
 <a id="filter"></a>
@@ -745,6 +759,7 @@ iv[truth] = 0 1 2 3
 Y = 5 5 5 5
 ```
 Awesome! We used most of the information from this guide to reproduce useful numpy functionality!
+With the added benefit that our implementation is parallel and works on distributed data!
 Now let's tackle the very similar challenge of expansion indexing.
 
 <a id="ex19"></a>
@@ -809,7 +824,7 @@ Problem:
 Create a `proc` which given two int arrays `A` and `B` with different domains
 will return `A` but with the even values replaced with the values of `B`
 
-You should aim to use as many of the concepts for the guide as possible:
+You should aim to use as many of the concepts from the guide as possible:
   - boolean expansion indexing
   - may-parallel `forall`
   - filtering
