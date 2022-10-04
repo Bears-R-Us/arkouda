@@ -273,7 +273,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
-        reader->Skip(startIdx);
+        startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
           if((numElems - i) < batchSize)
@@ -285,7 +285,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (int64_t*)chpl_arr;
         parquet::Int32Reader* reader =
           static_cast<parquet::Int32Reader*>(column_reader.get());
-        reader->Skip(startIdx);
+        startIdx -= reader->Skip(startIdx);
 
         int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
         while (reader->HasNext() && i < numElems) {
@@ -302,7 +302,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (bool*)chpl_arr;
         parquet::BoolReader* reader =
           static_cast<parquet::BoolReader*>(column_reader.get());
-        reader->Skip(startIdx);
+        startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
           if((numElems - i) < batchSize)
@@ -332,7 +332,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (double*)chpl_arr;
         parquet::FloatReader* reader =
           static_cast<parquet::FloatReader*>(column_reader.get());
-        reader->Skip(startIdx);
+        startIdx -= reader->Skip(startIdx);
 
         float* tmpArr = (float*)malloc(batchSize * sizeof(float));
         while (reader->HasNext() && i < numElems) {
@@ -349,7 +349,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
           static_cast<parquet::DoubleReader*>(column_reader.get());
-        reader->Skip(startIdx);
+        startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
           if((numElems - i) < batchSize)
@@ -358,9 +358,8 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i+=values_read;
         }
       }
-      return 0;
     }
-    return ARROWERROR;
+    return 0;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
