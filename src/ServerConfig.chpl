@@ -83,9 +83,9 @@ module ServerConfig
      */
     proc getChplVersion() throws {
         use Version;
-        var ver = chplVersion:string;
-        var verArray = ver.split('version');
-        return verArray[1];
+        // Prior to 1.28, chplVersion had a prepended version that has
+        // since been removed
+        return (chplVersion:string).replace('version ', '');
     }
 
     /*
