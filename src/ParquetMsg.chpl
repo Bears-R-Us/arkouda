@@ -757,7 +757,7 @@ module ParquetMsg {
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: Error {
-      var errorMsg = "problem writing to file %s".format(e);
+      var errorMsg = "problem writing to file %s".format(e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
