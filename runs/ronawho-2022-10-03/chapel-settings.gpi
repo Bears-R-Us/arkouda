@@ -1,0 +1,47 @@
+set terminal pdfcairo font "TrueType,9" linewidth 2 rounded fontscale 1.0 enhanced dashed
+
+# Line style for axes
+set style line 80 lc rgb "#808080" lw 2
+
+# Line style for grid
+set style line 81 dt 2  # dashed
+set style line 81 lc rgb "#808080"  # grey
+set style line 81 lw 0.6
+
+set grid back linestyle 81
+set grid noxtics
+set border 3 back linestyle 80
+# Remove border on top and right.
+set xtics nomirror
+set ytics nomirror
+
+
+## Line styles
+
+# solid
+set style line 1  linecolor rgb "#00A000" linewidth 1 pointtype 2  pointsize 0.5 dashtype 1 # green
+set style line 2  linecolor rgb "#00A6DD" linewidth 1 pointtype 5  pointsize 0.4 dashtype 1 # light blue
+set style line 3  linecolor rgb "#3984C3" linewidth 1 pointtype 7  pointsize 0.4 dashtype 1 # med blue
+set style line 4  linecolor rgb "#005696" linewidth 1 pointtype 13 pointsize 0.4 dashtype 1 # eark blue
+set style line 5  linecolor rgb "#A00000" linewidth 1 pointtype 2  pointsize 0.4 dashtype 1 # dark red
+set style line 6  linecolor rgb "#fec12b" linewidth 1 pointtype 2  pointsize 0.4 dashtype 1 # yellow
+# dashed
+set style line 11 linecolor rgb "#00A000" linewidth 1 pointtype 2  pointsize 0.5 dashtype 2 # green
+set style line 12 linecolor rgb "#00A6DD" linewidth 1 pointtype 5  pointsize 0.4 dashtype 2 # light blue
+set style line 13 linecolor rgb "#3984C3" linewidth 1 pointtype 7  pointsize 0.4 dashtype 2 # med blue
+set style line 14 linecolor rgb "#005696" linewidth 1 pointtype 13 pointsize 0.4 dashtype 2 # dark blue
+set style line 15 linecolor rgb "#A00000" linewidth 1 pointtype 2  pointsize 0.4 dashtype 2 # dark red
+# dotted
+set style line 21 linecolor rgb "#00A000" linewidth 1 pointtype 2  pointsize 0.5 dashtype 3 # green
+set style line 22 linecolor rgb "#00A6DD" linewidth 1 pointtype 5  pointsize 0.4 dashtype 3 # light blue
+set style line 23 linecolor rgb "#3984C3" linewidth 1 pointtype 7  pointsize 0.4 dashtype 3 # med blue
+set style line 24 linecolor rgb "#005696" linewidth 1 pointtype 13 pointsize 0.4 dashtype 3 # dark blue
+set style line 25 linecolor rgb "#A00000" linewidth 1 pointtype 2  pointsize 0.4 dashtype 3 # dark red
+
+# legend options
+set key inside left width -2
+set key height 0.5
+set key font "TrueType, 6"
+set key autotitle columnhead
+
+set size ratio .4

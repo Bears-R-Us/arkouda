@@ -1,0 +1,46 @@
+#!/usr/bin/env gnuplot
+
+load 'chapel-settings.gpi'
+
+set ylabel "Time (sec)"
+set key invert
+set xtics (16,64,128,240)
+
+set xlabel "Locales (x 40 cores / locale)"
+set key inside left width -1
+
+set title "Arkouda Argsort Time\n{/*0.7 SGI 8600 (EDR IB) -- 8 KiB Arrays}"
+set yrange [0:*]
+set output "ak-argsort-time-2-to-10.pdf"
+plot \
+  'data/arkouda-offset-flush/2-to-10/argsort.dat' every ::1 using 1:2 title "Offset Flush"      with linespoints linestyle 1, \
+  'data/arkouda-128/2-to-10/argsort.dat'          every ::1 using 1:2 title "Bucket Exchange"   with linespoints linestyle 2, \
+  'data/arkouda-127/2-to-10/argsort.dat'          every ::1 using 1:2 title "Scan Optimization" with linespoints linestyle 3, \
+  'data/arkouda-125/2-to-10/argsort.dat'          every ::1 using 1:2 title "Baseline"          with linespoints linestyle 4, \
+
+set title "Arkouda Argsort Time\n{/*0.7 SGI 8600 (EDR IB) -- 512 KiB Arrays}"
+set yrange [0:*]
+set output "ak-argsort-time-2-to-16.pdf"
+plot \
+  'data/arkouda-offset-flush/2-to-16/argsort.dat' every ::1 using 1:2 title "Offset Flush"      with linespoints linestyle 1, \
+  'data/arkouda-128/2-to-16/argsort.dat'          every ::1 using 1:2 title "Bucket Exchange"   with linespoints linestyle 2, \
+  'data/arkouda-127/2-to-16/argsort.dat'          every ::1 using 1:2 title "Scan Optimization" with linespoints linestyle 3, \
+  'data/arkouda-125/2-to-16/argsort.dat'          every ::1 using 1:2 title "Baseline"          with linespoints linestyle 4, \
+
+set title "Arkouda Argsort Time\n{/*0.7 SGI 8600 (EDR IB) -- 512 MiB Arrays}"
+set yrange [0:*]
+set output "ak-argsort-time-2-to-26.pdf"
+plot \
+  'data/arkouda-offset-flush/2-to-26/argsort.dat' every ::1 using 1:2 title "Offset Flush"      with linespoints linestyle 1, \
+  'data/arkouda-128/2-to-26/argsort.dat'          every ::1 using 1:2 title "Bucket Exchange"   with linespoints linestyle 2, \
+  'data/arkouda-127/2-to-26/argsort.dat'          every ::1 using 1:2 title "Scan Optimization" with linespoints linestyle 3, \
+  'data/arkouda-125/2-to-26/argsort.dat'          every ::1 using 1:2 title "Baseline"          with linespoints linestyle 4, \
+
+set title "Arkouda Argsort Time\n{/*0.7 SGI 8600 (EDR IB) -- 8 GiB Arrays}"
+set yrange [0:30]
+set output "ak-argsort-time-2-to-30.pdf"
+plot \
+  'data/arkouda-offset-flush/2-to-30/argsort.dat' every ::1 using 1:2 title "Offset Flush"      with linespoints linestyle 1, \
+  'data/arkouda-128/2-to-30/argsort.dat'          every ::1 using 1:2 title "Bucket Exchange"   with linespoints linestyle 2, \
+  'data/arkouda-127/2-to-30/argsort.dat'          every ::1 using 1:2 title "Scan Optimization" with linespoints linestyle 3, \
+  'data/arkouda-125/2-to-30/argsort.dat'          every ::1 using 1:2 title "Baseline"          with linespoints linestyle 4, \
