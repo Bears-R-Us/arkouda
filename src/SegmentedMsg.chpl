@@ -1403,18 +1403,6 @@ module SegmentedMsg {
       }
     }
   }
-
-  proc encodeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws  {
-    var msgArgs = parseMessageArgs(payload, argSize);
-    var strings = getSegString(msgArgs.getValueOf("obj"), st);
-    var (off, val) = strings.encode();
-    writeln("\n\n");
-    writeln(off);
-    writeln(val);
-    writeln("\n\n");
-    var repMsg = "THIS IS NOT A DRILL";
-    return new MsgTuple(repMsg, MsgType.NORMAL);
-  }
   
   use CommandMap;
   registerFunction("segmentLengths", segmentLengthsMsg, getModuleName());
