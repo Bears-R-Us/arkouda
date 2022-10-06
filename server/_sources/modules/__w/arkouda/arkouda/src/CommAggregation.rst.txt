@@ -44,6 +44,8 @@ or
 
    .. attribute:: const myLocaleSpace = 0..<numLocales
 
+   .. attribute:: var lastLocale: int
+
    .. attribute:: var opsUntilYield = yieldFrequency
 
    .. attribute:: var lBuffers: c_ptr(c_ptr(aggType))
@@ -78,6 +80,8 @@ or
    .. attribute:: const bufferSize = srcBuffSize
 
    .. attribute:: const myLocaleSpace = 0..<numLocales
+
+   .. attribute:: var lastLocale: int
 
    .. attribute:: var opsUntilYield = yieldFrequency
 
