@@ -647,5 +647,5 @@ class StringTest(ArkoudaTest):
         a2 = ['xn--mnchen-3ya', 'xn--zrich-kva', ' xn--zrich-boguscode', 'xn--!!']
         s2 = ak.array(a2)
         result = s2.idna_decode()
-        # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #
+        # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #1828
         self.assertEqual("array(['münchen', 'zürich', '', ''])", result.__repr__())
