@@ -40,6 +40,7 @@ module CommAggregation {
     type aggType = (c_ptr(elemType), elemType);
     const bufferSize = dstBuffSize;
     const myLocaleSpace = 0..<numLocales;
+    var lastLocale: int;
     var opsUntilYield = yieldFrequency;
     var lBuffers: c_ptr(c_ptr(aggType));
     var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
@@ -65,7 +66,8 @@ module CommAggregation {
     }
 
     proc flush() {
-      for loc in myLocaleSpace {
+      for offsetLoc in myLocaleSpace + lastLocale {
+        const loc = offsetLoc % numLocales;
         _flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
@@ -73,6 +75,7 @@ module CommAggregation {
     inline proc copy(ref dst: elemType, const in srcVal: elemType) {
       // Get the locale of dst and the local address on that locale
       const loc = dst.locale.id;
+      lastLocale = loc;
       const dstAddr = getAddr(dst);
 
       // Get our current index into the buffer for dst's locale
@@ -152,13 +155,13 @@ module CommAggregation {
     type aggType = c_ptr(elemType);
     const bufferSize = srcBuffSize;
     const myLocaleSpace = 0..<numLocales;
+    var lastLocale: int;
     var opsUntilYield = yieldFrequency;
     var dstAddrs: c_ptr(c_ptr(aggType));
     var lSrcAddrs: c_ptr(c_ptr(aggType));
     var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
     var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
     var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
-
     var bufferIdxs: c_ptr(int);
 
     proc postinit() {
@@ -186,7 +189,8 @@ module CommAggregation {
     }
 
     proc flush() {
-      for loc in myLocaleSpace {
+      for offsetLoc in myLocaleSpace + lastLocale {
+        const loc = offsetLoc % numLocales;
         _flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
@@ -198,6 +202,7 @@ module CommAggregation {
       const dstAddr = getAddr(dst);
 
       const loc = src.locale.id;
+      lastLocale = loc;
       const srcAddr = getAddr(src);
 
       ref bufferIdx = bufferIdxs[loc];
