@@ -1,6 +1,6 @@
 /*
-  This file contains the code for the examples in the associated guide `CHAPEL_TUTORIAL.md`.
-  To start, comment out all but the relevant example and navigate to the directory containng this file.
+  This file contains the code for the examples in the associated guide, `CHAPEL_TUTORIAL.md`.
+  To start, uncomment the relevant example and navigate to the directory containng this file.
 
   The compilation command is:
     chpl Tutorial.chpl -o tutorial
@@ -67,7 +67,7 @@
 // proc factorial(n: int) {
 //   var fact: int = 1;
 //   forall i in 1..n with (* reduce fact) {
-//     fact = i;
+//     fact *= i;
 //   }
 //   return fact;
 // }
@@ -81,10 +81,12 @@
 // }
 
 /*
-  Example 8: may-parallel Forall Expression
+  Example 8: Forall Expressions
 */
-// var tens = [i in 1..10] i*10;
+// // must-parallel forall expression
+// var tens = forall i in 1..10 do i*10;
 // writeln(tens);
+// // may-parallel forall expression
 // var negativeTens = [i in tens] -i;
 // writeln(negativeTens);
 
@@ -98,7 +100,7 @@
 
 /*
   Try It Yourself 1: Perfect Squares <=25
-  Generate and print an array of all perfect squares less than or equal to `25`
+  Compute and print out all perfect squares less than or equal to `25`
   Bonus points if you can do it in one line using `forall` expressions and reductions!
 
   Expected output:
@@ -123,11 +125,11 @@
   Try It Yourself 2: Array Absolute Value
   Write a `proc` using a ternary to take an `int array`, `A`, and return an array where index `i` is the absolute value of `A[i]`
 
-  Input: 
-  [-3, 7, 0, -4, 12]
+  Call: `arrayAbsVal([-3, 7, 0, -4, 12]);`
+
   Expected output:
-  0 1 4 9 16 25
-*/
+  3 7 0 4 12
+ */
 // proc arrayAbsVal(A) {
 //   // your code here
 // }
@@ -169,9 +171,9 @@
   Example 15: Zippered Interation in Arkouda
   based on `getLengths` in `SegmentedString`
 */
-// const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'];
-// const offsets = [0, 5, 9];
-// const size = 3;
+// const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'],
+//       offsets = [0, 5, 9],
+//       size = offsets.size;  // size refers to the number of stings in the Segstring, this is always equivalent to offsets.size
 
 // /* Return lengths of all strings, including null terminator. */
 // proc getLengths() {
@@ -191,7 +193,7 @@
 //     }
 //     else {
 //       // not the last string
-//       // len = start poistion of next string - start position of this string
+//       // len = start position of next string - start position of this string
 //       l = offsets[i+1] - o;
 //     }
 //   }
@@ -211,7 +213,7 @@
 //   Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
 //   :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
 // */
-// proc upper() throws {
+// proc upper() {
 //   var upperVals: [values.domain] string;
 //   const lengths = getLengths();
 //   forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
@@ -238,7 +240,7 @@
   Expected output:
   S s s 0  S s 1  S 2
 */
-// proc title() throws {
+// proc title() {
 //   // your code here!
 // }
 // writeln(title());
@@ -267,6 +269,7 @@
 // writeln("truth = ", truth);
 
 // // we use `truth` to create the indices, `iv`, into the compressed array
+// // `+ scan truth - truth` is essentially creating an exclusive scan
 // // note: `iv[truth] = [0, 1, 2, 3]`
 // var iv = + scan truth - truth;
 // writeln("iv = ", iv);
@@ -279,7 +282,7 @@
 // writeln("+ reduce truth = ", + reduce truth);
 // writeln("0..#(+ reduce truth) = ", 0..#(+ reduce truth), "\n");
 
-// // now that we have the set up, it's time for the actual indexing
+// // now that we have the setup, it's time for the actual indexing
 // // we do a may-parallel `forall` to iterate over the indices of `X`
 // // we filter on `truth[i]`, so we only act if the condition is met
 // // we use the compressed indices `iv[i]` to write into `Y`
@@ -305,22 +308,23 @@
 // writeln("truth = ", truth);
 
 // // we use `truth` to create the indices, `iv`, into the compressed array
+// // `+ scan truth - truth` is essentially creating an exclusive scan
 // // note: `iv[truth] = [0, 1, 2, 3]`
 // var iv = + scan truth - truth;
 // writeln("iv = ", iv);
 // writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
 
-// // now that we have the set up, it's time for the actual indexing
+// // now that we have the setup, it's time for the actual indexing
 // // this is equivalent to compression indexing with the assignment swapped
 // // we do a may-parallel `forall` to iterate over the indices of `X`
 // // we filter on `truth[i]`, so we only act if the condition is met
 // // we use the original indices `i` to write into `X`
 // // while using the compressed indices `iv[i]` to get the correct value from `Y`
-// // [i in X.domain] if truth[i] {X[i] = Y[iv[i]];}
+// [i in X.domain] if truth[i] {X[i] = Y[iv[i]];}
 
 // // note we could do the same thing with zippered iteration
 // // since `truth`, `X`, and `iv` have the same domain
-// [(t, x, v) in zip(truth, X, iv)] if t {x = Y[v];}
+// // [(t, x, v) in zip(truth, X, iv)] if t {x = Y[v];}
 
 // writeln("X = ", X);
 
@@ -337,9 +341,9 @@
   - introspection
   - zippered iteration
 
-  Input: 
-  [8, 9, 7, 2, 4, 3], [17, 19, 21]
-  [4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]
+  Call:
+  - `arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]);`
+  - `arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]);`
 
   Expected output:
   17 9 7 19 21 3

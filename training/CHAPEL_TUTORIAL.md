@@ -17,7 +17,7 @@ This guide will familiarize new developers with Chapel concepts regularly used i
 5. [`forall` Loops](#forall)
    1. [Example 6: Factorial with must-parallel `forall` and Reduction](#ex6)
    2. [Example 7: may-parallel `forall`](#ex7)
-   3. [Example 8: may-parallel `forall` Expression](#ex8)
+   3. [Example 8: `forall` Expressions](#ex8)
    4. [Example 9: Factorial with may-parallel `forall` Expression and Reduction](#ex9)
    5. [Try It Yourself 1: Perfect Squares <=25](#TIY1)
 6. [Ternary](#ternary)
@@ -56,12 +56,12 @@ The command to run the executable is:
 ```console
 ./tutorial
 ```
-To follow along, comment out all but the relevant example in `Tutorial.chpl`, compile, run, and verify the output matches the guide!
+To follow along, uncomment the relevant example in `Tutorial.chpl`, compile, run, and verify the output matches the guide!
 
 <a id="ranges_and_domains"></a>
 ## Ranges and Domains
 This will only cover enough to provide context for the other examples (the very basics). More information can be found in the Chapel docs for
-[ranges](https://chapel-lang.org/docs/primers/ranges.html) and [domains](https://chapel-lang.org/docs/language/spec/domains.html).
+[ranges](https://chapel-lang.org/docs/primers/ranges.html) and [domains](https://chapel-lang.org/docs/primers/domains.html).
 
 <a id="ranges"></a>
 ### Ranges
@@ -115,7 +115,7 @@ you are guaranteed that index `i` of one array will be local to index `i` of the
 
 In Arkouda, pdarrays (which stand for parallel, distributed arrays), are Chapel arrays stored in
 [block-distributed domains](https://chapel-lang.org/docs/primers/distributions.html#block-and-distribution-basics),
-meaning that the elements are split evenly across all locales.
+meaning that the elements are split as evenly as possible across all locales.
 
 The syntax for declaring an array with domain `D` and type `t` is:
 ```Chapel 
@@ -142,7 +142,7 @@ Note: `makeDistDom` is a helper function in Arkouda and not part of Chapel.
 
 <a id="init_fact"></a>
 ## Initial Factorial
-Let's start our chapel journey by writing a function to calculate the factorial of a given integer `n`.
+Let's start our Chapel journey by writing a function to calculate the factorial of a given integer `n`.
 Where factorial is
 
 $$ n! = \prod_{i=1}^n i = 1 \cdot 2 \cdot\ldots\cdot (n-1) \cdot n$$
@@ -194,18 +194,19 @@ Tutorial.chpl:43: note: The shadow variable 'fact' is constant due to forall int
 That's not what we want to see! There was an error during compilation.
 The issue is different iterations of the parallel loop could be modifying the outer variable `fact` simultaneously.
 
-Chapel handles this by giving each task its own copy of `fact` known as a [shadow variable](https://chapel-lang.org/docs/primers/forallLoops.html?highlight=intents#task-intents-and-shadow-variables).
+Chapel handles this by giving each task its own copy of `fact` known as a [shadow variable](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables).
 To combine the shadow variables and write the result back into `fact`, we'll need to learn about `reduction` operations.
 
 <a id="reduce_and_scan"></a>
 ## `reduce` and `scan`
-[Reductions and scans](https://chapel-lang.org/docs/language/spec/data-parallelism.html?highlight=scan#reductions-and-scans)
+[Reductions and scans](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reductions-and-scans)
 cumulatively apply an operation over the elements of an array (or any iterable) in parallel.
 
 - `op scan array`
   - scans over `array` and cumulatively applies `op` to every element
   - returns an array
   - `+ scan a` behaves like [`np.cumsum(a)`](https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html) in numpy
+  - `scan` is an [inclusive scan](https://en.wikipedia.org/wiki/Prefix_sum#Inclusive_and_exclusive_scans)
 - `op reduce array`
   - reduces the result of a scan to a single summary value
   - returns a single value
@@ -240,22 +241,22 @@ min reduce a = 1
 max scan a = 1 2 3 4 5
 max reduce a = 5
 ```
-Notice `op reduce array` is often the last element of `op scan array`. 
+Notice `op reduce array` is always the last element of `op scan array`.
 
-Reductions and scans are defined for [many operations](https://chapel-lang.org/docs/language/spec/data-parallelism.html?highlight=scan#reduction-expressions)
-, and you can even [write your own](https://chapel-lang.org/docs/technotes/reduceIntents.html#user-defined-reduction-example)!
+Reductions and scans are defined for [many operations](https://chapel-lang.org/docs/language/spec/data-parallelism.html#reduction-expressions),
+and you can even [write your own](https://chapel-lang.org/docs/technotes/reduceIntents.html#user-defined-reduction-example)!
 
 <a id="forall"></a>
 ## `forall` Loops
 <a id="ex6"></a>
 #### Example 6: Factorial with must-parallel `forall` and Reduction
 Back to parallel factorial, let's use `reduce` to combine the results of each task.
-This a [task intent](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables) as signified by the `with` keyword.
+This is a [task intent](https://chapel-lang.org/docs/primers/forallLoops.html#task-intents-and-shadow-variables) as signified by the `with` keyword.
 ```Chapel
 proc factorial(n: int) {
   var fact: int = 1;
   forall i in 1..n with (* reduce fact) {
-    fact = i;
+    fact *= i;
   }
   return fact;
 }
@@ -265,7 +266,7 @@ writeln(factorial(5));
 120
 ```
 That's more like it!
-Every iteration assigned its shadow variable of `fact` to `i`, so a `* reduce` of the shadow variables gives the product of all `i`.
+Every task multiplies its shadow variable of `fact` by `i`, so a `* reduce` of the shadow variables gives the product of all `i`.
 
 This is an example of a must-parallel `forall`.
 
@@ -299,14 +300,17 @@ Let's look at an example of a may-parallel `forall`:
 5
 ```
 As we can see this loop is not executing serially.
+This is because core Chapel types like ranges, domains, and arrays support parallel iterators, so they will be invoked by the may-parallel form.
 Your output will likely be in a different order than the above and will differ between runs.
 
 <a id="ex8"></a>
-#### Example 8: may-parallel `forall` Expression
+#### Example 8: `forall` Expressions
 `forall`s can also be used in expressions, for example:
 ```Chapel
-var tens = [i in 1..10] i*10;
+// must-parallel forall expression
+var tens = forall i in 1..10 do i*10;
 writeln(tens);
+// may-parallel forall expression
 var negativeTens = [i in tens] -i;
 writeln(negativeTens);
 ```
@@ -327,7 +331,7 @@ writeln(factorial(5));
 120
 ```
 
-For a specific `n`, we  can do this in one line!
+For a specified `n`, we  can do this in one line!
 ```Chapel
 writeln(* reduce [i in 1..#5] i);
 ```
@@ -335,7 +339,7 @@ writeln(* reduce [i in 1..#5] i);
 <a id="TIY1"></a>
 #### Try It Yourself 1: Perfect Squares <=25
 Problem:
-Generate and print an array of all perfect squares less than or equal to `25`
+Compute and print out all perfect squares less than or equal to `25`
 
 Bonus points if you can do it in one line using a `forall` expression!
 <details>
@@ -399,8 +403,7 @@ Problem:
 Write a `proc` using a ternary to take an `int array`, `A`, 
 and return an array where index `i` is the absolute value of `A[i]`
 
-Input: 
-`[-3, 7, 0, -4, 12]`
+Call: `arrayAbsVal([-3, 7, 0, -4, 12]);`
 
 <details>
   <summary>Potential Solution</summary>
@@ -426,10 +429,10 @@ Using introspection will result in a [generic](https://chapel-lang.org/docs/lang
 
 The syntax for this is:
 ```Chapel
-proc foo(array: [?D] ?t, value: t, array2: [?D2] ?t2) {
-  // using `D` and `t` in this proc will refer to `array`'s domain and type respectively
-  // `value` has the same type as `array` so there's no need for the `?`
-  // `D2` and `t2` refer to the domain and type of `array2`
+proc foo(arr1: [?D] ?t, value: t, arr2: [?D2] ?t2) {
+  // using `D` and `t` in this proc will refer to `arr1`'s domain and type respectively
+  // since value is declared to have type `t`, it must be passed a value that is compatible with `arr1`'s element type
+  // `D2` and `t2` refer to the domain and type of `arr2`
 }
 ```
 <a id="ex12"></a>
@@ -474,16 +477,23 @@ writeln(factorial([1, 2, 3, 4, 5]));
 1 2 6 24 120
 ```
 
+Promotion is equivalent to a `forall` loop. For this example the equivalent loop would be:
+```chapel
+[x in [1, 2, 3, 4, 5]] factorial(x);
+```
+
 <a id="zip_and_agg"></a>
 ## Zippered Iteration and Aggregation
 
 <a id="zippered_iteration"></a>
 ### Zippered Iteration
 [Zippered Iteration](https://chapel-lang.org/docs/users-guide/base/zip.html#zippered-iteration) is simultaneously
-iterating over multiple iterables (usually arrays and ranges) with compatible domains.
+iterating over multiple iterables (usually arrays and ranges) with compatible shape and size.
+For arrays, this means that their domains have the same number of elements in each dimension
 
 The syntax:
 ```chapel
+var A1, A2, A3, ..., An: [D] int;
 forall (v1, v2, v3, ..., vn) in zip(A1, A2, A3, ..., An) {
   // for loop iteration `j`, `vi` will refer to the `j`th element of `Ai`
 }
@@ -504,7 +514,7 @@ writeln(A);
 1.0 1.0 3.0 16.0 625.0
 ```
 Notice we have an [unbounded range](https://chapel-lang.org/docs/primers/ranges.html#variations-on-basic-ranges), `1..`,
-so the end bound is determined by the size of the iterables.
+so the end bound is determined by the size of the other iterables.
 Since in this case the other iterables are length 5, `1..` is equivalent to `1..5`.
 
 <a id="ex15"></a>
@@ -526,7 +536,8 @@ On the server, a SegString is made up of two distributed array components:
 - offsets: `int`
   - the start index of each individual string in the `values`
 
-For the sake of simplicity, we'll treat values as a string array. So for our `s` above, these components look something like
+For the sake of simplicity, we'll treat values as a string array.
+So for our `s` above, these components look something like:
 ```
 values = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00']
 offsets = [0, 5, 9]
@@ -534,9 +545,9 @@ offsets = [0, 5, 9]
 For `getLengths`, we want to calculate the length of each individual string including the null terminator.
 
 ```chapel
-const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'];
-const offsets = [0, 5, 9];
-const size = 3;
+const values: [0..#12] string = ['s', 's', 's', '0', '\x00', 's', 's', '1', '\x00', 's', '2', '\x00'],
+      offsets = [0, 5, 9],
+      size = offsets.size;  // size refers to the number of stings in the Segstring, this is always equivalent to offsets.size
 
 /* Return lengths of all strings, including null terminator. */
 proc getLengths() {
@@ -556,7 +567,7 @@ proc getLengths() {
     }
     else {
       // not the last string
-      // len = start poistion of next string - start position of this string
+      // len = start position of next string - start position of this string
       l = offsets[i+1] - o;
     }
   }
@@ -590,6 +601,9 @@ forall (i, v) in zip(inds, vals) with (var agg = new DstAggregator(int)) {
   agg.copy(remoteArr[i], v);
 }
 ```
+The `with` keyword here declares `agg` as a [Task-Private variable](https://chapel-lang.org/docs/language/spec/data-parallelism.html#task-private-variables),
+meaning each task will get its own shadow variable.
+
 It's important to note aggregation will only work if at least one side is local.
 Both sides being remote (remote-to-remote aggregation) is not yet supported. 
 
@@ -605,7 +619,7 @@ use CopyAggregation;
   Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
   :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
 */
-proc upper() throws {
+proc upper() {
   var upperVals: [values.domain] string;
   const lengths = getLengths();
   forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
@@ -626,9 +640,9 @@ writeln("New Vals:", newVals);
 Old Vals:s s s 0  s s 1  s 2
 New Vals:S S S 0  S S 1  S 2
 ```
-This function uses our previous `getLengths` function as well as the chapel builtins
-[`toUpper`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=totitle#String.string.toUpper)
-and [`join`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=totitle#String.string.join)!
+This function uses our previous `getLengths` function as well as the Chapel builtins
+[`toUpper`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.toUpper)
+and [`join`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.join)!
 
 
 <a id="TIY3"></a>
@@ -636,7 +650,7 @@ and [`join`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=t
 #### Try It Yourself 3: `title`
 Problem:
 Use Aggregation to transform the SegString from [example 15](#ex15) into title case.
-Be sure to use the chapel builtin [`toTitle`](https://chapel-lang.org/docs/language/spec/strings.html?highlight=totitle#String.string.toTitle)
+Be sure to use the Chapel builtin [`toTitle`](https://chapel-lang.org/docs/language/spec/strings.html#String.string.toTitle)
 and `getLengths` from example 15.
 <details>
   <summary>Potential Solution</summary>
@@ -644,7 +658,7 @@ and `getLengths` from example 15.
 ```Chapel
 use CopyAggregation;
 
-proc title() throws {
+proc title() {
   var titleVals: [values.domain] string;
   const lengths = getLengths();
   forall (off, len) in zip(offsets, lengths) with (var valAgg = new DstAggregator(string)) {
@@ -721,6 +735,7 @@ var truth = X == 5;
 writeln("truth = ", truth);
 
 // we use `truth` to create the indices, `iv`, into the compressed array
+// `+ scan truth - truth` is essentially creating an exclusive scan
 // note: `iv[truth] = [0, 1, 2, 3]`
 var iv = + scan truth - truth;
 writeln("iv = ", iv);
@@ -733,7 +748,7 @@ var Y: [0..#(+ reduce truth)] int;
 writeln("+ reduce truth = ", + reduce truth);
 writeln("0..#(+ reduce truth) = ", 0..#(+ reduce truth), "\n");
 
-// now that we have the set up, it's time for the actual indexing
+// now that we have the setup, it's time for the actual indexing
 // we do a may-parallel `forall` to iterate over the indices of `X`
 // we filter on `truth[i]`, so we only act if the condition is met
 // we use the compressed indices `iv[i]` to write into `Y`
@@ -787,12 +802,13 @@ var truth = X == 5;
 writeln("truth = ", truth);
 
 // we use `truth` to create the indices, `iv`, into the compressed array
+// `+ scan truth - truth` is essentially creating an exclusive scan
 // note: `iv[truth] = [0, 1, 2, 3]`
 var iv = + scan truth - truth;
 writeln("iv = ", iv);
 writeln("iv[truth] = ", [(t, v) in zip(truth, iv)] if t then v, "\n");
 
-// now that we have the set up, it's time for the actual indexing
+// now that we have the setup, it's time for the actual indexing
 // this is equivalent to compression indexing with the assignment swapped
 // we do a may-parallel `forall` to iterate over the indices of `X`
 // we filter on `truth[i]`, so we only act if the condition is met
@@ -832,9 +848,9 @@ You should aim to use as many of the concepts from the guide as possible:
   - introspection
   - zippered iteration
 
-  Input: 
-  - `[8, 9, 7, 2, 4, 3], [17, 19, 21]`
-  - `[4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]`
+Call:
+  - `arrayEvenReplace([8, 9, 7, 2, 4, 3], [17, 19, 21]);`
+  - `arrayEvenReplace([4, 4, 7, 4, 4, 4], [9, 9, 9, 9, 9]);`
 
 <details>
   <summary>Potential Solution</summary>
