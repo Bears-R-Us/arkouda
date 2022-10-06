@@ -526,15 +526,22 @@ module SegmentedString {
       const lengths = this.getLengths();
       forall (i, off, len) in zip(0..#this.size, offs, lengths) {
         var str_entry: string;
+        const filename: string = basePath+"/src/exec/%i_tmp.txt".format(i);
         for b in interpretAsString(origVals, off..#len, borrow=true) {
           str_entry = str_entry + b;
         }
         // use subprocessing to make a call to a python file for the encoding
-        var sub = spawn(["python3", procFile, "-v", str_entry], stdout=pipeStyle.pipe);
-        var line: string;
-        sub.stdout.readLine(line);
-        encodeArr[i] = line.strip();
+        var sub = spawn(["python3", procFile, "-v", str_entry, "-f", filename]);
         sub.wait();
+
+        // read file python wrote to
+        var encodedFile = open(filename, iomode.r);
+        var encodedStr: string;
+        var reader = encodedFile.reader();
+        var readSomething = reader.read(encodedStr);
+        encodeArr[i] = encodedStr;
+        // delete the temp file if it was created
+        remove(filename);
       }
       // calculate offsets and lengths
       encodeLengths = [e in encodeArr] e.numBytes;

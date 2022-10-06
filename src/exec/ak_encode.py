@@ -9,8 +9,12 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option("-v", "--value", dest="value",
                       help="The value to be encoded.")
+    parser.add_option("-f", "--file", dest="filename",
+                      help="The name of the file to write output to.")
     (options, args) = parser.parse_args()
     try:
-        sys.stdout.write(options.value.encode("idna").decode("ascii"))
+        with open(options.filename, "w") as f:
+            f.write(options.value.encode("idna").decode("ascii"))
+        # sys.stdout.write(options.value.encode("idna").decode("ascii"))
     except Exception:
         sys.stdout.write("")
