@@ -832,17 +832,28 @@ module ReductionMsg
         valsAgg.copy(sv, noNanVals[idx]);
       }
 
-      // Now that we have sorted segments, grab the middle element
-      forall (s, c, r) in zip(segments, counts, res) with (var resAgg = newSrcAggregator(real)) {
+      var tmp1: [D] t;
+      var tmp2: [D] t;
+      forall (s, c, r, t1, t2) in zip(segments, counts, res, tmp1, tmp2) with (var resAgg = newSrcAggregator(t)) {
         if c % 2 != 0 {
           // odd case: grab middle of sorted values
-          resAgg.copy(r, sortedVals[s + (c + 1)/2 - 1]:real);
+          resAgg.copy(t1, sortedVals[s + (c + 1)/2 - 1]);
         }
         else {
           // even case: average the 2 middles of the sorted values
-          resAgg.copy(r, (sortedVals[s + c/2 - 1]:real + sortedVals[s + c/2]:real) / 2.0 );
+          resAgg.copy(t1, sortedVals[s + c/2 - 1]);
+          resAgg.copy(t2, sortedVals[s + c/2]);
         }
       }
+
+      forall (c, r, t1, t2) in zip(counts, res, tmp1, tmp2) {
+        if c % 2 != 0 {
+          r = t1:real;
+        } else {
+          r = ((t1+t2):real)/2.0;
+        }
+      }
+
       return res;
     }
 
