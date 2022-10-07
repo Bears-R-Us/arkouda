@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import codecs
 import itertools
 import re
 from typing import Dict, List, Optional, Tuple, Union, cast
@@ -1689,7 +1690,7 @@ class Strings:
         res = np.empty(self.size, dtype=dt)
         # Form a string from each segment and store in numpy array
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
-            res[i] = np.str_("".join(chr(b) for b in npvalues[o : o + l]))
+            res[i] = np.str_(codecs.decode(npvalues[o : o + l]))
         return res
 
     def to_list(self) -> list:
