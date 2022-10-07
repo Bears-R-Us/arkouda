@@ -528,9 +528,6 @@ module SegmentedString {
         // var str_entry: string;
         const filename: string = basePath+"/src/exec/%i_tmp.txt".format(i);
         var str_entry: string = interpretAsString(origVals, off..#len);
-        // for b in interpretAsString(origVals, off..#len, borrow=true) {
-        //   str_entry = str_entry + b;
-        // }
         // use subprocessing to make a call to a python file for the encoding
         var sub = spawn(["python3", procFile, "-v", str_entry, "-f", filename]);
         sub.wait();
@@ -547,15 +544,8 @@ module SegmentedString {
       // calculate offsets and lengths
       encodeLengths = [e in encodeArr] e.numBytes;
       encodeOffsets = (+ scan encodeLengths) - encodeLengths + [i in 0..<encodeLengths.size] i;
-      // encodeOffsets = (+ scan encodeLengths) - encodeLengths;
-      // forall (i, o) in zip(0..#encodeOffsets.size, encodeOffsets){
-      //   if i != 0 {
-      //     o = o + i;
-      //   }
-      // }
       
       //calculate values for the segmentedstring
-      // var finalValues: [0..#((+ reduce encodeLengths)+encodeLengths.size)] uint(8);
       var finalValues = makeDistArray((+ reduce encodeLengths)+encodeLengths.size, uint(8));
       forall (s, o) in zip(encodeArr, encodeOffsets) with (var agg = newDstAggregator(uint(8))) {
         for (j, c) in zip(0.., s.chpl_bytes()) {
