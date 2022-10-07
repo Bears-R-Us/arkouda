@@ -4205,6 +4205,12 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+   .. py:method:: idna_encode()
+
+
+   .. py:method:: idna_decode()
+
+
    .. py:method:: to_lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -10187,6 +10193,12 @@ Attributes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: idna_encode()
+
+
+   .. py:method:: idna_decode()
 
 
    .. py:method:: to_lower() -> Strings
@@ -23113,6 +23125,12 @@ Attributes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
+   .. py:method:: idna_encode()
+
+
+   .. py:method:: idna_decode()
+
+
    .. py:method:: to_lower() -> Strings
 
       Returns a new Strings with all uppercase characters from the original replaced with
@@ -25246,6 +25264,12 @@ Attributes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: idna_encode()
+
+
+   .. py:method:: idna_decode()
 
 
    .. py:method:: to_lower() -> Strings

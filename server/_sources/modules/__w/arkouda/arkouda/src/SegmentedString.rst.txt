@@ -168,6 +168,8 @@ or
       :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
       
 
+   .. method:: proc idnaEncodeDecode(cmd: string) throws
+
    .. method:: proc findSubstringInBytes(const substr: string)
 
    .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
