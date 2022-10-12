@@ -101,6 +101,38 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
 
+    def test_client_type_creation(self):
+        import datetime as dt
+        f = ak.Fields(ak.arange(10), ["A", "B", "c"])
+        ip = ak.ip_address(ak.arange(10))
+        d = ak.Datetime(ak.arange(10))
+
+        df_dict = {
+            "fields": f,
+            "ip": ip,
+            "date": d
+        }
+        df = ak.DataFrame(df_dict)
+        pd_d = [pd.to_datetime(x, unit='ns') for x in d.to_list()]
+        pddf = pd.DataFrame({
+            "fields": f.to_list(),
+            "ip": ip.to_list(),
+            "date": pd_d
+        })
+        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
+        pd.set_option("display.max_rows", 4)
+        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
+        self.assertEqual(s, pddf.__repr__())
+
+        pd.set_option("display.max_rows", 10)
+        pdf = pd.DataFrame({'a': list(range(1000)), 'b': list(range(1000))})
+        pdf['a'] = pdf['a'].apply(lambda x: 'AA' + str(x))
+        pdf['b'] = pdf['b'].apply(lambda x: 'BB' + str(x))
+        df = ak.DataFrame(pdf)
+        shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
+        s = df.__repr__().replace(f" ({df._shape_str()})", f"\n\n{shape}")
+        self.assertEqual(s, pdf.__repr__())
+
     def test_boolean_indexing(self):
         df = build_ak_df()
         ref_df = build_pd_df()

@@ -34,6 +34,8 @@ from arkouda.segarray import SegArray
 from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
+from arkouda.client_dtypes import Fields, IPv4, BitVector
+from arkouda.timeclass import Datetime
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -573,6 +575,14 @@ class DataFrame(UserDict):
                 msg_list.append(f"SegArray+{col}+{self[col].segments.name}+{self[col].values.name}")
             elif isinstance(self[col], Strings):
                 msg_list.append(f"Strings+{col}+{self[col].name}")
+            elif isinstance(self[col], Fields):
+                msg_list.append(f"Fields+{col}+{self[col].name}")
+            elif isinstance(self[col], IPv4):
+                msg_list.append(f"IPv4+{col}+{self[col].name}")
+            elif isinstance(self[col], Datetime):
+                msg_list.append(f"Datetime+{col}+{self[col].name}")
+            elif isinstance(self[col], Fields):
+                msg_list.append(f"BitVector+{col}+{self[col].name}")
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
 
@@ -601,6 +611,14 @@ class DataFrame(UserDict):
                 # split creates for segments and values
                 eles = msg[2].split("+")
                 df_dict[msg[1]] = SegArray.from_parts(create_pdarray(eles[0]), create_pdarray(eles[1]))
+            elif t == "Fields":
+                df_dict[msg[1]] = Fields(create_pdarray(msg[2]), self[msg[1]].names)
+            elif t == "IPv4":
+                df_dict[msg[1]] = IPv4(create_pdarray(msg[2]))
+            elif t == "Datetime":
+                df_dict[msg[1]] = Datetime(create_pdarray(msg[2]))
+            elif t == "BitVector":
+                df_dict[msg[1]] = BitVector(create_pdarray(msg[2]))
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
