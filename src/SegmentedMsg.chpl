@@ -973,7 +973,7 @@ module SegmentedMsg {
   }
 
   proc segPdarrayIndex(objtype: string, objName: string, iname: string, dtype: DType,
-                       st: borrowed SymTab, smallIdx=false): MsgTuple throws {
+                       st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
@@ -994,10 +994,7 @@ module SegmentedMsg {
                 select gIV.dtype {
                     when DType.Int64 {
                         var iv = toSymEntry(gIV, int);
-                        // When smallIdx is set to true, some localization work will
-                        // be skipped and a localizing slice will instead be done,
-                        // which can perform better by avoiding those overhead costs.
-                        var (newSegs, newVals) = strings[iv.a, smallIdx=smallIdx];
+                        var (newSegs, newVals) = strings[iv.a];
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
@@ -1040,10 +1037,7 @@ module SegmentedMsg {
               select gIV.dtype {
                 when DType.Int64 {
                   var iv = toSymEntry(gIV, int);
-                  // When smallIdx is set to true, some localization work will
-                  // be skipped and a localizing slice will instead be done,
-                  // which can perform better by avoiding those overhead costs.
-                  var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
+                  var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
                   newSegArr.fillReturnMap(rtnmap, st);
                 }
@@ -1072,10 +1066,7 @@ module SegmentedMsg {
               select gIV.dtype {
                 when DType.Int64 {
                   var iv = toSymEntry(gIV, int);
-                  // When smallIdx is set to true, some localization work will
-                  // be skipped and a localizing slice will instead be done,
-                  // which can perform better by avoiding those overhead costs.
-                  var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
+                  var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
                   newSegArr.fillReturnMap(rtnmap, st);
                 }
@@ -1104,10 +1095,7 @@ module SegmentedMsg {
               select gIV.dtype {
                 when DType.Int64 {
                   var iv = toSymEntry(gIV, int);
-                  // When smallIdx is set to true, some localization work will
-                  // be skipped and a localizing slice will instead be done,
-                  // which can perform better by avoiding those overhead costs.
-                  var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
+                  var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
                   newSegArr.fillReturnMap(rtnmap, st);
                 }
@@ -1136,10 +1124,7 @@ module SegmentedMsg {
               select gIV.dtype {
                 when DType.Int64 {
                   var iv = toSymEntry(gIV, int);
-                  // When smallIdx is set to true, some localization work will
-                  // be skipped and a localizing slice will instead be done,
-                  // which can perform better by avoiding those overhead costs.
-                  var (newSegs, newVals) = segArr[iv.a, smallIdx=smallIdx];
+                  var (newSegs, newVals) = segArr[iv.a];
                   var newSegArr = getSegArray(newSegs, newVals, st);
                   newSegArr.fillReturnMap(rtnmap, st);
                 }
