@@ -100,7 +100,7 @@ or
       Chapel range, i.e. low..high by stride, not a Python slice.
       Returns arrays for the segment offsets and bytes of the slice.
 
-   .. method:: proc this(iv: [?D] ?t, smallIdx = false) throws
+   .. method:: proc this(iv: [?D] ?t) throws
 
       Gather strings by index. Returns arrays for the segment offsets
       and bytes of the gathered strings.
