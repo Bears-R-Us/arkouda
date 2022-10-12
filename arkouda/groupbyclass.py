@@ -115,24 +115,6 @@ def unique(
 
     # Get all grouping keys
     grouping_keys, nkeys = _get_grouping_keys(pda)
-    # if hasattr(pda, "_get_grouping_keys"):
-    #     # Single groupable array
-    #     nkeys = 1
-    #     grouping_keys = cast(list, cast(groupable_element_type, pda)._get_grouping_keys())
-    # else:
-    #     # Sequence of groupable arrays
-    #     nkeys = len(pda)
-    #     grouping_keys = []
-    #     first = True
-    #     for k in pda:
-    #         if first:
-    #             size = k.size
-    #             first = False
-    #         elif k.size != size:
-    #             raise ValueError("Key arrays must all be same size")
-    #         if not hasattr(k, "_get_grouping_keys"):
-    #             raise TypeError(f"{type(k)} does not support grouping")
-    #         grouping_keys.extend(cast(list, k._get_grouping_keys()))
     keynames = [k.name for k in grouping_keys]
     keytypes = [k.objtype for k in grouping_keys]
     effectiveKeys = len(grouping_keys)
