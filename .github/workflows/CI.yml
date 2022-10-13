@@ -147,6 +147,7 @@ jobs:
       run: |
         make check
     - name: Arkouda unit tests
+      if: matrix.image != 'chapel-gasnet-smp'
       env:
         ARKOUDA_PYTEST_OPTIONS: "--durations=0 --durations-min=5.0"
       run: |
