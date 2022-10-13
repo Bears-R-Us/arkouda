@@ -10,6 +10,7 @@ module MultiTypeSymEntry
 
     public use NumPyDType;
     public use SymArrayDmap;
+    use MultiTypeSymbolTable;
 
     private config const logLevel = ServerConfig.logLevel;
     const genLogger = new Logger(logLevel);
@@ -24,11 +25,11 @@ module MultiTypeSymEntry
             TypedArraySymEntry, // Parent type for Arrays with a dtype, legacy->GenSymEntry
                 PrimitiveTypedArraySymEntry, // int, uint8, bool, etc.
                 ComplexTypedArraySymEntry,   // DateTime, TimeDelta, IP Address, etc.
+                GroupBySymEntry,      // GroupBy
         
             CompositeSymEntry, // Parent type for things which are composites of arrays
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
-                GroupBySymEntry,      // GroupBy
                 SegArraySymEntry,     // Segmented Array
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
@@ -398,6 +399,37 @@ module MultiTypeSymEntry
 
         override proc getSizeEstimate(): int {
             return this.segmentsEntry.getSizeEstimate() + this.valuesEntry.getSizeEstimate();
+        }
+    }
+
+    class GroupBySymEntry:GenSymEntry {
+
+        var keyNamesEntry: shared SymEntry(string);
+        var keyTypesEntry: shared SymEntry(string);
+        var segmentsEntry: shared SymEntry(int);
+        var permEntry: shared SymEntry(int);
+        var ukIndEntry: shared SymEntry(int);
+        
+        proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, 
+                    permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int) {
+            super.init(int, permSymEntry.size); // sets this.size = permEntry.size
+            this.entryType = SymbolEntryType.GroupBySymEntry;
+            assignableTypes.add(this.entryType);
+            this.keyNamesEntry = keyNamesEntry;
+            this.keyTypesEntry = keyTypesEntry;
+            this.segmentsEntry = segmentsSymEntry;
+            this.permEntry = permSymEntry;
+            this.ukIndEntry = ukIndSymEntry;
+
+            this.dtype = DType.UNDEF; // not required by groupby, but needs initialization
+            this.itemsize = itemsize; // itemsize will vary and can be accessed from specific keys
+
+            this.ndim = this.segmentsEntry.size; // used as the number of groups
+        }
+
+        override proc getSizeEstimate(): int {
+            return this.keyNamesEntry.getSizeEstimate() + this.keyTypesEntry.getSizeEstimate() + 
+            this.segmentsEntry.getSizeEstimate() + this.permEntry.getSizeEstimate() + this.ukIndEntry.getSizeEstimate();
         }
     }
 
