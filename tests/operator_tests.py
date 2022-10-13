@@ -460,13 +460,7 @@ class OperatorsTest(ArkoudaTest):
         s = ak.sqrt(a)
         ex = np.sqrt(n)
 
-        # id nans
-        nan = ak.isnan(s)
-        npnan = np.isnan(ex)
-        self.assertListEqual(nan.to_list(), npnan.tolist())
-
-        # check results are equal remove nans
-        self.assertListEqual(s[~nan].to_list(), ex[~npnan].tolist())
+        self.assertTrue(np.allclose(s.to_ndarray(), ex, equal_nan=True))
 
     def test_pda_power(self):
         n = np.array([10, 5, 2])
@@ -485,9 +479,7 @@ class OperatorsTest(ArkoudaTest):
 
         p = ak.power(a, 0.5)
         ex = np.power(n, 0.5)
-        nan = ak.isnan(p)
-        npnan = np.isnan(ex)
-        self.assertListEqual(nan.to_list(), npnan.tolist())
+        self.assertTrue(np.allclose(p.to_ndarray(), ex, equal_nan=True))
 
     def testAllOperators(self):
         run_tests(verbose)
