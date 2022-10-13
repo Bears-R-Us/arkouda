@@ -618,7 +618,7 @@ class DataFrame(UserDict):
             elif t == "Datetime":
                 df_dict[msg[1]] = Datetime(create_pdarray(msg[2]))
             elif t == "BitVector":
-                df_dict[msg[1]] = BitVector(create_pdarray(msg[2]))
+                df_dict[msg[1]] = BitVector(create_pdarray(msg[2]), width=self[msg[1]].width)
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
