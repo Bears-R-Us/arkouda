@@ -1906,7 +1906,7 @@ Attributes
 .. py:function:: isSupportedInt(num)
 
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -9073,7 +9073,7 @@ Attributes
    array([1, 2, 3])
 
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -13789,7 +13789,7 @@ Attributes
        dt is not a np.dtype
 
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -17506,7 +17506,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
@@ -20763,7 +20763,7 @@ Attributes
 
    
 
-.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, hash_strings: bool = True, **kwargs)
+.. py:class:: GroupBy(keys: Optional[groupable], assume_sorted: bool = False, **kwargs)
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.

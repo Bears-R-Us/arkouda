@@ -19,7 +19,7 @@ or
 
 .. data:: const genLogger = new Logger(logLevel)
 
-.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, CompositeSymEntry, SegStringSymEntry, CategoricalSymEntry, GroupBySymEntry, SegArraySymEntry, AnythingSymEntry, UnknownSymEntry, None }
+.. enum:: enum SymbolEntryType { AbstractSymEntry, TypedArraySymEntry, PrimitiveTypedArraySymEntry, ComplexTypedArraySymEntry, GroupBySymEntry, CompositeSymEntry, SegStringSymEntry, CategoricalSymEntry, SegArraySymEntry, AnythingSymEntry, UnknownSymEntry, None }
 
    *
    * Internal Types we can use to build our Symbol type hierarchy.
@@ -287,6 +287,22 @@ or
    .. attribute:: var valuesEntry: shared SymEntry(etype)
 
    .. method:: proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype)
+
+   .. method:: override proc getSizeEstimate(): int
+
+.. class:: GroupBySymEntry : GenSymEntry
+
+   .. attribute:: var keyNamesEntry: shared SymEntry(string)
+
+   .. attribute:: var keyTypesEntry: shared SymEntry(string)
+
+   .. attribute:: var segmentsEntry: shared SymEntry(int)
+
+   .. attribute:: var permEntry: shared SymEntry(int)
+
+   .. attribute:: var ukIndEntry: shared SymEntry(int)
+
+   .. method:: proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int)
 
    .. method:: override proc getSizeEstimate(): int
 

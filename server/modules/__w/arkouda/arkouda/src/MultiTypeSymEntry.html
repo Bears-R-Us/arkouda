@@ -115,7 +115,7 @@
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CategoricalSymEntry,</span> <span class="pre">GroupBySymEntry,</span> <span class="pre">SegArraySymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">GroupBySymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CategoricalSymEntry,</span> <span class="pre">SegArraySymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Internal Types we can use to build our Symbol type hierarchy.</p></li>
@@ -629,6 +629,46 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegArraySymEntry.getSizeEstimate">
 <em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.SegArraySymEntry.getSizeEstimate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GroupBySymEntry</span></span><span class="pre">:</span> <span class="pre">GenSymEntry</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.keyNamesEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">keyNamesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(string)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.keyNamesEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.keyTypesEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">keyTypesEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(string)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.keyTypesEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.segmentsEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segmentsEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.segmentsEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.permEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">permEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.permEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.ukIndEntry">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ukIndEntry</span></span><span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.ukIndEntry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">keyNamesEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">keyTypesEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">segmentsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">permSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">ukIndSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry</span></em>, <em class="sig-param"><span class="pre">itemsize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.GroupBySymEntry.getSizeEstimate">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#MultiTypeSymEntry.GroupBySymEntry.getSizeEstimate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
