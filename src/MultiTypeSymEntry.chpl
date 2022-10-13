@@ -428,7 +428,8 @@ module MultiTypeSymEntry
         }
 
         override proc getSizeEstimate(): int {
-            return this.segmentsEntry.getSizeEstimate() + this.permEntry.getSizeEstimate();
+            return this.keyNamesEntry.getSizeEstimate() + this.keyTypesEntry.getSizeEstimate() + 
+            this.segmentsEntry.getSizeEstimate() + this.permEntry.getSizeEstimate() + this.ukIndEntry.getSizeEstimate();
         }
     }
 

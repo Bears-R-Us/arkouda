@@ -45,12 +45,8 @@ def _get_grouping_keys(pda: groupable):
         # Sequence of groupable arrays
         nkeys = len(pda)
         grouping_keys = []
-        first = True
         for k in pda:
-            if first:
-                size = k.size
-                first = False
-            elif k.size != size:
+            if k.size != pda[0].size:
                 raise ValueError("Key arrays must all be same size")
             if not hasattr(k, "_get_grouping_keys"):
                 raise TypeError(f"{type(k)} does not support grouping")
