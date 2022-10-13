@@ -102,7 +102,6 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue(ref_df.equals(df.to_pandas()))
 
     def test_client_type_creation(self):
-        import datetime as dt
         f = ak.Fields(ak.arange(10), ["A", "B", "c"])
         ip = ak.ip_address(ak.arange(10))
         d = ak.Datetime(ak.arange(10))
