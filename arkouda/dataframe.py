@@ -581,7 +581,7 @@ class DataFrame(UserDict):
                 msg_list.append(f"IPv4+{col}+{self[col].name}")
             elif isinstance(self[col], Datetime):
                 msg_list.append(f"Datetime+{col}+{self[col].name}")
-            elif isinstance(self[col], Fields):
+            elif isinstance(self[col], BitVector):
                 msg_list.append(f"BitVector+{col}+{self[col].name}")
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
