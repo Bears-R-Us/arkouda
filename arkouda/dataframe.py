@@ -612,13 +612,22 @@ class DataFrame(UserDict):
                 eles = msg[2].split("+")
                 df_dict[msg[1]] = SegArray.from_parts(create_pdarray(eles[0]), create_pdarray(eles[1]))
             elif t == "Fields":
-                df_dict[msg[1]] = Fields(create_pdarray(msg[2]), self[msg[1]].names)
+                df_dict[msg[1]] = Fields(
+                    create_pdarray(msg[2]),
+                    self[msg[1]].names,
+                    MSB_left=self[msg[1]].MSB_left,
+                    pad=self[msg[1]].padchar,
+                    separator=self[msg[1]].separator,
+                    show_int=self[msg[1]].show_int,
+                )
             elif t == "IPv4":
                 df_dict[msg[1]] = IPv4(create_pdarray(msg[2]))
             elif t == "Datetime":
-                df_dict[msg[1]] = Datetime(create_pdarray(msg[2]))
+                df_dict[msg[1]] = Datetime(create_pdarray(msg[2]), unit=self[msg[1]].unit)
             elif t == "BitVector":
-                df_dict[msg[1]] = BitVector(create_pdarray(msg[2]), width=self[msg[1]].width)
+                df_dict[msg[1]] = BitVector(
+                    create_pdarray(msg[2]), width=self[msg[1]].width, reverse=self[msg[1]].reverse
+                )
             else:
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
