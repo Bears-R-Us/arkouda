@@ -17,7 +17,7 @@
     const dfiLogger = new Logger(logLevel);
 
     // gather indexing by integer index vector
-    proc dfIdxHelper(idx: borrowed SymEntry(int), columnVals: borrowed SymEntry(?t), st: borrowed SymTab, col: string, rtnName: bool=false): string throws {
+    proc dfIdxHelper(idx: borrowed SymEntry(int), columnVals: borrowed SymEntry(?t), st: borrowed SymTab, col: string, objType: string, rtnName: bool=false): string throws {
         param pn = Reflection.getRoutineName();
         // get next symbol name
         var rname = st.nextName();
@@ -54,7 +54,7 @@
             return rname;
         }
 
-        var repMsg =  "pdarray+%s+created %s".format(col, st.attrib(rname));
+        var repMsg =  "%s+%s+created %s".format(objType, col, st.attrib(rname));
         return repMsg;
     }
 
@@ -109,53 +109,53 @@
         for (i, rpm, ele) in zip(repMsgList.domain, repMsgList, eleList) { 
             var ele_parts = ele.split("+");
             ref col_name = ele_parts[1];
-            select (ele_parts[0]) {
-                when ("Categorical") {
-                    ref codes_name = ele_parts[2];
-                    ref categories_name = ele_parts[3];
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Categorical\nCodes Name: %s, Categories Name: %s".format(i, codes_name, categories_name));
+            if ele_parts[0] == "Categorical" {
+                ref codes_name = ele_parts[2];
+                ref categories_name = ele_parts[3];
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Categorical\nCodes Name: %s, Categories Name: %s".format(i, codes_name, categories_name));
 
-                    var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
-                    var code_vals = toSymEntry(gCode, int);
-                    var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, true);
-                    
-                    var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st);
-                    
-                    if repTup.msgType == MsgType.ERROR {
-                        throw new IllegalArgumentError(repTup.msg);
-                    }
-
-                    rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
+                var code_vals = toSymEntry(gCode, int);
+                var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, "", true);
+                
+                var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st);
+                
+                if repTup.msgType == MsgType.ERROR {
+                    throw new IllegalArgumentError(repTup.msg);
                 }
-                when ("Strings") {
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
-                    var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8,  st);
-                    
-                    if repTup.msgType == MsgType.ERROR {
-                        throw new IllegalArgumentError(repTup.msg);
-                    }
 
-                    rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+            }
+            else if ele_parts[0] == "Strings"{
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
+                var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
+                
+                if repTup.msgType == MsgType.ERROR {
+                    throw new IllegalArgumentError(repTup.msg);
                 }
-                when ("pdarray"){
+
+                rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
+            }
+            else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
+                            ele_parts[0] == "Fields" || ele_parts[0] == "Datetime" || ele_parts[0] == "BitVector"{
                     dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is pdarray. Name: %s".format(i, ele_parts[2]));
                     var gCol: borrowed GenSymEntry = getGenericTypedArrayEntry(ele_parts[2], st);
                     select (gCol.dtype) {
                         when (DType.Int64) {
                             var col_vals = toSymEntry(gCol, int);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name));
+                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.UInt64) {
                             var col_vals = toSymEntry(gCol, uint);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name));
+                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Bool) {
                             var col_vals = toSymEntry(gCol, bool);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name));
+                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         when (DType.Float64){
                             var col_vals = toSymEntry(gCol, real);
-                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name));
+                            rpm = "%jt".format(dfIdxHelper(idx, col_vals, st, col_name, ele_parts[0]));
                         }
                         otherwise {
                             var errorMsg = notImplementedError(pn,dtype2str(gCol.dtype));
@@ -164,47 +164,45 @@
                         }
                     }
                 }
-                when ("SegArray"){
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is SegArray".format(i));
-                    ref segments_name = ele_parts[2];
-                    ref values_name = ele_parts[3];
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Segments Name: %s, Values Name: %s".format(segments_name, values_name));
+            else if ele_parts[0] == "SegArray" {
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is SegArray".format(i));
+                ref segments_name = ele_parts[2];
+                ref values_name = ele_parts[3];
+                dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Segments Name: %s, Values Name: %s".format(segments_name, values_name));
 
-                    var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
-                    var segments = toSymEntry(gSeg, int);
-                    var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
-                    select(gVal.dtype){
-                        when(DType.Int64){
-                            var values = toSymEntry(gVal, int);
-                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
-                        }
-                        when(DType.UInt64){
-                            var values = toSymEntry(gVal, uint);
-                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
-                        }
-                        when(DType.Float64){
-                            var values = toSymEntry(gVal, real);
-                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
-                        }
-                        when(DType.Bool){
-                            var values = toSymEntry(gVal, bool);
-                            rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
-                        }
-                        otherwise {
-                            var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));
-                            dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                            throw new IllegalArgumentError(errorMsg);
-                        }
+                var gSeg: borrowed GenSymEntry = getGenericTypedArrayEntry(segments_name, st);
+                var segments = toSymEntry(gSeg, int);
+                var gVal: borrowed GenSymEntry = getGenericTypedArrayEntry(values_name, st);
+                select(gVal.dtype){
+                    when(DType.Int64){
+                        var values = toSymEntry(gVal, int);
+                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                    }
+                    when(DType.UInt64){
+                        var values = toSymEntry(gVal, uint);
+                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                    }
+                    when(DType.Float64){
+                        var values = toSymEntry(gVal, real);
+                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                    }
+                    when(DType.Bool){
+                        var values = toSymEntry(gVal, bool);
+                        rpm = "%jt".format(df_seg_array_idx(idx, segments, values, col_name, st));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,dtype2str(gVal.dtype));
+                        dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        throw new IllegalArgumentError(errorMsg);
                     }
                 }
-                otherwise {
-                    var errorMsg = notImplementedError(pn, ele_parts[0]);
-                    dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    throw new IllegalArgumentError(errorMsg);
-                }
+            }
+            else {
+                var errorMsg = notImplementedError(pn, ele_parts[0]);
+                dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw new IllegalArgumentError(errorMsg);
             }
         }
-
         repMsg = "[%s]".format(",".join(repMsgList));
         dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL); 
