@@ -114,27 +114,6 @@
                 ref categories_name = ele_parts[3];
                 dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Categorical\nCodes Name: %s, Categories Name: %s".format(i, codes_name, categories_name));
 
-<<<<<<< HEAD
-                    var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
-                    var code_vals = toSymEntry(gCode, int);
-                    var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, true);
-                    
-                    var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st);
-                    
-                    if repTup.msgType == MsgType.ERROR {
-                        throw new IllegalArgumentError(repTup.msg);
-                    }
-
-                    rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
-                }
-                when ("Strings") {
-                    dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
-                    var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8,  st);
-                    
-                    if repTup.msgType == MsgType.ERROR {
-                        throw new IllegalArgumentError(repTup.msg);
-                    }
-=======
                 var gCode: borrowed GenSymEntry = getGenericTypedArrayEntry(codes_name, st);
                 var code_vals = toSymEntry(gCode, int);
                 var idxCodeName = dfIdxHelper(idx, code_vals, st, col_name, "", true);
@@ -142,12 +121,11 @@
                 // When smallIdx is set to true, some localization work will
                 // be skipped and a localizing slice will instead be done,
                 // which can perform better by avoiding those overhead costs.
-                var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st, smallIdx=true);
+                var repTup = segPdarrayIndex("str", categories_name, idxCodeName, DType.UInt8, st);
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);
                 }
->>>>>>> 9b9754fb (Updating handling to properly preserve types for client dtypes. Strings issue not yet resolved. Pushing against CI to test..)
 
                 rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
             }
@@ -156,7 +134,7 @@
                 // When smallIdx is set to true, some localization work will
                 // be skipped and a localizing slice will instead be done,
                 // which can perform better by avoiding those overhead costs.
-                var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st, smallIdx=true);
+                var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);
