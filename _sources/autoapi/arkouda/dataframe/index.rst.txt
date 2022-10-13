@@ -766,6 +766,35 @@ Functions
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
+   .. py:method:: _parse_col_name(entryName, dfName)
+      :staticmethod:
+
+      Helper method used by from_return_msg to parse the registered name of the data component
+      and pull out the column type and column name
+
+      :param entryName: The full registered name of the data component
+      :type entryName: string
+      :param dfName: The name of the DataFrame
+      :type dfName: string
+
+      :rtype: Tuple (columnName, columnType)
+
+
+   .. py:method:: from_return_msg(repMsg)
+      :staticmethod:
+
+      Creates and returns a DataFrame based on return components from ak.util.attach
+
+      :param repMsg: A '+' delimited string of the DataFrame components to parse.
+      :type repMsg: string
+
+      :returns: A DataFrame representing a set of DataFrame components on the server
+      :rtype: DataFrame
+
+      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+          the DataFrame instance
+
+
 
 .. py:function:: sorted(df, column=False)
 
