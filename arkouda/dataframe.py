@@ -15,6 +15,7 @@ from typeguard import typechecked
 from arkouda import list_registry
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, maxTransferBytes
+from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
@@ -34,7 +35,6 @@ from arkouda.segarray import SegArray
 from arkouda.series import Series
 from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
-from arkouda.client_dtypes import Fields, IPv4, BitVector
 from arkouda.timeclass import Datetime
 
 # This is necessary for displaying DataFrames with BitVector columns,
