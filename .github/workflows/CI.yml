@@ -124,8 +124,8 @@ jobs:
         include:
           - image: chapel
             threads: 2
-          - image: chapel-gasnet-smp
-            threads: 1
+#          - image: chapel-gasnet-smp
+#            threads: 1
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
