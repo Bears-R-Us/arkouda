@@ -430,28 +430,30 @@ class OperatorsTest(ArkoudaTest):
         np_edge_cases = np.array(scalar_edge_cases)
         ak_edge_cases = ak.array(np_edge_cases)
 
-        def equality_helper(a, n):
-            # verify they are NAN in the same locations
-            np_is_nan = np.isnan(n)
-            ak_is_nan = ak.isnan(a)
-            self.assertListEqual(ak_is_nan.to_list(), np_is_nan.tolist())
-
-            # verify they are equal in the locations they are not NAN
-            # Note: we have to do this becasue NAN != NAN
-            self.assertListEqual(a[~ak_is_nan].to_list(), n[~np_is_nan].tolist())
-
         for s in scalar_edge_cases:
             # test vector // scalar
-            equality_helper(ak_edge_cases // s, np_edge_cases // s)
+            self.assertTrue(
+                np.allclose((ak_edge_cases // s).to_ndarray(), np_edge_cases // s, equal_nan=True)
+            )
 
             # test scalar // vector
-            equality_helper(s // ak_edge_cases, s // np_edge_cases)
+            self.assertTrue(
+                np.allclose((s // ak_edge_cases).to_ndarray(), s // np_edge_cases, equal_nan=True)
+            )
 
             # test both vector // vector
             n_vect = np.full(len(scalar_edge_cases), s)
             a_vect = ak.array(n_vect)
-            equality_helper(ak_edge_cases // a_vect, np_edge_cases // n_vect)
-            equality_helper(a_vect // ak_edge_cases, n_vect // np_edge_cases)
+            self.assertTrue(
+                np.allclose(
+                    (ak_edge_cases // a_vect).to_ndarray(), np_edge_cases // n_vect, equal_nan=True
+                )
+            )
+            self.assertTrue(
+                np.allclose(
+                    (a_vect // ak_edge_cases).to_ndarray(), n_vect // np_edge_cases, equal_nan=True
+                )
+            )
 
     def test_pda_sqrt(self):
         n = np.array([4, 16, -1, 0, np.inf])
@@ -460,13 +462,7 @@ class OperatorsTest(ArkoudaTest):
         s = ak.sqrt(a)
         ex = np.sqrt(n)
 
-        # id nans
-        nan = ak.isnan(s)
-        npnan = np.isnan(ex)
-        self.assertListEqual(nan.to_list(), npnan.tolist())
-
-        # check results are equal remove nans
-        self.assertListEqual(s[~nan].to_list(), ex[~npnan].tolist())
+        self.assertTrue(np.allclose(s.to_ndarray(), ex, equal_nan=True))
 
     def test_pda_power(self):
         n = np.array([10, 5, 2])
@@ -485,9 +481,7 @@ class OperatorsTest(ArkoudaTest):
 
         p = ak.power(a, 0.5)
         ex = np.power(n, 0.5)
-        nan = ak.isnan(p)
-        npnan = np.isnan(ex)
-        self.assertListEqual(nan.to_list(), npnan.tolist())
+        self.assertTrue(np.allclose(p.to_ndarray(), ex, equal_nan=True))
 
     def testAllOperators(self):
         run_tests(verbose)
