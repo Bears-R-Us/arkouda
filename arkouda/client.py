@@ -2,7 +2,7 @@ import json
 import os
 import warnings
 from enum import Enum
-from typing import Dict, Mapping, Optional, Tuple, Union, cast
+from typing import Dict, Mapping, Optional, Tuple, Union, cast, List
 
 import pyfiglet  # type: ignore
 import zmq  # type: ignore
@@ -570,7 +570,7 @@ def shutdown() -> None:
     serverConfig = None
 
 
-def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
+def _json_args_to_str(json_obj: Dict = None) -> Tuple[int, str]:
     """
     Convert Python Dictionary into a JSON formatted string that can be parsed by the msg
     processing system on the Arkouda Server
@@ -596,7 +596,10 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
     - Nested dictionaries are not yet supported, but are planned for future support.
     - Support for lists of pdarray or Strings objects does not yet exist.
     """
-    j = []
+    j: List[str] = []
+    if json_obj is None:
+        # early return when none
+        return 0, json.dumps(j)
     for key, val in json_obj.items():
         if not isinstance(key, str):
             raise TypeError(f"Argument keys are required to be str. Found {type(key)}")
@@ -608,7 +611,7 @@ def _json_args_to_str(json_obj: Dict) -> Tuple[int, str]:
 
 def generic_msg(
     cmd: str,
-    args: Union[str, Dict] = None,
+    args: Dict = None,
     payload: memoryview = None,
     send_binary: bool = False,
     recv_binary: bool = False,
@@ -654,20 +657,17 @@ def generic_msg(
     if not connected:
         raise RuntimeError("client is not connected to a server")
 
-    size = -1
-    # if args are json format, configure json to match the server side parser.
-    if isinstance(args, dict):
-        size, args = _json_args_to_str(args)
+    size, msg_args = _json_args_to_str(args)
 
     try:
         if send_binary:
             assert payload is not None
             return _send_binary_message(
-                cmd=cmd, payload=payload, recv_binary=recv_binary, args=args, size=size
+                cmd=cmd, payload=payload, recv_binary=recv_binary, args=msg_args, size=size
             )
         else:
             assert payload is None
-            return _send_string_message(cmd=cmd, args=args, size=size, recv_binary=recv_binary)
+            return _send_string_message(cmd=cmd, args=msg_args, size=size, recv_binary=recv_binary)
 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
