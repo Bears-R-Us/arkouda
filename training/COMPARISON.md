@@ -194,9 +194,9 @@ m2 =[
     ak.array([0, 1, 3, 4, 8, 7]),
     ak.array([0, 2, 5, 9, 8, 5])
 ]
-ak_int = ak.intersect1d(m1, m1)
+ak_int = ak.intersect1d(m1, m2)
 ak_int
-[array([0 1 3 4 5 8]), array([0 9 5 1 5 8])]
+[array([0 3 8]), array([0 5 8])]
 ```
 
 <a id="groupby"></a>
@@ -425,7 +425,12 @@ For the example the following assumptions will be made:
 - The provided arrays are not unique
 - We will not be validating the format of the input as it is specifically designed for these examples
 - Input will be of the format below. Referenced as `m1` and `m2` in the examples.
+
+First, import and connect to Arkouda and initialize `m1` and `m2`.
 ```python
+import arkouda as ak
+ak.connect()
+
 m1 =[
     ak.array([0, 1, 3, 4, 8, 5, 0]),
     ak.array([0, 9, 5, 1, 8, 5, 0])
@@ -435,13 +440,6 @@ m2 =[
     ak.array([0, 2, 5, 9, 8, 5])
 ]
 ```
-
-First, import and connect to Arkouda
-```python
-import arkouda as ak
-ak.connect()
-```
-
 Next, we will create a key to de-interleave the arrays. Using this to index into the concatenated arrays will return values from `m1`. We will also concatenate `m1` and `m2`. `ak.ones()` creates a `pdarray` with every value being `1`. `ak.zeros()` creates a `pdarray` with every value being `0`. 
 ```python
 # Key for deinterleaving result
@@ -467,6 +465,10 @@ Now, we need to create a `GroupBy` object to get our unique keys. And the counts
 ```python
 g = ak.GroupBy(c)
 k, ct = g.count()
+k
+(array([0 1 1 3 4 4 5 7 8]), array([0 2 9 5 1 9 5 5 8]))
+ct
+array([3 1 1 2 1 1 1 1 2])
 ```
 
 This next step does a lot for us, so we are going to get in more detail here. 
