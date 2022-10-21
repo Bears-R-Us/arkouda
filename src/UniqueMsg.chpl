@@ -33,38 +33,6 @@ module UniqueMsg
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
 
-    proc assumeSortedShortcut(n, namesList: [] string, typesList: [] string, st) throws {
-      // very similar to uniqueAndCount but skips sort
-      var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
-      if (size == 0) {
-        return (new shared SymEntry(0, int), new shared SymEntry(0, int));
-      }
-      proc skipSortHelper(type t, keys: [?D] t) throws {
-        // skip sorting, set permutation to 0..#size and go directly to finding segment boundaries.
-        var permutation = new shared SymEntry(keys.size, int);
-        permutation.a = permutation.aD;
-        var (uniqueKeys, counts) = uniqueFromSorted(keys);
-        var segments = new shared SymEntry(counts.size, int);
-        segments.a = (+ scan counts) - counts;
-        return (permutation, segments);
-      }
-
-      // If no strings are present and row values can fit in 128 bits (8 digits),
-      // then pack into tuples of uint(16) for sorting keys.
-      if !hasStr {
-        var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(names, st);
-        if totalDigits <= 2 { return skipSortHelper(2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 4 { return skipSortHelper(4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 6 { return skipSortHelper(6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, names, st)); }
-        if totalDigits <= 8 { return skipSortHelper(8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, names, st)); }
-      }
-
-      // If here, either the row values are too large to fit in 128 bits, or
-      // strings are present and must be hashed anyway, so hash all arrays
-      // and combine hashes of row values into sorting keys.
-      return skipSortHelper(2*uint(64), hashArrays(size, names, types, st));
-    }
-
     proc uniqueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
         var msgArgs = parseMessageArgs(payload, argSize);
         // flag to return segments and permutation for GroupBy
@@ -75,7 +43,7 @@ module UniqueMsg
         var n = msgArgs.get("nstr").getIntValue();
         var keynames = msgArgs.get("keynames").getList(n);
         var keytypes = msgArgs.get("keytypes").getList(n);
-        var (permutation, segments) = if assumeSorted then assumeSortedShortcut(n, keynames, keytypes, st) else uniqueAndCount(n, keynames, keytypes, st);
+        var (permutation, segments) = uniqueAndCount(n, keynames, keytypes, assumeSorted, st);
         
         // If returning grouping info, add to SymTab and prepend to repMsg
         if returnGroups {
@@ -89,7 +57,7 @@ module UniqueMsg
         // Indices of first unique key in original array
         // These are the value of the permutation at the start of each group
         var uniqueKeyInds = new shared SymEntry(segments.size, int);
-        if (segments.size > 0) {
+        if segments.size > 0 {
           // Avoid initializing aggregators if empty array
           ref perm = permutation.a;
           ref segs = segments.a;
@@ -158,7 +126,7 @@ module UniqueMsg
       return repMsg;
     }
 
-    proc uniqueAndCount(n, namesList: [] string, typesList: [] string, st) throws {
+    proc uniqueAndCount(n, namesList: [] string, typesList: [] string, assumeSorted: bool, st) throws {
       if (n > 128) {
         throw new owned ErrorWithContext("Cannot hash more than 128 arrays",
                                          getLineNumber(),
@@ -171,17 +139,22 @@ module UniqueMsg
         return (new shared SymEntry(0, int), new shared SymEntry(0, int));
       }
       proc helper(itemsize, type t, keys: [?D] t) throws {
-        // Sort the keys
-        var sortMem = radixSortLSD_memEst(keys.size, itemsize);
-        overMemLimit(sortMem);
-        var kr = radixSortLSD(keys);
-        // Unpack the permutation and sorted keys
-        // var perm: [kr.domain] int;
-        var permutation = new shared SymEntry(kr.size, int);
-        ref perm = permutation.a;
-        var sortedKeys: [D] t;
-        forall (sh, p, val) in zip(sortedKeys, perm, kr) {
-          (sh, p) = val;
+        var permutation = new shared SymEntry(keys.size, int);
+        var sortedKeys: [D] t = keys;
+
+        if assumeSorted {
+          // set permutation to 0..#size and go directly to finding segment boundaries.
+          permutation.a = permutation.aD;
+        }
+        else {
+          // Sort the keys
+          overMemLimit(radixSortLSD_memEst(keys.size, itemsize));
+          var kr = radixSortLSD(keys);
+          // Unpack the permutation and sorted keys
+          ref perm = permutation.a;
+          forall (sh, p, val) in zip(sortedKeys, perm, kr) {
+            (sh, p) = val;
+          }
         }
         // Get the unique keys and the count of each
         var (uniqueKeys, counts) = uniqueFromSorted(sortedKeys);
@@ -190,7 +163,22 @@ module UniqueMsg
         segments.a = (+ scan counts) - counts;
         return (permutation, segments);
       }
-      
+
+      if hasStr && n == 1 {
+        // Only one array which is a strings
+        var (myNames, _) = namesList[0].splitMsgToTuple("+", 2);
+        var strings = getSegString(myNames, st);
+        var max_bytes = max reduce strings.getLengths();
+        if max_bytes < 16 {
+          var str_names = strings.bytesToUintArr(max_bytes, st).split("+");
+          var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(str_names, st);
+          if totalDigits <= 2 { return helper(2 * bitsPerDigit / 8, 2*uint(bitsPerDigit), mergeNumericArrays(2, size, totalDigits, bitWidths, negs, str_names, st)); }
+          if totalDigits <= 4 { return helper(4 * bitsPerDigit / 8, 4*uint(bitsPerDigit), mergeNumericArrays(4, size, totalDigits, bitWidths, negs, str_names, st)); }
+          if totalDigits <= 6 { return helper(6 * bitsPerDigit / 8, 6*uint(bitsPerDigit), mergeNumericArrays(6, size, totalDigits, bitWidths, negs, str_names, st)); }
+          if totalDigits <= 8 { return helper(8 * bitsPerDigit / 8, 8*uint(bitsPerDigit), mergeNumericArrays(8, size, totalDigits, bitWidths, negs, str_names, st)); }
+        }
+      }
+
       // If no strings are present and row values can fit in 128 bits (8 digits),
       // then pack into tuples of uint(16) for sorting keys.
       if !hasStr {

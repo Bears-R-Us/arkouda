@@ -477,8 +477,8 @@ class GroupByTest(ArkoudaTest):
         vals = ak.array([str(i) for i in range(8)] + [str(i) for i in range(3)])
         g = ak.GroupBy(keys)
         unique_keys, nuniq = g.nunique(vals)
-        expected_unique_keys = ["2", "1"]
-        expected_nuniq = [3, 8]
+        expected_unique_keys = ["1", "2"]
+        expected_nuniq = [8, 3]
         self.assertListEqual(expected_unique_keys, unique_keys.to_list())
         self.assertListEqual(expected_nuniq, nuniq.to_list())
 

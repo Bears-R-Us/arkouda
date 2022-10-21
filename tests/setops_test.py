@@ -291,8 +291,8 @@ class SetOpsTest(ArkoudaTest):
         b1 = ak.array(c)
         b2 = ak.array(d)
         t = ak.union1d([a1, a2], [b1, b2])
-        self.assertListEqual(["def", "xyz", "abc"], t[0].to_list())
-        self.assertListEqual(["456", "0", "123"], t[1].to_list())
+        self.assertListEqual(["xyz", "def", "abc"], t[0].to_list())
+        self.assertListEqual(["0", "456", "123"], t[1].to_list())
 
         # Test for Categorical
         cat_a1 = ak.Categorical(a1)
@@ -300,8 +300,8 @@ class SetOpsTest(ArkoudaTest):
         cat_b1 = ak.Categorical(b1)
         cat_b2 = ak.Categorical(b2)
         t = ak.union1d([cat_a1, cat_a2], [cat_b1, cat_b2])
-        self.assertListEqual(["abc", "xyz", "def"], t[0].to_list())
-        self.assertListEqual(["123", "0", "456"], t[1].to_list())
+        self.assertListEqual(["abc", "def", "xyz"], t[0].to_list())
+        self.assertListEqual(["123", "456", "0"], t[1].to_list())
 
     def testIn1d(self):
         pdaOne = ak.array([-1, 0, 1, 3])

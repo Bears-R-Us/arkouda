@@ -28,7 +28,7 @@ module GroupBy {
     proc getGroupBy(keyCount: int, keys: [] string, keyTypes: [] string, assumeSorted: bool, st: borrowed SymTab): owned GroupBy throws {
         var keyNamesEntry = new shared SymEntry(keys);
         var keyTypesEntry = new shared SymEntry(keyTypes);
-        var (permEntry, segmentsEntry) = if assumeSorted then assumeSortedShortcut(keyCount, keys, keyTypes, st) else uniqueAndCount(keyCount, keys, keyTypes, st);
+        var (permEntry, segmentsEntry) = uniqueAndCount(keyCount, keys, keyTypes, assumeSorted, st);
 
         var uniqueKeyInds = new shared SymEntry(segmentsEntry.size, int);
         if (segmentsEntry.size > 0) {
