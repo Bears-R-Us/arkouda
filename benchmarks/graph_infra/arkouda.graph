@@ -135,3 +135,9 @@ graphkeys: Noop ops/s
 files: noop.dat
 graphtitle: Noop Performance
 ylabel: Performance (ops/s)
+
+perfkeys: small str array Average rate =, medium str array Average rate =, big str array Average rate =
+graphkeys: small str array GiB/s, medium str array GiB/s, big str array GiB/s
+files: small-str-groupby.dat, small-str-groupby.dat, small-str-groupby.dat
+graphtitle: Small String Groupby Performance
+ylabel: Performance (GiB/s)
