@@ -36,6 +36,7 @@ BENCHMARKS = [
     "array_create",
     "array_transfer",
     "IO",
+    "small-str-groupby",
     "str-argsort",
     "str-coargsort",
     "str-groupby",
