@@ -25,12 +25,14 @@ module MultiTypeSymEntry
             TypedArraySymEntry, // Parent type for Arrays with a dtype, legacy->GenSymEntry
                 PrimitiveTypedArraySymEntry, // int, uint8, bool, etc.
                 ComplexTypedArraySymEntry,   // DateTime, TimeDelta, IP Address, etc.
-                GroupBySymEntry,      // GroupBy
         
-            CompositeSymEntry, // Parent type for things which are composites of arrays
+            GenSymEntry,
                 SegStringSymEntry,    // SegString composed of offset-int[], bytes->uint(8)
                 CategoricalSymEntry,  // Categorical
                 SegArraySymEntry,     // Segmented Array
+
+            CompositeSymEntry,        // Entries that consist of multiple SymEntries of varying type
+                GroupBySymEntry,      // GroupBy
 
             AnythingSymEntry, // Placeholder to stick aritrary things in the map
             UnknownSymEntry,
@@ -109,8 +111,13 @@ module MultiTypeSymEntry
         return gse.toSymEntry(etype);
     }
 
-    /* This is a dummy class to avoid having to talk about specific
-       instantiations of SymEntry. */
+    /* 
+        This is a dummy class to avoid having to talk about specific
+        instantiations of SymEntry. 
+        GenSymEntries can contain multiple SymEntries, but they represent a singular object.
+        For example, SegArray contains the offsets and values array, but only the values are 
+        considered data.
+    */
     class GenSymEntry:AbstractSymEntry
     {
         var dtype: DType; // answer to numpy dtype
@@ -300,14 +307,19 @@ module MultiTypeSymEntry
     }
 
     /**
-     * The base parent class for SymbolEntries that are composites
-     * of other entry types.
-     */
-    class CompositeSymEntry:GenSymEntry {
+        Base class for any entry that consists of multiple SymEntries that have varying types.
+        These entries are related, but do not represent a single object.
+        For Example, group by contains multiple SymEntries that are all considered part of the dataset.
+    */
+    class CompositeSymEntry:AbstractSymEntry {
         // This class is functionally equivalent to GenSymEntry, but used to denote
         // a Symbol Table Entry made up of multiple components.
-        proc init(type etype, len: int = 0) {
-            super.init(etype, len);
+        var ndim: int = 1; // answer to numpy ndim == 1-axis for now
+        var size: int = 0; // answer to numpy size == num elts
+        proc init(len: int = 0) {
+            this.entryType = SymbolEntryType.CompositeSymEntry;
+            assignableTypes.add(this.entryType);
+            this.size = len;
         }
 
     }
@@ -325,7 +337,7 @@ module MultiTypeSymEntry
         return new shared SymEntry(len, t);
     }
 
-    class SegStringSymEntry:CompositeSymEntry {
+    class SegStringSymEntry:GenSymEntry {
         type etype = string;
 
         var offsetsEntry: shared SymEntry(int);
@@ -376,7 +388,7 @@ module MultiTypeSymEntry
         }
     }
 
-    class SegArraySymEntry:CompositeSymEntry {
+    class SegArraySymEntry:GenSymEntry {
         type etype;
 
         var segmentsEntry: shared SymEntry(int);
@@ -402,7 +414,10 @@ module MultiTypeSymEntry
         }
     }
 
-    class GroupBySymEntry:GenSymEntry {
+    /*
+        Symbol Table entry representing a GroupBy object.
+    */
+    class GroupBySymEntry:CompositeSymEntry {
 
         var keyNamesEntry: shared SymEntry(string);
         var keyTypesEntry: shared SymEntry(string);
@@ -412,7 +427,7 @@ module MultiTypeSymEntry
         
         proc init(keyNamesEntry: shared SymEntry, keyTypesEntry: shared SymEntry, segmentsSymEntry: shared SymEntry, 
                     permSymEntry: shared SymEntry, ukIndSymEntry: shared SymEntry, itemsize: int) {
-            super.init(int, permSymEntry.size); // sets this.size = permEntry.size
+            super.init(permSymEntry.size); // sets this.size = permEntry.size
             this.entryType = SymbolEntryType.GroupBySymEntry;
             assignableTypes.add(this.entryType);
             this.keyNamesEntry = keyNamesEntry;
@@ -420,9 +435,6 @@ module MultiTypeSymEntry
             this.segmentsEntry = segmentsSymEntry;
             this.permEntry = permSymEntry;
             this.ukIndEntry = ukIndSymEntry;
-
-            this.dtype = DType.UNDEF; // not required by groupby, but needs initialization
-            this.itemsize = itemsize; // itemsize will vary and can be accessed from specific keys
 
             this.ndim = this.segmentsEntry.size; // used as the number of groups
         }
@@ -439,16 +451,19 @@ module MultiTypeSymEntry
     proc toGenSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed GenSymEntry);
     }
+
+    /**
+     * Helper proc to cast AbstrcatSymEntry to CompositeSymEntry
+     */
+    proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
+        return (entry: borrowed CompositeSymEntry);
+    }
     
     /**
      * Helper proc to cast AbstrcatSymEntry to SegStringSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
-    }
-
-    proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
-        return (entry: borrowed CompositeSymEntry);
     }
 
     /**

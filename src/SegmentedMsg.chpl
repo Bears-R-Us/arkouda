@@ -81,9 +81,9 @@ module SegmentedMsg {
     var msgArgs = parseMessageArgs(payload, argSize);
     var name = msgArgs.getValueOf("name"): string;
     var entry = st.tab.getBorrowed(name);
-    var compEntry: CompositeSymEntry = toCompositeSymEntry(entry);
+    var genEntry: GenSymEntry = toGenSymEntry(entry);
     var neName = st.nextName();
-    select compEntry.dtype {
+    select genEntry.dtype {
       when (DType.Int64) {
         var segArr = getSegArray(name, st, int);
         st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
@@ -110,7 +110,7 @@ module SegmentedMsg {
         repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
       }
       otherwise {
-        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(compEntry.dtype:string),
+        throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(genEntry.dtype:string),
                                       getLineNumber(),
                                       getRoutineName(),
                                       getModuleName(),
