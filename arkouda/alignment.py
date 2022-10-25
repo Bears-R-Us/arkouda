@@ -131,8 +131,8 @@ def find(query, space):
     else:
         if len(query) != len(space):
             raise TypeError("Multi-array arguments must have same number of arrays")
-        spacesize = set(s.size for s in space)
-        querysize = set(q.size for q in query)
+        spacesize = {s.size for s in space}
+        querysize = {q.size for q in query}
         if len(spacesize) != 1 or len(querysize) != 1:
             raise TypeError("Multi-array arguments must be non-empty and have equal-length arrays")
         spacesize = spacesize.pop()
@@ -380,15 +380,15 @@ def search_intervals(vals, intervals, tiebreak=None):
         if len(vals) != len(low) or len(vals) != len(high):
             raise TypeError("Multi-array arguments must have same number of arrays")
         if (
-            any([not isinstance(v, pdarray) for v in vals])
-            or any([not isinstance(lo, pdarray) for lo in low])
-            or any([not isinstance(hi, pdarray) for hi in high])
+            any(not isinstance(v, pdarray) for v in vals)
+            or any(not isinstance(lo, pdarray) for lo in low)
+            or any(not isinstance(hi, pdarray) for hi in high)
         ):
             raise TypeError("All elements of Multi-array arguments must be pdarrays")
 
-        valsize = set(v.size for v in vals)
-        lowsize = set(lo.size for lo in low)
-        highsize = set(hi.size for hi in high)
+        valsize = {v.size for v in vals}
+        lowsize = {lo.size for lo in low}
+        highsize = {hi.size for hi in high}
         if len(valsize) != 1 or len(lowsize) != 1 or len(highsize) != 1:
             raise TypeError("Multi-array arguments must be non-empty and have equal-length arrays")
 
@@ -406,7 +406,7 @@ def search_intervals(vals, intervals, tiebreak=None):
         if lowsize != highsize:
             raise ValueError("Lower and upper bound arrays must be same size")
         # verify upper bounds are greater than lower bounds
-        if not all([(hi >= lo).all() for hi, lo in zip(high, low)]):
+        if not all((hi >= lo).all() for hi, lo in zip(high, low)):
             raise ValueError("Upper bounds must be greater than lower bounds")
 
         # Index of interval containing each unique value (initialized to -1: not found)

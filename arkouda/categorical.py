@@ -1160,7 +1160,7 @@ class Categorical:
 
         # for each of the groups, find categorical by testing values in the group for ".categories"
         for k, v in groups.items():  # str->list[str]
-            if any([i.endswith(".categories") for i in v]):  # we have a categorical
+            if any(i.endswith(".categories") for i in v):  # we have a categorical
                 # gather categorical pieces and replace the original mapping with the categorical object
                 cat_parts = {}
                 base_name = ""

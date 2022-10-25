@@ -50,7 +50,7 @@ def generic_concat(items, ordered=True):
     # this version can be called with Dataframe and Series (which have Class.concat methods)
     from arkouda.pdarraysetops import concatenate as pdarrayconcatenate
 
-    types = set([type(x) for x in items])
+    types = {type(x) for x in items}
     if len(types) != 1:
         raise TypeError(f"Items must all have same type: {types}")
     t = types.pop()
@@ -109,7 +109,7 @@ def register_all(data, prefix, overwrite=True):
     elif isinstance(data, list):
         return [register(v, f"{prefix}{i}") for i, v in enumerate(data)]
     elif isinstance(data, tuple):
-        return tuple([register(v, f"{prefix}{i}") for i, v in enumerate(data)])
+        return tuple(register(v, f"{prefix}{i}") for i, v in enumerate(data))
     else:
         try:
             return data.register(prefix)

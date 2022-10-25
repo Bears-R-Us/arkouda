@@ -255,7 +255,7 @@ class SegArray:
         if isinstance(m, pdarray):
             return cls.from_parts(arange(m.size), m)
         else:
-            sd = set((mi.size, mi.dtype) for mi in m)
+            sd = {(mi.size, mi.dtype) for mi in m}
             if len(sd) != 1:
                 raise ValueError("All columns must have same length and dtype")
             size, dtype = sd.pop()
@@ -356,7 +356,7 @@ class SegArray:
         for xi in x:
             if not isinstance(xi, cls):
                 return NotImplemented
-        if len(set(xi.dtype for xi in x)) != 1:
+        if len({xi.dtype for xi in x}) != 1:
             raise ValueError("SegArrays must all have same dtype to concatenate")
         if axis == 0:
             ctr = 0
@@ -370,7 +370,7 @@ class SegArray:
                 vals.append(xi.values)
             return cls.from_parts(concatenate(segs), concatenate(vals))
         elif axis == 1:
-            sizes = set(xi.size for xi in x)
+            sizes = {xi.size for xi in x}
             if len(sizes) != 1:
                 raise ValueError("SegArrays must all have same size to concatenate with axis=1")
             if sizes.pop() == 0:
