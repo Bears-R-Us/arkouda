@@ -294,14 +294,14 @@ def concatenate(
         # return object as it's original type
         return callback(arrays[0])
 
-    types = set([type(x) for x in arrays])
+    types = {type(x) for x in arrays}
     if len(types) != 1:
         raise TypeError(f"Items must all have same type: {types}")
 
     if isinstance(arrays[0], BitVector):
         # everything should be a BitVector because all have the same type, but do isinstance for mypy
-        widths = set([x.width for x in arrays if isinstance(x, BitVector)])
-        revs = set([x.reverse for x in arrays if isinstance(x, BitVector)])
+        widths = {x.width for x in arrays if isinstance(x, BitVector)}
+        revs = {x.reverse for x in arrays if isinstance(x, BitVector)}
         if len(widths) != 1 or len(revs) != 1:
             raise TypeError("BitVectors must all have same width and direction")
 
@@ -358,10 +358,10 @@ def multiarray_setop_validation(
 
     if len(pda1) != len(pda2):
         raise ValueError("multi-array setops require same number of arrays in arguments.")
-    size1 = set([x.size for x in pda1])
+    size1 = {x.size for x in pda1}
     if len(size1) > 1:
         raise ValueError("multi-array setops require arrays in pda1 be the same size.")
-    size2 = set([x.size for x in pda2])
+    size2 = {x.size for x in pda2}
     if len(size2) > 1:
         raise ValueError("multi-array setops require arrays in pda2 be the same size.")
     atypes = [akint64 if isinstance(x, Categorical_) else x.dtype for x in pda1]

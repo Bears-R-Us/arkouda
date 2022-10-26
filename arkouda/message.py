@@ -122,7 +122,7 @@ class ParameterObject:
         from arkouda.strings import Strings
 
         # want the object type. If pdarray the content dtypes can vary
-        dtypes = set([type(p).__name__ for p in val])
+        dtypes = {type(p).__name__ for p in val}
         if len(dtypes) > 1:
             t_str = ", ".join(dtypes)
             raise TypeError(f"List values must be of the same type. Found {t_str}")

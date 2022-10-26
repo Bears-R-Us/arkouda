@@ -1983,7 +1983,7 @@ class DataFrame(UserDict):
         # Total number of registered parts should equal number of columns plus an entry
         # for the index and the column order
         total = len(self.data) + 2
-        registered = sum([data.is_registered() for col, data in self.data.items()])
+        registered = sum(data.is_registered() for col, data in self.data.items())
 
         if self.index.values.is_registered():
             registered += 1

@@ -135,7 +135,7 @@ def unique(
     if nkeys == 1:
         unique_keys = pda[unique_key_indices]
     else:
-        unique_keys = tuple([a[unique_key_indices] for a in pda])
+        unique_keys = tuple(a[unique_key_indices] for a in pda)
     if return_groups:
         return (unique_keys, permutation, segments, nkeys)
     else:
@@ -291,7 +291,7 @@ class GroupBy:
             if self.nkeys == 1:
                 self.unique_keys = self.keys[uki]
             else:
-                self.unique_keys = tuple([a[uki] for a in self.keys])
+                self.unique_keys = tuple(a[uki] for a in self.keys)
 
     def size(self) -> Tuple[groupable, pdarray]:
         """

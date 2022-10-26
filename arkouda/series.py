@@ -549,7 +549,7 @@ class Series:
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
-        types = set([type(x) for x in arrays])
+        types = {type(x) for x in arrays}
         if len(types) != 1:
             raise TypeError(f"Items must all have same type: {types}")
 
@@ -620,7 +620,7 @@ class Series:
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
-        types = set([type(x) for x in arrays])
+        types = {type(x) for x in arrays}
         if len(types) != 1:
             raise TypeError(f"Items must all have same type: {types}")
 
