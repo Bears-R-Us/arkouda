@@ -132,9 +132,9 @@ module MultiTypeSymbolTable
             if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) {
                 overMemLimit( (entry:GenSymEntry).size * (entry:GenSymEntry).itemsize);
 
-            } else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
-                // TODO invoke memory check ... maybe the mem check should be part of the SymbolType API?
-            }
+            } // } else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
+            //     // TODO invoke memory check ... maybe the mem check should be part of the SymbolType API?
+            // }
             
 
             if (tab.contains(name)) {
@@ -383,10 +383,13 @@ module MultiTypeSymbolTable
             checkTable(name, "attrib");
 
             var entry = tab.getBorrowed(name);
-            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry) || 
-                    entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) {
+            if entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry){ //Anything considered a GenSymEntry
                 var g:GenSymEntry = toGenSymEntry(entry);
                 return "%s %s %t %t %t %t".format(name, dtype2str(g.dtype), g.size, g.ndim, g.shape, g.itemsize);
+            }
+            else if entry.isAssignableTo(SymbolEntryType.CompositeSymEntry) { //CompositeSymEntry
+                var c: CompositeSymEntry = toCompositeSymEntry(entry);
+                return "%s %t %t".format(name, c.size, c.ndim);
             }
             
             throw new Error("attrib - Unsupported Entry Type %s".format(entry.entryType));

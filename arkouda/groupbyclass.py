@@ -283,8 +283,8 @@ class GroupBy:
             rep_json = json.loads(repmsg)
             fields = rep_json["groupby"].split()
             self.name = fields[1]
-            self.length = int(fields[3])
-            self.ngroups = int(fields[4])
+            self.length = int(fields[2])
+            self.ngroups = int(fields[3])
             self.permutation = create_pdarray(rep_json["permutation"])
             self.segments = create_pdarray(rep_json["segments"])
             uki = create_pdarray(rep_json["uniqueKeyIdx"])
