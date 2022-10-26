@@ -1636,14 +1636,14 @@ class Strings:
             generic_msg(cmd="segmentedGroup", args={"objType": self.objtype, "obj": self.entry})
         )
 
-    def _get_grouping_keys(self) -> List[pdarray]:
+    def _get_grouping_keys(self) -> List[Strings]:
         """
         Private method for generating grouping keys used by GroupBy.
 
         API: this method must be defined by all groupable arrays, and it
         must return a list of arrays that can be (co)argsorted.
         """
-        return list(self.hash())
+        return [self]
 
     def to_ndarray(self) -> np.ndarray:
         """

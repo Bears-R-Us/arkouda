@@ -481,6 +481,26 @@ module SegmentedString {
       return computeOnSegments(offsets.a, values.a, SegFunction.StringIsTitle, bool);
     }
 
+    proc bytesToUintArr(max_bytes:int, st) throws {
+      // bytes contained in strings < 128 bits, so concatenating is better than the hash
+      if max_bytes < 8 {
+        // we only need one uint array
+        var numeric = computeOnSegments(offsets.a, values.a, SegFunction.StringBytesToUintArr, uint);
+        const concatName = st.nextName();
+        st.addEntry(concatName, new shared SymEntry(numeric));
+        return concatName;
+      }
+      else {
+        // we need two uint arrays
+        var (numeric1, numeric2) = twoReturnComputeOnSegments(offsets.a, values.a, SegFunction.StringBytesTo2UintArrs, uint);
+        const concat1Name = st.nextName();
+        const concat2Name = st.nextName();
+        st.addEntry(concat1Name, new shared SymEntry(numeric1));
+        st.addEntry(concat2Name, new shared SymEntry(numeric2));
+        return "%s+%s".format(concat1Name, concat2Name);
+      }
+    }
+
     proc idnaEncodeDecode(cmd: string) throws {
       // select the appropriate file based on the command
       var procFile: string;
@@ -1403,6 +1423,17 @@ module SegmentedString {
   */
   inline proc stringIsTitle(values, rng) throws {
     return interpretAsString(values, rng, borrow=true).isTitle();
+  }
+
+  /*
+    The SegFunction called by computeOnSegments for bytesToUintArr
+  */
+  inline proc stringBytesToUintArr(values, rng) throws {
+      var concat: uint;
+      for v in values[rng] {
+        concat = concat<<8 + v:uint;
+      }
+      return concat;
   }
 
   /* Test array of strings for membership in another array (set) of strings. Returns

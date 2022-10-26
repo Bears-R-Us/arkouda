@@ -42,7 +42,7 @@ class CategoricalTest(ArkoudaTest):
         cat = self._getCategorical()
 
         self.assertListEqual(
-            [7, 5, 9, 8, 2, 1, 4, 0, 3, 6],
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             cat.codes.to_list(),
         )
         self.assertListEqual(
@@ -51,16 +51,16 @@ class CategoricalTest(ArkoudaTest):
         )
         self.assertListEqual(
             [
-                "string 8",
-                "string 6",
-                "string 5",
-                "string 9",
-                "string 7",
-                "string 2",
-                "string 10",
                 "string 1",
-                "string 4",
+                "string 2",
                 "string 3",
+                "string 4",
+                "string 5",
+                "string 6",
+                "string 7",
+                "string 8",
+                "string 9",
+                "string 10",
                 "N/A",
             ],
             cat.categories.to_list(),
@@ -109,14 +109,14 @@ class CategoricalTest(ArkoudaTest):
 
     def testGroup(self):
         group = self._getRandomizedCategorical().group()
-        self.assertListEqual([2, 5, 9, 6, 1, 3, 7, 0, 4, 8], group.to_list())
+        self.assertListEqual([0, 4, 8, 1, 6, 2, 5, 9, 3, 7], group.to_list())
 
     def testUnique(self):
         cat = self._getRandomizedCategorical()
 
         self.assertListEqual(
             ak.Categorical(
-                ak.array(["non-string", "string3", "string1", "non-string2", "string"])
+                ak.array(["string", "string1", "string3", "non-string", "non-string2"])
             ).to_list(),
             cat.unique().to_list(),
         )

@@ -111,12 +111,7 @@ class DataFrameTest(ArkoudaTest):
         df = ak.DataFrame(df_dict)
         pd_d = [pd.to_datetime(x, unit="ns") for x in d.to_list()]
         pddf = pd.DataFrame(
-            {
-                "fields": f.to_list(),
-                "ip": ip.to_list(),
-                "date": pd_d,
-                "bitvector": bv.to_list()
-            }
+            {"fields": f.to_list(), "ip": ip.to_list(), "date": pd_d, "bitvector": bv.to_list()}
         )
         shape = f"({df._shape_str()})".replace("(", "[").replace(")", "]")
         pd.set_option("display.max_rows", 4)
@@ -354,19 +349,18 @@ class DataFrameTest(ArkoudaTest):
 
     def test_groupby_standard(self):
         df = build_ak_df()
-
         gb = df.GroupBy("userName")
         keys, count = gb.count()
-        self.assertTrue(keys.to_list(), ["Alice", "Carol", "Bob"])
-        self.assertListEqual(count.to_list(), [3, 1, 2])
-        self.assertListEqual(gb.permutation.to_list(), [0, 2, 5, 3, 1, 4])
+        self.assertListEqual(keys.to_list(), ["Bob", "Alice", "Carol"])
+        self.assertListEqual(count.to_list(), [2, 3, 1])
+        self.assertListEqual(gb.permutation.to_list(), [1, 4, 0, 2, 5, 3])
 
         gb = df.GroupBy(["userName", "userID"])
         keys, count = gb.count()
         self.assertEqual(len(keys), 2)
-        self.assertListEqual(keys[0].to_list(), ["Carol", "Alice", "Bob"])
-        self.assertTrue(keys[1].to_list(), [111, 333, 222])
-        self.assertTrue(count.to_list(), [3, 1, 2])
+        self.assertListEqual(keys[0].to_list(), ["Carol", "Bob", "Alice"])
+        self.assertListEqual(keys[1].to_list(), [333, 222, 111])
+        self.assertListEqual(count.to_list(), [1, 2, 3])
 
     def test_gb_series(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
@@ -382,8 +376,8 @@ class DataFrameTest(ArkoudaTest):
 
         c = gb.count()
         self.assertIsInstance(c, ak.Series)
-        self.assertListEqual(c.index.to_list(), ["Alice", "Carol", "Bob"])
-        self.assertListEqual(c.values.to_list(), [3, 1, 2])
+        self.assertListEqual(c.index.to_list(), ["Bob", "Alice", "Carol"])
+        self.assertListEqual(c.values.to_list(), [2, 3, 1])
 
     def test_to_pandas(self):
         df = build_ak_df()

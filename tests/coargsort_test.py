@@ -166,12 +166,10 @@ class CoargsortTest(ArkoudaTest):
             codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
         )
         for algo in ak.SortingAlgorithm:
-            str_perm = ak.coargsort([string], algo)
-            str_sorted = string[str_perm].to_list()
-
             # coargsort on categorical
+            # coargsort sorts using codes, the order isn't guaranteed, only grouping
             cat_perm = ak.coargsort([cat], algo)
-            self.assertListEqual(str_sorted, cat[cat_perm].to_list())
+            self.assertListEqual(["a", "a", "b", "b", "c"], cat[cat_perm].to_list())
 
             # coargsort on categorical.from_codes
             # coargsort sorts using codes, the order isn't guaranteed, only grouping
@@ -180,11 +178,11 @@ class CoargsortTest(ArkoudaTest):
 
             # coargsort on 2 categoricals (one from_codes)
             cat_perm = ak.coargsort([cat, cat_from_codes], algo)
-            self.assertListEqual(str_sorted, cat[cat_perm].to_list())
+            self.assertListEqual(["a", "a", "b", "b", "c"], cat[cat_perm].to_list())
 
             # coargsort on mixed strings and categoricals
             mixed_perm = ak.coargsort([cat, string, cat_from_codes], algo)
-            self.assertListEqual(str_sorted, cat_from_codes[mixed_perm].to_list())
+            self.assertListEqual(["a", "a", "b", "b", "c"], cat_from_codes[mixed_perm].to_list())
 
 
 def create_parser():
