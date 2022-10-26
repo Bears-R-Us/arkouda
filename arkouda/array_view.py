@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from enum import Enum
+from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -379,7 +380,7 @@ class ArrayView:
             Mode to write the dataset in. Truncate will overwrite any existing files.
             Append will add the dataset to an existing file.
         file_type: str (single|distribute)
-            efault: distribute
+            Default: distribute
             Indicates the format to save the file. Single will store in a single file.
             Distribute will store the date in a file per locale.
 
@@ -412,4 +413,8 @@ class ArrayView:
         --------
         ak.ArrayView.save
         """
+        warn(
+            "ak.ArrayView.load has been deprecated. Please use ak.pdarrayIO.load",
+            DeprecationWarning,
+        )
         return read_hdf5_multi_dim(filepath, dset)

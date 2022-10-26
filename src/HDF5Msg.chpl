@@ -405,9 +405,9 @@ module HDF5Msg {
                         "%s exists? %t".format(localeFilename, exists(localeFilename)));
 
             var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-            // defer { // Close the file on scope exit
-            //     C_HDF5.H5Fclose(file_id);
-            // }
+            defer { // Close the file on scope exit
+                C_HDF5.H5Fclose(file_id);
+            }
 
             // validate that the dataset does not already exist
             validateDataset(file_id, localeFilename, dset_name);
@@ -441,7 +441,6 @@ module HDF5Msg {
                 // write attributes for arkouda meta info otherwise
                 writeArkoudaMetaData(file_id, dset_name, objType, dType);
             }
-            C_HDF5.H5Fclose(file_id);
         }
     }
 

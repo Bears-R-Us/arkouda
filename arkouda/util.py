@@ -6,7 +6,7 @@ from warnings import warn
 import h5py  # type: ignore
 import numpy as np  # type: ignore
 
-import arkouda
+import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4

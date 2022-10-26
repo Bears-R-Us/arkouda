@@ -5,6 +5,7 @@ import json
 import os
 import warnings
 from typing import Dict, List, Mapping, Optional, Union, cast
+from warnings import warn
 
 import pandas as pd  # type: ignore
 from typeguard import typechecked
@@ -896,6 +897,10 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
         - file_path will need to support list[str] and str for glob
         - Currently, order is always assumed to be row major
     """
+    warn(
+        "ak.pdarrayIO.read_hdf5_multi_dim has been deprecated. Please use ak.pdarrayIO.read",
+        DeprecationWarning,
+    )
     args = {"filename": file_path, "dset": dset}
     rep_msg = cast(
         str,

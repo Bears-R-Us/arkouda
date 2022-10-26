@@ -1568,7 +1568,7 @@ class pdarray:
         RegistrationError
             If the server was unable to register the pdarray with the user_defined_name
             If the user is attempting to register more than one pdarray with the same name,
-            the former should be unregisterzed first to free up the registration name.
+            the former should be unregistered first to free up the registration name.
 
         See also
         --------
