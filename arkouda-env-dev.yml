@@ -15,7 +15,7 @@ dependencies:
   - pip
   - types-tabulate
   - pytables>=3.7.0
-  - pyarrow==7.0.0
+  - pyarrow==9.0.0
 
   # Developer dependencies
   - pexpect
