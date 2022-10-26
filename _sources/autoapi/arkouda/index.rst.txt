@@ -3993,7 +3993,7 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[arkouda.pdarrayclass.pdarray]
+   .. py:method:: _get_grouping_keys() -> List[Strings]
 
       Private method for generating grouping keys used by GroupBy.
 
@@ -8999,7 +8999,7 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[arkouda.pdarrayclass.pdarray]
+   .. py:method:: _get_grouping_keys() -> List[Strings]
 
       Private method for generating grouping keys used by GroupBy.
 
@@ -16576,7 +16576,7 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[arkouda.pdarrayclass.pdarray]
+   .. py:method:: _get_grouping_keys() -> List[Strings]
 
       Private method for generating grouping keys used by GroupBy.
 
