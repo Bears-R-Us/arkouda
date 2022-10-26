@@ -69,7 +69,6 @@ endif
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 CHPL_FLAGS += -lparquet -larrow
-OPTIONAL_CHECKS += check-arrow
 ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
 ARROW_CPP += $(ARROW_FILE_NAME).cpp
 ARROW_H += $(ARROW_FILE_NAME).h
@@ -143,7 +142,7 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 $(OPTIONAL_CHECKS)
+CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow
 endif
 check-deps: $(CHECK_DEPS)
 
