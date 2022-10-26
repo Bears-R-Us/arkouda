@@ -453,14 +453,14 @@ module MultiTypeSymEntry
     }
 
     /**
-     * Helper proc to cast AbstrcatSymEntry to CompositeSymEntry
+     * Helper proc to cast AbstractSymEntry to CompositeSymEntry
      */
     proc toCompositeSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed CompositeSymEntry);
     }
     
     /**
-     * Helper proc to cast AbstrcatSymEntry to SegStringSymEntry
+     * Helper proc to cast AbstractSymEntry to SegStringSymEntry
      */
     proc toSegStringSymEntry(entry: borrowed AbstractSymEntry) throws {
         return (entry: borrowed SegStringSymEntry);
