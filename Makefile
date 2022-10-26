@@ -154,7 +154,7 @@ endif
 
 .PHONY: compile-arrow-cpp
 compile-arrow-cpp:
-	$(CXX) -O3 -std=c++11 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
+	$(CXX) -O3 -std=c++17 -c $(ARROW_CPP) -o $(ARROW_O) $(INCLUDE_FLAGS) $(ARROW_SANITIZE)
 
 $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 	make compile-arrow-cpp
