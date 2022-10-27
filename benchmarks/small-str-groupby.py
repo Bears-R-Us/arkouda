@@ -5,7 +5,7 @@ import time
 
 import arkouda as ak
 
-SIZES = {"small": 7, "medium": 14, "big": 28}
+SIZES = {"small": 6, "medium": 12, "big": 24}
 
 
 def time_ak_groupby(N_per_locale, trials, seed):

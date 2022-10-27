@@ -168,7 +168,8 @@ module UniqueMsg
         // Only one array which is a strings
         var (myNames, _) = namesList[0].splitMsgToTuple("+", 2);
         var strings = getSegString(myNames, st);
-        var max_bytes = max reduce strings.getLengths();
+        // should we do strings.getLengths()-1 to not account for null
+        const max_bytes = max reduce strings.getLengths();
         if max_bytes < 16 {
           var str_names = strings.bytesToUintArr(max_bytes, st).split("+");
           var (totalDigits, bitWidths, negs) = getNumDigitsNumericArrays(str_names, st);

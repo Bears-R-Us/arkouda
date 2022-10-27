@@ -49,7 +49,6 @@ module SegmentedComputation {
     StringIsUpper,
     StringIsTitle,
     StringBytesToUintArr,
-    StringBytesTo2UintArrs,
   }
   
   proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws {
@@ -129,55 +128,5 @@ module SegmentedComputation {
       }
     }
     return res;
-  }
-
-  proc twoReturnComputeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType) throws {
-    // I hate duplicating the code from computeOnSegments but I need to return 2 arrays
-    var res1: [D] retType;
-    var res2: [D] retType;
-    if D.size == 0 {
-      return (res1, res2);
-    }
-
-    const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
-
-    // Start task parallelism
-    coforall loc in Locales {
-      on loc {
-        const myFirstSegIdx = startSegInds[loc.id];
-        const myNumSegs = max(0, numSegs[loc.id]);
-        const mySegInds = {myFirstSegIdx..#myNumSegs};
-        // Segment offsets whose bytes are owned by loc
-        // Lengths of segments whose bytes are owned by loc
-        var mySegs, myLens: [mySegInds] int;
-        forall i in mySegInds with (var agg = new SrcAggregator(int)) {
-          agg.copy(mySegs[i], segments[i]);
-          agg.copy(myLens[i], lengths[i]);
-        }
-        try {
-          // Apply function to bytes of each owned segment, aggregating return values to res1 and res2
-          forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg1 = newDstAggregator(retType),
-                                                                         var agg2 = newDstAggregator(retType)) {
-            select function {
-              when SegFunction.StringBytesTo2UintArrs {
-                var half = (len/2):int;
-                agg1.copy(res1[i], stringBytesToUintArr(values, start..#half));
-                agg2.copy(res2[i], stringBytesToUintArr(values, (start+half)..#half));
-              }
-              otherwise {
-                compilerError("Unrecognized segmented function");
-              }
-            }
-          }
-        } catch {
-          throw new owned ErrorWithContext("Error computing %s on string or segment".format(function:string),
-                                           getLineNumber(),
-                                           getRoutineName(),
-                                           getModuleName(),
-                                           "IllegalArgumentError");
-        }
-      }
-    }
-    return (res1, res2);
   }
 }
