@@ -455,15 +455,6 @@ class OperatorsTest(ArkoudaTest):
                 )
             )
 
-    def test_pda_sqrt(self):
-        n = np.array([4, 16, -1, 0, np.inf])
-        a = ak.array(n)
-
-        s = ak.sqrt(a)
-        ex = np.sqrt(n)
-
-        self.assertTrue(np.allclose(s.to_ndarray(), ex, equal_nan=True))
-
     def test_pda_power(self):
         n = np.array([10, 5, 2])
         a = ak.array(n)
@@ -476,12 +467,56 @@ class OperatorsTest(ArkoudaTest):
         ex = np.power(n, [2, 3, 4])
         self.assertListEqual(p.to_list(), ex.tolist())
 
+        # Test a singleton with and without a Boolean argument
+        n = np.array([7])
+        a = ak.array(n)
+
+        self.assertListEqual(ak.power(a, 3, True).to_list(), ak.power(a, 3).to_list())
+        self.assertListEqual(ak.power(a, 3, False).to_list(), a.to_list())
+
+        # Test an with and without a Boolean argument, all the same
+        n = np.array([0, 0.0, 1, 7.0, 10])
+        a = ak.array(n)
+
+        truth_True = ak.ones(5, bool)
+        truth_False = ak.zeros(5, bool)
+
+        self.assertListEqual(ak.power(a, 3, truth_True).to_list(), ak.power(a, 3).to_list())
+        self.assertListEqual(ak.power(a, 3, truth_False).to_list(), a.to_list())
+
+        # Test a singleton with a mixed Boolean argument
+        a = ak.arange(10)
+        self.assertListEqual([i if i % 2 else i ** 2 for i in range(10)], ak.power(a, 2, a % 2 == 0).to_list())
+
+        # Test invalid input, negative
         n = np.array([-1.0, -3.0])
         a = ak.array(n)
 
         p = ak.power(a, 0.5)
         ex = np.power(n, 0.5)
         self.assertTrue(np.allclose(p.to_ndarray(), ex, equal_nan=True))
+
+        # Test edge case input, inf
+        I = np.inf
+        n = np.array([I, -I])
+        a = ak.array([I, -I])
+        self.assertListEqual(np.power(n, 2).tolist(), ak.power(a, 2).to_list())
+
+
+    def test_pda_sqrt(self):
+        # Base cases and edge cases
+        # Most cases are taken care of in the test_pda_power tests
+        n = np.array([4, 16.0, -1, 0, np.inf])
+        a = ak.array(n)
+
+        s = ak.sqrt(a)
+        ex = np.sqrt(n)
+
+        self.assertTrue(np.allclose(s.to_ndarray(), ex, equal_nan=True))
+
+        # Test with a mixed Boolean array
+        a = ak.arange(5)
+        self.assertListEqual([i if i % 2 else i ** .5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
 
     def testAllOperators(self):
         run_tests(verbose)
