@@ -47,7 +47,7 @@ module SegmentedArray {
 
         var segments: shared SymEntry(int);
         var values;
-        var lengths: shared SymEntry(int); //[segments.aD] int;
+        var lengths: shared SymEntry(int);
         var size: int;
         var nBytes: int;
 
@@ -60,11 +60,6 @@ module SegmentedArray {
 
             size = segments.size;
             nBytes = values.size;
-
-            // ref sa = segments.a;
-            // const low = segments.aD.low;
-            // const high = segments.aD.high;
-            // lengths = [(i, s) in zip (segments.aD, sa)] if i == high then values.size - s else sa[i+1] - s;
 
             // Note - groupby remaining client side because groupby does not have server side object
         }
