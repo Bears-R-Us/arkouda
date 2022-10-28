@@ -309,7 +309,7 @@ module MultiTypeSymbolTable
         */
         proc parseJson(names:string): [] string throws {
             var mem = openmem();
-            var writer = mem.writer().write(names);
+            mem.writer().write(names);
             var reader = mem.reader();
 
             var num_elements = 0;
