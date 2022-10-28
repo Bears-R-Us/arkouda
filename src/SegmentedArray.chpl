@@ -33,8 +33,7 @@ module SegmentedArray {
     proc getSegArray(segments: [] int, values: [] ?t, st: borrowed SymTab): owned SegArray throws {
         var segmentsEntry = new shared SymEntry(segments);
         var valuesEntry = new shared SymEntry(values);
-        // var segEntry = new shared SegArraySymEntry(segmentsEntry, valuesEntry, t, st);
-        var segEntry: shared SegArraySymEntry = createSegArrayEntry(segmentsEntry, valuesEntry, t, st);
+        var segEntry = new shared SegArraySymEntry(segmentsEntry, valuesEntry, t);
         var name = st.nextName();
         st.addEntry(name, segEntry);
         return getSegArray(name, st, segEntry.etype);

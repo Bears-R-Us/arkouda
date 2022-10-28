@@ -396,18 +396,6 @@ module MultiTypeSymEntry
         }
     }
 
-    proc createSegArrayEntry(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype, st: borrowed SymTab): shared SegArraySymEntry throws {
-        ref sa = segmentsSymEntry.a;
-        const low = segmentsSymEntry.aD.low;
-        const high = segmentsSymEntry.aD.high;
-        var lengths = [(i, s) in zip (segmentsSymEntry.aD, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
-        var lname = st.nextName();
-        var lengthsSymEntry = new shared SymEntry(lengths);
-        st.addEntry(lname, lengthsSymEntry);
-
-        return new shared SegArraySymEntry(segmentsSymEntry, valuesSymEntry, lengthsSymEntry, etype);
-    }
-
     class SegArraySymEntry:GenSymEntry {
         type etype;
 
@@ -415,15 +403,20 @@ module MultiTypeSymEntry
         var valuesEntry: shared SymEntry(etype);
         var lengthsEntry: shared SymEntry(int);
 
-        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, 
-                    lengthsSymEntry: shared SymEntry, type etype) {
+        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype) {
             super.init(etype, valuesSymEntry.size);
             this.entryType = SymbolEntryType.SegArraySymEntry;
             assignableTypes.add(this.entryType);
             this.etype = etype;
             this.segmentsEntry = segmentsSymEntry;
             this.valuesEntry = valuesSymEntry;
-            this.lengthsEntry = lengthsSymEntry;
+
+            ref sa = segmentsSymEntry.a;
+            const low = segmentsSymEntry.aD.low;
+            const high = segmentsSymEntry.aD.high;
+            var lengths = [(i, s) in zip (segmentsSymEntry.aD, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
+            
+            lengthsEntry = new shared SymEntry(lengths);
 
             this.dtype = whichDtype(etype);
             this.itemsize = this.valuesEntry.itemsize;
