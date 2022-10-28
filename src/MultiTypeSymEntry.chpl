@@ -51,10 +51,18 @@ module MultiTypeSymEntry
     class AbstractSymEntry {
         var entryType:SymbolEntryType;
         var assignableTypes:set(SymbolEntryType); // All subclasses should add their type to this set
+        var name = ""; // used to track the symbol table name assigned to the entry
         proc init() {
             this.entryType = SymbolEntryType.AbstractSymEntry;
             this.assignableTypes = new set(SymbolEntryType);
             this.assignableTypes.add(this.entryType);
+        }
+
+        /*
+            Sets the name of the entry when it is added to the Symbol Table
+        */
+        proc setName(name: string) {
+            this.name = name;
         }
 
         /**
@@ -388,19 +396,34 @@ module MultiTypeSymEntry
         }
     }
 
+    proc createSegArrayEntry(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype, st: borrowed SymTab): shared SegArraySymEntry throws {
+        ref sa = segmentsSymEntry.a;
+        const low = segmentsSymEntry.aD.low;
+        const high = segmentsSymEntry.aD.high;
+        var lengths = [(i, s) in zip (segmentsSymEntry.aD, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
+        var lname = st.nextName();
+        var lengthsSymEntry = new shared SymEntry(lengths);
+        st.addEntry(lname, lengthsSymEntry);
+
+        return new shared SegArraySymEntry(segmentsSymEntry, valuesSymEntry, lengthsSymEntry, etype);
+    }
+
     class SegArraySymEntry:GenSymEntry {
         type etype;
 
         var segmentsEntry: shared SymEntry(int);
         var valuesEntry: shared SymEntry(etype);
+        var lengthsEntry: shared SymEntry(int);
 
-        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, type etype){
+        proc init(segmentsSymEntry: shared SymEntry, valuesSymEntry: shared SymEntry, 
+                    lengthsSymEntry: shared SymEntry, type etype) {
             super.init(etype, valuesSymEntry.size);
             this.entryType = SymbolEntryType.SegArraySymEntry;
             assignableTypes.add(this.entryType);
             this.etype = etype;
             this.segmentsEntry = segmentsSymEntry;
             this.valuesEntry = valuesSymEntry;
+            this.lengthsEntry = lengthsSymEntry;
 
             this.dtype = whichDtype(etype);
             this.itemsize = this.valuesEntry.itemsize;

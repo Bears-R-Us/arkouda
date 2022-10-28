@@ -86,29 +86,21 @@ module GroupBy {
             //For initial implementation, UniqueKeyIndexes returned to compute UniqueKeys client side
         }
 
-        proc getSegmentsName(st: borrowed SymTab): string throws {
-            var sname = st.nextName();
-            st.addEntry(sname, segments);
-            return sname;
-        }
+        proc getComponentName(obj: SymEntry, st: borrowed SymTab): string throws {
+            if obj.name != "" {
+                return obj.name;
+            }
 
-        proc getPermutationName(st: borrowed SymTab): string throws {
-            var pname = st.nextName();
-            st.addEntry(pname, permutation);
-            return pname;
-        }
-
-        proc getUniqueKeyIndexName(st: borrowed SymTab): string throws {
-            var ukname = st.nextName();
-            st.addEntry(ukname, uniqueKeyIndexes);
-            return ukname;
+            var rname = st.nextName();
+            st.addEntry(rname, obj);
+            return obj.name;
         }
 
         proc fillReturnMap(ref rm: map(string, string), st: borrowed SymTab) throws {
             rm.add("groupby", "created " + st.attrib(this.name));
-            rm.add("segments", "created " + st.attrib(this.getSegmentsName(st)));
-            rm.add("permutation", "created " + st.attrib(this.getPermutationName(st)));
-            rm.add("uniqueKeyIdx", "created " + st.attrib(this.getUniqueKeyIndexName(st)));
+            rm.add("segments", "created " + st.attrib(this.getComponentName(this.segments, st)));
+            rm.add("permutation", "created " + st.attrib(this.getComponentName(this.permutation, st)));
+            rm.add("uniqueKeyIdx", "created " + st.attrib(this.getComponentName(this.uniqueKeyIndexes, st)));
         }
     }
 }
