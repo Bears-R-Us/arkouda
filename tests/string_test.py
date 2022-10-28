@@ -639,22 +639,26 @@ class StringTest(ArkoudaTest):
         self.assertListEqual(["c", "d", "i"], p.to_list())
 
     def test_encoding(self):
+        # IDNA test
         a1 = ["münchen", "zürich"]
         s1 = ak.array(a1)
-        result = s1.idna_encode()
+        result = s1.encode('idna')
         self.assertListEqual([i.encode("idna").decode("ascii") for i in a1], result.to_list())
 
         # validate encoding with empty string
         e = ["", "abc", "", "123"]
         ak_e = ak.array(e)
-        result = ak_e.idna_encode()
+        result = ak_e.encode('idna')
         self.assertListEqual([i.encode("idna").decode("ascii") for i in e], result.to_list())
 
-        a2 = ['xn--mnchen-3ya', 'xn--zrich-kva', ' xn--zrich-boguscode', 'xn--!!', 'example.com']
+        a2 = ['xn--mnchen-3ya', 'xn--zrich-kva', 'xn--zrich-boguscode', 'xn--!!', 'example.com']
         s2 = ak.array(a2)
-        result = s2.idna_decode()
+        result = s2.decode('idna')
         # using the below assertion due to a bug in `Strings.to_ndarray`. See issue #1828
         self.assertListEqual(["münchen", "zürich", "", "", "example.com"], result.to_list())
+
+        a3 = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
+        self.assertTrue((a3 == a3.encode('ascii').decode('ascii')).all())
 
     def test_tondarray(self):
         v1 = ["münchen","zürich", "abc", "123", ""]

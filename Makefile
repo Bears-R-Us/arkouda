@@ -61,14 +61,19 @@ endif
 ifdef ARKOUDA_ARROW_PATH
 $(eval $(call add-path,$(ARKOUDA_ARROW_PATH)))
 endif
+ifdef ARKOUDA_ICONV_PATH
+$(eval $(call add-path,$(ARKOUDA_ICONV_PATH)))
+endif
+ifdef ARKOUDA_IDN2_PATH
+$(eval $(call add-path,$(ARKOUDA_IDN2_PATH)))
+endif
 
 ifndef ARKOUDA_CONFIG_FILE
 ARKOUDA_CONFIG_FILE := $(ARKOUDA_PROJECT_DIR)/ServerModules.cfg
 endif
 
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
 
-CHPL_FLAGS += -lparquet -larrow
 ARROW_FILE_NAME += $(ARKOUDA_SOURCE_DIR)/ArrowFunctions
 ARROW_CPP += $(ARROW_FILE_NAME).cpp
 ARROW_H += $(ARROW_FILE_NAME).h
@@ -76,7 +81,7 @@ ARROW_O += $(ARROW_FILE_NAME).o
 
 
 .PHONY: install-deps
-install-deps: install-zmq install-hdf5 install-arrow
+install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
 
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
@@ -125,6 +130,34 @@ install-arrow:
 	cd $(ARROW_BUILD_DIR)/cpp && cmake -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON $(ARROW_OPTIONS) . && make && make install
 	rm -rf $(ARROW_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
+
+ICONV_VER := 1.17
+ICONV_NAME_VER := libiconv-$(ICONV_VER)
+ICONV_BUILD_DIR := $(DEP_BUILD_DIR)/$(ICONV_NAME_VER)
+ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
+ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
+install-iconv:
+	@echo "Installing iconv"
+	rm -rf $(ICONV_BUILD_DIR) $(ICONV_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
+	rm -rf $(ICONV_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
+
+LIBIDN_VER := 2.3.4
+LIBIDN_NAME_VER := libidn2-$(LIBIDN_VER)
+LIBIDN_BUILD_DIR := $(DEP_BUILD_DIR)/$(LIBIDN_NAME_VER)
+LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
+LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
+install-idn2:
+	@echo "Installing libidn2"
+	rm -rf $(LIBIDN_BUILD_DIR) $(LIBIDN_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
+	rm -rf $(LIBIDN_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
 # System Environment
 ifdef LD_RUN_PATH

@@ -357,13 +357,20 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
         )
 
-    def idna_encode(self):
-        rep_msg = generic_msg(cmd="encode", args={"encoding": "idna", "obj": self.entry})
+    # TODO: Store the string encoding for fromEncoding in strings object?
+    def encode(self, toEncoding="idna", fromEncoding="UTF-8"):
+        rep_msg = generic_msg(
+            cmd="encode",
+            args={
+                "toEncoding": toEncoding,
+                "fromEncoding": fromEncoding,
+                "obj": self.entry,
+            },
+        )
         return Strings.from_return_msg(rep_msg)
 
-    def idna_decode(self):
-        rep_msg = generic_msg(cmd="decode", args={"encoding": "idna", "obj": self.entry})
-        return Strings.from_return_msg(rep_msg)
+    def decode(self, fromEncoding="idna", toEncoding="UTF-8"):
+        return self.encode(toEncoding, fromEncoding)
 
     @typechecked
     def to_lower(self) -> Strings:
