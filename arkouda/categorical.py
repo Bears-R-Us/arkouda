@@ -16,11 +16,11 @@ from typing import (
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
-from arkouda.decorators import objtypedec
 
+from arkouda.decorators import objtypedec
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
-from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_scalars, str_
+from arkouda.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.groupbyclass import GroupBy, unique
 from arkouda.infoclass import information, list_registry
 from arkouda.logger import getArkoudaLogger
@@ -807,6 +807,7 @@ class Categorical:
         dataset: str = "categorical_array",
         file_format: str = "HDF5",
         mode: str = "truncate",
+        file_type: str = "distribute",
     ) -> str:
         """
         Save the Categorical object to HDF5. The result is a collection of HDF5 files,
@@ -823,6 +824,11 @@ class Categorical:
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Categorical dataset within existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
 
         Returns
         -------
@@ -864,6 +870,7 @@ class Categorical:
                         dataset=f"{dataset}.{k}",
                         file_format=file_format,
                         mode=(mode if first else "append"),
+                        file_type=file_type,
                     )
                 )
                 first = False

@@ -3,6 +3,7 @@ module HDF5MultiDim {
     use CTypes;
     use Reflection;
     use HDF5;
+    use HDF5Msg;  //won't be needed once everything is merged
     use FileIO;
     use FileSystem;
     use AryUtil;
@@ -381,5 +382,5 @@ module HDF5MultiDim {
 
     use CommandMap;
     registerFunction("readhdf_multi", read_hdf_multi_msg, getModuleName());
-    registerFunction("writehdf_multi", write_hdf_multi_msg, getModuleName());
+    // registerFunction("writehdf_multi", write_hdf_multi_msg, getModuleName());
 }

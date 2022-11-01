@@ -204,6 +204,7 @@ class Index:
         mode: str = "truncate",
         compressed: bool = False,
         file_format: str = "HDF5",
+        file_type: str = "distribute",
     ) -> str:
         """
         Save the index to HDF5 or Parquet. The result is a collection of files,
@@ -228,6 +229,11 @@ class Index:
             By default, saved files will be written to the HDF5 file format. If
             'Parquet', the files will be written to the Parquet file format. This
             is case insensitive.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
 
         Returns
         -------
@@ -267,6 +273,8 @@ class Index:
         Any file extension can be used. The file I/O does not rely on the extension to determine the
         file format.
         """
+        from arkouda.pdarrayIO import _file_type_to_int
+
         if mode.lower() in ["a", "app", "append"]:
             m = 1
         elif mode.lower() in ["t", "trunc", "truncate"]:
@@ -275,27 +283,39 @@ class Index:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
         if file_format.lower() == "hdf5":
-            cmd = "tohdf"
+            return typecast(
+                str,
+                generic_msg(
+                    cmd="tohdf",
+                    args={
+                        "values": self.values,
+                        "dset": dataset,
+                        "write_mode": m,
+                        "filename": prefix_path,
+                        "dtype": self.dtype,
+                        "objType": "pdarray",
+                        "file_format": _file_type_to_int(file_type),
+                    },
+                ),
+            )
         elif file_format.lower() == "parquet":
-            cmd = "writeParquet"
+            return typecast(
+                str,
+                generic_msg(
+                    cmd="writeParquet",
+                    args={
+                        "values": self.values,
+                        "dset": dataset,
+                        "mode": m,
+                        "prefix": prefix_path,
+                        "dtype": self.dtype,
+                        "save_offsets": False,  # only used by strings
+                        "compressed": compressed,
+                    },
+                ),
+            )
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
-
-        return typecast(
-            str,
-            generic_msg(
-                cmd=cmd,
-                args={
-                    "values": self.values,
-                    "dset": dataset,
-                    "mode": m,
-                    "prefix": prefix_path,
-                    "dtype": self.dtype,
-                    "save_offsets": False,  # this is only used by strings
-                    "compressed": compressed,
-                },
-            ),
-        )
 
 
 class MultiIndex(Index):

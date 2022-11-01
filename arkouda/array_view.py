@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from enum import Enum
+from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -364,7 +365,7 @@ class ArrayView:
         """
         return self.to_ndarray().tolist()
 
-    def save(self, filepath: str, dset: str, mode: str = "truncate", storage: str = "Flat"):
+    def save(self, filepath: str, dset: str, mode: str = "truncate", file_type: str = "distribute"):
         """
         Save the current ArrayView object to hdf5 file
 
@@ -378,21 +379,23 @@ class ArrayView:
             Default: truncate
             Mode to write the dataset in. Truncate will overwrite any existing files.
             Append will add the dataset to an existing file.
-        storage: str (Flat | Multi)
-            Default: Flat
-            Method to use when storing the dataset.
-            Flat - flatten the multi-dimensional object into a 1-D array of values
-            Multi - Store the object in the multidimensional presentation.
+        file_type: str (single|distribute)
+            Default: distribute
+            Indicates the format to save the file. Single will store in a single file.
+            Distribute will store the date in a file per locale.
 
         See Also
         --------
         ak.ArrayView.load
         """
-        write_hdf5_multi_dim(self, filepath, dset, mode=mode, storage=storage)
+        write_hdf5_multi_dim(self, filepath, dset, mode=mode, file_type=file_type)
 
     @staticmethod
     def load(filepath: str, dset: str) -> ArrayView:
         """
+        DEPRECATED
+        This function is being mantained to allow reading from files written in Arkouda v2022.10.13
+        or earlier. If used, save the object to update formatting.
         Read a multi-dimensional dataset from an HDF5 file into an ArrayView object
 
         Parameters
@@ -410,4 +413,8 @@ class ArrayView:
         --------
         ak.ArrayView.save
         """
+        warn(
+            "ak.ArrayView.load has been deprecated. Please use ak.pdarrayIO.load",
+            DeprecationWarning,
+        )
         return read_hdf5_multi_dim(filepath, dset)
