@@ -443,7 +443,7 @@ Functions
       :rtype: SegArray
 
 
-   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_format='HDF5')
+   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_format='HDF5', file_type='distribute')
 
       Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
@@ -461,6 +461,11 @@ Functions
       :type mode: str {'truncate' | 'append'}
       :param file_format: Defaults to `'HDF5'`. Indicates the file format to use to store data.
       :type file_format: str {'HDF5' | 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
 
       :rtype: None
 

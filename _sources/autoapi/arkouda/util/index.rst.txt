@@ -106,7 +106,7 @@ Functions
    Convert from arkouda to numpy using disk rather than sockets.
 
 
-.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Convert from numpy to arkouda using disk rather than sockets.
 

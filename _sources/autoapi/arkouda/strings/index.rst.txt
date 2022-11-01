@@ -1071,7 +1071,7 @@ Classes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       Save the Strings object to HDF5 or Parquet. The result is a collection of
       files, one file per locale of the arkouda server, where each filename starts
@@ -1097,6 +1097,10 @@ Classes
                           'Parquet', the files will be written to the Parquet file format. This
                           is case insensitive.
       :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
 
       :rtype: String message indicating result of save operation
 
@@ -1141,7 +1145,7 @@ Classes
       .. seealso:: :obj:`strings.save`, :obj:`pdarray.save_parquet`
 
 
-   .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True) -> str
+   .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = '') -> str
 
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts

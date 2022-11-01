@@ -45,7 +45,7 @@ Functions
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer', legacyHDF5: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Read datasets from HDF5 or Parquet files.
 
@@ -75,10 +75,16 @@ Functions
                        filenames to be of the specified type. Otherwise, will infer filetype
                        based off of first file in filenames, expanded if a glob expression.
    :type file_format: str
+   :param legacyHDF5: Default False
+                      Trigger reading an HDF5 file that was written before updates to
+                      formatting (v2022.10.13 or earlier).
+                      After using this, the object should be written again to update the correct formatting
+                      Can only be used if file_format="hdf5".
+   :type legacyHDF5: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
-             * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
-             * *Arkouda Strings.* -- Dictionary of {datasetName: pdarray or String}
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
 
    :raises ValueError: Raised if all datasets are not present in all hdf5/parquet files or if one or
        more of the specified files do not exist
@@ -134,7 +140,7 @@ Functions
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, legacyHDF5: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -241,7 +247,7 @@ Functions
    This function has been updated to determine the file extension based on the file format variable
 
 
-.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate') -> None
+.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -256,6 +262,10 @@ Functions
    :param mode: By default, truncate (overwrite) the output files if they exist.
                 If 'append', attempt to create new dataset in existing files.
    :type mode: {'truncate' | 'append'}
+   :param file_type: Default: distribute
+                     Single writes the dataset to a single file
+                     Distribute writes the dataset to a file per locale
+   :type file_type: str ("single" | "distribute")
 
    :rtype: None
 
@@ -346,6 +356,9 @@ Functions
 
 .. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
 
+   DEPRECATED
+   This function is being mantained to allow reading from files written in Arkouda v2022.10.13
+   or earlier. If used, save the object to update formatting.
    Read a multi-dimensional object from an HDF5 file
 
    :param file_path: path to the file to read from
@@ -366,7 +379,7 @@ Functions
    - Currently, order is always assumed to be row major
 
 
-.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', storage: str = 'Flat')
+.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', file_type: str = 'distribute')
 
    Write a multi-dimensional ArrayView object to an HDF5 file
 
@@ -380,16 +393,16 @@ Functions
                 Mode to write the dataset in. Truncate will overwrite any existing files.
                 Append will add the dataset to an existing file.
    :type mode: str (truncate | append)
-   :param storage: Default: Flat
-                   Method to use when storing the dataset.
-                   Flat - flatten the multi-dimensional object into a 1-D array of values
-                   Multi - Store the object in the multidimensional presentation.
-   :type storage: str (Flat | Multi)
+   :param file_type: Default: distribute
+                     Indicates the format to save the file. Single will store in a single file.
+                     Distribute will store the date in a file per locale.
+   :type file_type: str (single|distribute)
 
    .. seealso:: :obj:`ak.read_hdf5_multi_dim`
 
    .. rubric:: Notes
 
+   - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
    - If a file does not exist, it will be created regardless of the mode value
    - This function is currently standalone functionality for multi-dimensional datasets
    - Error handling done on server to prevent multiple server calls

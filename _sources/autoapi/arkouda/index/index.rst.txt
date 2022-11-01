@@ -105,7 +105,7 @@ Classes
    .. py:method:: lookup(key)
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       Save the index to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -127,6 +127,11 @@ Classes
                           'Parquet', the files will be written to the Parquet file format. This
                           is case insensitive.
       :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
 
       :rtype: string message indicating result of save operation
 

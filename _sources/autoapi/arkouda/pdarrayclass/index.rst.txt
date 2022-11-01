@@ -728,7 +728,7 @@ Functions
       numpy.devicendarray
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -750,6 +750,11 @@ Functions
                           'Parquet', the files will be written to the Parquet file format. This
                           is case insensitive.
       :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
 
       :rtype: string message indicating result of save operation
 
@@ -851,7 +856,7 @@ Functions
       True
 
 
-   .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate') -> str
+   .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
@@ -864,8 +869,10 @@ Functions
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
       :type mode: str {'truncate', 'append'}
-      :param compressed: By default, write without Snappy compression and RLE encoding.
-      :type compressed: bool
+      :param file_type: Default: distribute
+                        Single writes the dataset to a single file
+                        Distribute writes the dataset to a file per locale
+      :type file_type: str ("single" | "distribute")
 
       :rtype: string message indicating result of save operation
 

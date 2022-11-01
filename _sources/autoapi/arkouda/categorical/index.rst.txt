@@ -466,7 +466,7 @@ Classes
       This operation can be expensive -- slower than concatenating Strings.
 
 
-   .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate') -> str
+   .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
       Save the Categorical object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
@@ -480,6 +480,11 @@ Classes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Categorical dataset within existing files.
       :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
 
       :rtype: String message indicating result of save operation
 
