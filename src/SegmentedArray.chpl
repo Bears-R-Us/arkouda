@@ -46,23 +46,19 @@ module SegmentedArray {
 
         var segments: shared SymEntry(int);
         var values;
+        var lengths: shared SymEntry(int);
         var size: int;
         var nBytes: int;
-        var lengths: [segments.aD] int;
 
         proc init(entryName:string, entry:borrowed SegArraySymEntry, type eType) {
             name = entryName;
             composite = entry;
             segments = composite.segmentsEntry: shared SymEntry(int);
             values = composite.valuesEntry: shared SymEntry(eType);
+            lengths = composite.lengthsEntry: shared SymEntry(int);
 
             size = segments.size;
             nBytes = values.size;
-
-            ref sa = segments.a;
-            const low = segments.aD.low;
-            const high = segments.aD.high;
-            lengths = [(i, s) in zip (segments.aD, sa)] if i == high then values.size - s else sa[i+1] - s;
 
             // Note - groupby remaining client side because groupby does not have server side object
         }
@@ -242,7 +238,7 @@ module SegmentedArray {
         }
 
         proc getNonEmpty() throws {
-            return lengths > 0;
+            return lengths.a > 0;
         }
 
         proc getNonEmptyCount() throws {
@@ -250,29 +246,21 @@ module SegmentedArray {
             return + reduce non_empty:int;
         }
 
-        proc getValuesName(st: borrowed SymTab): string throws {
-            var vname = st.nextName();
-            st.addEntry(vname, values);
-            return vname;
-        }
-
-        proc getSegmentsName(st: borrowed SymTab): string throws {
-            var sname = st.nextName();
-            st.addEntry(sname, segments);
-            return sname;
-        }
-
-        proc getLengthsName(st: borrowed SymTab): string throws {
-            var lname = st.nextName();
-            st.addEntry(lname, new shared SymEntry(lengths));
-            return lname;
+        proc getComponentName(obj: SymEntry, st: borrowed SymTab): string throws {
+            // early out if name exists
+            if obj.name != "" {
+                return obj.name;
+            }
+            var rname = st.nextName();
+            st.addEntry(rname, obj);
+            return obj.name;
         }
 
         proc fillReturnMap(ref rm: map(string, string), st: borrowed SymTab) throws {
             rm.add("segarray", "created " + st.attrib(this.name));
-            rm.add("values", "created " + st.attrib(this.getValuesName(st)));
-            rm.add("segments", "created " + st.attrib(this.getSegmentsName(st)));
-            rm.add("lengths", "created " + st.attrib(this.getLengthsName(st)));
+            rm.add("values", "created " + st.attrib(this.getComponentName(this.values, st)));
+            rm.add("segments", "created " + st.attrib(this.getComponentName(this.segments, st)));
+            rm.add("lengths", "created " + st.attrib(this.getComponentName(this.lengths, st)));
         }
     }
 }
