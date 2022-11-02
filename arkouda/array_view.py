@@ -365,7 +365,13 @@ class ArrayView:
         """
         return self.to_ndarray().tolist()
 
-    def save(self, filepath: str, dset: str, mode: str = "truncate", file_type: str = "distribute"):
+    def save(
+        self,
+        filepath: str,
+        dset: str = "ArrayView",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ):
         """
         Save the current ArrayView object to hdf5 file
 

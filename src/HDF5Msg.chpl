@@ -211,7 +211,7 @@ module HDF5Msg {
     */
     proc validateDataset(file_id: C_HDF5.hid_t, filename: string, dset_name: string) throws {
         // validate that the dataset does not already exist
-        var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset_exists: int = C_HDF5.H5Lexists(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
         if dset_exists > 0 {
             throw getErrorWithContext(
                            msg="A dataset named %s already exists in %s. Overwriting is not currently supported. Please choose another name.".format(dset_name, filename),
@@ -235,7 +235,7 @@ module HDF5Msg {
         If it does not exist, it is created.
     */
     proc validateGroup(file_id: C_HDF5.hid_t, filename: string, group: string) throws {
-        var group_exists: int = C_HDF5.H5Lexists(file_id, group.c_str(), C_HDF5.H5P_DEFAULT);
+        var group_exists: int = C_HDF5.H5Lexists(file_id, group.localize().c_str(), C_HDF5.H5P_DEFAULT);
         if group_exists > 0 {
             throw getErrorWithContext(
                            msg="A group named %s already exists in %s. Overwriting is not currently supported. Please choose another name.".format(group, filename),
@@ -276,7 +276,7 @@ module HDF5Msg {
             id of the C_HDF5 datatype of the data contained in the object. Used to check for boolean datasets
     */
     proc writeArkoudaMetaData(file_id: C_HDF5.hid_t, objName: string, objType: string, dtype: C_HDF5.hid_t) throws {
-        var obj_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, objName.c_str(), C_HDF5.H5P_DEFAULT);
+        var obj_id: C_HDF5.hid_t = C_HDF5.H5Oopen(file_id, objName.localize().c_str(), C_HDF5.H5P_DEFAULT);
 
         // Create the attribute space
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
@@ -351,7 +351,7 @@ module HDF5Msg {
         h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Writing ArrayView Attrs");
         //open the created dset so we can add attributes.
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset_name.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(file_id, dset_name.localize().c_str(), C_HDF5.H5P_DEFAULT);
 
         // Create the attribute space
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
@@ -359,7 +359,8 @@ module HDF5Msg {
 
         // Store the rank of the dataset. Required to read so that shape can be built
         attr_id = C_HDF5.H5Acreate2(dset_id, "Rank".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(shape.size));
+        var s = shape.size; // needed to localize in the event that shape is not local.
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(s));
         C_HDF5.H5Aclose(attr_id);
 
         C_HDF5.H5Sclose(attrSpaceId);
@@ -425,9 +426,9 @@ module HDF5Msg {
             * or nested, named group within the hdf5 file corresponding to the locale.
             */
             if locDom.size <= 0 {
-                H5LTmake_dataset_WAR(file_id, dset_name.c_str(), 1, c_ptrTo(dims), dType, nil);
+                H5LTmake_dataset_WAR(file_id, dset_name.localize().c_str(), 1, c_ptrTo(dims), dType, nil);
             } else {
-                H5LTmake_dataset_WAR(file_id, dset_name.c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
+                H5LTmake_dataset_WAR(file_id, dset_name.localize().c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
             }
 
             // write the appropriate attributes
