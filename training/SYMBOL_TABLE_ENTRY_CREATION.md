@@ -1,6 +1,11 @@
 # Creating a New Symbol Table Entry
 
-This guide details the workflow required for adding a new Entry type to the Symbol Table. There are two main components here. The first is configuration of the Symbol Table Entry. This class is what is stored in the Symbol Table and is used to persist the object on the server. The second is the object used during processing in Chapel. This object is generated from the Symbol Table entry.
+This guide explains how to add a new Entry type to the Symbol Table. There are two main components:
+
+- The configuration of the Symbol Table entry.
+  - This class is what is stored in the Symbol Table and is used to persist the object on the server.
+- The object used during processing.
+  - This object is generated from the Symbol Table entry.
 
 ## Table of Contents
 1. [Determining Parent Class](#parent)
@@ -18,26 +23,26 @@ This guide details the workflow required for adding a new Entry type to the Symb
 <a id="parent"></a>
 ## Determining Parent Class
 
-Arkouda has two main parent classes for Symbol Table Entries, `GenSymEntry` and `CompositeSymEntry`. All Symbol Table entries inherit from `AbstractSymEntry`. This is extremely import for allowing generic handling during processing. For the purposes of this document, we will not be documenting addition of a Symbol Table Entry that inherits `AbstractSymEntry` because in all anticipated cases, leveraging `GenSymEntry` or `CompositeSymEntry` should suffice. 
+Arkouda has two main parent classes for Symbol Table Entries, `GenSymEntry` and `CompositeSymEntry`. All Symbol Table entries inherit from `AbstractSymEntry`. This is extremely important for allowing generic handling during processing. We will not be documenting the process of adding a Symbol Table Entry that directly inherits from `AbstractSymEntry` because in all anticipated cases, leveraging `GenSymEntry` or `CompositeSymEntry` should suffice. 
 
 <a id="parent-gen"></a>
 ### When to use `GenSymEntry`
-`GenSymEntry` objects all contain the properties list below:
+`GenSymEntry` objects all contain the properties listed below:
 
 - `dtype`: The data type the object contains.
 - `itemsize`: The size of an individual data point.
-- `size`: The number of elements in the object.
+- `size`: The number of data points in the object.
 - `ndim`: The number of dimensions in the object.
 - `shape`: Integer array of size `ndim` detailing the number of elements in each dimension.
 
-`GenSymEntry` is the basis of all server objects in Arkouda that represent one element. For example, the server side representation of a `pdarray`. When using `GenSymEntry` as the basis for these objects, all the properties are clearly defined by the single component that is being stored.
+`GenSymEntry` is the parent class of all server objects in Arkouda that represent one object containing a single component. For example, the server side representation of a `pdarray`. When using `GenSymEntry` as the parent for these objects, all the properties are clearly defined its single component.
 
-These entries can also be used when an element consists of multiple components, but the components are necessary for understanding of a singular element. For example, `SegArraySymEntry` contains a `values` and a `segments` entry. Each of these are `pdarrays`, but `segments` is used to index into `values` and retrieve data. Here we have a very specific relation between the components which ensures that the properties of `GenSymEntry` make sense.
+`GenSymEntry` can also be used when an element consists of multiple components, but the components are necessary for understanding a singular object. For example, `SegArraySymEntry` contains a `values` and a `segments` entry. Each of these are `pdarrays`, but `segments` is used to index into `values` and retrieve data. Here we have a very specific relationship between the components which ensures that the properties of `GenSymEntry` make sense.
 
 Let's step through the `GenSymEntry` properties to get a sense of why objects like `SegArraySymEntry` inherit this class. 
 
 - `dtype` refers to the data type of the `values` entry. All data points in `values` are required to be of that type. `segments` is always required to be an `int` array and is not considered data.
-- `itemsize` again refers only to the size of a single data point in values. Additionally, because `segments` is always guaranteed to be of type `int` we are still able to perform size computations in relation to `segments`.
+- `itemsize` again refers only to the size of a single data point in values. Additionally, because `segments` is always guaranteed to be of type `int`, we are still able to take `segments` into account when performning size computations.
 - `size` refers to the number of data points in the `values` entry.
 - `ndim` will store the number of segments because this is equivalent to our number of dimensions.
 - `shape` currently stores the shape of the segments entry.
@@ -57,7 +62,7 @@ If you are unsure of which parent class to utilize when creating a new Symbol Ta
 
 <a id="build"></a>
 ## Building the New Symbol Table Entry
-Once you have identified a parent class to inherit from, you are ready to configure the class representing the Symbol Table entry. An example class definition for each parent class is provided below. We will walk through defining each component separately.
+Once you have identified a parent class to inherit from, you are ready to configure the class representing the Symbol Table entry. Your new class should be added to `MultiTypeSymEntry.chpl`. An example class definition for each parent class is provided below. We will walk through defining each component separately.
 
 **GenSymEntry**
 ```chapel
@@ -66,7 +71,7 @@ class NewSymEntry:GenSymEntry {
     
     proc init() {
         super.init(elementType, objectSize);
-        this.entryType = SymbolEntryType.SegArraySymEntry;
+        this.entryType = SymbolEntryType.EntryType;
         assignableTypes.add(this.entryType);
     }
     
@@ -95,9 +100,9 @@ class NewSymEntry:CompositeSymEntry {
 
 <a id="enum"></a>
 ### Add to `SymbolEntryType` Enum
-The `SymbolEntryType` enum is used to keep track of Symbol Table entry types. When a entry is initialized, the enum value is stored to the `assignableTypes` property. This property is then used to determine valid Symbol Table entry types that an entry can be cast to. When initially access a Symbol Table entry, usually an `AbstractSymEntry` is returned. This class contains the `assignableTypes` property and allows for easy identification of the entry's valid types.
+The `SymbolEntryType` enum is used to keep track of Symbol Table entry types. When a entry is initialized, the enum value is stored to the `assignableTypes` property. This property is then used to determine valid Symbol Table entry types that an entry can be cast to. When initially accessing a Symbol Table entry, usually an `AbstractSymEntry` is returned. This class contains the `assignableTypes` property and allows for easy identification of the entry's valid types.
 
-As an example, let's look at adding a `NewSymEntry` that inherits from `CompositeSymEntry` to the enum object. You'll notice when looking at the object that indentation is used to indicate parent-child relations. The result of adding `NewSymEntry` is below:
+As an example, let's look at adding a `NewSymEntry` that inherits from `CompositeSymEntry` to the enum object. Notice indentation is used to indicate parent-child relationships. The result of adding `NewSymEntry` is below:
 
 ```chapel
 enum SymbolEntryType {
@@ -126,9 +131,9 @@ enum SymbolEntryType {
 ### Adding Properties
 In addition to its inherited properties, your new Symbol Table entry will need to define properties specific to itself. In most cases, these will be `SymEntry` objects contained within this entry. 
 
-Let's look at an example where we have 2 `SymEntry` objects as properties. The first will be an array of strings and the other an array of integers. First, we need to highlight a few assumptions:
+Let's look at an example where we have 2 `SymEntry` objects as properties. The first will be an array of strings and the other an array of integers. For our example, we will make the following assumptions:
 
-- The `SymEntry` containing a strings array is our main data
+- The `SymEntry` containing a strings array is our main data.
 - The `SymEntry` containing an integer array contains the index of the midpoint of each string.
 
 Now let's build out the class, starting with properties. Based on our assumptions, `GenSymEntry` is going to be our parent.
@@ -140,7 +145,7 @@ class NewSymEntry:GenSymEntry {
 }
 ```
 
-<a id="initObj"></a>
+<a id="init"></a>
 ### Initializing the Object
 Now that we have our properties defined, let's look at initializing the object. Because we need to set our 2 properties, we need to pass 2 `SymEntry` objects to our constructor. 
 
@@ -167,13 +172,13 @@ class NewSymEntry:GenSymEntry {
 }
 ```
 
-This `init` does a lot so let's break it down. First, we are initializing the `GenSymEntry` components. Here we use the `stringsEntry.size` to set the size because that is the principle component and will set size equal to our number of strings. We use `string` for the type because our main component is of type `string`. This will also be the `etype` for the entry we are building. Next, we need to ensure that we can validate the type of entry, so we assign the entry type and add it to our `assignableTypes`. Remember, this is key to being able to access the object later. Next, we assign our `SymEntry` objects. Finally, we configure the components from the parent. This will differ for each Symbol Table Entry, but walking through why we made the decision we did here should help in your decision making.
+This `init` does a lot so let's break it down. First, we are initializing the `GenSymEntry` components. Here we use the `stringsEntry.size` to set the size because that is the principle component and will set size equal to our number of strings. We use `string` for the type because our main component is of type `string`. This will also be the `etype` for the entry we are building. Next, we need to ensure that we can validate the type of entry, so we assign the entry type and add it to our `assignableTypes`. Remember, this is key to being able to access the object later. Next, we assign our `SymEntry` objects. Finally, we configure the components from the parent. This will differ for each Symbol Table Entry, but walking through why we made the decisions we did here should help in your decision making.
 
 The first component is setting the dtype equivalent of the Chapel type. This is used to identify handling in situations where different types may be required. `itemsize` is set to `stringsEntry.itemsize` because this component is our main data source. Thus, the `itemsize` of our new entry should be equivalent. For the final three components, we could use the `size`, `ndim` and `shape` of either our `stringsEntry` or our `midptEntry`. The key for these properties is to ensure that they represent the object correctly.
 
 <a id="sizeEst"></a>
 ### Providing the Size Estimation
-The size estimation is used for memory management and be be sure that objects can be accessed without exceeding memory thresholds. In this example, we need the computation to account for the size of each of our components, namely `stringsEntry` and `midptEntry`. As a result, our computation is simply adding the two sizes together. See the updated class definition below.
+The size estimation is used for memory management and to ensure that objects can be accessed without exceeding memory thresholds. In this example, we need the computation to account for the size of each of our components, namely `stringsEntry` and `midptEntry`. As a result, our computation is simply adding the two sizes together. See the updated class definition below.
 
 ```chapel
 class NewSymEntry:GenSymEntry {
@@ -206,7 +211,7 @@ Now we have a completed Symbol Table entry class. In the next section, we will l
 
 <a id="dynamic"></a>
 ### Handle Dynamic Types
-What if your data can contain values of different types in on of the `SymEntry` objects it contains? No problem! We can assign the type during initialization. Let's look at `SegArraySymEntry` as an example. The relevant code is provided below.
+What if your data can contain values of different types in the `SymEntry` objects it contains? No problem! We can assign the type during initialization. Let's look at `SegArraySymEntry` as an example. The relevant code is provided below.
 
 ```chapel
 class SegArraySymEntry:GenSymEntry {
@@ -242,7 +247,7 @@ Now look at the `proc init()`. The last parameter here is `type etype`. This req
 
 The remainder of the class is essentially the same configuration as our previous example. 
 
-<a id="createObj"></a>
+<a id="create"></a>
 ## Creating the Object
 Once you have your Symbol Table entry, you will need to configure the object that is built from the entry. This object will be used during processing on the Arkouda server. Let's look at creating this object that corresponds to our `NewSymEntry` example.
 
@@ -254,7 +259,7 @@ module NewSymObject {
 }
 ```
 
-We will now define the class for the object. First, let's discuss some of the properties. First, we need to store the `name` associated with the `SymEntry` used to create the object. Then, we need `composite`. This is going to be our `NewSymEntry` object. We will store each entry individually as well. These objects will need to be passed to our class constructor.
+We will now define the class for the object. Let's discuss some of the properties. We need to store the `name` associated with the `SymEntry` used to create the object. The next attribute we need is `composite`, which contains our `NewSymEntry` object. We will store its component entries as well. These objects will need to be passed to our class constructor.
 
 ```chapel
 module NewSymObject {
@@ -286,8 +291,8 @@ module NewSymObject {
         var valuesEntry = new shared SymEntry(values);
         var newEntry = new shared NewSymEntry(midptEntry, valuesEntry);
         var name = st.nextName();
-        st.addEntry(name, segEntry);
-        return getNewSymObj(name, st, segEntry.etype);
+        st.addEntry(name, newEntry);
+        return getNewSymObj(name, st, newEntry.etype);
     }
     
     class NewSymObj {
@@ -328,8 +333,8 @@ module NewSymObject {
         var valuesEntry = new shared SymEntry(values);
         var newEntry = new shared NewSymEntry(midptEntry, valuesEntry);
         var name = st.nextName();
-        st.addEntry(name, segEntry);
-        return getNewSymObj(name, st, segEntry.etype);
+        st.addEntry(name, newEntry);
+        return getNewSymObj(name, st, newEntry.etype);
     }
     
     class NewSymObj {
