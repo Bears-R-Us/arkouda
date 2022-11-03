@@ -566,7 +566,7 @@ module SegmentedString {
       //calculate values for the segmentedstring
       var finalValues = makeDistArray((+ reduce encodeLengths)+encodeLengths.size, uint(8));
       forall (s, o) in zip(encodeArr, encodeOffsets) with (var agg = newDstAggregator(uint(8))) {
-        for (j, c) in zip(0.., s.chpl_bytes()) {
+        for (c, j) in zip(s.chpl_bytes(), 0..) {
           agg.copy(finalValues[j+o], c);
         }
       }
@@ -580,7 +580,7 @@ module SegmentedString {
       // Every start position is valid until proven otherwise
       var truth: [D] bool = true;
       // Shift the flat values one byte at a time and check against corresponding byte of substr
-      for (i, b) in zip(0.., substr.chpl_bytes()) {
+      for (b, i) in zip(substr.chpl_bytes(), 0..) {
         truth &= (values.a[D.translate(i)] == b);
       }
       return truth;
