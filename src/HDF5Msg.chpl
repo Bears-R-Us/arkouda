@@ -1133,7 +1133,7 @@ module HDF5Msg {
                             if !isopen {
                                 file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                                                                         C_HDF5.H5P_DEFAULT);  
-                                try! dataset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+                                try! dataset = C_HDF5.H5Dopen(file_id, dsetName.localize().c_str(), C_HDF5.H5P_DEFAULT);
                                 isopen = true;
                             }
                             // do A[intersection] = file[intersection - offset]
