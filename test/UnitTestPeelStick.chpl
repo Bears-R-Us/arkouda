@@ -245,7 +245,7 @@ proc makeSegArrayFromString(s:string, st) throws {
   var bytes_list = new list(uint(8));
   offset_list.append(0); // first string starts at zero
   const length = s.size;
-  for (i, b) in zip(0.., s.encode().items()){
+  for (b, i) in zip(s.encode().items(), 0..){
     if (nb_byt == b && (i+1) != length) {
       offset_list.append(i+1);
     }
