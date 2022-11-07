@@ -38,7 +38,7 @@ The dependencies listed here are only required if you will be doing development 
 - `sphinx-argparse`
 - `sphinx-autoapi`
 - `typed-ast`
-- `mypy>=0.931`
+- `mypy>=0.931,<0.990`
 - `flake8`
 
 ## Installing/Updating Python Dependencies
