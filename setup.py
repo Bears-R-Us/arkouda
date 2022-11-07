@@ -157,7 +157,7 @@ setup(
     extras_require={  # Optional
         'dev': ['pexpect', 'pytest>=6.0', 'pytest-env',
                 'Sphinx>=5.1.1', 'sphinx-argparse', 'sphinx-autoapi',
-                'mypy>=0.931', 'typed-ast', 'black', 'isort',
+                'mypy>=0.931,<0.990', 'typed-ast', 'black', 'isort',
                 'flake8'],
     },
     # replace original install command with version that also builds
