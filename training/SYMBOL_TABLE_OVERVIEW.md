@@ -15,7 +15,8 @@ For more information regarding the creation of new Symbol Table Entry types, vie
 <a id="overview"></a>
 ## Symbol Table Overview
 
-The Symbol Table is Arkouda's "database" that tracks the components every Arkouda object is composed of. It serves as a `lookup table` that uses a Chapel `Map` which allows Arkouda to persist objects until the server is shutdown or the object is deleted.
+The Symbol Table is implemented using a Chapel Map and serves as a `lookup table` that uses a Chapel `Map` which allows Arkouda to persist objects until the server is shutdown or the object is deleted.
+
 
 <a id="symStruct"></a>
 ## Symbol Table Structure
