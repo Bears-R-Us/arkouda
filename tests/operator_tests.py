@@ -486,7 +486,8 @@ class OperatorsTest(ArkoudaTest):
 
         # Test a singleton with a mixed Boolean argument
         a = ak.arange(10)
-        self.assertListEqual([i if i % 2 else i ** 2 for i in range(10)], ak.power(a, 2, a % 2 == 0).to_list())
+        self.assertListEqual([i if i % 2 else i**2 for i in range(10)],
+                             ak.power(a, 2, a % 2 == 0).to_list())
 
         # Test invalid input, negative
         n = np.array([-1.0, -3.0])
@@ -497,11 +498,9 @@ class OperatorsTest(ArkoudaTest):
         self.assertTrue(np.allclose(p.to_ndarray(), ex, equal_nan=True))
 
         # Test edge case input, inf
-        I = np.inf
-        n = np.array([I, -I])
-        a = ak.array([I, -I])
+        n = np.array([np.inf, -np.inf])
+        a = ak.array([np.inf, -np.inf])
         self.assertListEqual(np.power(n, 2).tolist(), ak.power(a, 2).to_list())
-
 
     def test_pda_sqrt(self):
         # Base cases and edge cases
@@ -516,7 +515,7 @@ class OperatorsTest(ArkoudaTest):
 
         # Test with a mixed Boolean array
         a = ak.arange(5)
-        self.assertListEqual([i if i % 2 else i ** .5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
+        self.assertListEqual([i if i % 2 else i**.5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
 
     def testAllOperators(self):
         run_tests(verbose)
