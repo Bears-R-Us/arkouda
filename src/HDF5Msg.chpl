@@ -697,11 +697,39 @@ module HDF5Msg {
      * :type writeOffsets: bool
      */
     private proc writeNilStringsGroupToHdf(fileId: int, group: string, writeOffsets: bool) throws {
-        C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
+        var dset_id: C_HDF5.hid_t;
+        C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/values".format(group).c_str(), 1,
                 c_ptrTo([0:uint(64)]), getHDF5Type(uint(8)), nil);
+
+        dset_id = C_HDF5.H5Dopen(fileId, "/%s/values".format(group).c_str(), C_HDF5.H5P_DEFAULT);
+
+        // Create the attribute space
+        var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        var attr_id: C_HDF5.hid_t;
+
+        // Create the objectType. This will be important when merging with other read/write functionality.
+        attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var t: ObjType = ObjType.PDARRAY;
+        var t_int: int = t: int;
+        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
+        C_HDF5.H5Aclose(attr_id);
+        C_HDF5.H5Sclose(attrSpaceId);
+        C_HDF5.H5Dclose(dset_id);
+
         if (writeOffsets) {
-            C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
+            C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/segments".format(group).c_str(), 1,
                 c_ptrTo([0:uint(64)]), getHDF5Type(int), nil);
+
+            dset_id = C_HDF5.H5Dopen(fileId, "/%s/segments".format(group).c_str(), C_HDF5.H5P_DEFAULT);
+
+            attrSpaceId = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+            attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+            var t: ObjType = ObjType.PDARRAY;
+            var t_int: int = t: int;
+            C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
+            C_HDF5.H5Aclose(attr_id);
+            C_HDF5.H5Sclose(attrSpaceId);
+            C_HDF5.H5Dclose(dset_id);
         }
     }
 
@@ -729,11 +757,12 @@ module HDF5Msg {
         var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
         var attr_id: C_HDF5.hid_t;
 
-         // Create the objectType. This will be important when merging with other read/write functionality.
+        // Create the objectType. This will be important when merging with other read/write functionality.
         attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         var t: ObjType = ObjType.PDARRAY;
         var t_int: int = t: int;
         C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
+        C_HDF5.H5Sclose(attrSpaceId);
         C_HDF5.H5Aclose(attr_id);
         C_HDF5.H5Dclose(dset_id);
     }
@@ -819,6 +848,8 @@ module HDF5Msg {
                             "write1DDistStringsAggregators: locale.id %i has empty locDom.size %i, will get empty dataset."
                             .format(loc.id, locDom.size));
                         writeNilStringsGroupToHdf(file_id, group, writeOffsets);
+                        // write attributes for arkouda meta info
+                        writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
                     } else {
                         var localOffsets = A[locDom];
                         var startValIdx = localOffsets[locDom.low];
