@@ -6,16 +6,22 @@ from warnings import warn
 
 import numpy as np  # type: ignore
 
-import arkouda.infoclass
 from arkouda import objtypedec
 from arkouda.client import generic_msg
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdarray, unregister_pdarray_by_name
+from arkouda.pdarrayclass import (
+    attach_pdarray,
+    create_pdarray,
+    is_sorted,
+    pdarray,
+    unregister_pdarray_by_name,
+)
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
 from arkouda.pdarraysetops import concatenate
@@ -202,10 +208,9 @@ class SegArray:
             args={
                 "segments": segments,
                 "values": values,
-                "lengths": lengths
             },
         )
-        return cls.from_return_msg(rep_msg, grouping=grouping)
+        return cls.from_return_msg(rep_msg, lengths, grouping)
 
     @classmethod
     def _from_attach_return_msg(cls, repMsg) -> SegArray:
@@ -236,7 +241,7 @@ class SegArray:
         values = create_pdarray(parts[2])
         lengths = create_pdarray(parts[3])
         namePart = parts[1].split(" ")[1]
-        name = namePart[:namePart.index("_segments")]
+        name = namePart[: namePart.index("_segments")]
 
         segarr = cls.from_parts(segments, values, lengths=lengths)
         segarr.name = name
@@ -1304,19 +1309,13 @@ class SegArray:
         # self.grouping.register(name+grouping_suffix)
 
     def unregister(self):
-        # self.segments.unregister()
-        # self.values.unregister()
-        # self.lengths.unregister()
-        # TODO - groupby does not have unregister.
-        # self.grouping.unregister()
-
         SegArray.unregister_segarray_by_name(self.name)
 
         self.name = None
 
     @staticmethod
     def unregister_segarray_by_name(name):
-        registry = arkouda.infoclass.list_registry()
+        registry = list_registry()
 
         if f"{name}_segments" in registry:
             unregister_pdarray_by_name(f"{name}_segments")
