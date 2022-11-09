@@ -19,9 +19,7 @@ module GroupByMsg {
     private config const logLevel = ServerConfig.logLevel;
     const gmLogger = new Logger(logLevel);
 
-    proc createGroupByMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, argSize);
-
+    proc createGroupByMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue();
         var n = msgArgs.get("nkeys").getIntValue();
         var keynames = msgArgs.get("keynames").getList(n);

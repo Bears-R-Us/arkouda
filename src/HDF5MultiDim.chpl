@@ -117,9 +117,8 @@ module HDF5MultiDim {
     The resulting data is always in flattened form (as expected by ArrayView)
     Adds a pdarray containing the flattened data and a pdarray containing the shape of the object to the symbol table
     */
-    proc read_hdf_multi_msg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc read_hdf_multi_msg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         // Currently always load flat as row major
-        var msgArgs = parseMessageArgs(payload, argSize);
         var filename = msgArgs.getValueOf("filename");
         var dset_name = msgArgs.getValueOf("dset");
 

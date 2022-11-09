@@ -36,10 +36,9 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc intersect1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc intersect1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var isUnique = msgArgs.get("assume_unique").getBoolValue();
         
         var vname = st.nextName();
@@ -91,10 +90,9 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc setxor1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc setxor1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var isUnique = msgArgs.get("assume_unique").getBoolValue();
 
         var vname = st.nextName();
@@ -146,10 +144,9 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc setdiff1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc setdiff1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var isUnique = msgArgs.get("assume_unique").getBoolValue();
 
         var vname = st.nextName();
@@ -201,10 +198,9 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (MsgTuple) response message
     */
-    proc union1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc union1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var msgArgs = parseMessageArgs(payload, argSize);
 
       var vname = st.nextName();
 

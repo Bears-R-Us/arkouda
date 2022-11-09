@@ -33,8 +33,7 @@ module UniqueMsg
     private config const logLevel = ServerConfig.logLevel;
     const umLogger = new Logger(logLevel);
 
-    proc uniqueMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, argSize);
+    proc uniqueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         // flag to return segments and permutation for GroupBy
         const returnGroups = msgArgs.get("returnGroupStr").getBoolValue();
         const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue();

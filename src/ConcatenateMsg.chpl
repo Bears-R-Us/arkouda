@@ -24,10 +24,9 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab) : MsgTuple throws {
+    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, argSize);
         var objtype = msgArgs.getValueOf("objType");
         var mode = msgArgs.getValueOf("mode");
         var n = msgArgs.get("nstr").getIntValue(); // number of arrays to sort

@@ -15,12 +15,11 @@ module StatsMsg {
     private config const logLevel = ServerConfig.logLevel;
     const sLogger = new Logger(logLevel);
 
-    proc meanMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc meanMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, argSize);
 
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
+        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
 
         select (x.dtype) {
             when (DType.Int64) {
@@ -45,13 +44,12 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc varMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc varMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, argSize);
 
-        var ddof = args.get("ddof").getIntValue();
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
+        var ddof = msgArgs.get("ddof").getIntValue();
+        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
 
         select (x.dtype) {
             when (DType.Int64) {
@@ -76,13 +74,12 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc stdMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc stdMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, argSize);
 
-        var ddof = args.get("ddof").getIntValue();
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
+        var ddof = msgArgs.get("ddof").getIntValue();
+        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
 
         select (x.dtype) {
             when (DType.Int64) {
@@ -107,13 +104,12 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc covMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc covMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var args = parseMessageArgs(payload, argSize);
 
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
-        var y: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("y"), st);
+        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
+        var y: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
 
         select (x.dtype, y.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -206,12 +202,11 @@ module StatsMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc corrMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc corrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var args = parseMessageArgs(payload, argSize);
 
-        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("x"), st);
-        var y: borrowed GenSymEntry = getGenericTypedArrayEntry(args.getValueOf("y"), st);
+        var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
+        var y: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
 
         var repMsg: string = "float64 %.17r".format(corrHelper(x, y));
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
@@ -277,13 +272,12 @@ module StatsMsg {
         }
     }
 
-    proc corrMatrixMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc corrMatrixMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var args = parseMessageArgs(payload, argSize);
 
-        var size = args.get("size").getIntValue();
-        var columns = args.get("columns").getList(size);
-        var dataNames = args.get("data_names").getList(size);
+        var size = msgArgs.get("size").getIntValue();
+        var columns = msgArgs.get("columns").getList(size);
+        var dataNames = msgArgs.get("data_names").getList(size);
 
         var corrDict = new map(keyType=string, valType=string);
         for (col, d1, i) in zip(columns, dataNames, 0..) {

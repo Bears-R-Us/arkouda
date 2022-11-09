@@ -23,11 +23,10 @@ module RandMsg
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
-    proc randintMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc randintMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         
-        var msgArgs = parseMessageArgs(payload, argSize);
         const len = msgArgs.get("size").getIntValue();
         const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         const seed = msgArgs.getValueOf("seed");
@@ -122,9 +121,8 @@ module RandMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc randomNormalMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc randomNormalMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var pn = Reflection.getRoutineName();
-        var msgArgs = parseMessageArgs(payload, argSize);
         const len = msgArgs.get("size").getIntValue();
         // Result + 2 scratch arrays
         overMemLimit(3*8*len);

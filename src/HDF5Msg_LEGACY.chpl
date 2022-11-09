@@ -1774,9 +1774,8 @@ module HDF5Msg_LEGACY {
     /**
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
-    proc readAllHdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc readAllHdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, argSize);
         var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
         var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false

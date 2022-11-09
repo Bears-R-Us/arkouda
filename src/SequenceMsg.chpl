@@ -22,9 +22,8 @@ module SequenceMsg {
 
     :returns: MsgTuple
     */
-    proc arangeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc arangeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var start = msgArgs.get("start").getIntValue();
         var stop = msgArgs.get("stop").getIntValue();
         var stride = msgArgs.get("stride").getIntValue();
@@ -69,9 +68,8 @@ module SequenceMsg {
 
     :returns: MsgTuple
     */
-    proc linspaceMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc linspaceMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var start = msgArgs.get("start").getRealValue();
         var stop = msgArgs.get("stop").getRealValue();
         var len = msgArgs.get("len").getIntValue();

@@ -869,9 +869,7 @@ module HDF5Msg {
         Parse and exectue tohdf message.
         Determines the type of the object to be written and calls the corresponding write functionality.
     */
-    proc tohdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, argSize);
-
+    proc tohdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType; // pdarray, Strings, ArrayView
 
         select objType {
@@ -979,10 +977,8 @@ module HDF5Msg {
         return items;
     }
 
-    proc lshdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        // reqMsg: "lshdf [<json_filename>]"
+    proc lshdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, argSize);
 
         // Retrieve filename from payload
         var filename: string = msgArgs.getValueOf("filename");
@@ -1639,9 +1635,7 @@ module HDF5Msg {
     /*
         Read HDF5 files into an Arkouda Object
     */
-    proc readAllHdfMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, argSize);
-
+    proc readAllHdfMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
 
         var allowErrors: bool = msgArgs.get("allow_errors").getBoolValue(); // default is false

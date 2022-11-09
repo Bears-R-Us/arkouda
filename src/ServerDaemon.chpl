@@ -452,7 +452,6 @@ module ServerDaemon {
                     var format = msg.format;
                     var args   = msg.args;
                     var size: int;
-                    
                     try {
                             size = msg.size: int;
                     }
@@ -461,6 +460,14 @@ module ServerDaemon {
                                "Argument List size is not an integer. %s cannot be cast".format(msg.size));
                         sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
                                                          msgFormat=MsgFormat.STRING, user="Unknown"));
+                    }
+
+                    var msgArgs: owned MessageArgs;
+                    if size > 0 {
+                        msgArgs = parseMessageArgs(args, size);
+                    }
+                    else {
+                        msgArgs = new owned MessageArgs();
                     }
 
                     /*
@@ -509,7 +516,7 @@ module ServerDaemon {
                  *  up in the client.print_server_commands() function, but we need to intercept & process them as appropriate
                  */
                 select cmd {
-                    when "array"   { repTuple = arrayMsg(cmd, args, size, payload, st); }
+                    when "array"   { repTuple = arrayMsg(cmd, msgArgs, payload, st); }
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
@@ -531,11 +538,11 @@ module ServerDaemon {
                         if commandMap.contains(cmd) {
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            repTuple = commandMap.getBorrowed(cmd)(cmd, args, size, st);
+                            repTuple = commandMap.getBorrowed(cmd)(cmd, msgArgs, st);
                         } else if commandMapBinary.contains(cmd) { // Binary response commands require different handling
                             if moduleMap.contains(cmd) then
                                 usedModules.add(moduleMap[cmd]);
-                            var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, args, size, st);
+                            var binaryRepMsg = commandMapBinary.getBorrowed(cmd)(cmd, msgArgs, st);
                             sendRepMsg(binaryRepMsg);
                         } else {
                           repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
@@ -643,12 +650,20 @@ module ServerDaemon {
                 var cmd    = msg.cmd;
                 var format = msg.format;
                 var args   = msg.args;
-                var size   = msg.size;
+                var size   = msg.size: int;
+                
+                var msgArgs: owned MessageArgs;
+                if size > 0 {
+                    msgArgs = parseMessageArgs(args, size);
+                }
+                else {
+                    msgArgs = new owned MessageArgs();
+                }
 
                 var repTuple: MsgTuple;
 
                 select cmd {
-                    when "metrics" {repTuple = metricsMsg(cmd, args, size, st);}        
+                    when "metrics" {repTuple = metricsMsg(cmd, msgArgs, st);}        
                     when "connect" {
                         if authenticate {
                             repTuple = new MsgTuple("connected to arkouda metrics server tcp://*:%i as user " +
@@ -658,7 +673,7 @@ module ServerDaemon {
                                                                                     MsgType.NORMAL);
                         }
                     }
-                    when "getconfig" {repTuple = getconfigMsg(cmd, args, size, st);}
+                    when "getconfig" {repTuple = getconfigMsg(cmd, msgArgs, st);}
                 }           
 
                 this.socket.send(serialize(msg=repTuple.msg,msgType=repTuple.msgType,

@@ -27,10 +27,9 @@ module SortMsg
     }
 
     /* sort takes pdarray and returns a sorted copy of the array */
-    proc sortMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc sortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var msgArgs = parseMessageArgs(payload, argSize);
       const algoName = msgArgs.getValueOf("alg");
       const name = msgArgs.getValueOf("array");
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
