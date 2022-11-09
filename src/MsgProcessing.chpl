@@ -32,7 +32,6 @@ module MsgProcessing
     */
     proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
         var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var size = msgArgs.get("size").getIntValue();
         if (dtype == DType.UInt8) || (dtype == DType.Bool) {
