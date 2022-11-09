@@ -97,7 +97,8 @@ class SegArray:
     def __init__(
         self, name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None
     ):
-        self.name = name
+        self.name = None
+        self.serverName = name
         self.dtype = dtype
         self.size = size
         self.ndim = ndim
@@ -295,7 +296,7 @@ class SegArray:
             rep_msg = generic_msg(
                 cmd="segArr-getLengths",
                 args={
-                    "name": self.name,
+                    "name": self.serverName,
                 },
             )
             self._lengths = create_pdarray(rep_msg)
@@ -305,7 +306,7 @@ class SegArray:
         rep_msg = generic_msg(
             cmd="segArr-getNonEmpty",
             args={
-                "name": self.name,
+                "name": self.serverName,
             },
         )
         parts = rep_msg.split("+")
@@ -430,7 +431,7 @@ class SegArray:
                         "subcmd": "intIndex",
                         "objType": self.objtype,
                         "dtype": self.dtype,
-                        "obj": self.name,
+                        "obj": self.serverName,
                         "key": i,
                     },
                 )
@@ -445,7 +446,7 @@ class SegArray:
                 args={
                     "subcmd": "sliceIndex",
                     "objType": self.objtype,
-                    "obj": self.name,
+                    "obj": self.serverName,
                     "dtype": self.dtype,
                     "key": [start, stop, stride],
                 },
@@ -463,7 +464,7 @@ class SegArray:
                     "subcmd": "pdarrayIndex",
                     "objType": self.objtype,
                     "dtype": self.values.dtype,
-                    "obj": self.name,
+                    "obj": self.serverName,
                     "key": i,
                 },
             )
