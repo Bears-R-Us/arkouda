@@ -540,24 +540,28 @@ module SegmentedString {
       var encodeArr: [0..#this.size] string; 
       var encodeOffsets: [this.offsets.aD] int;
       var encodeLengths: [this.offsets.aD] int;
-
       const lengths = this.getLengths();
       forall (i, off, len) in zip(0..#this.size, offs, lengths) {
-        // var str_entry: string;
         const filename: string = basePath+"/src/exec/%i_tmp.txt".format(i);
         var str_entry: string = interpretAsString(origVals, off..#len);
-        // use subprocessing to make a call to a python file for the encoding
-        var sub = spawn(["python3", procFile, "-v", str_entry, "-f", filename]);
-        sub.wait();
+        // only run the encoding if the string value is not empty string to avoid segfaults
+        if str_entry != "" {
+          // use subprocessing to make a call to a python file for the encoding
+          var sub = spawn(["python3", procFile, "-v", str_entry, "-f", filename]);
+          sub.wait();
 
-        // read file python wrote to
-        var encodedFile = open(filename, iomode.r);
-        var encodedStr: string;
-        var reader = encodedFile.reader();
-        var readSomething = reader.read(encodedStr);
-        encodeArr[i] = encodedStr;
-        // delete the temp file if it was created
-        remove(filename);
+          // read file python wrote to
+          var encodedFile = open(filename, iomode.r);
+          var encodedStr: string;
+          var reader = encodedFile.reader();
+          var readSomething = reader.read(encodedStr);
+          encodeArr[i] = encodedStr;
+          // delete the temp file if it was created
+          remove(filename);
+        }
+        else {
+          encodeArr[i] = "";
+        }
       }
       // calculate offsets and lengths
       encodeLengths = [e in encodeArr] e.numBytes;
