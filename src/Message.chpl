@@ -371,8 +371,8 @@ module Message {
     */
     proc parseMessageArgs(json_str: string, size: int) throws {
         var pArr = jsonToPdArray(json_str, size);
-        var param_list: list(ParameterObj) = new list(ParameterObj);
-        for (i, j_str) in zip(0..#size, pArr) {
+        var param_list = new list(ParameterObj, parSafe=true);
+        forall j_str in pArr with (ref param_list) {
             param_list.append(parseParameter(j_str));
         }
         return new owned MessageArgs(param_list);
