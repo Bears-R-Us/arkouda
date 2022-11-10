@@ -15,9 +15,8 @@ module EncodingMsg {
     private config const logLevel = ServerConfig.logLevel;
     const emLogger = new Logger(logLevel);
 
-    proc encodeDecodeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc encodeDecodeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string;
-        var msgArgs = parseMessageArgs(payload, argSize);
         var encoding = msgArgs.getValueOf("encoding");
 
         var stringsObj = getSegString(msgArgs.getValueOf("obj"), st);

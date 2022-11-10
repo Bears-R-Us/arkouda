@@ -21,8 +21,7 @@ module SegmentedMsg {
   /**
   * Build a Segmented Array object based on the segments/values specified.
   **/
-  proc assembleSegArrayMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-    var msgArgs = parseMessageArgs(payload, argSize);
+  proc assembleSegArrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var segName = msgArgs.getValueOf("segments");
     var valName = msgArgs.getValueOf("values"); 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -76,9 +75,8 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc getSANonEmptyMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc getSANonEmptyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string = "";
-    var msgArgs = parseMessageArgs(payload, argSize);
     var name = msgArgs.getValueOf("name"): string;
     var entry = st.tab.getBorrowed(name);
     var genEntry: GenSymEntry = toGenSymEntry(entry);
@@ -129,8 +127,7 @@ module SegmentedMsg {
    * we'll either encapsulate both parts in a single message or do the
    * parsing and offsets construction on the server.
   */
-  proc assembleStringsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-    var msgArgs = parseMessageArgs(payload, argSize);
+  proc assembleStringsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     const offsetsName = msgArgs.getValueOf("offsets");
     const valuesName = msgArgs.getValueOf("values");
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -152,8 +149,7 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segStrTondarrayMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): bytes throws {
-      var msgArgs = parseMessageArgs(payload, argSize);
+  proc segStrTondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws {
       var entry = getSegString(msgArgs.getValueOf("obj"), st);
       const comp = msgArgs.getValueOf("comp");
       if comp == "offsets" {
@@ -199,9 +195,8 @@ module SegmentedMsg {
        return arrayBytes;
     }
 
-  proc randomStringsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc randomStringsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var msgArgs = parseMessageArgs(payload, argSize);
       const dist = msgArgs.getValueOf("dist");
       const len = msgArgs.get("size").getIntValue();
       const charset = str2CharSet(msgArgs.getValueOf("chars"));
@@ -237,10 +232,9 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentLengthsMsg(cmd: string, payload: string, argSize: int,
+  proc segmentLengthsMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                           st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
-    var msgArgs = parseMessageArgs(payload, argSize);
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
 
@@ -271,10 +265,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc caseChangeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc caseChangeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const subcmd = msgArgs.getValueOf("subcmd");
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
@@ -322,10 +315,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc checkCharsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc checkCharsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const subcmd = msgArgs.getValueOf("subcmd");
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
@@ -370,10 +362,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedSearchMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedSearchMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var msgArgs = parseMessageArgs(payload, argSize);
       const objtype = msgArgs.getValueOf("objType");
       const name = msgArgs.getValueOf("obj");
       const valtype = msgArgs.getValueOf("valType");
@@ -418,10 +409,9 @@ module SegmentedMsg {
     }
   }
 
-  proc segmentedFindLocMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedFindLocMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("parent_name");
     const groupNum = msgArgs.get("groupNum").getIntValue();
@@ -480,10 +470,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedFindAllMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedFindAllMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("parent_name");
     const numMatchesName = msgArgs.getValueOf("num_matches");
@@ -548,10 +537,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedSubMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedSubMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
     const repl = msgArgs.getValueOf("repl");
@@ -587,11 +575,10 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedStripMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedStripMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
-    var msgArgs = parseMessageArgs(payload, argSize);
     var objtype = msgArgs.getValueOf("objType");
     var name = msgArgs.getValueOf("name");
 
@@ -620,10 +607,9 @@ module SegmentedMsg {
     return (leftEntry.name, rightEntry.name);
   }
 
-  proc segmentedPeelMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedPeelMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const subcmd = msgArgs.getValueOf("subcmd");
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
@@ -717,10 +703,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedHashMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedHashMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
 
@@ -761,12 +746,11 @@ module SegmentedMsg {
    * 2. sliceIndex : segSliceIndex
    * 3. pdarrayIndex : segPdarrayIndex
   */ 
-  proc segmentedIndexMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedIndexMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     // 'subcmd' is the type of indexing to perform
     // 'objtype' is the type of segmented array
-    var msgArgs = parseMessageArgs(payload, argSize);
     const subcmd = msgArgs.getValueOf("subcmd");
     const objtype = msgArgs.getValueOf("objType");
     const name = msgArgs.getValueOf("obj");
@@ -1167,11 +1151,10 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segBinopvvMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segBinopvvMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
-    var msgArgs = parseMessageArgs(payload, argSize);
     const op = msgArgs.getValueOf("op");
     const ltype = msgArgs.getValueOf("objType");
     const leftName = msgArgs.getValueOf("obj");
@@ -1231,10 +1214,9 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segBinopvsMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segBinopvsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var msgArgs = parseMessageArgs(payload, argSize);
       const op = msgArgs.getValueOf("op");
       const objtype = msgArgs.getValueOf("objType");
       const name = msgArgs.getValueOf("obj");
@@ -1277,10 +1259,9 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segIn1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segIn1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var msgArgs = parseMessageArgs(payload, argSize);
       const mainObjtype = msgArgs.getValueOf("objType");
       const mainName = msgArgs.getValueOf("obj");
       const testObjtype = msgArgs.getValueOf("otherType");
@@ -1312,9 +1293,8 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segGroupMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segGroupMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var msgArgs = parseMessageArgs(payload, argSize);
       const objtype = msgArgs.getValueOf("objType");
       const name = msgArgs.getValueOf("obj");
 
@@ -1340,8 +1320,7 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc stringsToJSONMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-    var msgArgs = parseMessageArgs(payload, argSize);
+  proc stringsToJSONMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var strings = getSegString(msgArgs.getValueOf("name"), st);
     var size = strings.size;
     var rtn: [0..#size] string;
@@ -1354,11 +1333,10 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedSubstringMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedSubstringMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
 
-    var msgArgs = parseMessageArgs(payload, argSize);
     var objtype = msgArgs.getValueOf("objType");
     var name = msgArgs.getValueOf("name");
     

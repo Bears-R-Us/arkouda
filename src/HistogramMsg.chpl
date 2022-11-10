@@ -21,10 +21,9 @@ module HistogramMsg
     private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
-    proc histogramMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc histogramMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         const bins = msgArgs.get("bins").getIntValue();
         const name = msgArgs.getValueOf("array");
         

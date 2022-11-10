@@ -24,10 +24,9 @@ module In1dMsg
        which implementation
        of in1d to utilize.
     */
-    proc in1dMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc in1dMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var invert: bool = msgArgs.get("invert").getBoolValue();
 
         // get next symbol name

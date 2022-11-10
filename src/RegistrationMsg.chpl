@@ -31,10 +31,9 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc registerMsg(cmd: string, payload: string, argSize: int,
+    proc registerMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                         st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         const userDefinedName = msgArgs.getValueOf("user_name");
 
@@ -69,11 +68,10 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc attachMsg(cmd: string, payload: string, argSize: int,
+    proc attachMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                           st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
 
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name");
 
         // if verbose print action
@@ -297,9 +295,8 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc attachDataFrameMsg(cmd: string, payload: string, argSize: int,
-                                 st: borrowed SymTab): MsgTuple throws {        
-        var msgArgs = parseMessageArgs(payload, argSize);
+    proc attachDataFrameMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                                 st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs.getValueOf("name"); 
         var colName = "df_columns_%s".format(name);
         var repMsg = "dataframe+%s".format(name);
@@ -308,16 +305,15 @@ module RegistrationMsg
                             "%s: Collecting DataFrame components for '%s'".format(cmd, name));
 
         var jsonParam = new ParameterObj("name", colName, ObjectType.VALUE, "str");
-        var json: [0..#1] string = [jsonParam.getJSON()];
-
+        var subArgs1 = new MessageArgs(new list([jsonParam]));
         // Add columns as a json list
-        var cols = stringsToJSONMsg(cmd, "%jt".format(json), json.size, st).msg;
+        var cols = stringsToJSONMsg(cmd, subArgs1, st).msg;
         repMsg += "+json %s".format(cols);
 
         // Get index 
         var indParam = new ParameterObj("name", "df_index_%s_key".format(name), ObjectType.VALUE, "");
-        var indJSON: [0..#1] string = [indParam.getJSON()];
-        var ind = attachMsg(cmd, "%jt".format(indJSON), indJSON.size, st).msg;
+        var subArgs2 = new MessageArgs(new list([indParam]));
+        var ind = attachMsg(cmd, subArgs2, st).msg;
         if ind.startsWith("Error:") { 
             var errorMsg = ind;
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -348,13 +344,13 @@ module RegistrationMsg
             select (objtype){
                 when ("pdarray") {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var attJSON: [0..#1] string = [attParam.getJSON()];
-                    msg = attachMsg(cmd, "%jt".format(attJSON), attJSON.size, st).msg;
+                    var subArgs = new MessageArgs(new list([attParam]));
+                    msg = attachMsg(cmd, subArgs, st).msg;
                 }
                 when ("str") {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var attJSON: [0..#1] string = [attParam.getJSON()];
-                    msg = attachMsg(cmd, "%jt".format(attJSON), attJSON.size, st).msg;
+                    var subArgs = new MessageArgs(new list([attParam]));
+                    msg = attachMsg(cmd, subArgs, st).msg;
                 }
                 when ("SegArray") {
                     msg = attachSegArrayMsg(cmd, regName, st).msg;
@@ -447,10 +443,9 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc genAttachMsg(cmd: string, payload: string, argSize: int,
+    proc genAttachMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                             st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var dtype = msgArgs.getValueOf("dtype");
         const name = msgArgs.getValueOf("name");
 
@@ -464,12 +459,12 @@ module RegistrationMsg
             dtype = "simple";
         }
 
-        var json: [0..#1] string = [msgArgs.get("name").getJSON()];
+        var subArgs = new MessageArgs(new list([msgArgs.get("name")]));
 
         select (dtype.toLower()) {
             when ("simple") {
                 // pdarray and strings can use the attachMsg method
-                return attachMsg(cmd, "%jt".format(json), json.size, st);
+                return attachMsg(cmd, subArgs, st);
             }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
@@ -481,7 +476,7 @@ module RegistrationMsg
                 return attachSeriesMsg(cmd, name, st);
             }
             when ("dataframe") {
-                return attachDataFrameMsg(cmd, "%jt".format(json), json.size, st);
+                return attachDataFrameMsg(cmd, subArgs, st);
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
@@ -520,11 +515,9 @@ module RegistrationMsg
 
     :returns: MsgTuple response message
     */
-    proc unregisterMsg(cmd: string, payload: string, argSize: int,
+    proc unregisterMsg(cmd: string, msgArgs: borrowed MessageArgs,
                                       st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name");
 
         // if verbose print action
@@ -539,8 +532,7 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc unregisterByNameMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var msgArgs = parseMessageArgs(payload, argSize);
+    proc unregisterByNameMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var dtype = msgArgs.getValueOf("dtype");
         const name = msgArgs.getValueOf("name");
         var status = "";
@@ -558,8 +550,8 @@ module RegistrationMsg
         select (dtype.toLower()) {
             when ("simple") {
                 // pdarray and strings can use the unregisterMsg method without any other processing
-                var json: [0..#1] string = [msgArgs.get("name").getJSON()];
-                return unregisterMsg(cmd, "%jt".format(json), json.size, st);
+                var subArgs = new MessageArgs(new list([msgArgs.get("name")]));
+                return unregisterMsg(cmd, subArgs, st);
             }
             when ("categorical") {
                 // Create an array with 5 strings, one for each component of categorical, and assign the names
@@ -575,14 +567,14 @@ module RegistrationMsg
                     nameList[4] = "%s.segments".format(name);
                 }
 
-                var base_json = msgArgs.get("name").asMap();
+                var base_json = msgArgs.get("name");
 
                 for n in nameList {
                     // Check for "" in case optional components aren't found
                     if n != "" {
-                        base_json.set("val", n);
-                        var json: [0..#1] string = ["%jt".format(base_json)];
-                        var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
+                        base_json.setVal(n);
+                        var subArgs = new MessageArgs(new list([base_json]));
+                        var resp = unregisterMsg(cmd, subArgs, st);
                         status += " %s: %s ".format(n, resp.msg);
                     }
                 }
@@ -594,12 +586,12 @@ module RegistrationMsg
                 nameList[1] = "%s_values".format(name);
                 nameList[2] = "%s_lengths".format(name);
 
-                var base_json = msgArgs.get("name").asMap();
+                var base_json = msgArgs.get("name");
 
                 for n in nameList {
-                    base_json.set("val", n);
-                    var json: [0..#1] string = ["%jt".format(base_json)];
-                    var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
+                    base_json.setVal(n);
+                    var subArgs = new MessageArgs(new list([base_json]));
+                    var resp = unregisterMsg(cmd, subArgs, st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }
@@ -623,11 +615,11 @@ module RegistrationMsg
 
                 // Convert the string back into an array for looping
                 var nameList = nameStr.split("+");
-                var base_json = msgArgs.get("name").asMap();
+                var base_json = msgArgs.get("name");
                 forall n in nameList with (in base_json, + reduce status) {
-                    base_json.set("val", n);
-                    var json: [0..#1] string = ["%jt".format(base_json)];
-                    var resp = unregisterMsg(cmd, "%jt".format(json), json.size, st);
+                    base_json.setVal(n);
+                    var subArgs = new MessageArgs(new list([base_json]));
+                    var resp = unregisterMsg(cmd, subArgs, st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
             }

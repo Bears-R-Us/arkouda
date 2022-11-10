@@ -262,8 +262,7 @@ module FileIO {
       return getFileTypeByMagic(getFirstEightBytesFromFile(filename));
     }
 
-    proc getFileTypeMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-      var msgArgs = parseMessageArgs(payload, argSize);
+    proc getFileTypeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var filename = msgArgs.getValueOf("filename");
 
       // If the filename represents a glob pattern, retrieve the locale 0 filename
@@ -298,9 +297,7 @@ module FileIO {
       }
     }
 
-    proc lsAnyMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-      var msgArgs = parseMessageArgs(payload, argSize);
-      
+    proc lsAnyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       // Retrieve filename from payload
       var filename: string = msgArgs.getValueOf("filename");
       if filename.isEmpty() {
@@ -331,10 +328,10 @@ module FileIO {
 
       select getFileType(filename) {
         when FileType.HDF5 {
-          return executeCommand("lshdf", payload, argSize, st);
+          return executeCommand("lshdf", msgArgs, st);
         }
         when FileType.PARQUET {
-          return executeCommand("lspq", payload, argSize, st);
+          return executeCommand("lspq", msgArgs, st);
         } otherwise {
           var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -342,8 +339,7 @@ module FileIO {
       }
     }
 
-    proc readAnyMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-      var msgArgs = parseMessageArgs(payload, argSize);
+    proc readAnyMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var nfiles = msgArgs.get("filename_size").getIntValue();
       var filelist: [0..#nfiles] string;
       
@@ -386,10 +382,10 @@ module FileIO {
 
       select getFileType(filenames[0]) {
         when FileType.HDF5 {
-          return executeCommand("readAllHdf", payload, argSize, st);
+          return executeCommand("readAllHdf", msgArgs, st);
         }
         when FileType.PARQUET {
-          return executeCommand("readAllParquet", payload, argSize, st);
+          return executeCommand("readAllParquet", msgArgs, st);
         } otherwise {
           var errorMsg = "Unsupported file type; Parquet and HDF5 are only supported formats";
           return new MsgTuple(errorMsg, MsgType.ERROR);

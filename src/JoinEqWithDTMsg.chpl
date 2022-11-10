@@ -223,10 +223,9 @@ module JoinEqWithDTMsg
        pred: is the dt-predicate ("absDT","posDT","trueDT")
        resLimit: is how many answers can you tolerate ;-)
     */
-    proc joinEqWithDTMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc joinEqWithDTMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         const dt = msgArgs.get("dt").getIntValue();
         const pred = msgArgs.get("pred").getIntValue();
         const resLimit = msgArgs.get("resLimit").getIntValue();

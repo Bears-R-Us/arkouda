@@ -30,10 +30,8 @@ module MsgProcessing
 
     :returns: (MsgTuple) response message
     */
-    proc createMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc createMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
-        var msgArgs = parseMessageArgs(payload, argSize);
         var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         var size = msgArgs.get("size").getIntValue();
         if (dtype == DType.UInt8) || (dtype == DType.Bool) {
@@ -70,10 +68,8 @@ module MsgProcessing
 
     :returns: MsgTuple
     */
-    proc deleteMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc deleteMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("name");
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                      "cmd: %s array: %s".format(cmd,st.attrib(name)));
@@ -99,7 +95,7 @@ module MsgProcessing
 
     :returns: MsgTuple
      */
-    proc clearMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc clearMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".format(cmd));
         st.clear();
@@ -121,10 +117,8 @@ module MsgProcessing
 
     :returns: MsgTuple
      */
-    proc infoMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc infoMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        // split request into fields
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("names");
  
         // if name == "__AllSymbols__" passes back info on all symbols       
@@ -144,7 +138,7 @@ module MsgProcessing
 
     :returns: MsgTuple
      */
-    proc getconfigMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc getconfigMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         return new MsgTuple(getConfig(), MsgType.NORMAL);
@@ -161,7 +155,7 @@ module MsgProcessing
 
     :returns: MsgTuple
      */
-    proc getmemusedMsg(cmd: string, payload: string, argSize:int, st: borrowed SymTab): MsgTuple throws {
+    proc getmemusedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
@@ -190,7 +184,7 @@ module MsgProcessing
      *
      * :returns: MsgTuple containing JSON formatted string of cmd -> function mapping
      */
-    proc getCommandMapMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab) throws {
+    proc getCommandMapMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) throws {
         // We can ignore the args, we just need it to match the CommandMap call signature
         import CommandMap;
         try {
@@ -214,9 +208,8 @@ module MsgProcessing
 
     :returns: (string,MsgType)
    */
-    proc strMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc strMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, 2);
         const name = msgArgs.getValueOf("array");
 
         var printThresh = msgArgs.get("printThresh").getIntValue();
@@ -240,9 +233,8 @@ module MsgProcessing
 
        :returns: MsgTuple
       */ 
-    proc reprMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc reprMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         var printThresh = msgArgs.get("printThresh").getIntValue();
 
@@ -263,10 +255,9 @@ module MsgProcessing
     :returns: MsgTuple
     :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc setMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         const name = msgArgs.getValueOf("array");
         var dtype = str2dtype(msgArgs.getValueOf("dtype"));
         const value = msgArgs.get("val");

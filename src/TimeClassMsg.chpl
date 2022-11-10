@@ -38,8 +38,8 @@ module TimeClassMsg {
 
     const UNITS = ["nanosecond", "microsecond", "millisecond", "second", "minute", "hour", "day"];
 
-    proc dateTimeAttributesMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var values: borrowed GenSymEntry = getGenericTypedArrayEntry(parseMessageArgs(payload, argSize).getValueOf("values"), st);
+    proc dateTimeAttributesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var values: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("values"), st);
         var valuesEntry = toSymEntry(values, int);
         var attributesDict = simpleAttributesHelper(valuesEntry.a, st);
 
@@ -90,8 +90,8 @@ module TimeClassMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc timeDeltaAttributesMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-        var values: borrowed GenSymEntry = getGenericTypedArrayEntry(parseMessageArgs(payload, argSize).getValueOf("values"), st);
+    proc timeDeltaAttributesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var values: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("values"), st);
         var repMsg: string = "%jt".format(simpleAttributesHelper(toSymEntry(values, int).a, st));
 
         tLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);

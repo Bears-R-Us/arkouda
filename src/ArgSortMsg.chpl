@@ -207,10 +207,9 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc coargsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var msgArgs = parseMessageArgs(payload, argSize);
       var algoName = msgArgs.getValueOf("algoName");
       var algorithm: SortingAlgorithm = defaultSortAlgorithm;
       if algoName != "" {
@@ -325,10 +324,9 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+    proc argsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var msgArgs = parseMessageArgs(payload, argSize);
         var name = msgArgs.getValueOf("name");
         var algoName = msgArgs.getValueOf("algoName");
         var algorithm: SortingAlgorithm = defaultSortAlgorithm;

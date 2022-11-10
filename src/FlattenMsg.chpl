@@ -12,8 +12,7 @@ module FlattenMsg {
   private config const logLevel = ServerConfig.logLevel;
   const fmLogger = new Logger(logLevel);
 
-  proc segFlattenMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
-    var msgArgs = parseMessageArgs(payload, argSize);
+  proc segFlattenMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     const objtype = msgArgs.getValueOf("objtype");
     const returnSegs: bool = msgArgs.get("return_segs").getBoolValue();
     const regex: bool = msgArgs.get("regex").getBoolValue();
@@ -45,10 +44,9 @@ module FlattenMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedSplitMsg(cmd: string, payload: string, argSize: int, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedSplitMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var msgArgs = parseMessageArgs(payload, argSize);
 
     const objtype = msgArgs.getValueOf("objtype");
     const name = msgArgs.getValueOf("parent_name");

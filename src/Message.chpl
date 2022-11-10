@@ -255,9 +255,15 @@ module Message {
     :size: int - number of parameters contained in list
     */
     class MessageArgs {
-        var param_list;
+        var param_list: list(ParameterObj);
         var size: int;
-        proc init(param_list: [?aD] ?t) {
+
+        proc init() {
+            this.param_list = new list(ParameterObj);
+            this.size = 0;
+        }
+
+        proc init(param_list: list(ParameterObj)) {
             this.param_list = param_list;
             this.size = param_list.size;
         }
@@ -365,11 +371,11 @@ module Message {
     */
     proc parseMessageArgs(json_str: string, size: int) throws {
         var pArr = jsonToPdArray(json_str, size);
-        var paramArr: [0..#size] ParameterObj;
-        forall (i, j_str) in zip(0..#size, pArr) {
-            paramArr[i] = parseParameter(j_str);
+        var param_list = new list(ParameterObj, parSafe=true);
+        forall j_str in pArr with (ref param_list) {
+            param_list.append(parseParameter(j_str));
         }
-        return new MessageArgs(paramArr);
+        return new owned MessageArgs(param_list);
     }
 
     /*
