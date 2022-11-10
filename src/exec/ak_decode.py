@@ -12,11 +12,10 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
     try:
         decoded = options.value.encode("ascii").decode("idna")
-        if decoded != options.value:
-            with codecs.open(options.filename, "w", "utf-8") as f:
-                f.write(decoded)
-        else:
-            raise ValueError("Invalid encoding")
+        if decoded.strip()[:4] == "xn--":
+            raise ValueError("Invalid Encoding")
+        with codecs.open(options.filename, "w", "utf-8") as f:
+            f.write(decoded)
     except Exception:
         with open(options.filename, "w") as f:
             f.write("")
