@@ -9,12 +9,14 @@ module RegistrationMsg
     use Logging;
     use Message;
     use List;
+    use Map;
     use Set;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use SegmentedString;
+    use SegmentedArray;
     use SegmentedMsg;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -74,6 +76,11 @@ module RegistrationMsg
 
         const name = msgArgs.getValueOf("name");
 
+        var objType: string = "";
+        if msgArgs.contains("objType") {
+            objType = msgArgs.getValueOf("objType");
+        }
+
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "%s %s".format(cmd,name));
@@ -90,10 +97,38 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
-            repMsg = "created %s".format(attrib);
-            if (isStringAttrib(attrib)) {
-                var s = getSegString(name, st);
-                repMsg += "+created bytes.size %t".format(s.nBytes);
+            if objType.toLower() == "segarray" {
+                var a = attrib.split(" ");
+                var dtype = str2dtype(a[1]: string);
+                var rtnmap: map(string, string) = new map(string, string);
+
+                select dtype {
+                    when (DType.Int64) {
+                        var seg = getSegArray(name, st, int);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.UInt64) {
+                        var seg = getSegArray(name, st, uint);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.Float64) {
+                        var seg = getSegArray(name, st, real);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.Bool) {
+                        var seg = getSegArray(name, st, bool);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                }
+
+                repMsg = "%jt".format(rtnmap);
+            }
+            else {
+                repMsg = "created %s".format(attrib);
+                if (isStringAttrib(attrib)) {
+                    var s = getSegString(name, st);
+                    repMsg += "+created bytes.size %t".format(s.nBytes);
+                }
             }
             regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL); 

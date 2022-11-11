@@ -344,6 +344,14 @@ module Message {
             }
             return val_list;
         }
+
+        /*
+        Return bool if param_list contains given key name
+        */
+        proc contains(key: string): bool {
+            var key_list = new list(this.keys());
+            return key_list.contains(key);
+        }
     }
 
     /*
