@@ -1285,6 +1285,28 @@ class SegArray:
             return SegArray.from_parts(segments, new_values[g.permutation])
 
     def register(self, user_defined_name):
+        """
+        Save this SegArray object by registering it to the Symbol Table using a defined name
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which this SegArray object will be registered under
+
+        Returns
+        -------
+        SegArray
+            This SegArray object
+
+        Raises
+        ------
+        RegistrationError
+            Raised if the server could not register the SegArray object
+
+        See Also
+        --------
+        unregister, attach, is_registered
+        """
         try:
             rep_msg = generic_msg(
                 cmd="register", args={"array": self.name, "user_name": user_defined_name}
@@ -1301,21 +1323,78 @@ class SegArray:
         return self
 
     def unregister(self):
+        """
+        Remove this SegArray object from the Symbol Table
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not unregister the SegArray object from the Symbol Table
+
+        See Also
+        --------
+        register, attach, is_registered
+        """
         SegArray.unregister_segarray_by_name(self.name)
 
     @staticmethod
     def unregister_segarray_by_name(user_defined_name):
+        """
+        Using the defined name, remove the registered SegArray object from the Symbol Table
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the SegArray object was registered under
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not unregister the SegArray object from the Symbol Table
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
         generic_msg(cmd="unregister", args={"name": user_defined_name})
 
     @classmethod
     def attach(cls, user_defined_name):
+        """
+        Using the defined name, attach to a SegArray that has been registered to the Symbol Table
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the SegArray object was registered under
+
+        Returns
+        -------
+        SegArray
+            The resulting SegArray
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not attach to the SegArray object
+
+        See Also
+        --------
+        register, unregister, is_registered
+        """
         repMsg = generic_msg(
             cmd="attach",
             args={
                 "name": user_defined_name,
                 "objType": SegArray.objtype,
-                "segments": f"{user_defined_name}_segments",
-                "values": f"{user_defined_name}_values",
             },
         )
         return cls.from_return_msg(repMsg)
