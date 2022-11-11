@@ -15,7 +15,7 @@ For more information regarding the creation of new Symbol Table Entry types, vie
 <a id="overview"></a>
 ## Symbol Table Overview
 
-The Symbol Table is implemented using a Chapel Map and serves as a `lookup table` that uses a Chapel `Map` which allows Arkouda to persist objects until the server is shutdown or the object is deleted.
+The Symbol Table is implemented using a Chapel Map and serves as a `lookup table` which allows Arkouda to persist objects until the server is shutdown or the object is deleted.
 
 
 <a id="symStruct"></a>
@@ -41,7 +41,7 @@ The root-level entry type is `AbstractSymEntry`. All other entry types inherit f
 
 `SegStringSymEntry`tracks the component pieces of a `SegmentedStrings` object. The values of a `SegStringSymEntry` are stored in a `uint8` `SymEntry`. These components are all instances of `SymEntry` types.
 
-`CompositeSymEntry` is used to indicate that child `Entries` inheriting from this entry type contain multiple `data-adding` objects. This means that types under `CompositeSymEntry` contain multiple objects of varying types, which may not all be needed to conceptualize the Object. For example, `GroupBySymEntry` contains five `SymEntry` entries. One of these, `keyNamesEntry` could contain `n` number of references to additional data values. These could be of multiple types, and it is possible to build a GroupBy object with all or only part of the stored values.
+`CompositeSymEntry` is used to indicate that child `Entries` inheriting from this entry type contain multiple `data-adding` objects. This means that entry types under CompositeSymEntry contain multiple objects of varying types, which may not all be needed to conceptualize the object. For example, `GroupBySymEntry` contains five `SymEntry` entries. One of these, `keyNamesEntry` could contain `n` number of references to additional data values. These could be of multiple types, and it is possible to build a GroupBy object with all or only part of the stored values.
 
 `GroupBySymEntry` is used to track component pieces of a `GroupBy` object. It accomplishes this task by tracking five separate `SymEntry` instances that each correspond to one of the components.
 
@@ -104,11 +104,11 @@ More information on passing data between the client and server can be found [her
 
 ### Working with Entries in Chapel
 
-When working with a basic `SymEntry` entry type, you can easily access the data values within the entry by accessing the property `a`. To access the domain information, access the property `aD`. For example, assume we have a SymTab entry variable called `entry`.
+When working with a basic `SymEntry` entry type, you can easily access the data values within the entry by accessing the property `a`. To access the domain, access the property `aD`. For example, assume we have a SymTab entry variable called `entry`.
 
 ```chapel
   var values = entry.a;
-  var domain = entry.aD;
+  var entryDomain = entry.aD;
 ```
 
 Each entry type has its own set of properties that can be accessed using the `.` notation, similar to accessing class properties in Python objects. Below is a list of all accessible properties for each entry type within the hierarchy:
