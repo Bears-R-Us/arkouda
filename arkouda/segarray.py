@@ -97,8 +97,7 @@ class SegArray:
     def __init__(
         self, name, dtype, size, ndim, shape, itemsize, segments, values, lengths=None, grouping=None
     ):
-        self.name = None
-        self.serverName = name
+        self.name = name
         self.dtype = dtype
         self.size = size
         self.ndim = ndim
@@ -241,13 +240,8 @@ class SegArray:
         segments = create_pdarray(parts[1])
         values = create_pdarray(parts[2])
         lengths = create_pdarray(parts[3])
-        namePart = parts[1].split(" ")[1]
-        name = namePart[: namePart.index("_segments")]
 
-        segarr = cls.from_parts(segments, values, lengths=lengths)
-        segarr.name = name
-
-        return segarr
+        return cls.from_parts(segments, values, lengths=lengths)\
 
     @classmethod
     def from_multi_array(cls, m):
@@ -296,7 +290,7 @@ class SegArray:
             rep_msg = generic_msg(
                 cmd="segArr-getLengths",
                 args={
-                    "name": self.serverName,
+                    "name": self.name,
                 },
             )
             self._lengths = create_pdarray(rep_msg)
@@ -306,7 +300,7 @@ class SegArray:
         rep_msg = generic_msg(
             cmd="segArr-getNonEmpty",
             args={
-                "name": self.serverName,
+                "name": self.name,
             },
         )
         parts = rep_msg.split("+")
@@ -431,7 +425,7 @@ class SegArray:
                         "subcmd": "intIndex",
                         "objType": self.objtype,
                         "dtype": self.dtype,
-                        "obj": self.serverName,
+                        "obj": self.name,
                         "key": i,
                     },
                 )
@@ -446,7 +440,7 @@ class SegArray:
                 args={
                     "subcmd": "sliceIndex",
                     "objType": self.objtype,
-                    "obj": self.serverName,
+                    "obj": self.name,
                     "dtype": self.dtype,
                     "key": [start, stop, stride],
                 },
@@ -464,7 +458,7 @@ class SegArray:
                     "subcmd": "pdarrayIndex",
                     "objType": self.objtype,
                     "dtype": self.values.dtype,
-                    "obj": self.serverName,
+                    "obj": self.name,
                     "key": i,
                 },
             )
@@ -1339,14 +1333,11 @@ class SegArray:
         if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
             raise ValueError("Suffixes must all be different")
         # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
-        segarr = cls.from_parts(
+        return cls.from_parts(
             attach_pdarray(name + segment_suffix),
             attach_pdarray(name + value_suffix),
             lengths=attach_pdarray(name + length_suffix),
         )
-
-        segarr.name = name
-        return segarr
 
     def is_registered(self) -> bool:
         """
