@@ -241,7 +241,7 @@ class SegArray:
         values = create_pdarray(parts[2])
         lengths = create_pdarray(parts[3])
 
-        return cls.from_parts(segments, values, lengths=lengths)\
+        return cls.from_parts(segments, values, lengths=lengths)
 
     @classmethod
     def from_multi_array(cls, m):
