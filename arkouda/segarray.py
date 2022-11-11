@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import cast as type_cast
-from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -15,7 +14,12 @@ from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdarray, RegistrationError
+from arkouda.pdarrayclass import (
+    RegistrationError,
+    create_pdarray,
+    is_sorted,
+    pdarray,
+)
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
 from arkouda.pdarraysetops import concatenate
