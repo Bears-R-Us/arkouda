@@ -614,3 +614,21 @@ class SegArrayTest(ArkoudaTest):
         self.assertFalse(segarr.is_registered())
 
         self.assertEqual(len(ak.list_registry()), 0)
+
+    def test_unregister_by_name(self):
+        a = [1, 2, 3]
+        b = [6, 7, 8]
+
+        segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
+        # register the seg array
+        segarr.register("segarr_unreg_name_test")
+
+        # Verify is_registered
+        self.assertTrue(segarr.is_registered())
+
+        # Unregister all components
+        ak.SegArray.unregister_segarray_by_name("segarr_unreg_name_test")
+
+        # Verify no registered components remain
+        self.assertFalse(segarr.is_registered())
+        self.assertEqual(len(ak.list_registry()), 0)
