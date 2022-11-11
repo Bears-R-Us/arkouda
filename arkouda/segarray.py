@@ -1299,14 +1299,15 @@ class SegArray:
         self.segments.register(name + segment_suffix)
         self.values.register(name + value_suffix)
         self.lengths.register(name + length_suffix)
-        self.name = name
         # TODO - groupby does not have register.
         # self.grouping.register(name+grouping_suffix)
 
     def unregister(self):
-        SegArray.unregister_segarray_by_name(self.name)
-
-        self.name = None
+        self.segments.unregister()
+        self.values.unregister()
+        self.lengths.unregister()
+        # TODO - groupby does not have unregister.
+        # self.grouping.unregister()
 
     @staticmethod
     def unregister_segarray_by_name(name):
