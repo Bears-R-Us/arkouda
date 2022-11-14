@@ -175,7 +175,7 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow
+CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv check-idn2
 endif
 check-deps: $(CHECK_DEPS)
 
@@ -229,6 +229,20 @@ check-arrow: $(ARROW_CHECK) $(ARROW_O)
 	@echo "Checking for Arrow"
 	make compile-arrow-cpp
 	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< $(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
+
+ICONV_CHECK = $(DEP_INSTALL_DIR)/checkIconv.chpl
+check-iconv: $(ICONV_CHECK)
+	@echo "Checking for iconv"
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) -M $(ARKOUDA_SOURCE_DIR) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
+
+IDN2_CHECK = $(DEP_INSTALL_DIR)/checkIdn2.chpl
+check-idn2: $(IDN2_CHECK)
+	@echo "Checking for idn2"
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) -M $(ARKOUDA_SOURCE_DIR) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
 	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
