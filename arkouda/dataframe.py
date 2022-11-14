@@ -2147,10 +2147,7 @@ class DataFrame(UserDict):
         Tuple (columnName, columnType)
         """
         nameParts = entryName.split(" ")
-        if len(nameParts) > 1:
-            regName = nameParts[1]
-        else:
-            regName = nameParts[0]
+        regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
 
         colParts = regName.split("_")
         colType = colParts[2]
