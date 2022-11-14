@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from typing import Mapping, Union, cast
@@ -292,8 +293,6 @@ def attach(name: str, dtype: str = "infer"):
 
     if repType == "categorical":
         return Categorical.from_return_msg(repMsg)
-    elif repType == "segarray":
-        return SegArray._from_attach_return_msg(repMsg)
     elif repType == "series":
         from arkouda.series import Series
 
@@ -303,12 +302,15 @@ def attach(name: str, dtype: str = "infer"):
 
         return DataFrame.from_return_msg(repMsg)
     else:
-        dtype = repMsg.split()[2]
+        try:
+            return SegArray.from_return_msg(repMsg)
+        except json.JSONDecodeError:
+            dtype = repMsg.split()[2]
 
-        if dtype == "str":
-            return Strings.from_return_msg(repMsg)
-        else:
-            return create_pdarray(repMsg)
+            if dtype == "str":
+                return Strings.from_return_msg(repMsg)
+            else:
+                return create_pdarray(repMsg)
 
 
 def unregister_by_name(name: str, dtype: str = "infer"):

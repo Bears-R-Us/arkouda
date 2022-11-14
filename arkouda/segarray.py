@@ -14,12 +14,7 @@ from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
 from arkouda.pdarraysetops import concatenate
@@ -1394,7 +1389,7 @@ class SegArray:
             cmd="attach",
             args={
                 "name": user_defined_name,
-                "objType": SegArray.objtype,
+                "objtype": SegArray.objtype,
             },
         )
         return cls.from_return_msg(repMsg)
