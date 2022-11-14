@@ -197,11 +197,12 @@ module MultiTypeSymEntry
         type etype;
 
         /*
-        'aD' is the distributed domain for 'a' whose value and type
-        are defined by makeDistDom() to support varying distributions
+        'a' is the distributed array whose value and type are defined by
+        makeDist{Dom,Array}() to support varying distributions
         */
-        const aD: makeDistDom(size).type;
-        var a: [aD] etype;
+        var a = makeDistArray(size, etype);
+        /* Removed domain accessor, use `a.domain` instead */
+        proc aD { compilerError("SymEntry.aD has been removed, use SymEntry.a.domain instead"); }
         
         /*
         This init takes length and element type
@@ -218,31 +219,36 @@ module MultiTypeSymEntry
             assignableTypes.add(this.entryType);
 
             this.etype = etype;
-            this.aD = makeDistDom(len);
-            // this.a uses default initialization
+            this.a = makeDistArray(size, etype);
         }
 
-        /*This init takes an array of a type
+        /*
+        This init takes an array whose type matches `makeDistArray()`
 
         :arg a: array
         :type a: [] ?etype
         */
-        proc init(a: [?D] ?etype) {
+        proc init(in a: [?D] ?etype) {
             super.init(etype, D.size);
             this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
             assignableTypes.add(this.entryType);
 
             this.etype = etype;
-            this.aD = D;
             this.a = a;
         }
 
         /*
-        Verbose flag utility method
+        This init takes an array whose type is defaultRectangular (convenience
+        function for creating a distributed array from a non-distributed one)
+
+        :arg a: array
+        :type a: [] ?etype
         */
-        proc postinit() {
-            //if v {write("aD = "); printOwnership(this.a);}
+        proc init(a: [?D] ?etype) where MyDmap != Dmap.defaultRectangular && a.isDefaultRectangular() {
+            this.init(D.size, etype);
+            this.a = a;
         }
+
         /*
         Verbose flag utility method
         */
