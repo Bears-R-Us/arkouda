@@ -1,12 +1,20 @@
 import glob
 import os
 from shutil import rmtree
+from arkouda import io_util
+import tempfile
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
 
 class IndexTest(ArkoudaTest):
+    @classmethod
+    def setUpClass(cls):
+        super(IndexTest, cls).setUpClass()
+        IndexTest.ind_test_base_tmp = "{}/ind_io_test".format(os.getcwd())
+        io_util.get_directory(IndexTest.ind_test_base_tmp)
+
     def test_index_creation(self):
         idx = ak.Index(ak.arange(5))
 
@@ -101,13 +109,7 @@ class IndexTest(ArkoudaTest):
 
     def test_save(self):
         locale_count = ak.get_config()["numLocales"]
-        d = f"{os.getcwd()}/save_index_test"
-        # make directory to save to so pandas read works
-        os.mkdir(d)
-
-        idx = ak.Index(ak.arange(5))
-        idx.save(f"{d}/idx_file.h5")
-        self.assertEqual(len(glob.glob(f"{d}/idx_file_*.h5")), locale_count)
-
-        # clean up test files
-        rmtree(d)
+        with tempfile.TemporaryDirectory(dir=IndexTest.ind_test_base_tmp) as tmp_dirname:
+            idx = ak.Index(ak.arange(5))
+            idx.to_hdf(f"{tmp_dirname}/idx_file.h5")
+            self.assertEqual(len(glob.glob(f"{tmp_dirname}/idx_file_*.h5")), locale_count)

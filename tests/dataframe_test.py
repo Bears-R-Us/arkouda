@@ -2,7 +2,9 @@ import glob
 import os
 import random
 import string
+import tempfile
 from shutil import rmtree
+from arkouda import io_util
 
 import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
@@ -88,6 +90,12 @@ def build_pd_df_append():
 
 
 class DataFrameTest(ArkoudaTest):
+    @classmethod
+    def setUpClass(cls):
+        super(DataFrameTest, cls).setUpClass()
+        DataFrameTest.df_test_base_tmp = "{}/df_test".format(os.getcwd())
+        io_util.get_directory(DataFrameTest.df_test_base_tmp)
+
     def test_dataframe_creation(self):
         # Validate empty DataFrame
         df = ak.DataFrame()
@@ -495,9 +503,6 @@ class DataFrameTest(ArkoudaTest):
         self.assertEqual(df.__repr__(), df_copy.__repr__())
 
     def test_save(self):
-        d = f"{os.getcwd()}/save_table_test"
-        if os.path.exists(d):
-            rmtree(d)
         i = list(range(3))
         c1 = [9, 7, 17]
         c2 = [2, 4, 6]
@@ -512,27 +517,22 @@ class DataFrameTest(ArkoudaTest):
                 "c_2": c2,
             }
         )
+        with tempfile.TemporaryDirectory(dir=DataFrameTest.df_test_base_tmp) as tmp_dirname:
+            akdf.to_parquet(f"{tmp_dirname}/testName")
 
-        # make directory to save to so pandas read works
-        os.mkdir(d)
-        akdf.save(f"{d}/testName", file_format="Parquet")
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
+            self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
 
-        ak_loaded = ak.DataFrame.load(f"{d}/testName")
-        self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+            # test save with index true
+            akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
+            self.assertEqual(len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")), ak.get_config()["numLocales"])
 
-        # test save with index true
-        akdf.save(f"{d}/testName_with_index.pq", file_format="Parquet", index=True)
-        self.assertEqual(len(glob.glob(f"{d}/testName_with_index*.pq")), ak.get_config()["numLocales"])
-
-        # Test for df having seg array col
-        df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
-        df.save(f"{d}/seg_test.h5")
-        self.assertEqual(len(glob.glob(f"{d}/seg_test*.h5")), ak.get_config()["numLocales"])
-        ak_loaded = ak.DataFrame.load(f"{d}/seg_test.h5")
-        self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
-
-        # clean up test files
-        rmtree(d)
+            # Test for df having seg array col
+            df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
+            df.to_hdf(f"{tmp_dirname}/seg_test.h5")
+            self.assertEqual(len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"])
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
+            self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})

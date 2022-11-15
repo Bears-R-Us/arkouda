@@ -15,7 +15,6 @@ from arkouda.sorting import *
 from arkouda.pdarraysetops import *
 from arkouda.pdarraycreation import *
 from arkouda.numeric import *
-from arkouda.pdarrayIO import *
 from arkouda.groupbyclass import *
 from arkouda.strings import *
 from arkouda.join import *
@@ -31,3 +30,4 @@ from arkouda.series import *
 from arkouda.alignment import *
 from arkouda.plotting import *
 from arkouda.accessor import *
+from arkouda.io import *

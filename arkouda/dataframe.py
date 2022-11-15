@@ -30,7 +30,7 @@ from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import attach as pd_attach
 from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.pdarrayIO import get_filetype, load_all, save_all
+from arkouda.io import get_filetype, load_all, save_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
@@ -1449,8 +1449,72 @@ class DataFrame(UserDict):
         else:
             return pd.DataFrame(data=pandas_data)
 
+    def _prep_data(self, index=False, columns=None):
+        # if no columns are stored, we will save all columns
+        if columns is None:
+            data = self.data
+        else:
+            data = {c: self.data[c] for c in columns}
+
+        if index:
+            data["Index"] = self.index
+        return data
+
+    def to_hdf(self, path, index=False, columns=None, file_type="distribute"):
+        """
+        Save DataFrame to disk as hdf5, preserving column names.
+
+        Parameters
+        ----------
+        path : str
+            File path to save data
+        index : bool
+            If True, save the index column. By default, do not save the index.
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        file_type: str (single | distribute)
+            Default: distribute
+            Whether to save to a single file or distribute across Locales
+
+        Notes
+        -----
+        This method saves one file per locale of the arkouda server. All
+        files are prefixed by the path argument and suffixed by their
+        locale number.
+        """
+        from arkouda.io import to_hdf
+        data = self._prep_data(index=index, columns=columns)
+        to_hdf(data, prefix_path=path, file_type=file_type)
+
+    def to_parquet(self, path, index=False, columns=None):
+        """
+        Save DataFrame to disk as parquet, preserving column names.
+
+        Parameters
+        ----------
+        path : str
+            File path to save data
+        index : bool
+            If True, save the index column. By default, do not save the index.
+        columns: List
+            List of columns to include in the file. If None, writes out all columns
+        file_type: str (single | distribute)
+            Default: distribute
+            Whether to save to a single file or distribute across Locales
+
+        Notes
+        -----
+        This method saves one file per locale of the arkouda server. All
+        files are prefixed by the path argument and suffixed by their
+        locale number.
+        """
+        from arkouda.io import to_parquet
+        data = self._prep_data(index=index, columns=columns)
+        to_parquet(data, prefix_path=path)
+
     def save(self, path, index=False, columns=None, file_format="HDF5"):
         """
+        DEPRECATED
         Save DataFrame to disk, preserving column names.
 
         Parameters
@@ -1470,6 +1534,10 @@ class DataFrame(UserDict):
         files are prefixed by the path argument and suffixed by their
         locale number.
         """
+        warn(
+            "ak.DataFrame.save has been deprecated. Please use ak.DataFrame.to_hdf or ak.DataFrame.to_parquet",
+            DeprecationWarning,
+        )
         # if no columns are stored, we will save all columns
         if columns is None:
             data = self.data
