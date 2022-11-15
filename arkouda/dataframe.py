@@ -2113,8 +2113,7 @@ class DataFrame(UserDict):
         if len(matches) == 0:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
-        # Remove duplicates caused by multiple components in categorical or segarray and
-        # loop through
+        # Remove duplicates caused by multiple components in categorical and loop through
         for name in set(matches):
             if f"_{Strings.objtype}_" in name:
                 Strings.unregister_strings_by_name(name)
@@ -2203,6 +2202,8 @@ class DataFrame(UserDict):
                 elif colType == "str":
                     cols[colName] = Strings.from_return_msg(f"{parts[i]}+{parts[i+1]}")
                     i += 1
+                else:
+                    raise ValueError(f"Unknown object type defined in return message - {colType}")
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]

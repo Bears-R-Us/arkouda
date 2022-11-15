@@ -21,6 +21,7 @@ module RegistrationMsg
 
     private config const logLevel = ServerConfig.logLevel;
     const regLogger = new Logger(logLevel);
+    private var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
 
     /* 
     Parse, execute, and respond to a register message 
@@ -123,12 +124,17 @@ module RegistrationMsg
 
                 repMsg = "%jt".format(rtnmap);
             }
-            else {
+            else if objType == "" || objType == "str" || objType == "pdarray" {
                 repMsg = "created %s".format(attrib);
                 if (isStringAttrib(attrib)) {
                     var s = getSegString(name, st);
                     repMsg += "+created bytes.size %t".format(s.nBytes);
                 }
+            }
+            else {
+                var errorMsg = "Error: Unkown object type passed to attachMsg - %s".format(objType);
+                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
             regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL); 
@@ -453,7 +459,6 @@ module RegistrationMsg
         }
 
         // type possibilities for pdarray and strings
-        var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
         if simpleTypes.contains(dtype.toLower()) {
             dtype = "simple";
         }
@@ -461,13 +466,21 @@ module RegistrationMsg
         select (dtype.toLower()) {
             when ("simple") {
                 // pdarray, strings, and segarray can use the attachMsg method
-                return attachMsg(cmd, msgArgs, st);
+                var aRet = attachMsg(cmd, msgArgs, st);
+                var msg = aRet.msg;
+                var msgType = aRet.msgType;
+                repMsg = "simple+%s".format(msg);
+                return new MsgTuple(repMsg, msgType);
             }
             when ("segarray") {
                 var attParam = new ParameterObj("name", name, ObjectType.VALUE, "");
                 var objParam =  new ParameterObj("objtype", dtype, ObjectType.VALUE, "");
                 var subArgs = new MessageArgs(new list([attParam, objParam]));
-                return attachMsg(cmd, subArgs, st);
+                var aRet = attachMsg(cmd, subArgs, st);
+                var msg = aRet.msg;
+                var msgType = aRet.msgType;
+                repMsg = "segarray+%s".format(msg);
+                return new MsgTuple(repMsg, msgType);
             }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
@@ -541,9 +554,7 @@ module RegistrationMsg
             dtype = findType(cmd, name, st);
         }
 
-        // type possibilities for pdarray and strings
-        var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str", "segarray"];
-        if simpleTypes.contains(dtype.toLower()) {
+        if simpleTypes.contains(dtype.toLower()) || dtype == "segarray" {
             dtype = "simple";
         }
 

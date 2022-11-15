@@ -301,16 +301,18 @@ def attach(name: str, dtype: str = "infer"):
         from arkouda.dataframe import DataFrame
 
         return DataFrame.from_return_msg(repMsg)
+    elif repType == "segarray":
+        repMsg = repMsg[len(repType) + 1 :]
+        return SegArray.from_return_msg(repMsg)
+    elif repType == "simple":
+        dtype = repMsg.split()[2]
+        repMsg = repMsg[len(repType) + 1 :]
+        if dtype == "str":
+            return Strings.from_return_msg(repMsg)
+        else:
+            return create_pdarray(repMsg)
     else:
-        try:
-            return SegArray.from_return_msg(repMsg)
-        except json.JSONDecodeError:
-            dtype = repMsg.split()[2]
-
-            if dtype == "str":
-                return Strings.from_return_msg(repMsg)
-            else:
-                return create_pdarray(repMsg)
+        raise ValueError(f"Unknown object type returned by genericAttach - {repType}")
 
 
 def unregister_by_name(name: str, dtype: str = "infer"):
