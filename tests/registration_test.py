@@ -219,7 +219,7 @@ class RegistrationTest(ArkoudaTest):
             msg="No registered objects were found in registry",
         )
 
-        ak.ones(10, dtype=ak.int64)
+        not_registered_array = ak.ones(10, dtype=ak.int64)
         self.assertTrue(
             len(json.loads(ak.information(ak.AllSymbols)))
             > len(json.loads(ak.information(ak.RegisteredSymbols))),
@@ -687,6 +687,7 @@ class RegistrationTest(ArkoudaTest):
         segarr.unregister()
         self.assertFalse(segarr.is_registered())
 
+
     def test_unregister_by_name(self):
         a = [1, 2, 3]
         b = [6, 7, 8]
@@ -703,7 +704,6 @@ class RegistrationTest(ArkoudaTest):
 
         # Verify no registered components remain
         self.assertFalse(segarr.is_registered())
-
 
 def cleanup():
     ak.clear()
