@@ -7,6 +7,8 @@ The dependencies listed here have varying installation instructions depending up
 - `zeromq>=4.2.5`
 - `hdf5`
 - `python>=3.8`
+- `iconv`
+- `idn2`
 
 # Python Dependencies
 

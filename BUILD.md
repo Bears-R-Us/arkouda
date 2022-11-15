@@ -91,6 +91,8 @@ Before installing, ensure the `Makefile.paths` is empty.
 - ZMQ
 - HDF5
 - Arrow
+- iconv
+- idn2
 
 ##### All Dependencies 
 
@@ -107,6 +109,12 @@ make install-hdf5
 
 # Install Arrow Only
 make install-arrow
+
+# Install iconv Only
+make install-iconv
+
+# Install idn2 Only
+make install-idn2
 ```
 
 #### Arrow Install Troubleshooting

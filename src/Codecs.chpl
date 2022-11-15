@@ -20,7 +20,7 @@ module Codecs {
       }
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
-      forall i in ret.domain do ret[i] = (tmp+i).deref();
+      for i in ret.domain do ret[i] = (tmp+i).deref();
       idn2_free(cRes: c_void_ptr);
       return ret;
     } else if fromEncoding == "IDNA" {
@@ -37,7 +37,7 @@ module Codecs {
       }
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
-      forall i in ret.domain do ret[i] = (tmp+i).deref();
+      for i in ret.domain do ret[i] = (tmp+i).deref();
       idn2_free(cRes: c_void_ptr);
       return ret;
     } else {

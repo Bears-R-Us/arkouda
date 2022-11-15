@@ -19,7 +19,7 @@ These env vars can be used to configure your build of Arkouda when running `make
 #### Chapel Compiler Flags
   - CHPL_FLAGS : A number of flags will be added automatically to the `chpl` compiler in the Makefile, you can add your
     own, additional ones here.
-    - `-smemTrack=true -lhdf5 -lhdf5_hl -lzmq`, will add `--fast` unless one of the following env vars are set.
+    - `-smemTrack=true -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2`, will add `--fast` unless one of the following env vars are set.
   - ARKOUDA_DEVELOPER : Setting this to 1 or true will add the `-O1` flag to CHPL_FLAGS.  NOTE: _mutually exclusive_ with
     `ARKOUDA_QUICK_COMPILE`
   - ARKOUDA_QUICK_COMPILE : Setting this to 1 or true will add the following flags.  NOTE: _mutually exclusive_ with
@@ -36,7 +36,9 @@ Most folks install anaconda and link to these libraries through Makefile.paths i
 setup you can set them explicitly via:
   - ARKOUDA_ZMQ_PATH : Path to ZMQ library
   - ARKOUDA_HDF5_PATH : Path to HDF5 library
-  - ARKOUDA_ARROW_PATH : Path to Arrow library 
+  - ARKOUDA_ARROW_PATH : Path to Arrow library
+  - ARKOUDA_ICONV_PATH : Path to iconv library
+  - ARKOUDA_IDN2_PATH : Path to idn2 library
   - LD_LIBRARY_PATH : Path to environment `lib` directory.
   - ARKOUDA_SKIP_CHECK_DEPS : Setting this will skip the automated checks for dependencies (i.e. ZMQ, HDF5). This is
     useful for developers doing repeated Arkouda builds since they should have already verified the deps have been set up.
