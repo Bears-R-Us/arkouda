@@ -7,7 +7,9 @@ module Codecs {
   
   proc encodeStr(obj: c_ptr(uint(8)), inBufSize: int, outBufSize: int, toEncoding: string = "UTF-8", fromEncoding: string = "UTF-8"): [] uint(8) throws {
     if toEncoding == "IDNA" {
-      if outBufSize == 1 {
+      if fromEncoding != "UTF-8" {
+        throw new Error("Only encoding from UTF-8 is supported for IDNA encoding");
+      } else if outBufSize == 1 {
         var ret: [0..0] uint(8) = 0x00;
         return ret;
       }
@@ -18,11 +20,13 @@ module Codecs {
       }
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
-      for i in ret.domain do ret[i] = (tmp+i).deref();
+      forall i in ret.domain do ret[i] = (tmp+i).deref();
       idn2_free(cRes: c_void_ptr);
       return ret;
     } else if fromEncoding == "IDNA" {
-      if outBufSize == 1 {
+      if toEncoding != "UTF-8" {
+        throw new Error("Only encoding to UTF-8 is supported for IDNA encoding");
+      } else if outBufSize == 1 {
         var ret: [0..0] uint(8) = 0x00;
         return ret;
       }
@@ -33,7 +37,7 @@ module Codecs {
       }
       var tmp = cRes: c_ptr(uint(8));
       var ret: [0..#outBufSize] uint(8);
-      for i in ret.domain do ret[i] = (tmp+i).deref();
+      forall i in ret.domain do ret[i] = (tmp+i).deref();
       idn2_free(cRes: c_void_ptr);
       return ret;
     } else {
