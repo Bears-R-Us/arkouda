@@ -2638,8 +2638,6 @@ def rotr(x, rot) -> pdarray:
     >>> A = ak.arange(10)
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
-
-
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64]:
         if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
@@ -2658,18 +2656,19 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
     Raises an array to a power. If where is given, the operation will only take place in the positions
     where the where condition is True.
 
-    Notes:
-    This function was modified to deviate from the previous implementation that matched numpy.
-    If a False condition was given, numpy would return 0. This implementation will now return
-    the original value.
+    Note:
+    Our implementation of the where argument deviates from numpy. The difference in behavior occurs
+    at positions where the where argument contains a False. In numpy, these position will have
+    uninitialized memory (which can contain anything and will vary between runs). We have chosen to
+    instead return the value of the original array in these positions.
 
     Parameters
     ----------
     pda : pdarray
-        A pdarry of values that will be raised to a power (pwr)
+        A pdarray of values that will be raised to a power (pwr)
     pwr : integer, float, or pdarray
         The power(s) that pda is raised to
-    where : Boolean or pdaarray
+    where : Boolean or pdarray
         This condition is broadcast over the input. At locations where the condition is True, the
         corresponding value will be raised to the respective power. Elsewhere, it will retain its
         original value. Default set to True.
@@ -2681,7 +2680,10 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
 
     Examples
     --------
-    >>> ak.power(ak.arange(5), 3, truth)
+    >>> a = ak.arange(5)
+    >>> ak.power(a, 3)
+    array([0, 1, 8, 27, 64])
+    >>> ak.power(a), 3, a % 2 == 0)
     array([0, 1, 8, 3, 64])
     """
     from arkouda.numeric import cast as akcast
@@ -2717,9 +2719,10 @@ def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
         Returns a pdarray of square rooted values, under the boolean where condition.
 
     Examples:
-    >>> A = ak.arange(5)
-    >>> truth = ak.sqrt([True, True, False, False, True])
-    >>> ak.sqrt(A, truth)
+    >>> a = ak.arange(5)
+    >>> ak.sqrt(a)
+    array([0 1 1.4142135623730951 1.7320508075688772 2])
+    >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
     array([0, 1, 2, 3, 2])
     """
     return power(pda, 0.5, where)

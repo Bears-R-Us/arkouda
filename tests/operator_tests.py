@@ -468,21 +468,14 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual(p.to_list(), ex.tolist())
 
         # Test a singleton with and without a Boolean argument
-        n = np.array([7])
-        a = ak.array(n)
-
+        a = ak.array([7])
         self.assertListEqual(ak.power(a, 3, True).to_list(), ak.power(a, 3).to_list())
         self.assertListEqual(ak.power(a, 3, False).to_list(), a.to_list())
 
         # Test an with and without a Boolean argument, all the same
-        n = np.array([0, 0.0, 1, 7.0, 10])
-        a = ak.array(n)
-
-        truth_True = ak.ones(5, bool)
-        truth_False = ak.zeros(5, bool)
-
-        self.assertListEqual(ak.power(a, 3, truth_True).to_list(), ak.power(a, 3).to_list())
-        self.assertListEqual(ak.power(a, 3, truth_False).to_list(), a.to_list())
+        a = ak.array([0, 0.0, 1, 7.0, 10])
+        self.assertListEqual(ak.power(a, 3, ak.ones(5, bool)).to_list(), ak.power(a, 3).to_list())
+        self.assertListEqual(ak.power(a, 3, ak.zeros(5, bool)).to_list(), a.to_list())
 
         # Test a singleton with a mixed Boolean argument
         a = ak.arange(10)
@@ -507,11 +500,7 @@ class OperatorsTest(ArkoudaTest):
         # Most cases are taken care of in the test_pda_power tests
         n = np.array([4, 16.0, -1, 0, np.inf])
         a = ak.array(n)
-
-        s = ak.sqrt(a)
-        ex = np.sqrt(n)
-
-        self.assertTrue(np.allclose(s.to_ndarray(), ex, equal_nan=True))
+        self.assertTrue(np.allclose(ak.sqrt(a).to_ndarray(), np.sqrt(n), equal_nan=True))
 
         # Test with a mixed Boolean array
         a = ak.arange(5)
