@@ -45,15 +45,16 @@ module Codecs {
       if cd == (-1):libiconv_t then
         throw new Error("Unsupported encoding: " + toEncoding + " " + fromEncoding);
       var inBuf = obj:c_string;
-      // Add 1 for null terminator
-      var inSize = (inBufSize+1): c_size_t;
+      // Null terminator already accounted for
+      var inSize = (inBufSize): c_size_t;
 
       var chplRes: [0..#outBufSize] uint(8);
       var outSize = (outBufSize): c_size_t;
       
       var outBuf = c_ptrTo(chplRes):c_string;
 
-      libiconv(cd, inBuf, inSize, outBuf, outSize);
+      if libiconv(cd, inBuf, inSize, outBuf, outSize) != 0 then
+        throw new Error("Encoding to " + toEncoding + " failed");
       libiconv_close(cd);
 
       return chplRes;
@@ -103,7 +104,8 @@ module Codecs {
       
         var outBuf = c_ptrTo(chplRes):c_string;
 
-        libiconv(cd, inBuf, inSize, outBuf, outSize);
+        if libiconv(cd, inBuf, inSize, outBuf, outSize) != 0 then
+          throw new Error("Getting buf length for " + toEncoding + " failed");
         libiconv_close(cd);
       
         // For some encodings we have to handle the additional null
