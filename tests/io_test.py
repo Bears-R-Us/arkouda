@@ -770,8 +770,8 @@ class IOTest(ArkoudaTest):
             cwd += "/test/resources"
 
         # Now that we've figured out our loading path, load the files and test the lengths
-        v0 = ak.load(cwd + "/array_v0.hdf5", file_format="hdf5", legacyHDF5=True)
-        v1 = ak.load(cwd + "/array_v1.hdf5", file_format="hdf5", legacyHDF5=True)
+        v0 = ak.load(cwd + "/array_v0.hdf5", file_format="hdf5")
+        v1 = ak.load(cwd + "/array_v1.hdf5", file_format="hdf5")
         self.assertEqual(50, v0.size)
         self.assertEqual(50, v1.size)
 
