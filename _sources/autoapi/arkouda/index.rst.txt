@@ -7734,7 +7734,7 @@ Attributes
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer', legacyHDF5: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Read datasets from HDF5 or Parquet files.
 
@@ -7764,12 +7764,6 @@ Attributes
                        filenames to be of the specified type. Otherwise, will infer filetype
                        based off of first file in filenames, expanded if a glob expression.
    :type file_format: str
-   :param legacyHDF5: Default False
-                      Trigger reading an HDF5 file that was written before updates to
-                      formatting (v2022.10.13 or earlier).
-                      After using this, the object should be written again to update the correct formatting
-                      Can only be used if file_format="hdf5".
-   :type legacyHDF5: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
@@ -7809,7 +7803,7 @@ Attributes
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, legacyHDF5: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -12451,7 +12445,7 @@ Attributes
    array([False, False, False, False, False])
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False, legacyHDF5: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
