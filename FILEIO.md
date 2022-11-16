@@ -93,8 +93,6 @@ Arkouda objects can be read from files using the `ak.read()` or `ak.load()` func
 - [ak.load](https://bears-r-us.github.io/arkouda/usage/IO.html#arkouda.load)
 - [ak.load_all](https://bears-r-us.github.io/arkouda/usage/IO.html#arkouda.load_all)
 
-With the update to file version `v2.0`, reading `v1.0` and `v0.0` has been deprecated. If you have a file that was written in Arkouda version `v2022.10.13` or earlier, you will need to read the file with the `legacyHDF5=True`. This only works with `file_format='HDF5'`. You can then rewrite the file with the `save` functionality so that it can be read in future versions of arkouda.
-
 ## Writing Objects
 *Objects currently being written with file version `v2.0`.*
 
