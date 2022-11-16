@@ -1531,14 +1531,18 @@ module HDF5Msg {
         if C_HDF5.H5Aexists_by_name(obj_id, ".".c_str(), "ObjType", C_HDF5.H5P_DEFAULT) > 0 {
             var objType_id: C_HDF5.hid_t = C_HDF5.H5Aopen_by_name(obj_id, ".".c_str(), "ObjType", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
             C_HDF5.H5Aread(objType_id, getHDF5Type(int), c_ptrTo(objType_int));
+            C_HDF5.H5Aclose(objType_id);
         }
         else{
-            throw getErrorWithContext(
-                           msg="ObjType attribute not found",
-                           lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
-                           moduleName=getModuleName(),
-                           errorClass="RuntimeError");
+            // work around to handle old formats that do not store meta data.
+            // It is assumed that any objects in this case are storing strings or pdarray
+            if C_HDF5.H5Lexists(obj_id, "values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
+                // this means that the obj is a group and contains a strings obj
+                objType_int = ObjType.STRINGS: int;
+            }
+            else {
+                objType_int = ObjType.PDARRAY: int;
+            }
         }
         // Close the open hdf5 objects
         C_HDF5.H5Oclose(obj_id);

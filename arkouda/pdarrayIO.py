@@ -85,7 +85,6 @@ def read(
     allow_errors: bool = False,
     calc_string_offsets=False,
     file_format: str = "infer",
-    legacyHDF5: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -123,12 +122,6 @@ def read(
         type checking will be skipped and will execute expecting all files in
         filenames to be of the specified type. Otherwise, will infer filetype
         based off of first file in filenames, expanded if a glob expression.
-    legacyHDF5: bool
-        Default False
-        Trigger reading an HDF5 file that was written before updates to
-        formatting (v2022.10.13 or earlier).
-        After using this, the object should be written again to update the correct formatting
-        Can only be used if file_format="hdf5".
 
     Returns
     -------
@@ -198,7 +191,7 @@ def read(
     if file_format == "infer":
         cmd = "readany"
     elif file_format == "hdf5":
-        cmd = "readAllHdf_LEGACY" if legacyHDF5 else "readAllHdf"
+        cmd = "readAllHdf"
     elif file_format == "parquet":
         cmd = "readAllParquet"
     else:
@@ -352,7 +345,6 @@ def load(
     file_format: str = "INFER",
     dataset: str = "array",
     calc_string_offsets: bool = False,
-    legacyHDF5: bool = False,
 ) -> Union[
     pdarray,
     Strings,
@@ -423,7 +415,6 @@ def load(
             dataset,
             calc_string_offsets=calc_string_offsets,
             file_format=file_format,
-            legacyHDF5=legacyHDF5,
         )
     except RuntimeError as re:
         if "does not exist" in str(re):
