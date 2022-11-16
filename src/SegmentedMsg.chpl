@@ -971,15 +971,23 @@ module SegmentedMsg {
     
     select objtype {
         when "str" {
+            use Timers;
+            timers["getSegString1  "].startStop();
             var newStringsName = "";
             var nBytes = 0;
             var strings = getSegString(objName, st);
+            timers["getSegString1  "].startStop();
             try {
                 select gIV.dtype {
                     when DType.Int64 {
                         var iv = toSymEntry(gIV, int);
+                        timers["strings[iv.a]  "].startStop();
+                        timers["getSegString2  "];
                         var (newSegs, newVals) = strings[iv.a];
+                        timers["strings[iv.a]  "].startStop();
+                        timers["getSegString2  "].startStop();
                         var newStringsObj = getSegString(newSegs, newVals, st);
+                        timers["getSegString2  "].startStop();
                         newStringsName = newStringsObj.name;
                         nBytes = newStringsObj.nBytes;
                         repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %t".format(nBytes);

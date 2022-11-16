@@ -108,6 +108,7 @@
         for (i, rpm, ele) in zip(repMsgList.domain, repMsgList, eleList) { 
             var ele_parts = ele.split("+");
             ref col_name = ele_parts[1];
+            /*
             if ele_parts[0] == "Categorical" {
                 ref codes_name = ele_parts[2];
                 ref categories_name = ele_parts[3];
@@ -125,9 +126,13 @@
 
                 rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
             }
-            else if ele_parts[0] == "Strings"{
+            else */if ele_parts[0] == "Strings"{
                 dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is Strings. Name: %s".format(i, ele_parts[2]));
+		use Timers;
+		timers["segPdarrayIndex    "].startStop();
                 var repTup = segPdarrayIndex("str", ele_parts[2], msgArgs.getValueOf("idx_name"), DType.UInt8, st);
+		timers["segPdarrayIndex    "].startStop();
+
                 
                 if repTup.msgType == MsgType.ERROR {
                     throw new IllegalArgumentError(repTup.msg);
@@ -135,7 +140,7 @@
 
                 rpm = "%jt".format("Strings+%s+%s".format(col_name, repTup.msg));
             }
-            else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
+            /*else if ele_parts[0] == "pdarray" || ele_parts[0] == "IPv4" || 
                             ele_parts[0] == "Fields" || ele_parts[0] == "Datetime" || ele_parts[0] == "BitVector"{
                     dfiLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Element at %i is pdarray. Name: %s".format(i, ele_parts[2]));
                     var gCol: borrowed GenSymEntry = getGenericTypedArrayEntry(ele_parts[2], st);
@@ -195,7 +200,7 @@
                         throw new IllegalArgumentError(errorMsg);
                     }
                 }
-            }
+            }*/
             else {
                 var errorMsg = notImplementedError(pn, ele_parts[0]);
                 dfiLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

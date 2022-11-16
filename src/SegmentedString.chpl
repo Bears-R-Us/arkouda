@@ -205,8 +205,9 @@ module SegmentedString {
     /* Gather strings by index. Returns arrays for the segment offsets
        and bytes of the gathered strings.*/
     proc this(iv: [?D] ?t) throws where t == int || t == uint {
-      use ChplConfig;
-      
+      use ChplConfig, Timers;
+     
+      timers["checks"].startStop();
       // Early return for zero-length result
       if (D.size == 0) {
         return (makeDistArray(0, int), makeDistArray(0, uint(8)));
@@ -219,6 +220,9 @@ module SegmentedString {
                               "Array out of bounds");
           throw new owned OutOfBoundsError();
       }
+      timers["checks"].startStop();
+
+      timers["gather bound"].startStop();
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "Computing lengths and offsets");
       var t1 = getCurrentTime();
@@ -236,6 +240,8 @@ module SegmentedString {
         }
         agg.copy(l, oa[idx:int]);
       }
+      timers["gather bound"].startStop();
+      timers["len and offset"].startStop();
       // Lengths of segments including null bytes
       var gatheredLengths: [D] int = right - left;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -245,6 +251,7 @@ module SegmentedString {
       // The total number of bytes in the gathered strings
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
+      timers["len and offset"].startStop();
       
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                 "aggregation in %i seconds".format(getCurrentTime() - t1));
@@ -252,7 +259,11 @@ module SegmentedString {
       if logLevel == LogLevel.DEBUG {
           t1 = getCurrentTime();
       }
+
+      timers["gatheredVals create"].startStop();
       var gatheredVals = makeDistArray(retBytes, uint(8));
+      timers["gatheredVals create"].startStop();
+      timers["gather"].startStop();
       if CHPL_COMM != 'none' {
         // Compute the src index for each byte in gatheredVals
         /* For performance, we will do this with a scan, so first we need an array
@@ -292,6 +303,7 @@ module SegmentedString {
           }
         }
       }
+      timers["gather"].startStop();
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Gathered offsets and vals in %i seconds".format(
                                            getCurrentTime() -t1));

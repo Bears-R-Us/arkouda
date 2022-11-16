@@ -8,7 +8,7 @@ import pandas as pd
 
 import arkouda as ak
 
-OPS = ["_get_head_tail_server", "_get_head_tail"]
+OPS = ["_get_head_tail_server",]
 TYPES = (
     "int64",
     "uint64",
@@ -16,14 +16,14 @@ TYPES = (
 
 
 def generate_dataframe(N, seed):
-    types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]
+    types = [ak.Strings,]
 
     # generate random columns to build dataframe
     df_dict = {}
     np.random.seed(seed)
-    for x in range(20):  # loop to create 20 random columns
+    for x in range(50):
         key = f"c_{x}"
-        d = types[x % 4]
+        d = types[x % 1]
         if d == ak.Categorical:
             str_arr = ak.random_strings_uniform(minlen=5, maxlen=6, size=N, seed=seed)
             df_dict[key] = ak.Categorical(str_arr)
@@ -143,4 +143,5 @@ if __name__ == "__main__":
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
     time_ak_df_display(args.size, args.trials, args.seed)
+    ak.shutdown()
     sys.exit(0)
