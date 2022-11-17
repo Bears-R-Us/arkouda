@@ -279,7 +279,7 @@ def in1d_intervals(vals, intervals, symmetric=False):
         return found
 
 
-def search_intervals(vals, intervals, tiebreak=None, composite=False):
+def search_intervals(vals, intervals, tiebreak=None, hierarchical=False):
     """
     Given an array of query vals and non-overlapping, closed intervals, return
     the index of the best (see tiebreak) interval containing each query value,
@@ -297,7 +297,7 @@ def search_intervals(vals, intervals, tiebreak=None, composite=False):
         When a value is present in more than one interval, the interval with the
         lowest tiebreak value will be chosen. If no tiebreak is given, the
         first containing interval will be chosen.
-    composite: boolean
+    hierarchical: boolean
         When True, sequences of pdarrays will be treated as components specifying
         a single dimension (i.e. hierarchical)
         When False, sequences of pdarrays will be specifying multi-dimensional intervals
@@ -321,7 +321,7 @@ def search_intervals(vals, intervals, tiebreak=None, composite=False):
     >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
     >>> ak.search_intervals(vals, (starts, ends))
     array([0 -1 0 0 1 -1 1 -1])
-    >>> ak.search_intervals(vals, (starts, ends), composite=True)
+    >>> ak.search_intervals(vals, (starts, ends), hierarchical=True)
     array([0 0 0 0 1 1 1 -1])
     """
     from arkouda.join import gen_ranges
@@ -399,7 +399,7 @@ def search_intervals(vals, intervals, tiebreak=None, composite=False):
         if lowsize != highsize:
             raise ValueError("Lower and upper bound arrays must be same size")
         # verify upper bounds are greater than lower bounds
-        if composite:
+        if hierarchical:
             if not is_cosorted(low):
                 raise ValueError("Intervals must be sorted in ascending order")
             bounds_okay = True
@@ -437,7 +437,7 @@ def search_intervals(vals, intervals, tiebreak=None, composite=False):
 
         perm = coargsort([concatenate((lo, va, hi)) for lo, va, hi in zip(low, vals, high)])
 
-    if singleton or (isinstance(vals, Sequence) and composite):
+    if singleton or (isinstance(vals, Sequence) and hierarchical):
         # Index of interval containing each unique value (initialized to -1: not found)
         containing_interval = -ones(valsize, dtype=akint64)
         # iperm is the indices of the original values in the sorted array

@@ -49,7 +49,7 @@ class AlignmentTest(ArkoudaTest):
         self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
         self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
-        # test composite flag
+        # test hierarchical flag
         starts = (ak.array([0, 5]), ak.array([0, 11]))
         ends = (ak.array([5, 9]), ak.array([10, 20]))
         vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
@@ -58,7 +58,7 @@ class AlignmentTest(ArkoudaTest):
             ak.search_intervals(vals, (starts, ends)).to_list(), [0, -1, 0, 0, 1, -1, 1, -1]
         )
         self.assertListEqual(
-            ak.search_intervals(vals, (starts, ends), composite=True).to_list(),
+            ak.search_intervals(vals, (starts, ends), hierarchical=True).to_list(),
             [0, 0, 0, 0, 1, 1, 1, -1],
         )
 
