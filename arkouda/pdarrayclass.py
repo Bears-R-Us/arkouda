@@ -2653,13 +2653,81 @@ def rotr(x, rot) -> pdarray:
 
 
 @typechecked
-def power(pda: pdarray, pwr: Union[int, float, pdarray]) -> pdarray:
-    return pda**pwr
+def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdarray] = True) -> pdarray:
+    """
+    Raises an array to a power. If where is given, the operation will only take place in the positions
+    where the where condition is True.
+
+    Note:
+    Our implementation of the where argument deviates from numpy. The difference in behavior occurs
+    at positions where the where argument contains a False. In numpy, these position will have
+    uninitialized memory (which can contain anything and will vary between runs). We have chosen to
+    instead return the value of the original array in these positions.
+
+    Parameters
+    ----------
+    pda : pdarray
+        A pdarray of values that will be raised to a power (pwr)
+    pwr : integer, float, or pdarray
+        The power(s) that pda is raised to
+    where : Boolean or pdarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be raised to the respective power. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+        pdarray
+        Returns a pdarray of values raised to a power, under the boolean where condition.
+
+    Examples
+    --------
+    >>> a = ak.arange(5)
+    >>> ak.power(a, 3)
+    array([0, 1, 8, 27, 64])
+    >>> ak.power(a), 3, a % 2 == 0)
+    array([0, 1, 8, 3, 64])
+    """
+    from arkouda.numeric import cast as akcast
+    from arkouda.numeric import where as akwhere
+
+    if where is True:
+        return pda**pwr
+    elif where is False:
+        return pda
+    else:
+        exp = pda**pwr
+        return akwhere(where, exp, akcast(pda, dtype(exp)))
 
 
 @typechecked
-def sqrt(pda: pdarray) -> pdarray:
-    return power(pda, 0.5)
+def sqrt(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
+    """
+    Takes the square root of array. If where is given, the operation will only take place in
+    the positions where the where condition is True.
+
+    Parameters
+    ----------
+    pda : pdarray
+        A pdarry of values that will be square rooted
+    where : Boolean or pdaarray
+        This condition is broadcast over the input. At locations where the condition is True, the
+        corresponding value will be square rooted. Elsewhere, it will retain its original value.
+        Default set to True.
+
+    Returns
+    -------
+        pdarray
+        Returns a pdarray of square rooted values, under the boolean where condition.
+
+    Examples:
+    >>> a = ak.arange(5)
+    >>> ak.sqrt(a)
+    array([0 1 1.4142135623730951 1.7320508075688772 2])
+    >>> ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
+    array([0, 1, 2, 3, 2])
+    """
+    return power(pda, 0.5, where)
 
 
 @typechecked
