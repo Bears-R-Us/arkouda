@@ -42,8 +42,10 @@ module EncodingMsg {
       // TODO: is this inefficient?
       const lengths = stringsObj.getLengths();
 
+      var encodeLengths = getBufLengths(offs, origVals, toEncoding, fromEncoding);
       // add 1 for null terminator
-      var encodeLengths = getBufLengths(offs, origVals, toEncoding, fromEncoding) + 1;
+      if toEncoding != "IDNA" && fromEncoding != "IDNA" then
+        encodeLengths += 1;
       var encodeOffsets = (+ scan encodeLengths);
       encodeOffsets -= encodeLengths;
       
