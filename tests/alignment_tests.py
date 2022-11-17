@@ -2,7 +2,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 
 
-class DataFrameTest(ArkoudaTest):
+class AlignmentTest(ArkoudaTest):
     def test_search_interval(self):
         expected_result = [2, 5, 4, 0, 3, 1, 4, -1, -1]
         lb = [0, 10, 20, 30, 40, 50]
@@ -48,6 +48,19 @@ class DataFrameTest(ArkoudaTest):
         ans = [2, 1, -1]
         self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
         self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
+
+        # test hierarchical flag
+        starts = (ak.array([0, 5]), ak.array([0, 11]))
+        ends = (ak.array([5, 9]), ak.array([10, 20]))
+        vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
+
+        self.assertListEqual(
+            ak.search_intervals(vals, (starts, ends)).to_list(), [0, -1, 0, 0, 1, -1, 1, -1]
+        )
+        self.assertListEqual(
+            ak.search_intervals(vals, (starts, ends), hierarchical=True).to_list(),
+            [0, 0, 0, 0, 1, 1, 1, -1],
+        )
 
     def test_search_interval_nonunique(self):
         expected_result = [2, 5, 2, 1, 3, 1, 4, -1, -1]
