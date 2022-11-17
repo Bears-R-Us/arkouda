@@ -16,6 +16,8 @@ dependencies:
   - types-tabulate
   - pytables>=3.7.0
   - pyarrow==9.0.0
+  - libiconv
+  - libidn2
 
   - pip:
       - typeguard==2.10.0
