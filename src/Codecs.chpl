@@ -48,8 +48,8 @@ module Codecs {
       // Null terminator already accounted for
       var inSize = (inBufSize): c_size_t;
 
-      var chplRes: [0..#outBufSize] uint(8);
-      var outSize = (outBufSize): c_size_t;
+      var chplRes: [0..#(outBufSize+1)] uint(8);
+      var outSize = (outBufSize+1): c_size_t;
       
       var outBuf = c_ptrTo(chplRes):c_string;
 
@@ -95,7 +95,7 @@ module Codecs {
           throw new Error("Unsupported encoding: " + toEncoding + " " + fromEncoding);
         var inBuf = obj:c_string;
         // Add 1 for null terminator
-        var inSize = (inBufSize+1): c_size_t;
+        var inSize = (inBufSize): c_size_t;
 
         // TODO: this is probably worst way to allocate this
         var chplRes:bytes = (" "*(inBufSize*4));
