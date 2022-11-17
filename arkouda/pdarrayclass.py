@@ -456,6 +456,8 @@ class pdarray:
     def __invert__(self):
         if self.dtype == akint64:
             return self._binop(~0, "^")
+        if self.dtype == akuint64:
+            return self._binop(~np.uint(0), "^")
         if self.dtype == bool:
             return self._binop(True, "^")
         raise TypeError(f"Unhandled dtype: {self} ({self.dtype})")

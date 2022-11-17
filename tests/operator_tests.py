@@ -294,6 +294,12 @@ class OperatorsTest(ArkoudaTest):
             ak.concatenate([pdaOne, pdaTwo]).to_list(),
         )
 
+    def test_invert(self):
+        ak_uint = ak.arange(10, dtype=ak.uint64)
+        inverted = ~ak_uint
+        np_uint_inv = ~np.arange(10, dtype=np.uint)
+        self.assertListEqual(np_uint_inv.tolist(), inverted.to_list())
+
     def test_float_uint_binops(self):
         # Test fix for issue #1620
         ak_uint = ak.array([5], dtype=ak.uint64)
