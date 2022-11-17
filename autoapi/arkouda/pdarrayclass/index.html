@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.g2484ace documentation</title>
+    <title>arkouda.pdarrayclass &#8212; arkouda 0+untagged.1.ga3f1423 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -130,10 +130,10 @@
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.power" title="arkouda.pdarrayclass.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
-<td><p></p></td>
+<td><p>Raises an array to a power. If where is given, the operation will only take place in the positions</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sqrt" title="arkouda.pdarrayclass.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
-<td><p></p></td>
+<td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(→ pdarray)</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
@@ -2184,13 +2184,71 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.power">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.power" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises an array to a power. If where is given, the operation will only take place in the positions
+where the where condition is True.</p>
+<p>Note:
+Our implementation of the where argument deviates from numpy. The difference in behavior occurs
+at positions where the where argument contains a False. In numpy, these position will have
+uninitialized memory (which can contain anything and will vary between runs). We have chosen to
+instead return the value of the original array in these positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – A pdarray of values that will be raised to a power (pwr)</p></li>
+<li><p><strong>pwr</strong> (<em>integer</em><em>, </em><em>float</em><em>, or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – The power(s) that pda is raised to</p></li>
+<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – This condition is broadcast over the input. At locations where the condition is True, the
+corresponding value will be raised to the respective power. Elsewhere, it will retain its
+original value. Default set to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>pdarray</em></p></li>
+<li><p><em>Returns a pdarray of values raised to a power, under the boolean where condition.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">array([0, 1, 8, 27, 64])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">a</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">array([0, 1, 8, 3, 64])</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.sqrt">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.sqrt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.sqrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the square root of array. If where is given, the operation will only take place in
+the positions where the where condition is True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><em>pdarray</em></a>) – A pdarry of values that will be square rooted</p></li>
+<li><p><strong>where</strong> (<em>Boolean</em><em> or </em><em>pdaarray</em>) – This condition is broadcast over the input. At locations where the condition is True, the
+corresponding value will be square rooted. Elsewhere, it will retain its original value.
+Default set to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>pdarray</em></p></li>
+<li><p><em>Returns a pdarray of square rooted values, under the boolean where condition.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Examples:
+&gt;&gt;&gt; a = ak.arange(5)
+&gt;&gt;&gt; ak.sqrt(a)
+array([0 1 1.4142135623730951 1.7320508075688772 2])
+&gt;&gt;&gt; ak.sqrt(a, ak.sqrt([True, True, False, False, True]))
+array([0, 1, 2, 3, 2])</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.attach_pdarray">
