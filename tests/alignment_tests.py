@@ -36,17 +36,17 @@ class AlignmentTest(ArkoudaTest):
         ends = (ak.array([4, 14, 24]), ak.array([4, 14, 24]))
         vals = (ak.array([3, 13, 23]), ak.array([23, 13, 3]))
         ans = [-1, 1, -1]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list())
         self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
         vals = (ak.array([23, 13, 3]), ak.array([23, 13, 3]))
         ans = [2, 1, 0]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list())
         self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
         vals = (ak.array([23, 13, 33]), ak.array([23, 13, 3]))
         ans = [2, 1, -1]
-        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends)).to_list())
+        self.assertListEqual(ans, ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list())
         self.assertListEqual(ans, ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list())
 
         # test hierarchical flag
@@ -55,11 +55,11 @@ class AlignmentTest(ArkoudaTest):
         vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
 
         self.assertListEqual(
-            ak.search_intervals(vals, (starts, ends)).to_list(), [0, -1, 0, 0, 1, -1, 1, -1]
+            ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list(),
+            [0, -1, 0, 0, 1, -1, 1, -1],
         )
         self.assertListEqual(
-            ak.search_intervals(vals, (starts, ends), hierarchical=True).to_list(),
-            [0, 0, 0, 0, 1, 1, 1, -1],
+            ak.search_intervals(vals, (starts, ends)).to_list(), [0, 0, 0, 0, 1, 1, 1, -1]
         )
 
     def test_search_interval_nonunique(self):
@@ -159,7 +159,7 @@ class AlignmentTest(ArkoudaTest):
         tiebreak_smallest = (y1 - y0) * (x1 - x0)
         first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
         smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
-        first_result = ak.search_intervals(values, intervals)
+        first_result = ak.search_intervals(values, intervals, hierarchical=False)
         self.assertListEqual(first_result.to_list(), first_answer)
-        smallest_result = ak.search_intervals(values, intervals, tiebreak=tiebreak_smallest)
+        smallest_result = ak.search_intervals(values, intervals, tiebreak=tiebreak_smallest, hierarchical=False)
         self.assertListEqual(smallest_result.to_list(), smallest_answer)

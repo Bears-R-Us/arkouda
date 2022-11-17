@@ -279,7 +279,7 @@ def in1d_intervals(vals, intervals, symmetric=False):
         return found
 
 
-def search_intervals(vals, intervals, tiebreak=None, hierarchical=False):
+def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     """
     Given an array of query vals and non-overlapping, closed intervals, return
     the index of the best (see tiebreak) interval containing each query value,
@@ -414,26 +414,27 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=False):
                     bounds_okay = True
                     break
                 needtocheck &= lo == hi
+            # check non_overlapping
+            left = high[0][:-1]
+            right = low[0][1:]
+            not_overlapping = True
+            if (left <= right).any():
+                not_overlapping = False
+            else:
+                boundary = left != right
+                for lo, hi in zip(low[1:], high[1:]):
+                    left = hi[:-1]
+                    right = lo[1:]
+                    _ = left <= right
+                    if not (_ | boundary).all():
+                        not_overlapping = False
+                        break
+                    boundary = boundary | (left != right)
         else:
             bounds_okay = all((hi >= lo).all() for hi, lo in zip(high, low))
 
         if not bounds_okay:
             raise ValueError("Upper bounds must be greater than lower bounds")
-
-        left = high[0][:-1]
-        right = low[0][1:]
-        not_overlapping = True
-        if (left < right).any():
-            not_overlapping = False
-        else:
-            boundary = left != right
-            for lo, hi in zip(low[1:], high[1:]):
-                left = hi[:-1]
-                right = lo[1:]
-                if not ((left <= right) | boundary).all():
-                    not_overlapping = False
-                    break
-                boundary = boundary | (left != right)
 
         perm = coargsort([concatenate((lo, va, hi)) for lo, va, hi in zip(low, vals, high)])
 
@@ -569,13 +570,14 @@ def is_cosorted(arrays):
     for array in arrays[1:]:
         left = array[:-1]
         right = array[1:]
-        if not ((left <= right) | boundary).all():
+        _ = left <= right
+        if not (_ | boundary).all():
             return False
         boundary = boundary | (left != right)
     return True
 
 
-def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None):
+def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierarchical=False):
     """
     Apply a function defined over intervals to an array of arguments.
 
@@ -605,7 +607,7 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None):
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
-    idx = search_intervals(arguments, keys, tiebreak=tiebreak)
+    idx = search_intervals(arguments, keys, tiebreak=tiebreak, hierarchical=hierarchical)
     arguments_size = arguments.size if isinstance(arguments, pdarray) else arguments[0].size
     res = zeros(arguments_size, dtype=values.dtype)
     if fillvalue is not None:
