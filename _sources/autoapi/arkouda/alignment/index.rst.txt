@@ -173,7 +173,7 @@ Functions
    But much faster when vals is non-trivial size.
 
 
-.. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=False)
+.. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=True)
 
    Given an array of query vals and non-overlapping, closed intervals, return
    the index of the best (see tiebreak) interval containing each query value,
@@ -230,7 +230,7 @@ Functions
    :raises TypeError: Raised if arrays is not a list-like of pdarrays
 
 
-.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None)
+.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierarchical=False)
 
    Apply a function defined over intervals to an array of arguments.
 
