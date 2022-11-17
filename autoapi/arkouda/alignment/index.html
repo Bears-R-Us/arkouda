@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>arkouda.alignment &#8212; arkouda 0+untagged.1.g5f1abbe documentation</title>
+    <title>arkouda.alignment &#8212; arkouda 0+untagged.1.g77c7bef documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -68,10 +68,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.in1d_intervals" title="arkouda.alignment.in1d_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in1d_intervals</span></code></a>(vals, intervals[, symmetric])</p></td>
 <td><p>Test each value for membership in <em>any</em> of a set of half-open (pythonic)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.search_intervals" title="arkouda.alignment.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak])</p></td>
-<td><p>Given an array of query vals and closed intervals, return the index of the</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.search_intervals" title="arkouda.alignment.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak, hierarchical])</p></td>
+<td><p>Given an array of query vals and non-overlapping, closed intervals, return</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.interval_lookup" title="arkouda.alignment.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments[, fillvalue, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.alignment.is_cosorted" title="arkouda.alignment.is_cosorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cosorted</span></code></a>(arrays)</p></td>
+<td><p>Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.alignment.interval_lookup" title="arkouda.alignment.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments[, fillvalue, ...])</p></td>
 <td><p>Apply a function defined over intervals to an array of arguments.</p></td>
 </tr>
 </tbody>
@@ -262,19 +265,23 @@ interval contains any of the values in &lt;vals&gt;.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.search_intervals">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.search_intervals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given an array of query vals and closed intervals, return the index of the
-best (see tiebreak) interval containing each query value, or -1 if not present in any
-interval.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.search_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an array of query vals and non-overlapping, closed intervals, return
+the index of the best (see tiebreak) interval containing each query value,
+or -1 if not present in any interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vals</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>(</em><em>int</em><em>, </em><em>uint</em><em>, </em><em>float</em><em>)</em>) – Values to search for in intervals. If multiple arrays, each “row” is an item.</p></li>
-<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Closed (inclusive) intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_inclusive).
+<li><p><strong>intervals</strong> (<em>2-tuple</em><em> of </em><em>(</em><em>sequences of</em><em>) </em><em>pdarrays</em>) – Non-overlapping, half-open intervals, as a tuple of
+(lower_bounds_inclusive, upper_bounds_exclusive)
 Must have same dtype(s) as vals.</p></li>
 <li><p><strong>tiebreak</strong> (<em>(</em><em>optional</em><em>) </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>numeric</em>) – When a value is present in more than one interval, the interval with the
 lowest tiebreak value will be chosen. If no tiebreak is given, the
 first containing interval will be chosen.</p></li>
+<li><p><strong>hierarchical</strong> (<em>boolean</em>) – When True, sequences of pdarrays will be treated as components specifying
+a single dimension (i.e. hierarchical)
+When False, sequences of pdarrays will be specifying multi-dimensional intervals</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -291,6 +298,40 @@ first containing interval will be chosen.</p></li>
 <blockquote>
 <div><p>(intervals[1][idx[present]] &gt;= vals[present])).all()</p>
 </div></blockquote>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ends</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">))</span>
+<span class="go">array([0 -1 0 0 1 -1 1 -1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([0 0 0 0 1 1 1 -1])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.alignment.is_cosorted">
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">is_cosorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.alignment.is_cosorted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
+then the rows are sorted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arrays</strong> (<em>list-like</em><em> of </em><em>pdarrays</em>) – Arrays to check for cosortedness</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True iff arrays are cosorted.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if arrays are not the same length</p></li>
+<li><p><strong>TypeError</strong> – Raised if arrays is not a list-like of pdarrays</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

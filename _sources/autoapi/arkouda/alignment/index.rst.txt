@@ -22,6 +22,7 @@ Functions
    arkouda.alignment.lookup
    arkouda.alignment.in1d_intervals
    arkouda.alignment.search_intervals
+   arkouda.alignment.is_cosorted
    arkouda.alignment.interval_lookup
 
 
@@ -172,21 +173,26 @@ Functions
    But much faster when vals is non-trivial size.
 
 
-.. py:function:: search_intervals(vals, intervals, tiebreak=None)
+.. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=False)
 
-   Given an array of query vals and closed intervals, return the index of the
-   best (see tiebreak) interval containing each query value, or -1 if not present in any
-   interval.
+   Given an array of query vals and non-overlapping, closed intervals, return
+   the index of the best (see tiebreak) interval containing each query value,
+   or -1 if not present in any interval.
 
    :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
    :type vals: (sequence of) pdarray(int, uint, float)
-   :param intervals: Closed (inclusive) intervals, as a tuple of (lower_bounds_inclusive, upper_bounds_inclusive).
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
                      Must have same dtype(s) as vals.
    :type intervals: 2-tuple of (sequences of) pdarrays
    :param tiebreak: When a value is present in more than one interval, the interval with the
                     lowest tiebreak value will be chosen. If no tiebreak is given, the
                     first containing interval will be chosen.
    :type tiebreak: (optional) pdarray, numeric
+   :param hierarchical: When True, sequences of pdarrays will be treated as components specifying
+                        a single dimension (i.e. hierarchical)
+                        When False, sequences of pdarrays will be specifying multi-dimensional intervals
+   :type hierarchical: boolean
 
    :returns: **idx** -- Index of interval containing each query value, or -1 if not found
    :rtype: pdarray(int64)
@@ -197,6 +203,31 @@ Functions
        present = idx > -1
        ((intervals[0][idx[present]] <= vals[present]) &
         (intervals[1][idx[present]] >= vals[present])).all()
+
+   .. rubric:: Examples
+
+   >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
+   >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
+   >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
+   >>> ak.search_intervals(vals, (starts, ends))
+   array([0 -1 0 0 1 -1 1 -1])
+   >>> ak.search_intervals(vals, (starts, ends), hierarchical=True)
+   array([0 0 0 0 1 1 1 -1])
+
+
+.. py:function:: is_cosorted(arrays)
+
+   Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
+   then the rows are sorted.
+
+   :param arrays: Arrays to check for cosortedness
+   :type arrays: list-like of pdarrays
+
+   :returns: True iff arrays are cosorted.
+   :rtype: bool
+
+   :raises ValueError: Raised if arrays are not the same length
+   :raises TypeError: Raised if arrays is not a list-like of pdarrays
 
 
 .. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None)
