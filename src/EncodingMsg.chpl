@@ -15,6 +15,7 @@ module EncodingMsg {
     use AryUtil;
 
     use SegmentedString;
+    use SegmentedComputation;
 
     private config const logLevel = ServerConfig.logLevel;
     const emLogger = new Logger(logLevel);
@@ -41,18 +42,11 @@ module EncodingMsg {
       // TODO: is this inefficient?
       const lengths = stringsObj.getLengths();
 
-      // TODO: We only need one of these, they have the same info
-      var encodeLengths: [stringsObj.offsets.a.domain] int;
-      var encodeOffsets: [stringsObj.offsets.a.domain] int;
+      // add 1 for null terminator
+      var encodeLengths = getBufLengths(offs, origVals, toEncoding, fromEncoding) + 1;
+      var encodeOffsets = (+ scan encodeLengths);
+      encodeOffsets -= encodeLengths;
       
-      // First get lengths
-      forall (i, off, len) in zip(0..#stringsObj.size, offs, lengths) {
-        var slice = new lowLevelLocalizingSlice(origVals, off..#len);
-        encodeLengths[i] = getBufLength(slice.ptr: c_ptr(uint(8)), len, toEncoding, fromEncoding);
-      }
-
-      // TODO: Is this efficient?
-      encodeOffsets = (+ scan encodeLengths) - encodeLengths;
       var finalValues = makeDistArray(+ reduce encodeLengths, uint(8));
       forall (i, off, len) in zip(0..#stringsObj.size, offs, lengths) {
         var slice = new lowLevelLocalizingSlice(origVals, off..#len);
@@ -62,6 +56,45 @@ module EncodingMsg {
 
       return (encodeOffsets, finalValues);
     }
+
+    proc getBufLengths(segments: [?D] int, values: [?vD] ?t, toEncoding: string, fromEncoding: string) throws {
+      var res: [D] int;
+      if (D.size == 0) {
+        return res;
+      }
+
+      const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
+    
+      // Start task parallelism
+      coforall loc in Locales {
+        on loc {
+          const myFirstSegIdx = startSegInds[loc.id];
+          const myNumSegs = max(0, numSegs[loc.id]);
+          const mySegInds = {myFirstSegIdx..#myNumSegs};
+          // Segment offsets whose bytes are owned by loc
+          // Lengths of segments whose bytes are owned by loc
+          var mySegs, myLens: [mySegInds] int;
+          forall i in mySegInds with (var agg = new SrcAggregator(int)) {
+            agg.copy(mySegs[i], segments[i]);
+            agg.copy(myLens[i], lengths[i]);
+          }
+          try {
+            forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(int)) {
+              var slice = new lowLevelLocalizingSlice(values, start..#len);
+              agg.copy(res[i], getBufLength(slice.ptr: c_ptr(uint(8)), len, toEncoding, fromEncoding));
+            }
+          } catch {
+            throw new owned ErrorWithContext("Error",
+                                             getLineNumber(),
+                                             getRoutineName(),
+                                             getModuleName(),
+                                             "IllegalArgumentError");
+          }
+        }
+      }
+      return res;
+    }
+
 
     use CommandMap;
     registerFunction("encode", encodeDecodeMsg, getModuleName());
