@@ -493,14 +493,18 @@ module ServerDaemon {
                        }
                 }
 
-                // If cmd is shutdown, don't bother generating a repMsg
-                if cmd == "shutdown" {
+                inline proc sendShutdownRequest(user: string) throws {
                     requestShutdown(user=user);
                     if (trace) {
                         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "<<< shutdown initiated by %s took %.17r sec".format(user, 
-                                                   t1.elapsed() - s0));
+                                        "<<< shutdown initiated by %s took %.17r sec".format(user, 
+                                                t1.elapsed() - s0));
                     }
+                }
+
+                // If cmd is shutdown, don't bother generating a repMsg
+                if cmd == "shutdown" {
+                    sendShutdownRequest(user=user);
                     break;
                 }
 
@@ -526,6 +530,11 @@ module ServerDaemon {
                         }
                     }
                     when "disconnect" {
+                        if autoShutdown {
+                            sendShutdownRequest(user=user);
+                            break;
+                        }
+                        
                         repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), MsgType.NORMAL);
                     }
                     when "noop" {

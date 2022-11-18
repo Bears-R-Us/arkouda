@@ -58,6 +58,11 @@ module ServerConfig
     config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
 
     /*
+    Flag to shut down the arkouda server automatically when the client disconnects
+    */
+    config const autoShutdown = false;
+
+    /*
     Hostname where I am running
     */
     var serverHostname: string = try! get_hostname();
@@ -146,6 +151,7 @@ module ServerConfig
             const logLevel: LogLevel;
             const regexMaxCaptures: int;
             const byteorder: string;
+            const autoShutdown: bool;
         }
 
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -168,7 +174,8 @@ module ServerConfig
             authenticate = authenticate,
             logLevel = logLevel,
             regexMaxCaptures = regexMaxCaptures,
-            byteorder = try! getByteorder()
+            byteorder = try! getByteorder(),
+            autoShutdown = autoShutdown
         );
         return try! "%jt".format(cfg);
 
