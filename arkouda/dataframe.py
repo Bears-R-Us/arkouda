@@ -28,7 +28,7 @@ from arkouda.numeric import isnan as akisnan
 from arkouda.numeric import where
 from arkouda.pdarrayclass import (
     RegistrationError,
-    attach_pdarray,
+    attach,
     pdarray,
     unregister_pdarray_by_name,
 )
@@ -2054,7 +2054,7 @@ class DataFrame(UserDict):
             if f"_{Strings.objtype}_" in name:
                 columns[colName] = Strings.attach(name)
             elif f"_{pdarray.objtype}_" in name:
-                columns[colName] = attach_pdarray(name)
+                columns[colName] = attach(name)
             elif f"_{Categorical.objtype}_" in name:
                 columns[colName] = Categorical.attach(name)
             elif f"_{SegArray.objtype}_" in name:
