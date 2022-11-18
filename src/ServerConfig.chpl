@@ -63,6 +63,11 @@ module ServerConfig
     config const autoShutdown = false;
 
     /*
+    Flag to print the server information on startup
+    */
+    config const serverInfoNoSplash = false;
+
+    /*
     Hostname where I am running
     */
     var serverHostname: string = try! get_hostname();
@@ -152,6 +157,7 @@ module ServerConfig
             const regexMaxCaptures: int;
             const byteorder: string;
             const autoShutdown: bool;
+            const serverInfoNoSplash: bool;
         }
 
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
@@ -175,7 +181,8 @@ module ServerConfig
             logLevel = logLevel,
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder(),
-            autoShutdown = autoShutdown
+            autoShutdown = autoShutdown,
+            serverInfoNoSplash = serverInfoNoSplash
         );
         return try! "%jt".format(cfg);
 

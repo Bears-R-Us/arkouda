@@ -106,7 +106,7 @@ def connect(
     timeout: int = 0,
     access_token: str = None,
     connect_url=None,
-) -> None:
+) -> str:
     """
     Connect to a running arkouda server.
 
@@ -129,7 +129,7 @@ def connect(
 
     Returns
     -------
-    None
+    JSON string of connection configuration information
 
     Raises
     ------
@@ -206,6 +206,8 @@ def connect(
         )
     regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type:ignore
     clientLogger.info(return_message)
+
+    return cast(str, generic_msg(cmd="getconfig", args={}))
 
 
 def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
