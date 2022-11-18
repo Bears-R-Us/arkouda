@@ -144,7 +144,6 @@ setup(
         'types-tabulate',
         'tables>=3.7.0',
         'pyarrow==9.0.0',
-        'libiconv',
         'libidn2'
     ],
 
