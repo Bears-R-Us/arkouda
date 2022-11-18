@@ -112,17 +112,17 @@ module ConcatenateMsg
                   if (objtype == "str") && (mynumsegs > 0) {
                     const stringEntry = toSegStringSymEntry(abstractEntry);
                     const e = stringEntry.offsetsEntry;
-                    const firstSeg = e.a[e.aD.localSubdomain().low];
+                    const firstSeg = e.a[e.a.domain.localSubdomain().low];
                     var mybytes: int;
                     /* If this locale contains the last segment, we cannot use the
                      * next segment offset to calculate the number of bytes for this
                      * locale, and we must instead use the total size of the values
                      * array.
                      */
-                    if (e.aD.localSubdomain().high >= e.aD.high) {
+                    if (e.a.domain.localSubdomain().high >= e.a.domain.high) {
                       mybytes = valSize - firstSeg;
                     } else {
-                      mybytes = e.a[e.aD.localSubdomain().high + 1] - firstSeg;
+                      mybytes = e.a[e.a.domain.localSubdomain().high + 1] - firstSeg;
                     }
                     blockValSizes[here.id] += mybytes;
                   }
@@ -170,24 +170,24 @@ module ConcatenateMsg
                       coforall loc in Locales {
                         on loc {
                           // Number of strings on this locale for this input array
-                          const mynsegs = thisSegs.aD.localSubdomain().size;
+                          const mynsegs = thisSegs.a.domain.localSubdomain().size;
                           // If no strings on this locale, skip to avoid out of bounds array
                           // accesses
                           if mynsegs > 0 {
-                            ref mysegs = thisSegs.a.localSlice[thisSegs.aD.localSubdomain()];
+                            ref mysegs = thisSegs.a.localSlice[thisSegs.a.domain.localSubdomain()];
                             // Segments must be rebased to start from blockValStart,
                             // which is the current pointer to this locale's chunk of
                             // the values array
-                            esegs.a[{blockstarts[here.id]..#mynsegs}] = mysegs - mysegs[thisSegs.aD.localSubdomain().low] + blockValStarts[here.id];
+                            esegs.a[{blockstarts[here.id]..#mynsegs}] = mysegs - mysegs[thisSegs.a.domain.localSubdomain().low] + blockValStarts[here.id];
                             blockstarts[here.id] += mynsegs;
-                            const firstSeg = thisSegs.a[thisSegs.aD.localSubdomain().low];
+                            const firstSeg = thisSegs.a[thisSegs.a.domain.localSubdomain().low];
                             var mybytes: int;
                             // If locale contains last string, must use overall number of bytes
                             // to compute size, instead of start of next string
-                            if (thisSegs.aD.localSubdomain().high >= thisSegs.aD.high) {
+                            if (thisSegs.a.domain.localSubdomain().high >= thisSegs.a.domain.high) {
                               mybytes = thisVals.size - firstSeg;
                             } else {
-                              mybytes = thisSegs.a[thisSegs.aD.localSubdomain().high + 1] - firstSeg;
+                              mybytes = thisSegs.a[thisSegs.a.domain.localSubdomain().high + 1] - firstSeg;
                             }
                             evals.a[{blockValStarts[here.id]..#mybytes}] = thisVals.a[firstSeg..#mybytes];
                             blockValStarts[here.id] += mybytes;
@@ -198,7 +198,7 @@ module ConcatenateMsg
                       forall (i, s) in zip(newSegs.domain, newSegs) with (var agg = newDstAggregator(int)) {
                         agg.copy(esa[i+segStart], s);
                       }
-                      forall (i, v) in zip(thisVals.aD, thisVals.a) with (var agg = newDstAggregator(uint(8))) {
+                      forall (i, v) in zip(thisVals.a.domain, thisVals.a) with (var agg = newDstAggregator(uint(8))) {
                         agg.copy(eva[i+valStart], v);
                       }
                       segStart += thisSegs.size;
@@ -227,15 +227,15 @@ module ConcatenateMsg
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                  const size = o.a.domain.localSubdomain().size;
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
                             } else {
                               ref ea = e.a;
                               // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(int)) {
+                              forall (i, v) in zip(o.a.domain, o.a) with (var agg = newDstAggregator(int)) {
                                 agg.copy(ea[start+i], v);
                               }
                               // update new start for next array copy
@@ -256,15 +256,15 @@ module ConcatenateMsg
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                  const size = o.a.domain.localSubdomain().size;
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
                             } else {
                               ref ea = e.a;
                               // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(real)) {
+                              forall (i, v) in zip(o.a.domain, o.a) with (var agg = newDstAggregator(real)) {
                                 agg.copy(ea[start+i], v);
                               }
                               // update new start for next array copy
@@ -285,15 +285,15 @@ module ConcatenateMsg
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                  const size = o.a.domain.localSubdomain().size;
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
                             } else {
                               ref ea = e.a;
                               // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(bool)) {
+                              forall (i, v) in zip(o.a.domain, o.a) with (var agg = newDstAggregator(bool)) {
                                 agg.copy(ea[start+i], v);
                               }
                               // update new start for next array copy
@@ -314,15 +314,15 @@ module ConcatenateMsg
                             if mode == "interleave" {
                               coforall loc in Locales {
                                 on loc {
-                                  const size = o.aD.localSubdomain().size;
-                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
+                                  const size = o.a.domain.localSubdomain().size;
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
                             } else {
                               ref ea = e.a;
                               // copy array into concatenation array
-                              forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(uint)) {
+                              forall (i, v) in zip(o.a.domain, o.a) with (var agg = newDstAggregator(uint)) {
                                 agg.copy(ea[start+i], v);
                               }
                               // update new start for next array copy

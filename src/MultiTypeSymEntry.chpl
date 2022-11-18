@@ -412,8 +412,8 @@ module MultiTypeSymEntry
             this.valuesEntry = valuesSymEntry;
 
             ref sa = segmentsSymEntry.a;
-            const high = segmentsSymEntry.aD.high;
-            var lengths = [(i, s) in zip (segmentsSymEntry.aD, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
+            const high = segmentsSymEntry.a.domain.high;
+            var lengths = [(i, s) in zip (segmentsSymEntry.a.domain, sa)] if i == high then valuesSymEntry.size - s else sa[i+1] - s;
             
             lengthsEntry = new shared SymEntry(lengths);
 

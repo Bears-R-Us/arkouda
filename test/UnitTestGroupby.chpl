@@ -70,7 +70,7 @@ prototype module UnitTestGroupby
     
     // sort keys and return iv
     var ivname = st.nextName();
-    var iv: [keys.aD] int;
+    var iv: [keys.a.domain] int;
     var eMin = min reduce keys.a;
     var eMax = max reduce keys.a;
     var d: Diags;

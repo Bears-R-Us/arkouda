@@ -822,7 +822,7 @@ module HDF5Msg {
                 ref ss = segString;
                 var A = ss.offsets.a;
                 const lastOffset = A[A.domain.high];
-                const lastValIdx = ss.values.aD.high;
+                const lastValIdx = ss.values.a.domain.high;
 
                 // For each locale gather the string bytes corresponding to the offsets in its local domain
                 coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref ss) do on loc {
@@ -1493,7 +1493,7 @@ module HDF5Msg {
         read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGSTRING_VALUE_NAME, skips);
 
         proc _buildEntryCalcOffsets(): shared SymEntry throws {
-            var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
+            var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
             return new shared SymEntry(offsetsArray);
         }
 

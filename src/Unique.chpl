@@ -161,7 +161,7 @@ module Unique
             var inv = makeDistArray(0, int);
             return (uo, uv, c, inv);
         }
-        const aD = str.offsets.aD;
+        const ref aD = str.offsets.a.domain;
         var invD: aD.type;
         if returnInverse {
           invD = aD;
@@ -181,7 +181,7 @@ module Unique
           [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         } else {
           var soff: [aD] int;
-          var sval: [str.values.aD] uint(8);
+          var sval: [str.values.a.domain] uint(8);
           perm = str.argsort();
           (soff, sval) = str[perm];
           truth[0] = true;

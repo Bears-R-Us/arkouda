@@ -22,8 +22,8 @@ proc parseIdFromReadAllHdfMsgCreated(msg:string, start:int = 0):string {
 proc main() {
   var st = new owned SymTab();
   var A = st.addEntry("A", size*numLocales, int);
-  A.a = A.aD;
-  const GiB = (8*A.aD.size):real / (2**30):real;
+  A.a = A.a.domain;
+  const GiB = (8*A.a.domain.size):real / (2**30):real;
 
   var d: Diags;
 

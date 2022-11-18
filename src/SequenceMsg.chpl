@@ -44,7 +44,7 @@ module SequenceMsg {
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
-        ref ead = e.aD;
+        const ref ead = e.a.domain;
         forall (ei, i) in zip(ea,ead) {
             ei = start + (i * stride);
         }
@@ -89,7 +89,7 @@ module SequenceMsg {
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
-        ref ead = e.aD;
+        const ref ead = e.a.domain;
         forall (ei, i) in zip(ea,ead) {
             ei = start + (i * stride);
         }

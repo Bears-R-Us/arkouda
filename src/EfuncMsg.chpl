@@ -194,13 +194,13 @@ module EfuncMsg
                 select efunc
                 {
                     when "cumsum" {
-                        var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
+                        var ia: [e.a.domain] int = (e.a:int); // make a copy of bools as ints blah!
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(+ scan ia));
                     }
                     when "cumprod" {
-                        var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
+                        var ia: [e.a.domain] int = (e.a:int); // make a copy of bools as ints blah!
                         // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
                         overMemLimit(numBytes(int) * ia.size);
                         st.addEntry(rname, new shared SymEntry(* scan ia));

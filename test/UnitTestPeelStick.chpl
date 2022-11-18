@@ -76,7 +76,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
             writeln("Lengths <= 0: %t".format(badLen));
             if badLen > 0 {
               var n = 0;
-              for (i, ll, rl, ol) in zip(lstr.offsets.aD, llen, rlen, lengths) {
+              for (i, ll, rl, ol) in zip(lstr.offsets.a.domain, llen, rlen, lengths) {
                 if (ll <= 0) {
                   n += 1;
                   writeln("%i: %s (%i) -> <bad> (%i) | %s (%i)".format(i, strings[i], ol, ll, rstr[i], rl));
@@ -109,7 +109,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
           if !success {
             var n = 0;
             const rtlen = roundTrip.getLengths();
-            for (i, e) in zip(strings.offsets.aD, eq) {
+            for (i, e) in zip(strings.offsets.a.domain, eq) {
               if !e {
                 n += 1;
                 writeln("%i: %s (%i) -> %s (%i)".format(i, strings[i], lengths[i], roundTrip[i], rtlen[i]));

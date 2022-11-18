@@ -126,7 +126,7 @@ module ArgSortMsg
           when DType.Int64 {
               var e = toSymEntry(g, int);
               // Permute the keys array with the initial iv
-              var newa: [e.aD] int;
+              var newa: [e.a.domain] int;
               ref olda = e.a;
               // Effectively: newa = olda[iv]
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
@@ -138,7 +138,7 @@ module ArgSortMsg
           when DType.UInt64 {
               var e = toSymEntry(g, uint);
               // Permute the keys array with the initial iv
-              var newa: [e.aD] uint;
+              var newa: [e.a.domain] uint;
               ref olda = e.a;
               // Effectively: newa = olda[iv]
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(uint)) {
@@ -149,7 +149,7 @@ module ArgSortMsg
           }
           when DType.Float64 {
               var e = toSymEntry(g, real);
-              var newa: [e.aD] real;
+              var newa: [e.a.domain] real;
               ref olda = e.a;
               forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
                   agg.copy(newai, olda[idx]);

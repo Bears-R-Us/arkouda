@@ -143,7 +143,7 @@ module UniqueMsg
 
         if assumeSorted {
           // set permutation to 0..#size and go directly to finding segment boundaries.
-          permutation.a = permutation.aD;
+          permutation.a = permutation.a.domain;
         }
         else {
           // Sort the keys

@@ -143,7 +143,7 @@ module SegmentedString {
 
     /* Retrieve one string from the array */
     proc this(idx: ?t): string throws where t == int || t == uint {
-      if (idx < offsets.aD.low) || (idx > offsets.aD.high) {
+      if (idx < offsets.a.domain.low) || (idx > offsets.a.domain.high) {
         throw new owned OutOfBoundsError();
       }
       // Start index of the string
@@ -164,7 +164,7 @@ module SegmentedString {
        Chapel range, i.e. low..high by stride, not a Python slice.
        Returns arrays for the segment offsets and bytes of the slice.*/
     proc this(const slice: range(stridable=false)) throws {
-      if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
+      if (slice.low < offsets.a.domain.low) || (slice.high > offsets.a.domain.high) {
           ssLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
           "Array is out of bounds");
           throw new owned OutOfBoundsError();
@@ -177,9 +177,9 @@ module SegmentedString {
       var start = offsets.a[slice.low];
       // End of bytearray slice
       var end: int;
-      if (slice.high == offsets.aD.high) {
+      if (slice.high == offsets.a.domain.high) {
         // if slice includes the last string, go to the end of values
-        end = values.aD.high;
+        end = values.a.domain.high;
       } else {
         end = offsets.a[slice.high+1] - 1;
       }
@@ -223,7 +223,7 @@ module SegmentedString {
                                               "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
-      const low = offsets.aD.low, high = offsets.aD.high;
+      const low = offsets.a.domain.low, high = offsets.a.domain.high;
       // Gather the right and left boundaries of the indexed strings
       // NOTE: cannot compute lengths inside forall because agg.copy will
       // experience race condition with loop-private variable
@@ -301,7 +301,7 @@ module SegmentedString {
     /* Logical indexing (compress) of strings. */
     proc this(iv: [?D] bool) throws {
       // Index vector must be same domain as array
-      if (D != offsets.aD) {
+      if (D != offsets.a.domain) {
           ssLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "Array out of bounds");
           throw new owned OutOfBoundsError();
@@ -310,7 +310,7 @@ module SegmentedString {
                                                  "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
-      const low = offsets.aD.low, high = offsets.aD.high;
+      const low = offsets.a.domain.low, high = offsets.a.domain.high;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * iv.size);
       // Calculate the destination indices
@@ -379,14 +379,14 @@ module SegmentedString {
 
     /* Return lengths of all strings, including null terminator. */
     proc getLengths() {
-      var lengths: [offsets.aD] int;
+      var lengths: [offsets.a.domain] int;
       if (size == 0) {
         return lengths;
       }
       ref oa = offsets.a;
-      const low = offsets.aD.low;
-      const high = offsets.aD.high;
-      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
+      const low = offsets.a.domain.low;
+      const high = offsets.a.domain.high;
+      forall (i, o, l) in zip(offsets.a.domain, oa, lengths) {
         if (i == high) {
           l = values.size - o;
         } else {
@@ -405,7 +405,7 @@ module SegmentedString {
     proc lower() throws {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
-      var lowerVals: [this.values.aD] uint(8);
+      var lowerVals: [this.values.a.domain] uint(8);
       const lengths = this.getLengths();
       forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
@@ -424,7 +424,7 @@ module SegmentedString {
     proc upper() throws {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
-      var upperVals: [this.values.aD] uint(8);
+      var upperVals: [this.values.a.domain] uint(8);
       const lengths = this.getLengths();
       forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
@@ -445,7 +445,7 @@ module SegmentedString {
     proc title() throws {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
-      var titleVals: [this.values.aD] uint(8);
+      var titleVals: [this.values.a.domain] uint(8);
       const lengths = this.getLengths();
       forall (off, len) in zip(offs, lengths) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
@@ -496,7 +496,7 @@ module SegmentedString {
         ref vals = values.a;
         // should we do strings.getLengths()-1 to not account for null byte
         const lens = getLengths();
-        var numeric1, numeric2: [offsets.aD] uint;
+        var numeric1, numeric2: [offsets.a.domain] uint;
         forall (o, l, n1, n2) in zip(off, lens, numeric1, numeric2) {
           const half = (l/2):int;
           n1 = stringBytesToUintArr(vals, o..#half);
@@ -538,8 +538,8 @@ module SegmentedString {
       ref origVals = this.values.a;
       ref offs = this.offsets.a;
       var encodeArr: [0..#this.size] string; 
-      var encodeOffsets: [this.offsets.aD] int;
-      var encodeLengths: [this.offsets.aD] int;
+      var encodeOffsets: [this.offsets.a.domain] int;
+      var encodeLengths: [this.offsets.a.domain] int;
       const lengths = this.getLengths();
       forall (i, off, len) in zip(0..#this.size, offs, lengths) {
         const filename: string = basePath+"/src/exec/%i_tmp.txt".format(i);
@@ -580,7 +580,7 @@ module SegmentedString {
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
-      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes + 1)];
+      var D: subdomain(values.a.domain) = values.a.domain[values.a.domain.low..#(values.size - substr.numBytes + 1)];
       // Every start position is valid until proven otherwise
       var truth: [D] bool = true;
       // Shift the flat values one byte at a time and check against corresponding byte of substr
@@ -605,14 +605,14 @@ module SegmentedString {
       const lengths = this.getLengths();
 
       overMemLimit((4 * this.offsets.size * numBytes(int)) + (3 * this.values.size * numBytes(int)));
-      var numMatches: [this.offsets.aD] int;
-      var matchStartBool: [this.values.aD] bool = false;
-      var sparseLens: [this.values.aD] int;
-      var sparseStarts: [this.values.aD] int;
-      var searchBools: [this.offsets.aD] bool = false;
-      var matchBools: [this.offsets.aD] bool = false;
-      var fullMatchBools: [this.offsets.aD] bool = false;
-      forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
+      var numMatches: [this.offsets.a.domain] int;
+      var matchStartBool: [this.values.a.domain] bool = false;
+      var sparseLens: [this.values.a.domain] int;
+      var sparseStarts: [this.values.a.domain] int;
+      var searchBools: [this.offsets.a.domain] bool = false;
+      var matchBools: [this.offsets.a.domain] bool = false;
+      var fullMatchBools: [this.offsets.a.domain] bool = false;
+      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
                                                                                var lenAgg = newDstAggregator(int),
                                                                                var startPosAgg = newDstAggregator(int),
                                                                                var startBoolAgg = newDstAggregator(bool),
@@ -650,7 +650,7 @@ module SegmentedString {
       var matchesIndicies = (+ scan numMatches) - numMatches;
       var matchStarts: [makeDistDom(totalMatches)] int;
       var matchLens: [makeDistDom(totalMatches)] int;
-      [i in this.values.aD] if (matchStartBool[i] == true) {
+      [i in this.values.a.domain] if (matchStartBool[i] == true) {
         matchStarts[matchTransform[i]] = sparseStarts[i];
         matchLens[matchTransform[i]] = sparseLens[i];
       }
@@ -698,8 +698,8 @@ module SegmentedString {
       var matchesVals: [makeDistDom(matchesValsSize)] uint(8);
       var matchesOffsets: [makeDistDom(matchLens.size)] int;
       // + current index to account for null bytes
-      var matchesIndicies = + scan matchLens - matchLens + lensEntry.aD;
-      forall (i, start, len, matchesInd) in zip(lensEntry.aD, absoluteStarts, matchLens, matchesIndicies) with (var valAgg = newDstAggregator(uint(8)), var offAgg = newDstAggregator(int)) {
+      var matchesIndicies = + scan matchLens - matchLens + lensEntry.a.domain;
+      forall (i, start, len, matchesInd) in zip(lensEntry.a.domain, absoluteStarts, matchLens, matchesIndicies) with (var valAgg = newDstAggregator(uint(8)), var offAgg = newDstAggregator(int)) {
         for j in 0..#len {
           // copy in match
           valAgg.copy(matchesVals[matchesInd + j], origVals[start + j]);
@@ -709,7 +709,7 @@ module SegmentedString {
         if i == 0 {
           offAgg.copy(matchesOffsets[i], 0);
         }
-        if i != lensEntry.aD.high {
+        if i != lensEntry.a.domain.high {
           offAgg.copy(matchesOffsets[i+1], matchesInd + len + 1);
         }
       }
@@ -718,7 +718,7 @@ module SegmentedString {
       const matchOriginsDom = if returnMatchOrig then makeDistDom(matchesOffsets.size) else makeDistDom(0);
       var matchOrigins: [matchOriginsDom] int;
       if returnMatchOrig {
-        forall (stringInd, matchInd) in zip(this.offsets.aD, indices) with (var originAgg = newDstAggregator(int)) {
+        forall (stringInd, matchInd) in zip(this.offsets.a.domain, indices) with (var originAgg = newDstAggregator(int)) {
           for k in matchInd..#numMatches[stringInd] {
             // Each string has numMatches[stringInd] number of pattern matches, so matchOrigins needs to repeat stringInd for numMatches[stringInd] times
             originAgg.copy(matchOrigins[k], stringInd);
@@ -753,16 +753,16 @@ module SegmentedString {
       const lengths = this.getLengths();
 
       overMemLimit((2 * this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
-      var numReplacements: [this.offsets.aD] int;
-      var replacedLens: [this.offsets.aD] int;
-      var nonMatch: [this.values.aD] bool = true;
-      var matchStartBool: [this.values.aD] bool = false;
+      var numReplacements: [this.offsets.a.domain] int;
+      var replacedLens: [this.offsets.a.domain] int;
+      var nonMatch: [this.values.a.domain] bool = true;
+      var matchStartBool: [this.values.a.domain] bool = false;
 
       var repl = replStr:bytes;
       // count = 0 means substitute all occurances, so we set count equal to 10**9
       var count = if initCount == 0 then 10**9:int else initCount;
       // since the pattern matches are variable length, we don't know what the size of subbedVals should be until we've found the matches
-      forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
+      forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
                                                                                var numReplAgg = newDstAggregator(int),
                                                                                var LenAgg = newDstAggregator(int),
                                                                                var nonMatchAgg = newDstAggregator(bool),
@@ -827,7 +827,7 @@ module SegmentedString {
                                              "chars: %s - origOffsets: %t - origVals: %t"
                                              .format(chars, origOffsets, origVals:bytes));
 
-      var replacedLens: [this.offsets.aD] int;
+      var replacedLens: [this.offsets.a.domain] int;
 
       forall (off, len, rlen) in zip(origOffsets, lengths, replacedLens) {
         if chars.isEmpty() {
@@ -905,10 +905,10 @@ module SegmentedString {
       ref oa = offsets.a;
       ref va = values.a;
       const lengths = getLengths() - 1;
-      var leftEnd: [offsets.aD] int;
-      var rightStart: [offsets.aD] int;
+      var leftEnd: [offsets.a.domain] int;
+      var rightStart: [offsets.a.domain] int;
 
-      forall (o, len, i) in zip(oa, lengths, offsets.aD) with (var myRegex = _unsafeCompileRegex(delimiter)) {
+      forall (o, len, i) in zip(oa, lengths, offsets.a.domain) with (var myRegex = _unsafeCompileRegex(delimiter)) {
         var matches = myRegex.matches(interpretAsString(va, o..#len, borrow=true));
         if matches.size < times {
           // not enough occurances of delim, the entire string stays together, and the param args
@@ -981,16 +981,16 @@ module SegmentedString {
       param stride = if left then 1 else -1;
       const dBytes = delimiter.numBytes;
       const lengths = getLengths() - 1;
-      var leftEnd: [offsets.aD] int;
-      var rightStart: [offsets.aD] int;
+      var leftEnd: [offsets.a.domain] int;
+      var rightStart: [offsets.a.domain] int;
       const truth = findSubstringInBytes(delimiter);
       const D = truth.domain;
       ref oa = offsets.a;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * truth.size);
       var numHits = (+ scan truth) - truth;
-      const high = offsets.aD.high;
-      forall i in offsets.aD {
+      const high = offsets.a.domain.high;
+      forall i in offsets.a.domain {
         // First, check whether string contains enough instances of delimiter to peel
         var hasEnough: bool;
         if oa[i] > D.high {
@@ -1034,7 +1034,7 @@ module SegmentedString {
           } else {
             // If coming from the right, need to handle edge case of last string
             if i == high {
-              j = values.aD.high - 1;
+              j = values.a.domain.high - 1;
             } else {
               j = oa[i+1] - 2;
             }
@@ -1101,7 +1101,7 @@ module SegmentedString {
     }
 
     proc stick(other: SegString, delim: string, param right: bool) throws {
-        if (offsets.aD != other.offsets.aD) {
+        if (offsets.a.domain != other.offsets.a.domain) {
             throw getErrorWithContext(
                            msg="The SegString offsets to not match",
                            lineNumber = getLineNumber(),
@@ -1116,7 +1116,7 @@ module SegmentedString {
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * newLengths.size);
       var newOffsets = (+ scan newLengths);
-      const newBytes = newOffsets[offsets.aD.high];
+      const newBytes = newOffsets[offsets.a.domain.high];
       newOffsets -= newLengths;
       // Allocate new values array
       var newVals = makeDistArray(newBytes, uint(8));
@@ -1160,15 +1160,15 @@ module SegmentedString {
       return (newOffsets, newVals);
     }
 
-    proc ediff():[offsets.aD] int {
-      var diff: [offsets.aD] int;
+    proc ediff():[offsets.a.domain] int {
+      var diff: [offsets.a.domain] int;
       if (size < 2) {
         return diff;
       }
       ref oa = offsets.a;
       ref va = values.a;
-      const high = offsets.aD.high;
-      forall (i, a) in zip(offsets.aD, diff) {
+      const high = offsets.a.domain.high;
+      forall (i, a) in zip(offsets.a.domain, diff) {
         if (i < high) {
           var asc: bool;
           const left = oa[i]..oa[i+1]-1;
@@ -1176,7 +1176,7 @@ module SegmentedString {
             const right = oa[i+1]..oa[i+2]-1;
             a = -memcmp(va, left, va, right);
           } else { // i == high - 1
-            const right = oa[i+1]..values.aD.high;
+            const right = oa[i+1]..values.a.domain.high;
             a = -memcmp(va, left, va, right);
           }
         } else { // i == high
@@ -1193,8 +1193,8 @@ module SegmentedString {
       return (&& reduce (ediff() >= 0));
     }
 
-    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
-      const ref D = offsets.aD;
+    proc argsort(checkSorted:bool=false): [offsets.a.domain] int throws {
+      const ref D = offsets.a.domain;
       const ref va = values.a;
       if checkSorted && isSorted() {
           ssLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1301,7 +1301,7 @@ module SegmentedString {
       const rh = rss.siphash();
       return if polarity then (lh == rh) else (lh != rh);
     }
-    ref oD = lss.offsets.aD;
+    const ref oD = lss.offsets.a.domain;
     // Start by assuming all elements differ, then correct for those that are equal
     // This translates to an initial value of false for == and true for !=
     var truth: [oD] bool = !polarity;
@@ -1452,7 +1452,7 @@ module SegmentedString {
     use In1d;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
-      var truth: [mainStr.offsets.aD] bool;
+      var truth: [mainStr.offsets.a.domain] bool;
       return truth;
     }
     return in1d(mainStr.siphash(), testStr.siphash(), invert);
@@ -1474,7 +1474,7 @@ module SegmentedString {
   private config const in1dSortThreshold = 64;
   
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
-    var truth: [mainStr.offsets.aD] bool;
+    var truth: [mainStr.offsets.a.domain] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       return truth;
@@ -1519,7 +1519,7 @@ module SegmentedString {
             const right = saro[i+1]..saro[i+2]-1;
             eq = (memcmp(sarv, left, sarv, right) == 0);
           } else {
-            const ref right = saro[i+1]..sar.values.aD.high;
+            const ref right = saro[i+1]..sar.values.a.domain.high;
             eq = (memcmp(sarv, left, sarv, right) == 0);
           }
           if eq {
@@ -1544,7 +1544,7 @@ module SegmentedString {
                                                 "Ret pop: %t".format(+ reduce ret));
       }
       // Broadcast back to original (pre-unique) order
-      var truth: [mainStr.offsets.aD] bool;
+      var truth: [mainStr.offsets.a.domain] bool;
       forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
         agg.copy(t, ret[i]);
       }

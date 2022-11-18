@@ -81,7 +81,7 @@ module GenSymIO {
                 var g = st.lookup(rname);
                 if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
                     var values = toSymEntry( (g:GenSymEntry), uint(8) );
-                    var offsets = segmentedCalcOffsets(values.a, values.aD);
+                    var offsets = segmentedCalcOffsets(values.a, values.a.domain);
                     var oname = st.nextName();
                     var offsetsEntry = new shared SymEntry(offsets);
                     st.addEntry(oname, offsetsEntry);

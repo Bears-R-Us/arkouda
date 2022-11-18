@@ -36,12 +36,12 @@ module Flatten {
     const lengths = this.getLengths();
 
     overMemLimit((this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
-    var numMatches: [this.offsets.aD] int;
-    var writeToVal: [this.values.aD] bool = true;
-    var nullByteLocations: [this.values.aD] bool = false;
+    var numMatches: [this.offsets.a.domain] int;
+    var writeToVal: [this.values.a.domain] bool = true;
+    var nullByteLocations: [this.values.a.domain] bool = false;
 
     // since the delim matches are variable length, we don't know what the size of flattenedVals should be until we've found the matches
-    forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(delim.encode()),
+    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(delim.encode()),
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {
@@ -78,7 +78,7 @@ module Flatten {
     var valsIndexTransform = (+ scan writeToVal) - writeToVal;
     var offsIndexTransform = (+ scan nullByteLocations) - nullByteLocations + 1;  // the plus one is to leave space for the offset 0 edge case
 
-    forall (origInd, flatValInd, offInd) in zip(this.values.aD, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
+    forall (origInd, flatValInd, offInd) in zip(this.values.a.domain, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
                                                                                                               var offAgg = newDstAggregator(int)) {
       // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
       if writeToVal[origInd] {
@@ -89,7 +89,7 @@ module Flatten {
         if nullByteLocations[origInd] {
           // nullbyte location, copy nullbyte into flattenedVals
           valAgg.copy(flattenedVals[flatValInd], NULL_STRINGS_VALUE);
-          if origInd != this.values.aD.high {
+          if origInd != this.values.a.domain.high {
             // offset points to position after null byte
             offAgg.copy(flattenedOffsets[offInd], flatValInd + 1);
           }
@@ -102,7 +102,7 @@ module Flatten {
     }
 
     // build segments mapping from original Strings to flattenedStrings
-    const segmentsDom = if returnSegs then this.offsets.aD else makeDistDom(0);
+    const segmentsDom = if returnSegs then this.offsets.a.domain else makeDistDom(0);
     var segments: [segmentsDom] int;
     if returnSegs {
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -137,14 +137,14 @@ module Flatten {
     const lengths = this.getLengths();
 
     overMemLimit((this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
-    var numMatches: [this.offsets.aD] int;
-    var writeToVal: [this.values.aD] bool = true;
-    var nullByteLocations: [this.values.aD] bool = false;
+    var numMatches: [this.offsets.a.domain] int;
+    var writeToVal: [this.values.a.domain] bool = true;
+    var nullByteLocations: [this.values.a.domain] bool = false;
 
     // maxSplit = 0 means replace all occurances, so we set maxsplit equal to 10**9
     var maxsplit = if initMaxSplit == 0 then 10**9:int else initMaxSplit;
     // since the pattern matches are variable length, we don't know what the size of splitVals should be until we've found the matches
-    forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern.encode()),
+    forall (i, off, len) in zip(this.offsets.a.domain, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern.encode()),
                                                                              var writeAgg = newDstAggregator(bool),
                                                                              var nbAgg = newDstAggregator(bool),
                                                                              var matchAgg = newDstAggregator(int)) {
@@ -175,7 +175,7 @@ module Flatten {
     var valsIndexTransform = (+ scan writeToVal) - writeToVal;
     var offsIndexTransform = (+ scan nullByteLocations) - nullByteLocations + 1;
 
-    forall (origInd, origVal, splitValInd, offInd) in zip(this.values.aD, origVals, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
+    forall (origInd, origVal, splitValInd, offInd) in zip(this.values.a.domain, origVals, valsIndexTransform, offsIndexTransform) with (var valAgg = newDstAggregator(uint(8)),
                                                                                                                var offAgg = newDstAggregator(int)) {
       // writeToVal is true for positions to copy origVals (non-matches) and positions to write a null byte
       if writeToVal[origInd] {
@@ -186,7 +186,7 @@ module Flatten {
         if nullByteLocations[origInd] {
           // nullbyte location, copy nullbyte into splitVals
           valAgg.copy(splitVals[splitValInd], NULL_STRINGS_VALUE);
-          if origInd != this.values.aD.high {
+          if origInd != this.values.a.domain.high {
             // offset points to position after null byte
             offAgg.copy(splitOffsets[offInd], splitValInd + 1);
           }
@@ -199,7 +199,7 @@ module Flatten {
     }
 
      // build segments mapping from original Strings to flattenedStrings
-    const segmentsDom = if returnSegs then this.offsets.aD else makeDistDom(0);
+    const segmentsDom = if returnSegs then this.offsets.a.domain else makeDistDom(0);
     var segments: [segmentsDom] int;
     if returnSegs {
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
@@ -228,8 +228,8 @@ module Flatten {
     }
     // delimHits is true immediately following instances of delim, i.e.
     // at the starts of newly created segments
-    var delimHits: [this.values.aD] bool;
-    const hitD = this.values.aD.interior(this.values.size - delim.numBytes);
+    var delimHits: [this.values.a.domain] bool;
+    const hitD = this.values.a.domain.interior(this.values.size - delim.numBytes);
     delimHits[hitD] = this.findSubstringInBytes(delim)[hitD.translate(-delim.numBytes)];
     // Hits could be overlapping, if delim is palindromic and > 1 byte
     // Convert to greedy, erasing overlapping hits
@@ -246,7 +246,7 @@ module Flatten {
     var off: [offDom] int;
     // Need to merge original offsets with new offsets from delims
     // offTruth is true at start of every segment (new or old)
-    var offTruth: [this.values.aD] bool = delimHits;
+    var offTruth: [this.values.a.domain] bool = delimHits;
     forall o in this.offsets.a with (var agg = newDstAggregator(bool)) {
       agg.copy(offTruth[o], true);
     }
@@ -255,7 +255,7 @@ module Flatten {
     // Running segment number
     var scanOff = (+ scan offTruth) - offTruth;
     // Copy over the offsets; later we will shrink them if delim is > 1 byte
-    forall (i, o, t) in zip(this.values.aD, scanOff, offTruth) with (var agg = newDstAggregator(int)) {
+    forall (i, o, t) in zip(this.values.a.domain, scanOff, offTruth) with (var agg = newDstAggregator(int)) {
       if t {
         agg.copy(off[o], i);
       }
@@ -264,7 +264,7 @@ module Flatten {
     // Then we need to build segments based on how many delims were
     // present in each string, plus the original string boundaries.
     // Fortunately, scanOff already has this information.
-    const segD = if returnSegs then this.offsets.aD else makeDistDom(0);
+    const segD = if returnSegs then this.offsets.a.domain else makeDistDom(0);
     var seg: [segD] int;
     if returnSegs {
       forall (s, o) in zip(seg, this.offsets.a) with (var agg = newSrcAggregator(int)) {
@@ -310,7 +310,7 @@ module Flatten {
         agg.copy(srcIdx[o], d);
       }
       // Force first derivative to match start of src domain
-      srcIdx[valDom.low] = this.values.aD.low;
+      srcIdx[valDom.low] = this.values.a.domain.low;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(int) * srcIdx.size);
       // Perform integration to compute gather indices
