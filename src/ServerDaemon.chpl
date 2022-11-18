@@ -402,10 +402,7 @@ module ServerDaemon {
             this.connectUrl = this.getConnectUrl(this.serverToken);
             this.createServerConnectionInfo();
             if serverInfoNoSplash {
-                writeln("Server Information:");
                 writeln(getConfig());
-                writeln();
-                writeln();
             } else {
                 this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             }
