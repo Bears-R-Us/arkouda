@@ -49,7 +49,7 @@ module EncodingMsg {
       var encodeOffsets = (+ scan encodeLengths);
       encodeOffsets -= encodeLengths;
       
-      var encodedValues = encodeSegments(offs, origVals, encodeLengths, toEncoding, fromEncoding);
+      var encodedValues = encodeSegments(offs, origVals, encodeOffsets, encodeLengths, toEncoding, fromEncoding);
 
       return (encodeOffsets, encodedValues);
     }
@@ -92,13 +92,14 @@ module EncodingMsg {
       return res;
     }
 
-    proc encodeSegments(segments: [?D] int, values: [?vD] uint(8), encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
+    proc encodeSegments(segments: [?D] int, values: [?vD] uint(8), encodeOffsets: [D] int, encodeLengths: [D] int, toEncoding: string, fromEncoding: string) throws {
       var res = makeDistArray(+ reduce encodeLengths, uint(8));
       if (D.size == 0) {
         return res;
       }
 
       const (startSegInds, numSegs, lengths) = computeSegmentOwnership(segments, vD);
+      const (eStartSegInds, eNumSegs, eLengths) = computeSegmentOwnership(encodeOffsets, res.domain);
     
       // Start task parallelism
       coforall loc in Locales {
@@ -106,20 +107,26 @@ module EncodingMsg {
           const myFirstSegIdx = startSegInds[loc.id];
           const myNumSegs = max(0, numSegs[loc.id]);
           const mySegInds = {myFirstSegIdx..#myNumSegs};
+
+          const myFirstESegIdx = eStartSegInds[loc.id];
+          const myNumESegs = max(0, eNumSegs[loc.id]);
+          const myESegInds = {myFirstESegIdx..#myNumESegs};
           // Segment offsets whose bytes are owned by loc
           // Lengths of segments whose bytes are owned by loc
-          var mySegs, myLens: [mySegInds] int;
+          var mySegs, myLens, myELens, myESegs: [mySegInds] int;
           forall i in mySegInds with (var agg = new SrcAggregator(int)) {
             agg.copy(mySegs[i], segments[i]);
             agg.copy(myLens[i], lengths[i]);
+            agg.copy(myELens[i], eLengths[i]);
+            agg.copy(myESegs[i], encodeOffsets[i]);
           }
           try {
-            forall (start, len, i, encodeLen) in zip(mySegs, myLens, mySegInds, encodeLengths) {
+            forall (start, len, i, eStart, eLen) in zip(mySegs, myLens, mySegInds, myESegs, myELens) {
               var slice = new lowLevelLocalizingSlice(values, start..#len);
-              var encodedStr = encodeStr(slice.ptr: c_ptr(uint(8)), len, encodeLen, toEncoding, fromEncoding);
+              var encodedStr = encodeStr(slice.ptr: c_ptr(uint(8)), len, eLen, toEncoding, fromEncoding);
               var agg = newDstAggregator(uint(8));
-              for j in start..#len {
-                agg.copy(res[j], encodedStr[j-start]);
+              for j in eStart..#eLen {
+                agg.copy(res[j], encodedStr[j-eStart]);
               }
             }
           } catch {
