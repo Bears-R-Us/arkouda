@@ -9,16 +9,19 @@ module RegistrationMsg
     use Logging;
     use Message;
     use List;
+    use Map;
     use Set;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use SegmentedString;
+    use SegmentedArray;
     use SegmentedMsg;
 
     private config const logLevel = ServerConfig.logLevel;
     const regLogger = new Logger(logLevel);
+    private var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
 
     /* 
     Parse, execute, and respond to a register message 
@@ -74,6 +77,11 @@ module RegistrationMsg
 
         const name = msgArgs.getValueOf("name");
 
+        var objType: string = "";
+        if msgArgs.contains("objtype") {
+            objType = msgArgs.getValueOf("objtype");
+        }
+
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "%s %s".format(cmd,name));
@@ -90,10 +98,43 @@ module RegistrationMsg
             regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         } else {
-            repMsg = "created %s".format(attrib);
-            if (isStringAttrib(attrib)) {
-                var s = getSegString(name, st);
-                repMsg += "+created bytes.size %t".format(s.nBytes);
+            if objType.toLower() == "segarray" {
+                var a = attrib.split(" ");
+                var dtype = str2dtype(a[1]: string);
+                var rtnmap: map(string, string) = new map(string, string);
+
+                select dtype {
+                    when (DType.Int64) {
+                        var seg = getSegArray(name, st, int);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.UInt64) {
+                        var seg = getSegArray(name, st, uint);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.Float64) {
+                        var seg = getSegArray(name, st, real);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                    when (DType.Bool) {
+                        var seg = getSegArray(name, st, bool);
+                        seg.fillReturnMap(rtnmap, st);
+                    }
+                }
+
+                repMsg = "%jt".format(rtnmap);
+            }
+            else if objType == "" || objType == "str" || objType == "pdarray" {
+                repMsg = "created %s".format(attrib);
+                if (isStringAttrib(attrib)) {
+                    var s = getSegString(name, st);
+                    repMsg += "+created bytes.size %t".format(s.nBytes);
+                }
+            }
+            else {
+                var errorMsg = "Error: Unkown object type passed to attachMsg - %s".format(objType);
+                regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
             regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL); 
@@ -174,51 +215,6 @@ module RegistrationMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    /* 
-    Compile the component parts of a SegString attach message 
-
-    :arg cmd: calling command 
-    :type cmd: string 
-
-    :arg name: name of SymTab element
-    :type name: string
-
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
-
-    :returns: MsgTuple response message
-    */
-    proc attachSegArrayMsg(cmd: string, name: string, st: borrowed SymTab): MsgTuple throws {
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                            "%s: Collecting SegString components for '%s'".format(cmd, name));
-
-        var repMsg: string;
-
-        var segs = st.attrib("%s_segments".format(name));
-        if (segs.startsWith("Error:")) { 
-            var errorMsg = segs;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        var vals = st.attrib("%s_values".format(name));
-        if (vals.startsWith("Error:")) { 
-            var errorMsg = vals;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        var lens = st.attrib("%s_lengths".format(name));
-        if (lens.startsWith("Error:")) { 
-            var errorMsg = lens;
-            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        repMsg = "segarray+created %s+created %s+created %s".format(segs, vals, lens);
-
-        return new MsgTuple(repMsg, MsgType.NORMAL);
-    }
 
     /* 
     Compile the component parts of a Series attach message 
@@ -353,7 +349,10 @@ module RegistrationMsg
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
                 when ("SegArray") {
-                    msg = attachSegArrayMsg(cmd, regName, st).msg;
+                    var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
+                    var objParam =  new ParameterObj("objtype", objtype, ObjectType.VALUE, "");
+                    var subArgs = new MessageArgs(new list([attParam, objParam]));
+                    msg = "segarray+%s+%s".format(regName, attachMsg(cmd, subArgs, st).msg);
                 }
                 when ("Categorical") {
                     msg = attachCategoricalMsg(cmd, regName, st).msg;
@@ -402,20 +401,23 @@ module RegistrationMsg
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                         "Attempting to find type of registered element '%s'".format(name));
 
-        var dtype: string;
+        var objtype: string;
 
         if st.contains(name) {
-            // Easy case where full name given matches an entry, pdarray or Strings
-            dtype = "simple";
+            // SegArray is now also represented in the SymbolTable as a single entry with no extras attached to the name
+            var entry = st.lookup(name);
+            if entry.isAssignableTo(SymbolEntryType.SegArraySymEntry) {
+                objtype = "segarray";
+            } else {
+                // pdarray or Strings
+                objtype = "simple";
+            }
         } else if st.contains("%s.categories".format(name)) && st.contains("%s.codes".format(name)) {
-            dtype = "categorical";
-        } else if st.contains("%s_segments".format(name)) && st.contains("%s_values".format(name)) {
-            // Important to note that categorical has a .segments while segarray uses _segments
-            dtype = "segarray";
+            objtype = "categorical";
         } else if st.contains("%s_value".format(name)) && (st.contains("%s_key".format(name)) || st.contains("%s_key_0".format(name))) {
-            dtype = "series";
+            objtype = "series";
         } else if st.contains("df_columns_%s".format(name)) && (st.contains("df_index_%s_key".format(name))) {
-            dtype = "dataframe";
+            objtype = "dataframe";
         } else {
             throw getErrorWithContext(
                                 msg="Unable to determine type for given name: %s".format(name),
@@ -426,7 +428,10 @@ module RegistrationMsg
                                 );
         }
 
-        return dtype;
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                        "Type determined to be: '%s'".format(objtype));
+
+        return objtype;
     }
 
     /* 
@@ -454,29 +459,37 @@ module RegistrationMsg
         }
 
         // type possibilities for pdarray and strings
-        var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
         if simpleTypes.contains(dtype.toLower()) {
             dtype = "simple";
         }
 
-        var subArgs = new MessageArgs(new list([msgArgs.get("name")]));
-
         select (dtype.toLower()) {
             when ("simple") {
-                // pdarray and strings can use the attachMsg method
-                return attachMsg(cmd, subArgs, st);
+                // pdarray, strings, and segarray can use the attachMsg method
+                var aRet = attachMsg(cmd, msgArgs, st);
+                var msg = aRet.msg;
+                var msgType = aRet.msgType;
+                repMsg = "simple+%s".format(msg);
+                return new MsgTuple(repMsg, msgType);
+            }
+            when ("segarray") {
+                var attParam = new ParameterObj("name", name, ObjectType.VALUE, "");
+                var objParam =  new ParameterObj("objtype", dtype, ObjectType.VALUE, "");
+                var subArgs = new MessageArgs(new list([attParam, objParam]));
+                var aRet = attachMsg(cmd, subArgs, st);
+                var msg = aRet.msg;
+                var msgType = aRet.msgType;
+                repMsg = "segarray+%s".format(msg);
+                return new MsgTuple(repMsg, msgType);
             }
             when ("categorical") {
                 return attachCategoricalMsg(cmd, name, st);
-            }
-            when ("segarray") {
-                return attachSegArrayMsg(cmd, name, st);
             }
             when ("series") {
                 return attachSeriesMsg(cmd, name, st);
             }
             when ("dataframe") {
-                return attachDataFrameMsg(cmd, subArgs, st);
+                return attachDataFrameMsg(cmd, msgArgs, st);
             }
             otherwise {
                 regLogger.warn(getModuleName(),getRoutineName(),getLineNumber(), 
@@ -541,9 +554,7 @@ module RegistrationMsg
             dtype = findType(cmd, name, st);
         }
 
-        // type possibilities for pdarray and strings
-        var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
-        if simpleTypes.contains(dtype.toLower()) {
+        if simpleTypes.contains(dtype.toLower()) || dtype == "segarray" {
             dtype = "simple";
         }
 
@@ -577,22 +588,6 @@ module RegistrationMsg
                         var resp = unregisterMsg(cmd, subArgs, st);
                         status += " %s: %s ".format(n, resp.msg);
                     }
-                }
-            }
-            when ("segarray") {
-                // Create an array with 3 strings, one for each component of segarray, and assign the names
-                var nameList: [0..2] string;
-                nameList[0] = "%s_segments".format(name);
-                nameList[1] = "%s_values".format(name);
-                nameList[2] = "%s_lengths".format(name);
-
-                var base_json = msgArgs.get("name");
-
-                for n in nameList {
-                    base_json.setVal(n);
-                    var subArgs = new MessageArgs(new list([base_json]));
-                    var resp = unregisterMsg(cmd, subArgs, st);
-                    status += " %s: %s ".format(n, resp.msg);
                 }
             }
             when ("series") {

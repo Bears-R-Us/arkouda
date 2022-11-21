@@ -403,7 +403,8 @@ class RegistrationTest(ArkoudaTest):
         # registered objects are not deleted from symbol table
         a.register("keep")
         self.assertEqual(
-            ak.client.generic_msg(cmd="delete", args={"name": a.name}), f"registered symbol, {a.name}, not deleted"
+            ak.client.generic_msg(cmd="delete", args={"name": a.name}), f"registered symbol, "
+                                                                        f"{a.name}, not deleted"
         )
         self.assertTrue(a.name in ak.list_symbol_table())
 
@@ -666,6 +667,43 @@ class RegistrationTest(ArkoudaTest):
         df.unregister()
         self.assertFalse(df.is_registered())
 
+    def test_register_attach(self):
+        a = [1, 2, 3]
+        b = [6, 7, 8]
+
+        segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
+        # register the seg array
+        segarr.register("segarrtest")
+
+        segarr_2 = ak.SegArray.attach("segarrtest")
+
+        self.assertEqual(segarr.size, segarr_2.size)
+        self.assertListEqual(segarr.lengths.to_list(), segarr_2.lengths.to_list())
+        self.assertListEqual(segarr.segments.to_list(), segarr_2.segments.to_list())
+        self.assertListEqual(segarr.values.to_list(), segarr_2.values.to_list())
+
+        # Verify is_registered
+        self.assertTrue(segarr.is_registered())
+        segarr.unregister()
+        self.assertFalse(segarr.is_registered())
+
+
+    def test_unregister_by_name(self):
+        a = [1, 2, 3]
+        b = [6, 7, 8]
+
+        segarr = ak.segarray(ak.array([0, len(a)]), ak.array(a + b))
+        # register the seg array
+        segarr.register("segarr_unreg_name_test")
+
+        # Verify is_registered
+        self.assertTrue(segarr.is_registered())
+
+        # Unregister all components
+        ak.SegArray.unregister_segarray_by_name("segarr_unreg_name_test")
+
+        # Verify no registered components remain
+        self.assertFalse(segarr.is_registered())
 
 def cleanup():
     ak.clear()

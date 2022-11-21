@@ -292,8 +292,6 @@ def attach(name: str, dtype: str = "infer"):
 
     if repType == "categorical":
         return Categorical.from_return_msg(repMsg)
-    elif repType == "segarray":
-        return SegArray._from_attach_return_msg(repMsg)
     elif repType == "series":
         from arkouda.series import Series
 
@@ -302,13 +300,18 @@ def attach(name: str, dtype: str = "infer"):
         from arkouda.dataframe import DataFrame
 
         return DataFrame.from_return_msg(repMsg)
-    else:
+    elif repType == "segarray":
+        repMsg = repMsg[len(repType) + 1 :]
+        return SegArray.from_return_msg(repMsg)
+    elif repType == "simple":
         dtype = repMsg.split()[2]
-
+        repMsg = repMsg[len(repType) + 1 :]
         if dtype == "str":
             return Strings.from_return_msg(repMsg)
         else:
             return create_pdarray(repMsg)
+    else:
+        raise ValueError(f"Unknown object type returned by genericAttach - {repType}")
 
 
 def unregister_by_name(name: str, dtype: str = "infer"):

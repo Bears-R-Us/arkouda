@@ -2754,7 +2754,7 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
 
     See also
     --------
-    register, unregister, is_registered, unregister_pdarray_by_name, list_registry
+    attach, register, unregister, is_registered, unregister_pdarray_by_name, list_registry
 
     Notes
     -----
@@ -2767,6 +2767,49 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     >>> a.register("my_zeros")
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
+    >>> # ...other work...
+    >>> b.unregister()
+    """
+    return attach(user_defined_name)
+
+
+@typechecked
+def attach(user_defined_name: str) -> pdarray:
+    """
+    class method to return a pdarray attached to the registered name in the arkouda
+    server which was registered using register()
+
+    Parameters
+    ----------
+    user_defined_name : str
+        user defined name which array was registered under
+
+    Returns
+    -------
+    pdarray
+        pdarray which is bound to the corresponding server side component which was registered
+        with user_defined_name
+
+    Raises
+    ------
+    TypeError
+      Raised if user_defined_name is not a str
+
+    See also
+    --------
+    register, unregister, is_registered, unregister_pdarray_by_name, list_registry
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion
+    until they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> a.register("my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.pdarrayclass.attach("my_zeros")
     >>> # ...other work...
     >>> b.unregister()
     """

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import cast as type_cast
-from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -12,9 +11,10 @@ from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.infoclass import list_registry
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
-from arkouda.pdarrayclass import attach_pdarray, create_pdarray, is_sorted, pdarray
+from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarrayIO import load
 from arkouda.pdarraysetops import concatenate
@@ -1279,71 +1279,133 @@ class SegArray:
             segments[truth] = segments[arange(self.size)[truth] + 1]
             return SegArray.from_parts(segments, new_values[g.permutation])
 
-    def register(
-        self,
-        name,
-        segment_suffix="_segments",
-        value_suffix="_values",
-        length_suffix="_lengths",
-        grouping_suffix="_grouping",
-    ):
-        if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
-            raise ValueError("Suffixes must all be different")
-        self.segments.register(name + segment_suffix)
-        self.values.register(name + value_suffix)
-        self.lengths.register(name + length_suffix)
-        # TODO - groupby does not have register.
-        # self.grouping.register(name+grouping_suffix)
+    def register(self, user_defined_name):
+        """
+        Save this SegArray object by registering it to the Symbol Table using a defined name
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which this SegArray object will be registered under
+
+        Returns
+        -------
+        SegArray
+            This SegArray object
+
+        Raises
+        ------
+        RegistrationError
+            Raised if the server could not register the SegArray object
+
+        See Also
+        --------
+        unregister, attach, is_registered
+        """
+        try:
+            rep_msg = generic_msg(
+                cmd="register", args={"array": self.name, "user_name": user_defined_name}
+            )
+            if rep_msg != "success":
+                raise RegistrationError
+        except (
+            RuntimeError,
+            RegistrationError,
+        ):  # Registering two objects with the same name is not allowed
+            raise RegistrationError(f"Server was unable to register {user_defined_name}")
+
+        self.name = user_defined_name
+        return self
 
     def unregister(self):
-        self.segments.unregister()
-        self.values.unregister()
-        self.lengths.unregister()
-        # TODO - groupby does not have unregister.
-        # self.grouping.unregister()
+        """
+        Remove this SegArray object from the Symbol Table
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not unregister the SegArray object from the Symbol Table
+
+        See Also
+        --------
+        register, attach, is_registered
+        """
+        SegArray.unregister_segarray_by_name(self.name)
+
+    @staticmethod
+    def unregister_segarray_by_name(user_defined_name):
+        """
+        Using the defined name, remove the registered SegArray object from the Symbol Table
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the SegArray object was registered under
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not unregister the SegArray object from the Symbol Table
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
+        generic_msg(cmd="unregister", args={"name": user_defined_name})
 
     @classmethod
-    def attach(
-        cls,
-        name,
-        segment_suffix="_segments",
-        value_suffix="_values",
-        length_suffix="_lengths",
-        grouping_suffix="_grouping",
-    ):
-        if len(set((segment_suffix, value_suffix, length_suffix, grouping_suffix))) != 4:
-            raise ValueError("Suffixes must all be different")
-        # TODO - add grouping attaching grouping=ak.GroupBy.attach(name+grouping_suffix)
-        return cls.from_parts(
-            attach_pdarray(name + segment_suffix),
-            attach_pdarray(name + value_suffix),
-            lengths=attach_pdarray(name + length_suffix),
+    def attach(cls, user_defined_name):
+        """
+        Using the defined name, attach to a SegArray that has been registered to the Symbol Table
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the SegArray object was registered under
+
+        Returns
+        -------
+        SegArray
+            The resulting SegArray
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the server could not attach to the SegArray object
+
+        See Also
+        --------
+        register, unregister, is_registered
+        """
+        repMsg = generic_msg(
+            cmd="attach",
+            args={
+                "name": user_defined_name,
+                "objtype": SegArray.objtype,
+            },
         )
+        return cls.from_return_msg(repMsg)
 
     def is_registered(self) -> bool:
         """
-        Checks if all components of the SegArray object are registered
+        Checks if the name of the SegArray object is registered in the Symbol Table
 
         Returns
         -------
         bool
-            True if all components are registered, false if not
+            True if SegArray is registered, false if not
 
         See Also
         --------
         register, unregister, attach
         """
 
-        # SegArray contains 3 parts - segments, values, and lengths
-        regParts = [
-            self.segments.is_registered(),
-            self.values.is_registered(),
-            self.lengths.is_registered(),
-        ]
-
-        if any(regParts) and not all(regParts):
-            warn(
-                f"SegArray expected {len(regParts)} components to be registered,"
-                f" but only located {sum(regParts)}"
-            )
-        return all(regParts)
+        return self.name in list_registry()

@@ -26,7 +26,9 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
 from arkouda.numeric import where
-from arkouda.pdarrayclass import RegistrationError, pdarray, unregister_pdarray_by_name
+from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import attach as pd_attach
+from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarrayIO import get_filetype, load_all, save_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -2045,14 +2047,11 @@ class DataFrame(UserDict):
         # Remove duplicates caused by multiple components in Categorical or SegArray and
         # loop through
         for name in set(matches):
-            colName = name.split("_")[3]
-            if f"_{Strings.objtype}_" in name or f"_{pdarray.objtype}_" in name:
-                cols_resp = cast(str, generic_msg(cmd="attach", args={"name": name}))
-                dtype = cols_resp.split()[2]
-                if dtype == Strings.objtype:
-                    columns[colName] = Strings.from_return_msg(cols_resp)
-                else:  # pdarray
-                    columns[colName] = create_pdarray(cols_resp)
+            colName = DataFrame._parse_col_name(name, user_defined_name)[0]
+            if f"_{Strings.objtype}_" in name:
+                columns[colName] = Strings.attach(name)
+            elif f"_{pdarray.objtype}_" in name:
+                columns[colName] = pd_attach(name)
             elif f"_{Categorical.objtype}_" in name:
                 columns[colName] = Categorical.attach(name)
             elif f"_{SegArray.objtype}_" in name:
@@ -2111,8 +2110,7 @@ class DataFrame(UserDict):
         if len(matches) == 0:
             raise RegistrationError(f"No registered elements with name '{user_defined_name}'")
 
-        # Remove duplicates caused by multiple components in categorical or segarray and
-        # loop through
+        # Remove duplicates caused by multiple components in categorical and loop through
         for name in set(matches):
             if f"_{Strings.objtype}_" in name:
                 Strings.unregister_strings_by_name(name)
@@ -2121,10 +2119,7 @@ class DataFrame(UserDict):
             elif f"_{Categorical.objtype}_" in name:
                 Categorical.unregister_categorical_by_name(name)
             elif f"_{SegArray.objtype}_" in name:
-                # SegArray does not have an unregister_by_name function. By attaching and using
-                # unregister() it prevents unregistering the components individually here
-                segarray = SegArray.attach(name)
-                segarray.unregister()
+                SegArray.unregister_segarray_by_name(name)
 
         unregister_pdarray_by_name(f"df_index_{user_defined_name}_key")
         Strings.unregister_strings_by_name(f"df_columns_{user_defined_name}")
@@ -2147,7 +2142,9 @@ class DataFrame(UserDict):
         -------
         Tuple (columnName, columnType)
         """
-        regName = entryName.split(" ")[1]
+        nameParts = entryName.split(" ")
+        regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
+
         colParts = regName.split("_")
         colType = colParts[2]
 
@@ -2199,9 +2196,11 @@ class DataFrame(UserDict):
                 colName, colType = DataFrame._parse_col_name(parts[i], dfName)
                 if colType == "pdarray":
                     cols[colName] = create_pdarray(parts[i])
-                else:
+                elif colType == "str":
                     cols[colName] = Strings.from_return_msg(f"{parts[i]}+{parts[i+1]}")
                     i += 1
+                else:
+                    raise ValueError(f"Unknown object type defined in return message - {colType}")
 
             elif parts[i] == "categorical":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
@@ -2214,9 +2213,8 @@ class DataFrame(UserDict):
 
             elif parts[i] == "segarray":
                 colName = DataFrame._parse_col_name(parts[i + 1], dfName)[0]
-                segMsg = f"{parts[i]}+{parts[i+1]}+{parts[i+2]}+{parts[i+3]}"
-                cols[colName] = SegArray._from_attach_return_msg(segMsg)
-                i += 3
+                cols[colName] = SegArray.from_return_msg(parts[i + 2])
+                i += 2
 
             i += 1
 
