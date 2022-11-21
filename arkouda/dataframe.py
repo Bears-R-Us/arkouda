@@ -26,12 +26,9 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
 from arkouda.numeric import where
-from arkouda.pdarrayclass import (
-    RegistrationError,
-    attach,
-    pdarray,
-    unregister_pdarray_by_name,
-)
+from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import attach as pd_attach
+from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.pdarrayIO import get_filetype, load_all, save_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
@@ -2054,7 +2051,7 @@ class DataFrame(UserDict):
             if f"_{Strings.objtype}_" in name:
                 columns[colName] = Strings.attach(name)
             elif f"_{pdarray.objtype}_" in name:
-                columns[colName] = attach(name)
+                columns[colName] = pd_attach(name)
             elif f"_{Categorical.objtype}_" in name:
                 columns[colName] = Categorical.attach(name)
             elif f"_{SegArray.objtype}_" in name:
