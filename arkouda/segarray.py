@@ -1089,7 +1089,7 @@ class SegArray:
         value_suffix="_values",
     ):
         """
-        Load a saved SegArray from HDF5. All arguments msut match what
+        Load a saved SegArray from HDF5. All arguments must match what
         was supplied to SegArray.save()
 
         Parameters

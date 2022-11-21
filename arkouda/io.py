@@ -463,7 +463,7 @@ def read_hdf(
     Raises
     ------
     ValueError
-        Raised if all datasets are not present in all hdf5/parquet files or if one or
+        Raised if all datasets are not present in all hdf5 files or if one or
         more of the specified files do not exist
     RuntimeError
         Raised if one or more of the specified files cannot be opened.
@@ -540,7 +540,7 @@ def read_parquet(
     Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
 ]:
     """
-    Read Arkouda objects from HDF5 file/s
+    Read Arkouda objects from Parquet file/s
 
         Parameters
         ----------
@@ -572,7 +572,7 @@ def read_parquet(
         Raises
         ------
         ValueError
-            Raised if all datasets are not present in all hdf5/parquet files or if one or
+            Raised if all datasets are not present in all parquet files or if one or
             more of the specified files do not exist
         RuntimeError
             Raised if one or more of the specified files cannot be opened.
@@ -594,7 +594,7 @@ def read_parquet(
 
         If datasets is None, infer the names of datasets from the first file
         and read all of them. Use ``get_datasets`` to show the names of datasets
-        to HDF5/Parquet files.
+        to Parquet files.
 
         Parquet always recomputes offsets at this time
         This will need to be updated once parquets workflow is updated
@@ -847,7 +847,7 @@ def to_parquet(
     Notes
     -----
     Creates one file per locale containing that locale's chunk of each pdarray.
-    If columns is a dictionary, the keys are used as the HDF5 dataset names.
+    If columns is a dictionary, the keys are used as the Parquet column names.
     Otherwise, if no names are supplied, 0-up integers are used. By default,
     any existing files at path_prefix will be overwritten, unless the user
     specifies the 'append' mode, in which case arkouda will attempt to add
