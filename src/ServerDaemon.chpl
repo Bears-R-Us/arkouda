@@ -401,7 +401,12 @@ module ServerDaemon {
     
             this.connectUrl = this.getConnectUrl(this.serverToken);
             this.createServerConnectionInfo();
-            this.printServerSplashMessage(this.serverToken,this.arkDirectory);
+            if serverInfoNoSplash {
+                writeln(getConfig());
+                stdout.flush();
+            } else {
+                this.printServerSplashMessage(this.serverToken,this.arkDirectory);
+            }
             this.registerServerCommands();
                     
             var t1 = new Time.Timer();
