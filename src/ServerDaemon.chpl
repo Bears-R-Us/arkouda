@@ -403,6 +403,7 @@ module ServerDaemon {
             this.createServerConnectionInfo();
             if serverInfoNoSplash {
                 writeln(getConfig());
+                stdout.flush();
             } else {
                 this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             }

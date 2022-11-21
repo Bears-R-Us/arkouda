@@ -207,8 +207,6 @@ def connect(
     regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type:ignore
     clientLogger.info(return_message)
 
-    return cast(str, generic_msg(cmd="getconfig", args={}))
-
 
 def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
     """
