@@ -129,7 +129,7 @@ def connect(
 
     Returns
     -------
-    JSON string of connection configuration information
+    None
 
     Raises
     ------
