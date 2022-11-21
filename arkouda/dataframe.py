@@ -1535,7 +1535,8 @@ class DataFrame(UserDict):
         locale number.
         """
         warn(
-            "ak.DataFrame.save has been deprecated. Please use ak.DataFrame.to_hdf or ak.DataFrame.to_parquet",
+            "ak.DataFrame.save has been deprecated. "
+            "Please use ak.DataFrame.to_hdf or ak.DataFrame.to_parquet",
             DeprecationWarning,
         )
         # if no columns are stored, we will save all columns

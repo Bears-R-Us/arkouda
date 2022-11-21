@@ -986,7 +986,8 @@ class Categorical:
         via the dataset parameter.
         """
         warn(
-            "ak.Categorical.save has been deprecated. Please use ak.Categorical.to_parquet or ak.Categorical.to_hdf",
+            "ak.Categorical.save has been deprecated. "
+            "Please use ak.Categorical.to_parquet or ak.Categorical.to_hdf",
             DeprecationWarning,
         )
         if mode.lower() not in ["append", "truncate"]:
