@@ -16,6 +16,31 @@ Two new flags were added to the arkouda_server startup command to help streamlin
 
 - `--serverInfoNoSplash`
   - This flag replaces the usual splash message in the output of the server startup with the server configuration JSON. This JSON can then be parsed to read the server host, server port, and any other configuration info you may need.
+  - An example of the JSON configuration that gets written to `stdout`: 
+```json
+{
+  "arkoudaVersion":"v2022.11.17",
+  "chplVersion":"1.28.0",
+  "ZMQVersion":"4.3.4",
+  "HDF5Version":"1.12.1",
+  "serverHostname":"MSI",
+  "ServerPort":5555,
+  "numLocales":1,
+  "numPUs":6,
+  "maxTaskPar":6,
+  "physicalMemory":13272535040,
+  "distributionType":"domain(1,int(64),false)",
+  "LocaleConfigs":[{"id":0, "name":"MSI", "numPUs":6, "maxTaskPar":6, "physicalMemory":13272535040}],
+  "authenticate":false,
+  "logLevel":"INFO",
+  "regexMaxCaptures":20,
+  "byteorder":"little",
+  "autoShutdown":true,
+  "serverInfoNoSplash":true,
+  "ARROW_VERSION":"7.0.0"
+}
+```
+
 - `--autoShutdown`
   - This flag toggles whether the arkouda_server will shut itself down when the client disconnects. When set to `true`, `ak.disconnect()` will trigger the server shutdown process.
 
