@@ -106,7 +106,7 @@ def connect(
     timeout: int = 0,
     access_token: str = None,
     connect_url=None,
-) -> str:
+) -> None:
     """
     Connect to a running arkouda server.
 
