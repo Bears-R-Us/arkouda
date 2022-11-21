@@ -3,8 +3,9 @@ import json
 import os
 import warnings
 from typing import Dict, List, Mapping, Optional, Union, cast
+from warnings import warn
 
-import pandas as pd
+import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 import arkouda.array_view
@@ -159,14 +160,15 @@ def get_null_indices(
     rep_msg = generic_msg(
         cmd="getnullparquet",
         args={
-            "dset_size": len(datasets),
+            "dset_size": len(datasets) if datasets is not None else 0,  # if needed for mypy
             "filename_size": len(filenames),
             "dsets": datasets,
             "filenames": filenames,
         },
     )
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
-    return _build_objects(rep)
+    # ignore the type here because we are returning a specific case
+    return _build_objects(rep)  # type: ignore
 
 
 @typechecked
@@ -370,7 +372,14 @@ def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayVie
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
 
-def _build_objects(rep_msg: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, Dict]:
+def _build_objects(
+    rep_msg: Dict,
+) -> Union[
+    Strings,
+    pdarray,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[Strings, pdarray, arkouda.array_view.ArrayView]],
+]:
     """
     Helper function to create the Arkouda objects from a read operation
 
@@ -394,7 +403,7 @@ def _build_objects(rep_msg: Dict) -> Union[Strings, pdarray, arkouda.array_view.
     # 2. We have a single pdarray
     # 3. We have a single strings object
     if len(items) > 1:  # DataSets condition
-        d: Dict[str, Union[pdarray, Strings]] = {}
+        d: Dict[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]] = {}
         for item in items:
             d[item["dataset_name"]] = _parse_obj(item)
         return d
@@ -795,7 +804,8 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
     return datasetNames, pdarrays
 
 
-def to_parquet(columns: Union[Mapping[str, pdarray], List[pdarray]],
+def to_parquet(
+    columns: Union[Mapping[str, pdarray], List[pdarray]],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -861,17 +871,13 @@ def to_parquet(columns: Union[Mapping[str, pdarray], List[pdarray]],
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
 
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        arr.to_parquet(
-            prefix_path=prefix_path,
-            dataset=name,
-            mode=mode,
-            compressed=compressed
-        )
+        arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
         if mode.lower() == "truncate":
             mode = "append"
 
 
-def to_hdf(columns: Union[Mapping[str, pdarray], List[pdarray]],
+def to_hdf(
+    columns: Union[Mapping[str, pdarray], List[pdarray]],
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
@@ -945,6 +951,7 @@ def to_hdf(columns: Union[Mapping[str, pdarray], List[pdarray]],
         )
         if mode.lower() == "truncate":
             mode = "append"
+
 
 @typechecked
 def load(
@@ -1020,11 +1027,7 @@ def load(
     try:
         file_format = get_filetype(globstr) if file_format.lower() == "infer" else file_format
         if file_format.lower() == "hdf5":
-            return read_hdf(
-                globstr,
-                dataset,
-                calc_string_offsets=calc_string_offsets
-            )
+            return read_hdf(globstr, dataset, calc_string_offsets=calc_string_offsets)
         else:
             return read_parquet(
                 globstr,
@@ -1125,7 +1128,6 @@ def load_all(
 """
     The following functionality will be deprecated in a later release
 """
-from warnings import warn
 
 
 def read(
@@ -1366,6 +1368,7 @@ def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayVi
     arr = arkouda.array_view.ArrayView(flat, shape)
     return arr
 
+
 @typechecked
 def write_hdf5_multi_dim(
     obj: arkouda.array_view.ArrayView,
@@ -1427,6 +1430,7 @@ def write_hdf5_multi_dim(
         cmd="tohdf",
         args=args,
     )
+
 
 def save_all(
     columns: Union[Mapping[str, pdarray], List[pdarray]],
