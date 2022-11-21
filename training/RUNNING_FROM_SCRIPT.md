@@ -8,11 +8,12 @@
 
 <a id="overview"></a>
 ## Overview
-The purpose of this document is to provide an example process for using a script to automatically run the Arkouda server, connect to the server, perform required actions, then disconnect from the server without any user interaction required.
+The purpose of this document is to provide an example process for using a script to automatically run the Arkouda server, connect to the server, perform required actions, then shutdown the server without any user interaction required.
+
 
 <a id="flags"></a>
 ## New Server Startup Flags
-Two new flags were added to the arkouda_server startup command to help streamline this type of Arkouda usage. These flags are both boolean flags that are `false` by default.
+Two new flags were added to the arkouda_server startup command to help streamline this type of Arkouda usage. Both flags are booleans that default to `false`.
 
 - `--serverInfoNoSplash`
   - This flag replaces the usual splash message in the output of the server startup with the server configuration JSON. This JSON can then be parsed to read the server host, server port, and any other configuration info you may need.
