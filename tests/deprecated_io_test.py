@@ -109,7 +109,8 @@ class DeprecatedIOTest(ArkoudaTest):
 
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
             df = {"cat1": c1, "cat2": c2, "pda1": pda1, "strings1": strings1}
-            ak.save_all(df, f"{tmp_dirname}/cat-save-test")
+            with pytest.deprecated_call():
+                ak.save_all(df, f"{tmp_dirname}/cat-save-test")
             x = ak.load_all(path_prefix=f"{tmp_dirname}/cat-save-test")
             self.assertEqual(len(x.items()), 4)
             # Note assertCountEqual asserts a and b have the same
@@ -135,18 +136,21 @@ class DeprecatedIOTest(ArkoudaTest):
             }
         )
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            akdf.save(f"{tmp_dirname}/testName", file_format="Parquet")
+            with pytest.deprecated_call():
+                akdf.save(f"{tmp_dirname}/testName", file_format="Parquet")
 
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
             self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
 
             # test save with index true
-            akdf.save(f"{tmp_dirname}/testName_with_index.pq", file_format="Parquet", index=True)
+            with pytest.deprecated_call():
+                akdf.save(f"{tmp_dirname}/testName_with_index.pq", file_format="Parquet", index=True)
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")), ak.get_config()["numLocales"])
 
             # Test for df having seg array col
             df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
-            df.save(f"{tmp_dirname}/seg_test.h5")
+            with pytest.deprecated_call():
+                df.save(f"{tmp_dirname}/seg_test.h5")
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"])
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
             self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
@@ -154,7 +158,8 @@ class DeprecatedIOTest(ArkoudaTest):
     def test_export_hdf(self):
         akdf = self.build_arkouda_dataframe()
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            akdf.save(f"{tmp_dirname}/ak_write")
+            with pytest.deprecated_call():
+                akdf.save(f"{tmp_dirname}/ak_write")
 
             pddf = ak.export(f"{tmp_dirname}/ak_write", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/pd_from_ak.h5")), 1)
@@ -181,14 +186,16 @@ class DeprecatedIOTest(ArkoudaTest):
         locale_count = ak.get_config()["numLocales"]
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
             idx = ak.Index(ak.arange(5))
-            idx.save(f"{tmp_dirname}/idx_file.h5")
+            with pytest.deprecated_call():
+                idx.save(f"{tmp_dirname}/idx_file.h5")
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/idx_file_*.h5")), locale_count)
 
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
         strings_array = ak.array(["testing string{}".format(num) for num in list(range(0, 25))])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            strings_array.save("{}/strings-test".format(tmp_dirname), dataset="strings")
+            with pytest.deprecated_call():
+                strings_array.save("{}/strings-test".format(tmp_dirname), dataset="strings")
             r_strings_array = ak.load("{}/strings-test".format(tmp_dirname), dataset="strings")
 
             strings = strings_array.to_ndarray()
@@ -207,34 +214,38 @@ class DeprecatedIOTest(ArkoudaTest):
                     datasets="strings/values",
                 )
             )
-            self.assertIsNotNone(
-                ak.read(
-                    filenames="{}/strings-test_LOCALE0000".format(tmp_dirname),
-                    datasets="strings/segments",
+            with pytest.deprecated_call():
+                self.assertIsNotNone(
+                    ak.read(
+                        filenames="{}/strings-test_LOCALE0000".format(tmp_dirname),
+                        datasets="strings/segments",
+                    )
                 )
-            )
 
             # Repeat the test using the calc_string_offsets=True option to
             # have server calculate offsets array
-            r_strings_subset = ak.read(
-                filenames=f"{tmp_dirname}/strings-test_LOCALE0000", calc_string_offsets=True
-            )
+            with pytest.deprecated_call():
+                r_strings_subset = ak.read(
+                    filenames=f"{tmp_dirname}/strings-test_LOCALE0000", calc_string_offsets=True
+                )
             self.assertIsNotNone(r_strings_subset)
             self.assertTrue(isinstance(r_strings_subset[0], str))
-            self.assertIsNotNone(
-                ak.read(
-                    filenames=f"{tmp_dirname}/strings-test_LOCALE0000",
-                    datasets="strings/values",
-                    calc_string_offsets=True,
+            with pytest.deprecated_call():
+                self.assertIsNotNone(
+                    ak.read(
+                        filenames=f"{tmp_dirname}/strings-test_LOCALE0000",
+                        datasets="strings/values",
+                        calc_string_offsets=True,
+                    )
                 )
-            )
-            self.assertIsNotNone(
-                ak.read(
-                    filenames=f"{tmp_dirname}/strings-test_LOCALE0000",
-                    datasets="strings/segments",
-                    calc_string_offsets=True,
+            with pytest.deprecated_call():
+                self.assertIsNotNone(
+                    ak.read(
+                        filenames=f"{tmp_dirname}/strings-test_LOCALE0000",
+                        datasets="strings/segments",
+                        calc_string_offsets=True,
+                    )
                 )
-            )
 
     def testStringsWithoutOffsets(self):
         """
@@ -244,9 +255,10 @@ class DeprecatedIOTest(ArkoudaTest):
         """
         strings_array = ak.array(["testing string{}".format(num) for num in list(range(0, 25))])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            strings_array.save(
-                "{}/strings-test".format(tmp_dirname), dataset="strings", save_offsets=False
-            )
+            with pytest.deprecated_call():
+                strings_array.save(
+                    "{}/strings-test".format(tmp_dirname), dataset="strings", save_offsets=False
+                )
             r_strings_array = ak.load(
                 "{}/strings-test".format(tmp_dirname), dataset="strings", calc_string_offsets=True
             )
@@ -265,7 +277,8 @@ class DeprecatedIOTest(ArkoudaTest):
             ]
         )
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            strings.save("{}/strings-test".format(tmp_dirname), dataset="strings")
+            with pytest.deprecated_call():
+                strings.save("{}/strings-test".format(tmp_dirname), dataset="strings")
 
             n_strings = strings.to_ndarray()
             n_strings.sort()
@@ -279,10 +292,11 @@ class DeprecatedIOTest(ArkoudaTest):
         m_floats = ak.array([x / 10.0 for x in range(0, 10)])
         m_ints = ak.array(list(range(0, 10)))
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            ak.save_all(
-                {"m_strings": strings_array, "m_floats": m_floats, "m_ints": m_ints},
-                "{}/multi-type-test".format(tmp_dirname),
-            )
+            with pytest.deprecated_call():
+                ak.save_all(
+                    {"m_strings": strings_array, "m_floats": m_floats, "m_ints": m_ints},
+                    "{}/multi-type-test".format(tmp_dirname),
+                )
             r_mixed = ak.load_all("{}/multi-type-test".format(tmp_dirname))
 
             self.assertListEqual(
@@ -310,10 +324,12 @@ class DeprecatedIOTest(ArkoudaTest):
     def testAppendStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            strings_array.save("{}/append-strings-test".format(tmp_dirname), dataset="strings")
-            strings_array.save(
-                "{}/append-strings-test".format(tmp_dirname), dataset="strings-dupe", mode="append"
-            )
+            with pytest.deprecated_call():
+                strings_array.save("{}/append-strings-test".format(tmp_dirname), dataset="strings")
+            with pytest.deprecated_call():
+                strings_array.save(
+                    "{}/append-strings-test".format(tmp_dirname), dataset="strings-dupe", mode="append"
+                )
 
             r_strings = ak.load("{}/append-strings-test".format(tmp_dirname), dataset="strings")
             r_strings_dupe = ak.load(
@@ -324,14 +340,16 @@ class DeprecatedIOTest(ArkoudaTest):
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            strings_array.save("{}/append-multi-type-test".format(tmp_dirname), dataset="m_strings")
+            with pytest.deprecated_call():
+                strings_array.save("{}/append-multi-type-test".format(tmp_dirname), dataset="m_strings")
             m_floats = ak.array([x / 10.0 for x in range(0, 10)])
             m_ints = ak.array(list(range(0, 10)))
-            ak.save_all(
-                {"m_floats": m_floats, "m_ints": m_ints},
-                "{}/append-multi-type-test".format(tmp_dirname),
-                mode="append",
-            )
+            with pytest.deprecated_call():
+                ak.save_all(
+                    {"m_floats": m_floats, "m_ints": m_ints},
+                    "{}/append-multi-type-test".format(tmp_dirname),
+                    mode="append",
+                )
             r_mixed = ak.load_all("{}/append-multi-type-test".format(tmp_dirname))
 
             self.assertIsNotNone(r_mixed["m_floats"])
@@ -368,9 +386,11 @@ class DeprecatedIOTest(ArkoudaTest):
                     fd = f.create_dataset("floats", data=fdata)
                     fd.attrs["ObjType"] = 1
             with self.assertRaises(RuntimeError):
-                ak.read(prefix + "*")
+                with pytest.deprecated_call():
+                    ak.read(prefix + "*")
 
-            a = ak.read(prefix + "*", strictTypes=False)
+            with pytest.deprecated_call():
+                a = ak.read(prefix + "*", strictTypes=False)
             self.assertListEqual(a["integers"].to_list(), np.arange(len(inttypes) * N).tolist())
             self.assertTrue(
                 np.allclose(a["floats"].to_ndarray(), np.arange(len(floattypes) * N, dtype=np.float64))
@@ -379,7 +399,8 @@ class DeprecatedIOTest(ArkoudaTest):
     def testSmallArrayToHDF5(self):
         a1 = ak.array([1])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
+            with pytest.deprecated_call():
+                a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
             # Now load it back in
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
@@ -388,7 +409,8 @@ class DeprecatedIOTest(ArkoudaTest):
     def testSmallStringArrayToHDF5(self):
         a1 = ak.array(["ab", "cd"])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            a1.save(f"{tmp_dirname}/small_string_array", dataset="a1")
+            with pytest.deprecated_call():
+                a1.save(f"{tmp_dirname}/small_string_array", dataset="a1")
             # Now load it back in
             a2 = ak.load(f"{tmp_dirname}/small_string_array", dataset="a1")
             self.assertEqual(str(a1), str(a2))
@@ -396,7 +418,8 @@ class DeprecatedIOTest(ArkoudaTest):
         # Test a single string
         b1 = ak.array(["123456789"])
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            b1.save(f"{tmp_dirname}/single_string", dataset="b1")
+            with pytest.deprecated_call():
+                b1.save(f"{tmp_dirname}/single_string", dataset="b1")
             # Now load it back in
             b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
             self.assertEqual(str(b1), str(b2))
@@ -410,7 +433,8 @@ class DeprecatedIOTest(ArkoudaTest):
         )
         pda1 = ak.array(npa1)
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            pda1.save(f"{tmp_dirname}/small_numeric", dataset="pda1")
+            with pytest.deprecated_call():
+                pda1.save(f"{tmp_dirname}/small_numeric", dataset="pda1")
             # Now load it back in
             pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")
             self.assertEqual(str(pda1), str(pda2))
@@ -421,17 +445,21 @@ class DeprecatedIOTest(ArkoudaTest):
         # Test when quotes are part of the dataset name
         my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
-            ak.read(f"{tmp_dirname}/bad_dataset_names*")
+            with pytest.deprecated_call():
+                ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
+            with pytest.deprecated_call():
+                ak.read(f"{tmp_dirname}/bad_dataset_names*")
 
     def test_multi_dim_rdwr(self):
         arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            ak.write_hdf5_multi_dim(
-                arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append"
-            )
+            with pytest.deprecated_call():
+                ak.write_hdf5_multi_dim(
+                    arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append"
+                )
             # load data back
-            read_arr = ak.read(tmp_dirname + "/multi_dim_test*", "MultiDimObj")
+            with pytest.deprecated_call():
+                read_arr = ak.read(tmp_dirname + "/multi_dim_test*", "MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
 
     def test_parquet(self):
@@ -448,8 +476,10 @@ class DeprecatedIOTest(ArkoudaTest):
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
 
             with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-                ak_arr.save_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset")
-                pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                with pytest.deprecated_call():
+                    ak_arr.save_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset")
+                with pytest.deprecated_call():
+                    pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
     def test_multi_file(self):
@@ -471,21 +501,25 @@ class DeprecatedIOTest(ArkoudaTest):
                 per_arr = int(adjusted_size / NUMFILES)
                 for i in range(NUMFILES):
                     test_arrs.append(elems[(i * per_arr): (i * per_arr) + per_arr])
-                    test_arrs[i].save_parquet(f"{tmp_dirname}/pq_test{i:04d}", "test-dset")
-
-                pq_arr = ak.read(f"{tmp_dirname}/pq_test*", "test-dset")
+                    with pytest.deprecated_call():
+                        test_arrs[i].save_parquet(f"{tmp_dirname}/pq_test{i:04d}", "test-dset")
+                with pytest.deprecated_call():
+                    pq_arr = ak.read(f"{tmp_dirname}/pq_test*", "test-dset")
                 self.assertListEqual(elems.to_list(), pq_arr.to_list())
 
     def test_wrong_dset_name(self):
         ak_arr = ak.randint(0, 2**32, SIZE)
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            ak_arr.save_parquet(f"{tmp_dirname}/pq_test", "test-dset-name")
+            with pytest.deprecated_call():
+                ak_arr.save_parquet(f"{tmp_dirname}/pq_test", "test-dset-name")
 
             with self.assertRaises(RuntimeError):
-                ak.read(f"{tmp_dirname}/pq_test*", "wrong-dset-name")
+                with pytest.deprecated_call():
+                    ak.read(f"{tmp_dirname}/pq_test*", "wrong-dset-name")
 
             with self.assertRaises(ValueError):
-                ak.read(f"{tmp_dirname}/pq_test*", ["test-dset-name", "wrong-dset-name"])
+                with pytest.deprecated_call():
+                    ak.read(f"{tmp_dirname}/pq_test*", ["test-dset-name", "wrong-dset-name"])
 
     def test_max_read_write(self):
         for dtype in TYPES:
@@ -501,8 +535,10 @@ class DeprecatedIOTest(ArkoudaTest):
                 val = "max"
             a = ak.array([val])
             with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-                a.save_parquet(f"{tmp_dirname}/pq_test", "test-dset")
-                ak_res = ak.read(f"{tmp_dirname}/pq_test*", "test-dset")
+                with pytest.deprecated_call():
+                    a.save_parquet(f"{tmp_dirname}/pq_test", "test-dset")
+                with pytest.deprecated_call():
+                    ak_res = ak.read(f"{tmp_dirname}/pq_test*", "test-dset")
                 self.assertEqual(ak_res[0], val)
 
     def test_get_datasets(self):
@@ -519,7 +555,8 @@ class DeprecatedIOTest(ArkoudaTest):
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
 
             with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-                ak_arr.save_parquet(f"{tmp_dirname}/pq_testdset", "TEST_DSET")
+                with pytest.deprecated_call():
+                    ak_arr.save_parquet(f"{tmp_dirname}/pq_testdset", "TEST_DSET")
 
                 dsets = ak.get_datasets(f"{tmp_dirname}/pq_testdset*")
                 self.assertEqual(["TEST_DSET"], dsets)
@@ -537,11 +574,13 @@ class DeprecatedIOTest(ArkoudaTest):
         ak_dict["str-dset"] = ak.random_strings_uniform(1, 10, append_size)
 
         with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            base_dset.save_parquet(f"{tmp_dirname}/pq_testcorrect", "base-dset")
+            with pytest.deprecated_call():
+                base_dset.save_parquet(f"{tmp_dirname}/pq_testcorrect", "base-dset")
             for key in ak_dict:
                 ak_dict[key].save_parquet(f"{tmp_dirname}/pq_testcorrect", key, mode="append")
 
-            ak_vals = ak.read(f"{tmp_dirname}/pq_testcorrect*")
+            with pytest.deprecated_call():
+                ak_vals = ak.read(f"{tmp_dirname}/pq_testcorrect*")
 
             for key in ak_dict:
                 self.assertListEqual(ak_vals[key].to_list(), ak_dict[key].to_list())
@@ -552,7 +591,8 @@ class DeprecatedIOTest(ArkoudaTest):
         expected = ["first-string", "", "string2", "", "third", "", ""]
 
         filename = os.path.join(datadir, basename)
-        res = ak.read(filename)
+        with pytest.deprecated_call():
+            res = ak.read(filename)
 
         self.assertListEqual(expected, res.to_list())
 
@@ -570,8 +610,10 @@ class DeprecatedIOTest(ArkoudaTest):
                 ak_arr = ak.random_strings_uniform(1, 10, SIZE)
 
             with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-                ak_arr.save(f"{tmp_dirname}/pq_testcorrect", "my-dset", mode="append", file_format="parquet")
-                pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                with pytest.deprecated_call():
+                    ak_arr.save(f"{tmp_dirname}/pq_testcorrect", "my-dset", mode="append", file_format="parquet")
+                with pytest.deprecated_call():
+                    pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
 
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
@@ -613,9 +655,11 @@ class DeprecatedIOTest(ArkoudaTest):
             self.assertListEqual(columns, ans)
             # Merely test that read succeeds, do not check output
             if "delta_byte_array.parquet" not in filename:
-                data = ak.read(filename, datasets=columns)
+                with pytest.deprecated_call():
+                    data = ak.read(filename, datasets=columns)
             else:
                 # Since delta encoding is not supported, the columns in
                 # this file should raise an error and not crash the server
                 with self.assertRaises(RuntimeError):
-                    data = ak.read(filename, datasets=columns)
+                    with pytest.deprecated_call():
+                        data = ak.read(filename, datasets=columns)
