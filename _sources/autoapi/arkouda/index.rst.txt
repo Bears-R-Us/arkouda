@@ -216,9 +216,9 @@ Functions
    arkouda.pretty_print_information
    arkouda.isSupportedInt
    arkouda.translate_np_dtype
+   arkouda.list_registry
    arkouda.getArkoudaLogger
    arkouda.cumsum
-   arkouda.attach_pdarray
    arkouda.create_pdarray
    arkouda.is_sorted
    arkouda.arange
@@ -6408,7 +6408,7 @@ Attributes
 
    :raises TypeError: Raised if user_defined_name is not a str
 
-   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+   .. seealso:: :obj:`attach`, :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
 
    .. rubric:: Notes
 
@@ -11253,6 +11253,18 @@ Attributes
        dt is not a np.dtype
 
 
+.. py:function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
 .. py:function:: getArkoudaLogger(name: str, handlers: Optional[List[logging.Handler]] = None, logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT, logLevel: LogLevel = None) -> ArkoudaLogger
 
    A convenience method for instantiating an ArkoudaLogger that retrieves the
@@ -11309,35 +11321,11 @@ Attributes
    array([0, 1, 1, 2, 3])
 
 
-.. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
+.. py:exception:: RegistrationError
 
-   class method to return a pdarray attached to the registered name in the arkouda
-   server which was registered using register()
+   Bases: :py:obj:`Exception`
 
-   :param user_defined_name: user defined name which array was registered under
-   :type user_defined_name: str
-
-   :returns: pdarray which is bound to the corresponding server side component which was registered
-             with user_defined_name
-   :rtype: pdarray
-
-   :raises TypeError: Raised if user_defined_name is not a str
-
-   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
-
-   .. rubric:: Notes
-
-   Registered names/pdarrays in the server are immune to deletion
-   until they are unregistered.
-
-   .. rubric:: Examples
-
-   >>> a = zeros(100)
-   >>> a.register("my_zeros")
-   >>> # potentially disconnect from server and reconnect to server
-   >>> b = ak.attach_pdarray("my_zeros")
-   >>> # ...other work...
-   >>> b.unregister()
+   Error/Exception used when the Arkouda Server cannot register an object
 
 
 .. py:function:: create_pdarray(repMsg: str) -> pdarray
@@ -13150,21 +13138,68 @@ Attributes
       ])
 
 
-   .. py:method:: register(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+   .. py:method:: register(user_defined_name)
+
+      Save this SegArray object by registering it to the Symbol Table using a defined name
+
+      :param user_defined_name: user defined name which this SegArray object will be registered under
+      :type user_defined_name: str
+
+      :returns: This SegArray object
+      :rtype: SegArray
+
+      :raises RegistrationError: Raised if the server could not register the SegArray object
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
    .. py:method:: unregister()
 
+      Remove this SegArray object from the Symbol Table
 
-   .. py:method:: attach(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: unregister_segarray_by_name(user_defined_name)
+      :staticmethod:
+
+      Using the defined name, remove the registered SegArray object from the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: attach(user_defined_name)
       :classmethod:
+
+      Using the defined name, attach to a SegArray that has been registered to the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :returns: The resulting SegArray
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if the server could not attach to the SegArray object
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`
 
 
    .. py:method:: is_registered() -> bool
 
-      Checks if all components of the SegArray object are registered
+      Checks if the name of the SegArray object is registered in the Symbol Table
 
-      :returns: True if all components are registered, false if not
+      :returns: True if SegArray is registered, false if not
       :rtype: bool
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`

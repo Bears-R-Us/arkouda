@@ -601,21 +601,68 @@ Functions
       ])
 
 
-   .. py:method:: register(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+   .. py:method:: register(user_defined_name)
+
+      Save this SegArray object by registering it to the Symbol Table using a defined name
+
+      :param user_defined_name: user defined name which this SegArray object will be registered under
+      :type user_defined_name: str
+
+      :returns: This SegArray object
+      :rtype: SegArray
+
+      :raises RegistrationError: Raised if the server could not register the SegArray object
+
+      .. seealso:: :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
    .. py:method:: unregister()
 
+      Remove this SegArray object from the Symbol Table
 
-   .. py:method:: attach(name, segment_suffix='_segments', value_suffix='_values', length_suffix='_lengths', grouping_suffix='_grouping')
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. seealso:: :obj:`register`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: unregister_segarray_by_name(user_defined_name)
+      :staticmethod:
+
+      Using the defined name, remove the registered SegArray object from the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: attach(user_defined_name)
       :classmethod:
+
+      Using the defined name, attach to a SegArray that has been registered to the Symbol Table
+
+      :param user_defined_name: user defined name which the SegArray object was registered under
+      :type user_defined_name: str
+
+      :returns: The resulting SegArray
+      :rtype: SegArray
+
+      :raises RuntimeError: Raised if the server could not attach to the SegArray object
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`
 
 
    .. py:method:: is_registered() -> bool
 
-      Checks if all components of the SegArray object are registered
+      Checks if the name of the SegArray object is registered in the Symbol Table
 
-      :returns: True if all components are registered, false if not
+      :returns: True if SegArray is registered, false if not
       :rtype: bool
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`

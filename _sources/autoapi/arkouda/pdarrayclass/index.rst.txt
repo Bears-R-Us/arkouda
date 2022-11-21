@@ -1620,7 +1620,7 @@ Functions
 
    :raises TypeError: Raised if user_defined_name is not a str
 
-   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
+   .. seealso:: :obj:`attach`, :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
 
    .. rubric:: Notes
 
