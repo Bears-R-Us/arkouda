@@ -392,7 +392,7 @@ check:
 #### Test.mk ####
 #################
 
-TEST_SOURCE_DIR := test
+TEST_SOURCE_DIR := tests/server
 TEST_SOURCES := $(wildcard $(TEST_SOURCE_DIR)/*.chpl)
 TEST_MODULES := $(basename $(notdir $(TEST_SOURCES)))
 
