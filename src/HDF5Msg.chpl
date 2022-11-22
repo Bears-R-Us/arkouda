@@ -220,7 +220,7 @@ module HDF5Msg {
                            moduleName=getModuleName(),
                            errorClass="IllegalArgumentError");
         }
-        else if dset_exists < -1 {
+        else if dset_exists < 0 {
             throw getErrorWithContext(
                            msg="Failure validating the status of dataset named %s.".format(dset_name),
                            lineNumber=getLineNumber(),
@@ -244,7 +244,7 @@ module HDF5Msg {
                            moduleName=getModuleName(),
                            errorClass="IllegalArgumentError");
         }
-        else if group_exists < -1 {
+        else if group_exists < 0 {
             throw getErrorWithContext(
                            msg="Failure validating the status of group named %s.".format(group),
                            lineNumber=getLineNumber(),
@@ -1536,7 +1536,7 @@ module HDF5Msg {
         else{
             // work around to handle old formats that do not store meta data.
             // It is assumed that any objects in this case are storing strings or pdarray
-            if C_HDF5.H5Lexists(obj_id, "values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
+            if C_HDF5.H5Lexists(obj_id, "/values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
                 // this means that the obj is a group and contains a strings obj
                 objType_int = ObjType.STRINGS: int;
             }
@@ -1616,7 +1616,7 @@ module HDF5Msg {
                            errorClass="HDF5FileFormatError");            
         }
 
-        if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
+        if C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) <= 0 {
             C_HDF5.H5Fclose(file_id);
             throw getErrorWithContext(
                  msg="The dataset %s does not exist in the file %s".format(dsetName, 
