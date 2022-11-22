@@ -102,6 +102,7 @@ This yielded a >20TB dataframe in Arkouda.
 2. [Building Arkouda](#build-ak)
 3. [Testing Arkouda](#test-ak)
 4. [Running arkouda_server](#run-ak)
+   - [Running the arkouda_server From a Script](#run-server-script)
    - [Sanity check](#run-ak-sanity)
    - [Token-Based Authentication](#run-ak-token-auth)
    - [Connecting to Arkouda](#run-ak-connect)
@@ -193,6 +194,25 @@ Other command line options are available and can be viewed by using the `--help`
 ```bash
 ./arkouda-server --help
 ```
+
+<a id="run-server-script"></a>
+### Running the arkouda_server From a Script
+
+With the addition of two server startup flags, `--autoShutdown` and `--serverInfoNoSplash`, running the arkouda_server from a script is easier than ever.
+
+To connect to the server via a script, you'll first have to issue a subprocess command to start the `arkouda_server` with the optional configuration flags.
+
+```python
+import subprocess
+
+# Update the below path to point to your arkouda_server
+cmd = "/Users/<username>/Documents/git/arkouda/arkouda_server -nl 1 --serverInfoNoSplash=true --autoShutdown=true"
+p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+```
+
+This will allow you to access the server output, which on launch using `--serverInfoNoSplash=true` will be a JSON string with the server configuration which can be parsed for the server host, port, and other potentially useful information.
+
+For a full example and explanation, view the [Running From Script](training/RUNNING_FROM_SCRIPT.md) document.
 
 <a id="run-ak-sanity"></a>
 ### Sanity check arkouda\_server <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
