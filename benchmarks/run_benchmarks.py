@@ -48,6 +48,7 @@ BENCHMARKS = [
     "multiIO",
     "str-locality",
     "dataframe",
+    "encode",
 ]
 
 if os.getenv("ARKOUDA_SERVER_PARQUET_SUPPORT"):
