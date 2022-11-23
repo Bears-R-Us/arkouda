@@ -639,6 +639,10 @@ class StringTest(ArkoudaTest):
         self.assertListEqual(["c", "d", "i"], p.to_list())
 
     def test_encoding(self):
+        idna_strings = ak.array(['Bücher.example','ドメイン.テスト', 'домен.испытание', 'Königsgäßchen'])
+        expected = ak.array(['xn--bcher-kva.example','xn--eckwd4c7c.xn--zckzah', 'xn--d1acufc.xn--80akhbyknj4f', 'xn--knigsgchen-b4a3dun'])
+        self.assertEqual((idna_strings.encode() == expected).all())
+        
         # IDNA test
         a1 = ["münchen", "zürich"]
         s1 = ak.array(a1)
