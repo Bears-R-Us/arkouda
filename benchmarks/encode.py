@@ -56,7 +56,7 @@ def check_correctness(encoding, seed):
 
     # Do round trip encode/decode
     encoded = a.encode(encoding)
-    decoded = a.decode(encoding)
+    decoded = encoded.decode(encoding)
 
     assert(a == decoded).all()
 
