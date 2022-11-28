@@ -357,13 +357,48 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
         )
 
-    def idna_encode(self):
-        rep_msg = generic_msg(cmd="encode", args={"encoding": "idna", "obj": self.entry})
+    # TODO: Store the current encoding for fromEncoding in strings object?
+    def encode(self, toEncoding, fromEncoding="UTF-8"):
+        """
+        Return a new strings object in `toEncoding`, expecting that the
+        current Strings is encoded in `fromEncoding`
+
+        Returns
+        -------
+        Strings
+            A new Strings object in `toEncoding`
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+        """
+        rep_msg = generic_msg(
+            cmd="encode",
+            args={
+                "toEncoding": toEncoding,
+                "fromEncoding": fromEncoding,
+                "obj": self.entry,
+            },
+        )
         return Strings.from_return_msg(rep_msg)
 
-    def idna_decode(self):
-        rep_msg = generic_msg(cmd="decode", args={"encoding": "idna", "obj": self.entry})
-        return Strings.from_return_msg(rep_msg)
+    def decode(self, fromEncoding, toEncoding="UTF-8"):
+        """
+        Return a new strings object in `fromEncoding`, expecting that the
+        current Strings is encoded in `toEncoding`
+
+        Returns
+        -------
+        Strings
+            A new Strings object in `toEncoding`
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+        """
+        return self.encode(toEncoding, fromEncoding)
 
     @typechecked
     def to_lower(self) -> Strings:

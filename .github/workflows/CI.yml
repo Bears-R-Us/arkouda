@@ -77,8 +77,9 @@ jobs:
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
         wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
         apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
+        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+        make install-iconv
+        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check python version
       run: |
         python3 --version
@@ -104,8 +105,9 @@ jobs:
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
         wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
         apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
+        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+        make install-iconv
+        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Check chpl version
       run: |
         chpl --version
@@ -137,8 +139,9 @@ jobs:
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
         wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
         apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
+        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip libarrow-dev libparquet-dev libcurl4-openssl-dev libidn2-dev
+        make install-iconv
+        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
     - name: Build/Install Arkouda
       run: |
         make

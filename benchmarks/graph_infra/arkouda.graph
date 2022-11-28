@@ -130,6 +130,12 @@ files: dataframe.dat, dataframe.dat
 graphtitle: DataFrame Display Performance
 ylabel: Time (Seconds)
 
+perfkeys: Average idna encode rate =, Average idna decode rate =, Average ascii encode rate =, Average ascii decode rate =
+graphkeys: idna encode GiB/s, idna decode GiB/s, ascii encode GiB/s, ascii decode GiB/s
+files: encode.dat, encode.dat, encode.dat, encode.dat
+graphtitle: Encode/Decode Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: Average rate =
 graphkeys: Noop ops/s
 files: noop.dat
