@@ -437,7 +437,7 @@ class ArrayView:
         """
         warn(
             "ak.ArrayView.save has been deprecated. "
-            "Please use ak.ArrayView.to_parquet/ak.ArrayView.to_hdf",
+            "Please use ak.ArrayView.to_hdf",
             DeprecationWarning,
         )
         from arkouda.io import write_hdf5_multi_dim

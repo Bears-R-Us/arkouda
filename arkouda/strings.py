@@ -1909,10 +1909,6 @@ class Strings:
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
 
-        See Also
-        --------
-        pdarrayIO.save
-
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets

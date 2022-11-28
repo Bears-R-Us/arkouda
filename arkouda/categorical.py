@@ -811,7 +811,7 @@ class Categorical:
         """
         Save the Categorical object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
         corresponding file.
 
         Parameters
@@ -881,7 +881,7 @@ class Categorical:
         """
         Save the Categorical object to Parquet. The result is a collection of Parquet files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
         corresponding file.
 
         Parameters
@@ -973,10 +973,6 @@ class Categorical:
             neither 'truncate' nor 'append'
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
-
-        See Also
-        --------
-        pdarrayIO.save, pdarrayIO.load_all
 
         Notes
         -----

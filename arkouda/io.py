@@ -403,10 +403,7 @@ def _build_objects(
     # 2. We have a single pdarray
     # 3. We have a single strings object
     if len(items) > 1:  # DataSets condition
-        d: Dict[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]] = {}
-        for item in items:
-            d[item["dataset_name"]] = _parse_obj(item)
-        return d
+        return {item["dataset_name"]: _parse_obj(item) for item in items}
     elif len(items) == 1:
         return _parse_obj(items[0])
     else:
@@ -1029,15 +1026,12 @@ def load(
         if file_format.lower() == "hdf5":
             return read_hdf(globstr, dataset, calc_string_offsets=calc_string_offsets)
         else:
-            return read_parquet(
-                globstr,
-                dataset,
-            )
+            return read_parquet(globstr, dataset)
     except RuntimeError as re:
         if "does not exist" in str(re):
             raise ValueError(
                 f"There are no files corresponding to the path_prefix {path_prefix} in"
-                " location accessible to Arkouda"
+                " a location accessible to Arkouda"
             )
         else:
             raise RuntimeError(re)
