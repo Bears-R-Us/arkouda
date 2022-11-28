@@ -730,6 +730,7 @@ Functions
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -804,8 +805,15 @@ Functions
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -858,6 +866,7 @@ Functions
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its

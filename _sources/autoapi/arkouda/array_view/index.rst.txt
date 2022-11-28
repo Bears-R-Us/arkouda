@@ -168,8 +168,27 @@ Attributes
       list
 
 
+   .. py:method:: to_hdf(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
+
+      Save the current ArrayView object to hdf5 file
+
+      :param filepath: Path to the file to write the dataset to
+      :type filepath: str
+      :param dset: Name of the dataset to write
+      :type dset: str
+      :param mode: Default: truncate
+                   Mode to write the dataset in. Truncate will overwrite any existing files.
+                   Append will add the dataset to an existing file.
+      :type mode: str (truncate | append)
+      :param file_type: Default: distribute
+                        Indicates the format to save the file. Single will store in a single file.
+                        Distribute will store the date in a file per locale.
+      :type file_type: str (single|distribute)
+
+
    .. py:method:: save(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
 
+      DEPRECATED
       Save the current ArrayView object to hdf5 file
 
       :param filepath: Path to the file to write the dataset to

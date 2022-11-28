@@ -23,6 +23,7 @@ Submodules
    groupbyclass/index.rst
    index/index.rst
    infoclass/index.rst
+   io/index.rst
    io_util/index.rst
    join/index.rst
    logger/index.rst
@@ -30,7 +31,6 @@ Submodules
    matcher/index.rst
    message/index.rst
    numeric/index.rst
-   pdarrayIO/index.rst
    pdarrayclass/index.rst
    pdarraycreation/index.rst
    pdarraysetops/index.rst
@@ -107,8 +107,6 @@ Functions
    arkouda.array
    arkouda.ones
    arkouda.zeros
-   arkouda.read_hdf5_multi_dim
-   arkouda.write_hdf5_multi_dim
    arkouda.concatenate
    arkouda.isSupportedInt
    arkouda.akcast
@@ -192,18 +190,6 @@ Functions
    arkouda.histogram
    arkouda.value_counts
    arkouda.isnan
-   arkouda.ls
-   arkouda.read
-   arkouda.load
-   arkouda.get_datasets
-   arkouda.load_all
-   arkouda.save_all
-   arkouda.get_filetype
-   arkouda.get_null_indices
-   arkouda.import_data
-   arkouda.export
-   arkouda.read_hdf5_multi_dim
-   arkouda.write_hdf5_multi_dim
    arkouda.join_on_eq_with_dt
    arkouda.enableVerbose
    arkouda.disableVerbose
@@ -274,6 +260,24 @@ Functions
    arkouda.plot_dist
    arkouda.string_operators
    arkouda.date_operators
+   arkouda.get_filetype
+   arkouda.ls
+   arkouda.get_null_indices
+   arkouda.get_datasets
+   arkouda.read_hdf
+   arkouda.read_parquet
+   arkouda.import_data
+   arkouda.export
+   arkouda.to_hdf
+   arkouda.to_parquet
+   arkouda.load
+   arkouda.load_all
+   arkouda.read
+   arkouda.read_hdf5_multi_dim
+   arkouda.write_hdf5_multi_dim
+   arkouda.save_all
+   arkouda.file_type_to_int
+   arkouda.mode_str_to_int
 
 
 
@@ -1177,6 +1181,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -1251,8 +1256,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -1305,6 +1317,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -1622,60 +1635,6 @@ Attributes
    array([False, False, False, False, False])
 
 
-.. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
-
-   DEPRECATED
-   This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-   or earlier. If used, save the object to update formatting.
-   Read a multi-dimensional object from an HDF5 file
-
-   :param file_path: path to the file to read from
-   :type file_path: str
-   :param dset: name of the dataset to read
-   :type dset: str
-
-   :rtype: ArrayView object representing the data read from file
-
-   .. seealso:: :obj:`ak.write_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - Error handling done on server to prevent multiple server calls
-   - This is an initial implementation and updates will be coming soon
-   - dset currently only reading a single dataset is supported
-   - file_path will need to support list[str] and str for glob
-   - Currently, order is always assumed to be row major
-
-
-.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', file_type: str = 'distribute')
-
-   Write a multi-dimensional ArrayView object to an HDF5 file
-
-   :param obj: The object that will be written to the file
-   :type obj: ArrayView
-   :param file_path: Path to the file to write the dataset to
-   :type file_path: str
-   :param dset: Name of the dataset to write
-   :type dset: str
-   :param mode: Default: truncate
-                Mode to write the dataset in. Truncate will overwrite any existing files.
-                Append will add the dataset to an existing file.
-   :type mode: str (truncate | append)
-   :param file_type: Default: distribute
-                     Indicates the format to save the file. Single will store in a single file.
-                     Distribute will store the date in a file per locale.
-   :type file_type: str (single|distribute)
-
-   .. seealso:: :obj:`ak.read_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
-   - If a file does not exist, it will be created regardless of the mode value
-   - This function is currently standalone functionality for multi-dimensional datasets
-   - Error handling done on server to prevent multiple server calls
-
-
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
@@ -1855,8 +1814,27 @@ Attributes
       list
 
 
+   .. py:method:: to_hdf(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
+
+      Save the current ArrayView object to hdf5 file
+
+      :param filepath: Path to the file to write the dataset to
+      :type filepath: str
+      :param dset: Name of the dataset to write
+      :type dset: str
+      :param mode: Default: truncate
+                   Mode to write the dataset in. Truncate will overwrite any existing files.
+                   Append will add the dataset to an existing file.
+      :type mode: str (truncate | append)
+      :param file_type: Default: distribute
+                        Indicates the format to save the file. Single will store in a single file.
+                        Distribute will store the date in a file per locale.
+      :type file_type: str (single|distribute)
+
+
    .. py:method:: save(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
 
+      DEPRECATED
       Save the current ArrayView object to hdf5 file
 
       :param filepath: Path to the file to write the dataset to
@@ -2680,6 +2658,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -2754,8 +2733,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -2808,6 +2794,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -4168,6 +4155,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5 or Parquet. The result is a collection of
       files, one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -4203,8 +4191,6 @@ Attributes
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
-      .. seealso:: :obj:`pdarrayIO.save`
-
       .. rubric:: Notes
 
       Important implementation notes: (1) Strings state is saved as two datasets
@@ -4213,8 +4199,64 @@ Attributes
       via the dataset parameter.
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Strings object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+
+      Save the Strings object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -4242,6 +4284,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = '') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -5563,6 +5606,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -5637,8 +5681,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -5691,6 +5742,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -7811,380 +7863,6 @@ Attributes
       
 
 
-.. py:function:: ls(filename: str) -> List[str]
-
-   This function calls the h5ls utility on a HDF5 file visible to the
-   arkouda server or calls a function that imitates the result of h5ls
-   on a Parquet file.
-
-   :param filename: The name of the file to pass to the server
-   :type filename: str
-
-   :returns: The string output of the datasets from the server
-   :rtype: str
-
-   :raises TypeError: Raised if filename is not a str
-   :raises ValueError: Raised if filename is empty or contains only whitespace
-   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
-
-
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
-
-   Read datasets from HDF5 or Parquet files.
-
-   :param filenames: Either a list of filenames or shell expression
-   :type filenames: list or str
-   :param datasets: (List of) name(s) of dataset(s) to read (default: all available)
-   :type datasets: list or str or None
-   :param iterative: Iterative (True) or Single (False) function call(s) to server
-   :type iterative: bool
-   :param strictTypes: If True (default), require all dtypes of a given dataset to have the
-                       same precision and sign. If False, allow dtypes of different
-                       precision and sign across different files. For example, if one
-                       file contains a uint32 dataset and another contains an int64
-                       dataset with the same name, the contents of both will be read
-                       into an int64 pdarray.
-   :type strictTypes: bool
-   :param allow_errors: Default False, if True will allow files with read errors to be skipped
-                        instead of failing.  A warning will be included in the return containing
-                        the total number of files skipped due to failure and up to 10 filenames.
-   :type allow_errors: bool
-   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
-                               offsets/segments array on the server versus loading them from HDF5 files.
-                               In the future this option may be set to True as the default.
-   :type calc_string_offsets: bool
-   :param file_format: Default 'infer', if 'HDF5' or 'Parquet' (case insensitive), the file
-                       type checking will be skipped and will execute expecting all files in
-                       filenames to be of the specified type. Otherwise, will infer filetype
-                       based off of first file in filenames, expanded if a glob expression.
-   :type file_format: str
-
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
-             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
-
-   :raises ValueError: Raised if all datasets are not present in all hdf5/parquet files or if one or
-       more of the specified files do not exist
-   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
-       If `allow_errors` is true this may be raised if no values are returned
-       from the server.
-   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
-
-   .. seealso:: :obj:`read`, :obj:`get_datasets`, :obj:`ls`
-
-   .. rubric:: Notes
-
-   If filenames is a string, it is interpreted as a shell expression
-   (a single filename is a valid expression, so it will work) and is
-   expanded with glob to read all matching files.
-
-   If iterative == True each dataset name and file names are passed to
-   the server as independent sequential strings while if iterative == False
-   all dataset names and file names are passed to the server in a single
-   string.
-
-   If datasets is None, infer the names of datasets from the first file
-   and read all of them. Use ``get_datasets`` to show the names of datasets
-   to HDF5/Parquet files.
-
-   .. rubric:: Examples
-
-   Read with file Extension
-   >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
-   Read without file Extension
-   >>> x = ak.read('path/name_prefix.parquet', file_format='Parquet') # load Parquet
-   Read Glob Expression
-   >>> x = ak.read('path/name_prefix*') # Reads HDF5
-
-
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
-
-   Load a pdarray previously saved with ``pdarray.save()``.
-
-   :param path_prefix: Filename prefix used to save the original pdarray
-   :type path_prefix: str
-   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded.
-                       If INFER, this will be detected during processing
-   :type file_format: str
-   :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
-   :type dataset: str
-   :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
-                               it from the null-byte terminators.  Defaults to False currently
-   :type calc_string_offsets: bool
-
-   :returns: The pdarray or Strings that was previously saved
-   :rtype: Union[pdarray, Strings]
-
-   :raises TypeError: Raised if either path_prefix or dataset is not a str
-   :raises ValueError: Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
-       path_prefix does not correspond to files accessible to Arkouda
-   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
-       one or more of them
-
-   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read`
-
-   .. rubric:: Notes
-
-   If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
-   with a .parquet appended to the prefix_path.
-   Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
-
-   .. rubric:: Examples
-
-   >>> # Loading from file without extension
-   >>> obj = a.load('path/prefix')
-   Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
-   The file type is inferred during processing.
-
-   >>> # Loading with an extension (HDF5)
-   >>> obj = a.load('path/prefix.test')
-   Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
-   #### is replaced by each locale numbers. Because filetype is inferred during processing,
-   the extension is not required to be a specific format.
-
-
-.. py:function:: get_datasets(filename: str) -> List[str]
-
-   Get the names of datasets in an HDF5 file.
-
-   :param filename: Name of an HDF5/Parquet file visible to the arkouda server
-   :type filename: str
-
-   :returns: Names of the datasets in the file
-   :rtype: List[str]
-
-   :raises TypeError: Raised if filename is not a str
-   :raises ValueError: Raised if filename is empty or contains only whitespace
-   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
-
-   .. seealso:: :obj:`ls`
-
-
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
-
-   Load multiple pdarrays or Strings previously saved with ``save_all()``.
-
-   :param path_prefix: Filename prefix used to save the original pdarray
-   :type path_prefix: str
-   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Indicates the format being loaded.
-                       When 'INFER' the processing will detect the format
-                       Defaults to 'HDF5'
-   :type file_format: str
-
-   :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
-   :rtype: Mapping[str,pdarray]
-
-   :raises TypeError:: Raised if path_prefix is not a str
-   :raises ValueError: Raised if file_format/extension is encountered that is not hdf5 or parquet or
-       if all datasets are not present in all hdf5/parquet files or if the
-       path_prefix does not correspond to files accessible to Arkouda
-   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
-       one or more of them
-
-   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
-
-   .. rubric:: Notes
-
-   This function has been updated to determine the file extension based on the file format variable
-
-
-.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> None
-
-   Save multiple named pdarrays to HDF5 files.
-
-   :param columns: Collection of arrays to save
-   :type columns: dict or list of pdarrays
-   :param prefix_path: Directory and filename prefix for output files
-   :type prefix_path: str
-   :param names: Dataset names for the pdarrays
-   :type names: list of str
-   :param file_format: 'HDF5' or 'Parquet'. Defaults to hdf5
-   :type file_format: str
-   :param mode: By default, truncate (overwrite) the output files if they exist.
-                If 'append', attempt to create new dataset in existing files.
-   :type mode: {'truncate' | 'append'}
-   :param file_type: Default: distribute
-                     Single writes the dataset to a single file
-                     Distribute writes the dataset to a file per locale
-   :type file_type: str ("single" | "distribute")
-
-   :rtype: None
-
-   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
-       is not 'truncate' or 'append'
-
-   .. seealso:: :obj:`save`, :obj:`load_all`
-
-   .. rubric:: Notes
-
-   Creates one file per locale containing that locale's chunk of each pdarray.
-   If columns is a dictionary, the keys are used as the HDF5 dataset names.
-   Otherwise, if no names are supplied, 0-up integers are used. By default,
-   any existing files at path_prefix will be overwritten, unless the user
-   specifies the 'append' mode, in which case arkouda will attempt to add
-   <columns> as new datasets to existing files. If the wrong number of files
-   is present or dataset names already exist, a RuntimeError is raised.
-
-   .. rubric:: Examples
-
-   >>> a = ak.arange(25)
-   >>> b = ak.arange(25)
-
-   >>> # Save with mapping defining dataset names
-   >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
-
-   >>> # Save using names instead of mapping
-   >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
-
-
-.. py:function:: get_filetype(filenames: Union[str, List[str]]) -> str
-
-   Get the type of a file accessible to the server. Supported
-   file types and possible return strings are 'HDF5' and 'Parquet'.
-
-   :param filenames: A file or list of files visible to the arkouda server
-   :type filenames: Union[str, List[str]]
-
-   :returns: Type of the file returned as a string, either 'HDF5' or 'Parquet'
-   :rtype: str
-
-   :raises ValueError: Raised if filename is empty or contains only whitespace
-
-   .. seealso:: :obj:`read`
-
-
-.. py:function:: get_null_indices(filenames, datasets) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
-
-   Get null indices of a string column in a Parquet file.
-
-   :param filenames: Either a list of filenames or shell expression
-   :type filenames: list or str
-   :param datasets: (List of) name(s) of dataset(s) to read. Each dataset must be a string
-                    column. There is no default value for this funciton, the datasets to be
-                    read must be specified.
-   :type datasets: list or str or None
-
-   :returns: * *For a single dataset returns an Arkouda pdarray and for multiple datasets*
-             * *returns a dictionary of Arkouda pdarrays* -- Dictionary of {datasetName: pdarray}
-
-   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
-   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
-
-   .. seealso:: :obj:`get_datasets`, :obj:`ls`
-
-
-.. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
-
-   Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
-   a file formatted to be read by Arkouda.
-
-   :param read_path: path to file where pandas data is stored. This can be glob expression for parquet formats.
-   :type read_path: str
-   :param write_file: path to file to write arkouda formatted data to. Only write file if provided
-   :type write_file: str, optional
-   :param return_obj: Default True. When True return the Arkouda DataFrame object, otherwise return None
-   :type return_obj: bool, optional
-   :param index: Default False. When True, maintain the indexes loaded from the pandas file
-   :type index: bool, optional
-
-   :raises RuntimeWarning: - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
-   :raises RuntimeError: - Unsupported file type
-
-   :returns: When `return_obj=True`
-   :rtype: pd.DataFrame
-
-   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.export`
-
-   .. rubric:: Notes
-
-   - Import can only be performed from hdf5 or parquet files written by pandas.
-
-
-.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: str = None, return_obj: bool = True, index: bool = False)
-
-   Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
-   readable by Pandas
-
-   :param read_path: path to file where arkouda data is stored.
-   :type read_path: str
-   :param dataset_name: name to store dataset under
-   :type dataset_name: str
-   :param index: Default False. When True, maintain the indexes loaded from the pandas file
-   :type index: bool
-   :param write_file: path to file to write pandas formatted data to. Only write the file if this is set
-   :type write_file: str, optional
-   :param return_obj: Default True. When True return the Pandas DataFrame object, otherwise return None
-   :type return_obj: bool, optional
-
-   :raises RuntimeError: - Unsupported file type
-
-   :returns: When `return_obj=True`
-   :rtype: pd.DataFrame
-
-   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.import_data`
-
-   .. rubric:: Notes
-
-   - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
-   will remain parquet and hdf5 will remain hdf5.
-   - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
-   the same file type, but formatted to be read by Pandas.
-
-
-.. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
-
-   DEPRECATED
-   This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-   or earlier. If used, save the object to update formatting.
-   Read a multi-dimensional object from an HDF5 file
-
-   :param file_path: path to the file to read from
-   :type file_path: str
-   :param dset: name of the dataset to read
-   :type dset: str
-
-   :rtype: ArrayView object representing the data read from file
-
-   .. seealso:: :obj:`ak.write_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - Error handling done on server to prevent multiple server calls
-   - This is an initial implementation and updates will be coming soon
-   - dset currently only reading a single dataset is supported
-   - file_path will need to support list[str] and str for glob
-   - Currently, order is always assumed to be row major
-
-
-.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', file_type: str = 'distribute')
-
-   Write a multi-dimensional ArrayView object to an HDF5 file
-
-   :param obj: The object that will be written to the file
-   :type obj: ArrayView
-   :param file_path: Path to the file to write the dataset to
-   :type file_path: str
-   :param dset: Name of the dataset to write
-   :type dset: str
-   :param mode: Default: truncate
-                Mode to write the dataset in. Truncate will overwrite any existing files.
-                Append will add the dataset to an existing file.
-   :type mode: str (truncate | append)
-   :param file_type: Default: distribute
-                     Indicates the format to save the file. Single will store in a single file.
-                     Distribute will store the date in a file per locale.
-   :type file_type: str (single|distribute)
-
-   .. seealso:: :obj:`ak.read_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
-   - If a file does not exist, it will be created regardless of the mode value
-   - This function is currently standalone functionality for multi-dimensional datasets
-   - Error handling done on server to prevent multiple server calls
-
-
 .. py:class:: Strings(strings_pdarray: arkouda.pdarrayclass.pdarray, bytes_size: arkouda.dtypes.int_scalars)
 
    Represents an array of strings whose data resides on the
@@ -9257,6 +8935,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5 or Parquet. The result is a collection of
       files, one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -9292,8 +8971,6 @@ Attributes
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
-      .. seealso:: :obj:`pdarrayIO.save`
-
       .. rubric:: Notes
 
       Important implementation notes: (1) Strings state is saved as two datasets
@@ -9302,8 +8979,64 @@ Attributes
       via the dataset parameter.
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Strings object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+
+      Save the Strings object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -9331,6 +9064,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = '') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -9959,8 +9693,67 @@ Attributes
       This operation can be expensive -- slower than concatenating Strings.
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+      Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Categorical object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: By default, write without Snappy compression and RLE encoding.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Categorical object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
@@ -9984,8 +9777,6 @@ Attributes
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
-
-      .. seealso:: :obj:`pdarrayIO.save`, :obj:`pdarrayIO.load_all`
 
       .. rubric:: Notes
 
@@ -10945,6 +10736,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -11019,8 +10811,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -11073,6 +10872,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -12768,6 +12568,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -12842,8 +12643,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -12896,6 +12704,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -13244,6 +13053,8 @@ Attributes
    If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
    with a .parquet appended to the prefix_path.
    Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+
+   This function will be deprecated when glob flags are added to read_* functions
 
    .. rubric:: Examples
 
@@ -13711,8 +13522,41 @@ Attributes
       :rtype: SegArray
 
 
+   .. py:method:: to_hdf(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_type='distribute')
+
+      Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
+      per locale of the arkouda server, where each filename starts with prefix_path.
+
+      :param prefix_path: Directory and filename prefix that all output files will share
+      :type prefix_path: str
+      :param dataset: Name prefix for saved data within the HDF5 file
+      :type dataset: str
+      :param segment_suffix: Suffix to append to dataset name for segments array
+      :type segment_suffix: str
+      :param value_suffix: Suffix to append to dataset name for values array
+      :type value_suffix: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', add data as a new column to existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: None
+
+      .. rubric:: Notes
+
+      Unlike for ak.Strings, SegArray is saved as two datasets in the top level of
+      the HDF5 file, not nested under a group.
+
+      SegArray is not currently supported by Parquet
+
+
    .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_format='HDF5', file_type='distribute')
 
+      DEPRECATED
       Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
 
@@ -13743,10 +13587,10 @@ Attributes
       the HDF5 file, not nested under a group.
 
 
-   .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate')
+   .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values')
       :classmethod:
 
-      Load a saved SegArray from HDF5. All arguments msut match what
+      Load a saved SegArray from HDF5. All arguments must match what
       was supplied to SegArray.save()
 
       :param prefix_path: Directory and filename prefix
@@ -14370,8 +14214,54 @@ Attributes
       :rtype: pandas.DataFrame
 
 
+   .. py:method:: _prep_data(index=False, columns=None)
+
+
+   .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
+
+      Save DataFrame to disk as hdf5, preserving column names.
+
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_type: Default: distribute
+                        Whether to save to a single file or distribute across Locales
+      :type file_type: str (single | distribute)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+
+   .. py:method:: to_parquet(path, index=False, columns=None)
+
+      Save DataFrame to disk as parquet, preserving column names.
+
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_type: Default: distribute
+                        Whether to save to a single file or distribute across Locales
+      :type file_type: str (single | distribute)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+
    .. py:method:: save(path, index=False, columns=None, file_format='HDF5')
 
+      DEPRECATED
       Save DataFrame to disk, preserving column names.
 
       :param path: File path to save data
@@ -15493,6 +15383,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -15567,8 +15458,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -15621,6 +15519,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -16108,8 +16007,15 @@ Attributes
    .. py:method:: lookup(key)
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False)
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the index to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -16935,8 +16841,67 @@ Attributes
       This operation can be expensive -- slower than concatenating Strings.
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+      Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Categorical object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: By default, write without Snappy compression and RLE encoding.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Categorical object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
@@ -16960,8 +16925,6 @@ Attributes
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
-
-      .. seealso:: :obj:`pdarrayIO.save`, :obj:`pdarrayIO.load_all`
 
       .. rubric:: Notes
 
@@ -17871,6 +17834,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -17945,8 +17909,15 @@ Attributes
       ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the pdarray to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -17999,6 +17970,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the pdarray to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
@@ -19500,6 +19472,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5 or Parquet. The result is a collection of
       files, one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -19535,8 +19508,6 @@ Attributes
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
-      .. seealso:: :obj:`pdarrayIO.save`
-
       .. rubric:: Notes
 
       Important implementation notes: (1) Strings state is saved as two datasets
@@ -19545,8 +19516,64 @@ Attributes
       via the dataset parameter.
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Strings object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+
+      Save the Strings object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -19574,6 +19601,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = '') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -20432,8 +20460,67 @@ Attributes
       This operation can be expensive -- slower than concatenating Strings.
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+      Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Categorical object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: By default, write without Snappy compression and RLE encoding.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'categorical_array', file_format: str = 'HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Categorical object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
@@ -20457,8 +20544,6 @@ Attributes
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
-
-      .. seealso:: :obj:`pdarrayIO.save`, :obj:`pdarrayIO.load_all`
 
       .. rubric:: Notes
 
@@ -21696,6 +21781,7 @@ Attributes
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5 or Parquet. The result is a collection of
       files, one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -21731,8 +21817,6 @@ Attributes
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
-      .. seealso:: :obj:`pdarrayIO.save`
-
       .. rubric:: Notes
 
       Important implementation notes: (1) Strings state is saved as two datasets
@@ -21741,8 +21825,64 @@ Attributes
       via the dataset parameter.
 
 
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+
+      Save the Strings object to Parquet. The result is a collection of Parquet files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compressed: Defaults to False. When True, files will be written with Snappy compression
+                         and RLE bit packing.
+      :type compressed: bool
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = 'distribute') -> str
+
+      Save the Strings object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
    .. py:method:: save_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
 
+      DEPRECATED
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -21770,6 +21910,7 @@ Attributes
 
    .. py:method:: save_hdf(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, file_type: str = '') -> str
 
+      DEPRECATED
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -22113,5 +22254,646 @@ Attributes
 .. py:class:: StringAccessor(series)
 
    Bases: :py:obj:`Properties`
+
+
+.. py:function:: get_filetype(filenames: Union[str, List[str]]) -> str
+
+   Get the type of a file accessible to the server. Supported
+   file types and possible return strings are 'HDF5' and 'Parquet'.
+
+   :param filenames: A file or list of files visible to the arkouda server
+   :type filenames: Union[str, List[str]]
+
+   :returns: Type of the file returned as a string, either 'HDF5' or 'Parquet'
+   :rtype: str
+
+   :raises ValueError: Raised if filename is empty or contains only whitespace
+
+   .. rubric:: Notes
+
+   When list provided, it is assumed that all files are the same type
+
+   .. seealso:: :obj:`read_parquet`, :obj:`read_hdf`
+
+
+.. py:function:: ls(filename: str) -> List[str]
+
+   This function calls the h5ls utility on a HDF5 file visible to the
+   arkouda server or calls a function that imitates the result of h5ls
+   on a Parquet file.
+
+   :param filename: The name of the file to pass to the server
+   :type filename: str
+
+   :returns: The string output of the datasets from the server
+   :rtype: str
+
+   :raises TypeError: Raised if filename is not a str
+   :raises ValueError: Raised if filename is empty or contains only whitespace
+   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
+   :raises Notes: - This will need to be updated because Parquet will not technically support this when we update.
+           Similar functionality will be added for Parquet in the future
+
+
+.. py:function:: get_null_indices(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
+
+   Get null indices of a string column in a Parquet file.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read. Each dataset must be a string
+                    column. There is no default value for this funciton, the datasets to be
+                    read must be specified.
+   :type datasets: list or str or None
+
+   :returns: * *For a single dataset returns an Arkouda pdarray and for multiple datasets*
+             * *returns a dictionary of Arkouda pdarrays* -- Dictionary of {datasetName: pdarray}
+
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+   .. seealso:: :obj:`get_datasets`, :obj:`ls`
+
+
+.. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -> List[str]
+
+   Get the names of the datasets in the provide files
+
+   :param filenames: Name of the file/s from which to return datasets
+   :type filenames: str or List[str]
+   :param allow_errors: Default: False
+                        Whether or not to allow errors while accessing datasets
+   :type allow_errors: bool
+
+   :rtype: List[str] of names of the datasets
+
+   :raises RuntimeError: - If no datasets are returned
+
+   .. rubric:: Notes
+
+   - This function currently supports HDF5 and Parquet formats.
+   - Future updates to Parquet will deprecate this functionality on that format,
+   but similar support will be added for Parquet at that time.
+   - If a list of files is provided, only the datasets in the first file will be returned
+
+   .. seealso:: :obj:`ls`
+
+
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+   Read Arkouda objects from HDF5 file/s
+
+   :param filenames: Filename/s to read objects from
+   :type filenames: str, List[str]
+   :param datasets: datasets to read from the provided files
+   :type datasets: Optional str, List[str]
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strict_types: If True (default), require all dtypes of a given dataset to have the
+                        same precision and sign. If False, allow dtypes of different
+                        precision and sign across different files. For example, if one
+                        file contains a uint32 dataset and another contains an int64
+                        dataset with the same name, the contents of both will be read
+                        into an int64 pdarray.
+   :type strict_types: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
+   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
+                               offsets/segments array on the server versus loading them from HDF5 files.
+                               In the future this option may be set to True as the default.
+   :type calc_string_offsets: bool
+
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
+
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
+
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to HDF5 files.
+
+   .. rubric:: Examples
+
+   Read with file Extension
+   >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
+   Read Glob Expression
+   >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
+
+
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+   Read Arkouda objects from Parquet file/s
+
+       Parameters
+       ----------
+       filenames : str, List[str]
+           Filename/s to read objects from
+       datasets : Optional str, List[str]
+           datasets to read from the provided files
+       iterative : bool
+           Iterative (True) or Single (False) function call(s) to server
+       strict_types: bool
+           If True (default), require all dtypes of a given dataset to have the
+           same precision and sign. If False, allow dtypes of different
+           precision and sign across different files. For example, if one
+           file contains a uint32 dataset and another contains an int64
+           dataset with the same name, the contents of both will be read
+           into an int64 pdarray.
+       allow_errors: bool
+           Default False, if True will allow files with read errors to be skipped
+           instead of failing.  A warning will be included in the return containing
+           the total number of files skipped due to failure and up to 10 filenames.
+
+       Returns
+       -------
+       For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
+       and for multiple datasets returns a dictionary of Arkouda pdarrays,
+       Arkouda Strings or Arkouda ArrayView.
+           Dictionary of {datasetName: pdarray or String}
+
+       Raises
+       ------
+       ValueError
+           Raised if all datasets are not present in all parquet files or if one or
+           more of the specified files do not exist
+       RuntimeError
+           Raised if one or more of the specified files cannot be opened.
+           If `allow_errors` is true this may be raised if no values are returned
+           from the server.
+       TypeError
+           Raised if we receive an unknown arkouda_type returned from the server
+
+       Notes
+       -----
+       If filenames is a string, it is interpreted as a shell expression
+       (a single filename is a valid expression, so it will work) and is
+       expanded with glob to read all matching files.
+
+       If iterative == True each dataset name and file names are passed to
+       the server as independent sequential strings while if iterative == False
+       all dataset names and file names are passed to the server in a single
+       string.
+
+       If datasets is None, infer the names of datasets from the first file
+       and read all of them. Use ``get_datasets`` to show the names of datasets
+       to Parquet files.
+
+       Parquet always recomputes offsets at this time
+       This will need to be updated once parquets workflow is updated
+
+       Examples
+       --------
+       Read without file Extension
+       >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
+       Read Glob Expression
+       >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+
+
+.. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
+
+   Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or
+   a file formatted to be read by Arkouda.
+
+   :param read_path: path to file where pandas data is stored. This can be glob expression for parquet formats.
+   :type read_path: str
+   :param write_file: path to file to write arkouda formatted data to. Only write file if provided
+   :type write_file: str, optional
+   :param return_obj: Default True. When True return the Arkouda DataFrame object, otherwise return None
+   :type return_obj: bool, optional
+   :param index: Default False. When True, maintain the indexes loaded from the pandas file
+   :type index: bool, optional
+
+   :raises RuntimeWarning: - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
+   :raises RuntimeError: - Unsupported file type
+
+   :returns: When `return_obj=True`
+   :rtype: pd.DataFrame
+
+   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.export`
+
+   .. rubric:: Notes
+
+   - Import can only be performed from hdf5 or parquet files written by pandas.
+
+
+.. py:function:: export(read_path: str, dataset_name: str = 'ak_data', write_file: str = None, return_obj: bool = True, index: bool = False)
+
+   Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be
+   readable by Pandas
+
+   :param read_path: path to file where arkouda data is stored.
+   :type read_path: str
+   :param dataset_name: name to store dataset under
+   :type dataset_name: str
+   :param index: Default False. When True, maintain the indexes loaded from the pandas file
+   :type index: bool
+   :param write_file: path to file to write pandas formatted data to. Only write the file if this is set
+   :type write_file: str, optional
+   :param return_obj: Default True. When True return the Pandas DataFrame object, otherwise return None
+   :type return_obj: bool, optional
+
+   :raises RuntimeError: - Unsupported file type
+
+   :returns: When `return_obj=True`
+   :rtype: pd.DataFrame
+
+   .. seealso:: :obj:`pandas.DataFrame.to_parquet`, :obj:`pandas.DataFrame.to_hdf`, :obj:`pandas.DataFrame.read_parquet`, :obj:`pandas.DataFrame.read_hdf`, :obj:`ak.import_data`
+
+   .. rubric:: Notes
+
+   - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
+   will remain parquet and hdf5 will remain hdf5.
+   - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
+   the same file type, but formatted to be read by Pandas.
+
+
+.. py:function:: to_hdf(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+
+   Save multiple named pdarrays to HDF5 files.
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+   :param file_type: Default: distribute
+                     Single writes the dataset to a single file
+                     Distribute writes the dataset to a file per locale
+   :type file_type: str ("single" | "distribute")
+
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the HDF5 dataset names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(25)
+   >>> b = ak.arange(25)
+
+   >>> # Save with mapping defining dataset names
+   >>> ak.to_hdf({'a': a, 'b': b}, 'path/name_prefix')
+
+   >>> # Save using names instead of mapping
+   >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: to_parquet(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compressed: bool = False) -> None
+
+   Save multiple named pdarrays to Parquet files.
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+   :param file_type: Default: distribute
+                     Single writes the dataset to a single file
+                     Distribute writes the dataset to a file per locale
+   :type file_type: str ("single" | "distribute")
+
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the Parquet column names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(25)
+   >>> b = ak.arange(25)
+
+   >>> # Save with mapping defining dataset names
+   >>> ak.to_parquet({'a': a, 'b': b}, 'path/name_prefix')
+
+   >>> # Save using names instead of mapping
+   >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+   Load a pdarray previously saved with ``pdarray.save()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded.
+                       If INFER, this will be detected during processing
+   :type file_format: str
+   :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
+   :type dataset: str
+   :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
+                               it from the null-byte terminators.  Defaults to False currently
+   :type calc_string_offsets: bool
+
+   :returns: The pdarray or Strings that was previously saved
+   :rtype: Union[pdarray, Strings]
+
+   :raises TypeError: Raised if either path_prefix or dataset is not a str
+   :raises ValueError: Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
+       path_prefix does not correspond to files accessible to Arkouda
+   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
+       one or more of them
+
+   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read`
+
+   .. rubric:: Notes
+
+   If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
+   with a .parquet appended to the prefix_path.
+   Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+
+   This function will be deprecated when glob flags are added to read_* functions
+
+   .. rubric:: Examples
+
+   >>> # Loading from file without extension
+   >>> obj = a.load('path/prefix')
+   Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
+   The file type is inferred during processing.
+
+   >>> # Loading with an extension (HDF5)
+   >>> obj = a.load('path/prefix.test')
+   Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
+   #### is replaced by each locale numbers. Because filetype is inferred during processing,
+   the extension is not required to be a specific format.
+
+
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
+
+   Load multiple pdarrays or Strings previously saved with ``save_all()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+   :param file_format: 'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Indicates the format being loaded.
+                       When 'INFER' the processing will detect the format
+                       Defaults to 'HDF5'
+   :type file_format: str
+
+   :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+   :rtype: Mapping[str,pdarray]
+
+   :raises TypeError:: Raised if path_prefix is not a str
+   :raises ValueError: Raised if file_format/extension is encountered that is not hdf5 or parquet or
+       if all datasets are not present in all hdf5/parquet files or if the
+       path_prefix does not correspond to files accessible to Arkouda
+   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
+       one or more of them
+
+   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+   .. rubric:: Notes
+
+   This function has been updated to determine the file extension based on the file format variable
+
+   This function will be deprecated when glob flags are added to read_* methods
+
+
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False, file_format: str = 'infer') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+   DEPRECATED
+   Read datasets from HDF5 or Parquet files.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read (default: all available)
+   :type datasets: list or str or None
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strictTypes: If True (default), require all dtypes of a given dataset to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset with the same name, the contents of both will be read
+                       into an int64 pdarray.
+   :type strictTypes: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
+   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
+                               offsets/segments array on the server versus loading them from HDF5 files.
+                               In the future this option may be set to True as the default.
+   :type calc_string_offsets: bool
+   :param file_format: Default 'infer', if 'HDF5' or 'Parquet' (case insensitive), the file
+                       type checking will be skipped and will execute expecting all files in
+                       filenames to be of the specified type. Otherwise, will infer filetype
+                       based off of first file in filenames, expanded if a glob expression.
+   :type file_format: str
+
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5/parquet files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
+
+   .. seealso:: :obj:`read`, :obj:`get_datasets`, :obj:`ls`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
+
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
+
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to HDF5/Parquet files.
+
+   .. rubric:: Examples
+
+   Read with file Extension
+   >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
+   Read without file Extension
+   >>> x = ak.read('path/name_prefix.parquet', file_format='Parquet') # load Parquet
+   Read Glob Expression
+   >>> x = ak.read('path/name_prefix*') # Reads HDF5
+
+
+.. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
+
+   DEPRECATED
+   This function is being mantained to allow reading from files written in Arkouda v2022.10.13
+   or earlier. If used, save the object to update formatting.
+   Read a multi-dimensional object from an HDF5 file
+
+   :param file_path: path to the file to read from
+   :type file_path: str
+   :param dset: name of the dataset to read
+   :type dset: str
+
+   :rtype: ArrayView object representing the data read from file
+
+   .. seealso:: :obj:`ak.write_hdf5_multi_dim`
+
+   .. rubric:: Notes
+
+   - Error handling done on server to prevent multiple server calls
+   - This is an initial implementation and updates will be coming soon
+   - dset currently only reading a single dataset is supported
+   - file_path will need to support list[str] and str for glob
+   - Currently, order is always assumed to be row major
+
+
+.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', file_type: str = 'distribute')
+
+   DEPRECATED
+   Write a multi-dimensional ArrayView object to an HDF5 file
+
+   :param obj: The object that will be written to the file
+   :type obj: ArrayView
+   :param file_path: Path to the file to write the dataset to
+   :type file_path: str
+   :param dset: Name of the dataset to write
+   :type dset: str
+   :param mode: Default: truncate
+                Mode to write the dataset in. Truncate will overwrite any existing files.
+                Append will add the dataset to an existing file.
+   :type mode: str (truncate | append)
+   :param file_type: Default: distribute
+                     Indicates the format to save the file. Single will store in a single file.
+                     Distribute will store the date in a file per locale.
+   :type file_type: str (single|distribute)
+
+   .. seealso:: :obj:`ak.read_hdf5_multi_dim`
+
+   .. rubric:: Notes
+
+   - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
+   - If a file does not exist, it will be created regardless of the mode value
+   - This function is currently standalone functionality for multi-dimensional datasets
+   - Error handling done on server to prevent multiple server calls
+
+
+.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> None
+
+   DEPRECATED
+   Save multiple named pdarrays to HDF5 files.
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param file_format: 'HDF5' or 'Parquet'. Defaults to hdf5
+   :type file_format: str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+   :param file_type: Default: distribute
+                     Single writes the dataset to a single file
+                     Distribute writes the dataset to a file per locale
+   :type file_type: str ("single" | "distribute")
+
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the HDF5 dataset names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(25)
+   >>> b = ak.arange(25)
+
+   >>> # Save with mapping defining dataset names
+   >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
+
+   >>> # Save using names instead of mapping
+   >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
+
+
+.. py:function:: file_type_to_int(file_type: str) -> int
+
+   Convert a string to integer representing the format to save the file in
+
+   :param file_type: The string representation of the format for saving the file
+   :type file_type: str (single | distribute)
+
+   :rtype: int representing the format
+
+   :raises ValueError: - If mode is not 'single' or 'distribute'
+
+
+.. py:function:: mode_str_to_int(mode: str) -> int
+
+   Convert string to integer representing the mode to write
+
+   :param mode: The string representation of the write mode to be converted to integer
+   :type mode: str (truncate | append)
+
+   :rtype: int representing the mode
+
+   :raises ValueError: - If mode is not 'truncate' or 'append'
 
 

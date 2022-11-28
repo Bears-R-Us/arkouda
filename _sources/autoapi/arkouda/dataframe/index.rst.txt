@@ -461,8 +461,54 @@ Functions
       :rtype: pandas.DataFrame
 
 
+   .. py:method:: _prep_data(index=False, columns=None)
+
+
+   .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
+
+      Save DataFrame to disk as hdf5, preserving column names.
+
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_type: Default: distribute
+                        Whether to save to a single file or distribute across Locales
+      :type file_type: str (single | distribute)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+
+   .. py:method:: to_parquet(path, index=False, columns=None)
+
+      Save DataFrame to disk as parquet, preserving column names.
+
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_type: Default: distribute
+                        Whether to save to a single file or distribute across Locales
+      :type file_type: str (single | distribute)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+
    .. py:method:: save(path, index=False, columns=None, file_format='HDF5')
 
+      DEPRECATED
       Save DataFrame to disk, preserving column names.
 
       :param path: File path to save data

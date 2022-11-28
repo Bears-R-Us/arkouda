@@ -105,8 +105,15 @@ Classes
    .. py:method:: lookup(key)
 
 
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False)
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
+      DEPRECATED
       Save the index to HDF5 or Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
