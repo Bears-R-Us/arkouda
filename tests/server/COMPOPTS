@@ -5,7 +5,8 @@ if [[ -n $CHPL_HOME ]]; then
 fi
 
 PARENT_DIR=$(dirname $(cd $(dirname $0) ; pwd))
-ARKOUDA_HOME=${ARKOUDA_HOME:-$PARENT_DIR}
+GRANDPARENT_DIR=$(dirname $PARENT_DIR ; pwd)
+ARKOUDA_HOME=${ARKOUDA_HOME:-$GRANDPARENT_DIR}
 
 # Get test flags (dependencies, user options, optimization level)
 TEST_FLAGS=$(cd $ARKOUDA_HOME && make -s print-TEST_CHPL_FLAGS)

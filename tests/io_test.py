@@ -765,9 +765,9 @@ class IOTest(ArkoudaTest):
         # Determine where the test was launched by inspecting our path and update it accordingly
         cwd = os.getcwd()
         if cwd.endswith("tests"):  # IDEs may launch unit tests from this location
-            cwd = cwd[:-1] + "/resources"
+            cwd = cwd + "/server/resources"
         else:  # assume arkouda root dir
-            cwd += "/test/resources"
+            cwd += "/tests/server/resources"
 
         # Now that we've figured out our loading path, load the files and test the lengths
         v0 = ak.load(cwd + "/array_v0.hdf5", file_format="hdf5")
