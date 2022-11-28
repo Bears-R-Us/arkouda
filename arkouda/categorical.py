@@ -13,6 +13,7 @@ from typing import (
     Union,
     cast,
 )
+from warnings import warn
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -800,6 +801,136 @@ class Categorical:
             new_codes = cast(pdarray, concatenate([arr.codes for arr in new_arrays], ordered=ordered))
             return Categorical.from_codes(new_codes, new_categories, NAvalue=self.NAvalue)
 
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "categorical_array",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ) -> str:
+        """
+        Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in HDF5 files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Categorical dataset within existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError
+            Raised if the lengths of columns and values differ, or the mode is
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+
+        Notes
+        -----
+        Important implementation notes: (1) Strings state is saved as two datasets
+        within an hdf5 group: one for the string characters and one for the
+        segments corresponding to the start of each string, (2) the hdf5 group is named
+        via the dataset parameter.
+        """
+        result = []
+        comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
+
+        if self.RequiredPieces.issubset(comp_dict.keys()):
+            # Honor the first mode but switch to append for all others
+            # since each following comp may wipe out the file
+            first = True
+            for k, v in comp_dict.items():
+                result.append(
+                    v.to_hdf(
+                        prefix_path,
+                        dataset=f"{dataset}.{k}",
+                        mode=(mode if first else "append"),
+                        file_type=file_type,
+                    )
+                )
+                first = False
+        else:
+            raise Exception(
+                "The required pieces of `categories` and `codes` were not populated on this Categorical"
+            )
+        return ";".join(result)
+
+    def to_parquet(
+        self,
+        prefix_path: str,
+        dataset: str = "categorical_array",
+        mode: str = "truncate",
+        compressed: bool = False,
+    ) -> str:
+        """
+        Save the Categorical object to Parquet. The result is a collection of Parquet files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in HDF5 files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Categorical dataset within existing files.
+        compressed : bool
+            By default, write without Snappy compression and RLE encoding.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError
+            Raised if the lengths of columns and values differ, or the mode is
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+        """
+        result = []
+        comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
+
+        if self.RequiredPieces.issubset(comp_dict.keys()):
+            # Honor the first mode but switch to append for all others
+            # since each following comp may wipe out the file
+            first = True
+            for k, v in comp_dict.items():
+                result.append(
+                    v.to_parquet(
+                        prefix_path,
+                        dataset=f"{dataset}.{k}",
+                        mode=(mode if first else "append"),
+                        compressed=compressed
+                    )
+                )
+                first = False
+        else:
+            raise Exception(
+                "The required pieces of `categories` and `codes` were not populated on this Categorical"
+            )
+        return ";".join(result)
+
     @typechecked
     def save(
         self,
@@ -810,6 +941,7 @@ class Categorical:
         file_type: str = "distribute",
     ) -> str:
         """
+        DEPRECATED
         Save the Categorical object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
@@ -842,10 +974,6 @@ class Categorical:
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
 
-        See Also
-        --------
-        pdarrayIO.save, pdarrayIO.load_all
-
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
@@ -853,6 +981,11 @@ class Categorical:
         segments corresponding to the start of each string, (2) the hdf5 group is named
         via the dataset parameter.
         """
+        warn(
+            "ak.Categorical.save has been deprecated. "
+            "Please use ak.Categorical.to_parquet or ak.Categorical.to_hdf",
+            DeprecationWarning,
+        )
         if mode.lower() not in ["append", "truncate"]:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 

@@ -501,7 +501,7 @@ class IOTest(ArkoudaTest):
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
         strings_array = ak.array(["testing string{}".format(num) for num in list(range(0, 25))])
-        strings_array.save("{}/strings-test".format(IOTest.io_test_dir), dataset="strings")
+        strings_array.to_hdf("{}/strings-test".format(IOTest.io_test_dir), dataset="strings")
         r_strings_array = ak.load("{}/strings-test".format(IOTest.io_test_dir), dataset="strings")
 
         strings = strings_array.to_ndarray()
@@ -515,13 +515,13 @@ class IOTest(ArkoudaTest):
         self.assertIsNotNone(r_strings_subset)
         self.assertTrue(isinstance(r_strings_subset[0], str))
         self.assertIsNotNone(
-            ak.read(
+            ak.read_hdf(
                 filenames="{}/strings-test_LOCALE0000".format(IOTest.io_test_dir),
                 datasets="strings/values",
             )
         )
         self.assertIsNotNone(
-            ak.read(
+            ak.read_hdf(
                 filenames="{}/strings-test_LOCALE0000".format(IOTest.io_test_dir),
                 datasets="strings/segments",
             )
@@ -529,20 +529,20 @@ class IOTest(ArkoudaTest):
 
         # Repeat the test using the calc_string_offsets=True option to
         # have server calculate offsets array
-        r_strings_subset = ak.read(
+        r_strings_subset = ak.read_hdf(
             filenames=f"{IOTest.io_test_dir}/strings-test_LOCALE0000", calc_string_offsets=True
         )
         self.assertIsNotNone(r_strings_subset)
         self.assertTrue(isinstance(r_strings_subset[0], str))
         self.assertIsNotNone(
-            ak.read(
+            ak.read_hdf(
                 filenames=f"{IOTest.io_test_dir}/strings-test_LOCALE0000",
                 datasets="strings/values",
                 calc_string_offsets=True,
             )
         )
         self.assertIsNotNone(
-            ak.read(
+            ak.read_hdf(
                 filenames=f"{IOTest.io_test_dir}/strings-test_LOCALE0000",
                 datasets="strings/segments",
                 calc_string_offsets=True,
@@ -556,7 +556,7 @@ class IOTest(ArkoudaTest):
         terminator strings
         """
         strings_array = ak.array(["testing string{}".format(num) for num in list(range(0, 25))])
-        strings_array.save(
+        strings_array.to_hdf(
             "{}/strings-test".format(IOTest.io_test_dir), dataset="strings", save_offsets=False
         )
         r_strings_array = ak.load(
@@ -576,7 +576,7 @@ class IOTest(ArkoudaTest):
                 for num in list(range(0, 26))
             ]
         )
-        strings.save("{}/strings-test".format(IOTest.io_test_dir), dataset="strings")
+        strings.to_hdf("{}/strings-test".format(IOTest.io_test_dir), dataset="strings")
 
         n_strings = strings.to_ndarray()
         n_strings.sort()
@@ -589,7 +589,7 @@ class IOTest(ArkoudaTest):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
         m_floats = ak.array([x / 10.0 for x in range(0, 10)])
         m_ints = ak.array(list(range(0, 10)))
-        ak.save_all(
+        ak.to_hdf(
             {"m_strings": strings_array, "m_floats": m_floats, "m_ints": m_ints},
             "{}/multi-type-test".format(IOTest.io_test_dir),
         )
@@ -619,8 +619,8 @@ class IOTest(ArkoudaTest):
 
     def testAppendStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
-        strings_array.save("{}/append-strings-test".format(IOTest.io_test_dir), dataset="strings")
-        strings_array.save(
+        strings_array.to_hdf("{}/append-strings-test".format(IOTest.io_test_dir), dataset="strings")
+        strings_array.to_hdf(
             "{}/append-strings-test".format(IOTest.io_test_dir), dataset="strings-dupe", mode="append"
         )
 
@@ -632,10 +632,10 @@ class IOTest(ArkoudaTest):
 
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(["string {}".format(num) for num in list(range(0, 25))])
-        strings_array.save("{}/append-multi-type-test".format(IOTest.io_test_dir), dataset="m_strings")
+        strings_array.to_hdf("{}/append-multi-type-test".format(IOTest.io_test_dir), dataset="m_strings")
         m_floats = ak.array([x / 10.0 for x in range(0, 10)])
         m_ints = ak.array(list(range(0, 10)))
-        ak.save_all(
+        ak.to_hdf(
             {"m_floats": m_floats, "m_ints": m_ints},
             "{}/append-multi-type-test".format(IOTest.io_test_dir),
             mode="append",
@@ -675,9 +675,9 @@ class IOTest(ArkoudaTest):
                 fd = f.create_dataset("floats", data=fdata)
                 fd.attrs["ObjType"] = 1
         with self.assertRaises(RuntimeError):
-            ak.read(prefix + "*")
+            ak.read_hdf(prefix + "*")
 
-        a = ak.read(prefix + "*", strictTypes=False)
+        a = ak.read_hdf(prefix + "*", strict_types=False)
         self.assertListEqual(a["integers"].to_list(), np.arange(len(inttypes) * N).tolist())
         self.assertTrue(
             np.allclose(a["floats"].to_ndarray(), np.arange(len(floattypes) * N, dtype=np.float64))
@@ -697,7 +697,7 @@ class IOTest(ArkoudaTest):
     def testSmallArrayToHDF5(self):
         a1 = ak.array([1])
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
+            a1.to_hdf(f"{tmp_dirname}/small_numeric", dataset="a1")
             # Now load it back in
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
@@ -706,7 +706,7 @@ class IOTest(ArkoudaTest):
     def testSmallStringArrayToHDF5(self):
         a1 = ak.array(["ab", "cd"])
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            a1.save(f"{tmp_dirname}/small_string_array", dataset="a1")
+            a1.to_hdf(f"{tmp_dirname}/small_string_array", dataset="a1")
             # Now load it back in
             a2 = ak.load(f"{tmp_dirname}/small_string_array", dataset="a1")
             self.assertEqual(str(a1), str(a2))
@@ -714,7 +714,7 @@ class IOTest(ArkoudaTest):
         # Test a single string
         b1 = ak.array(["123456789"])
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            b1.save(f"{tmp_dirname}/single_string", dataset="b1")
+            b1.to_hdf(f"{tmp_dirname}/single_string", dataset="b1")
             # Now load it back in
             b2 = ak.load(f"{tmp_dirname}/single_string", dataset="b1")
             self.assertEqual(str(b1), str(b2))
@@ -728,7 +728,7 @@ class IOTest(ArkoudaTest):
         )
         pda1 = ak.array(npa1)
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            pda1.save(f"{tmp_dirname}/small_numeric", dataset="pda1")
+            pda1.to_hdf(f"{tmp_dirname}/small_numeric", dataset="pda1")
             # Now load it back in
             pda2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="pda1")
             self.assertEqual(str(pda1), str(pda2))
@@ -750,8 +750,8 @@ class IOTest(ArkoudaTest):
         # Test when quotes are part of the dataset name
         my_arrays = {'foo"0"': ak.arange(100), 'bar"': ak.arange(100)}
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            ak.save_all(my_arrays, f"{tmp_dirname}/bad_dataset_names")
-            ak.read(f"{tmp_dirname}/bad_dataset_names*")
+            ak.to_hdf(my_arrays, f"{tmp_dirname}/bad_dataset_names")
+            ak.read_hdf(f"{tmp_dirname}/bad_dataset_names*")
 
     def testInternalVersions(self):
         """
@@ -778,11 +778,9 @@ class IOTest(ArkoudaTest):
     def test_multi_dim_rdwr(self):
         arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            ak.write_hdf5_multi_dim(
-                arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append"
-            )
+            arr.to_hdf(tmp_dirname + "/multi_dim_test", dset="MultiDimObj", mode="append")
             # load data back
-            read_arr = ak.read(tmp_dirname + "/multi_dim_test*", "MultiDimObj")
+            read_arr = ak.read_hdf(tmp_dirname + "/multi_dim_test*", datasets="MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
 
     def tearDown(self):

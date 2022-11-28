@@ -7,7 +7,7 @@ import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda import io_util, pdarrayIO
+from arkouda import io_util, io
 
 
 class CategoricalTest(ArkoudaTest):
@@ -267,23 +267,24 @@ class CategoricalTest(ArkoudaTest):
         """
         num_elems = 51  # _getCategorical starts counting at 1, so the size is really off by one
         cat = self._getCategorical(size=num_elems)
-        with self.assertRaises(ValueError):  # Expect error for mode not being append or truncate
-            cat.save("foo", dataset="bar", mode="not_allowed")
+        with self.assertRaises(ValueError):
+            # Expect error for mode not being append or truncate
+            cat.to_hdf("foo", dataset="bar", mode="not_allowed")
 
         with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             dset_name = "categorical_array"  # name of categorical array
 
             # Test the save functionality & confirm via h5py
-            cat.save(f"{tmp_dirname}/cat-save-test", dataset=dset_name)
+            cat.to_hdf(f"{tmp_dirname}/cat-save-test", dataset=dset_name)
 
             import h5py
 
             f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
             keys = set(f.keys())
             if (
-                pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys
+                io.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys
             ):  # Ignore the metadata group if it exists
-                keys.remove(pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP)
+                keys.remove(io.ARKOUDA_HDF5_FILE_METADATA_GROUP)
             self.assertEqual(len(keys), 5, "Expected 5 keys")
             self.assertSetEqual(
                 set(f"categorical_array.{k}" for k in cat._get_components_dict().keys()), keys
@@ -340,7 +341,7 @@ class CategoricalTest(ArkoudaTest):
 
         with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             df = {"cat1": c1, "cat2": c2, "pda1": pda1, "strings1": strings1}
-            ak.save_all(df, f"{tmp_dirname}/cat-save-test")
+            ak.to_hdf(df, f"{tmp_dirname}/cat-save-test")
             x = ak.load_all(path_prefix=f"{tmp_dirname}/cat-save-test")
             self.assertEqual(len(x.items()), 4)
             # Note assertCountEqual asserts a and b have the same

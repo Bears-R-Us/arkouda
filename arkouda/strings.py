@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
+from warnings import warn
 
 import arkouda.dtypes
 from arkouda.client import generic_msg
@@ -1725,7 +1726,7 @@ class Strings:
         res = np.empty(self.size, dtype=dt)
         # Form a string from each segment and store in numpy array
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
-            res[i] = np.str_(codecs.decode(b"".join(npvalues[o:o + l])))
+            res[i] = np.str_(codecs.decode(b"".join(npvalues[o : o + l])))
         return res
 
     def to_list(self) -> list:
@@ -1861,9 +1862,10 @@ class Strings:
         save_offsets: bool = True,
         compressed: bool = False,
         file_format: str = "HDF5",
-        file_type: str = "distribute"
+        file_type: str = "distribute",
     ) -> str:
         """
+        DEPRECATED
         Save the Strings object to HDF5 or Parquet. The result is a collection of
         files, one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -1907,10 +1909,6 @@ class Strings:
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
 
-        See Also
-        --------
-        pdarrayIO.save
-
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
@@ -1918,32 +1916,30 @@ class Strings:
         segments corresponding to the start of each string, (2) the hdf5 group is named
         via the dataset parameter.
         """
-        from arkouda.pdarrayIO import _file_type_to_int
-        if mode.lower() in ["a", "app", "append"]:
-            m = 1
-        elif mode.lower() in ["t", "trunc", "truncate"]:
-            m = 0
-        else:
-            raise ValueError("Allowed modes are 'truncate' and 'append'")
+        warn(
+            "ak.Strings.save has been deprecated. Please use ak.Strings.to_hdf or ak.Strings.to_parquet",
+            DeprecationWarning,
+        )
+        from arkouda.io import file_type_to_int, mode_str_to_int
 
         if file_format.lower() == "hdf5":
             args = {
                 "values": self.entry,
                 "dset": dataset,
-                "write_mode": m,
+                "write_mode": mode_str_to_int(mode),
                 "filename": prefix_path,
                 "dtype": self.dtype,
                 "save_offsets": save_offsets,
                 "compressed": compressed,
                 "objType": "strings",
-                "file_format": _file_type_to_int(file_type),
+                "file_format": file_type_to_int(file_type),
             }
             return cast(str, generic_msg("tohdf", args))
         elif file_format.lower() == "parquet":
             args = {
                 "values": self.entry,
                 "dset": dataset,
-                "mode": m,
+                "mode": mode_str_to_int(mode),
                 "prefix": prefix_path,
                 "dtype": self.dtype,
                 "save_offsets": save_offsets,
@@ -1953,7 +1949,7 @@ class Strings:
         else:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
 
-    def save_parquet(
+    def to_parquet(
         self,
         prefix_path: str,
         dataset: str = "strings_array",
@@ -1990,12 +1986,134 @@ class Strings:
             neither 'truncate' nor 'append'
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
+        """
+        from arkouda.io import mode_str_to_int
+
+        return cast(
+            str,
+            generic_msg(
+                "writeParquet",
+                {
+                    "values": self.entry,
+                    "dset": dataset,
+                    "mode": mode_str_to_int(mode),
+                    "prefix": prefix_path,
+                    "dtype": self.dtype,
+                    "compressed": compressed,
+                },
+            ),
+        )
+
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "strings_array",
+        mode: str = "truncate",
+        save_offsets: bool = True,
+        file_type: str = "distribute",
+    ) -> str:
+        """
+        Save the Strings object to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Strings dataset within existing files.
+        save_offsets : bool
+            Defaults to True which will instruct the server to save the offsets array to HDF5
+            If False the offsets array will not be save and will be derived from the string values
+            upon load/read.
+        file_type: str ("single" | "distribute")
+            Default: Distribute
+            Distribute the dataset over a file per locale.
+            Single file will save the dataset to one file
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError
+            Raised if the lengths of columns and values differ, or the mode is
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+        """
+        from arkouda.io import mode_str_to_int, file_type_to_int
+        return cast(
+            str,
+            generic_msg(
+                "tohdf",
+                {
+                    "values": self.entry,
+                    "dset": dataset,
+                    "write_mode": mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "save_offsets": save_offsets,
+                    "objType": "strings",
+                    "file_format": file_type_to_int(file_type),
+                },
+            ),
+        )
+
+    def save_parquet(
+        self,
+        prefix_path: str,
+        dataset: str = "strings_array",
+        mode: str = "truncate",
+        compressed: bool = False,
+    ) -> str:
+        """
+        DEPRECATED
+        Save the Strings object to Parquet. The result is a collection of Parquet files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Strings dataset within existing files.
+        compressed : bool
+            Defaults to False. When True, files will be written with Snappy compression
+            and RLE bit packing.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError
+            Raised if the lengths of columns and values differ, or the mode is
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
 
         See Also
         --------
         strings.save()
         pdarray.save_parquet()
         """
+        warn(
+            "ak.pdarrayIO.save_parquet has been deprecated. Please use ak.Strings.to_parquet",
+            DeprecationWarning,
+        )
         return self.save(
             prefix_path=prefix_path,
             dataset=dataset,
@@ -2010,9 +2128,10 @@ class Strings:
         dataset: str = "strings_array",
         mode: str = "truncate",
         save_offsets: bool = True,
-        file_type: str = ""
+        file_type: str = "",
     ) -> str:
         """
+        DEPRECATED
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the Strings array to its
@@ -2049,6 +2168,10 @@ class Strings:
         strings.save()
         pdarray.save()
         """
+        warn(
+            "ak.Strings.save_hdf has been deprecated. Please use ak.Strings.to_hdf",
+            DeprecationWarning,
+        )
         return self.save(
             prefix_path=prefix_path,
             dataset=dataset,

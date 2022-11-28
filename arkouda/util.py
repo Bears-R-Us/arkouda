@@ -14,7 +14,7 @@ from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_symbol_table
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
-from arkouda.pdarrayIO import read
+from arkouda.io import read
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort

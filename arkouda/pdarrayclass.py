@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 from typing import List, Sequence, Union, cast
+from warnings import warn
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -1256,6 +1257,7 @@ class pdarray:
         file_type: str = "distribute",
     ) -> str:
         """
+        DEPRECATED
         Save the pdarray to HDF5 or Parquet. The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
@@ -1340,14 +1342,11 @@ class pdarray:
         Saves the array in numLocales Parquet files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
-        from arkouda.pdarrayIO import _file_type_to_int
-
-        if mode.lower() in ["a", "app", "append"]:
-            m = 1
-        elif mode.lower() in ["t", "trunc", "truncate"]:
-            m = 0
-        else:
-            raise ValueError("Allowed modes are 'truncate' and 'append'")
+        warn(
+            "ak.pdarray.save has been deprecated. Please use ak.pdarray.to_parquet or ak.pdarray.to_hdf",
+            DeprecationWarning,
+        )
+        from arkouda.io import file_type_to_int, mode_str_to_int
 
         if file_format.lower() == "hdf5":
             return cast(
@@ -1357,11 +1356,11 @@ class pdarray:
                     args={
                         "values": self,
                         "dset": dataset,
-                        "write_mode": m,
+                        "write_mode": mode_str_to_int(mode),
                         "filename": prefix_path,
                         "dtype": self.dtype,
                         "objType": "pdarray",
-                        "file_format": _file_type_to_int(file_type),
+                        "file_format": file_type_to_int(file_type),
                     },
                 ),
             )
@@ -1373,7 +1372,7 @@ class pdarray:
                     args={
                         "values": self,
                         "dset": dataset,
-                        "mode": m,
+                        "mode": mode_str_to_int(mode),
                         "prefix": prefix_path,
                         "dtype": self.dtype,
                         "save_offsets": False,  # only used by strings
@@ -1385,6 +1384,53 @@ class pdarray:
             raise ValueError("Supported file formats are 'HDF5' and 'Parquet'")
 
     @typechecked
+    def to_parquet(
+        self, prefix_path: str, dataset: str = "array", mode: str = "truncate", compressed: bool = False
+    ) -> str:
+        from arkouda.io import mode_str_to_int
+
+        return cast(
+            str,
+            generic_msg(
+                cmd="writeParquet",
+                args={
+                    "values": self,
+                    "dset": dataset,
+                    "mode": mode_str_to_int(mode),
+                    "prefix": prefix_path,
+                    "dtype": self.dtype,
+                    "compressed": compressed,
+                },
+            ),
+        )
+
+    @typechecked
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ) -> str:
+        from arkouda.io import file_type_to_int, mode_str_to_int
+
+        return cast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "values": self,
+                    "dset": dataset,
+                    "write_mode": mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "objType": "pdarray",
+                    "file_format": file_type_to_int(file_type),
+                },
+            ),
+        )
+
+    @typechecked
     def save_parquet(
         self,
         prefix_path: str,
@@ -1393,6 +1439,7 @@ class pdarray:
         compressed: bool = False,
     ) -> str:
         """
+        DEPRECATED
         Save the pdarray to Parquet. The result is a collection of Parquet files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
@@ -1453,6 +1500,10 @@ class pdarray:
         >>> (a == b).all()
         True
         """
+        warn(
+            "ak.pdarray.save_parquet has been deprecated. Please use ak.pdarray.to_parquet",
+            DeprecationWarning,
+        )
         return self.save(
             prefix_path=prefix_path,
             dataset=dataset,
@@ -1470,6 +1521,7 @@ class pdarray:
         file_type: str = "distribute",
     ) -> str:
         """
+        DEPRECATED
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
@@ -1532,6 +1584,10 @@ class pdarray:
         >>> (a == b).all()
         True
         """
+        warn(
+            "ak.pdarray.save_hdf has been deprecated. Please use ak.pdarray.to_hdf",
+            DeprecationWarning,
+        )
         return self.save(
             prefix_path=prefix_path,
             dataset=dataset,

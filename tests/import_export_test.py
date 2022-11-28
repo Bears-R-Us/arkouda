@@ -1,14 +1,22 @@
 import glob
 import os
 from shutil import rmtree
+import tempfile
 
 import numpy as np
 import pandas as pd
 from base_test import ArkoudaTest
 from context import arkouda as ak
+from arkouda import io_util, io
 
 
-class DataFrameTest(ArkoudaTest):
+class ImportExportTest(ArkoudaTest):
+    @classmethod
+    def setUpClass(cls):
+        super(ImportExportTest, cls).setUpClass()
+        ImportExportTest.ie_test_base_tmp = "{}/import_export_test".format(os.getcwd())
+        io_util.get_directory(ImportExportTest.ie_test_base_tmp)
+
     def build_pandas_dataframe(self):
         df = pd.DataFrame(
             data={
@@ -61,23 +69,16 @@ class DataFrameTest(ArkoudaTest):
         rmtree(f_base)
 
     def test_export_hdf(self):
-        f_base = f"{os.getcwd()}/import_export_test"
-        # make directory to save to so pandas read works
-        if not os.path.exists(f_base):
-            os.mkdir(f_base)
-
         akdf = self.build_arkouda_dataframe()
-        akdf.save(f"{f_base}/ak_write")
+        with tempfile.TemporaryDirectory(dir=ImportExportTest.ie_test_base_tmp) as tmp_dirname:
+            akdf.to_hdf(f"{tmp_dirname}/ak_write")
 
-        pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.h5", index=True)
-        self.assertEqual(len(glob.glob(f"{f_base}/pd_from_ak.h5")), 1)
-        self.assertTrue(pddf.equals(akdf.to_pandas()))
+            pddf = ak.export(f"{tmp_dirname}/ak_write", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
+            self.assertEqual(len(glob.glob(f"{tmp_dirname}/pd_from_ak.h5")), 1)
+            self.assertTrue(pddf.equals(akdf.to_pandas()))
 
-        with self.assertRaises(RuntimeError):
-            pddf = ak.export(f"{f_base}/foo.h5", write_file=f"{f_base}/pd_from_ak.h5", index=True)
-
-        # clean up test files
-        rmtree(f_base)
+            with self.assertRaises(RuntimeError):
+                pddf = ak.export(f"{tmp_dirname}/foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)
 
     def test_import_parquet(self):
         locales = self.get_locale_count()
@@ -96,22 +97,14 @@ class DataFrameTest(ArkoudaTest):
         rmtree(f_base)
 
     def test_export_parquet(self):
-        f_base = f"{os.getcwd()}/import_export_test"
-        # make directory to save to so pandas read works
-        if not os.path.exists(f_base):
-            os.mkdir(f_base)
-
         akdf = self.build_arkouda_dataframe()
-        akdf.save(f"{f_base}/ak_write", file_format="Parquet")
-        print(akdf.__repr__())
+        with tempfile.TemporaryDirectory(dir=ImportExportTest.ie_test_base_tmp) as tmp_dirname:
+            akdf.to_parquet(f"{tmp_dirname}/ak_write")
+            print(akdf.__repr__())
 
-        pddf = ak.export(f"{f_base}/ak_write", write_file=f"{f_base}/pd_from_ak.parquet", index=True)
-        print(pddf)
-        self.assertEqual(len(glob.glob(f"{f_base}/pd_from_ak.parquet")), 1)
-        self.assertTrue(pddf.equals(akdf.to_pandas()))
+            pddf = ak.export(f"{tmp_dirname}/ak_write", write_file=f"{tmp_dirname}/pd_from_ak.parquet", index=True)
+            self.assertEqual(len(glob.glob(f"{tmp_dirname}/pd_from_ak.parquet")), 1)
+            self.assertTrue(pddf.equals(akdf.to_pandas()))
 
-        with self.assertRaises(RuntimeError):
-            pddf = ak.export(f"{f_base}/foo.h5", write_file=f"{f_base}/pd_from_ak.h5", index=True)
-
-        # clean up test files
-        rmtree(f_base)
+            with self.assertRaises(RuntimeError):
+                pddf = ak.export(f"{tmp_dirname}/foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)

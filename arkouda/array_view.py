@@ -12,7 +12,6 @@ from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumprod, where
 from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
-from arkouda.pdarrayIO import read_hdf5_multi_dim, write_hdf5_multi_dim
 from arkouda.pdarraysetops import concatenate
 
 OrderType = Enum("OrderType", ["ROW_MAJOR", "COLUMN_MAJOR"])
@@ -365,7 +364,7 @@ class ArrayView:
         """
         return self.to_ndarray().tolist()
 
-    def save(
+    def to_hdf(
         self,
         filepath: str,
         dset: str = "ArrayView",
@@ -389,11 +388,59 @@ class ArrayView:
             Default: distribute
             Indicates the format to save the file. Single will store in a single file.
             Distribute will store the date in a file per locale.
+        """
+        from arkouda.io import file_type_to_int, mode_str_to_int
+
+        generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self.base,
+                "shape": self.shape,
+                "order": self.order,
+                "filename": filepath,
+                "file_format": file_type_to_int(file_type),
+                "dset": dset,
+                "write_mode": mode_str_to_int(mode),
+                "objType": "ArrayView",
+            },
+        )
+
+    def save(
+        self,
+        filepath: str,
+        dset: str = "ArrayView",
+        mode: str = "truncate",
+        file_type: str = "distribute",
+    ):
+        """
+        DEPRECATED
+        Save the current ArrayView object to hdf5 file
+
+        Parameters
+        ----------
+        filepath: str
+            Path to the file to write the dataset to
+        dset: str
+            Name of the dataset to write
+        mode: str (truncate | append)
+            Default: truncate
+            Mode to write the dataset in. Truncate will overwrite any existing files.
+            Append will add the dataset to an existing file.
+        file_type: str (single|distribute)
+            Default: distribute
+            Indicates the format to save the file. Single will store in a single file.
+            Distribute will store the date in a file per locale.
 
         See Also
         --------
         ak.ArrayView.load
         """
+        warn(
+            "ak.ArrayView.save has been deprecated. "
+            "Please use ak.ArrayView.to_hdf",
+            DeprecationWarning,
+        )
+        from arkouda.io import write_hdf5_multi_dim
         write_hdf5_multi_dim(self, filepath, dset, mode=mode, file_type=file_type)
 
     @staticmethod
@@ -420,7 +467,8 @@ class ArrayView:
         ak.ArrayView.save
         """
         warn(
-            "ak.ArrayView.load has been deprecated. Please use ak.pdarrayIO.load",
+            "ak.ArrayView.load has been deprecated. Please use ak.load",
             DeprecationWarning,
         )
+        from arkouda.io import read_hdf5_multi_dim
         return read_hdf5_multi_dim(filepath, dset)
