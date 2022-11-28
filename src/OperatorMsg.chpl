@@ -753,22 +753,11 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.UInt64) {
-                var l = toSymEntry(left,int);
-                var r = toSymEntry(right,uint);
-                select op {
-                    when "+=" { l.a += r.a:int; }
-                    when "-=" { l.a -= r.a:int; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
+                var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             when (DType.Int64, DType.Float64) {
-                var l = toSymEntry(left,int);
-                var r = toSymEntry(right,real);
-
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -788,9 +777,6 @@ module OperatorMsg
                 }
             }
             when (DType.UInt64, DType.Int64) {
-                var l = toSymEntry(left,uint);
-                var r = toSymEntry(right,int);
-
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -834,9 +820,6 @@ module OperatorMsg
                 }
             }
             when (DType.UInt64, DType.Float64) {
-                var l = toSymEntry(left,uint);
-                var r = toSymEntry(right,real);
-
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -1005,7 +988,7 @@ module OperatorMsg
                         if val != 0 {l.a %= val;} else {l.a = 0;}
                     }
                     when "**=" {
-                        if (val<0) {
+                        if val<0 {
                             var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
                             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                                               errorMsg);
@@ -1022,17 +1005,9 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.UInt64) {
-                var l = toSymEntry(left,int);
-                var val = value.getUIntValue();
-                select op {
-                    when "+=" { l.a += val:int; }
-                    when "-=" { l.a -= val:int; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                }
+                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             when (DType.Int64, DType.Float64) {
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);

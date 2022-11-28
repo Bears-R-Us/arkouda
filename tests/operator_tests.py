@@ -561,7 +561,7 @@ class OperatorsTest(ArkoudaTest):
 
         # the only arrays that can be added in place are uint and bool
         # scalars are cast to same type if possible
-        for v in [u_arr, b_arr, u, b, i, f]:
+        for v in [b_arr, u, b, i, f]:
             u_tmp = u_arr[:]
             i_tmp = i_arr[:]
             u_tmp += v
@@ -580,9 +580,8 @@ class OperatorsTest(ArkoudaTest):
             u_arr -= 7
 
         # verify other types can have uint applied to them
-        for a in [i_arr, f_arr]:
-            a += u_arr
-            a += u
+        f_arr += u_arr
+        f_arr += u
 
     def testAllOperators(self):
         run_tests(verbose)
