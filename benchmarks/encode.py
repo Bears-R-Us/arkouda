@@ -52,13 +52,17 @@ def time_ak_decode(N_per_locale, trials, seed):
         
 def check_correctness(encoding, seed):
     N = 10
-    a = ak.random_strings_uniform(1, 16, N, seed=seed)
+    # IDNA converts all characters to lowercase
+    a = ak.random_strings_uniform(1, 16, N, seed=seed, characters='lowercase')
 
     # Do round trip encode/decode
     encoded = a.encode(encoding)
     decoded = encoded.decode(encoding)
 
-    assert(a == decoded).all()
+    # If value is not roundtrippable, it will be empty string
+    for i in range(len(decoded)):
+        if decoded[i] != " ":
+            assert(decoded[i] == a[i])
 
 
 def create_parser():
