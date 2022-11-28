@@ -753,6 +753,7 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.UInt64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -777,6 +778,7 @@ module OperatorMsg
                 }
             }
             when (DType.UInt64, DType.Int64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -787,14 +789,7 @@ module OperatorMsg
                 select op {
                     when "+=" { l.a += r.a; }
                     when "-=" {
-                        if || reduce (l.a < r.a) {
-                            // will result in a negative which won't work in a uint
-                            var errorMsg = "Subtracting by an amount larger than self results in a negative";
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                        else {
-                            l.a -= r.a;
-                        }
+                        l.a -= r.a;
                     }
                     when "*=" { l.a *= r.a; }
                     when "//=" {
@@ -1005,6 +1000,7 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.UInt64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -1029,6 +1025,7 @@ module OperatorMsg
                 }
             }
             when (DType.UInt64, DType.Int64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -1039,14 +1036,7 @@ module OperatorMsg
                 select op {
                     when "+=" { l.a += val; }
                     when "-=" {
-                        if || reduce (l.a < val) {
-                            // will result in a negative which won't work in a uint
-                            var errorMsg = "Subtracting by an amount larger than self results in a negative";
-                            return new MsgTuple(errorMsg, MsgType.ERROR);
-                        }
-                        else {
-                            l.a -= val;
-                        }
+                        l.a -= val;
                     }
                     when "*=" { l.a *= val; }
                     when "//=" {

@@ -573,12 +573,6 @@ class OperatorsTest(ArkoudaTest):
             with self.assertRaises(RuntimeError):
                 u_arr += e
 
-        # test that subtraction which would be negative produces an error
-        with self.assertRaises(RuntimeError):
-            u_arr -= ak.full(10, 7, ak.uint64)
-        with self.assertRaises(RuntimeError):
-            u_arr -= 7
-
         # verify other types can have uint applied to them
         f_arr += u_arr
         f_arr += u
