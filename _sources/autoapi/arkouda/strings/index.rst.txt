@@ -190,10 +190,26 @@ Classes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: idna_encode()
+   .. py:method:: encode(toEncoding, fromEncoding='UTF-8')
+
+      Return a new strings object in `toEncoding`, expecting that the
+      current Strings is encoded in `fromEncoding`
+
+      :returns: A new Strings object in `toEncoding`
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: idna_decode()
+   .. py:method:: decode(fromEncoding, toEncoding='UTF-8')
+
+      Return a new strings object in `fromEncoding`, expecting that the
+      current Strings is encoded in `toEncoding`
+
+      :returns: A new Strings object in `toEncoding`
+      :rtype: Strings
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
 
 
    .. py:method:: to_lower() -> Strings
