@@ -512,6 +512,71 @@ class OperatorsTest(ArkoudaTest):
         a = ak.arange(5)
         self.assertListEqual([i if i % 2 else i**.5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
 
+    def test_uint_operation_equals(self):
+        u_arr = ak.arange(10, dtype=ak.uint64)
+        i_arr = ak.arange(10)
+        f_arr = ak.linspace(1, 5, 10)
+        b_arr = i_arr % 2 == 0
+        u = np.uint(7)
+        i = 7
+        f = 3.14
+        b = True
+
+        # test uint opequals uint functionality against numpy
+        np_arr = np.arange(10, dtype=np.uint)
+        u_tmp = u_arr[:]
+        u_tmp += u
+        np_arr += u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp += u_tmp
+        np_arr += np_arr
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp -= u
+        np_arr -= u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp -= u_tmp
+        np_arr -= np_arr
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp *= u
+        np_arr *= u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp *= u_tmp
+        np_arr *= np_arr
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp **= u
+        np_arr **= u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp **= u_tmp
+        np_arr **= np_arr
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp %= u
+        np_arr %= u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp //= u
+        np_arr //= u
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        u_tmp //= u_tmp
+        np_arr //= np_arr
+        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+
+        # the only arrays that can be added in place are uint and bool
+        # scalars are cast to same type if possible
+        for v in [b_arr, u, b, i, f]:
+            u_tmp = u_arr[:]
+            i_tmp = i_arr[:]
+            u_tmp += v
+            i_tmp += v
+            self.assertListEqual(u_tmp.to_list(), i_tmp.to_list())
+
+        # adding a float or int inplace could have a result which is not a uint
+        for e in [i_arr, f_arr]:
+            with self.assertRaises(RuntimeError):
+                u_arr += e
+
+        # verify other types can have uint applied to them
+        f_arr += u_arr
+        f_arr += u
+
     def testAllOperators(self):
         run_tests(verbose)
 

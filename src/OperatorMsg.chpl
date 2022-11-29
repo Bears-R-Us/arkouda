@@ -722,8 +722,7 @@ module OperatorMsg
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
                 var r = toSymEntry(right,int);
-                select op
-                {
+                select op {
                     when "+=" { l.a += r.a; }
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
@@ -749,24 +748,96 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
-            when (DType.Int64, DType.Float64) {
-                var l = toSymEntry(left,int);
-                var r = toSymEntry(right,real);
-
+            when (DType.Int64, DType.UInt64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
                 var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);  
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.Int64, DType.Float64) {
+                var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.Int64, DType.Bool) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+=" {l.a += r.a:int;}
+                    when "-=" {l.a -= r.a:int;}
+                    when "*=" {l.a *= r.a:int;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Int64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
+                var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.UInt64, DType.UInt64) {
+                var l = toSymEntry(left,uint);
+                var r = toSymEntry(right,uint);
+                select op {
+                    when "+=" { l.a += r.a; }
+                    when "-=" {
+                        l.a -= r.a;
+                    }
+                    when "*=" { l.a *= r.a; }
+                    when "//=" {
+                        //l.a /= r.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
+                    }//floordiv
+                    when "%=" {
+                        //l.a /= r.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
+                    }
+                    when "**=" {
+                        l.a **= r.a;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Float64) {
+                var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.UInt64, DType.Bool) {
+                var l = toSymEntry(left, uint);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+=" {l.a += r.a:uint;}
+                    when "-=" {l.a -= r.a:uint;}
+                    when "*=" {l.a *= r.a:uint;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
                 var r = toSymEntry(right,int);
 
-                select op
-                {
+                select op {
                     when "+=" {l.a += r.a;}
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
@@ -774,21 +845,42 @@ module OperatorMsg
                     when "//=" { //floordiv
                         ref la = l.a;
                         ref ra = r.a;
-                        [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
+                        [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
                     }
                     when "**=" { l.a **= r.a; }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Float64, DType.UInt64) {
+                var l = toSymEntry(left,real);
+                var r = toSymEntry(right,uint);
+
+                select op {
+                    when "+=" {l.a += r.a;}
+                    when "-=" {l.a -= r.a;}
+                    when "*=" {l.a *= r.a;}
+                    when "/=" {l.a /= r.a:real;} //truediv
+                    when "//=" { //floordiv
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    }
+                    when "**=" { l.a **= r.a; }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             when (DType.Float64, DType.Float64) {
                 var l = toSymEntry(left,real);
                 var r = toSymEntry(right,real);
-                select op
-                {
+                select op {
                     when "+=" {l.a += r.a;}
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
@@ -796,58 +888,41 @@ module OperatorMsg
                     when "//=" { //floordiv
                         ref la = l.a;
                         ref ra = r.a;
-                        [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
+                        [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
                     }
                     when "**=" { l.a **= r.a; }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);      
-                    }
-                }
-            }
-            when (DType.Bool, DType.Bool) {
-                var l = toSymEntry(left, bool);
-                var r = toSymEntry(right, bool);
-                select op
-                {
-                    when "|=" {l.a |= r.a;}
-                    when "&=" {l.a &= r.a;}
-                    when "^=" {l.a ^= r.a;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
-                    }
-                }
-            }
-            when (DType.Int64, DType.Bool) {
-                var l = toSymEntry(left, int);
-                var r = toSymEntry(right, bool);
-                select op
-                { 
-                    when "+=" {l.a += r.a:int;}
-                    when "-=" {l.a -= r.a:int;}
-                    when "*=" {l.a *= r.a:int;}
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             when (DType.Float64, DType.Bool) {
                 var l = toSymEntry(left, real);
                 var r = toSymEntry(right, bool);
-                select op
-                {
+                select op {
                     when "+=" {l.a += r.a:real;}
                     when "-=" {l.a -= r.a:real;}
                     when "*=" {l.a *= r.a:real;}
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Bool, DType.Bool) {
+                var l = toSymEntry(left, bool);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "|=" {l.a |= r.a;}
+                    when "&=" {l.a &= r.a;}
+                    when "^=" {l.a ^= r.a;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
@@ -855,10 +930,9 @@ module OperatorMsg
                 var errorMsg = unrecognizedTypeError(pn,
                                   "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);                                 
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
         repMsg = "opeqvv success";
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -898,23 +972,22 @@ module OperatorMsg
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
                 var val = value.getIntValue();
-                select op
-                {
+                select op {
                     when "+=" { l.a += val; }
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
-                    when "//=" { 
+                    when "//=" {
                         if val != 0 {l.a /= val;} else {l.a = 0;}
                     }//floordiv
-                    when "%=" { 
+                    when "%=" {
                         if val != 0 {l.a %= val;} else {l.a = 0;}
                     }
-                    when "**=" { 
-                        if (val<0){
+                    when "**=" {
+                        if val<0 {
                             var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
                             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                                               errorMsg);
-                            return new MsgTuple(errorMsg, MsgType.ERROR);                              
+                            return new MsgTuple(errorMsg, MsgType.ERROR);
                         }
                         else{ l.a **= val; }
 
@@ -926,50 +999,16 @@ module OperatorMsg
                     }
                 }
             }
+            when (DType.Int64, DType.UInt64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
+                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
             when (DType.Int64, DType.Float64) {
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);  
-            }
-            when (DType.Float64, DType.Int64) {
-                var l = toSymEntry(left,real);
-                var val = value.getIntValue();
-                select op
-                {
-                    when "+=" {l.a += val;}
-                    when "-=" {l.a -= val;}
-                    when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val:real;} //truediv
-                    when "//=" { //floordiv
-                        if val != 0 {l.a = floor(l.a / val);} else {l.a = NAN;}
-                    }
-                    when "**=" { l.a **= val; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
-                    }
-                }
-            }
-            when (DType.Float64, DType.Float64) {
-                var l = toSymEntry(left,real);
-                var val = value.getRealValue();
-                select op
-                {
-                    when "+=" {l.a += val;}
-                    when "-=" {l.a -= val;}
-                    when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val;}//truediv
-                    when "//=" { //floordiv
-                        if val != 0 {l.a = floor(l.a / val);} else {l.a = NAN;}
-                    }
-                    when "**=" { l.a **= val; }
-                    otherwise {
-                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
-                    }
-                }
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             when (DType.Int64, DType.Bool) {
                 var l = toSymEntry(left, int);
@@ -981,7 +1020,121 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Int64) {
+                // The result of operations between int and uint are float by default which doesn't fit in either type
+                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.UInt64, DType.UInt64) {
+                var l = toSymEntry(left,uint);
+                var val = value.getUIntValue();
+                select op {
+                    when "+=" { l.a += val; }
+                    when "-=" {
+                        l.a -= val;
+                    }
+                    when "*=" { l.a *= val; }
+                    when "//=" {
+                        if val != 0 {l.a /= val;} else {l.a = 0;}
+                    }//floordiv
+                    when "%=" {
+                        if val != 0 {l.a %= val;} else {l.a = 0;}
+                    }
+                    when "**=" {
+                        l.a **= val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.UInt64, DType.Float64) {
+                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            when (DType.UInt64, DType.Bool) {
+                var l = toSymEntry(left, uint);
+                var val = value.getBoolValue();
+                select op {
+                    when "+=" {l.a += val:uint;}
+                    when "-=" {l.a -= val:uint;}
+                    when "*=" {l.a *= val:uint;}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Float64, DType.Int64) {
+                var l = toSymEntry(left,real);
+                var val = value.getIntValue();
+                select op {
+                    when "+=" {l.a += val;}
+                    when "-=" {l.a -= val;}
+                    when "*=" {l.a *= val;}
+                    when "/=" {l.a /= val:real;} //truediv
+                    when "//=" { //floordiv
+                        ref la = l.a;
+                        [li in la] li = floorDivisionHelper(li, val);
+                    }
+                    when "**=" { l.a **= val; }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Float64, DType.UInt64) {
+                var l = toSymEntry(left,real);
+                var val = value.getUIntValue();
+                select op {
+                    when "+=" { l.a += val; }
+                    when "-=" { l.a -= val; }
+                    when "*=" { l.a *= val; }
+                    when "//=" {
+                        ref la = l.a;
+                        [li in la] li = floorDivisionHelper(li, val);
+                    }//floordiv
+                    when "%=" {
+                        if val != 0 {l.a %= val;} else {l.a = 0;}
+                    }
+                    when "**=" {
+                        l.a **= val;
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
+                    }
+                }
+            }
+            when (DType.Float64, DType.Float64) {
+                var l = toSymEntry(left,real);
+                var val = value.getRealValue();
+                select op {
+                    when "+=" {l.a += val;}
+                    when "-=" {l.a -= val;}
+                    when "*=" {l.a *= val;}
+                    when "/=" {l.a /= val;}//truediv
+                    when "//=" { //floordiv
+                        ref la = l.a;
+                        [li in la] li = floorDivisionHelper(li, val);
+                    }
+                    when "**=" { l.a **= val; }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
@@ -995,7 +1148,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
@@ -1003,10 +1156,9 @@ module OperatorMsg
                 var errorMsg = unrecognizedTypeError(pn,
                                    "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                           
-                return new MsgTuple(errorMsg, MsgType.ERROR);                
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-
         repMsg = "opeqvs success";
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
