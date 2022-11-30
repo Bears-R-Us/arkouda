@@ -668,7 +668,7 @@ class Strings:
         self._regex_dict = dict()
 
     def _empty_pattern_verification(self, pattern):
-        if pattern == "$" or (pattern == "" and (self == "").any()):  # type: ignore
+        if pattern == "$" or (re.search(pattern, "") and (self == "").any()):  # type: ignore
             # TODO remove once changes from chapel issue #20431 and #20441 are in arkouda
             raise ValueError(
                 "regex operations not currently supported with a pattern='$' or pattern='' when "
