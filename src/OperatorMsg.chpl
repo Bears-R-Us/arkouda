@@ -1105,9 +1105,6 @@ module OperatorMsg
                         ref la = l.a;
                         [li in la] li = floorDivisionHelper(li, val);
                     }//floordiv
-                    when "%=" {
-                        if val != 0 {l.a %= val;} else {l.a = 0;}
-                    }
                     when "**=" {
                         l.a **= val;
                     }
