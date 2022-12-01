@@ -65,6 +65,9 @@ module EncodingMsg {
       // Start task parallelism
       coforall loc in Locales {
         on loc {
+          const locTo = toEncoding;
+          const locFrom = fromEncoding;
+          
           const myFirstSegIdx = startSegInds[loc.id];
           const myNumSegs = max(0, numSegs[loc.id]);
           const mySegInds = {myFirstSegIdx..#myNumSegs};
@@ -78,7 +81,7 @@ module EncodingMsg {
           try {
             forall (start, len, i) in zip(mySegs, myLens, mySegInds) with (var agg = newDstAggregator(int)) {
               var slice = new lowLevelLocalizingSlice(values, start..#len);
-              agg.copy(res[i], getBufLength(slice.ptr: c_ptr(uint(8)), len, toEncoding, fromEncoding));
+              agg.copy(res[i], getBufLength(slice.ptr: c_ptr(uint(8)), len, locTo, locFrom));
             }
           } catch {
             throw new owned ErrorWithContext("Error",
@@ -104,6 +107,9 @@ module EncodingMsg {
       // Start task parallelism
       coforall loc in Locales {
         on loc {
+          const locTo = toEncoding;
+          const locFrom = fromEncoding;
+          
           const myFirstSegIdx = startSegInds[loc.id];
           const myNumSegs = max(0, numSegs[loc.id]);
           const mySegInds = {myFirstSegIdx..#myNumSegs};
@@ -123,7 +129,7 @@ module EncodingMsg {
           try {
             forall (start, len, i, eStart, eLen) in zip(mySegs, myLens, mySegInds, myESegs, myELens) {
               var slice = new lowLevelLocalizingSlice(values, start..#len);
-              var encodedStr = encodeStr(slice.ptr: c_ptr(uint(8)), len, eLen, toEncoding, fromEncoding);
+              var encodedStr = encodeStr(slice.ptr: c_ptr(uint(8)), len, eLen, locTo, locFrom);
               var agg = newDstAggregator(uint(8));
               for j in eStart..#eLen {
                 agg.copy(res[j], encodedStr[j-eStart]);
