@@ -22,13 +22,9 @@ module FileIO {
     proc appendFile(filePath : string, line : string) throws {
         var writer;
         if exists(filePath) {
-            use Version;
+            use ArkoudaFileCompat;
             var aFile = open(filePath, iomode.rw);
-            if chplVersion >= createVersion(1,28) {
-              writer = aFile.writer(region=aFile.size..);
-            } else {
-              writer = aFile.writer(start=aFile.size);
-            }
+            writer = aFile.appendWriter();
         } else {
             var aFile = open(filePath, iomode.cwr);
             writer = aFile.writer();
