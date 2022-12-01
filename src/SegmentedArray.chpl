@@ -8,7 +8,7 @@ module SegmentedArray {
     use Logging;
     use ServerErrors;
     use CommAggregation;
-    use Time only Timer, getCurrentTime;
+    use Time only getCurrentTime;
     use Map;
 
     private config const logLevel = ServerConfig.logLevel;

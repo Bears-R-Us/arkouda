@@ -4,7 +4,7 @@ module ServerDaemon {
     use Security;
     use ServerConfig;
     use ServerErrors;
-    use Time only;
+    use Time;
     use ZMQ only;
     use Memory;
     use FileSystem;
@@ -409,9 +409,7 @@ module ServerDaemon {
             }
             this.registerServerCommands();
                     
-            var t1 = new Time.Timer();
-            t1.clear();
-            t1.start();            
+            var startTime = getCurrentTime();
         
             while !this.shutdownDaemon {
                 // receive message on the zmq socket
@@ -419,7 +417,7 @@ module ServerDaemon {
 
                 this.reqCount += 1;
 
-                var s0 = t1.elapsed();
+                var s0 = getCurrentTime();
         
                 /*
                  * Separate the first tuple, which is a string binary containing the JSON binary
@@ -503,7 +501,7 @@ module ServerDaemon {
                     if (trace) {
                         sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                         "<<< shutdown initiated by %s took %.17r sec".format(user, 
-                                                t1.elapsed() - s0));
+                                                getCurrentTime() - s0));
                     }
                 }
 
@@ -579,7 +577,7 @@ module ServerDaemon {
                  */
                 if trace {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
+                                              "<<< %s took %.17r sec".format(cmd, getCurrentTime() - s0));
                 }
                 if (trace && memTrack) {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
@@ -595,7 +593,7 @@ module ServerDaemon {
                                                         user=user));
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
+                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, getCurrentTime() - s0));
                 }
             } catch (e: Error) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
@@ -610,19 +608,19 @@ module ServerDaemon {
                 if trace {
                     sdLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),
-                                                                                 t1.elapsed() - s0));
+                                                                                 getCurrentTime() - s0));
                 }
             }
         }
 
-        t1.stop();
+        var elapsed = getCurrentTime() - startTime;
 
         deleteServerConnectionInfo();
 
         sdLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
             "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,
                                                                        repCount,
-                                                                       t1.elapsed()));
+                                                                       elapsed));
         this.shutdown(); 
         }
     }
