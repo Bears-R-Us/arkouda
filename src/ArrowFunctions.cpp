@@ -366,6 +366,130 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
   }
 }
 
+// configure the schema for a multicolumn file
+std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void* datatypes, int64_t colnum) {
+  parquet::schema::NodeVector fields;
+  auto cname_ptr = (char**)column_names;
+  auto dtypes_ptr = (int64_t*) datatypes;
+  for (int64_t i = 0; i < colnum; i++){
+    if(dtypes_ptr[i] == ARROWINT64)
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::NONE));
+    else if(dtypes_ptr[i] == ARROWUINT64)
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::UINT_64));
+    else if(dtypes_ptr[i] == ARROWBOOLEAN)
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
+    else if(dtypes_ptr[i] == ARROWDOUBLE)
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+    else if(dtypes_ptr[i] == ARROWSTRING)
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
+  }
+  return std::static_pointer_cast<parquet::schema::GroupNode>(
+      parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
+}
+
+int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
+                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                bool compressed, char** errMsg) {
+  try {
+    // initialize the file to write to
+    using FileClass = ::arrow::io::FileOutputStream;
+    std::shared_ptr<FileClass> out_file;
+    ARROWRESULT_OK(FileClass::Open(filename), out_file);
+
+    // Setup the parquet schema
+    std::shared_ptr<parquet::schema::GroupNode> schema = SetupSchema(column_names, datatypes, colnum);
+
+    parquet::WriterProperties::Builder builder;
+    if(compressed) {
+      builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    }
+    std::shared_ptr<parquet::WriterProperties> props = builder.build();
+
+    std::shared_ptr<parquet::ParquetFileWriter> file_writer =
+      parquet::ParquetFileWriter::Open(out_file, schema, props);
+
+    auto dtypes_ptr = (int64_t*) datatypes;
+    int64_t numLeft = numelems; // number of elements remaining to write (rows)
+    int64_t x = 0;  // index to start writing batch from
+    while (numLeft > 0) {
+      // Append a RowGroup with a specific number of rows.
+      parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+      int64_t batchSize = rowGroupSize;
+      if(numLeft < rowGroupSize)
+        batchSize = numLeft;
+
+      // loop the columns and write the row groups
+      for(int64_t i = 0; i < colnum; i++){
+        int64_t dtype = dtypes_ptr[i];
+        if (dtype == ARROWINT64 || dtype == ARROWUINT64) {
+          auto data_ptr = (int64_t*)ptr_arr[i];
+          parquet::Int64Writer* int64_writer =
+              static_cast<parquet::Int64Writer*>(rg_writer->NextColumn());
+          int64_writer->WriteBatch(batchSize, nullptr, nullptr, &data_ptr[x]);
+        } else if(dtype == ARROWBOOLEAN) {
+          auto data_ptr = (bool*)ptr_arr[i];
+          parquet::BoolWriter* bool_writer =
+            static_cast<parquet::BoolWriter*>(rg_writer->NextColumn());
+          bool_writer->WriteBatch(batchSize, nullptr, nullptr, &data_ptr[x]);
+        } else if(dtype == ARROWDOUBLE) {
+          auto data_ptr = (double*)ptr_arr[i];
+          parquet::DoubleWriter* dbl_writer =
+            static_cast<parquet::DoubleWriter*>(rg_writer->NextColumn());
+          dbl_writer->WriteBatch(batchSize, nullptr, nullptr, &data_ptr[x]);
+        } else if(dtype == ARROWSTRING) {
+          auto data_ptr = (uint8_t*)ptr_arr[i];
+          auto offsets = (int64_t*)offset_ptrs[i];
+          parquet::ByteArrayWriter* ba_writer =
+          static_cast<parquet::ByteArrayWriter*>(rg_writer->NextColumn());
+          int64_t count = 0;
+          int64_t offIdx = x;
+          int64_t byteIdx = offsets[offIdx];
+
+          // DEBUGGING PRINT OF offsets
+          int64_t tmp_numLeft = numLeft;
+          while(tmp_numLeft > 0 && count < batchSize) {
+            parquet::ByteArray value;
+            int16_t definition_level = 1;
+            value.ptr = reinterpret_cast<const uint8_t*>(&data_ptr[byteIdx]);
+            // comput the next index
+            int64_t nextIdx;
+            if (offIdx == numelems - 1) {
+              // compute the length of data 
+              nextIdx = offsets[offIdx];
+              while(data_ptr[nextIdx] != 0x00){
+                nextIdx++;
+              }
+            }
+            else {
+              nextIdx = offsets[offIdx+1];
+            }
+            // subtract 1 since we have the null terminator
+            value.len = nextIdx - offsets[offIdx];
+            ba_writer->WriteBatch(1, &definition_level, nullptr, &value);
+            tmp_numLeft--;count++;
+            offIdx++;
+            byteIdx+=offsets[offIdx] - offsets[offIdx-1];
+          }
+        } else {
+          return ARROWERROR;
+        }
+      }
+      numLeft -= batchSize;
+      x += batchSize;
+    }
+
+    file_writer->Close();
+    ARROWSTATUS_OK(out_file->Close());
+    
+    return 0;
+   } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
                              int64_t rowGroupSize, int64_t dtype, bool compressed,
@@ -782,5 +906,12 @@ extern "C" {
 
   void c_free_string(void* ptr) {
     cpp_free_string(ptr);
+  }
+
+  int c_writeMultiColToParquet(const char* filename, void* column_names, 
+                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                bool compressed, char** errMsg){
+    return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, offset_ptrs, datatypes, colnum, numelems, rowGroupSize, compressed, errMsg);
   }
 }

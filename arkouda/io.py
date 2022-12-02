@@ -862,15 +862,32 @@ def to_parquet(
     >>> # Save using names instead of mapping
     >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
     """
-    if mode.lower() not in ["append", "truncate"]:
-        raise ValueError("Allowed modes are 'truncate' and 'append'")
-
-    datasetNames, pdarrays = _bulk_write_prep(columns, names)
-
-    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
-        if mode.lower() == "truncate":
-            mode = "append"
+    # if mode.lower() not in ["append", "truncate"]:
+    #     raise ValueError("Allowed modes are 'truncate' and 'append'")
+    #
+    # datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    #
+    # for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    #     arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
+    #     if mode.lower() == "truncate":
+    #         mode = "append"
+    print(list(columns.values()))
+    print(list(columns.keys()))
+    print(len(columns.values()))
+    repmsg = cast(
+        str,
+        generic_msg(
+            cmd="toParquet_multi",
+            args={
+                "columns": list(columns.values()),
+                "col_names": list(columns.keys()),
+                "filename": prefix_path,
+                "num_cols": len(columns.values()),
+                "compressed": compressed,
+            },
+        ),
+    )
+    print(repmsg)
 
 
 def to_hdf(

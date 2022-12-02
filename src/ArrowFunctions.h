@@ -3,9 +3,13 @@
 
 // Wrap functions in C extern if compiling C++ object file
 #ifdef __cplusplus
+#include <cassert>
+#include <fstream>
 #include <iostream>
+#include <memory>
 #include <arrow/api.h>
 #include <arrow/io/api.h>
+#include <arrow/table.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/column_reader.h>
@@ -79,6 +83,16 @@ extern "C" {
                                 const char* dsetname, int64_t numelems,
                                 int64_t dtype, bool compressed,
                                 char** errMsg);
+  
+  int c_writeMultiColToParquet(const char* filename, void* column_names, 
+                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                bool compressed, char** errMsg);
+
+  int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
+                                  void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                  int64_t colnum, int64_t numelems, int64_t rowGroupSize,
+                                  bool compressed, char** errMsg);
     
   const char* c_getVersionInfo(void);
   const char* cpp_getVersionInfo(void);
