@@ -101,8 +101,8 @@ class Index:
             return MultiIndex(index)
 
     def to_pandas(self):
-        val = convert_if_categorical(self.values)
-        return pd.Index(data=val.to_ndarray(), dtype=self.dtype, name=self.name)
+        val = convert_if_categorical(self.values).to_ndarray()
+        return pd.Index(data=val, dtype=val.dtype, name=self.name)
 
     def to_ndarray(self):
         val = convert_if_categorical(self.values)

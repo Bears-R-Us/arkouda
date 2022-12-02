@@ -387,6 +387,11 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(c.index.to_list(), ["Bob", "Alice", "Carol"])
         self.assertListEqual(c.values.to_list(), [2, 3, 1])
 
+        # testing counts with IPv4 column
+        s = ak.DataFrame({'a': ak.IPv4(ak.array([1, 2, 3, 4]))}).groupby('a').count()
+        pds = pd.Series(data=np.array([1, 1, 1, 1]), index=pd.Index(data=np.array(['0.0.0.1', '0.0.0.2', '0.0.0.3', '0.0.0.4'], dtype="<U7")))
+        self.assertTrue(s.to_pandas().equals(other=pds))
+
     def test_to_pandas(self):
         df = build_ak_df()
         pd_df = build_pd_df()
