@@ -396,7 +396,7 @@ class Strings:
                 },
             )
             return Strings.from_return_msg(rep_msg)
-            
+
         rep_msg = generic_msg(
             cmd="encode",
             args={
