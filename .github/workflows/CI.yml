@@ -7,7 +7,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Check for tabs
@@ -15,7 +15,7 @@ jobs:
         ! git --no-pager grep -n $'\t' -- '*.chpl'
         
   mypy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: chapel/chapel:1.28.0
     steps:
@@ -30,7 +30,7 @@ jobs:
         python3 -m mypy arkouda
 
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: chapel/chapel:1.28.0
     steps:
@@ -45,7 +45,7 @@ jobs:
         make doc
 
   flake8:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: chapel/chapel:1.28.0
     steps:
@@ -60,16 +60,16 @@ jobs:
           flake8 arkouda          
 
   arkouda_python_portability:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
     container:
       image: chapel/chapel:1.28.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{matrix.python-version}}
     - name: Install dependencies
@@ -92,7 +92,7 @@ jobs:
         make test-python
 
   arkouda_chpl_portability:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         chpl-version: ['1.27.0', '1.28.0']
@@ -120,7 +120,7 @@ jobs:
         make test-python
 
   arkouda_tests_linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         include:
