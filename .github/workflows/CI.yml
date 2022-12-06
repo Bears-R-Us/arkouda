@@ -9,7 +9,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Check for tabs
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
@@ -19,7 +19,7 @@ jobs:
     container:
       image: chapel/chapel:1.28.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
@@ -34,7 +34,7 @@ jobs:
     container:
       image: chapel/chapel:1.28.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
@@ -49,7 +49,7 @@ jobs:
     container:
       image: chapel/chapel:1.28.0
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Dependencies
         run: |
           apt-get update && apt-get install -y python3-pip libhdf5-dev hdf5-tools libzmq3-dev libcurl4-openssl-dev
@@ -60,16 +60,16 @@ jobs:
           flake8 arkouda          
 
   arkouda_python_portability:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
     container:
       image: chapel/chapel:1.28.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{matrix.python-version}}
     - name: Install dependencies
@@ -99,7 +99,7 @@ jobs:
     container:
       image: chapel/chapel:${{matrix.chpl-version}}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
@@ -133,7 +133,7 @@ jobs:
     container:
       image: chapel/${{matrix.image}}:1.28.0
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y -V ca-certificates lsb-release wget
