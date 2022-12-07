@@ -20,15 +20,11 @@ module FileIO {
     enum FileType {HDF5, ARROW, PARQUET, UNKNOWN};
 
     proc appendFile(filePath : string, line : string) throws {
-        var writer : channel;
+        var writer;
         if exists(filePath) {
-            use Version;
+            use ArkoudaFileCompat;
             var aFile = open(filePath, iomode.rw);
-            if chplVersion >= createVersion(1,28) {
-              writer = aFile.writer(region=aFile.size..);
-            } else {
-              writer = aFile.writer(start=aFile.size);
-            }
+            writer = aFile.appendWriter();
         } else {
             var aFile = open(filePath, iomode.cwr);
             writer = aFile.writer();
@@ -40,9 +36,8 @@ module FileIO {
     }
 
     proc writeToFile(filePath : string, line : string) throws {
-        var writer : channel;
         var aFile = open(filePath, iomode.cwr);
-        writer = aFile.writer();
+        var writer = aFile.writer();
 
         writer.writeln(line);
         writer.flush();
@@ -50,9 +45,8 @@ module FileIO {
     }
     
     proc writeLinesToFile(filePath : string, lines : string) throws {
-        var writer : channel;
         var aFile = open(filePath, iomode.cwr);
-        writer = aFile.writer();
+        var writer = aFile.writer();
 
         for line in lines {
             writer.writeln(line);
@@ -82,7 +76,7 @@ module FileIO {
     
     proc getLineFromFile(path: string, match: string) throws {
         var aFile = open(path, iomode.r);
-        var reader: channel = aFile.reader();
+        var reader = aFile.reader();
         var returnLine: string;
 
         for line in reader.lines() {

@@ -11,7 +11,7 @@ module SegmentedString {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time only Timer, getCurrentTime;
+  use Time only getCurrentTime;
   use Reflection;
   use Logging;
   use ServerErrors;
@@ -340,26 +340,24 @@ module SegmentedString {
        this permutation will not sort the strings, but all equivalent strings
        will fall in one contiguous block. */
     proc argGroup() throws {
-      var t = new Timer();
       if useHash {
         // Hash all strings
         ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
-        if logLevel == LogLevel.DEBUG { t.start(); }
+        var t1: real;
+        if logLevel == LogLevel.DEBUG { t1 = getCurrentTime(); }
         var hashes = this.siphash();
 
         if logLevel == LogLevel.DEBUG { 
-            t.stop();    
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "hashing took %t seconds\nSorting hashes".format(t.elapsed())); 
-            t.clear(); t.start(); 
+                           "hashing took %t seconds\nSorting hashes".format(getCurrentTime() - t1));
+            t1 = getCurrentTime();
         }
 
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
         if logLevel == LogLevel.DEBUG { 
-            t.stop(); 
             ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "sorting took %t seconds".format(t.elapsed())); 
+                                            "sorting took %t seconds".format(getCurrentTime() - t1));
         }
         if logLevel == LogLevel.DEBUG {
           var sortedHashes = [i in iv] hashes[i];

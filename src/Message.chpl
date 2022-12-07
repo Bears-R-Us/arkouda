@@ -421,7 +421,7 @@ module Message {
      * Converts the JSON array to a pdarray
      */
     proc jsonToPdArray(json: string, size: int) throws {
-        var f = opentmp(); defer { ensureClose(f); }
+        var f = openmem(); defer { ensureClose(f); }
         var w = f.writer();
         w.write(json);
         w.close();

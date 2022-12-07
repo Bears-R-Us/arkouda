@@ -11,6 +11,7 @@ module RegistrationMsg
     use List;
     use Map;
     use Set;
+    use Sort;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -241,7 +242,7 @@ module RegistrationMsg
         // if Series matches MultiIndex format
         if st.contains("%s_key_0".format(name)) {
             var nameList = st.findAll("%s_key_\\d".format(name));
-            nameList = nameList.sorted();  // Sort the list to return the indexes in order from 0 to N
+            sort(nameList);
             for regName in nameList {
                 var entry = st.attrib(regName);
                 if (regName.startsWith("Error:")) { 
