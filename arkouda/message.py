@@ -123,10 +123,16 @@ class ParameterObject:
 
         # want the object type. If pdarray the content dtypes can vary
         dtypes = {type(p).__name__ for p in val}
-        if len(dtypes) > 1:
-            t_str = ", ".join(dtypes)
-            raise TypeError(f"List values must be of the same type. Found {t_str}")
-        t = dtypes.pop()
+        if len(dtypes) == 1:
+            t = dtypes.pop()
+        else:
+            for t in dtypes:
+                if t not in [pdarray.__name__, Strings.__name__]:
+                    t_str = ", ".join(dtypes)
+                    raise TypeError(f"Lists of multiple types can only "
+                                    f"contain strings and pdarray. Found {t_str}")
+            # using pdarray for now. May change in future. This does not impact functionality
+            t = pdarray.__name__
         if any(x == t for x in [pdarray.__name__, Strings.__name__]):
             return ParameterObject(key, ObjectType.LIST, t, json.dumps([x.name for x in val]))
         else:
