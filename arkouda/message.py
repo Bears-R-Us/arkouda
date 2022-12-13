@@ -130,7 +130,7 @@ class ParameterObject:
                 if t not in [pdarray.__name__, Strings.__name__]:
                     t_str = ", ".join(dtypes)
                     raise TypeError(f"Lists of multiple types can only "
-                                    f"conatin strings and pdarray. Found {t_str}")
+                                    f"contain strings and pdarray. Found {t_str}")
             # using pdarray for now. May change in future. This does not impact functionality
             t = pdarray.__name__
         if any(x == t for x in [pdarray.__name__, Strings.__name__]):
