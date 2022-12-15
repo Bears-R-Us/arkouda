@@ -14,6 +14,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/column_reader.h>
 #include <parquet/api/writer.h>
+#include <queue>
 extern "C" {
 #endif
 
@@ -85,12 +86,12 @@ extern "C" {
                                 char** errMsg);
   
   int c_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                void** ptr_arr, void* datatypes,
                                 int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                 bool compressed, char** errMsg);
 
   int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
-                                  void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                  void** ptr_arr, void* datatypes,
                                   int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                   bool compressed, char** errMsg);
     

@@ -1,7 +1,6 @@
 import glob
 import json
 import os
-import warnings
 from typing import Dict, List, Mapping, Optional, Union, cast
 from warnings import warn
 
@@ -334,7 +333,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
     file_errors = rep_msg["file_errors"] if "file_errors" in rep_msg else []
     if allow_errors and file_errors:
         file_error_count = rep_msg["file_error_count"] if "file_error_count" in rep_msg else -1
-        warnings.warn(
+        warn(
             f"There were {file_error_count} errors reading files on the server. "
             + f"Sample error messages {file_errors}",
             RuntimeWarning,
@@ -822,10 +821,8 @@ def to_parquet(
     mode : {'truncate' | 'append'}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
-    file_type : str ("single" | "distribute")
-            Default: distribute
-            Single writes the dataset to a single file
-            Distribute writes the dataset to a file per locale
+        'append' is deprecated, please use the multi-column write
+
 
     Returns
     -------
@@ -862,32 +859,32 @@ def to_parquet(
     >>> # Save using names instead of mapping
     >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
     """
-    # if mode.lower() not in ["append", "truncate"]:
-    #     raise ValueError("Allowed modes are 'truncate' and 'append'")
-    #
-    # datasetNames, pdarrays = _bulk_write_prep(columns, names)
-    #
-    # for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-    #     arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
-    #     if mode.lower() == "truncate":
-    #         mode = "append"
-    print(list(columns.values()))
-    print(list(columns.keys()))
-    print(len(columns.values()))
-    repmsg = cast(
-        str,
+    if mode.lower() not in ["append", "truncate"]:
+        raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+    if mode.lower() == "append":
+        warn(
+            "Append has been deprecated when writing Parquet files. "
+            "Please write all columns to the file at once.",
+            DeprecationWarning,
+        )
+
+    datasetNames, pdarrays = _bulk_write_prep(columns, names)
+    # append or single column use the old logic
+    if mode.lower() == "append" or len(pdarrays) == 1:
+        for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+            arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
+    else:
         generic_msg(
             cmd="toParquet_multi",
             args={
-                "columns": list(columns.values()),
-                "col_names": list(columns.keys()),
+                "columns": pdarrays,
+                "col_names": datasetNames,
                 "filename": prefix_path,
                 "num_cols": len(columns.values()),
                 "compressed": compressed,
             },
         ),
-    )
-    print(repmsg)
 
 
 def to_hdf(
@@ -1251,7 +1248,7 @@ def read(
     elif file_format == "parquet":
         cmd = "readAllParquet"
     else:
-        warnings.warn(f"Unrecognized file format string: {file_format}. Inferring file type")
+        warn(f"Unrecognized file format string: {file_format}. Inferring file type")
         cmd = "readany"
     if iterative:  # iterative calls to server readhdf
         return {
@@ -1283,7 +1280,7 @@ def read(
         file_errors = rep["file_errors"] if "file_errors" in rep else []
         if allow_errors and file_errors:
             file_error_count = rep["file_error_count"] if "file_error_count" in rep else -1
-            warnings.warn(
+            warn(
                 f"There were {file_error_count} errors reading files on the server. "
                 + f"Sample error messages {file_errors}",
                 RuntimeWarning,

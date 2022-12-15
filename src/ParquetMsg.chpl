@@ -774,7 +774,7 @@ module ParquetMsg {
                               ncols: int, sym_names: [] string, targetLocales: [] locale, 
                               compressed: bool, st: borrowed SymTab) throws {
 
-    extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr, offset_ptrs,
+    extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr,
                                       datatypes, colnum, numelems, rowGroupSize, compressed, errMsg): int;
 
     var prefix: string;
@@ -795,14 +795,36 @@ module ParquetMsg {
       const fname = filenames[idx];
 
       var ptrList: [0..#ncols] c_void_ptr;
-      var offsetPtrs: [0..#ncols] c_void_ptr;
       var datatypes: [0..#ncols] int;
       var sizeList: [0..#ncols] int;
 
       var my_column_names = col_names;
       var c_names: [0..#ncols] c_string;
 
-      forall (i, column) in zip(0..#ncols, sym_names) {
+      var locSize: int = 0;
+      var sections_sizes: [0..#ncols] int; // only fill in sizes for str columns
+      forall (i, column) in zip(0..#ncols, sym_names) with (+ reduce locSize) {
+        var entry = st.lookup(column);
+        // need to calculate the total size of Strings on this local
+        if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+          var e: SegStringSymEntry = toSegStringSymEntry(entry);
+          var segStr = new SegString("", e);
+          ref ss = segStr;
+          var lens = ss.getLengths();
+          const locDom = ss.offsets.a.localSubdomain();
+          var x: int;
+          for i in locDom do x += lens[i];
+          sections_sizes[i] = x;
+          locSize += x;
+        }
+      }
+
+      writeln("\n\nSection Sizes: %jt".format(sections_sizes));
+      writeln("Reduced: %jt\n\n".format((+ scan sections_sizes) - sections_sizes));
+
+      var str_vals: [0..#locSize] uint(8);
+      var str_idx = (+ scan sections_sizes) - sections_sizes;
+      forall (i, column, si) in zip(0..#ncols, sym_names, str_idx) {
         // generate the local c string list of column names
         c_names[i] = my_column_names[i].localize().c_str();
 
@@ -868,11 +890,11 @@ module ParquetMsg {
             var startValIdx = localOffsets[locDom.low];
             var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
             var valIdxRange = startValIdx..endValIdx;
-            var localVals = new lowLevelLocalizingSlice(ss.values.a, valIdxRange);
-            offsetPtrs[i] = c_ptrTo(ss.offsets.a[locDom]): c_void_ptr;
-            ptrList[i] = localVals.ptr: c_void_ptr;
+            ref olda = ss.values.a;
+            str_vals[si..#valIdxRange.size] = olda[valIdxRange];
+            ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
             datatypes[i] = ARROWSTRING;
-            sizeList[i] = locDom.size; // TODO - may need a plus 1 here
+            sizeList[i] = locDom.size;
           } otherwise {
             throw getErrorWithContext(
                               msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
@@ -896,7 +918,7 @@ module ParquetMsg {
               errorClass='ValueError'
         );
       }
-      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(offsetPtrs), c_ptrTo(datatypes), ncols, numelems, ROWGROUPS, compressed, c_ptrTo(pqErr.errMsg));
+      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(datatypes), ncols, numelems, ROWGROUPS, compressed, c_ptrTo(pqErr.errMsg));
     }
     
   }
@@ -948,7 +970,10 @@ module ParquetMsg {
       } when DType.Float64 {
         var e = toSymEntry(toGenSymEntry(entry), real);
         targetLocales = e.a.targetLocales();
-      // } when DType.Strings {
+      } when DType.Strings {
+        var e: SegStringSymEntry = toSegStringSymEntry(entry);
+        var segStr = new SegString("", e);
+        targetLocales = segStr.offsets.a.targetLocales();
       } otherwise {
         throw getErrorWithContext(
                           msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),

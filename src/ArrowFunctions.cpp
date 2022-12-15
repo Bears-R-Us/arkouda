@@ -388,7 +388,7 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
 }
 
 int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                void** ptr_arr, void* datatypes,
                                 int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                 bool compressed, char** errMsg) {
   try {
@@ -409,6 +409,8 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
 
     std::shared_ptr<parquet::ParquetFileWriter> file_writer =
       parquet::ParquetFileWriter::Open(out_file, schema, props);
+
+    std::queue<int64_t> idxQueue; // queue used to track string byteIdx 
 
     auto dtypes_ptr = (int64_t*) datatypes;
     int64_t numLeft = numelems; // number of elements remaining to write (rows)
@@ -440,37 +442,33 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
           dbl_writer->WriteBatch(batchSize, nullptr, nullptr, &data_ptr[x]);
         } else if(dtype == ARROWSTRING) {
           auto data_ptr = (uint8_t*)ptr_arr[i];
-          auto offsets = (int64_t*)offset_ptrs[i];
           parquet::ByteArrayWriter* ba_writer =
           static_cast<parquet::ByteArrayWriter*>(rg_writer->NextColumn());
           int64_t count = 0;
-          int64_t offIdx = x;
-          int64_t byteIdx = offsets[offIdx];
+          int64_t byteIdx = 0;
 
-          // DEBUGGING PRINT OF offsets
-          int64_t tmp_numLeft = numLeft;
-          while(tmp_numLeft > 0 && count < batchSize) {
+          // identify the starting byte index
+          if (x > 0){
+            byteIdx = idxQueue.front();
+            idxQueue.pop();
+          }
+          
+          while(count < batchSize) {
             parquet::ByteArray value;
             int16_t definition_level = 1;
             value.ptr = reinterpret_cast<const uint8_t*>(&data_ptr[byteIdx]);
-            // comput the next index
-            int64_t nextIdx;
-            if (offIdx == numelems - 1) {
-              // compute the length of data 
-              nextIdx = offsets[offIdx];
-              while(data_ptr[nextIdx] != 0x00){
-                nextIdx++;
-              }
-            }
-            else {
-              nextIdx = offsets[offIdx+1];
+            int64_t nextIdx = byteIdx;
+            while (data_ptr[nextIdx] != 0x00){
+              nextIdx++;
             }
             // subtract 1 since we have the null terminator
-            value.len = nextIdx - offsets[offIdx];
+            value.len = nextIdx - byteIdx;
             ba_writer->WriteBatch(1, &definition_level, nullptr, &value);
-            tmp_numLeft--;count++;
-            offIdx++;
-            byteIdx+=offsets[offIdx] - offsets[offIdx-1];
+            count++;
+            byteIdx = nextIdx + 1;
+          }
+          if (numLeft - count > 0) {
+            idxQueue.push(byteIdx);
           }
         } else {
           return ARROWERROR;
@@ -909,9 +907,9 @@ extern "C" {
   }
 
   int c_writeMultiColToParquet(const char* filename, void* column_names, 
-                                void** ptr_arr, void** offset_ptrs, void* datatypes,
+                                void** ptr_arr, void* datatypes,
                                 int64_t colnum, int64_t numelems, int64_t rowGroupSize,
                                 bool compressed, char** errMsg){
-    return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, offset_ptrs, datatypes, colnum, numelems, rowGroupSize, compressed, errMsg);
+    return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, datatypes, colnum, numelems, rowGroupSize, compressed, errMsg);
   }
 }
