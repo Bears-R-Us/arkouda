@@ -193,14 +193,14 @@ $(ARROW_O): $(ARROW_CPP) $(ARROW_H)
 
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
 CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 27 && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 27 && echo yes)
+CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 28 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.27.0 or newer is required)
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.28.0 or newer is recommended)
+	$(warning Chapel 1.29.0 or newer is recommended)
 endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
