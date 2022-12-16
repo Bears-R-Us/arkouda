@@ -772,7 +772,7 @@ module ParquetMsg {
 
   proc writeMultiColParquet(filename: string, col_names: [] string, 
                               ncols: int, sym_names: [] string, targetLocales: [] locale, 
-                              compressed: bool, st: borrowed SymTab) throws {
+                              compressed: bool, st: borrowed SymTab): bool throws {
 
     extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr,
                                       datatypes, colnum, numelems, rowGroupSize, compressed, errMsg): int;
@@ -818,9 +818,6 @@ module ParquetMsg {
           locSize += x;
         }
       }
-
-      writeln("\n\nSection Sizes: %jt".format(sections_sizes));
-      writeln("Reduced: %jt\n\n".format((+ scan sections_sizes) - sections_sizes));
 
       var str_vals: [0..#locSize] uint(8);
       var str_idx = (+ scan sections_sizes) - sections_sizes;
@@ -911,16 +908,16 @@ module ParquetMsg {
       var numelems: int = sizeList[0];
       if !(|| reduce (sizeList==numelems)) {
         throw getErrorWithContext(
-              msg="Columns must be the same size",
+              msg="Parquet columns must be the same size",
               lineNumber=getLineNumber(), 
               routineName=getRoutineName(), 
               moduleName=getModuleName(), 
-              errorClass='ValueError'
+              errorClass='WriteModeError'
         );
       }
       var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(datatypes), ncols, numelems, ROWGROUPS, compressed, c_ptrTo(pqErr.errMsg));
     }
-    
+    return filesExist;
   }
 
   proc toParquetMultiColMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -985,9 +982,31 @@ module ParquetMsg {
       }
     }
 
-    writeMultiColParquet(filename, col_names, ncols, sym_names, targetLocales, compressed, st);
+    var warnFlag: bool;
+    try {
+      warnFlag = writeMultiColParquet(filename, col_names, ncols, sym_names, targetLocales, compressed, st);
+    } catch e: FileNotFoundError {
+      var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    } catch e: WriteModeError {
+      var errorMsg = "Write mode error %s".format(e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    } catch e: Error {
+      var errorMsg = "problem writing to file %s".format(e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
 
-    return new MsgTuple("IN TESTING", MsgType.NORMAL);
+    if warnFlag {
+      var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+      return new MsgTuple(warnMsg, MsgType.WARNING);
+    } else {
+      var repMsg = "wrote array to file";
+      pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
   }
 
   proc lspqMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {

@@ -875,16 +875,19 @@ def to_parquet(
         for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
     else:
-        generic_msg(
-            cmd="toParquet_multi",
-            args={
-                "columns": pdarrays,
-                "col_names": datasetNames,
-                "filename": prefix_path,
-                "num_cols": len(columns.values()),
-                "compressed": compressed,
-            },
-        ),
+        print(cast(
+            str,
+            generic_msg(
+                cmd="toParquet_multi",
+                args={
+                    "columns": pdarrays,
+                    "col_names": datasetNames,
+                    "filename": prefix_path,
+                    "num_cols": len(columns.values()),
+                    "compressed": compressed,
+                },
+            )
+        ))
 
 
 def to_hdf(
