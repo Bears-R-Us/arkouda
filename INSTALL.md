@@ -49,9 +49,9 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-12-dev llvm-12 llvm-12-tools clang-12 libclang-12-dev libclang-cpp12-dev libedit-dev
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.28.0/chapel-1.28.0.tar.gz
-tar xvf chapel-1.28.0.tar.gz
-cd chapel-1.28.0/
+wget https://github.com/chapel-lang/chapel/releases/download/1.29.0/chapel-1.29.0.tar.gz
+tar xvf chapel-1.29.0.tar.gz
+cd chapel-1.29.0/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
@@ -156,7 +156,7 @@ for installing Chapel & Arkouda.  We also recommend installing Anaconda for wind
 
 <b>Note:</b> When running `make` to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.
 
-An example of one of these errors found while using Chapel 1.28.0 and Ubuntu 20.04 LTS with WSL is:
+An example of one of these errors found while using Chapel 1.29.0 and Ubuntu 20.04 LTS with WSL is:
 ```
 ../../../bin/llvm-tblgen: error while loading shared libraries: libtinfow.so.6: cannot open shared object file: No such file or directory
 ````
@@ -201,11 +201,11 @@ For convenience, the steps to install Chapel from source are detailed here. If y
 
 2) Unpack the release
 ```bash
-tar xzf chapel-1.28.0.tar.gz
+tar xzf chapel-1.29.0.tar.gz
 ```
 3) Access the directory created when the release was unpacked
 ```bash
-cd chapel-1.28.0
+cd chapel-1.29.0
 ```
 4) Configure environment variables. *Please Note: This command assumes the use of `bash` or `zsh`. Please refer to the [Chapel Documentation](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells) if you are using another shell.*
 ```bash
