@@ -340,8 +340,6 @@ module MsgProcessing
                 repMsg = "set %s to %t".format(name, val);
             }
             when (DType.UInt64, DType.UInt64) {
-                // TODO create a .getBigIntValue()
-                // for now we treat this as a uint
                 var e = toSymEntry(gEnt,uint);
                 var val: uint = value.getUIntValue();
                 e.a = val;
@@ -349,8 +347,8 @@ module MsgProcessing
             }
             when (DType.BigInt, DType.BigInt) {
                 var e = toSymEntry(gEnt,bigint);
-                var val: uint = value.getUIntValue();
-                e.a = val:bigint;
+                var val: bigint = value.getBigIntValue();
+                e.a = val;
                 repMsg = "set %s to %t".format(name, val);
             }
             when (DType.BigInt, DType.UInt64) {
@@ -369,6 +367,7 @@ module MsgProcessing
                 var e = toSymEntry(gEnt,bigint);
                 var val: bool = value.getBoolValue();
                 // can't cast from a bool to a bigint, so first cast to int
+                // TODO update once that functionality is available
                 e.a = val:int:bigint;
                 repMsg = "set %s to %t".format(name, val);
             }

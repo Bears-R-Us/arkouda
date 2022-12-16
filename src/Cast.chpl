@@ -37,7 +37,15 @@ module Cast {
     var tmp = makeDistArray(before.size, bigint);
     try {
       // TODO change once we can cast directly from bool to bigint
-      tmp = if fromType != bool then before.a: bigint else before.a:int:bigint;
+      if fromType == bigint {
+        tmp = before.a;
+      }
+      else if fromType == bool {
+        tmp = before.a:int:bigint;
+      }
+      else {
+        tmp = before.a:bigint;
+      }
     } catch e: IllegalArgumentError {
       var errorMsg = "bad value in cast from %s to bigint".format(fromType:string);
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

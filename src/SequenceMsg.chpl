@@ -65,6 +65,7 @@ module SequenceMsg {
         var stride = msgArgs.get("stride").getBigIntValue();
         // compute length
         var len = (stop - start + stride - 1) / stride;
+        // TODO figure out a way to do memory checking for bigint
         // overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();

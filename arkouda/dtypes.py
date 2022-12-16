@@ -46,6 +46,8 @@ NUMBER_FORMAT_STRINGS = {
 
 
 def dtype(x):
+    # we had to create our own bigint type since numpy
+    # gives them dtype=object there's no np equivalent
     if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
         return bigint
     else:
