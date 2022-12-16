@@ -203,7 +203,9 @@ module MultiTypeSymEntry
         var a = makeDistArray(size, etype);
         /* Removed domain accessor, use `a.domain` instead */
         proc aD { compilerError("SymEntry.aD has been removed, use SymEntry.a.domain instead"); }
-        
+        /* only used with bigint pdarrays */
+        var max_bits = -1;
+
         /*
         This init takes length and element type
 
@@ -228,13 +230,14 @@ module MultiTypeSymEntry
         :arg a: array
         :type a: [] ?etype
         */
-        proc init(in a: [?D] ?etype) {
+        proc init(in a: [?D] ?etype, max_bits=-1) {
             super.init(etype, D.size);
             this.entryType = SymbolEntryType.PrimitiveTypedArraySymEntry;
             assignableTypes.add(this.entryType);
 
             this.etype = etype;
             this.a = a;
+            this.max_bits=max_bits;
         }
 
         /*

@@ -6,6 +6,7 @@ module Message {
     use NumPyDType;
     use Map;
     use List;
+    use BigInteger;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}
@@ -190,6 +191,19 @@ module Message {
             }
             catch {
                 throw new owned ErrorWithContext("Parameter cannot be cast as bool. Attempting to cast %s as type bool failed".format(this.val),
+                                    getLineNumber(),
+                                    getRoutineName(),
+                                    getModuleName(),
+                                    "TypeError");
+            }
+        }
+
+        proc getBigIntValue(): bigint throws {
+            try {
+                return this.val:bigint;
+            }
+            catch {
+                throw new owned ErrorWithContext("Parameter cannot be cast as bigint. Attempting to cast %s as type bigint failed".format(this.val),
                                     getLineNumber(),
                                     getRoutineName(),
                                     getModuleName(),

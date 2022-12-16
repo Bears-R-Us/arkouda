@@ -7,6 +7,7 @@ module Cast {
   use Logging;
   use CommAggregation;
   use ServerConfig;
+  use BigInteger;
   
   private config const logLevel = ServerConfig.logLevel;
   const castLogger = new Logger(logLevel);
@@ -24,6 +25,25 @@ module Cast {
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
       return "Error: %s".format(errorMsg);
     }
+
+    var returnMsg = "created " + st.attrib(name);
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+    return returnMsg;
+  }
+
+  proc castGenSymEntryToBigInt(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string throws {
+    const before = toSymEntry(gse, fromType);
+    const name = st.nextName();
+    var tmp = makeDistArray(before.size, bigint);
+    try {
+      // TODO change once we can cast directly from bool to bigint
+      tmp = if fromType != bool then before.a: bigint else before.a:int:bigint;
+    } catch e: IllegalArgumentError {
+      var errorMsg = "bad value in cast from %s to bigint".format(fromType:string);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return "Error: %s".format(errorMsg);
+    }
+    var after = st.addEntry(name, new shared SymEntry(tmp));
 
     var returnMsg = "created " + st.attrib(name);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
@@ -144,6 +164,39 @@ module Cast {
           forall (n, v, vf) in zip(entry.a, valid.a, valWithFlag) {
             (n, v) = vf;
           }
+          returnMsg += "+created " + st.attrib(vname);
+        }
+      }
+      castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+      return returnMsg;
+  }
+
+    proc castStringToBigInt(s: SegString, st: borrowed SymTab, errors: ErrorMode): string throws {
+      use SegmentedComputation;
+      ref oa = s.offsets.a;
+      ref va = s.values.a;
+      var returnMsg = "";
+      const name = st.nextName();
+      // do something like segmented computation w/o the aggregation
+      select errors {
+        when ErrorMode.strict {
+          var entry = st.addEntry(name, new shared SymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericStrict, bigint)));
+          returnMsg = "created " + st.attrib(name);
+        }
+        when ErrorMode.ignore {
+          var entry = st.addEntry(name, new shared SymEntry(computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericIgnore, bigint)));
+          returnMsg = "created " + st.attrib(name);
+        }
+        when ErrorMode.return_validity {
+          var valWithFlag = computeOnSegmentsWithoutAggregation(oa, va, SegFunction.StringToNumericReturnValidity, (bigint, bool));
+          const vname = st.nextName();
+          var valid = st.addEntry(vname, s.size, bool);
+          var tmp = makeDistArray(s.size, bigint);
+          forall (t, v, vf) in zip(tmp, valid.a, valWithFlag) {
+            (t, v) = vf;
+          }
+          var entry = st.addEntry(name, new shared SymEntry(tmp));
+          returnMsg = "created " + st.attrib(name);
           returnMsg += "+created " + st.attrib(vname);
         }
       }

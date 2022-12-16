@@ -8,7 +8,7 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import bool as npbool
 from arkouda.dtypes import dtype, get_server_byteorder
@@ -95,6 +95,9 @@ def parse_single_value(msg: str) -> object:
 
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
+    if mydtype == bigint:
+        # we have to strip off quotes
+        return int(value[1:-1])
     if mydtype == npbool:
         if value == "True":
             return mydtype.type(True)
@@ -169,7 +172,7 @@ class pdarray:
     def __init__(
         self,
         name: str,
-        mydtype: np.dtype,
+        mydtype: Union[np.dtype, str],
         size: int_scalars,
         ndim: int_scalars,
         shape: Sequence[int],
@@ -280,19 +283,18 @@ class pdarray:
             repMsg = generic_msg(cmd="binopvv", args={"op": op, "a": self, "b": other})
             return create_pdarray(repMsg)
         # pdarray binop scalar
+        # If scalar cannot be safely cast, server will infer the return dtype
+        dt = resolve_scalar_dtype(other)
         if np.can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
-        else:
-            # If scalar cannot be safely cast, server will infer the return dtype
-            dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
             cmd="binopvs",
-            args={"op": op, "a": self, "dtype": dt, "value": NUMBER_FORMAT_STRINGS[dt].format(other)},
+            args={"op": op, "a": self, "dtype": dt, "value": other},
         )
         return create_pdarray(repMsg)
 
@@ -326,19 +328,18 @@ class pdarray:
         if op not in self.BinOps:
             raise ValueError(f"bad operator {op}")
         # pdarray binop scalar
+        # If scalar cannot be safely cast, server will infer the return dtype
+        dt = resolve_scalar_dtype(other)
         if np.can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
-        else:
-            # If scalar cannot be safely cast, server will infer the return dtype
-            dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
             cmd="binopsv",
-            args={"op": op, "dtype": dt, "value": NUMBER_FORMAT_STRINGS[dt].format(other), "a": self},
+            args={"op": op, "dtype": dt, "value": other, "a": self},
         )
         return create_pdarray(repMsg)
 
@@ -1115,6 +1116,8 @@ class pdarray:
         """
         from arkouda.client import maxTransferBytes
 
+        dt = dtype(self.dtype)
+
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
@@ -1134,7 +1137,6 @@ class pdarray:
             )
         # The server sends us native-endian data so we need to account for
         # that. If the view is readonly, copy so the np array is mutable
-        dt = np.dtype(self.dtype)
         if get_server_byteorder() == "big":
             dt = dt.newbyteorder(">")
         else:
@@ -1767,7 +1769,6 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
-#       server has created pdarray already befroe this is called
 @typechecked
 def create_pdarray(repMsg: str) -> pdarray:
     """
@@ -2753,7 +2754,7 @@ def power(pda: pdarray, pwr: Union[int, float, pdarray], where: Union[bool, pdar
         return pda
     else:
         exp = pda**pwr
-        return akwhere(where, exp, akcast(pda, dtype(exp)))
+        return akwhere(where, exp, akcast(pda, exp.dtype))
 
 
 @typechecked

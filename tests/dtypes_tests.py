@@ -121,17 +121,18 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual("int64", str(dtypes.DType.INT64))
         self.assertEqual("str", str(dtypes.DType.STR))
         self.assertEqual("uint8", str(dtypes.DType.UINT8))
+        self.assertEqual("bigint", str(dtypes.DType.BIGINT))
         self.assertEqual(
-            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64"}), ak.DTypes
+            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}), ak.DTypes
         )
         self.assertEqual(
-            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64"}),
+            frozenset({"float", "float64", "bool", "uint8", "int", "int64", "str", "uint64", "bigint"}),
             ak.ARKOUDA_SUPPORTED_DTYPES,
         )
 
     def test_NumericDTypes(self):
         self.assertEqual(
-            frozenset(["bool", "float", "float64", "int", "int64", "uint64"]), dtypes.NumericDTypes
+            frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"]), dtypes.NumericDTypes
         )
 
     def test_SeriesDTypes(self):
