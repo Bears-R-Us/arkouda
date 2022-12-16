@@ -528,7 +528,7 @@ class DataFrameTest(ArkoudaTest):
             akdf.to_parquet(f"{tmp_dirname}/testName")
 
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/testName")
-            self.assertTrue(validation_df.equals(ak_loaded.to_pandas()))
+            self.assertTrue(validation_df.equals(ak_loaded[akdf.columns].to_pandas()))
 
             # test save with index true
             akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
