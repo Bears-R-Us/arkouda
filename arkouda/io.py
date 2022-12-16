@@ -883,7 +883,7 @@ def to_parquet(
                     "columns": pdarrays,
                     "col_names": datasetNames,
                     "filename": prefix_path,
-                    "num_cols": len(columns.values()),
+                    "num_cols": len(pdarrays),
                     "compressed": compressed,
                 },
             )
