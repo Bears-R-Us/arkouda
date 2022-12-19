@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from enum import Enum
+from typing import cast as typecast
 from warnings import warn
 
 import numpy as np  # type: ignore
@@ -440,11 +441,25 @@ class ArrayView:
             "Please use ak.ArrayView.to_hdf",
             DeprecationWarning,
         )
-        from arkouda.io import write_hdf5_multi_dim
-        write_hdf5_multi_dim(self, filepath, dset, mode=mode, file_type=file_type)
+        from arkouda.io import file_type_to_int, mode_str_to_int
+        args = {
+            "values": self.base,
+            "shape": self.shape,
+            "order": self.order,
+            "filename": filepath,
+            "file_format": file_type_to_int(file_type),
+            "dset": dset,
+            "write_mode": mode_str_to_int(mode),
+            "objType": "ArrayView",
+        }
 
-    @staticmethod
-    def load(filepath: str, dset: str) -> ArrayView:
+        generic_msg(
+            cmd="tohdf",
+            args=args,
+        )
+
+    @classmethod
+    def load(cls, filepath: str, dset: str) -> ArrayView:
         """
         DEPRECATED
         This function is being mantained to allow reading from files written in Arkouda v2022.10.13
@@ -453,7 +468,7 @@ class ArrayView:
 
         Parameters
         ----------
-        file_path: str
+        filepath: str
             path to the file to read from
         dset: str
             name of the dataset to read
@@ -470,5 +485,19 @@ class ArrayView:
             "ak.ArrayView.load has been deprecated. Please use ak.load",
             DeprecationWarning,
         )
-        from arkouda.io import read_hdf5_multi_dim
-        return read_hdf5_multi_dim(filepath, dset)
+        args = {"filename": filepath, "dset": dset}
+        rep_msg = typecast(
+            str,
+            generic_msg(
+                cmd="readhdf_multi",
+                args=args,
+            ),
+        )
+
+        objs = rep_msg.split("+")
+
+        shape = create_pdarray(objs[0])
+        flat = create_pdarray(objs[1])
+
+        arr = cls(flat, shape)
+        return arr
