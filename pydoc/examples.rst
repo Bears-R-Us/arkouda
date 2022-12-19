@@ -264,7 +264,7 @@ Exporting an Arkouda `DataFrame` to Pandas is extremely simple using the `to_pan
 GroupBy
 ====================
 
-`GroupBy` functionality in Arkouda allows for a `pdarray` to be grouped by value. In other words, if two indexes share the same value then they are placed in the same group. 
+In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. `GroupBy` functionality in Arkouda is supported on `pdarray` and `DataFrame` objects.
 
 `pdarrays`
 -----------
