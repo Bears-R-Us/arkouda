@@ -1,4 +1,4 @@
-module BigInt {
+module BigIntMsg {
     use ServerConfig;
 
     use Reflection;
