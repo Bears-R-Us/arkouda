@@ -314,9 +314,13 @@ class OperatorsTest(ArkoudaTest):
         np_uints = [np_uint, scalar_uint]
         ak_floats = [ak_float, scalar_float]
         np_floats = [np_float, scalar_float]
-        for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
-            self.assertEqual(ak_uint + akf, np_uint + npf)
-            self.assertEqual(akf + ak_uint, npf + np_uint)
+        for aeku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
+            self.assertTrue(
+                np.allclose((ak_uint + akf).to_ndarray(), np_uint + npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf + ak_uint).to_ndarray(), npf + np_uint, equal_nan=True)
+            )
             self.assertTrue(
                 np.allclose((ak_float + aku).to_ndarray(), np_float + npu, equal_nan=True)
             )
@@ -324,8 +328,12 @@ class OperatorsTest(ArkoudaTest):
                 np.allclose((aku + ak_float).to_ndarray(), npu + np_float, equal_nan=True)
             )
 
-            self.assertEqual(ak_uint - akf, np_uint - npf)
-            self.assertEqual(akf - ak_uint, npf - np_uint)
+            self.assertTrue(
+                np.allclose((ak_uint - akf).to_ndarray(), np_uint - npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf - ak_uint).to_ndarray(), npf - np_uint, equal_nan=True)
+            )
             self.assertTrue(
                 np.allclose((ak_float - aku).to_ndarray(), np_float - npu, equal_nan=True)
             )
@@ -333,8 +341,12 @@ class OperatorsTest(ArkoudaTest):
                 np.allclose((aku - ak_float).to_ndarray(), npu - np_float, equal_nan=True)
             )
 
-            self.assertEqual(ak_uint * akf, np_uint * npf)
-            self.assertEqual(akf * ak_uint, npf * np_uint)
+            self.assertTrue(
+                np.allclose((ak_uint * akf).to_ndarray(), np_uint * npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf * ak_uint).to_ndarray(), npf * np_uint, equal_nan=True)
+            )
             self.assertTrue(
                 np.allclose((ak_float * aku).to_ndarray(), np_float * npu, equal_nan=True)
             )
@@ -342,8 +354,12 @@ class OperatorsTest(ArkoudaTest):
                 np.allclose((aku * ak_float).to_ndarray(), npu * np_float, equal_nan=True)
             )
 
-            self.assertEqual(ak_uint / akf, np_uint / npf)
-            self.assertEqual(akf / ak_uint, npf / np_uint)
+            self.assertTrue(
+                np.allclose((ak_uint / akf).to_ndarray(), np_uint / npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf / ak_uint).to_ndarray(), npf / np_uint, equal_nan=True)
+            )            
             self.assertTrue(
                 np.allclose((ak_float / aku).to_ndarray(), np_float / npu, equal_nan=True)
             )
@@ -351,8 +367,12 @@ class OperatorsTest(ArkoudaTest):
                 np.allclose((aku / ak_float).to_ndarray(), npu / np_float, equal_nan=True)
             )
 
-            self.assertEqual(ak_uint // akf, np_uint // npf)
-            self.assertEqual(akf // ak_uint, npf // np_uint)
+            self.assertTrue(
+                np.allclose((ak_uint // akf).to_ndarray(), np_uint // npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf // ak_uint).to_ndarray(), npf // np_uint, equal_nan=True)
+            )
             self.assertTrue(
                 np.allclose((ak_float // aku).to_ndarray(), np_float // npu, equal_nan=True)
             )
@@ -360,8 +380,12 @@ class OperatorsTest(ArkoudaTest):
                 np.allclose((aku // ak_float).to_ndarray(), npu // np_float, equal_nan=True)
             )
 
-            self.assertEqual(ak_uint**akf, np_uint**npf)
-            self.assertEqual(akf**ak_uint, npf**np_uint)
+            self.assertTrue(
+                np.allclose((ak_uint ** akf).to_ndarray(), np_uint ** npf, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((akf ** ak_uint).to_ndarray(), npf ** np_uint, equal_nan=True)
+            )            
             self.assertTrue(
                 np.allclose((ak_float ** aku).to_ndarray(), np_float ** npu, equal_nan=True)
             )
