@@ -100,7 +100,7 @@ def check_correctness(dtype, random, seed):
         elif dtype == "bool":
             npv = np.random.randint(0, 1, Nv, dtype=np.bool)
         elif dtype == "str":
-            npv = np.array([np.str(x) for x in np.random.randint(0, 2**32, Nv)])
+            npv = np.array([str(x) for x in np.random.randint(0, 2**32, Nv)])
     else:
         npv = np.ones(Nv, dtype=dtype)
     akv = ak.array(npv)
