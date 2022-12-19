@@ -317,33 +317,57 @@ class OperatorsTest(ArkoudaTest):
         for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
             self.assertEqual(ak_uint + akf, np_uint + npf)
             self.assertEqual(akf + ak_uint, npf + np_uint)
-            self.assertEqual(ak_float + aku, np_float + npu)
-            self.assertEqual(aku + ak_float, npu + np_float)
+            self.assertTrue(
+                np.allclose((ak_float + aku).to_ndarray(), np_float + npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku + ak_float).to_ndarray(), npu + np_float, equal_nan=True)
+            )
 
             self.assertEqual(ak_uint - akf, np_uint - npf)
             self.assertEqual(akf - ak_uint, npf - np_uint)
-            self.assertEqual(ak_float - aku, np_float - npu)
-            self.assertEqual(aku - ak_float, npu - np_float)
+            self.assertTrue(
+                np.allclose((ak_float - aku).to_ndarray(), np_float - npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku - ak_float).to_ndarray(), npu - np_float, equal_nan=True)
+            )
 
             self.assertEqual(ak_uint * akf, np_uint * npf)
             self.assertEqual(akf * ak_uint, npf * np_uint)
-            self.assertEqual(ak_float * aku, np_float * npu)
-            self.assertEqual(aku * ak_float, npu * np_float)
+            self.assertTrue(
+                np.allclose((ak_float * aku).to_ndarray(), np_float * npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku * ak_float).to_ndarray(), npu * np_float, equal_nan=True)
+            )
 
             self.assertEqual(ak_uint / akf, np_uint / npf)
             self.assertEqual(akf / ak_uint, npf / np_uint)
-            self.assertEqual(ak_float / aku, np_float / npu)
-            self.assertEqual(aku / ak_float, npu / np_float)
+            self.assertTrue(
+                np.allclose((ak_float / aku).to_ndarray(), np_float / npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku / ak_float).to_ndarray(), npu / np_float, equal_nan=True)
+            )
 
             self.assertEqual(ak_uint // akf, np_uint // npf)
             self.assertEqual(akf // ak_uint, npf // np_uint)
-            self.assertEqual(ak_float // aku, np_float // npu)
-            self.assertEqual(aku // ak_float, npu // np_float)
+            self.assertTrue(
+                np.allclose((ak_float // aku).to_ndarray(), np_float // npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku // ak_float).to_ndarray(), npu // np_float, equal_nan=True)
+            )
 
             self.assertEqual(ak_uint**akf, np_uint**npf)
             self.assertEqual(akf**ak_uint, npf**np_uint)
-            self.assertEqual(ak_float**aku, np_float**npu)
-            self.assertEqual(aku**ak_float, npu**np_float)
+            self.assertTrue(
+                np.allclose((ak_float ** aku).to_ndarray(), np_float ** npu, equal_nan=True)
+            )
+            self.assertTrue(
+                np.allclose((aku ** ak_float).to_ndarray(), npu ** np_float, equal_nan=True)
+            )
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
