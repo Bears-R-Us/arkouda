@@ -314,7 +314,7 @@ class OperatorsTest(ArkoudaTest):
         np_uints = [np_uint, scalar_uint]
         ak_floats = [ak_float, scalar_float]
         np_floats = [np_float, scalar_float]
-        for aeku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
+        for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
             self.assertTrue(
                 np.allclose((ak_uint + akf).to_ndarray(), np_uint + npf, equal_nan=True)
             )
