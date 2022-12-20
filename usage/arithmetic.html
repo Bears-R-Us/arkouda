@@ -1,40 +1,248 @@
 
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Arithmetic and Numeric Operations &mdash; arkouda 0+untagged.1.g09eab55 documentation</title>
+  
 
-    <title>Arithmetic and Numeric Operations &#8212; arkouda 0+untagged.1.g6e3da83 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Indexing and Assignment" href="indexing.html" />
-    <link rel="prev" title="Data I/O" href="IO.html" />
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.g09eab55 documentation" href="../index.html"/>
+        <link rel="up" title="Usage" href="../usage.html"/>
+        <link rel="next" title="Indexing and Assignment" href="indexing.html"/>
+        <link rel="prev" title="Data I/O" href="IO.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
           
 
-          <div class="body" role="main">
+          
+            <a href="../index.html" class="icon icon-home"> arkouda
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Arithmetic and Numeric Operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vector-and-scalar-arithmetic">Vector and Scalar Arithmetic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#element-wise-functions">Element-wise Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.abs"><code class="docutils literal notranslate"><span class="pre">abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.log"><code class="docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.exp"><code class="docutils literal notranslate"><span class="pre">exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.sin"><code class="docutils literal notranslate"><span class="pre">sin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cos"><code class="docutils literal notranslate"><span class="pre">cos()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#scans">Scans</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cumsum"><code class="docutils literal notranslate"><span class="pre">cumsum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cumprod"><code class="docutils literal notranslate"><span class="pre">cumprod()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#reductions">Reductions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.any"><code class="docutils literal notranslate"><span class="pre">any()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.all"><code class="docutils literal notranslate"><span class="pre">all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.is_sorted"><code class="docutils literal notranslate"><span class="pre">is_sorted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.sum"><code class="docutils literal notranslate"><span class="pre">sum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.prod"><code class="docutils literal notranslate"><span class="pre">prod()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.min"><code class="docutils literal notranslate"><span class="pre">min()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.max"><code class="docutils literal notranslate"><span class="pre">max()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmin"><code class="docutils literal notranslate"><span class="pre">argmin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmax"><code class="docutils literal notranslate"><span class="pre">argmax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.mean"><code class="docutils literal notranslate"><span class="pre">mean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.var"><code class="docutils literal notranslate"><span class="pre">var()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.std"><code class="docutils literal notranslate"><span class="pre">std()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.mink"><code class="docutils literal notranslate"><span class="pre">mink()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.maxk"><code class="docutils literal notranslate"><span class="pre">maxk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmink"><code class="docutils literal notranslate"><span class="pre">argmink()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmaxk"><code class="docutils literal notranslate"><span class="pre">argmaxk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#where">Where</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.where"><code class="docutils literal notranslate"><span class="pre">where()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.abs">abs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.log">log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.exp">exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.sin">sin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cos">cos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cumsum">cumsum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.cumprod">cumprod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.any">any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.all">all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.is_sorted">is_sorted</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.sum">sum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.prod">prod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.min">min</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.max">max</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmin">argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmax">argmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.mean">mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.var">var</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.std">std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.mink">mink</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.maxk">maxk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmink">argmink</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.argmaxk">argmaxk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.where">where</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">arkouda</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../usage.html">Usage</a> &raquo;</li>
+        
+      <li>Arithmetic and Numeric Operations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/arithmetic.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <section id="arithmetic-and-numeric-operations">
 <h1>Arithmetic and Numeric Operations<a class="headerlink" href="#arithmetic-and-numeric-operations" title="Permalink to this heading">¶</a></h1>
@@ -833,98 +1041,75 @@ is not currently supported in Arkouda</p>
 </section>
 
 
+           </div>
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">arkouda</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Arithmetic and Numeric Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../usage.html">Usage</a><ul>
-      <li>Previous: <a href="IO.html" title="previous chapter">Data I/O</a></li>
-      <li>Next: <a href="indexing.html" title="next chapter">Indexing and Assignment</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="indexing.html" class="btn btn-neutral float-right" title="Indexing and Assignment" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="IO.html" class="btn btn-neutral" title="Data I/O" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Michael Merrill and William Reus.
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Michael Merrill and William Reus.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/usage/arithmetic.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0+untagged.1.g09eab55',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/documentation_options.js"></script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

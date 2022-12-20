@@ -1,40 +1,267 @@
 
+
 <!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>GroupBy &mdash; arkouda 0+untagged.1.g09eab55 documentation</title>
+  
 
-    <title>GroupBy &#8212; arkouda 0+untagged.1.g6e3da83 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Strings in Arkouda" href="strings.html" />
-    <link rel="prev" title="Array Set Operations" href="setops.html" />
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.g09eab55 documentation" href="../index.html"/>
+        <link rel="up" title="Usage" href="../usage.html"/>
+        <link rel="next" title="Strings in Arkouda" href="strings.html"/>
+        <link rel="prev" title="Array Set Operations" href="setops.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
           
 
-          <div class="body" role="main">
+          
+            <a href="../index.html" class="icon icon-home"> arkouda
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GroupBy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#arkouda.GroupBy"><code class="docutils literal notranslate"><span class="pre">GroupBy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nkeys"><code class="docutils literal notranslate"><span class="pre">GroupBy.nkeys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.size"><code class="docutils literal notranslate"><span class="pre">GroupBy.size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.permutation"><code class="docutils literal notranslate"><span class="pre">GroupBy.permutation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique_keys"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.ngroups"><code class="docutils literal notranslate"><span class="pre">GroupBy.ngroups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.segments"><code class="docutils literal notranslate"><span class="pre">GroupBy.segments</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.logger"><code class="docutils literal notranslate"><span class="pre">GroupBy.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.AND"><code class="docutils literal notranslate"><span class="pre">GroupBy.AND()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.OR"><code class="docutils literal notranslate"><span class="pre">GroupBy.OR()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.XOR"><code class="docutils literal notranslate"><span class="pre">GroupBy.XOR()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.aggregate"><code class="docutils literal notranslate"><span class="pre">GroupBy.aggregate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.all"><code class="docutils literal notranslate"><span class="pre">GroupBy.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.any"><code class="docutils literal notranslate"><span class="pre">GroupBy.any()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmax"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmin"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.attach"><code class="docutils literal notranslate"><span class="pre">GroupBy.attach()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.broadcast"><code class="docutils literal notranslate"><span class="pre">GroupBy.broadcast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.build_from_components"><code class="docutils literal notranslate"><span class="pre">GroupBy.build_from_components()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.count"><code class="docutils literal notranslate"><span class="pre">GroupBy.count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.first"><code class="docutils literal notranslate"><span class="pre">GroupBy.first()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.is_registered"><code class="docutils literal notranslate"><span class="pre">GroupBy.is_registered()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.max"><code class="docutils literal notranslate"><span class="pre">GroupBy.max()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mean"><code class="docutils literal notranslate"><span class="pre">GroupBy.mean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.median"><code class="docutils literal notranslate"><span class="pre">GroupBy.median()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.min"><code class="docutils literal notranslate"><span class="pre">GroupBy.min()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mode"><code class="docutils literal notranslate"><span class="pre">GroupBy.mode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.most_common"><code class="docutils literal notranslate"><span class="pre">GroupBy.most_common()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">GroupBy.nunique()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.prod"><code class="docutils literal notranslate"><span class="pre">GroupBy.prod()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.register"><code class="docutils literal notranslate"><span class="pre">GroupBy.register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.std"><code class="docutils literal notranslate"><span class="pre">GroupBy.std()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.sum"><code class="docutils literal notranslate"><span class="pre">GroupBy.sum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister_groupby_by_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.var"><code class="docutils literal notranslate"><span class="pre">GroupBy.var()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#arkouda.GroupBy">GroupBy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nkeys">nkeys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.size">size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.permutation">permutation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique_keys">unique_keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.ngroups">ngroups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.segments">segments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.logger">logger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.AND">AND</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.OR">OR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.XOR">XOR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.aggregate">aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.all">all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.any">any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmax">argmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmin">argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.attach">attach</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.broadcast">broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.build_from_components">build_from_components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.count">count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.first">first</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.is_registered">is_registered</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.max">max</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mean">mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.median">median</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.min">min</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mode">mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.most_common">most_common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nunique">nunique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.prod">prod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.register">register</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0">size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.std">std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.sum">sum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique">unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister">unregister</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name">unregister_groupby_by_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.var">var</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">arkouda</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../usage.html">Usage</a> &raquo;</li>
+        
+      <li>GroupBy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/usage/groupby.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <section id="groupby">
 <span id="groupby-label"></span><h1>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">¶</a></h1>
@@ -1214,98 +1441,75 @@ normally distributed variables.</p>
 </section>
 
 
+           </div>
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">arkouda</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GroupBy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../usage.html">Usage</a><ul>
-      <li>Previous: <a href="setops.html" title="previous chapter">Array Set Operations</a></li>
-      <li>Next: <a href="strings.html" title="next chapter">Strings in Arkouda</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="strings.html" class="btn btn-neutral float-right" title="Strings in Arkouda" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="setops.html" class="btn btn-neutral" title="Array Set Operations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Michael Merrill and William Reus.
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Michael Merrill and William Reus.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/usage/groupby.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0+untagged.1.g09eab55',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/documentation_options.js"></script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
