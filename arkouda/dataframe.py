@@ -1457,7 +1457,7 @@ class DataFrame(UserDict):
             data = {c: self.data[c] for c in columns}
 
         if index:
-            data["Index"] = self.index
+            data["Index"] = self.index.values
         return data
 
     def to_hdf(self, path, index=False, columns=None, file_type="distribute"):

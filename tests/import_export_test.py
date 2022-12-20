@@ -100,11 +100,10 @@ class ImportExportTest(ArkoudaTest):
         akdf = self.build_arkouda_dataframe()
         with tempfile.TemporaryDirectory(dir=ImportExportTest.ie_test_base_tmp) as tmp_dirname:
             akdf.to_parquet(f"{tmp_dirname}/ak_write")
-            print(akdf.__repr__())
 
             pddf = ak.export(f"{tmp_dirname}/ak_write", write_file=f"{tmp_dirname}/pd_from_ak.parquet", index=True)
             self.assertEqual(len(glob.glob(f"{tmp_dirname}/pd_from_ak.parquet")), 1)
-            self.assertTrue(pddf.equals(akdf.to_pandas()))
+            self.assertTrue(pddf[akdf.columns].equals(akdf.to_pandas()))
 
             with self.assertRaises(RuntimeError):
                 pddf = ak.export(f"{tmp_dirname}/foo.h5", write_file=f"{tmp_dirname}/pd_from_ak.h5", index=True)

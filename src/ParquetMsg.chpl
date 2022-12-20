@@ -12,6 +12,7 @@ module ParquetMsg {
   use NumPyDType;
   use Sort;
   use CommAggregation;
+  use AryUtil;
 
   use SegmentedString;
 
@@ -769,6 +770,245 @@ module ParquetMsg {
     }
   }
 
+  proc writeMultiColParquet(filename: string, col_names: [] string, 
+                              ncols: int, sym_names: [] string, targetLocales: [] locale, 
+                              compressed: bool, st: borrowed SymTab): bool throws {
+
+    extern proc c_writeMultiColToParquet(filename, column_names, ptr_arr,
+                                      datatypes, colnum, numelems, rowGroupSize, compressed, errMsg): int;
+
+    var prefix: string;
+    var extension: string;
+    (prefix, extension) = getFileMetadata(filename);
+
+    // Generate the filenames based upon the number of targetLocales.
+    var filenames = generateFilenames(prefix, extension, targetLocales.size);
+
+    //Generate a list of matching filenames to test against. 
+    var matchingFilenames = getMatchingFilenames(prefix, extension);
+
+    // TODO when APPEND is fully deprecated update this to not need the mode.
+    var filesExist = processParquetFilenames(filenames, matchingFilenames, TRUNCATE); // set to truncate. We will not be supporting appending. 
+
+    coforall (loc, idx) in zip(targetLocales, filenames.domain) do on loc {
+      var pqErr = new parquetErrorMsg();
+      const fname = filenames[idx];
+
+      var ptrList: [0..#ncols] c_void_ptr;
+      var datatypes: [0..#ncols] int;
+      var sizeList: [0..#ncols] int;
+
+      var my_column_names = col_names;
+      var c_names: [0..#ncols] c_string;
+
+      var locSize: int = 0;
+      var sections_sizes: [0..#ncols] int; // only fill in sizes for str columns
+      forall (i, column) in zip(0..#ncols, sym_names) with (+ reduce locSize) {
+        var entry = st.lookup(column);
+        // need to calculate the total size of Strings on this local
+        if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+          var e: SegStringSymEntry = toSegStringSymEntry(entry);
+          var segStr = new SegString("", e);
+          ref ss = segStr;
+          var lens = ss.getLengths();
+          const locDom = ss.offsets.a.localSubdomain();
+          var x: int;
+          for i in locDom do x += lens[i];
+          sections_sizes[i] = x;
+          locSize += x;
+        }
+      }
+
+      var str_vals: [0..#locSize] uint(8);
+      var str_idx = (+ scan sections_sizes) - sections_sizes;
+      forall (i, column, si) in zip(0..#ncols, sym_names, str_idx) {
+        // generate the local c string list of column names
+        c_names[i] = my_column_names[i].localize().c_str();
+
+        var entry = st.lookup(column);
+
+        // access the dtype of each 
+        var entryDtype = DType.UNDEF;
+        if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+          entryDtype = (entry: borrowed GenSymEntry).dtype;
+        } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+          entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+        } else {
+          throw getErrorWithContext(
+              msg="Unknown SymEntry Type",
+              lineNumber=getLineNumber(), 
+              routineName=getRoutineName(), 
+              moduleName=getModuleName(), 
+              errorClass='ValueError'
+          );
+        }
+        
+        select entryDtype {
+          when DType.Int64 {
+            var e = toSymEntry(toGenSymEntry(entry), int);
+            var locDom = e.a.localSubdomain();
+            // set the pointer to the entry array in the list of Pointers
+            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+            datatypes[i] = ARROWINT64;
+            sizeList[i] = locDom.size;
+          }
+          when DType.UInt64 {
+            var e = toSymEntry(toGenSymEntry(entry), uint);
+            var locDom = e.a.localSubdomain();
+            // set the pointer to the entry array in the list of Pointers
+            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+            datatypes[i] = ARROWUINT64;
+            sizeList[i] = locDom.size;
+          }
+          when DType.Bool {
+            var e = toSymEntry(toGenSymEntry(entry), bool);
+            var locDom = e.a.localSubdomain();
+            // set the pointer to the entry array in the list of Pointers
+            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+            datatypes[i] = ARROWBOOLEAN;
+            sizeList[i] = locDom.size;
+          } when DType.Float64 {
+            var e = toSymEntry(toGenSymEntry(entry), real);
+            var locDom = e.a.localSubdomain();
+            // set the pointer to the entry array in the list of Pointers
+            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+            datatypes[i] = ARROWDOUBLE;
+            sizeList[i] = locDom.size;
+          } when DType.Strings {
+            var e: SegStringSymEntry = toSegStringSymEntry(entry);
+            var segStr = new SegString("", e);
+            ref ss = segStr;
+            var A = ss.offsets.a;
+            const lastOffset = A[A.domain.high];
+            const lastValIdx = ss.values.a.domain.high;
+            const locDom = ss.offsets.a.localSubdomain();
+
+            var localOffsets = A[locDom];
+            var startValIdx = localOffsets[locDom.low];
+            var endValIdx = if (lastOffset == localOffsets[locDom.high]) then lastValIdx else A[locDom.high + 1] - 1;
+            var valIdxRange = startValIdx..endValIdx;
+            ref olda = ss.values.a;
+            str_vals[si..#valIdxRange.size] = olda[valIdxRange];
+            ptrList[i] = c_ptrTo(str_vals[si]): c_void_ptr;
+            datatypes[i] = ARROWSTRING;
+            sizeList[i] = locDom.size;
+          } otherwise {
+            throw getErrorWithContext(
+                              msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
+                              lineNumber=getLineNumber(), 
+                              routineName=getRoutineName(), 
+                              moduleName=getModuleName(), 
+                              errorClass='DataTypeError'
+            );
+          }
+        }
+      }
+      
+      // validate all elements same size
+      var numelems: int = sizeList[0];
+      if !(&& reduce (sizeList==numelems)) {
+        throw getErrorWithContext(
+              msg="Parquet columns must be the same size",
+              lineNumber=getLineNumber(), 
+              routineName=getRoutineName(), 
+              moduleName=getModuleName(), 
+              errorClass='WriteModeError'
+        );
+      }
+      var result: int = c_writeMultiColToParquet(fname.localize().c_str(), c_ptrTo(c_names), c_ptrTo(ptrList), c_ptrTo(datatypes), ncols, numelems, ROWGROUPS, compressed, c_ptrTo(pqErr.errMsg));
+    }
+    return filesExist;
+  }
+
+  proc toParquetMultiColMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    const filename: string = msgArgs.getValueOf("filename");
+    const ncols: int = msgArgs.get("num_cols").getIntValue();
+
+    // get list of the names for the columns
+    var col_names: [0..#ncols] string = msgArgs.get("col_names").getList(ncols);
+
+    // get list of sym entry names holding column data
+    var sym_names: [0..#ncols] string = msgArgs.get("columns").getList(ncols);
+
+    var compressed = msgArgs.get("compressed").getBoolValue();
+
+    // Assuming all columns have same distribution, access the first to get target locales
+    var entry = st.lookup(sym_names[0]);
+
+    // access the dtype to create symentry from abstract
+    var entryDtype = DType.UNDEF;
+    if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+      entryDtype = (entry: borrowed GenSymEntry).dtype;
+    } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+      entryDtype = (entry: borrowed SegStringSymEntry).dtype;
+    } else {
+      throw getErrorWithContext(
+          msg="Unknown SymEntry Type",
+          lineNumber=getLineNumber(), 
+          routineName=getRoutineName(), 
+          moduleName=getModuleName(), 
+          errorClass='ValueError'
+      );
+    }
+
+    var targetLocales;
+    select entryDtype {
+      when DType.Int64 {
+        var e = toSymEntry(toGenSymEntry(entry), int);
+        targetLocales = e.a.targetLocales();
+      }
+      when DType.UInt64 {
+        var e = toSymEntry(toGenSymEntry(entry), uint);
+        targetLocales = e.a.targetLocales();
+      }
+      when DType.Bool {
+        var e = toSymEntry(toGenSymEntry(entry), bool);
+        targetLocales = e.a.targetLocales();
+      } when DType.Float64 {
+        var e = toSymEntry(toGenSymEntry(entry), real);
+        targetLocales = e.a.targetLocales();
+      } when DType.Strings {
+        var e: SegStringSymEntry = toSegStringSymEntry(entry);
+        var segStr = new SegString("", e);
+        targetLocales = segStr.offsets.a.targetLocales();
+      } otherwise {
+        throw getErrorWithContext(
+                          msg="Writing Parquet files (multi-column) does not support columns of type %s".format(entryDtype),
+                          lineNumber=getLineNumber(), 
+                          routineName=getRoutineName(), 
+                          moduleName=getModuleName(), 
+                          errorClass='DataTypeError'
+        );
+      }
+    }
+
+    var warnFlag: bool;
+    try {
+      warnFlag = writeMultiColParquet(filename, col_names, ncols, sym_names, targetLocales, compressed, st);
+    } catch e: FileNotFoundError {
+      var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    } catch e: WriteModeError {
+      var errorMsg = "Write mode error %s".format(e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    } catch e: Error {
+      var errorMsg = "problem writing to file %s".format(e.message());
+      pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+      return new MsgTuple(errorMsg, MsgType.ERROR);
+    }
+
+    if warnFlag {
+      var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+      return new MsgTuple(warnMsg, MsgType.WARNING);
+    } else {
+      var repMsg = "wrote array to file";
+      pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+  }
+
   proc lspqMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     // reqMsg: "lshdf [<json_filename>]"
     var repMsg: string;
@@ -938,6 +1178,7 @@ module ParquetMsg {
 
   use CommandMap;
   registerFunction("readAllParquet", readAllParquetMsg, getModuleName());
+  registerFunction("toParquet_multi", toParquetMultiColMsg, getModuleName());
   registerFunction("writeParquet", toparquetMsg, getModuleName());
   registerFunction("lspq", lspqMsg, getModuleName());
   registerFunction("getnullparquet", nullIndicesMsg, getModuleName());
