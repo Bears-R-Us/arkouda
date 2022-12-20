@@ -4,177 +4,296 @@
 Examples
 *************
 
-DataFrame-like Patterns
-=======================
+Arkouda Arrays
+====================
 
-DataFrames (e.g. from ``pandas``) are a useful abstraction for working with tabular data. While arkouda does not yet have an actual ``DataFrame`` class, it is possible to do many of the same operations. Here, we will create and use a pseudo-DataFrame: a ``dict`` of named ``pdarray`` objects, which are analogous to columns of a DataFrame. Let the following represent transactions in which a userID purchased an item on a particular day for a certain amount of money:
+Arkouda arrays function similarly to arrays in NumPy, but allow for a much larger scale. In Arkouda, arrays are referred to as `pdarray` objects. It is possible to generate a `pdarray` from a Python `list`, NumPy `ndarray`, or using a generator method similar to those found in NumPy. This document aims to provide an introduction into some of the most commonly used elements of Arkouda and is not an exhaustive description of functionality.
 
-.. code-block:: python
+`pdarray` Creation
+-------------------
 
-   >>> userName = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
-   >>> userID = ak.array([111, 222, 111, 333, 222, 111])
-   >>> item = ak.array([0, 0, 1, 1, 2, 0])
-   >>> day = ak.array([5, 5, 6, 5, 6, 6])
-   >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-   >>> data = {'userName': userName, 'userID': userID,
-               'item': item, 'day': day, 'amount': amount}
-
-Selection
----------
-   
-The ``df.loc[condition]`` syntax is useful for selecting subsets of data by value and can be emulated in arkouda. For example, here we select all transactions involving user ``111`` of an amount less than ``1.0``:
+Like `ndarray` objects in NumPy, Arkouda `pdarray` objects can be generated from a Python `list`.
 
 .. code-block:: python
 
-   >>> condition = (data['userID'] == 111) & (data['amount'] < 1.0)
-   >>> u1 = {col: a[condition] for col, a in data.items()}
-   >>> u1
-   {'userName': array(['Alice', 'Alice']),
-    'userID': array([111, 111]),
-    'item': array([0, 0]),
-    'day': array([5, 6]),
-    'amount': array([0.5, 0.59999999999999998])}
-   
-Description
+    # create the Python List
+    >> l = [0, 1, 2, 3, 4]
+    
+    # generate a pdarray
+    >> ak_arr = ak.array(l)
+    >> ak_arr
+    array([0 1 2 3 4])
+
+`pdarray` objects can be generated directly from an `ndarray`. This allows you to easily move objects into Arkouda from NumPy.
+
+.. code-block:: python
+
+    # create an ndarray
+    >> np_arr = np.array([0, 1, 2, 3, 4])
+
+    # generate a pdarray
+    >> ak_arr = ak.array(np_arr)
+    >> ak_arr
+    array([0 1 2 3 4])
+
+`pdarray` objects can be generated using generator calls such as `arange` and `randint`.
+
+.. code-block:: python
+
+    # arange
+    >> ak_arr = ak.arange(10)
+    >> ak_arr
+    array([0 1 2 3 4 5 6 7 8 9])
+
+    # randint(low, high, size)
+    >> r = ak.randint(0, 100, 10)
+    >> r # output will vary
+    array([52 84 1 52 80 71 27 20 7 7])
+
+Exporting `pdarray` Objects
+---------------------------
+
+Arkouda allows users to export `pdarray` objects to other formats to aide in transitioning between toolsets. A `pdarray` can be exported to a NumPy `ndarray` or a Python `list`.
+
+.. code-block:: python
+
+    # create pdarray
+    >> ak_arr = ak.array([0, 1, 2, 3, 4])
+
+    # export to ndarray
+    >> np_arr = ak_arr.to_ndarray()
+    >> np_arr
+    array([0, 1, 2, 3, 4])
+
+    # export to a Python List
+    >> l = ak_arr.to_list()
+    >> l
+    [0, 1, 2, 3, 4]
+
+`pdarray` Set operations
+------------------------
+
+Like NumPy, Arkouda supports set operations on `pdarray` objects. The supported set operations are 
+
+- **IN** (`in1d`) : Test whether each element of a 1-D array is also present in a second array.
+- **UNION** (`union1d`) : Compute the unique union of the arrays
+- **INTERSECT** (`intersect1d`) : Compute the unique intersection of the arrays.
+- **SET DIFFERENCE** (`setdiff1d`) : Compute the difference between the two arrays.
+- **SYMMETRIC DIFFERENCE** (`setxor1d`) : Compute the exclusive-or of the two arrays.
+
+One important note is that Arkouda takes this functionality beyond a single dimension. These operations can be performed on lists of `pdarrays` as well. We will look at `in1d` and `intersect1d` in both 1 dimension and multiple in the code block below.
+
+.. code-block:: python
+
+    # configure 2 pdarrays to run against
+    >> a = ak.array([4, 2, 5, 6, 4, 7, 2])
+    >> b = ak.array([1, 5, 4, 11, 9, 6])
+
+    # compute boolean array indicating the values from a found in b.
+    >> ak_in1d = ak.in1d(a, b)
+    >> ak_in1d
+    array([True False True True True False False])
+
+    # compute array of unique values found in a and b
+    >> ak_int = ak.intersect1d(a, b)
+    >> ak_int
+    array([4 5 6])
+
+    # Arkouda can perform this operation on multiple arrays at once
+    >> m1 =[
+        ak.array([0, 1, 3, 4, 8, 5, 0]),
+        ak.array([0, 9, 5, 1, 8, 5, 0])
+    ]
+    >> m2 =[
+        ak.array([0, 1, 3, 4, 8, 7]),
+        ak.array([0, 2, 5, 9, 8, 5])
+    ]
+
+    
+    >> ak_in1dmult = ak.in1d(m1, m2)
+    >> ak_in1dmulti
+    array([True False True False True False True])
+    
+    >> ak_intmult = ak.intersect1d(m1, m2)
+    >> ak_intmult
+    [array([0 3 8]), array([0 5 8])]
+
+There are a few things to keep in mind when working in the multi-dimension case. First, `m1` and `m2` must be Python `lists` containing the same number of `pdarray` elements. Second, the values are treated as a tuple. Using our example above, the first value of `m1` is viewed as `(0, 0)` during computation.
+
+Arkouda DataFrames
+====================
+
+Like in Pandas, Arkouda supports the construct of a `DataFrame`. The structure of these objects is very similar, though some functionality may vary. `DataFrames` are extremely useful when working with multiple `pdarray` objects that are related. In Arkouda, `DataFrames` consist of an `Index` (which uses are `Arkouda.Index`), `Column Names` and `Column Data`.
+
+Creating & Using a DataFrame
+-----------------------------
+
+Let's take a look at creating a `DataFrame` in Arkouda. Once again, we have several methods to create a `DataFrame` in Arkouda:
+
+- Importing a Pandas `DataFrame`
+- Python Mapping `{column_name: column_data}`. `column_data` must be `pdarray`. `column_name` will be used by the constructor to set the column names for the `DataFrame`
+
+The most important thing to remember is that each column of an Arkouda `DataFrame` is a `pdarray` and must be provided as such. The only exception is when a Pandas DataFrame is being imported because the constructor will generate the `pdarray` objects for you from the columns of the Pandas `DataFrame`. 
+
+Importing Pandas DataFrame
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: python
+
+    # construct the Pandas DataFrame
+    >> fname = ['John', 'Jane', 'John', 'Jake']
+    >> lname = ['Doe', 'Doe', 'Smith', 'Brown']
+    >> age = [37, 35, 50, 32]
+    >> salary = [75000, 77000, 100000, 35000]
+    >> pd_df = pd.DataFrame({
+        'F_Name': fname,
+        'L_Name': lname,
+        'Age': age,
+        'Salary': salary
+    })
+    >> pd_df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000
+
+    # call the Arkouda DataFrame constructor
+    >> df = ak.DataFrame(pd_df)
+    >> df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (4 rows x 4 columns)
+
+Python Mapping
+^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+    >> fname = ak.array(['John', 'Jane', 'John', 'Jake'])
+    >> lname = ak.array(['Doe', 'Doe', 'Smith', 'Brown'])
+    >> age = ak.array([37, 35, 50, 32])
+    >> salary = ak.array([75000, 77000, 100000, 35000])
+    >> df = ak.DataFrame({
+        'F_Name': fname,
+        'L_Name': lname,
+        'Age': age,
+        'Salary': salary
+    })
+
+    >> df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (4 rows x 4 columns)
+
+**NOTICE**: Here the call to the Arkouda `DataFrame` constructor takes in very close to the same information as the Pandas constructor, but with one key difference. Each of the columns is an Arkouda `pdarray`.
+
+Basic Interaction
+^^^^^^^^^^^^^^^^^
+
+**Please Note:** For this section we will be using the same `DataFrame` generated in the creation demos.
+
+In this section, we will highlight some of the basics of `DataFrame` interaction in Arkouda. You should notice that it is very similar to interacting with a Pandas `DataFrame`.
+
+.. code-block:: python
+
+    # adding reference to dataframe created earlier for easy reference
+    >> df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (4 rows x 4 columns)
+
+    # accessing a column
+    >> df['Age']
+    array([37 35 50 32])
+
+    # accessing multiple columns at once
+    >> df['L_Name', 'Age'] # equivalent to df[['L_Name', 'Age']]
+        L_Name  Age
+    0    Doe   37
+    1    Doe   35
+    2  Smith   50
+    3  Brown   32 (4 rows x 2 columns)
+
+    # accessing row
+    >> df[0]
+    {'F_Name': 'John', 'L_Name': 'Doe', 'Age': 37, 'Salary': 75000}
+
+    # accessing row slice
+    >> df[0:2]
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000 (2 rows x 4 columns)
+
+    # accessing multiple indexes
+    >> idx = ak.array([0, 2, 3])
+    >> df[idx]
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (3 rows x 4 columns)
+
+Exporting to Pandas
+--------------------
+
+Exporting an Arkouda `DataFrame` to Pandas is extremely simple using the `to_pandas` function. 
+
+.. code-block:: python
+
+    # adding reference to dataframe created earlier for easy reference
+    >> df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (4 rows x 4 columns)
+
+    >> pd_df = df.to_pandas()
+    >> pd_df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000
+
+GroupBy
+====================
+
+In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. `GroupBy` functionality in Arkouda is supported on `pdarray` and `DataFrame` objects.
+
+`pdarrays`
 -----------
 
 .. code-block:: python
 
-   >>> ak.value_counts(data['day'])
-   (array([5, 6]), array([3, 3]))
-   >>> ak.histogram(data['amount'], 10)
-   array([3, 2, 0, 0, 0, 0, 0, 0, 0, 1])
+    # using randint for more interesting results. Note values will vary
+    >> x = ak.randint(0, 10, 100)
+    >> g = ak.GroupBy(x)
+    >> g.count()
+    (array([0 1 2 3 4 5 6 7 8 9]), array([14 5 8 17 14 8 5 9 11 9]))
 
-Grouping
---------
-
-In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. Note that, because arkouda does not yet have a true ``DataFrame`` class, the arkouda ``GroupBy`` operation does not conform to the ``pandas`` API.
-
-Here we group the data by item and get the number of unique users who bought the item, and the total revenue generated by the item.
+DataFrames
+-----------
 
 .. code-block:: python
 
-   >>> byItem = ak.GroupBy(data['item'])
-   >>> byItem.nunique(data['userID'])
-   (array([0, 1, 2]), array([2, 2, 1]))
-   >>> byItem.sum(data['amount'])
-   (array([0, 1, 2]),
-    array([1.7000000000000002, 2.2999999999999998, 4.3000000000000007]))
+    # adding reference to dataframe created earlier for easy reference
+    >> df
+        F_Name L_Name  Age  Salary
+    0   John    Doe   37   75000
+    1   Jane    Doe   35   77000
+    2   John  Smith   50  100000
+    3   Jake  Brown   32   35000 (4 rows x 4 columns)
 
-Integration with Pandas
------------------------
+    >> g = df.groupby("L_Name")
+    >> g.count()
+    Doe      2
+    Brown    1
+    Smith    1
+    dtype: int64
 
-Often, it is useful to load data in arkouda and bring back a small subset of the data to explore further in Pandas. This can be done as long as each column is less than ``arkouda.maxTransferBytes`` in size (default 1 GB).
-
-.. code-block:: python
-
-   # Assume some filtering takes place here
-   >>> subset = data
-   >>> df = pd.DataFrame({col: a.to_ndarray() for col, a in subset.items()})
-   >>> df
-      amount  day  item  userID userName
-      0     0.5    5     0     111    Alice
-      1     0.6    5     0     222      Bob
-      2     1.1    6     1     111    Alice
-      3     1.2    5     1     333    Carol
-      4     4.3    6     2     222      Bob
-      5     0.6    6     0     111    Alice
-
-Graphs
-======
-
-Arkouda can be used for constructing and performing basic analysis of graphs.
-
-Consider the following arkouda code (from ``toys/ak_rmat.py``), which generates an RMAT graph:
-
-.. code-block:: python
-
-    def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
-	# number of vertices
-	Nv = 2**lgNv
-	# number of edges
-	Ne = Ne_per_v * Nv
-	# probabilities
-	a = p
-	b = (1.0 - a)/ 3.0
-	c = b
-	d = b
-	# init edge arrays
-	ii = ak.ones(Ne,dtype=ak.int64)
-	jj = ak.ones(Ne,dtype=ak.int64)
-	# quantites to use in edge generation loop
-	ab = a+b
-	c_norm = c / (c + d)
-	a_norm = a / (a + b)
-	# generate edges
-	for ib in range(1,lgNv):
-	    ii_bit = (ak.randint(0,1,Ne,dtype=ak.float64) > ab)
-	    jj_bit = (ak.randint(0,1,Ne,dtype=ak.float64) > (c_norm * ii_bit + a_norm * (~ ii_bit)))
-	    ii = ii + ((2**(ib-1)) * ii_bit)
-	    jj = jj + ((2**(ib-1)) * jj_bit)
-	# sort all based on ii and jj using coargsort
-	# all edges should be sorted based on both vertices of the edge
-	iv = ak.coargsort((ii,jj))
-	# permute into sorted order
-	ii = ii[iv] # permute first vertex into sorted order
-	jj = jj[iv] # permute second vertex into sorted order
-	# to premute/rename vertices
-	if perm:
-	    # generate permutation for new vertex numbers(names)
-	    ir = ak.argsort(ak.randint(0,1,Nv,dtype=ak.float64))
-	    # renumber(rename) vertices
-	    ii = ir[ii] # rename first vertex
-	    jj = ir[jj] # rename second vertex
-	#
-	# maybe: remove edges which are self-loops???
-	#    
-	# return pair of ndarrays
-	return (ii,jj)
-
-Here we generate a random-looking edge-list representing one million vertices and about 10 million edges
-
-.. code-block:: python
-
-   >>> src, dst = gen_rmat_edges(20, 10, 0.01, True)
-
-Calculate out degrees using GroupBy:
-
-.. code-block:: python
-
-   >>> bySrc = ak.GroupBy(src)
-   >>> srcID, outDeg = bySrc.count()
-
-Breadth first search is relatively straightforward to implement using :ref:`setops-label`. This example is from ``toys/ak_bfs_conn_comp.py``.
-
-.. code-block:: python
-		
-    # src and dst pdarrays hold the edge list
-    # seeds pdarray with starting vertices/seeds
-    def bfs(src,dst,seeds,printLayers=False):
-	# holds vertices in the current layer of the bfs
-	Z = ak.unique(seeds)
-	# holds the visited vertices
-	V = ak.unique(Z) # holds vertices in Z to start with
-	# frontiers
-	F = [Z]
-	while Z.size != 0:
-	    if printLayers:
-		print("Z.size = ",Z.size," Z = ",Z)
-	    fZv = ak.in1d(src,Z) # find src vertex edges 
-	    W = ak.unique(dst[fZv]) # compress out dst vertices to match and make them unique
-	    Z = ak.setdiff1d(W,V) # subtract out vertices already visited
-	    V = ak.union1d(V,Z) # union current frontier into vertices already visited
-	    F.append(Z)
-	return (F,V)
-
-Now we do a breadth-first search from the first vertex:
-
-.. code-block:: python
-
-   >>> layers, visited = bfs(src, dst, ak.array([src[0]]))
-   >>> [l.size for l in layers]
-   [1, 1, 2056, 42584, 410889, 24146, 2, 0]
-   >>> visited.size
-   479679
-
-From this we see the number of new vertices in each frontier, as well as the total number of vertices reachable from the seed.
