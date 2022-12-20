@@ -187,7 +187,7 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
-            var e = st.addEntry(rname, l.size, uint);
+            var e = st.addEntry(rname, l.size, real);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.UInt64, DType.Bool) {
@@ -197,7 +197,7 @@ module OperatorMsg
               var e = st.addEntry(rname, l.size, bool);
               return doBinOpvv(l, r, e, op, rname, pn, st);
             }
-            var e = st.addEntry(rname, l.size, uint);
+            var e = st.addEntry(rname, l.size, real);
             return doBinOpvv(l, r, e, op, rname, pn, st);
           }
           when (DType.UInt64, DType.UInt64) {

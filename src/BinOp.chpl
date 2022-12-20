@@ -52,7 +52,7 @@ module BinOp
   :returns: (MsgTuple) 
   :throws: `UndefinedSymbolError(name)`
   */
-  proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws {
+  proc doBinOpvv (l, r, e, op: string, rname, pn, st) throws {
     if e.etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses
@@ -364,6 +364,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a:real + r.a:real;
+          }
+          when "-" {
+            e.a = l.a:real - r.a:real;
+          }
+          when "*" {
+            e.a = l.a:real * r.a:real;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);  
     } else if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
       select op {
           when "+" {
