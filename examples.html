@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; arkouda 0+untagged.1.gf6565f6 documentation</title>
+  <title>Examples &mdash; arkouda 0+untagged.1.g98aa94e documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.gf6565f6 documentation" href="index.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.g98aa94e documentation" href="index.html"/>
         <link rel="next" title="Contributing" href="contributing.html"/>
         <link rel="prev" title="ArrayView in Arkouda" href="usage/arrayview.html"/> 
 
@@ -96,14 +96,27 @@
 <li class="toctree-l1"><a class="reference internal" href="setup/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dataframe-like-patterns">DataFrame-like Patterns</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#selection">Selection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#grouping">Grouping</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#integration-with-pandas">Integration with Pandas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arkouda-arrays">Arkouda Arrays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pdarray-creation"><cite>pdarray</cite> Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-pdarray-objects">Exporting <cite>pdarray</cite> Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pdarray-set-operations"><cite>pdarray</cite> Set operations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#graphs">Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#arkouda-dataframes">Arkouda DataFrames</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-using-a-dataframe">Creating &amp; Using a DataFrame</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#importing-pandas-dataframe">Importing Pandas DataFrame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-mapping">Python Mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-interaction">Basic Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-to-pandas">Exporting to Pandas</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#groupby">GroupBy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pdarrays"><cite>pdarrays</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataframes">DataFrames</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
@@ -174,158 +187,274 @@
             
   <section id="examples">
 <span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h1>
-<section id="dataframe-like-patterns">
-<h2>DataFrame-like Patterns<a class="headerlink" href="#dataframe-like-patterns" title="Permalink to this heading">¶</a></h2>
-<p>DataFrames (e.g. from <code class="docutils literal notranslate"><span class="pre">pandas</span></code>) are a useful abstraction for working with tabular data. While arkouda does not yet have an actual <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, it is possible to do many of the same operations. Here, we will create and use a pseudo-DataFrame: a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of named <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, which are analogous to columns of a DataFrame. Let the following represent transactions in which a userID purchased an item on a particular day for a certain amount of money:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">userID</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">111</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">item</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">day</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">amount</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">4.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;userName&#39;</span><span class="p">:</span> <span class="n">userName</span><span class="p">,</span> <span class="s1">&#39;userID&#39;</span><span class="p">:</span> <span class="n">userID</span><span class="p">,</span>
-<span class="go">            &#39;item&#39;: item, &#39;day&#39;: day, &#39;amount&#39;: amount}</span>
+<section id="arkouda-arrays">
+<h2>Arkouda Arrays<a class="headerlink" href="#arkouda-arrays" title="Permalink to this heading">¶</a></h2>
+<p>Arkouda arrays function similarly to arrays in NumPy, but allow for a much larger scale. In Arkouda, arrays are referred to as <cite>pdarray</cite> objects. It is possible to generate a <cite>pdarray</cite> from a Python <cite>list</cite>, NumPy <cite>ndarray</cite>, or using a generator method similar to those found in NumPy. This document aims to provide an introduction into some of the most commonly used elements of Arkouda and is not an exhaustive description of functionality.</p>
+<section id="pdarray-creation">
+<h3><cite>pdarray</cite> Creation<a class="headerlink" href="#pdarray-creation" title="Permalink to this heading">¶</a></h3>
+<p>Like <cite>ndarray</cite> objects in NumPy, Arkouda <cite>pdarray</cite> objects can be generated from a Python <cite>list</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the Python List</span>
+<span class="o">&gt;&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+<span class="c1"># generate a pdarray</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
-<section id="selection">
-<h3>Selection<a class="headerlink" href="#selection" title="Permalink to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">df.loc[condition]</span></code> syntax is useful for selecting subsets of data by value and can be emulated in arkouda. For example, here we select all transactions involving user <code class="docutils literal notranslate"><span class="pre">111</span></code> of an amount less than <code class="docutils literal notranslate"><span class="pre">1.0</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;userID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">111</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">u1</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">u1</span>
-<span class="go">{&#39;userName&#39;: array([&#39;Alice&#39;, &#39;Alice&#39;]),</span>
-<span class="go"> &#39;userID&#39;: array([111, 111]),</span>
-<span class="go"> &#39;item&#39;: array([0, 0]),</span>
-<span class="go"> &#39;day&#39;: array([5, 6]),</span>
-<span class="go"> &#39;amount&#39;: array([0.5, 0.59999999999999998])}</span>
+<p><cite>pdarray</cite> objects can be generated directly from an <cite>ndarray</cite>. This allows you to easily move objects into Arkouda from NumPy.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create an ndarray</span>
+<span class="o">&gt;&gt;</span> <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="c1"># generate a pdarray</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np_arr</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
-</section>
-<section id="description">
-<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">])</span>
-<span class="go">(array([5, 6]), array([3, 3]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
-<span class="go">array([3, 2, 0, 0, 0, 0, 0, 0, 0, 1])</span>
-</pre></div>
-</div>
-</section>
-<section id="grouping">
-<h3>Grouping<a class="headerlink" href="#grouping" title="Permalink to this heading">¶</a></h3>
-<p>In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. Note that, because arkouda does not yet have a true <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, the arkouda <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> operation does not conform to the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> API.</p>
-<p>Here we group the data by item and get the number of unique users who bought the item, and the total revenue generated by the item.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;userID&#39;</span><span class="p">])</span>
-<span class="go">(array([0, 1, 2]), array([2, 2, 1]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span>
-<span class="go">(array([0, 1, 2]),</span>
-<span class="go"> array([1.7000000000000002, 2.2999999999999998, 4.3000000000000007]))</span>
+<p><cite>pdarray</cite> objects can be generated using generator calls such as <cite>arange</cite> and <cite>randint</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># arange</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">7</span> <span class="mi">8</span> <span class="mi">9</span><span class="p">])</span>
+
+<span class="c1"># randint(low, high, size)</span>
+<span class="o">&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">r</span> <span class="c1"># output will vary</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">52</span> <span class="mi">84</span> <span class="mi">1</span> <span class="mi">52</span> <span class="mi">80</span> <span class="mi">71</span> <span class="mi">27</span> <span class="mi">20</span> <span class="mi">7</span> <span class="mi">7</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
-<section id="integration-with-pandas">
-<h3>Integration with Pandas<a class="headerlink" href="#integration-with-pandas" title="Permalink to this heading">¶</a></h3>
-<p>Often, it is useful to load data in arkouda and bring back a small subset of the data to explore further in Pandas. This can be done as long as each column is less than <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code> in size (default 1 GB).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume some filtering takes place here</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">subset</span> <span class="o">=</span> <span class="n">data</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">col</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">subset</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span>
-   <span class="n">amount</span>  <span class="n">day</span>  <span class="n">item</span>  <span class="n">userID</span> <span class="n">userName</span>
-   <span class="mi">0</span>     <span class="mf">0.5</span>    <span class="mi">5</span>     <span class="mi">0</span>     <span class="mi">111</span>    <span class="n">Alice</span>
-   <span class="mi">1</span>     <span class="mf">0.6</span>    <span class="mi">5</span>     <span class="mi">0</span>     <span class="mi">222</span>      <span class="n">Bob</span>
-   <span class="mi">2</span>     <span class="mf">1.1</span>    <span class="mi">6</span>     <span class="mi">1</span>     <span class="mi">111</span>    <span class="n">Alice</span>
-   <span class="mi">3</span>     <span class="mf">1.2</span>    <span class="mi">5</span>     <span class="mi">1</span>     <span class="mi">333</span>    <span class="n">Carol</span>
-   <span class="mi">4</span>     <span class="mf">4.3</span>    <span class="mi">6</span>     <span class="mi">2</span>     <span class="mi">222</span>      <span class="n">Bob</span>
-   <span class="mi">5</span>     <span class="mf">0.6</span>    <span class="mi">6</span>     <span class="mi">0</span>     <span class="mi">111</span>    <span class="n">Alice</span>
+<section id="exporting-pdarray-objects">
+<h3>Exporting <cite>pdarray</cite> Objects<a class="headerlink" href="#exporting-pdarray-objects" title="Permalink to this heading">¶</a></h3>
+<p>Arkouda allows users to export <cite>pdarray</cite> objects to other formats to aide in transitioning between toolsets. A <cite>pdarray</cite> can be exported to a NumPy <cite>ndarray</cite> or a Python <cite>list</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create pdarray</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="c1"># export to ndarray</span>
+<span class="o">&gt;&gt;</span> <span class="n">np_arr</span> <span class="o">=</span> <span class="n">ak_arr</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+<span class="o">&gt;&gt;</span> <span class="n">np_arr</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+<span class="c1"># export to a Python List</span>
+<span class="o">&gt;&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="n">ak_arr</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="o">&gt;&gt;</span> <span class="n">l</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="pdarray-set-operations">
+<h3><cite>pdarray</cite> Set operations<a class="headerlink" href="#pdarray-set-operations" title="Permalink to this heading">¶</a></h3>
+<p>Like NumPy, Arkouda supports set operations on <cite>pdarray</cite> objects. The supported set operations are</p>
+<ul class="simple">
+<li><p><strong>IN</strong> (<cite>in1d</cite>) : Test whether each element of a 1-D array is also present in a second array.</p></li>
+<li><p><strong>UNION</strong> (<cite>union1d</cite>) : Compute the unique union of the arrays</p></li>
+<li><p><strong>INTERSECT</strong> (<cite>intersect1d</cite>) : Compute the unique intersection of the arrays.</p></li>
+<li><p><strong>SET DIFFERENCE</strong> (<cite>setdiff1d</cite>) : Compute the difference between the two arrays.</p></li>
+<li><p><strong>SYMMETRIC DIFFERENCE</strong> (<cite>setxor1d</cite>) : Compute the exclusive-or of the two arrays.</p></li>
+</ul>
+<p>One important note is that Arkouda takes this functionality beyond a single dimension. These operations can be performed on lists of <cite>pdarrays</cite> as well. We will look at <cite>in1d</cite> and <cite>intersect1d</cite> in both 1 dimension and multiple in the code block below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># configure 2 pdarrays to run against</span>
+<span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+<span class="c1"># compute boolean array indicating the values from a found in b.</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_in1d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_in1d</span>
+<span class="n">array</span><span class="p">([</span><span class="kc">True</span> <span class="kc">False</span> <span class="kc">True</span> <span class="kc">True</span> <span class="kc">True</span> <span class="kc">False</span> <span class="kc">False</span><span class="p">])</span>
+
+<span class="c1"># compute array of unique values found in a and b</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_int</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_int</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">])</span>
+
+<span class="c1"># Arkouda can perform this operation on multiple arrays at once</span>
+<span class="o">&gt;&gt;</span> <span class="n">m1</span> <span class="o">=</span><span class="p">[</span>
+    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">m2</span> <span class="o">=</span><span class="p">[</span>
+    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span>
+    <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="p">]</span>
+
+
+<span class="o">&gt;&gt;</span> <span class="n">ak_in1dmult</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_in1dmulti</span>
+<span class="n">array</span><span class="p">([</span><span class="kc">True</span> <span class="kc">False</span> <span class="kc">True</span> <span class="kc">False</span> <span class="kc">True</span> <span class="kc">False</span> <span class="kc">True</span><span class="p">])</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">ak_intmult</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">ak_intmult</span>
+<span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">3</span> <span class="mi">8</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">5</span> <span class="mi">8</span><span class="p">])]</span>
+</pre></div>
+</div>
+<p>There are a few things to keep in mind when working in the multi-dimension case. First, <cite>m1</cite> and <cite>m2</cite> must be Python <cite>lists</cite> containing the same number of <cite>pdarray</cite> elements. Second, the values are treated as a tuple. Using our example above, the first value of <cite>m1</cite> is viewed as <cite>(0, 0)</cite> during computation.</p>
+</section>
+</section>
+<section id="arkouda-dataframes">
+<h2>Arkouda DataFrames<a class="headerlink" href="#arkouda-dataframes" title="Permalink to this heading">¶</a></h2>
+<p>Like in Pandas, Arkouda supports the construct of a <cite>DataFrame</cite>. The structure of these objects is very similar, though some functionality may vary. <cite>DataFrames</cite> are extremely useful when working with multiple <cite>pdarray</cite> objects that are related. In Arkouda, <cite>DataFrames</cite> consist of an <cite>Index</cite> (which uses are <cite>Arkouda.Index</cite>), <cite>Column Names</cite> and <cite>Column Data</cite>.</p>
+<section id="creating-using-a-dataframe">
+<h3>Creating &amp; Using a DataFrame<a class="headerlink" href="#creating-using-a-dataframe" title="Permalink to this heading">¶</a></h3>
+<p>Let’s take a look at creating a <cite>DataFrame</cite> in Arkouda. Once again, we have several methods to create a <cite>DataFrame</cite> in Arkouda:</p>
+<ul class="simple">
+<li><p>Importing a Pandas <cite>DataFrame</cite></p></li>
+<li><p>Python Mapping <cite>{column_name: column_data}</cite>. <cite>column_data</cite> must be <cite>pdarray</cite>. <cite>column_name</cite> will be used by the constructor to set the column names for the <cite>DataFrame</cite></p></li>
+</ul>
+<p>The most important thing to remember is that each column of an Arkouda <cite>DataFrame</cite> is a <cite>pdarray</cite> and must be provided as such. The only exception is when a Pandas DataFrame is being imported because the constructor will generate the <cite>pdarray</cite> objects for you from the columns of the Pandas <cite>DataFrame</cite>.</p>
+<section id="importing-pandas-dataframe">
+<h4>Importing Pandas DataFrame<a class="headerlink" href="#importing-pandas-dataframe" title="Permalink to this heading">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># construct the Pandas DataFrame</span>
+<span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">salary</span> <span class="o">=</span> <span class="p">[</span><span class="mi">75000</span><span class="p">,</span> <span class="mi">77000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">35000</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="n">pd_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
+    <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
+    <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
+    <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="n">salary</span>
+<span class="p">})</span>
+<span class="o">&gt;&gt;</span> <span class="n">pd_df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span>
+
+<span class="c1"># call the Arkouda DataFrame constructor</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pd_df</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="python-mapping">
+<h4>Python Mapping<a class="headerlink" href="#python-mapping" title="Permalink to this heading">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Jake&#39;</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">lname</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Brown&#39;</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">age</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">37</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">salary</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">75000</span><span class="p">,</span> <span class="mi">77000</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">35000</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="n">fname</span><span class="p">,</span>
+    <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="n">lname</span><span class="p">,</span>
+    <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="n">age</span><span class="p">,</span>
+    <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="n">salary</span>
+<span class="p">})</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>NOTICE</strong>: Here the call to the Arkouda <cite>DataFrame</cite> constructor takes in very close to the same information as the Pandas constructor, but with one key difference. Each of the columns is an Arkouda <cite>pdarray</cite>.</p>
+</section>
+<section id="basic-interaction">
+<h4>Basic Interaction<a class="headerlink" href="#basic-interaction" title="Permalink to this heading">¶</a></h4>
+<p><strong>Please Note:</strong> For this section we will be using the same <cite>DataFrame</cite> generated in the creation demos.</p>
+<p>In this section, we will highlight some of the basics of <cite>DataFrame</cite> interaction in Arkouda. You should notice that it is very similar to interacting with a Pandas <cite>DataFrame</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+
+<span class="c1"># accessing a column</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">37</span> <span class="mi">35</span> <span class="mi">50</span> <span class="mi">32</span><span class="p">])</span>
+
+<span class="c1"># accessing multiple columns at once</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;L_Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="c1"># equivalent to df[[&#39;L_Name&#39;, &#39;Age&#39;]]</span>
+    <span class="n">L_Name</span>  <span class="n">Age</span>
+<span class="mi">0</span>    <span class="n">Doe</span>   <span class="mi">37</span>
+<span class="mi">1</span>    <span class="n">Doe</span>   <span class="mi">35</span>
+<span class="mi">2</span>  <span class="n">Smith</span>   <span class="mi">50</span>
+<span class="mi">3</span>  <span class="n">Brown</span>   <span class="mi">32</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">2</span> <span class="n">columns</span><span class="p">)</span>
+
+<span class="c1"># accessing row</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">{</span><span class="s1">&#39;F_Name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;L_Name&#39;</span><span class="p">:</span> <span class="s1">&#39;Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Age&#39;</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span> <span class="s1">&#39;Salary&#39;</span><span class="p">:</span> <span class="mi">75000</span><span class="p">}</span>
+
+<span class="c1"># accessing row slice</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span> <span class="p">(</span><span class="mi">2</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+
+<span class="c1"># accessing multiple indexes</span>
+<span class="o">&gt;&gt;</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">3</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="graphs">
-<h2>Graphs<a class="headerlink" href="#graphs" title="Permalink to this heading">¶</a></h2>
-<p>Arkouda can be used for constructing and performing basic analysis of graphs.</p>
-<p>Consider the following arkouda code (from <code class="docutils literal notranslate"><span class="pre">toys/ak_rmat.py</span></code>), which generates an RMAT graph:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_rmat_edges</span><span class="p">(</span><span class="n">lgNv</span><span class="p">,</span> <span class="n">Ne_per_v</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="c1"># number of vertices</span>
-    <span class="n">Nv</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">lgNv</span>
-    <span class="c1"># number of edges</span>
-    <span class="n">Ne</span> <span class="o">=</span> <span class="n">Ne_per_v</span> <span class="o">*</span> <span class="n">Nv</span>
-    <span class="c1"># probabilities</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">p</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">/</span> <span class="mf">3.0</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">b</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">b</span>
-    <span class="c1"># init edge arrays</span>
-    <span class="n">ii</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-    <span class="n">jj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-    <span class="c1"># quantites to use in edge generation loop</span>
-    <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
-    <span class="n">c_norm</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
-    <span class="n">a_norm</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
-    <span class="c1"># generate edges</span>
-    <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">lgNv</span><span class="p">):</span>
-        <span class="n">ii_bit</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ab</span><span class="p">)</span>
-        <span class="n">jj_bit</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">c_norm</span> <span class="o">*</span> <span class="n">ii_bit</span> <span class="o">+</span> <span class="n">a_norm</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span> <span class="n">ii_bit</span><span class="p">)))</span>
-        <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span> <span class="o">+</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">ib</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">ii_bit</span><span class="p">)</span>
-        <span class="n">jj</span> <span class="o">=</span> <span class="n">jj</span> <span class="o">+</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">ib</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">jj_bit</span><span class="p">)</span>
-    <span class="c1"># sort all based on ii and jj using coargsort</span>
-    <span class="c1"># all edges should be sorted based on both vertices of the edge</span>
-    <span class="n">iv</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">coargsort</span><span class="p">((</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">))</span>
-    <span class="c1"># permute into sorted order</span>
-    <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="c1"># permute first vertex into sorted order</span>
-    <span class="n">jj</span> <span class="o">=</span> <span class="n">jj</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="c1"># permute second vertex into sorted order</span>
-    <span class="c1"># to premute/rename vertices</span>
-    <span class="k">if</span> <span class="n">perm</span><span class="p">:</span>
-        <span class="c1"># generate permutation for new vertex numbers(names)</span>
-        <span class="n">ir</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Nv</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
-        <span class="c1"># renumber(rename) vertices</span>
-        <span class="n">ii</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="c1"># rename first vertex</span>
-        <span class="n">jj</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="c1"># rename second vertex</span>
-    <span class="c1">#</span>
-    <span class="c1"># maybe: remove edges which are self-loops???</span>
-    <span class="c1">#</span>
-    <span class="c1"># return pair of ndarrays</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span>
+<section id="exporting-to-pandas">
+<h3>Exporting to Pandas<a class="headerlink" href="#exporting-to-pandas" title="Permalink to this heading">¶</a></h3>
+<p>Exporting an Arkouda <cite>DataFrame</cite> to Pandas is extremely simple using the <cite>to_pandas</cite> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">pd_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<span class="o">&gt;&gt;</span> <span class="n">pd_df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span>
 </pre></div>
 </div>
-<p>Here we generate a random-looking edge-list representing one million vertices and about 10 million edges</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">gen_rmat_edges</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</section>
+</section>
+<section id="groupby">
+<h2>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">¶</a></h2>
+<p>In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. <cite>GroupBy</cite> functionality in Arkouda is supported on <cite>pdarray</cite> and <cite>DataFrame</cite> objects.</p>
+<section id="pdarrays">
+<h3><cite>pdarrays</cite><a class="headerlink" href="#pdarrays" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># using randint for more interesting results. Note values will vary</span>
+<span class="o">&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">7</span> <span class="mi">8</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span><span class="mi">14</span> <span class="mi">5</span> <span class="mi">8</span> <span class="mi">17</span> <span class="mi">14</span> <span class="mi">8</span> <span class="mi">5</span> <span class="mi">9</span> <span class="mi">11</span> <span class="mi">9</span><span class="p">]))</span>
 </pre></div>
 </div>
-<p>Calculate out degrees using GroupBy:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bySrc</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">srcID</span><span class="p">,</span> <span class="n">outDeg</span> <span class="o">=</span> <span class="n">bySrc</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</section>
+<section id="dataframes">
+<h3>DataFrames<a class="headerlink" href="#dataframes" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding reference to dataframe created earlier for easy reference</span>
+<span class="o">&gt;&gt;</span> <span class="n">df</span>
+    <span class="n">F_Name</span> <span class="n">L_Name</span>  <span class="n">Age</span>  <span class="n">Salary</span>
+<span class="mi">0</span>   <span class="n">John</span>    <span class="n">Doe</span>   <span class="mi">37</span>   <span class="mi">75000</span>
+<span class="mi">1</span>   <span class="n">Jane</span>    <span class="n">Doe</span>   <span class="mi">35</span>   <span class="mi">77000</span>
+<span class="mi">2</span>   <span class="n">John</span>  <span class="n">Smith</span>   <span class="mi">50</span>  <span class="mi">100000</span>
+<span class="mi">3</span>   <span class="n">Jake</span>  <span class="n">Brown</span>   <span class="mi">32</span>   <span class="mi">35000</span> <span class="p">(</span><span class="mi">4</span> <span class="n">rows</span> <span class="n">x</span> <span class="mi">4</span> <span class="n">columns</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;L_Name&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">Doe</span>      <span class="mi">2</span>
+<span class="n">Brown</span>    <span class="mi">1</span>
+<span class="n">Smith</span>    <span class="mi">1</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">int64</span>
 </pre></div>
 </div>
-<p>Breadth first search is relatively straightforward to implement using <a class="reference internal" href="usage/setops.html#setops-label"><span class="std std-ref">Array Set Operations</span></a>. This example is from <code class="docutils literal notranslate"><span class="pre">toys/ak_bfs_conn_comp.py</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># src and dst pdarrays hold the edge list</span>
-<span class="c1"># seeds pdarray with starting vertices/seeds</span>
-<span class="k">def</span> <span class="nf">bfs</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">dst</span><span class="p">,</span><span class="n">seeds</span><span class="p">,</span><span class="n">printLayers</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="c1"># holds vertices in the current layer of the bfs</span>
-    <span class="n">Z</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
-    <span class="c1"># holds the visited vertices</span>
-    <span class="n">V</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># holds vertices in Z to start with</span>
-    <span class="c1"># frontiers</span>
-    <span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">Z</span><span class="p">]</span>
-    <span class="k">while</span> <span class="n">Z</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">printLayers</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z.size = &quot;</span><span class="p">,</span><span class="n">Z</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="s2">&quot; Z = &quot;</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span>
-        <span class="n">fZv</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># find src vertex edges</span>
-        <span class="n">W</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dst</span><span class="p">[</span><span class="n">fZv</span><span class="p">])</span> <span class="c1"># compress out dst vertices to match and make them unique</span>
-        <span class="n">Z</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">V</span><span class="p">)</span> <span class="c1"># subtract out vertices already visited</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># union current frontier into vertices already visited</span>
-        <span class="n">F</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">F</span><span class="p">,</span><span class="n">V</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now we do a breadth-first search from the first vertex:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">layers</span><span class="p">,</span> <span class="n">visited</span> <span class="o">=</span> <span class="n">bfs</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]</span>
-<span class="go">[1, 1, 2056, 42584, 410889, 24146, 2, 0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">visited</span><span class="o">.</span><span class="n">size</span>
-<span class="go">479679</span>
-</pre></div>
-</div>
-<p>From this we see the number of new vertices in each frontier, as well as the total number of vertices reachable from the seed.</p>
+</section>
 </section>
 </section>
 
@@ -370,7 +499,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1.gf6565f6',
+            VERSION:'0+untagged.1.g98aa94e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
