@@ -814,6 +814,12 @@ class PdarrayCreationTest(ArkoudaTest):
             self.assertTrue(np.all(a == i + 1))
             self.assertTrue(np.all(npa == i + 1))
 
+    def test_uint_greediness(self):
+        # default to uint when all supportedInt and any value > 2**63
+        # to avoid loss of precision see (#1297)
+        self.assertEqual(ak.array([2 ** 63, 6, 2 ** 63 - 1, 2 ** 63 + 1]).dtype, ak.uint64)
+        self.assertEqual(ak.array([2 ** 64 - 1, 0, -1]).dtype, ak.uint64)
+
     def randint_randomness(self):
         # THIS TEST DOES NOT RUN, see Issue #1672
         # To run rename to `test_randint_randomness`
