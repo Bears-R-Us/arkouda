@@ -857,7 +857,7 @@ module ParquetMsg {
             var locDom = e.a.localSubdomain();
             // set the pointer to the entry array in the list of Pointers
             ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-            datatypes[i] = ARROWINT64;
+            datatypes[i] = ARROWUINT64;
             sizeList[i] = locDom.size;
           }
           when DType.Bool {
@@ -906,7 +906,7 @@ module ParquetMsg {
       
       // validate all elements same size
       var numelems: int = sizeList[0];
-      if !(|| reduce (sizeList==numelems)) {
+      if !(&& reduce (sizeList==numelems)) {
         throw getErrorWithContext(
               msg="Parquet columns must be the same size",
               lineNumber=getLineNumber(), 
