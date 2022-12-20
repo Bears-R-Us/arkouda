@@ -24,7 +24,7 @@ Like `ndarray` objects in NumPy, Arkouda `pdarray` objects can be generated from
     >> ak_arr
     array([0 1 2 3 4])
 
-`pdarray` objects can be generated directly form an `ndarray`. This makes allows you to easily move objects into Arkouda from NumPy.
+`pdarray` objects can be generated directly from an `ndarray`. This allows you to easily move objects into Arkouda from NumPy.
 
 .. code-block:: python
 
