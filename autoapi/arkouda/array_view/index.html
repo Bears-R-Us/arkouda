@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>arkouda.array_view &mdash; arkouda 0+untagged.1.g98aa94e documentation</title>
+  <title>arkouda.array_view &mdash; arkouda 0+untagged.1.gb657359 documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.g98aa94e documentation" href="../../../index.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.gb657359 documentation" href="../../../index.html"/>
         <link rel="up" title="arkouda" href="../index.html"/>
         <link rel="next" title="arkouda.categorical" href="../categorical/index.html"/>
         <link rel="prev" title="arkouda.alignment" href="../alignment/index.html"/> 
@@ -452,55 +452,6 @@ Distribute will store the date in a file per locale.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ArrayView'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.array_view.ArrayView.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>DEPRECATED
-Save the current ArrayView object to hdf5 file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Path to the file to write the dataset to</p></li>
-<li><p><strong>dset</strong> (<em>str</em>) – Name of the dataset to write</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em> (</em><em>truncate</em><em> | </em><em>append</em><em>)</em>) – Default: truncate
-Mode to write the dataset in. Truncate will overwrite any existing files.
-Append will add the dataset to an existing file.</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>single</em><em>|</em><em>distribute</em><em>)</em>) – Default: distribute
-Indicates the format to save the file. Single will store in a single file.
-Distribute will store the date in a file per locale.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.ArrayView.load</span></code></p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.array_view.ArrayView.load">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">ArrayView</span></a></span></span><a class="headerlink" href="#arkouda.array_view.ArrayView.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>DEPRECATED
-This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-or earlier. If used, save the object to update formatting.
-Read a multi-dimensional dataset from an HDF5 file into an ArrayView object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>file_path</strong> (<em>str</em>) – path to the file to read from</p></li>
-<li><p><strong>dset</strong> (<em>str</em>) – name of the dataset to read</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ArrayView object representing the data read from file</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.ArrayView.save</span></code></p>
-</div>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -548,7 +499,7 @@ Read a multi-dimensional dataset from an HDF5 file into an ArrayView object</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0+untagged.1.g98aa94e',
+            VERSION:'0+untagged.1.gb657359',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

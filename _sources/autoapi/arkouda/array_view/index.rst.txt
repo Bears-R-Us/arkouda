@@ -186,43 +186,4 @@ Attributes
       :type file_type: str (single|distribute)
 
 
-   .. py:method:: save(filepath: str, dset: str = 'ArrayView', mode: str = 'truncate', file_type: str = 'distribute')
-
-      DEPRECATED
-      Save the current ArrayView object to hdf5 file
-
-      :param filepath: Path to the file to write the dataset to
-      :type filepath: str
-      :param dset: Name of the dataset to write
-      :type dset: str
-      :param mode: Default: truncate
-                   Mode to write the dataset in. Truncate will overwrite any existing files.
-                   Append will add the dataset to an existing file.
-      :type mode: str (truncate | append)
-      :param file_type: Default: distribute
-                        Indicates the format to save the file. Single will store in a single file.
-                        Distribute will store the date in a file per locale.
-      :type file_type: str (single|distribute)
-
-      .. seealso:: :obj:`ak.ArrayView.load`
-
-
-   .. py:method:: load(filepath: str, dset: str) -> ArrayView
-      :staticmethod:
-
-      DEPRECATED
-      This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-      or earlier. If used, save the object to update formatting.
-      Read a multi-dimensional dataset from an HDF5 file into an ArrayView object
-
-      :param file_path: path to the file to read from
-      :type file_path: str
-      :param dset: name of the dataset to read
-      :type dset: str
-
-      :rtype: ArrayView object representing the data read from file
-
-      .. seealso:: :obj:`ak.ArrayView.save`
-
-
 

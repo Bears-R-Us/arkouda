@@ -28,8 +28,6 @@ Functions
    arkouda.io.load
    arkouda.io.load_all
    arkouda.io.read
-   arkouda.io.read_hdf5_multi_dim
-   arkouda.io.write_hdf5_multi_dim
    arkouda.io.save_all
 
 
@@ -565,61 +563,6 @@ Functions
    >>> x = ak.read('path/name_prefix.parquet', file_format='Parquet') # load Parquet
    Read Glob Expression
    >>> x = ak.read('path/name_prefix*') # Reads HDF5
-
-
-.. py:function:: read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView
-
-   DEPRECATED
-   This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-   or earlier. If used, save the object to update formatting.
-   Read a multi-dimensional object from an HDF5 file
-
-   :param file_path: path to the file to read from
-   :type file_path: str
-   :param dset: name of the dataset to read
-   :type dset: str
-
-   :rtype: ArrayView object representing the data read from file
-
-   .. seealso:: :obj:`ak.write_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - Error handling done on server to prevent multiple server calls
-   - This is an initial implementation and updates will be coming soon
-   - dset currently only reading a single dataset is supported
-   - file_path will need to support list[str] and str for glob
-   - Currently, order is always assumed to be row major
-
-
-.. py:function:: write_hdf5_multi_dim(obj: arkouda.array_view.ArrayView, file_path: str, dset: str, mode: str = 'truncate', file_type: str = 'distribute')
-
-   DEPRECATED
-   Write a multi-dimensional ArrayView object to an HDF5 file
-
-   :param obj: The object that will be written to the file
-   :type obj: ArrayView
-   :param file_path: Path to the file to write the dataset to
-   :type file_path: str
-   :param dset: Name of the dataset to write
-   :type dset: str
-   :param mode: Default: truncate
-                Mode to write the dataset in. Truncate will overwrite any existing files.
-                Append will add the dataset to an existing file.
-   :type mode: str (truncate | append)
-   :param file_type: Default: distribute
-                     Indicates the format to save the file. Single will store in a single file.
-                     Distribute will store the date in a file per locale.
-   :type file_type: str (single|distribute)
-
-   .. seealso:: :obj:`ak.read_hdf5_multi_dim`
-
-   .. rubric:: Notes
-
-   - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
-   - If a file does not exist, it will be created regardless of the mode value
-   - This function is currently standalone functionality for multi-dimensional datasets
-   - Error handling done on server to prevent multiple server calls
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute') -> None

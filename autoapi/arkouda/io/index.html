@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>arkouda.io &mdash; arkouda 0+untagged.1.g98aa94e documentation</title>
+  <title>arkouda.io &mdash; arkouda 0+untagged.1.gb657359 documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.g98aa94e documentation" href="../../../index.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.gb657359 documentation" href="../../../index.html"/>
         <link rel="up" title="arkouda" href="../index.html"/>
         <link rel="next" title="arkouda.io_util" href="../io_util/index.html"/>
         <link rel="prev" title="arkouda.infoclass" href="../infoclass/index.html"/> 
@@ -260,12 +260,6 @@
 <td><p>Load multiple pdarrays or Strings previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
-<td><p>DEPRECATED</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_hdf5_multi_dim" title="arkouda.io.read_hdf5_multi_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf5_multi_dim</span></code></a>(→ arkouda.array_view.ArrayView)</p></td>
-<td><p>DEPRECATED</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.write_hdf5_multi_dim" title="arkouda.io.write_hdf5_multi_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_hdf5_multi_dim</span></code></a>(obj, file_path, dset[, mode, ...])</p></td>
 <td><p>DEPRECATED</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.save_all" title="arkouda.io.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(→ None)</p></td>
@@ -914,71 +908,6 @@ Read Glob Expression
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.io.read_hdf5_multi_dim">
-<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">read_hdf5_multi_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a></span></span><a class="headerlink" href="#arkouda.io.read_hdf5_multi_dim" title="Permalink to this definition">¶</a></dt>
-<dd><p>DEPRECATED
-This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-or earlier. If used, save the object to update formatting.
-Read a multi-dimensional object from an HDF5 file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>file_path</strong> (<em>str</em>) – path to the file to read from</p></li>
-<li><p><strong>dset</strong> (<em>str</em>) – name of the dataset to read</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ArrayView object representing the data read from file</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.write_hdf5_multi_dim</span></code></p>
-</div>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Error handling done on server to prevent multiple server calls</p></li>
-<li><p>This is an initial implementation and updates will be coming soon</p></li>
-<li><p>dset currently only reading a single dataset is supported</p></li>
-<li><p>file_path will need to support list[str] and str for glob</p></li>
-<li><p>Currently, order is always assumed to be row major</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.io.write_hdf5_multi_dim">
-<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">write_hdf5_multi_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.write_hdf5_multi_dim" title="Permalink to this definition">¶</a></dt>
-<dd><p>DEPRECATED
-Write a multi-dimensional ArrayView object to an HDF5 file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><em>ArrayView</em></a>) – The object that will be written to the file</p></li>
-<li><p><strong>file_path</strong> (<em>str</em>) – Path to the file to write the dataset to</p></li>
-<li><p><strong>dset</strong> (<em>str</em>) – Name of the dataset to write</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em> (</em><em>truncate</em><em> | </em><em>append</em><em>)</em>) – Default: truncate
-Mode to write the dataset in. Truncate will overwrite any existing files.
-Append will add the dataset to an existing file.</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>single</em><em>|</em><em>distribute</em><em>)</em>) – Default: distribute
-Indicates the format to save the file. Single will store in a single file.
-Distribute will store the date in a file per locale.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ak.read_hdf5_multi_dim</span></code></p>
-</div>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>All ArrayView/Multi-Dimensional objects are stored as flattened arrays</p></li>
-<li><p>If a file does not exist, it will be created regardless of the mode value</p></li>
-<li><p>This function is currently standalone functionality for multi-dimensional datasets</p></li>
-<li><p>Error handling done on server to prevent multiple server calls</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.save_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">save_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HDF5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.io.save_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>DEPRECATED
@@ -1077,7 +1006,7 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0+untagged.1.g98aa94e',
+            VERSION:'0+untagged.1.gb657359',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
