@@ -158,7 +158,7 @@ setup(
         'dev': ['pexpect', 'pytest>=6.0', 'pytest-env',
                 'Sphinx>=5.1.1', 'sphinx-argparse', 'sphinx-autoapi',
                 'mypy>=0.931,<0.990', 'typed-ast', 'black', 'isort',
-                'flake8'],
+                'flake8', 'sphinx-theme'],
     },
     # replace original install command with version that also builds
     # chapel and the arkouda server.

@@ -39,6 +39,7 @@ The dependencies listed here are only required if you will be doing development 
 - `Sphinx`
 - `sphinx-argparse`
 - `sphinx-autoapi`
+- `sphinx-theme`
 - `typed-ast`
 - `mypy>=0.931,<0.990`
 - `flake8`
