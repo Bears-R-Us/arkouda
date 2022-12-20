@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from enum import Enum
-from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -404,71 +403,3 @@ class ArrayView:
                 "objType": "ArrayView",
             },
         )
-
-    def save(
-        self,
-        filepath: str,
-        dset: str = "ArrayView",
-        mode: str = "truncate",
-        file_type: str = "distribute",
-    ):
-        """
-        DEPRECATED
-        Save the current ArrayView object to hdf5 file
-
-        Parameters
-        ----------
-        filepath: str
-            Path to the file to write the dataset to
-        dset: str
-            Name of the dataset to write
-        mode: str (truncate | append)
-            Default: truncate
-            Mode to write the dataset in. Truncate will overwrite any existing files.
-            Append will add the dataset to an existing file.
-        file_type: str (single|distribute)
-            Default: distribute
-            Indicates the format to save the file. Single will store in a single file.
-            Distribute will store the date in a file per locale.
-
-        See Also
-        --------
-        ak.ArrayView.load
-        """
-        warn(
-            "ak.ArrayView.save has been deprecated. "
-            "Please use ak.ArrayView.to_hdf",
-            DeprecationWarning,
-        )
-        from arkouda.io import write_hdf5_multi_dim
-        write_hdf5_multi_dim(self, filepath, dset, mode=mode, file_type=file_type)
-
-    @staticmethod
-    def load(filepath: str, dset: str) -> ArrayView:
-        """
-        DEPRECATED
-        This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-        or earlier. If used, save the object to update formatting.
-        Read a multi-dimensional dataset from an HDF5 file into an ArrayView object
-
-        Parameters
-        ----------
-        file_path: str
-            path to the file to read from
-        dset: str
-            name of the dataset to read
-
-        Returns
-        -------
-        ArrayView object representing the data read from file
-
-        See Also
-        --------
-        ak.ArrayView.save
-        """
-        warn(
-            "ak.ArrayView.load has been deprecated. Please use ak.load",
-            DeprecationWarning,
-        )
-        from arkouda.io import read_hdf5_multi_dim
-        return read_hdf5_multi_dim(filepath, dset)

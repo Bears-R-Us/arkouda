@@ -27,8 +27,6 @@ __all__ = [
     "load",
     "load_all",
     "read",
-    "read_hdf5_multi_dim",
-    "write_hdf5_multi_dim",
     "save_all",
     "file_type_to_int",
     "mode_str_to_int",
@@ -1325,122 +1323,6 @@ def read(
                 raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         else:
             raise RuntimeError("No items were returned")
-
-
-@typechecked
-def read_hdf5_multi_dim(file_path: str, dset: str) -> arkouda.array_view.ArrayView:
-    """
-    DEPRECATED
-    This function is being mantained to allow reading from files written in Arkouda v2022.10.13
-    or earlier. If used, save the object to update formatting.
-    Read a multi-dimensional object from an HDF5 file
-
-    Parameters
-    ----------
-    file_path: str
-        path to the file to read from
-    dset: str
-        name of the dataset to read
-
-    Returns
-    -------
-    ArrayView object representing the data read from file
-
-    See Also
-    --------
-    ak.write_hdf5_multi_dim
-
-    Notes
-    -----
-        - Error handling done on server to prevent multiple server calls
-        - This is an initial implementation and updates will be coming soon
-        - dset currently only reading a single dataset is supported
-        - file_path will need to support list[str] and str for glob
-        - Currently, order is always assumed to be row major
-    """
-    warn(
-        "ak.pdarrayIO.read_hdf5_multi_dim has been deprecated. Please use ak.pdarrayIO.read",
-        DeprecationWarning,
-    )
-    args = {"filename": file_path, "dset": dset}
-    rep_msg = cast(
-        str,
-        generic_msg(
-            cmd="readhdf_multi",
-            args=args,
-        ),
-    )
-
-    objs = rep_msg.split("+")
-
-    shape = create_pdarray(objs[0])
-    flat = create_pdarray(objs[1])
-
-    arr = arkouda.array_view.ArrayView(flat, shape)
-    return arr
-
-
-@typechecked
-def write_hdf5_multi_dim(
-    obj: arkouda.array_view.ArrayView,
-    file_path: str,
-    dset: str,
-    mode: str = "truncate",
-    file_type: str = "distribute",
-):
-    """
-    DEPRECATED
-    Write a multi-dimensional ArrayView object to an HDF5 file
-
-    Parameters
-    ----------
-    obj: ArrayView
-        The object that will be written to the file
-    file_path: str
-        Path to the file to write the dataset to
-    dset: str
-        Name of the dataset to write
-    mode: str (truncate | append)
-        Default: truncate
-        Mode to write the dataset in. Truncate will overwrite any existing files.
-        Append will add the dataset to an existing file.
-    file_type: str (single|distribute)
-        Default: distribute
-        Indicates the format to save the file. Single will store in a single file.
-        Distribute will store the date in a file per locale.
-
-    See Also
-    --------
-    ak.read_hdf5_multi_dim
-
-    Notes
-    -----
-    - All ArrayView/Multi-Dimensional objects are stored as flattened arrays
-    - If a file does not exist, it will be created regardless of the mode value
-    - This function is currently standalone functionality for multi-dimensional datasets
-    - Error handling done on server to prevent multiple server calls
-    """
-    from arkouda.io import file_type_to_int, mode_str_to_int
-
-    warn(
-        "ak.write_hdf5_multi_dim has been deprecated. Please use ak.ArrayView.to_hdf",
-        DeprecationWarning,
-    )
-    args = {
-        "values": obj.base,
-        "shape": obj.shape,
-        "order": obj.order,
-        "filename": file_path,
-        "file_format": file_type_to_int(file_type),
-        "dset": dset,
-        "write_mode": mode_str_to_int(mode),
-        "objType": "ArrayView",
-    }
-
-    generic_msg(
-        cmd="tohdf",
-        args=args,
-    )
 
 
 def save_all(

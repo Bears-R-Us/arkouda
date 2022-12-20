@@ -450,18 +450,6 @@ class DeprecatedIOTest(ArkoudaTest):
             with pytest.deprecated_call():
                 ak.read(f"{tmp_dirname}/bad_dataset_names*")
 
-    def test_multi_dim_rdwr(self):
-        arr = ak.ArrayView(ak.arange(27), ak.array([3, 3, 3]))
-        with tempfile.TemporaryDirectory(dir=DeprecatedIOTest.dep_test_base_tmp) as tmp_dirname:
-            with pytest.deprecated_call():
-                ak.write_hdf5_multi_dim(
-                    arr, tmp_dirname + "/multi_dim_test", "MultiDimObj", mode="append"
-                )
-            # load data back
-            with pytest.deprecated_call():
-                read_arr = ak.read(tmp_dirname + "/multi_dim_test*", "MultiDimObj")
-            self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
-
     def test_parquet(self):
         for dtype in TYPES:
             if dtype == "int64":

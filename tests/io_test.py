@@ -755,7 +755,7 @@ class IOTest(ArkoudaTest):
 
     def testInternalVersions(self):
         """
-        Deprecated - using legacy read
+        Test loading legacy files to ensure they can still be read.
         Test loading internal arkouda hdf5 structuring by loading v0 and v1 files.
         v1 contains _arkouda_metadata group and attributes, v0 does not.
         Files are located under `test/resources` ... where server-side unit tests are located.
