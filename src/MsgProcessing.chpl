@@ -146,25 +146,56 @@ module MsgProcessing
     }
 
     /* 
-    query server total memory allocated or symbol table data memory
-    
-    :arg reqMsg: request containing (cmd)
-    :type reqMsg: string 
+        query server total memory allocated or symbol table data memory
 
-    :arg st: SymTab to act on
-    :type st: borrowed SymTab 
+        :arg reqMsg: request containing (cmd)
+        :type reqMsg: string
 
-    :returns: MsgTuple
+        :arg st: SymTab to act on
+        :type st: borrowed SymTab
+
+        :returns: MsgTuple
      */
     proc getmemusedMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
+        var factor = msgArgs.get("factor").getIntValue();
+        var asPercent = msgArgs.get("as_percent").getBoolValue();
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
-        if (memTrack) {
-            return new MsgTuple((getMemUsed():uint * numLocales:uint):string, MsgType.NORMAL);
+        var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
+        if asPercent {
+            repMsg = AutoMath.round((memUsed / (getMemLimit():real * numLocales)) * 100):uint:string;
         }
         else {
-            return new MsgTuple(st.memUsed():string, MsgType.NORMAL);
+            repMsg = AutoMath.round(memUsed / factor):uint:string;
         }
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    /*
+        query server total memory availble
+
+        :arg reqMsg: request containing (cmd)
+        :type reqMsg: string
+
+        :arg st: SymTab to act on
+        :type st: borrowed SymTab
+
+        :returns: MsgTuple
+     */
+    proc getmemavailMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var repMsg: string; // response message
+        var factor = msgArgs.get("factor").getIntValue();
+        var asPercent = msgArgs.get("as_percent").getBoolValue();
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
+        var memUsed = if memTrack then getMemUsed():real * numLocales else st.memUsed():real;
+        var totMem = getMemLimit():real * numLocales;
+        if asPercent {
+            repMsg = (100 - AutoMath.round((memUsed / totMem) * 100)):uint:string;
+        }
+        else {
+            repMsg = AutoMath.round((totMem - memUsed) / factor):uint:string;
+        }
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
     /**
