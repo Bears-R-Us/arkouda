@@ -79,9 +79,9 @@ Like NumPy, Arkouda supports set operations on `pdarray` objects. The supported 
 - **UNION** (`union1d`) : Compute the unique union of the arrays
 - **INTERSECT** (`intersect1d`) : Compute the unique intersection of the arrays.
 - **SET DIFFERENCE** (`setdiff1d`) : Compute the difference between the two arrays.
-- **SYMMETRIC DIFFERENCE** (`setxor1d`) : Compute the exlusive-or of the two arrays.
+- **SYMMETRIC DIFFERENCE** (`setxor1d`) : Compute the exclusive-or of the two arrays.
 
-One important note is that Arkouda takes this functionality beyond a single dimension. This operations can be performed on lists of `pdarrays` as well. We will look at `in1d` and `intersect1d` in both 1 dimension and multiple in the code block below.
+One important note is that Arkouda takes this functionality beyond a single dimension. These operations can be performed on lists of `pdarrays` as well. We will look at `in1d` and `intersect1d` in both 1 dimension and multiple in the code block below.
 
 .. code-block:: python
 
