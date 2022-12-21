@@ -5,6 +5,7 @@ module SequenceMsg {
     use Reflection;
     use Logging;
     use Message;
+    use BigInteger;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -55,7 +56,39 @@ module SequenceMsg {
         repMsg = "created " + st.attrib(rname);
         smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
-    }            
+    }
+
+    proc bigIntArangeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var repMsg: string; // response message
+        var start = msgArgs.get("start").getBigIntValue();
+        var stop = msgArgs.get("stop").getBigIntValue();
+        var stride = msgArgs.get("stride").getBigIntValue();
+        // compute length
+        var len = (stop - start + stride - 1) / stride;
+        // TODO figure out a way to do memory checking for bigint
+        // overMemLimit(8*len);
+        // get next symbol name
+        var rname = st.nextName();
+
+        smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                       "cmd: %s start: %jt stop: %jt stride: %jt : len: %jt rname: %s".format(
+                        cmd, start, stop, stride, len, rname));
+        
+        var t1 = Time.getCurrentTime();
+        var tmp = makeDistArray(len:int, bigint);
+        const ref td = tmp.domain;
+        forall (ti, i) in zip(tmp,td) {
+            ti = start + (i * stride);
+        }
+        var e = st.addEntry(rname, new shared SymEntry(tmp));
+
+        smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "compute time = %i sec".format(Time.getCurrentTime() - t1));
+
+        repMsg = "created " + st.attrib(rname);
+        smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }  
 
     /* 
     Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, len)
@@ -105,5 +138,6 @@ module SequenceMsg {
 
     use CommandMap;
     registerFunction("arange", arangeMsg, getModuleName());
+    registerFunction("bigintArange", bigIntArangeMsg, getModuleName());
     registerFunction("linspace", linspaceMsg, getModuleName());
 }

@@ -7,6 +7,8 @@ from typing import Dict
 
 from typeguard import typechecked
 
+from arkouda.dtypes import bigint
+
 
 class ObjectType(Enum):
     """
@@ -169,6 +171,8 @@ class ParameterObject:
         ParameterObject
         """
         v = val if isinstance(val, str) else str(val)
+        if isinstance(val, int) and val >= 2**64:
+            return ParameterObject(key, ObjectType.VALUE, bigint.name, v)
         return ParameterObject(key, ObjectType.VALUE, type(val).__name__, v)
 
     @staticmethod

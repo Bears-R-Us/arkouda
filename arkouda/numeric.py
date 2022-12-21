@@ -7,6 +7,7 @@ from typeguard import typechecked
 
 from arkouda.client import generic_msg
 from arkouda.dtypes import (
+    BigInt,
     DTypes,
     _as_dtype,
     int_scalars,
@@ -46,7 +47,9 @@ class ErrorMode(Enum):
 
 @typechecked
 def cast(
-    pda: Union[pdarray, Strings], dt: Union[np.dtype, type, str], errors: ErrorMode = ErrorMode.strict
+    pda: Union[pdarray, Strings],
+    dt: Union[np.dtype, type, str, BigInt],
+    errors: ErrorMode = ErrorMode.strict,
 ) -> Union[Union[pdarray, Strings], Tuple[pdarray, pdarray]]:
     """
     Cast an array to another dtype.
@@ -660,10 +663,7 @@ def histogram(pda: pdarray, bins: int_scalars = 10) -> Tuple[np.ndarray, pdarray
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
     b = np.linspace(pda.min(), pda.max(), bins + 1)[:-1]  # type: ignore
-    repMsg = generic_msg(cmd="histogram", args={
-        "array": pda,
-        "bins": bins
-    })
+    repMsg = generic_msg(cmd="histogram", args={"array": pda, "bins": bins})
     return b, create_pdarray(type_cast(str, repMsg))
 
 

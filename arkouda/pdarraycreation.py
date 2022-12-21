@@ -6,7 +6,14 @@ import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, DTypes, NumericDTypes, SeriesDTypes
+from arkouda.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    BigInt,
+    DTypes,
+    NumericDTypes,
+    SeriesDTypes,
+    bigint,
+)
 from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import (
     float64,
@@ -18,6 +25,7 @@ from arkouda.dtypes import (
     isSupportedNumber,
     numeric_scalars,
 )
+from arkouda.dtypes import uint64 as akuint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.strings import Strings
 
@@ -37,6 +45,7 @@ __all__ = [
     "random_strings_uniform",
     "random_strings_lognormal",
     "from_series",
+    "bigint_from_uint_arrays",
 ]
 
 
@@ -130,7 +139,7 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
 
 def array(
-    a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None
+    a: Union[pdarray, np.ndarray, Iterable], dtype: Union[np.dtype, type, str] = None, max_bits: int = -1
 ) -> Union[pdarray, Strings]:
     """
     Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
@@ -142,6 +151,8 @@ def array(
         Rank-1 array of a supported dtype
     dtype: np.dtype, type, or str
         The target dtype to cast values to
+    max_bits: int
+        Specifies the maximum number of bits; only used for bigint pdarrays
 
     Returns
     -------
@@ -196,16 +207,17 @@ def array(
 
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
+        # TODO update if max_bits is set
         return a if dtype is None else akcast(a, dtype)
     from arkouda.client import maxTransferBytes
 
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
-            if dtype is not None:
+            if dtype is not None and dtype != bigint:
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
-            elif all(isSupportedInt(i) for i in a) and any(i > 2 ** 63 for i in a):
+            elif all(isSupportedInt(i) for i in a) and any(2**64 > i > 2 ** 63 for i in a):
                 # all supportedInt values but some >2**63, default to uint (see #1297)
                 # iterating shouldn't be too expensive since
                 # this is after the `isinstance(a, pdarray)` check
@@ -250,24 +262,38 @@ def array(
         )
 
     # If not strings, then check that dtype is supported in arkouda
-    if a.dtype.name not in DTypes:
-        raise RuntimeError(f"Unhandled dtype {a.dtype}")
-    # Do not allow arrays that are too large
-    size = a.size
-    if (size * a.itemsize) > maxTransferBytes:
-        raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
-    # Pack binary array data into a bytes object with a command header
-    # including the dtype and size. If the server has a different byteorder
-    # than our numpy array we need to swap to match since the server expects
-    # native endian bytes
-    aview = _array_memview(a)
-    rep_msg = generic_msg(
-        cmd="array",
-        args={"dtype": a.dtype.name, "size": size, "seg_string": False},
-        payload=aview,
-        send_binary=True,
-    )
-    return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+    if dtype == bigint or a.dtype.name not in DTypes:
+        # 2 situations result in attempting to call `bigint_from_uint_arrays`
+        # 1. user specified i.e. dtype=ak.bigint
+        # 2. too big to fit into other numpy types (dtype = object)
+        try:
+            # attempt to break bigint into multiple uint64 arrays
+            uint_arrays = []
+            while any(a != 0):
+                low, a = a % 2**64, a // 2**64
+                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+            return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
+        except TypeError:
+            raise RuntimeError(f"Unhandled dtype {a.dtype}")
+    else:
+        # Do not allow arrays that are too large
+        size = a.size
+        if (size * a.itemsize) > maxTransferBytes:
+            raise RuntimeError(
+                "Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow"
+            )
+        # Pack binary array data into a bytes object with a command header
+        # including the dtype and size. If the server has a different byteorder
+        # than our numpy array we need to swap to match since the server expects
+        # native endian bytes
+        aview = _array_memview(a)
+        rep_msg = generic_msg(
+            cmd="array",
+            args={"dtype": a.dtype.name, "size": size, "seg_string": False},
+            payload=aview,
+            send_binary=True,
+        )
+        return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
 
 
 def _array_memview(a) -> memoryview:
@@ -279,8 +305,70 @@ def _array_memview(a) -> memoryview:
         return memoryview(a)
 
 
+def bigint_from_uint_arrays(arrays, max_bits=-1):
+    """
+    Create a bigint pdarray from an iterable of uint pdarrays.
+    The first item in arrays will be the highest 64 bits and
+    the last item will be the lowest 64 bits.
+
+    Parameters
+    ----------
+    arrays : Sequence[pdarray]
+        An iterable of uint pdarrays used to construct the bigint pdarray.
+        The first item in arrays will be the highest 64 bits and
+        the last item will be the lowest 64 bits.
+    max_bits : int
+        Specifies the maximum number of bits; only used for bigint pdarrays
+
+    Returns
+    -------
+    pdarray
+        bigint pdarray constructed from uint arrays
+
+    Raises
+    ------
+    TypeError
+        Raised if any pdarray in arrays has a dtype other than uint or
+        if the pdarrays are not the same size.
+    RuntimeError
+        Raised if there is a server-side error thrown
+
+    See Also
+    --------
+    pdarray.bigint_to_uint_arrays
+
+    Examples
+    --------
+    >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
+    >>> a
+    array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+    "18446744073709551619" "18446744073709551620"])
+
+    >>> a.dtype
+    dtype(bigint)
+
+    >>> all(a[i] == 2**64 + i for i in range(5))
+    True
+    """
+    if not all(isinstance(a, pdarray) and a.dtype == akuint64 for a in arrays):
+        raise TypeError("Sequence must contain only uint pdarrays")
+    if len({a.size for a in arrays}) != 1:
+        raise TypeError("All pdarrays must be same size")
+    return create_pdarray(
+        generic_msg(
+            cmd="big_int_creation",
+            args={
+                "arrays": arrays,
+                "num_arrays": len(arrays),
+                "len": arrays[0].size,
+                "max_bits": max_bits,
+            },
+        )
+    )
+
+
 @typechecked
-def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
+def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt] = float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -320,16 +408,17 @@ def zeros(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = flo
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
     # check dtype for error
-    if cast(np.dtype, dtype).name not in NumericDTypes:
+    if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
+    repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
 
     return create_pdarray(repMsg)
 
 
 @typechecked
-def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = float64) -> pdarray:
+def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str, BigInt] = float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -369,10 +458,11 @@ def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = floa
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
     # check dtype for error
-    if cast(np.dtype, dtype).name not in NumericDTypes:
+    if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
+    repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(1)
     return a
@@ -380,7 +470,9 @@ def ones(size: Union[int_scalars, str], dtype: Union[np.dtype, type, str] = floa
 
 @typechecked
 def full(
-    size: Union[int_scalars, str], fill_value: int_scalars, dtype: Union[np.dtype, type, str] = float64
+    size: Union[int_scalars, str],
+    fill_value: int_scalars,
+    dtype: Union[np.dtype, type, str, BigInt] = float64,
 ) -> pdarray:
     """
     Create a pdarray filled with fill_value.
@@ -423,10 +515,11 @@ def full(
     if not np.isscalar(size):
         raise TypeError(f"size must be a scalar, not {size.__class__.__name__}")
     dtype = akdtype(dtype)  # normalize dtype
+    dtype_name = dtype.name if isinstance(dtype, BigInt) else cast(np.dtype, dtype).name
     # check dtype for error
-    if cast(np.dtype, dtype).name not in NumericDTypes:
+    if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    repMsg = generic_msg(cmd="create", args={"dtype": cast(np.dtype, dtype).name, "size": size})
+    repMsg = generic_msg(cmd="create", args={"dtype": dtype_name, "size": size})
     a = create_pdarray(repMsg)
     a.fill(fill_value)
     return a
@@ -656,10 +749,17 @@ def arange(*args, **kwargs) -> pdarray:
     dtype = int64 if "dtype" not in kwargs.keys() else kwargs["dtype"]
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
-        if stride < 0:
-            stop = stop + 2
-        repMsg = generic_msg(cmd="arange", args={"start": start, "stop": stop, "stride": stride})
-        return create_pdarray(repMsg) if dtype == int64 else akcast(create_pdarray(repMsg), dtype)
+        if dtype in ["bigint", bigint] or start >= 2**64 or stop >= 2**64:
+            # we only return dtype bigint here
+            repMsg = generic_msg(
+                cmd="bigintArange", args={"start": start, "stop": stop, "stride": stride}
+            )
+            return create_pdarray(repMsg)
+        else:
+            if stride < 0:
+                stop = stop + 2
+            repMsg = generic_msg(cmd="arange", args={"start": start, "stop": stop, "stride": stride})
+            return create_pdarray(repMsg) if dtype == int64 else akcast(create_pdarray(repMsg), dtype)
     else:
         raise TypeError(
             f"start,stop,stride must be type int, np.int64, or np.uint64 {start} {stop} {stride}"

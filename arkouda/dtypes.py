@@ -16,6 +16,7 @@ __all__ = [
     "uint8",
     "uint64",
     "str_",
+    "bigint",
     "intTypes",
     "bitType",
     "check_np_dtype",
@@ -40,15 +41,40 @@ NUMBER_FORMAT_STRINGS = {
     "uint8": "{:n}",
     "np.float64": "f",
     "uint64": "{:n}",
+    "bigint": "{:n}",
 }
 
-dtype = np.dtype
+
+def dtype(x):
+    # we had to create our own bigint type since numpy
+    # gives them dtype=object there's no np equivalent
+    if (isinstance(x, str) and x == "bigint") or isinstance(x, BigInt):
+        return bigint
+    else:
+        return np.dtype(x)
+
+
+class BigInt:
+    def __init__(self):
+        self.name = "bigint"
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"dtype({self.name})"
+
+    def type(self, x):
+        return int(x)
+
+
 bool = np.dtype(bool)
 int64 = np.dtype(np.int64)
 float64 = np.dtype(np.float64)
 uint8 = np.dtype(np.uint8)
 uint64 = np.dtype(np.uint64)
 str_ = np.dtype(np.str_)
+bigint = BigInt()
 npstr = np.dtype(str)
 intTypes = frozenset((int64, uint64, uint8))
 bitType = uint64
@@ -100,6 +126,7 @@ class DType(Enum):
     STR = "str"
     UINT8 = "uint8"
     UINT64 = "uint64"
+    BIGINT = "bigint"
 
     def __str__(self) -> str:  # type: ignore
         """
@@ -126,6 +153,7 @@ ARKOUDA_SUPPORTED_INTS = (
     np.uint16,
     np.uint32,
     np.uint64,
+    BigInt,
 )
 ARKOUDA_SUPPORTED_FLOATS = (float, np.float64)
 ARKOUDA_SUPPORTED_NUMBERS = (
@@ -140,14 +168,13 @@ ARKOUDA_SUPPORTED_NUMBERS = (
     np.uint16,
     np.uint32,
     np.uint64,
+    BigInt,
 )
-ARKOUDA_SUPPORTED_DTYPES = frozenset(
-    [member.value for _, member in DType.__members__.items()]
-)
+ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, member in DType.__members__.items()])
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
 DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8, uint64])
-NumericDTypes = frozenset(["bool", "float", "float64", "int", "int64", "uint64"])
+NumericDTypes = frozenset(["bool", "float", "float64", "int", "int64", "uint64", "bigint"])
 SeriesDTypes = {
     "string": np.str_,
     "<class 'str'>": np.str_,
@@ -177,7 +204,7 @@ def isSupportedNumber(num):
 
 def _as_dtype(dt) -> np.dtype:
     if not isinstance(dt, np.dtype):
-        return np.dtype(dt)
+        return dtype(dt)
     return dt
 
 
@@ -228,17 +255,13 @@ def resolve_scalar_dtype(val: object) -> str:  # type: ignore
     ):
         return "bool"
     # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (
-        hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"
-    ):
+    elif isinstance(val, int) or (hasattr(val, "dtype") and cast(np.uint, val).dtype.kind in "ui"):
         if isinstance(val, np.uint64):
             return "uint64"
         else:
             return "int64"
     # Python float or np.float*
-    elif isinstance(val, float) or (
-        hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"
-    ):
+    elif isinstance(val, float) or (hasattr(val, "dtype") and cast(np.float_, val).dtype.kind == "f"):
         return "float64"
     elif isinstance(val, builtins.str) or isinstance(val, np.str_):
         return "str"

@@ -7,6 +7,7 @@ module MultiTypeSymbolTable
     use ServerErrors;
     use Logging;
     use Regex;
+    use BigInteger;
     
     use MultiTypeSymEntry;
     use Map;
@@ -99,8 +100,9 @@ module MultiTypeSymbolTable
         */
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
             // check and throw if memory limit would be exceeded
-            if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
-            
+            if t != bigint {
+                if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
+            }
             var entry = new shared SymEntry(len, t);
             if (tab.contains(name)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -170,6 +172,7 @@ module MultiTypeSymbolTable
                 when DType.UInt64 { return addEntry(name, len, uint); }
                 when DType.Float64 { return addEntry(name, len, real); }
                 when DType.Bool { return addEntry(name, len, bool); }
+                when DType.BigInt { return addEntry(name, len, bigint); }
                 otherwise { 
                     var errorMsg = "addEntry not implemented for %t".format(dtype); 
                     throw getErrorWithContext(

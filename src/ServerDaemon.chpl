@@ -24,6 +24,7 @@ module ServerDaemon {
     use List;
     use ExternalIntegration;
     use MetricsMsg;
+    use BigIntMsg;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
