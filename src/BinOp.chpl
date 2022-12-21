@@ -52,7 +52,7 @@ module BinOp
   :returns: (MsgTuple) 
   :throws: `UndefinedSymbolError(name)`
   */
-  proc doBinOpvv (l, r, e, op: string, rname, pn, st) throws {
+  proc doBinOpvv(l, r, e, op: string, rname, pn, st) throws {
     if e.etype == bool {
       // Since we know that the result type is a boolean, we know
       // that it either (1) is an operation between bools or (2) uses
@@ -367,13 +367,13 @@ module BinOp
     } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
       select op {
           when "+" {
-            e.a = l.a:real + r.a:real;
+            e.a = l.a:uint + r.a:uint;
           }
           when "-" {
-            e.a = l.a:real - r.a:real;
+            e.a = l.a:uint - r.a:uint;
           }
           when "*" {
-            e.a = l.a:real * r.a:real;
+            e.a = l.a:uint * r.a:uint;
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
