@@ -1,13 +1,9 @@
-# Arkouda File Support
+# File I/O
 
 *Please Note: This file is being developed in conjunction with updates to our file I/O system. Information is being omitted until updates on each section are completed to avoid confusion.*
 
-## Table of Contents
-1. [File Types](#filetypes)
-2. [HDF5](#hdf)
-   1. [Multidimensional Objects](#multidim)
-
 ## Supported File Types
+
 Arkouda currently supports the file types listed below. The way the data is stored may vary. This file will detail the "schema" each file type is expected to follow. If your file does not follow the detailed "schema", please try using our `import`/`export` tools. *Please Note: The functionality of the `import`/`export` tools is dependent on the size of the data because they only run on the client.*
 
 - HDF5
@@ -30,6 +26,7 @@ These attributes are required to be set for each group and dataset.
 
 `ObjType`: `int`
    Integer representing the type of object stored in the group/dataset. This corresponds to the Chapel `enum ObjType`. Required to properly read each object. 
+
    - 0 = `ArrayView`
    - 1 = `pdarray`
    - 2 = `Strings`
@@ -49,12 +46,14 @@ While most objects in Arkouda can be saved, there are 3 main datatypes currently
 
 - pdarray
 - Strings
-- ArrayView (Import/Export not Supported) 
+- ArrayView (Import/Export not Supported)
 
 ### PDArray/ArrayView Dataset Format
+
 `ArrayView` and `pdarray` objects' storage format is identical. The only difference is that `ArrayView` objects require additional attributes to ensure that they can be read properly. These objects are stored in an HDF5 dataset. 
 
 **Structure**
+
 1) Dataset
    1) Data - ArrayView/pdarray values
    2) Attributes
@@ -69,9 +68,11 @@ While most objects in Arkouda can be saved, there are 3 main datatypes currently
 `Shape`: `int array` Integer array storing the size of each dimension. The array should be of length equal to the `Rank`.
 
 ### Strings DataSet Format
+
 `Strings` objects are stored within an HDF5 group. This group contains datasets storing the values and segments separately. 
 
 **Structure**
+
 1) Group
    1) Dataset - `values`
       1) `ObjType` Attribute
@@ -84,9 +85,11 @@ While most objects in Arkouda can be saved, there are 3 main datatypes currently
 Each dataset within the group contains the `ObjType` attribute so that they can be read individually as a dataset. The `isBool` attribute is not needed because these objects will never store boolean values.
 
 ## Parquet
+
 COMING SOON
 
 ## Reading Objects
+
 Arkouda objects can be read from files using the `ak.read()` or `ak.load()` functions. More information on these functions are linked below.
 
 - [ak.read](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarrayIO/index.html#arkouda.pdarrayIO.read)
@@ -94,6 +97,7 @@ Arkouda objects can be read from files using the `ak.read()` or `ak.load()` func
 - [ak.load_all](https://bears-r-us.github.io/arkouda/usage/IO.html#arkouda.load_all)
 
 ## Writing Objects
+
 *Objects currently being written with file version `v2.0`.*
 
 Arkouda objects can be written to files using the `ak.obj.save()` or `ak.save_all()` functions.

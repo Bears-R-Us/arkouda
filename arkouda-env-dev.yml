@@ -35,5 +35,7 @@ dependencies:
   - pip:
     # Developer dependencies
     - typeguard==2.10.0
-    - sphinx-theme
+    - furo # sphinx theme
+    - myst-parser
+    - linkify-it-py
   
