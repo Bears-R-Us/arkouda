@@ -571,3 +571,9 @@ class DataFrameTest(ArkoudaTest):
         # Added for testing Issue #1505
         df = ak.DataFrame({"a": ak.arange(10), "b": ak.arange(10), "c": ak.arange(10)})
         df.groupby(["a", "b"]).sum("c")
+
+    def test_uint_greediness(self):
+        # default to uint when all supportedInt and any value > 2**63
+        # to avoid loss of precision see (#1983)
+        df = pd.DataFrame({'Test': [2 ** 64 - 1, 0]})
+        self.assertEqual(df['Test'].dtype, ak.uint64)

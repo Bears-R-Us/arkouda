@@ -202,7 +202,17 @@ def array(
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
-            a = np.array(a, dtype=dtype)
+            if dtype is not None:
+                # if the user specified dtype, use that dtype
+                a = np.array(a, dtype=dtype)
+            elif all(isSupportedInt(i) for i in a) and any(i > 2 ** 63 for i in a):
+                # all supportedInt values but some >2**63, default to uint (see #1297)
+                # iterating shouldn't be too expensive since
+                # this is after the `isinstance(a, pdarray)` check
+                a = np.array(a, dtype=np.uint)
+            else:
+                # let numpy decide the type
+                a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
     # Return multi-dimensional arrayview
