@@ -217,7 +217,7 @@ def array(
             if dtype is not None and dtype != bigint:
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
-            elif all(isSupportedInt(i) for i in a) and any(i > 2 ** 63 for i in a):
+            elif all(isSupportedInt(i) for i in a) and any(2**64 > i > 2 ** 63 for i in a):
                 # all supportedInt values but some >2**63, default to uint (see #1297)
                 # iterating shouldn't be too expensive since
                 # this is after the `isinstance(a, pdarray)` check
