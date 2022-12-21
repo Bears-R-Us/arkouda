@@ -115,6 +115,7 @@ Functions
    arkouda.ip_address
    arkouda.is_ipv4
    arkouda.is_ipv6
+   arkouda.dtype
    arkouda.check_np_dtype
    arkouda.translate_np_dtype
    arkouda.resolve_scalar_dtype
@@ -174,6 +175,7 @@ Functions
    arkouda.random_strings_uniform
    arkouda.random_strings_lognormal
    arkouda.from_series
+   arkouda.bigint_from_uint_arrays
    arkouda.cast
    arkouda.abs
    arkouda.log
@@ -270,13 +272,13 @@ Attributes
    arkouda.intTypes
    arkouda.DTypes
    arkouda.DTypeObjects
-   arkouda.dtype
    arkouda.bool
    arkouda.int64
    arkouda.float64
    arkouda.uint8
    arkouda.uint64
    arkouda.str_
+   arkouda.bigint
    arkouda.intTypes
    arkouda.bitType
    arkouda.ARKOUDA_SUPPORTED_DTYPES
@@ -331,7 +333,7 @@ Attributes
        dt is not a np.dtype
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -482,7 +484,7 @@ Attributes
    :rtype: object numpy scalar
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -1505,7 +1507,7 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -1514,6 +1516,8 @@ Attributes
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -1555,7 +1559,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -1584,7 +1588,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -1824,7 +1828,7 @@ Attributes
 .. py:function:: isSupportedInt(num)
 
 
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -1920,7 +1924,7 @@ Attributes
    is not currently supported in Arkouda
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -2943,7 +2947,7 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -2952,6 +2956,8 @@ Attributes
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -2993,7 +2999,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -4747,10 +4753,8 @@ Attributes
 
    
 
-.. py:data:: dtype
-   
+.. py:function:: dtype(x)
 
-   
 
 .. py:data:: bool
    
@@ -4778,6 +4782,11 @@ Attributes
    
 
 .. py:data:: str_
+   
+
+   
+
+.. py:data:: bigint
    
 
    
@@ -4868,7 +4877,7 @@ Attributes
 .. py:function:: objtypedec(orig_cls)
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -6835,7 +6844,7 @@ Attributes
    [array([2, 2, 4, 4, 5, 5]), array([2, 5, 2, 4, 4, 5]), array([2, 4, 5, 4, 2, 5])]
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -6844,6 +6853,8 @@ Attributes
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -6885,7 +6896,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -6914,7 +6925,7 @@ Attributes
    array([False, False, False, False, False])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -6943,7 +6954,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
@@ -7410,7 +7421,43 @@ Attributes
    contains strings and sets the dtype to str
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: bigint_from_uint_arrays(arrays, max_bits=-1)
+
+   Create a bigint pdarray from an iterable of uint pdarrays.
+   The first item in arrays will be the highest 64 bits and
+   the last item will be the lowest 64 bits.
+
+   :param arrays: An iterable of uint pdarrays used to construct the bigint pdarray.
+                  The first item in arrays will be the highest 64 bits and
+                  the last item will be the lowest 64 bits.
+   :type arrays: Sequence[pdarray]
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
+
+   :returns: bigint pdarray constructed from uint arrays
+   :rtype: pdarray
+
+   :raises TypeError: Raised if any pdarray in arrays has a dtype other than uint or
+       if the pdarrays are not the same size.
+   :raises RuntimeError: Raised if there is a server-side error thrown
+
+   .. seealso:: :obj:`pdarray.bigint_to_uint_arrays`
+
+   .. rubric:: Examples
+
+   >>> a = ak.bigint_from_uint_arrays([ak.ones(5, dtype=ak.uint64), ak.arange(5, dtype=ak.uint64)])
+   >>> a
+   array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+   "18446744073709551619" "18446744073709551620"])
+
+   >>> a.dtype
+   dtype(bigint)
+
+   >>> all(a[i] == 2**64 + i for i in range(5))
+   True
+
+
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -9238,7 +9285,7 @@ Attributes
    array([5, 4, 3, 2, 1])
 
 
-.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
 
    Cast an array to another dtype.
 
@@ -9300,7 +9347,7 @@ Attributes
        the pdarray instance
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -11132,7 +11179,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -12155,7 +12202,7 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -12164,6 +12211,8 @@ Attributes
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -12205,7 +12254,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -12234,7 +12283,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 
@@ -13899,7 +13948,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -14922,7 +14971,7 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -14931,6 +14980,8 @@ Attributes
    :type a: Union[pdarray, np.ndarray]
    :param dtype: The target dtype to cast values to
    :type dtype: np.dtype, type, or str
+   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
+   :type max_bits: int
 
    :returns: A pdarray instance stored on arkouda server or Strings instance, which
              is composed of two pdarrays stored on arkouda server
@@ -14972,7 +15023,7 @@ Attributes
    <class 'arkouda.strings.Strings'>
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -15652,7 +15703,7 @@ Attributes
    is not currently supported in Arkouda
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
@@ -16675,7 +16726,7 @@ Attributes
    array([-5, -6, -7, -8, -9])
 
 
-.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: full(size: Union[arkouda.dtypes.int_scalars, str], fill_value: arkouda.dtypes.int_scalars, dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
@@ -16706,7 +16757,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -16735,7 +16786,7 @@ Attributes
    array([True, True, True, True, True])
 
 
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str] = float64) -> arkouda.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
 
    Create a pdarray filled with zeros.
 

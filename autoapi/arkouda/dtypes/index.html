@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>arkouda.dtypes &mdash; arkouda 0+untagged.1.g911041e documentation</title>
+  <title>arkouda.dtypes &mdash; arkouda 0+untagged.1.gbf543af documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.g911041e documentation" href="../../../index.html"/>
+    <link rel="top" title="arkouda 0+untagged.1.gbf543af documentation" href="../../../index.html"/>
         <link rel="up" title="arkouda" href="../index.html"/>
         <link rel="next" title="arkouda.groupbyclass" href="../groupbyclass/index.html"/>
         <link rel="prev" title="arkouda.decorators" href="../decorators/index.html"/> 
@@ -217,19 +217,22 @@
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.check_np_dtype" title="arkouda.dtypes.check_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_np_dtype</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.dtype" title="arkouda.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.check_np_dtype" title="arkouda.dtypes.check_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_np_dtype</span></code></a>(→ None)</p></td>
 <td><p>Assert that numpy dtype dt is one of the dtypes supported</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.translate_np_dtype" title="arkouda.dtypes.translate_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_np_dtype</span></code></a>(→ Tuple[str, int])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.translate_np_dtype" title="arkouda.dtypes.translate_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_np_dtype</span></code></a>(→ Tuple[str, int])</p></td>
 <td><p>Split numpy dtype dt into its kind and byte size, raising</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.get_byteorder" title="arkouda.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.get_byteorder" title="arkouda.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get a concrete byteorder (turns '=' into '&lt;' or '&gt;')</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.get_server_byteorder" title="arkouda.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.get_server_byteorder" title="arkouda.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get the server's byteorder</p></td>
 </tr>
 </tbody>
@@ -239,25 +242,25 @@
 <h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.dtype" title="arkouda.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.bool" title="arkouda.dtypes.bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.bool" title="arkouda.dtypes.bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.int64" title="arkouda.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.float64" title="arkouda.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.uint8" title="arkouda.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.uint8" title="arkouda.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.uint64" title="arkouda.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.uint64" title="arkouda.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.str_" title="arkouda.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.str_" title="arkouda.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.bigint" title="arkouda.dtypes.bigint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.intTypes" title="arkouda.dtypes.intTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intTypes</span></code></a></p></td>
@@ -298,9 +301,9 @@
 </tr>
 </tbody>
 </table>
-<dl class="py data">
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.dtypes.dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.dtypes.dtype" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dtypes.dtype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py data">
@@ -331,6 +334,11 @@
 <dl class="py data">
 <dt class="sig sig-object py" id="arkouda.dtypes.str_">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">str_</span></span><a class="headerlink" href="#arkouda.dtypes.str_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda.dtypes.bigint">
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">bigint</span></span><a class="headerlink" href="#arkouda.dtypes.bigint" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py data">
@@ -483,7 +491,7 @@ dt is not a np.dtype</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0+untagged.1.g911041e',
+            VERSION:'0+untagged.1.gbf543af',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

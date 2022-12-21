@@ -13,6 +13,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.dtypes.dtype
    arkouda.dtypes.check_np_dtype
    arkouda.dtypes.translate_np_dtype
    arkouda.dtypes.resolve_scalar_dtype
@@ -26,13 +27,13 @@ Attributes
 
 .. autoapisummary::
 
-   arkouda.dtypes.dtype
    arkouda.dtypes.bool
    arkouda.dtypes.int64
    arkouda.dtypes.float64
    arkouda.dtypes.uint8
    arkouda.dtypes.uint64
    arkouda.dtypes.str_
+   arkouda.dtypes.bigint
    arkouda.dtypes.intTypes
    arkouda.dtypes.bitType
    arkouda.dtypes.bool_scalars
@@ -47,10 +48,8 @@ Attributes
    arkouda.dtypes.DTypeObjects
 
 
-.. py:data:: dtype
-   
+.. py:function:: dtype(x)
 
-   
 
 .. py:data:: bool
    
@@ -78,6 +77,11 @@ Attributes
    
 
 .. py:data:: str_
+   
+
+   
+
+.. py:data:: bigint
    
 
    

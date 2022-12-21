@@ -53,7 +53,7 @@ Functions
 
 
 
-.. py:class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
    attributies of the array; the data resides on the arkouda
