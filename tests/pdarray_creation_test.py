@@ -52,7 +52,6 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.array(list(list(0)))
 
     def test_bigint_creation(self):
-        # we aren't testing the values in this test since bigint doesn't have indexing yet
         bi = 2**200
 
         pda_from_str = ak.array([f"{i}" for i in range(bi, bi + 10)], dtype=ak.bigint)
@@ -62,13 +61,20 @@ class PdarrayCreationTest(ArkoudaTest):
             self.assertIsInstance(pda, ak.pdarray)
             self.assertEqual(10, len(pda))
             self.assertEqual(ak.bigint, pda.dtype)
+            self.assertEqual(pda[-1], bi + 9)
 
         # test array and arange infer dtype
         arr = ak.array([bi, bi + 1, bi + 2, bi + 3, bi + 4])
         ara = ak.arange(bi, bi + 5)
+        # TODO add .to_list and .to_ndarray functionality
+        for i in range(5):
+            self.assertEqual(arr[i], bi + i)
+            self.assertEqual(ara[i], bi + i)
 
         # test that max_bits being set results in a mod
         pda = ak.array([bi, bi + 1, bi + 2, bi + 3, bi + 4], max_bits=200)
+        for i in range(5):
+            self.assertEqual(i, pda[i])
 
         # test ak.bigint_from_uint_arrays
         # top bits are all 1 which should be 2**64
@@ -76,9 +82,13 @@ class PdarrayCreationTest(ArkoudaTest):
         bot_bits = ak.arange(5, dtype=ak.uint64)
         two_arrays = ak.bigint_from_uint_arrays([top_bits, bot_bits])
         self.assertEqual(ak.bigint, two_arrays.dtype)
+        for i in range(5):
+            self.assertEqual(2**64 + i, two_arrays[i])
         # top bits should represent 2**128
         mid_bits = ak.zeros(5, ak.uint64)
         three_arrays = ak.bigint_from_uint_arrays([top_bits, mid_bits, bot_bits])
+        for i in range(5):
+            self.assertEqual(2**128 + i, three_arrays[i])
 
     def test_arange(self):
         self.assertListEqual([0, 1, 2, 3, 4], ak.arange(0, 5, 1).to_list())
@@ -290,6 +300,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         bigintZeros = ak.zeros(5, dtype=ak.bigint)
         self.assertEqual(ak.bigint, bigintZeros.dtype)
+        self.assertEqual(0, bigintZeros[0])
 
         zeros = ak.zeros("5")
         self.assertEqual(5, len(zeros))
@@ -327,6 +338,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         bigintOnes = ak.ones(5, dtype=ak.bigint)
         self.assertEqual(ak.bigint, bigintOnes.dtype)
+        self.assertEqual(1, bigintOnes[0])
 
         ones = ak.ones("5")
         self.assertEqual(5, len(ones))
