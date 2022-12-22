@@ -1,3 +1,5 @@
+.. _installation-label:
+
 Installation
 ======================
 
@@ -32,7 +34,6 @@ Install Guides
 .. toctree::
     :maxdepth: 1
 
-    quickstart
     LINUX_INSTALL
     WINDOWS_INSTALL
     MAC_INSTALL

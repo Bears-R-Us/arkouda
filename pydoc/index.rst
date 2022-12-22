@@ -11,6 +11,8 @@ Arkouda Documentation
    :maxdepth: 2
    :caption: Contents:
       
+   quickstart
+   
    setup/REQUIREMENTS
    setup/install_menu
    setup/BUILD
