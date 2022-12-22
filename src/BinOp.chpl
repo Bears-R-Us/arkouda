@@ -364,6 +364,25 @@ module BinOp
         }
       var repMsg = "created %s".format(st.attrib(rname));
       return new MsgTuple(repMsg, MsgType.NORMAL);
+    } else if ((l.etype == uint && r.etype == bool) || (l.etype == bool && r.etype == uint)) {
+      select op {
+          when "+" {
+            e.a = l.a:uint + r.a:uint;
+          }
+          when "-" {
+            e.a = l.a:uint - r.a:uint;
+          }
+          when "*" {
+            e.a = l.a:uint * r.a:uint;
+          }
+          otherwise {
+            var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
+            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
+        }
+      var repMsg = "created %s".format(st.attrib(rname));
+      return new MsgTuple(repMsg, MsgType.NORMAL);  
     } else if ((l.etype == real && r.etype == bool) || (l.etype == bool && r.etype == real)) {
       select op {
           when "+" {

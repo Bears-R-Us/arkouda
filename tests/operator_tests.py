@@ -300,6 +300,13 @@ class OperatorsTest(ArkoudaTest):
         np_uint_inv = ~np.arange(10, dtype=np.uint)
         self.assertListEqual(np_uint_inv.tolist(), inverted.to_list())
 
+    def test_uint_bool_binops(self):
+        # Test fix for issue #1932
+        # Adding support to binopvv to correctly handle uint and bool types
+        ak_uint = ak.arange(10, dtype=ak.uint64)
+        ak_bool = ak_uint % 2 == 0
+        self.assertListEqual((ak_uint + ak_bool).to_list(), (ak.arange(10) + ak_bool).to_list())
+        
     def test_float_uint_binops(self):
         # Test fix for issue #1620
         ak_uint = ak.array([5], dtype=ak.uint64)
@@ -353,20 +360,18 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(
                 np.allclose((aku * ak_float).to_ndarray(), npu * np_float, equal_nan=True)
             )
-
             self.assertTrue(
                 np.allclose((ak_uint / akf).to_ndarray(), np_uint / npf, equal_nan=True)
             )
             self.assertTrue(
                 np.allclose((akf / ak_uint).to_ndarray(), npf / np_uint, equal_nan=True)
-            )            
+            )
             self.assertTrue(
                 np.allclose((ak_float / aku).to_ndarray(), np_float / npu, equal_nan=True)
             )
             self.assertTrue(
                 np.allclose((aku / ak_float).to_ndarray(), npu / np_float, equal_nan=True)
             )
-
             self.assertTrue(
                 np.allclose((ak_uint // akf).to_ndarray(), np_uint // npf, equal_nan=True)
             )
@@ -379,13 +384,12 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(
                 np.allclose((aku // ak_float).to_ndarray(), npu // np_float, equal_nan=True)
             )
-
             self.assertTrue(
                 np.allclose((ak_uint ** akf).to_ndarray(), np_uint ** npf, equal_nan=True)
             )
             self.assertTrue(
                 np.allclose((akf ** ak_uint).to_ndarray(), npf ** np_uint, equal_nan=True)
-            )            
+            )
             self.assertTrue(
                 np.allclose((ak_float ** aku).to_ndarray(), np_float ** npu, equal_nan=True)
             )
