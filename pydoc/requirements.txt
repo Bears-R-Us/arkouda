@@ -23,7 +23,9 @@ pytest-env
 Sphinx>=5.1.1
 sphinx-argparse
 sphinx-autoapi
-sphinx-theme
+myst-parser
+furo # sphinx theme
+linkify-it-py
 typed-ast
 mypy>=0.931,0.990
 flake8

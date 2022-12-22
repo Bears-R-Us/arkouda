@@ -1,8 +1,10 @@
+.. _quickstart-label:
+
 #######################
 Quickstart
 #######################
 
-This guide assumes you have satisfied the :ref:`prerequisites-label` and followed the :ref:`installation-label` to build the arkouda server. Also, both your ``PATH`` and ``PYTHONPATH`` environment variables should contain the arkouda root directory.
+This guide assumes you have satisfied the `Requirements <setup/REQUIREMENTS.html>`_ and followed the :ref:`installation-label` to build the arkouda server. Also, both your ``PATH`` and ``PYTHONPATH`` environment variables should contain the arkouda root directory.
 
 **********************
 Launch Arkouda Server

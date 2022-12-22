@@ -117,9 +117,9 @@ This yielded a >20TB dataframe in Arkouda.
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-For a complete list of requirements for Arkouda, please review [REQUIREMENTS.md](REQUIREMENTS.md).
+For a complete list of requirements for Arkouda, please review [REQUIREMENTS.md](pydoc/setup/REQUIREMENTS.md).
 
-For detailed prerequisite information and installation guides, please review [INSTALL.md](INSTALL.md).
+For detailed prerequisite information and installation guides, please review [INSTALL.md](pydoc/setup/INSTALL.md).
 
 <a id="build-ak"></a>
 ## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
