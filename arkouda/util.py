@@ -14,7 +14,7 @@ from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_symbol_table
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.pdarraycreation import arange
-from arkouda.io import read
+from arkouda.io import read_hdf
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
@@ -266,7 +266,7 @@ def numpy_to_arkouda(
         arr = f.create_dataset("arr", (A.shape[0],), dtype="int64")
         arr[:] = A[:]
 
-    B = read(f"{tmp_dir}/{rng}.hdf5", "arr")
+    B = read_hdf(f"{tmp_dir}/{rng}.hdf5", "arr")
     os.remove(f"{tmp_dir}/{rng}.hdf5")
 
     return B
