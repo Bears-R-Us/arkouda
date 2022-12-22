@@ -90,6 +90,16 @@ class PdarrayCreationTest(ArkoudaTest):
         for i in range(5):
             self.assertEqual(2**128 + i, three_arrays[i])
 
+        # test round_trip of ak.bigint_to/from_uint_arrays
+        t = ak.arange(bi - 1, bi + 9)
+        t_dup = ak.bigint_from_uint_arrays(t.bigint_to_uint_arrays())
+        self.assertListEqual(ak.cast(t, ak.uint64).to_list(), ak.cast(t_dup, ak.uint64).to_list())
+
+        # test slice_bits along 64 bit boundaries matches return from bigint_to_uint_arrays
+        for i, uint_bits in enumerate(t.bigint_to_uint_arrays()):
+            slice_bits = t.slice_bits(64 * (4 - (i + 1)), 64 * (4 - i))
+            self.assertListEqual(uint_bits.to_list(), ak.cast(slice_bits, ak.uint64).to_list())
+
     def test_arange(self):
         self.assertListEqual([0, 1, 2, 3, 4], ak.arange(0, 5, 1).to_list())
         self.assertListEqual([5, 4, 3, 2, 1], ak.arange(5, 0, -1).to_list())

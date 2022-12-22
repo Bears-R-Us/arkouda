@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import json
 from typing import List, Sequence, Union, cast
 
 import numpy as np  # type: ignore
@@ -284,11 +285,15 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if np.can_cast(other, self.dtype):
+        if self.dtype != bigint and np.can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
+        else:
+            # see if other is a bigint
+            if isSupportedInt(other) and other >= 2**64:
+                dt = bigint.name
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -329,11 +334,15 @@ class pdarray:
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
-        if np.can_cast(other, self.dtype):
+        if self.dtype != bigint and np.can_cast(other, self.dtype):
             # If scalar can be losslessly cast to array dtype,
             # do the cast so that return array will have same dtype
             dt = self.dtype.name
             other = self.dtype.type(other)
+        else:
+            # see if other is a bigint
+            if isSupportedInt(other) and other >= 2**64:
+                dt = bigint.name
         if dt not in DTypes:
             raise TypeError(f"Unhandled scalar type: {other} ({type(other)})")
         repMsg = generic_msg(
@@ -1041,6 +1050,75 @@ class pdarray:
         from arkouda.numeric import cast as akcast
 
         return akcast(self, dtype)
+
+    def slice_bits(self, low, high) -> pdarray:
+        """
+        Returns a pdarray containing only bits from low to high of self
+
+        Parameters
+        __________
+        low: int
+            The lowest bit included in the slice (inclusive)
+        high: int
+            The highest bit included in the slice (inclusive)
+
+        Returns
+        -------
+        pdarray
+            A new pdarray containing the bits of self from low to high
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        Examples
+        --------
+        >>> p = ak.array([2**65 + (2**64 - 1)])
+        >>> bin(p[0])
+        '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+        >>> bin(p.slice_bits(64, 65)[0])
+        '0b10'
+        """
+        if low > high:
+            raise ValueError("low must not exceed high")
+        return (self >> low) % 2**(high - low + 1)
+
+    def bigint_to_uint_arrays(self):
+        """
+        Creates a list of uint pdarrays from a bigint pdarray.
+        The first item in return will be the highest 64 bits of the
+        bigint pdarray and the last item will be the lowest 64 bits.
+
+        Returns
+        -------
+        List[pdarrays]
+            A list of uint pdarrays where:
+            The first item in return will be the highest 64 bits of the
+            bigint pdarray and the last item will be the lowest 64 bits.
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        pdarraycreation.bigint_from_uint_arrays
+
+        Examples
+        --------
+        >>> a = ak.arange(2**64, 2**64 + 5)
+        >>> a
+        array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+        "18446744073709551619" "18446744073709551620"])
+
+        >>> a.bigint_to_uint_arrays()
+        [array([1 1 1 1 1]), array([0 1 2 3 4])]
+        """
+        ret_list = json.loads(generic_msg(cmd="break_into_arrays", args={"array": self}))
+        return list(reversed([create_pdarray(a) for a in ret_list]))
 
     def reshape(self, *shape, order="row_major"):
         """
@@ -2355,7 +2433,7 @@ def rotl(x, rot) -> pdarray:
     >>> ak.rotl(A, A)
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
     """
-    if isinstance(x, pdarray) and x.dtype in [akint64, akuint64]:
+    if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
@@ -2393,7 +2471,7 @@ def rotr(x, rot) -> pdarray:
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
     """
-    if isinstance(x, pdarray) and x.dtype in [akint64, akuint64]:
+    if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
