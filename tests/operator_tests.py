@@ -305,7 +305,7 @@ class OperatorsTest(ArkoudaTest):
         # Adding support to binopvv to correctly handle uint and bool types
         ak_uint = ak.arange(10, dtype=ak.uint64)
         ak_bool = ak_uint % 2 == 0
-        self.assertListEqual((ak_uint + ak_bool).tolist(), (ak.arange(10) + ak_bool).to_list())
+        self.assertListEqual((ak_uint + ak_bool).to_list(), (ak.arange(10) + ak_bool).to_list())
         
     def test_float_uint_binops(self):
         # Test fix for issue #1620
