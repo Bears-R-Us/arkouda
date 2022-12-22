@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import builtins
 from typing import List, Sequence, Union, cast
-from warnings import warn
 
 import numpy as np  # type: ignore
 from typeguard import typechecked

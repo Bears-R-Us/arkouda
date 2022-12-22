@@ -1,20 +1,14 @@
-import os
 import re
-from typing import Mapping, Union, cast
+from typing import cast
 from warnings import warn
 
-import h5py  # type: ignore
-import numpy as np  # type: ignore
-
-import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg, get_config, get_mem_used
 from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_symbol_table
-from arkouda.pdarrayclass import RegistrationError, create_pdarray, pdarray
+from arkouda.pdarrayclass import RegistrationError, create_pdarray
 from arkouda.pdarraycreation import arange
-from arkouda.io import read_hdf
 from arkouda.pdarraysetops import unique
 from arkouda.segarray import SegArray
 from arkouda.sorting import coargsort
@@ -214,62 +208,6 @@ def most_common(g, values):
     )
 
     return g.most_common(values)
-
-
-def arkouda_to_numpy(A: pdarray, tmp_dir: str = "") -> np.ndarray:
-    """
-    Convert from arkouda to numpy using disk rather than sockets.
-    """
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.pdarray.to_ndarray instead.",
-        DeprecationWarning,
-    )
-
-    rng = np.random.randint(2**64, dtype=np.uint64)
-    tmp_dir = os.getcwd() if not tmp_dir else tmp_dir
-    A.save(f"{tmp_dir}/{rng}")
-    files = sorted(f"{tmp_dir}/{f}" for f in os.listdir(tmp_dir) if f.startswith(str(rng)))
-
-    B = np.zeros(A.size, dtype=np.int64)
-    i = 0
-    for file in files:
-        with h5py.File(file) as hf:
-            a = hf["array"]
-            B[i : i + a.size] = a[:]
-            i += a.size
-        os.remove(file)
-
-    return B
-
-
-def numpy_to_arkouda(
-    A: np.ndarray, tmp_dir: str = ""
-) -> Union[
-    pdarray,
-    Strings,
-    arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
-]:
-    """
-    Convert from numpy to arkouda using disk rather than sockets.
-    """
-    warn(
-        "This function is deprecated and will be removed in a later version of Arkouda."
-        " Use arkouda.array(x) instead.",
-        DeprecationWarning,
-    )
-
-    rng = np.random.randint(2**64, dtype=np.uint64)
-    tmp_dir = os.getcwd() if not tmp_dir else tmp_dir
-    with h5py.File(f"{tmp_dir}/{rng}.hdf5", "w") as f:
-        arr = f.create_dataset("arr", (A.shape[0],), dtype="int64")
-        arr[:] = A[:]
-
-    B = read_hdf(f"{tmp_dir}/{rng}.hdf5", "arr")
-    os.remove(f"{tmp_dir}/{rng}.hdf5")
-
-    return B
 
 
 def convert_if_categorical(values):

@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
-from warnings import warn
 
 import arkouda.dtypes
 from arkouda.client import generic_msg
@@ -1952,7 +1951,8 @@ class Strings:
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
         """
-        from arkouda.io import mode_str_to_int, file_type_to_int
+        from arkouda.io import file_type_to_int, mode_str_to_int
+
         return cast(
             str,
             generic_msg(

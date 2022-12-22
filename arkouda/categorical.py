@@ -13,7 +13,6 @@ from typing import (
     Union,
     cast,
 )
-from warnings import warn
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -921,7 +920,7 @@ class Categorical:
                         prefix_path,
                         dataset=f"{dataset}.{k}",
                         mode=(mode if first else "append"),
-                        compressed=compressed
+                        compressed=compressed,
                     )
                 )
                 first = False

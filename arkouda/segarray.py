@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import cast as type_cast
-from warnings import warn
 
 import numpy as np  # type: ignore
 
@@ -13,11 +12,11 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
+from arkouda.io import load
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
-from arkouda.io import load
 from arkouda.pdarraysetops import concatenate
 
 
@@ -970,13 +969,13 @@ class SegArray:
         return SegArray.from_parts(g.segments, uval, grouping=g, lengths=lengths)
 
     def to_hdf(
-            self,
-            prefix_path,
-            dataset="segarray",
-            segment_suffix="_segments",
-            value_suffix="_values",
-            mode="truncate",
-            file_type="distribute",
+        self,
+        prefix_path,
+        dataset="segarray",
+        segment_suffix="_segments",
+        value_suffix="_values",
+        mode="truncate",
+        file_type="distribute",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
@@ -1012,8 +1011,12 @@ class SegArray:
 
         SegArray is not currently supported by Parquet
         """
-        self.segments.to_hdf(prefix_path, dataset=dataset+segment_suffix, mode=mode, file_type=file_type)
-        self.values.to_hdf(prefix_path, dataset=dataset+value_suffix, mode="append", file_type=file_type)
+        self.segments.to_hdf(
+            prefix_path, dataset=dataset + segment_suffix, mode=mode, file_type=file_type
+        )
+        self.values.to_hdf(
+            prefix_path, dataset=dataset + value_suffix, mode="append", file_type=file_type
+        )
 
     @classmethod
     def load(
