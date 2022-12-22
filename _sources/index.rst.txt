@@ -3,27 +3,37 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to arkouda's documentation!
-===================================
+Arkouda Documentation
+======================
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
       
-   setup/prerequisites
-   setup/installation
+   quickstart
+   
+   setup/REQUIREMENTS
+   setup/install_menu
+   setup/BUILD
+   setup/MODULAR
+
    setup/testing
-   setup/quickstart
+
+   FILEIO
 
    usage
    examples
-   contributing
+   CONTRIBUTING_LINK
    autoapi/index
    server/index
+   genindex
 
-Indices and tables
-==================
+.. image:: ../pictures/arkouda_wide_marker1.png
+   :width: 800
+   :alt: Arkouda Logo
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. rst-class:: center
+Interactive Data Analytics at Supercomputing Scale
+
+A Python API powered by Chapel

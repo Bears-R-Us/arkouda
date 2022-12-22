@@ -1,101 +1,175 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Strings in Arkouda" href="strings.html" /><link rel="prev" title="Array Set Operations" href="setops.html" />
 
-
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>GroupBy &mdash; arkouda 0+untagged.1.gb102c06 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>GroupBy - arkouda 0+untagged.1.gc2f28ba documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
     
 
-  
 
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
   
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.gb102c06 documentation" href="../index.html"/>
-        <link rel="up" title="Usage" href="../usage.html"/>
-        <link rel="next" title="Strings in Arkouda" href="strings.html"/>
-        <link rel="prev" title="Array Set Operations" href="setops.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-   
-  <div class="wy-grid-for-nav">
-
+      }
+    }
+  }
+</style></head>
+  <body>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-          
-            <a href="../index.html" class="icon icon-home"> arkouda
-          
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          </a>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
-          
-            
-            
-          
 
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
 
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">arkouda 0+untagged.1.gc2f28ba documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda 0+untagged.1.gc2f28ba documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../FILEIO.html">File I/O</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../usage.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
@@ -105,89 +179,7 @@
 <li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GroupBy</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#arkouda.GroupBy"><code class="docutils literal notranslate"><span class="pre">GroupBy</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nkeys"><code class="docutils literal notranslate"><span class="pre">GroupBy.nkeys</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.size"><code class="docutils literal notranslate"><span class="pre">GroupBy.size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.permutation"><code class="docutils literal notranslate"><span class="pre">GroupBy.permutation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique_keys"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique_keys</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.ngroups"><code class="docutils literal notranslate"><span class="pre">GroupBy.ngroups</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.segments"><code class="docutils literal notranslate"><span class="pre">GroupBy.segments</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.logger"><code class="docutils literal notranslate"><span class="pre">GroupBy.logger</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.AND"><code class="docutils literal notranslate"><span class="pre">GroupBy.AND()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.OR"><code class="docutils literal notranslate"><span class="pre">GroupBy.OR()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.XOR"><code class="docutils literal notranslate"><span class="pre">GroupBy.XOR()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.aggregate"><code class="docutils literal notranslate"><span class="pre">GroupBy.aggregate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.all"><code class="docutils literal notranslate"><span class="pre">GroupBy.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.any"><code class="docutils literal notranslate"><span class="pre">GroupBy.any()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmax"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmax()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmin"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmin()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.attach"><code class="docutils literal notranslate"><span class="pre">GroupBy.attach()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.broadcast"><code class="docutils literal notranslate"><span class="pre">GroupBy.broadcast()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.build_from_components"><code class="docutils literal notranslate"><span class="pre">GroupBy.build_from_components()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.count"><code class="docutils literal notranslate"><span class="pre">GroupBy.count()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.first"><code class="docutils literal notranslate"><span class="pre">GroupBy.first()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.is_registered"><code class="docutils literal notranslate"><span class="pre">GroupBy.is_registered()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.max"><code class="docutils literal notranslate"><span class="pre">GroupBy.max()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mean"><code class="docutils literal notranslate"><span class="pre">GroupBy.mean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.median"><code class="docutils literal notranslate"><span class="pre">GroupBy.median()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.min"><code class="docutils literal notranslate"><span class="pre">GroupBy.min()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mode"><code class="docutils literal notranslate"><span class="pre">GroupBy.mode()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.most_common"><code class="docutils literal notranslate"><span class="pre">GroupBy.most_common()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">GroupBy.nunique()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.prod"><code class="docutils literal notranslate"><span class="pre">GroupBy.prod()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.register"><code class="docutils literal notranslate"><span class="pre">GroupBy.register()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.std"><code class="docutils literal notranslate"><span class="pre">GroupBy.std()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.sum"><code class="docutils literal notranslate"><span class="pre">GroupBy.sum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister_groupby_by_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.var"><code class="docutils literal notranslate"><span class="pre">GroupBy.var()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#arkouda.GroupBy">GroupBy</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nkeys">nkeys</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.size">size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.permutation">permutation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique_keys">unique_keys</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.ngroups">ngroups</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.segments">segments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.logger">logger</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.AND">AND</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.OR">OR</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.XOR">XOR</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.aggregate">aggregate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.all">all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.any">any</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmax">argmax</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.argmin">argmin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.attach">attach</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.broadcast">broadcast</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.build_from_components">build_from_components</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.count">count</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.first">first</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.is_registered">is_registered</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.max">max</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mean">mean</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.median">median</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.min">min</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.mode">mode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.most_common">most_common</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.nunique">nunique</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.prod">prod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.register">register</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id0">size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.std">std</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.sum">sum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unique">unique</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister">unregister</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name">unregister_groupby_by_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.GroupBy.var">var</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GroupBy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
@@ -195,76 +187,84 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
 </ul>
 
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">arkouda</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../usage.html">Usage</a> &raquo;</li>
-        
-      <li>GroupBy</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/usage/groupby.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <section id="groupby">
-<span id="groupby-label"></span><h1>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">¶</a></h1>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="groupby">
+<span id="groupby-label"></span><h1>GroupBy<a class="headerlink" href="#groupby" title="Permalink to this heading">#</a></h1>
 <p>The groupby-aggregate pattern is the workhorse operation in many data science applications, such as feature extraction and graph construction. It relies on <code class="docutils literal notranslate"><span class="pre">argsort()</span></code> to group an array of keys and then perform aggregations on other arrays of values.</p>
 <p>For example, imagine a dataset with two columns, <code class="docutils literal notranslate"><span class="pre">userID</span></code> and <code class="docutils literal notranslate"><span class="pre">dayOfWeek</span></code>. The following groupby-aggregate operation would show how many user IDs were active on each day of the week:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note: The GroupBy arg should be the values of the dayOfWeek column</span>
@@ -275,7 +275,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.GroupBy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy" title="Permalink to this definition">#</a></dt>
 <dd><p>Group an array or list of arrays by value, usually in preparation
 for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
@@ -288,7 +288,7 @@ for aggregating the within-group values of another array.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.nkeys">
-<span class="sig-name descname"><span class="pre">nkeys</span></span><a class="headerlink" href="#arkouda.GroupBy.nkeys" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nkeys</span></span><a class="headerlink" href="#arkouda.GroupBy.nkeys" title="Permalink to this definition">#</a></dt>
 <dd><p>The number of key arrays (columns)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -299,7 +299,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.size">
-<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.GroupBy.size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.GroupBy.size" title="Permalink to this definition">#</a></dt>
 <dd><p>The length of the input array(s), i.e. number of rows</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -310,7 +310,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.permutation">
-<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#arkouda.GroupBy.permutation" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#arkouda.GroupBy.permutation" title="Permalink to this definition">#</a></dt>
 <dd><p>The permutation that sorts the keys array(s) by value (row)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -321,7 +321,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.unique_keys">
-<span class="sig-name descname"><span class="pre">unique_keys</span></span><a class="headerlink" href="#arkouda.GroupBy.unique_keys" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">unique_keys</span></span><a class="headerlink" href="#arkouda.GroupBy.unique_keys" title="Permalink to this definition">#</a></dt>
 <dd><p>The unique values of the keys array(s), in grouped order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -332,7 +332,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.ngroups">
-<span class="sig-name descname"><span class="pre">ngroups</span></span><a class="headerlink" href="#arkouda.GroupBy.ngroups" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ngroups</span></span><a class="headerlink" href="#arkouda.GroupBy.ngroups" title="Permalink to this definition">#</a></dt>
 <dd><p>The length of the unique_keys array(s), i.e. number of groups</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -343,7 +343,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.segments">
-<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.GroupBy.segments" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.GroupBy.segments" title="Permalink to this definition">#</a></dt>
 <dd><p>The start index of each group in the grouped array(s)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -354,7 +354,7 @@ for aggregating the within-group values of another array.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.GroupBy.logger">
-<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.GroupBy.logger" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.GroupBy.logger" title="Permalink to this definition">#</a></dt>
 <dd><p>Used for all logging operations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -385,7 +385,7 @@ groups the array</p></li>
 will be used; otherwise, method 1 will be used.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.AND">
-<span class="sig-name descname"><span class="pre">AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.AND" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.AND" title="Permalink to this definition">#</a></dt>
 <dd><p>Bitwise AND of values in each segment.</p>
 <p>Using the permutation stored in the GroupBy instance, group
 another array of values and perform a bitwise AND reduction on
@@ -415,7 +415,7 @@ each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.OR">
-<span class="sig-name descname"><span class="pre">OR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.OR" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">OR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.OR" title="Permalink to this definition">#</a></dt>
 <dd><p>Bitwise OR of values in each segment.</p>
 <p>Using the permutation stored in the GroupBy instance, group
 another array of values and perform a bitwise OR reduction on
@@ -445,7 +445,7 @@ each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.XOR">
-<span class="sig-name descname"><span class="pre">XOR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.XOR" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">XOR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.XOR" title="Permalink to this definition">#</a></dt>
 <dd><p>Bitwise XOR of values in each segment.</p>
 <p>Using the permutation stored in the GroupBy instance, group
 another array of values and perform a bitwise XOR reduction on
@@ -475,7 +475,7 @@ each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.aggregate">
-<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.aggregate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.aggregate" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group another
 array of values and apply a reduction to each group’s values.</p>
 <dl class="field-list simple">
@@ -523,7 +523,7 @@ array of values and apply a reduction to each group’s values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.all">
-<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.all" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and perform an “and” reduction on
 each group.</p>
@@ -552,7 +552,7 @@ each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.any">
-<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.any" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.any" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group another
 array of values and perform an “or” reduction on each group.</p>
 <dl class="field-list simple">
@@ -579,7 +579,7 @@ array of values and perform an “or” reduction on each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.argmax">
-<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.argmax" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.argmax" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and return the location of the first
 maximum of each group’s values.</p>
@@ -624,7 +624,7 @@ not the permutation applied by the GroupBy instance.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.argmin">
-<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.argmin" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.argmin" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and return the location of the first
 minimum of each group’s values.</p>
@@ -670,7 +670,7 @@ passed in, not the permutation applied by the GroupBy instance.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.attach">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.attach" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.attach" title="Permalink to this definition">#</a></dt>
 <dd><p>Function to return a GroupBy object attached to the registered name in the
 arkouda server which was registered using register()</p>
 <dl class="field-list simple">
@@ -695,7 +695,7 @@ arkouda server which was registered using register()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.broadcast">
-<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.broadcast" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.broadcast" title="Permalink to this definition">#</a></dt>
 <dd><p>Fill each group’s segment with a constant value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -754,7 +754,7 @@ array([3, 3, 3, 5, 5]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.build_from_components">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.build_from_components" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.build_from_components" title="Permalink to this definition">#</a></dt>
 <dd><p>function to build a new GroupBy object from component keys and permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -774,7 +774,7 @@ array([3, 3, 3, 5, 5]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.count" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.count" title="Permalink to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
 each key appears.</p>
 <dl class="field-list simple">
@@ -805,7 +805,7 @@ each key appears.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.first">
-<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable_element_type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable_element_type</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.first" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable_element_type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable_element_type</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.first" title="Permalink to this definition">#</a></dt>
 <dd><p>First value in each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -823,7 +823,7 @@ each key appears.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.is_registered">
-<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.GroupBy.is_registered" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.GroupBy.is_registered" title="Permalink to this definition">#</a></dt>
 <dd><blockquote>
 <div><p>Return True if the object is contained in the registry</p>
 </div></blockquote>
@@ -849,7 +849,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.max">
-<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.max" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.max" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and return the maximum of each
 group’s values.</p>
@@ -895,7 +895,7 @@ group’s values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.mean" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.mean" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and compute the mean of each group’s
 values.</p>
@@ -941,7 +941,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.median">
-<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.median" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.median" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and compute the median of each group’s
 values.</p>
@@ -987,7 +987,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.min">
-<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.min" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.min" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and return the minimum of each group’s
 values.</p>
@@ -1033,7 +1033,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.mode">
-<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.mode" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">groupable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.mode" title="Permalink to this definition">#</a></dt>
 <dd><p>Most common value in each group. If a group is multi-modal, return the
 modal value that occurs first.</p>
 <dl class="field-list simple">
@@ -1052,13 +1052,13 @@ modal value that occurs first.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.most_common">
-<span class="sig-name descname"><span class="pre">most_common</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.most_common" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">most_common</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.most_common" title="Permalink to this definition">#</a></dt>
 <dd><p>(Deprecated) See <cite>GroupBy.mode()</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.nunique">
-<span class="sig-name descname"><span class="pre">nunique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.nunique" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nunique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.nunique" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group another
 array of values and return the number of unique values in each group.</p>
 <dl class="field-list simple">
@@ -1104,7 +1104,7 @@ array of values and return the number of unique values in each group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.prod">
-<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.prod" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.prod" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and compute the product of each group’s
 values.</p>
@@ -1151,7 +1151,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.register" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html#arkouda.groupbyclass.GroupBy" title="arkouda.groupbyclass.GroupBy"><span class="pre">GroupBy</span></a></span></span><a class="headerlink" href="#arkouda.GroupBy.register" title="Permalink to this definition">#</a></dt>
 <dd><p>Register this GroupBy object and underlying components with the Arkouda server</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1185,7 +1185,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Permalink to this definition">#</a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times
 each key appears.</p>
 <dl class="field-list simple">
@@ -1222,7 +1222,7 @@ each key appears.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.std">
-<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.std" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.std" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and compute the standard deviation of
 each group’s values.</p>
@@ -1280,7 +1280,7 @@ unbiased estimate of the standard deviation per se.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.sum">
-<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.sum" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.sum" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and sum each group’s values.</p>
 <dl class="field-list simple">
@@ -1323,7 +1323,7 @@ another array of values and sum each group’s values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.unique">
-<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.unique" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">groupable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.unique" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the set of unique values in each group, as a SegArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1341,7 +1341,7 @@ another array of values and sum each group’s values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.unregister">
-<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.unregister" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.GroupBy.unregister" title="Permalink to this definition">#</a></dt>
 <dd><p>Unregister this GroupBy object in the arkouda server which was previously
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
@@ -1361,7 +1361,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.unregister_groupby_by_name">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unregister_groupby_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.GroupBy.unregister_groupby_by_name" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unregister_groupby_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.GroupBy.unregister_groupby_by_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Function to unregister GroupBy object by name which was registered
 with the arkouda server via register()</p>
 <dl class="field-list simple">
@@ -1383,7 +1383,7 @@ with the arkouda server via register()</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.var">
-<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.var" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int_scalars</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.GroupBy.var" title="Permalink to this definition">#</a></dt>
 <dd><p>Using the permutation stored in the GroupBy instance, group
 another array of values and compute the variance of
 each group’s values.</p>
@@ -1440,76 +1440,159 @@ normally distributed variables.</p>
 
 </section>
 
-
-           </div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="strings.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Strings in Arkouda</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="setops.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Array Set Operations</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="strings.html" class="btn btn-neutral float-right" title="Strings in Arkouda" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="setops.html" class="btn btn-neutral" title="Array Set Operations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
     </div>
-  
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">GroupBy</a><ul>
+<li><a class="reference internal" href="#arkouda.GroupBy"><code class="docutils literal notranslate"><span class="pre">GroupBy</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.GroupBy.nkeys"><code class="docutils literal notranslate"><span class="pre">GroupBy.nkeys</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.size"><code class="docutils literal notranslate"><span class="pre">GroupBy.size</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.permutation"><code class="docutils literal notranslate"><span class="pre">GroupBy.permutation</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unique_keys"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique_keys</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.ngroups"><code class="docutils literal notranslate"><span class="pre">GroupBy.ngroups</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.segments"><code class="docutils literal notranslate"><span class="pre">GroupBy.segments</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.logger"><code class="docutils literal notranslate"><span class="pre">GroupBy.logger</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.AND"><code class="docutils literal notranslate"><span class="pre">GroupBy.AND()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.OR"><code class="docutils literal notranslate"><span class="pre">GroupBy.OR()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.XOR"><code class="docutils literal notranslate"><span class="pre">GroupBy.XOR()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.aggregate"><code class="docutils literal notranslate"><span class="pre">GroupBy.aggregate()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.all"><code class="docutils literal notranslate"><span class="pre">GroupBy.all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.any"><code class="docutils literal notranslate"><span class="pre">GroupBy.any()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.argmax"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmax()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.argmin"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmin()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.attach"><code class="docutils literal notranslate"><span class="pre">GroupBy.attach()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.broadcast"><code class="docutils literal notranslate"><span class="pre">GroupBy.broadcast()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.build_from_components"><code class="docutils literal notranslate"><span class="pre">GroupBy.build_from_components()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.count"><code class="docutils literal notranslate"><span class="pre">GroupBy.count()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.first"><code class="docutils literal notranslate"><span class="pre">GroupBy.first()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.is_registered"><code class="docutils literal notranslate"><span class="pre">GroupBy.is_registered()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.max"><code class="docutils literal notranslate"><span class="pre">GroupBy.max()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.mean"><code class="docutils literal notranslate"><span class="pre">GroupBy.mean()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.median"><code class="docutils literal notranslate"><span class="pre">GroupBy.median()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.min"><code class="docutils literal notranslate"><span class="pre">GroupBy.min()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.mode"><code class="docutils literal notranslate"><span class="pre">GroupBy.mode()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.most_common"><code class="docutils literal notranslate"><span class="pre">GroupBy.most_common()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">GroupBy.nunique()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.prod"><code class="docutils literal notranslate"><span class="pre">GroupBy.prod()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.register"><code class="docutils literal notranslate"><span class="pre">GroupBy.register()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.std"><code class="docutils literal notranslate"><span class="pre">GroupBy.std()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.sum"><code class="docutils literal notranslate"><span class="pre">GroupBy.sum()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unique"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unregister"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister_groupby_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.var"><code class="docutils literal notranslate"><span class="pre">GroupBy.var()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.GroupBy">GroupBy</a><ul>
+<li><a class="reference internal" href="#arkouda.GroupBy.nkeys">nkeys</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.size">size</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.permutation">permutation</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unique_keys">unique_keys</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.ngroups">ngroups</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.segments">segments</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.logger">logger</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.AND">AND</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.OR">OR</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.XOR">XOR</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.aggregate">aggregate</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.all">all</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.any">any</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.argmax">argmax</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.argmin">argmin</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.attach">attach</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.broadcast">broadcast</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.build_from_components">build_from_components</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.count">count</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.first">first</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.is_registered">is_registered</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.max">max</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.mean">mean</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.median">median</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.min">min</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.mode">mode</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.most_common">most_common</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.nunique">nunique</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.prod">prod</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.register">register</a></li>
+<li><a class="reference internal" href="#id0">size</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.std">std</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.sum">sum</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unique">unique</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unregister">unregister</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.unregister_groupby_by_name">unregister_groupby_by_name</a></li>
+<li><a class="reference internal" href="#arkouda.GroupBy.var">var</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Michael Merrill and William Reus.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
+          </div>
         </div>
       </div>
-
-    </section>
-
+      
+      
+    </aside>
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0+untagged.1.gb102c06',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/documentation_options.js"></script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
 </html>

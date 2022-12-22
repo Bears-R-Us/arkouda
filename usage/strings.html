@@ -1,101 +1,175 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Categoricals" href="categorical.html" /><link rel="prev" title="GroupBy" href="groupby.html" />
 
-
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Strings in Arkouda &mdash; arkouda 0+untagged.1.gb102c06 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Strings in Arkouda - arkouda 0+untagged.1.gc2f28ba documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
     
 
-  
 
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
   
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.gb102c06 documentation" href="../index.html"/>
-        <link rel="up" title="Usage" href="../usage.html"/>
-        <link rel="next" title="Categoricals" href="categorical.html"/>
-        <link rel="prev" title="GroupBy" href="groupby.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-   
-  <div class="wy-grid-for-nav">
-
+      }
+    }
+  }
+</style></head>
+  <body>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-          
-            <a href="../index.html" class="icon icon-home"> arkouda
-          
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          </a>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
-          
-            
-            
-          
 
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
 
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">arkouda 0+untagged.1.gc2f28ba documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda 0+untagged.1.gc2f28ba documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../FILEIO.html">File I/O</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../usage.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
@@ -106,100 +180,91 @@
 <li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Strings in Arkouda</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#i-o">I/O</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#iteration">Iteration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.Strings.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#operations">Operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#string-specific-methods">String-Specific Methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#substring-search">Substring search</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#splitting-and-joining">Splitting and joining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#flattening">Flattening</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#regular-expressions">Regular Expressions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.Strings.to_ndarray">to_ndarray</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Strings in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
 </ul>
 
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">arkouda</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../usage.html">Usage</a> &raquo;</li>
-        
-      <li>Strings in Arkouda</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/usage/strings.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <section id="strings-in-arkouda">
-<h1>Strings in Arkouda<a class="headerlink" href="#strings-in-arkouda" title="Permalink to this heading">¶</a></h1>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="strings-in-arkouda">
+<h1>Strings in Arkouda<a class="headerlink" href="#strings-in-arkouda" title="Permalink to this heading">#</a></h1>
 <p>Like NumPy, Arkouda supports arrays of strings, but whereas in NumPy arrays of strings are still <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, in Arkouda the array of strings is its own class: <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p>
 <p>In order to efficiently store strings with a wide range of lengths, Arkouda uses a “segmented array” data structure, comprising:</p>
 <ul class="simple">
@@ -207,20 +272,20 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">offsets</span></code>: A <code class="docutils literal notranslate"><span class="pre">int64</span></code> array with the start index of each string</p></li>
 </ul>
 <section id="performance">
-<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this heading">¶</a></h2>
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this heading">#</a></h2>
 <p>Because strings are a variable-width data type, and because of the way Arkouda represents strings, operations on strings are considerably slower than operations on numeric data. Use numeric data whenever possible. For example, if your raw data contains string data that could be represented numerically, consider setting up a processing pipeline performs the conversion (and stores the result in HDF5 format) on ingest.</p>
 </section>
 <section id="i-o">
-<span id="string-io-label"></span><h2>I/O<a class="headerlink" href="#i-o" title="Permalink to this heading">¶</a></h2>
+<span id="string-io-label"></span><h2>I/O<a class="headerlink" href="#i-o" title="Permalink to this heading">#</a></h2>
 <p>Arrays of strings can be transferred between the Arkouda client and server using the <code class="docutils literal notranslate"><span class="pre">arkouda.array</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray</span></code> functions (see <a class="reference internal" href="IO.html#io-label"><span class="std std-ref">Data I/O</span></a>). The former converts a Python list or NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of strings to an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, whereas the latter converts an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object to a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. As with numeric arrays, if the size of the data exceeds the threshold set by <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>, the client will raise an exception.</p>
 <p>Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 <code class="docutils literal notranslate"><span class="pre">group</span></code> containing two datasets: <code class="docutils literal notranslate"><span class="pre">segments</span></code> (an integer array corresponding to <code class="docutils literal notranslate"><span class="pre">offsets</span></code> above) and <code class="docutils literal notranslate"><span class="pre">values</span></code> (a <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array corresponding to <code class="docutils literal notranslate"><span class="pre">bytes</span></code> above). See <a class="reference internal" href="IO.html#data-preprocessing-label"><span class="std std-ref">Supported File Formats</span></a> for more information and guidelines.</p>
 </section>
 <section id="iteration">
-<h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this heading">¶</a></h2>
+<h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this heading">#</a></h2>
 <p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">Strings</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">string</span></code> is not supported to discourage transferring all the <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object’s data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">Strings</span></code> as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. See <a class="reference internal" href="#string-io-label"><span class="std std-ref">I/O</span></a> for more details about using <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> with <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Strings.to_ndarray">
-<span class="sig-prename descclassname"><span class="pre">arkouda.Strings.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#arkouda.Strings.to_ndarray" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.Strings.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#arkouda.Strings.to_ndarray" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert the array to a np.ndarray, transferring array data from the
 arkouda server to Python. If the array exceeds a built-in size limit,
 a RuntimeError is raised.</p>
@@ -256,7 +321,7 @@ value, but proceed with caution.</p>
 
 </section>
 <section id="operations">
-<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this heading">¶</a></h2>
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this heading">#</a></h2>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects support the following operations:</p>
 <ul class="simple">
 <li><p>Indexing with integer, slice, integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, and boolean <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (see <a class="reference internal" href="indexing.html#indexing-label"><span class="std std-ref">Indexing and Assignment</span></a>)</p></li>
@@ -269,13 +334,13 @@ value, but proceed with caution.</p>
 </ul>
 </section>
 <section id="string-specific-methods">
-<h2>String-Specific Methods<a class="headerlink" href="#string-specific-methods" title="Permalink to this heading">¶</a></h2>
+<h2>String-Specific Methods<a class="headerlink" href="#string-specific-methods" title="Permalink to this heading">#</a></h2>
 <section id="substring-search">
-<h3>Substring search<a class="headerlink" href="#substring-search" title="Permalink to this heading">¶</a></h3>
+<h3>Substring search<a class="headerlink" href="#substring-search" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.contains">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.contains" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.contains" title="Permalink to this definition">#</a></dt>
 <dd><p>Check whether each element contains the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -318,7 +383,7 @@ Note: only handles regular expressions supported by re2
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.startswith">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.startswith" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.startswith" title="Permalink to this definition">#</a></dt>
 <dd><p>Check whether each element starts with the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -364,7 +429,7 @@ Note: only handles regular expressions supported by re2
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.endswith">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.endswith" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings.endswith" title="Permalink to this definition">#</a></dt>
 <dd><p>Check whether each element ends with the given substring.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -411,11 +476,11 @@ Note: only handles regular expressions supported by re2
 </div></blockquote>
 </section>
 <section id="splitting-and-joining">
-<h3>Splitting and joining<a class="headerlink" href="#splitting-and-joining" title="Permalink to this heading">¶</a></h3>
+<h3>Splitting and joining<a class="headerlink" href="#splitting-and-joining" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.peel">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">peel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromRight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span></span></span><a class="headerlink" href="#arkouda.Strings.peel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">peel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromRight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span></span></span><a class="headerlink" href="#arkouda.Strings.peel" title="Permalink to this definition">#</a></dt>
 <dd><p>Peel off one or more delimited fields from each string (similar
 to string.partition), returning two new arrays of strings.
 <em>Warning</em>: This function is experimental and not guaranteed to work.</p>
@@ -481,7 +546,7 @@ is true)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.rpeel">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">rpeel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Strings.rpeel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">rpeel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Strings.rpeel" title="Permalink to this definition">#</a></dt>
 <dd><p>Peel off one or more delimited fields from the end of each string
 (similar to string.rpartition), returning two new arrays of strings.
 <em>Warning</em>: This function is experimental and not guaranteed to work.</p>
@@ -540,7 +605,7 @@ Note: only handles regular expressions supported by re2
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.stick">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">stick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toLeft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.stick" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">stick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toLeft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.stick" title="Permalink to this definition">#</a></dt>
 <dd><p>Join the strings from another array onto one end of the strings
 of this array, optionally inserting a delimiter.
 <em>Warning</em>: This function is experimental and not guaranteed to work.</p>
@@ -583,7 +648,7 @@ other is joined to the right of self.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.lstick">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">lstick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.lstick" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">lstick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.lstick" title="Permalink to this definition">#</a></dt>
 <dd><p>Join the strings from another array onto the left of the strings
 of this array, optionally inserting a delimiter.
 <em>Warning</em>: This function is experimental and not guaranteed to work.</p>
@@ -624,12 +689,12 @@ of this array, optionally inserting a delimiter.
 </div></blockquote>
 </section>
 <section id="flattening">
-<h3>Flattening<a class="headerlink" href="#flattening" title="Permalink to this heading">¶</a></h3>
+<h3>Flattening<a class="headerlink" href="#flattening" title="Permalink to this heading">#</a></h3>
 <p>Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe</p>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.flatten">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.flatten" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.flatten" title="Permalink to this definition">#</a></dt>
 <dd><p>Unpack delimiter-joined substrings into a flat array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -675,12 +740,12 @@ in the return array</p></li>
 </div></blockquote>
 </section>
 <section id="regular-expressions">
-<h3>Regular Expressions<a class="headerlink" href="#regular-expressions" title="Permalink to this heading">¶</a></h3>
+<h3>Regular Expressions<a class="headerlink" href="#regular-expressions" title="Permalink to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Strings</span></code> implements behavior similar to the re python library applied to every element. This functionality is based on Chapel’s regex module which is built on google’s re2. re2 sacrifices some functionality (notably lookahead/lookbehind) in exchange for guarantees that searches complete in linear time and in a fixed amount of stack space</p>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.search">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.search" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.search" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a match object with the first location in each element where pattern produces a match.
 Elements match if any part of the string matches the regular expression pattern</p>
 <dl class="field-list simple">
@@ -706,7 +771,7 @@ regular expression pattern</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.match">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.match" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.match" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a match object where elements match only if the beginning of the string matches the
 regular expression pattern</p>
 <dl class="field-list simple">
@@ -732,7 +797,7 @@ regular expression pattern</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.fullmatch">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">fullmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.fullmatch" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">fullmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/match/index.html#arkouda.match.Match" title="arkouda.match.Match"><span class="pre">Match</span></a></span></span><a class="headerlink" href="#arkouda.Strings.fullmatch" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a match object where elements match only if the whole string matches the
 regular expression pattern</p>
 <dl class="field-list simple">
@@ -758,7 +823,7 @@ regular expression pattern</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.split">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsplit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.split" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsplit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.split" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a new Strings split by the occurrences of pattern.
 If maxsplit is nonzero, at most maxsplit splits occur</p>
 <dl class="field-list simple">
@@ -790,7 +855,7 @@ in the return array</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.findall">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.findall" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.findall" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a new Strings containg all non-overlapping matches of pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -829,7 +894,7 @@ pattern match is from</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.sub">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.sub" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="headerlink" href="#arkouda.Strings.sub" title="Permalink to this definition">#</a></dt>
 <dd><p>Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
 replacement repl.
 If count is nonzero, at most count substitutions occur</p>
@@ -870,7 +935,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.subn">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">subn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span></span></span><a class="headerlink" href="#arkouda.Strings.subn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">subn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span></span></span><a class="headerlink" href="#arkouda.Strings.subn" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -910,7 +975,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.find_locations">
-<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.find_locations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.find_locations" title="Permalink to this definition">#</a></dt>
 <dd><p>Finds pattern matches and returns pdarrays containing the number, start postitions,
 and lengths of matches</p>
 <dl class="field-list simple">
@@ -952,12 +1017,12 @@ and lengths of matches</p>
 
 </div></blockquote>
 <section id="match-object">
-<h4>Match Object<a class="headerlink" href="#match-object" title="Permalink to this heading">¶</a></h4>
+<h4>Match Object<a class="headerlink" href="#match-object" title="Permalink to this heading">#</a></h4>
 <p>search, match, and fullmatch return a <code class="docutils literal notranslate"><span class="pre">Match</span></code> object which supports the following methods</p>
 <blockquote>
 <div><dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.matched">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">matched</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.matched" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">matched</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.matched" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a boolean array indiciating whether each element matched</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -977,7 +1042,7 @@ and lengths of matches</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.start">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.start" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.start" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the starts of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -997,7 +1062,7 @@ and lengths of matches</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.end">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.end" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.match.Match.end" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the ends of matches</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1017,7 +1082,7 @@ and lengths of matches</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.match_type">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">match_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.match.Match.match_type" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">match_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.match.Match.match_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the type of the Match object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1037,7 +1102,7 @@ and lengths of matches</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.find_matches">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">find_matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.match.Match.find_matches" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">find_matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.match.Match.find_matches" title="Permalink to this definition">#</a></dt>
 <dd><p>Return all matches as a new Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1065,7 +1130,7 @@ match is from</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.match.Match.group">
-<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_group_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.match.Match.group" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">Match.</span></span><span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_group_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.match.Match.group" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a new Strings containing the capture group corresponding to group_num.
 For the default, group_num=0, return the full match</p>
 <dl class="field-list simple">
@@ -1103,76 +1168,151 @@ capture group is from</p></li>
 </section>
 </section>
 
-
-           </div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="categorical.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Categoricals</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="groupby.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">GroupBy</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="categorical.html" class="btn btn-neutral float-right" title="Categoricals" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="groupby.html" class="btn btn-neutral" title="GroupBy" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
     </div>
-  
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Strings in Arkouda</a><ul>
+<li><a class="reference internal" href="#performance">Performance</a></li>
+<li><a class="reference internal" href="#i-o">I/O</a></li>
+<li><a class="reference internal" href="#iteration">Iteration</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operations">Operations</a></li>
+<li><a class="reference internal" href="#string-specific-methods">String-Specific Methods</a><ul>
+<li><a class="reference internal" href="#substring-search">Substring search</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.contains"><code class="docutils literal notranslate"><span class="pre">Strings.contains()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.startswith"><code class="docutils literal notranslate"><span class="pre">Strings.startswith()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.endswith"><code class="docutils literal notranslate"><span class="pre">Strings.endswith()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#splitting-and-joining">Splitting and joining</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.peel"><code class="docutils literal notranslate"><span class="pre">Strings.peel()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.rpeel"><code class="docutils literal notranslate"><span class="pre">Strings.rpeel()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.stick"><code class="docutils literal notranslate"><span class="pre">Strings.stick()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.lstick"><code class="docutils literal notranslate"><span class="pre">Strings.lstick()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flattening">Flattening</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.flatten"><code class="docutils literal notranslate"><span class="pre">Strings.flatten()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regular-expressions">Regular Expressions</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.search"><code class="docutils literal notranslate"><span class="pre">Strings.search()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.match"><code class="docutils literal notranslate"><span class="pre">Strings.match()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.fullmatch"><code class="docutils literal notranslate"><span class="pre">Strings.fullmatch()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.split"><code class="docutils literal notranslate"><span class="pre">Strings.split()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.findall"><code class="docutils literal notranslate"><span class="pre">Strings.findall()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.sub"><code class="docutils literal notranslate"><span class="pre">Strings.sub()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.subn"><code class="docutils literal notranslate"><span class="pre">Strings.subn()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.Strings.find_locations"><code class="docutils literal notranslate"><span class="pre">Strings.find_locations()</span></code></a></li>
+<li><a class="reference internal" href="#match-object">Match Object</a><ul>
+<li><a class="reference internal" href="#arkouda.match.Match.matched"><code class="docutils literal notranslate"><span class="pre">Match.matched()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.start"><code class="docutils literal notranslate"><span class="pre">Match.start()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.end"><code class="docutils literal notranslate"><span class="pre">Match.end()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.match_type"><code class="docutils literal notranslate"><span class="pre">Match.match_type()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.find_matches"><code class="docutils literal notranslate"><span class="pre">Match.find_matches()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.group"><code class="docutils literal notranslate"><span class="pre">Match.group()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.matched">matched</a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.start">start</a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.end">end</a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.match_type">match_type</a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.find_matches">find_matches</a></li>
+<li><a class="reference internal" href="#arkouda.match.Match.group">group</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.Strings.to_ndarray">to_ndarray</a><ul>
+<li><a class="reference internal" href="#arkouda.Strings.contains">contains</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.startswith">startswith</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.endswith">endswith</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.peel">peel</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.rpeel">rpeel</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.stick">stick</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.lstick">lstick</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.flatten">flatten</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.search">search</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.match">match</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.fullmatch">fullmatch</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.split">split</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.findall">findall</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.sub">sub</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.subn">subn</a></li>
+<li><a class="reference internal" href="#arkouda.Strings.find_locations">find_locations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Michael Merrill and William Reus.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
+          </div>
         </div>
       </div>
-
-    </section>
-
+      
+      
+    </aside>
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0+untagged.1.gb102c06',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/documentation_options.js"></script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
 </html>

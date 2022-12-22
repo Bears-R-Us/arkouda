@@ -1,155 +1,182 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Sorting" href="argsort.html" /><link rel="prev" title="Indexing and Assignment" href="indexing.html" />
 
-
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Summarizing Data &mdash; arkouda 0+untagged.1.gb102c06 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Summarizing Data - arkouda 0+untagged.1.gc2f28ba documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
     
 
-  
 
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
   
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="arkouda 0+untagged.1.gb102c06 documentation" href="../index.html"/>
-        <link rel="up" title="Usage" href="../usage.html"/>
-        <link rel="next" title="Sorting" href="argsort.html"/>
-        <link rel="prev" title="Indexing and Assignment" href="indexing.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-   
-  <div class="wy-grid-for-nav">
-
+      }
+    }
+  }
+</style></head>
+  <body>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-          
-            <a href="../index.html" class="icon icon-home"> arkouda
-          
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          </a>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
-          
-            
-            
-          
 
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
 
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">arkouda 0+untagged.1.gc2f28ba documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda 0+untagged.1.gc2f28ba documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../FILEIO.html">File I/O</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../usage.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Summarizing Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#descriptive-statistics">Descriptive Statistics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.any"><code class="docutils literal notranslate"><span class="pre">pdarray.any()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.all"><code class="docutils literal notranslate"><span class="pre">pdarray.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.is_sorted"><code class="docutils literal notranslate"><span class="pre">pdarray.is_sorted()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.sum"><code class="docutils literal notranslate"><span class="pre">pdarray.sum()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.prod"><code class="docutils literal notranslate"><span class="pre">pdarray.prod()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.min"><code class="docutils literal notranslate"><span class="pre">pdarray.min()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.max"><code class="docutils literal notranslate"><span class="pre">pdarray.max()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmin"><code class="docutils literal notranslate"><span class="pre">pdarray.argmin()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmax"><code class="docutils literal notranslate"><span class="pre">pdarray.argmax()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.mean"><code class="docutils literal notranslate"><span class="pre">pdarray.mean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.var"><code class="docutils literal notranslate"><span class="pre">pdarray.var()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.std"><code class="docutils literal notranslate"><span class="pre">pdarray.std()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.mink"><code class="docutils literal notranslate"><span class="pre">pdarray.mink()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.maxk"><code class="docutils literal notranslate"><span class="pre">pdarray.maxk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmink"><code class="docutils literal notranslate"><span class="pre">pdarray.argmink()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmaxk"><code class="docutils literal notranslate"><span class="pre">pdarray.argmaxk()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#histogram">Histogram</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#value-counts">Value Counts</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.value_counts"><code class="docutils literal notranslate"><span class="pre">value_counts()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.any">any</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.all">all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.is_sorted">is_sorted</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.sum">sum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.prod">prod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.min">min</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.max">max</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmin">argmin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmax">argmax</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.mean">mean</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.var">var</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.std">std</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.mink">mink</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.maxk">maxk</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmink">argmink</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.pdarray.argmaxk">argmaxk</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.histogram">histogram</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arkouda.value_counts">value_counts</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Summarizing Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
@@ -160,78 +187,86 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
 </ul>
 
-            
-          
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">arkouda</a>
-        
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../usage.html">Usage</a> &raquo;</li>
-        
-      <li>Summarizing Data</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="../_sources/usage/histogram.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <section id="summarizing-data">
-<h1>Summarizing Data<a class="headerlink" href="#summarizing-data" title="Permalink to this heading">¶</a></h1>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="summarizing-data">
+<h1>Summarizing Data<a class="headerlink" href="#summarizing-data" title="Permalink to this heading">#</a></h1>
 <section id="descriptive-statistics">
-<h2>Descriptive Statistics<a class="headerlink" href="#descriptive-statistics" title="Permalink to this heading">¶</a></h2>
+<h2>Descriptive Statistics<a class="headerlink" href="#descriptive-statistics" title="Permalink to this heading">#</a></h2>
 <p>Simple descriptive statistics are available as reduction methods on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
@@ -251,19 +286,19 @@
 <p>The list of reductions supported on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects is:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.any">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.any" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.any" title="Permalink to this definition">#</a></dt>
 <dd><p>Return True iff any element of the array evaluates to True.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.all">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.all" title="Permalink to this definition">#</a></dt>
 <dd><p>Return True iff all elements of the array evaluate to True.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.is_sorted">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.is_sorted" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">is_sorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool_</span></span></span><a class="headerlink" href="#arkouda.pdarray.is_sorted" title="Permalink to this definition">#</a></dt>
 <dd><p>Return True iff the array is monotonically non-decreasing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -286,50 +321,50 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.sum">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.sum" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.sum" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the sum of all elements in the array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.prod">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.prod" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.prod" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the product of all elements in the array. Return value is
 always a np.float64 or np.int64.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.min">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.min" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.min" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the minimum value of the array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.max">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.max" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str_</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.pdarray.max" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the maximum value of the array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.argmin">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int64</span></span></span><a class="headerlink" href="#arkouda.pdarray.argmin" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int64</span></span></span><a class="headerlink" href="#arkouda.pdarray.argmin" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array min value</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.argmax">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int64</span></span></span><a class="headerlink" href="#arkouda.pdarray.argmax" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int64</span></span></span><a class="headerlink" href="#arkouda.pdarray.argmax" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the index of the first occurrence of the array max value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.mean">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.mean" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.mean" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the mean of the array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.var">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.var" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.var" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the variance. See <code class="docutils literal notranslate"><span class="pre">arkouda.var</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -353,7 +388,7 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.std">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.std" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="headerlink" href="#arkouda.pdarray.std" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the standard deviation. See <code class="docutils literal notranslate"><span class="pre">arkouda.std</span></code> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -376,7 +411,7 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.mink">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.mink" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">mink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.mink" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -396,7 +431,7 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.maxk">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">maxk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.maxk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">maxk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.maxk" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -416,7 +451,7 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.argmink">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.argmink" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.argmink" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the minimum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -436,7 +471,7 @@ always a np.float64 or np.int64.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.argmaxk">
-<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmaxk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.argmaxk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">pdarray.</span></span><span class="sig-name descname"><span class="pre">argmaxk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarray.argmaxk" title="Permalink to this definition">#</a></dt>
 <dd><p>Finds the indices corresponding to the maximum “k” values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -456,11 +491,11 @@ always a np.float64 or np.int64.</p>
 
 </section>
 <section id="histogram">
-<h2>Histogram<a class="headerlink" href="#histogram" title="Permalink to this heading">¶</a></h2>
+<h2>Histogram<a class="headerlink" href="#histogram" title="Permalink to this heading">#</a></h2>
 <p>Arkouda can compute simple histograms on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data. Currently, this function can only create histograms over evenly spaced bins between the min and max of the data. In the future, we plan to support using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> to define custom bin edges.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.histogram">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.histogram" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint8</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint16</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint32</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">uint64</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.histogram" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute a histogram of evenly spaced bins over the range of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -507,11 +542,11 @@ always a np.float64 or np.int64.</p>
 
 </section>
 <section id="value-counts">
-<h2>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this heading">¶</a></h2>
+<h2>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this heading">#</a></h2>
 <p>For int64 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, it is often useful to count only the unique values that appear. This function finds all unique values and their counts.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.value_counts">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.value_counts" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.value_counts" title="Permalink to this definition">#</a></dt>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -548,76 +583,124 @@ return_counts parameter is set to True.</p>
 </section>
 </section>
 
-
-           </div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="argsort.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Sorting</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="indexing.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Indexing and Assignment</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="argsort.html" class="btn btn-neutral float-right" title="Sorting" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="indexing.html" class="btn btn-neutral" title="Indexing and Assignment" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
     </div>
-  
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Summarizing Data</a><ul>
+<li><a class="reference internal" href="#descriptive-statistics">Descriptive Statistics</a><ul>
+<li><a class="reference internal" href="#arkouda.pdarray.any"><code class="docutils literal notranslate"><span class="pre">pdarray.any()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.all"><code class="docutils literal notranslate"><span class="pre">pdarray.all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.is_sorted"><code class="docutils literal notranslate"><span class="pre">pdarray.is_sorted()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.sum"><code class="docutils literal notranslate"><span class="pre">pdarray.sum()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.prod"><code class="docutils literal notranslate"><span class="pre">pdarray.prod()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.min"><code class="docutils literal notranslate"><span class="pre">pdarray.min()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.max"><code class="docutils literal notranslate"><span class="pre">pdarray.max()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmin"><code class="docutils literal notranslate"><span class="pre">pdarray.argmin()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmax"><code class="docutils literal notranslate"><span class="pre">pdarray.argmax()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.mean"><code class="docutils literal notranslate"><span class="pre">pdarray.mean()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.var"><code class="docutils literal notranslate"><span class="pre">pdarray.var()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.std"><code class="docutils literal notranslate"><span class="pre">pdarray.std()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.mink"><code class="docutils literal notranslate"><span class="pre">pdarray.mink()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.maxk"><code class="docutils literal notranslate"><span class="pre">pdarray.maxk()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmink"><code class="docutils literal notranslate"><span class="pre">pdarray.argmink()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmaxk"><code class="docutils literal notranslate"><span class="pre">pdarray.argmaxk()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#histogram">Histogram</a><ul>
+<li><a class="reference internal" href="#arkouda.histogram"><code class="docutils literal notranslate"><span class="pre">histogram()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#value-counts">Value Counts</a><ul>
+<li><a class="reference internal" href="#arkouda.value_counts"><code class="docutils literal notranslate"><span class="pre">value_counts()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.any">any</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.all">all</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.is_sorted">is_sorted</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.sum">sum</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.prod">prod</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.min">min</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.max">max</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmin">argmin</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmax">argmax</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.mean">mean</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.var">var</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.std">std</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.mink">mink</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.maxk">maxk</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmink">argmink</a></li>
+<li><a class="reference internal" href="#arkouda.pdarray.argmaxk">argmaxk</a></li>
+<li><a class="reference internal" href="#arkouda.histogram">histogram</a></li>
+<li><a class="reference internal" href="#arkouda.value_counts">value_counts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Michael Merrill and William Reus.
-
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-
+          </div>
         </div>
       </div>
-
-    </section>
-
+      
+      
+    </aside>
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0+untagged.1.gb102c06',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/documentation_options.js"></script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
 </html>

@@ -1,0 +1,541 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="autoapi/index.html" /><link rel="prev" title="Examples" href="examples.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Contributing - arkouda 0+untagged.1.gc2f28ba documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">arkouda 0+untagged.1.gc2f28ba documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">arkouda 0+untagged.1.gc2f28ba documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FILEIO.html">File I/O</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/IO.html">Data I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/arrayview.html">ArrayView in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/categorical/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/infoclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/io_util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/join/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/pdarraysetops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraysetops</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/plotting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.plotting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/row/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.row</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/security/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.security</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/segarray/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.segarray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/series/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.series</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/sorting/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.sorting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/strings/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.strings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/timeclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.timeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/util/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.util</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">#</a></h1>
+<p>Arkouda is an open source project and we love to see new contributors!
+We welcome contributions via issues and pull requests.</p>
+<section id="adding-issues">
+<h2>Adding Issues<a class="headerlink" href="#adding-issues" title="Permalink to this heading">#</a></h2>
+<p>Most issues fall under the broad categories of bug reports or feature requests.
+If your issue doesn’t fit either of these, please add it anyway and provide as much detail as possible.</p>
+<p>It is always a good idea to review the current issue list and make sure your issue is not already present.</p>
+<p>Using github markdown (especially <a class="reference external" href="https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks">code blocks</a>)
+is very appreciated.</p>
+<section id="bug-reports">
+<h3>Bug Reports<a class="headerlink" href="#bug-reports" title="Permalink to this heading">#</a></h3>
+<p>When reporting a bug, please be sure to include the following information:</p>
+<ul class="simple">
+<li><p>Summary of Problem</p>
+<ul>
+<li><p>What behavior did you observe when encountering the bug?</p></li>
+<li><p>What behavior did you expect to observe?</p></li>
+<li><p>Is this a blocking issue with no known work-arounds?</p></li>
+</ul>
+</li>
+<li><p>Steps to Reproduce</p>
+<ul>
+<li><p>Please provide code that will reproduce the problem if possible.
+Providing simplified programs demonstrating the problem will be appreciated.</p></li>
+</ul>
+</li>
+<li><p>Configuration Information</p>
+<ul>
+<li><p>What’s the output of <code class="docutils literal notranslate"><span class="pre">ak.get_config()</span></code>? This includes information like the <code class="docutils literal notranslate"><span class="pre">ArkoudaVersion</span></code> and the version of Chapel the server was built with.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="feature-requests">
+<h3>Feature Requests<a class="headerlink" href="#feature-requests" title="Permalink to this heading">#</a></h3>
+<p>Be as specific as possible and provide examples when appropriate. If the requested feature is based on another library
+(i.e. numpy, pandas, scipy), please provide a link to their supporting documentation for reference.</p>
+</section>
+</section>
+<section id="developing-arkouda">
+<h2>Developing Arkouda<a class="headerlink" href="#developing-arkouda" title="Permalink to this heading">#</a></h2>
+<p>If you don’t have anything in mind, check out our <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues">outstanding issues</a>
+(it’s likely a good idea to filter on the label <code class="docutils literal notranslate"><span class="pre">good</span> <span class="pre">first</span> <span class="pre">issue</span></code>).</p>
+<p>If you already have an idea for a new feature or have identified a bug, <span class="xref myst">add an issue</span> before you start working on it.</p>
+<p>Once you find or create an issue you intend to work, please leave a comment in the issue indicating that.
+Be sure to mention <code class="docutils literal notranslate"><span class="pre">&#64;Bears-R-Us/arkouda-core-dev</span></code> for our awareness.
+We will then assign the issue to you to avoid anyone duplicating your work.</p>
+<p>Need assistance or want to discuss design with someone on the Arkouda team?
+Add a comment tagging <code class="docutils literal notranslate"><span class="pre">&#64;Bears-R-Us/arkouda-core-dev</span></code> to the issue and a developer will reach out!</p>
+<p>We use a <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow">Git Forking Workflow</a>
+and recommend developers use a simple <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow">Git Feature Branch Workflow</a>
+on their own fork.</p>
+<section id="coding-conventions-and-linting">
+<h3>Coding Conventions and Linting<a class="headerlink" href="#coding-conventions-and-linting" title="Permalink to this heading">#</a></h3>
+<section id="python3">
+<h4>Python3<a class="headerlink" href="#python3" title="Permalink to this heading">#</a></h4>
+<p>We follow the coding standards laid out in <a class="reference external" href="https://peps.python.org/pep-0008/">PEP8</a>.
+Our Continuous Integration workflow has a linter (<code class="docutils literal notranslate"><span class="pre">flake8</span></code>) to verify all our python code meets these requirements.</p>
+<p>We use <code class="docutils literal notranslate"><span class="pre">isort</span></code>, <code class="docutils literal notranslate"><span class="pre">black</span></code>, and <code class="docutils literal notranslate"><span class="pre">flake8</span></code> (typically in that order) to ensure our code is consistent.
+We utilize a line length of 105. When running <code class="docutils literal notranslate"><span class="pre">black</span></code>, be sure to to use the <code class="docutils literal notranslate"><span class="pre">--line-length</span> <span class="pre">105</span></code> parameter.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ isort arkouda/example_feature.py
+Fixing arkouda/example_feature.py
+
+$ black --line-length <span class="m">105</span> arkouda/example_feature.py
+reformatted arkouda/example_feature.py
+
+All <span class="k">done</span>!
+<span class="m">1</span> file reformatted.
+
+$ flake8 arkouda/example_feature.py
+</pre></div>
+</div>
+<p>For users of pycharm there is nice <a class="reference external" href="https://black.readthedocs.io/en/stable/integrations/editors.html#pycharm-intellij-idea">interoperability</a> with these tools.</p>
+<p>We use numpy style doc strings. It’s a good idea to write code that looks similar to the surrounding functions.</p>
+</section>
+<section id="chapel">
+<h4>Chapel<a class="headerlink" href="#chapel" title="Permalink to this heading">#</a></h4>
+<p>Our Chapel code linting is checking spaces only. The linter in the CI will fail if tabs are present.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lowerCamelCase</span></code> is used for variable names and procedures</p></li>
+</ul>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">aX</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="mi">0</span><span class="o">..#</span><span class="nx">s</span><span class="p">}]</span><span class="w"> </span><span class="kt">real</span><span class="p">;</span><span class="w"></span>
+<span class="k">proc</span><span class="w"> </span><span class="nf">printIt</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="nx">writeln</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">UpperCamelCase</span></code> is used for class names</p></li>
+</ul>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span><span class="w"> </span><span class="nx">FooParent</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
+<p>If you’re fixing a bug, add a test. Run it first to confirm it fails, then fix the bug, run it again to confirm it’s really fixed.</p>
+<p>If adding a new feature, add a test to make sure it behaves properly.</p>
+<p>See our wiki for more info on how to run our tests and create your own:
+<a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing">https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing</a></p>
+<section id="running-python-tests">
+<h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Permalink to this heading">#</a></h4>
+<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span>make test
+</pre></div>
+</div>
+</section>
+<section id="running-chapel-tests">
+<h4>Running chapel tests<a class="headerlink" href="#running-chapel-tests" title="Permalink to this heading">#</a></h4>
+<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span>python3 util/test/parallel_start_test.py -d test
+</pre></div>
+</div>
+</section>
+</section>
+<section id="writing-pull-requests">
+<h3>Writing Pull Requests<a class="headerlink" href="#writing-pull-requests" title="Permalink to this heading">#</a></h3>
+<p>Every pull request should have at least one associated issue (if there’s not one, create one!).</p>
+<p>The issue number(s) should be listed in the title and the body using <a class="reference external" href="https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue">closing keywords</a>.
+Using github markdown (especially <a class="reference external" href="https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks">code blocks</a>)
+is very appreciated. When in doubt, take a look at some closed pull requests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Closes #99999: Example Feature Request
+
+This PR (Closes #99999):
+- Implements example feature request
+- Adds testing for example feature request
+
+Example:
+```python
+&gt;&gt;&gt; ak.example_feature(args)
+&quot;super cool functionality!&quot;
+```
+
+Note:
+- It will be helpful if reviewers keep THIS in mind
+</pre></div>
+</div>
+</section>
+<section id="reviewing-pull-requests">
+<h3>Reviewing Pull Requests<a class="headerlink" href="#reviewing-pull-requests" title="Permalink to this heading">#</a></h3>
+<p>For the most part, only the core dev team or those assigned should review PRs.</p>
+<ul class="simple">
+<li><p>As the person who left the PR feedback, you should be the one to resolve the conversation once you decide the author has addressed the issue.</p></li>
+<li><p>Try to resolve all of your feedback when you feel the PR is ready to be merged.</p>
+<ul>
+<li><p>If necessary, add an issue to track any feedback which is outside the scope of the PR and link the PR comment in the issue.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="core-development-team-only">
+<h2>Core Development Team Only<a class="headerlink" href="#core-development-team-only" title="Permalink to this heading">#</a></h2>
+<section id="merging-pull-requests">
+<h3>Merging Pull Requests<a class="headerlink" href="#merging-pull-requests" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Only members of the core dev team with quite a bit of experience writing and reviewing PRs should merge pull requests. If you’re unsure, ask first.</p></li>
+<li><p>Only merge PRs with 2 or more concurrent approvals from members of the core dev team with limited exceptions.</p></li>
+<li><p>Only merge PRs after the CI has passed and if there are no conflicts. Ideally rebase or merge with master first.</p></li>
+<li><p>We prefer to have all feedback resolved before a PR is merged.</p></li>
+<li><p>If you wrote it, don’t merge it. It’s best practice for someone else to decide it’s ready to be merged.</p></li>
+<li><p>To keep the commit history simple and allow for easy manipulation of PRs, we use the <code class="docutils literal notranslate"><span class="pre">Squash-and-Merge</span></code> functionality of GitHub’s web interface.</p></li>
+<li><p>Be sure to include <code class="docutils literal notranslate"><span class="pre">&#64;pierce314159</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;Ethan-DeBandi99</span></code> as a reviewer</p></li>
+</ul>
+</section>
+<section id="release-process">
+<h3>Release Process<a class="headerlink" href="#release-process" title="Permalink to this heading">#</a></h3>
+<p>New versions should only be released after the core dev team has reached a consensus.
+Instructions on our release process:</p>
+<p><a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Release-Process">https://github.com/Bears-R-Us/arkouda/wiki/Release-Process</a></p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="autoapi/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="examples.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Examples</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Contributing</a><ul>
+<li><a class="reference internal" href="#adding-issues">Adding Issues</a><ul>
+<li><a class="reference internal" href="#bug-reports">Bug Reports</a></li>
+<li><a class="reference internal" href="#feature-requests">Feature Requests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#developing-arkouda">Developing Arkouda</a><ul>
+<li><a class="reference internal" href="#coding-conventions-and-linting">Coding Conventions and Linting</a><ul>
+<li><a class="reference internal" href="#python3">Python3</a></li>
+<li><a class="reference internal" href="#chapel">Chapel</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing">Testing</a><ul>
+<li><a class="reference internal" href="#running-python-tests">Running python tests</a></li>
+<li><a class="reference internal" href="#running-chapel-tests">Running chapel tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#writing-pull-requests">Writing Pull Requests</a></li>
+<li><a class="reference internal" href="#reviewing-pull-requests">Reviewing Pull Requests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core-development-team-only">Core Development Team Only</a><ul>
+<li><a class="reference internal" href="#merging-pull-requests">Merging Pull Requests</a></li>
+<li><a class="reference internal" href="#release-process">Release Process</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
+</html>
