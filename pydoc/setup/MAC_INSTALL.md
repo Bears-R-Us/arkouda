@@ -30,16 +30,17 @@ cd chapel-1.29.0
 source util/quickstart/setchplenv.bash
 ```
 
-5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.* 
+5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.*
 
 6) Add the following to your `rc` file.
 
 ```bash
 export CHPL_LLVM=system
 export CHPL_RE2=bundled
+export CHPL_GMP=system # set to the same value as CHPL_LLVM
 ```
 
-6) Use GNU make to build Chapel 
+6) Use GNU make to build Chapel
 
 ```bash
 make
@@ -90,7 +91,7 @@ pip install -e . --no-deps
 
 ## Updating Environment
 
-As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool. 
+As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool.
 
 ### Anaconda
 

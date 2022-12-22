@@ -33,7 +33,6 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 export CHPL_RE2=bundled
 export CHPL_LLVM=bundled
-export CHPL_GMP=bundled
 
 # Build Chapel
 cd $CHPL_HOME
@@ -192,16 +191,11 @@ cd chapel-1.29.0
 ```bash
 source util/quickstart/setchplenv.bash
 ```
-<<<<<<< HEAD:INSTALL.md
-5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled` and `CHPL_GMP=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.* You may want to add this to your `rc` file as well.
-=======
 
 5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.* You may want to add this to your `rc` file as well.
 
->>>>>>> 91a0f2dc (Update to documentation configuration to make github pages more usable. This also prevents duplication of documentation as it will reuse a lot of our documents in most cases.):pydoc/setup/INSTALL.md
 ```bash
 export CHPL_LLVM=system
-export CHPL_GMP=system
 export CHPL_RE2=bundled
 ```
 

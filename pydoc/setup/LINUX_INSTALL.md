@@ -31,6 +31,7 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 export CHPL_RE2=bundled
 export CHPL_LLVM=bundled
+export CHPL_GMP=bundled # needs to be set to what CHPL_LLVM is
 
 # Build Chapel
 cd $CHPL_HOME

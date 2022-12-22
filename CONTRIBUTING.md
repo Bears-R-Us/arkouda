@@ -125,7 +125,7 @@ The issue number(s) should be listed in the title and the body using [closing ke
 Using github markdown (especially [code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks))
 is very appreciated. When in doubt, take a look at some closed pull requests.
 
-```text
+````
 Closes #99999: Example Feature Request
 
 This PR (Closes #99999):
@@ -137,6 +137,10 @@ Example:
 >>> ak.example_feature(args)
 "super cool functionality!"
 ```
+
+Note:
+- It will be helpful if reviewers keep THIS in mind
+````
 
 ### Reviewing Pull Requests
 

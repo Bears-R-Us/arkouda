@@ -92,17 +92,12 @@ COMING SOON
 
 Arkouda objects can be read from files using the `ak.read()` or `ak.load()` functions. More information on these functions are linked below.
 
-- [ak.read](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarrayIO/index.html#arkouda.pdarrayIO.read)
 - [ak.load](https://bears-r-us.github.io/arkouda/usage/IO.html#arkouda.load)
 - [ak.load_all](https://bears-r-us.github.io/arkouda/usage/IO.html#arkouda.load_all)
 
 ## Writing Objects
 
 *Objects currently being written with file version `v2.0`.*
-
-Arkouda objects can be written to files using the `ak.obj.save()` or `ak.save_all()` functions.
-
-- [ak.save_all](https://bears-r-us.github.io/arkouda/autoapi/arkouda/pdarrayIO/index.html#arkouda.pdarrayIO.save_all)
 
 Additionally, there are `save` functions for individual Arkouda objects. The function definition is detailed below as it is the same for each object type.
 
