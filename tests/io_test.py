@@ -204,7 +204,12 @@ class IOTest(ArkoudaTest):
             columns=self.dict_columns, prefix_path="{}/iotest_dict_columns".format(IOTest.io_test_dir)
         )
 
+        # test with read_hdf
         dataset = ak.read_hdf(filenames=["{}/iotest_dict_columns_LOCALE0000".format(IOTest.io_test_dir)])
+        self.assertEqual(4, len(list(dataset.keys())))
+
+        # test with generic read function
+        dataset = ak.read(filenames=["{}/iotest_dict_columns_LOCALE0000".format(IOTest.io_test_dir)])
         self.assertEqual(4, len(list(dataset.keys())))
 
     def testReadHdfWithGlob(self):

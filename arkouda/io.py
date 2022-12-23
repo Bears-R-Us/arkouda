@@ -20,6 +20,7 @@ __all__ = [
     "get_datasets",
     "read_hdf",
     "read_parquet",
+    "read",
     "import_data",
     "export",
     "to_hdf",
@@ -874,19 +875,21 @@ def to_parquet(
         for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
     else:
-        print(cast(
-            str,
-            generic_msg(
-                cmd="toParquet_multi",
-                args={
-                    "columns": pdarrays,
-                    "col_names": datasetNames,
-                    "filename": prefix_path,
-                    "num_cols": len(pdarrays),
-                    "compressed": compressed,
-                },
+        print(
+            cast(
+                str,
+                generic_msg(
+                    cmd="toParquet_multi",
+                    args={
+                        "columns": pdarrays,
+                        "col_names": datasetNames,
+                        "filename": prefix_path,
+                        "num_cols": len(pdarrays),
+                        "compressed": compressed,
+                    },
+                ),
             )
-        ))
+        )
 
 
 def to_hdf(
@@ -1133,3 +1136,109 @@ def load_all(
                 f"Could not open one or more files with path_prefix {prefix} and "
                 f"file_format {file_format} in location accessible to Arkouda"
             )
+
+
+def read(
+    filenames: Union[str, List[str]],
+    datasets: Optional[Union[str, List[str]]] = None,
+    iterative: bool = False,
+    strictTypes: bool = True,
+    allow_errors: bool = False,
+    calc_string_offsets=False,
+) -> Union[
+    pdarray,
+    Strings,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+]:
+    """
+    Read datasets from files.
+    File Type is determined automatically.
+
+    Parameters
+    ----------
+    filenames : list or str
+        Either a list of filenames or shell expression
+    datasets : list or str or None
+        (List of) name(s) of dataset(s) to read (default: all available)
+    iterative : bool
+        Iterative (True) or Single (False) function call(s) to server
+    strictTypes: bool
+        If True (default), require all dtypes of a given dataset to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one
+        file contains a uint32 dataset and another contains an int64
+        dataset with the same name, the contents of both will be read
+        into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
+    calc_string_offsets: bool
+        Default False, if True this will tell the server to calculate the
+        offsets/segments array on the server versus loading them from HDF5 files.
+        In the future this option may be set to True as the default.
+
+    Returns
+    -------
+    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
+    and for multiple datasets returns a dictionary of Arkouda pdarrays,
+    Arkouda Strings or Arkouda ArrayView.
+        Dictionary of {datasetName: pdarray or String}
+
+    Raises
+    ------
+    RuntimeError
+        If invalid filetype is detected
+
+    See Also
+    --------
+    read, get_datasets, ls, read_parquet, read_hdf
+
+    Notes
+    -----
+    If filenames is a string, it is interpreted as a shell expression
+    (a single filename is a valid expression, so it will work) and is
+    expanded with glob to read all matching files.
+
+    If iterative == True each dataset name and file names are passed to
+    the server as independent sequential strings while if iterative == False
+    all dataset names and file names are passed to the server in a single
+    string.
+
+    If datasets is None, infer the names of datasets from the first file
+    and read all of them. Use ``get_datasets`` to show the names of datasets
+    to HDF5/Parquet files.
+
+    Examples
+    --------
+    Read with file Extension
+    >>> x = ak.read('path/name_prefix.h5') # load HDF5 - processing determines file type not extension
+    Read without file Extension
+    >>> x = ak.read('path/name_prefix.parquet') # load Parquet
+    Read Glob Expression
+    >>> x = ak.read('path/name_prefix*') # Reads HDF5
+    """
+    if isinstance(filenames, str):
+        filenames = [filenames]
+
+    ftype = get_filetype(filenames)
+    if ftype.lower() == "hdf5":
+        return read_hdf(
+            filenames,
+            datasets=datasets,
+            iterative=iterative,
+            strict_types=strictTypes,
+            allow_errors=allow_errors,
+            calc_string_offsets=calc_string_offsets,
+        )
+    elif ftype.lower() == "parquet":
+        return read_parquet(
+            filenames,
+            datasets=datasets,
+            iterative=iterative,
+            strict_types=strictTypes,
+            allow_errors=allow_errors,
+        )
+    else:
+        raise RuntimeError(f"Invalid File Type detected, {ftype}")

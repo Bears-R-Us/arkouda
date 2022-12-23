@@ -39,6 +39,12 @@ class ParquetTest(ArkoudaTest):
                 pq_arr = ak.read_parquet(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
                 self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
 
+            # verify generic read
+            with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+                ak_arr.to_parquet(f"{tmp_dirname}/pq_testcorrect", "my-dset")
+                pq_arr = ak.read(f"{tmp_dirname}/pq_testcorrect*", "my-dset")
+                self.assertListEqual(ak_arr.to_list(), pq_arr.to_list())
+
     def test_multi_file(self):
         for dtype in TYPES:
             adjusted_size = int(SIZE / NUMFILES) * NUMFILES
