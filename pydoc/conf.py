@@ -26,7 +26,8 @@ copyright = '2020, Michael Merrill and William Reus'
 author = 'Michael Merrill and William Reus'
 
 # The full version, including alpha/beta/rc tags
-release = _version.get_versions()["version"]
+# release = _version.get_versions()["version"]
+release = ""
 
 
 # -- General configuration ---------------------------------------------------
