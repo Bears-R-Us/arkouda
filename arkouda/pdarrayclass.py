@@ -1331,7 +1331,7 @@ class pdarray:
 
     @typechecked
     def to_parquet(
-        self, prefix_path: str, dataset: str = "array", mode: str = "truncate", compressed: bool = False
+        self, prefix_path: str, dataset: str = "array", mode: str = "truncate", compression: Optional[str] = None
     ) -> str:
         from arkouda.io import mode_str_to_int
 
@@ -1345,7 +1345,7 @@ class pdarray:
                     "mode": mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "dtype": self.dtype,
-                    "compressed": compressed,
+                    "compression": compression,
                 },
             ),
         )

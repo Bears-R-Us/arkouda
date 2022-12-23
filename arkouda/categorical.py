@@ -875,7 +875,7 @@ class Categorical:
         prefix_path: str,
         dataset: str = "categorical_array",
         mode: str = "truncate",
-        compressed: bool = False,
+        compression: Optional[str] = None,
     ) -> str:
         """
         Save the Categorical object to Parquet. The result is a collection of Parquet files,
@@ -892,8 +892,10 @@ class Categorical:
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Categorical dataset within existing files.
-        compressed : bool
-            By default, write without Snappy compression and RLE encoding.
+        compression : str (Optional)
+            Default None
+            Provide the compression type to use when writing the file.
+            Supported values: snappy, gzip, brotli, zstd, lz4
 
         Returns
         -------

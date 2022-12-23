@@ -1880,7 +1880,7 @@ class Strings:
         prefix_path: str,
         dataset: str = "strings_array",
         mode: str = "truncate",
-        compressed: bool = False,
+        compression: Optional[str] = None,
     ) -> str:
         """
         Save the Strings object to Parquet. The result is a collection of Parquet files,
@@ -1897,9 +1897,10 @@ class Strings:
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Strings dataset within existing files.
-        compressed : bool
-            Defaults to False. When True, files will be written with Snappy compression
-            and RLE bit packing.
+        compression : str (Optional)
+            Default None
+            Provide the compression type to use when writing the file.
+            Supported values: snappy, gzip, brotli, zstd, lz4
 
         Returns
         -------
@@ -1925,7 +1926,7 @@ class Strings:
                     "mode": mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "dtype": self.dtype,
-                    "compressed": compressed,
+                    "compression": compression,
                 },
             ),
         )
