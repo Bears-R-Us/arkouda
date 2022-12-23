@@ -354,6 +354,7 @@ module ServerDaemon {
             registerFunction("repr", reprMsg);
             registerFunction("getconfig", getconfigMsg);
             registerFunction("getmemused", getmemusedMsg);
+            registerFunction("getavailmem", getmemavailMsg);
             registerFunction("getCmdMap", getCommandMapMsg);
             registerFunction("clear", clearMsg);
             registerFunction("lsany", lsAnyMsg);

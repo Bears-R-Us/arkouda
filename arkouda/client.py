@@ -2,7 +2,7 @@ import json
 import os
 import warnings
 from enum import Enum
-from typing import Dict, Mapping, Optional, Tuple, Union, cast, List
+from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
 import pyfiglet  # type: ignore
 import zmq  # type: ignore
@@ -23,6 +23,7 @@ __all__ = [
     "shutdown",
     "get_config",
     "get_mem_used",
+    "get_mem_avail",
     "get_server_commands",
     "print_server_commands",
     "ruok",
@@ -45,7 +46,39 @@ pdarrayIterThreshDefVal = 100
 pdarrayIterThresh = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
+# maximum number of capture group for regex
 regexMaxCaptures: int = -1
+# unit conversion for get_mem_used
+_memunit2normunit = {
+    "bytes": "b",
+    "kilobytes": "kb",
+    "megabytes": "mb",
+    "gigabytes": "gb",
+    "terabytes": "tb",
+    "petabytes": "pb",
+}
+_memunit2factor = {
+    "b": 1,
+    "kb": 10**3,
+    "mb": 10**6,
+    "gb": 10**9,
+    "tb": 10**12,
+    "pb": 10**15,
+}
+
+
+def _mem_get_factor(unit: str) -> int:
+    unit = unit.lower()
+    if unit in _memunit2factor:
+        return _memunit2factor[unit]
+    else:
+        for key, normunit in _memunit2normunit.items():
+            if key.startswith(unit):
+                return _memunit2factor[normunit]
+        raise ValueError(
+            f"Argument must be one of {set(_memunit2factor.keys()) | set(_memunit2normunit.keys())}"
+        )
+
 
 logger = getArkoudaLogger(name="Arkouda Client")
 clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
@@ -723,24 +756,66 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         raise RuntimeError(f"{e} in retrieving Arkouda server config")
 
 
-def get_mem_used() -> int:
+def get_mem_used(unit: str = "b", as_percent: bool = False) -> int:
     """
     Compute the amount of memory used by objects in the server's symbol table.
 
-    Returns
-    -------
-    int
-        Indicates the amount of memory allocated to symbol table objects.
+    Parameters
+     ----------
+     unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+         unit of return ('b' by default)
+     as_percent : bool
+         If True, return the percent (as an int) of the available memory that's been used
+         False by default
 
-    Raises
-    ------
-    RuntimeError
-        Raised if there is a server-side error in getting memory used
-    ValueError
-        Raised if the returned value is not an int-formatted string
+     Returns
+     -------
+     int
+         Indicates the amount of memory allocated to symbol table objects.
+
+     Raises
+     ------
+     RuntimeError
+         Raised if there is a server-side error in getting memory used
+     ValueError
+         Raised if the returned value is not an int-formatted string
     """
-    mem_used_message = cast(str, generic_msg(cmd="getmemused"))
+    mem_used_message = cast(
+        str,
+        generic_msg(cmd="getmemused", args={"factor": _mem_get_factor(unit), "as_percent": as_percent}),
+    )
     return int(mem_used_message)
+
+
+def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
+    """
+    Compute the amount of memory available to be used.
+
+    Parameters
+     ----------
+     unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+         unit of return ('b' by default)
+     as_percent : bool
+         If True, return the percent (as an int) of the memory that's available to be used
+         False by default
+
+     Returns
+     -------
+     int
+         Indicates the amount of memory available to be used.
+
+     Raises
+     ------
+     RuntimeError
+         Raised if there is a server-side error in getting memory available
+     ValueError
+         Raised if the returned value is not an int-formatted string
+    """
+    mem_avail_message = cast(
+        str,
+        generic_msg(cmd="getavailmem", args={"factor": _mem_get_factor(unit), "as_percent": as_percent}),
+    )
+    return int(mem_avail_message)
 
 
 def get_server_commands() -> Mapping[str, str]:

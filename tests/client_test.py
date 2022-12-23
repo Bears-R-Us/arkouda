@@ -83,7 +83,7 @@ class ClientTest(ArkoudaTest):
 
     def test_get_mem_used(self):
         """
-        Tests the ak.client.get_mem_used method
+        Tests the ak.get_mem_used and ak.get_mem_avail methods
 
         :return: None
         :raise: AssertionError if one or more ak.get_mem_used values are not as
@@ -96,6 +96,20 @@ class ClientTest(ArkoudaTest):
         except Exception as e:
             raise AssertionError(e)
         self.assertTrue(mem_used > 0)
+
+        # test units
+        mem_used = ak.get_mem_used()
+        mem_avail = ak.get_mem_avail()
+        for u, f in ak.client._memunit2factor.items():
+            self.assertEqual(round(mem_used / f), ak.get_mem_used(u))
+            self.assertEqual(round(mem_avail / f), ak.get_mem_avail(u))
+
+        # test as_percent
+        tot_mem = ak.get_mem_used() + ak.get_mem_avail()
+        self.assertEqual(ak.get_mem_used(as_percent=True), round((ak.get_mem_used() / tot_mem) * 100))
+        self.assertEqual(ak.get_mem_avail(as_percent=True), round((ak.get_mem_avail() / tot_mem) * 100))
+
+        self.assertEqual(100, ak.get_mem_used(as_percent=True) + ak.get_mem_avail(as_percent=True))
 
     def test_no_op(self):
         """
