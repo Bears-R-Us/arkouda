@@ -18,6 +18,7 @@ Functions
    arkouda.client.shutdown
    arkouda.client.get_config
    arkouda.client.get_mem_used
+   arkouda.client.get_mem_avail
    arkouda.client.get_server_commands
    arkouda.client.print_server_commands
    arkouda.client.ruok
@@ -94,15 +95,54 @@ Functions
    :raises RuntimeError: Raised if the client is not connected to a server
 
 
-.. py:function:: get_mem_used() -> int
+.. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
 
    Compute the amount of memory used by objects in the server's symbol table.
 
-   :returns: Indicates the amount of memory allocated to symbol table objects.
-   :rtype: int
+   Parameters
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the available memory that's been used
+        False by default
 
-   :raises RuntimeError: Raised if there is a server-side error in getting memory used
-   :raises ValueError: Raised if the returned value is not an int-formatted string
+    Returns
+    -------
+    int
+        Indicates the amount of memory allocated to symbol table objects.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
+
+.. py:function:: get_mem_avail(unit: str = 'b', as_percent: bool = False) -> int
+
+   Compute the amount of memory available to be used.
+
+   Parameters
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the memory that's available to be used
+        False by default
+
+    Returns
+    -------
+    int
+        Indicates the amount of memory available to be used.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory available
+    ValueError
+        Raised if the returned value is not an int-formatted string
 
 
 .. py:function:: get_server_commands() -> Mapping[str, str]
