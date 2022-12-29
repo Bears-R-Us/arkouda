@@ -823,6 +823,15 @@ class DataFrame(UserDict):
         return self._size
 
     @property
+    def first(self):
+        """
+        Returns the first group in a DataFrame
+        """
+        return self.head(1)
+
+
+
+    @property
     def dtypes(self):
         dtypes = []
         keys = []

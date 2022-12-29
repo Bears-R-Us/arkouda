@@ -22,7 +22,6 @@ def build_ak_df():
         {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
     )
 
-
 def build_ak_df_duplicates():
     username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
     userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -346,6 +345,15 @@ class DataFrameTest(ArkoudaTest):
         hdf = df.head(3)
         hdf_ref = ref_df.head(3).reset_index(drop=True)
         self.assertTrue(hdf_ref.equals(hdf.to_pandas()))
+
+    def test_first(self):
+        "special case of the head function, only calling the first row of the data frame"
+        df = build_ak_df()
+        ref_df = build_pd_df()
+
+        firstdf = df.first
+        firstdf_ref = ref_df.head(1).reset_index(drop=True)
+        self.assertTrue(firstdf_ref.equals(firstdf.to_pandas()))
 
     def test_tail(self):
         df = build_ak_df()
