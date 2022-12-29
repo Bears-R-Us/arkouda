@@ -33,7 +33,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
     for i in range(trials):
         for j in range(numfiles):
             start = time.time()
-            a.save(f"{path}{j:04}") if not parquet else a.save_parquet(
+            a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
                 f"{path}{j:04}", compressed=compressed
             )
             end = time.time()
@@ -59,7 +59,7 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, seed, parquet):
     readtimes = []
     for i in range(trials):
         start = time.time()
-        a = ak.read(path + "*")
+        a = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
         end = time.time()
         readtimes.append(end - start)
     avgread = sum(readtimes) / trials
@@ -90,11 +90,11 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
         if multifile:
             b = ak.randint(0, 1, N, dtype=ak.uint64, seed=seed)
 
-    a.save(f"{path}{1}") if not parquet else a.save_parquet(f"{path}{1}")
+    a.to_hdf(f"{path}{1}") if not parquet else a.to_parquet(f"{path}{1}")
     if multifile:
-        b.save(f"{path}{2}") if not parquet else b.save_parquet(f"{path}{2}")
+        b.to_hdf(f"{path}{2}") if not parquet else b.to_parquet(f"{path}{2}")
 
-    c = ak.read(path + "*")
+    c = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
 
     for f in glob(path + "*"):
         os.remove(f)

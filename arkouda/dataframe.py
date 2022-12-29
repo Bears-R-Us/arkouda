@@ -30,7 +30,7 @@ from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import attach as pd_attach
 from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.io import get_filetype, load_all, save_all
+from arkouda.io import get_filetype, load_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
@@ -1511,43 +1511,6 @@ class DataFrame(UserDict):
         from arkouda.io import to_parquet
         data = self._prep_data(index=index, columns=columns)
         to_parquet(data, prefix_path=path)
-
-    def save(self, path, index=False, columns=None, file_format="HDF5"):
-        """
-        DEPRECATED
-        Save DataFrame to disk, preserving column names.
-
-        Parameters
-        ----------
-        path : str
-            File path to save data
-        index : bool
-            If True, save the index column. By default, do not save the index.
-        columns: List
-            List of columns to include in the file. If None, writes out all columns
-        file_format: str
-            'HDF5' or 'Parquet'. Defaults to 'HDF5'
-
-        Notes
-        -----
-        This method saves one file per locale of the arkouda server. All
-        files are prefixed by the path argument and suffixed by their
-        locale number.
-        """
-        warn(
-            "ak.DataFrame.save has been deprecated. "
-            "Please use ak.DataFrame.to_hdf or ak.DataFrame.to_parquet",
-            DeprecationWarning,
-        )
-        # if no columns are stored, we will save all columns
-        if columns is None:
-            data = self.data
-        else:
-            data = {c: self.data[c] for c in columns}
-
-        if index:
-            data["Index"] = self.index
-        save_all(data, prefix_path=path, file_format=file_format)
 
     @classmethod
     def load(cls, prefix_path, file_format="INFER"):
