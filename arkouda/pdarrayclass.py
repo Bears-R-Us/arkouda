@@ -163,7 +163,7 @@ class pdarray:
             "**",
         ]
     )
-    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="])
+    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "%=", "//=", "&=", "|=", "^=", "<<=", ">>=", "**="])
     objtype = "pdarray"
 
     __array_priority__ = 1000
@@ -502,6 +502,10 @@ class pdarray:
     # overload /= pdarray, other can be {pdarray, int, float}
     def __itruediv__(self, other):
         return self.opeq(other, "/=")
+
+    # overload %= pdarray, other can be {pdarray, int, float}
+    def __imod__(self, other):
+        return self.opeq(other, "%=")
 
     # overload //= pdarray, other can be {pdarray, int, float}
     def __ifloordiv__(self, other):

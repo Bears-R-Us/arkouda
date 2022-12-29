@@ -564,8 +564,20 @@ class OperatorsTest(ArkoudaTest):
         a = ak.arange(5)
         self.assertListEqual([i if i % 2 else i**.5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
 
-    def test_uint_operation_equals(self):
-        u_arr = ak.arange(10, dtype=ak.uint64)
+    def test_uint_and_bigint_operation_equals(self):
+        u_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.uint64,
+        )
+        bi_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.bigint,
+            max_bits=64,
+        )
+        np_arr = np.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=np.uint,
+        )
         i_arr = ak.arange(10)
         f_arr = ak.linspace(1, 5, 10)
         b_arr = i_arr % 2 == 0
@@ -575,55 +587,113 @@ class OperatorsTest(ArkoudaTest):
         b = True
 
         # test uint opequals uint functionality against numpy
-        np_arr = np.arange(10, dtype=np.uint)
-        u_tmp = u_arr[:]
-        u_tmp += u
+        u_arr += u
+        bi_arr += u
         np_arr += u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp += u_tmp
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr += u_arr
+        bi_arr += bi_arr
         np_arr += np_arr
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp -= u
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr -= u
+        bi_arr -= u
         np_arr -= u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp -= u_tmp
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr -= u_arr
+        bi_arr -= bi_arr
         np_arr -= np_arr
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp *= u
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+
+        # redeclare minus self zeroed out
+        u_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.uint64,
+        )
+        bi_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.bigint,
+            max_bits=64,
+        )
+        np_arr = np.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=np.uint,
+        )
+        u_arr *= u
+        bi_arr *= u
         np_arr *= u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp *= u_tmp
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr *= u_arr
+        bi_arr *= bi_arr
         np_arr *= np_arr
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp **= u
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr **= u
+        bi_arr **= u
         np_arr **= u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp **= u_tmp
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr **= u_arr
+        bi_arr **= bi_arr
         np_arr **= np_arr
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp %= u
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr %= u
+        bi_arr %= u
         np_arr %= u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp //= u
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        u_arr //= u
+        bi_arr //= u
         np_arr //= u
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
-        u_tmp //= u_tmp
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+
+        # redeclare divide zeroed out
+        u_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.uint64,
+        )
+        bi_arr = ak.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=ak.bigint,
+            max_bits=64,
+        )
+        np_arr = np.array(
+            [0, 1, 2, 3, 4, 2**64 - 5, 2**64 - 4, 2**64 - 3, 2**64 - 2, 2**64 - 1],
+            dtype=np.uint,
+        )
+        u_arr //= u_arr
+        bi_arr //= bi_arr
         np_arr //= np_arr
-        self.assertListEqual(u_tmp.to_list(), np_arr.tolist())
+        self.assertListEqual(u_arr.to_list(), np_arr.tolist())
+        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
 
         # the only arrays that can be added in place are uint and bool
         # scalars are cast to same type if possible
+        u_arr = ak.arange(10, dtype=ak.uint64)
+        bi_arr = ak.arange(10, dtype=ak.bigint)
         for v in [b_arr, u, b, i, f]:
             u_tmp = u_arr[:]
+            bi_tmp = bi_arr[:]
             i_tmp = i_arr[:]
             u_tmp += v
+            bi_tmp += v
             i_tmp += v
             self.assertListEqual(u_tmp.to_list(), i_tmp.to_list())
+            self.assertListEqual(u_tmp.to_list(), ak.cast(bi_tmp, ak.uint64).to_list())
 
         # adding a float or int inplace could have a result which is not a uint
         for e in [i_arr, f_arr]:
             with self.assertRaises(RuntimeError):
                 u_arr += e
+
+        with self.assertRaises(RuntimeError):
+            bi_arr += f_arr
 
         # verify other types can have uint applied to them
         f_arr += u_arr
