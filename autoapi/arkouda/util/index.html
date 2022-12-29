@@ -311,12 +311,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.most_common" title="arkouda.util.most_common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_common</span></code></a>(g, values)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.arkouda_to_numpy" title="arkouda.util.arkouda_to_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda_to_numpy</span></code></a>(→ numpy.ndarray)</p></td>
-<td><p>Convert from arkouda to numpy using disk rather than sockets.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.util.numpy_to_arkouda" title="arkouda.util.numpy_to_arkouda"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_to_arkouda</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
-<td><p>Convert from numpy to arkouda using disk rather than sockets.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.util.convert_if_categorical" title="arkouda.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
 <td><p>Convert a Categorical array to Strings for display</p></td>
 </tr>
@@ -428,18 +422,6 @@ proper as ak.broadcast. It is retained here for backwards compatibility.</p>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.arkouda_to_numpy">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">arkouda_to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#arkouda.util.arkouda_to_numpy" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert from arkouda to numpy using disk rather than sockets.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.util.numpy_to_arkouda">
-<span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">numpy_to_arkouda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.util.numpy_to_arkouda" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert from numpy to arkouda using disk rather than sockets.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.util.convert_if_categorical">
 <span class="sig-prename descclassname"><span class="pre">arkouda.util.</span></span><span class="sig-name descname"><span class="pre">convert_if_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.util.convert_if_categorical" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert a Categorical array to Strings for display</p>
@@ -543,8 +525,6 @@ Supported types are: pdarray, strings, categorical, segarray, and series</p></li
 <li><a class="reference internal" href="#arkouda.util.expand"><code class="docutils literal notranslate"><span class="pre">expand()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.invert_permutation"><code class="docutils literal notranslate"><span class="pre">invert_permutation()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.most_common"><code class="docutils literal notranslate"><span class="pre">most_common()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.arkouda_to_numpy"><code class="docutils literal notranslate"><span class="pre">arkouda_to_numpy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.util.numpy_to_arkouda"><code class="docutils literal notranslate"><span class="pre">numpy_to_arkouda()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.convert_if_categorical"><code class="docutils literal notranslate"><span class="pre">convert_if_categorical()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.attach"><code class="docutils literal notranslate"><span class="pre">attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.util.unregister_by_name"><code class="docutils literal notranslate"><span class="pre">unregister_by_name()</span></code></a></li>
@@ -561,8 +541,6 @@ Supported types are: pdarray, strings, categorical, segarray, and series</p></li
 <li><a class="reference internal" href="#arkouda.util.expand">expand</a></li>
 <li><a class="reference internal" href="#arkouda.util.invert_permutation">invert_permutation</a></li>
 <li><a class="reference internal" href="#arkouda.util.most_common">most_common</a></li>
-<li><a class="reference internal" href="#arkouda.util.arkouda_to_numpy">arkouda_to_numpy</a></li>
-<li><a class="reference internal" href="#arkouda.util.numpy_to_arkouda">numpy_to_arkouda</a></li>
 <li><a class="reference internal" href="#arkouda.util.convert_if_categorical">convert_if_categorical</a></li>
 <li><a class="reference internal" href="#arkouda.util.attach">attach</a></li>
 <li><a class="reference internal" href="#arkouda.util.unregister_by_name">unregister_by_name</a></li>

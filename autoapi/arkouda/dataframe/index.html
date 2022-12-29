@@ -910,27 +910,6 @@ locale number.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HDF5'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.save" title="Permalink to this definition">#</a></dt>
-<dd><p>DEPRECATED
-Save DataFrame to disk, preserving column names.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – File path to save data</p></li>
-<li><p><strong>index</strong> (<em>bool</em>) – If True, save the index column. By default, do not save the index.</p></li>
-<li><p><strong>columns</strong> (<em>List</em>) – List of columns to include in the file. If None, writes out all columns</p></li>
-<li><p><strong>file_format</strong> (<em>str</em>) – ‘HDF5’ or ‘Parquet’. Defaults to ‘HDF5’</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This method saves one file per locale of the arkouda server. All
-files are prefixed by the path argument and suffixed by their
-locale number.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.load">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFER'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.load" title="Permalink to this definition">#</a></dt>
 <dd><p>Load dataframe from file
@@ -1195,7 +1174,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id429" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id417" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1217,7 +1196,7 @@ in attached copies.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id429" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id417" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1242,7 +1221,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id429" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id417" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1270,7 +1249,7 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id429" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id417" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1291,7 +1270,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id429" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id417" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1526,7 +1505,6 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame._prep_data"><code class="docutils literal notranslate"><span class="pre">DataFrame._prep_data()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_hdf"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_parquet"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_parquet()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.save"><code class="docutils literal notranslate"><span class="pre">DataFrame.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.load"><code class="docutils literal notranslate"><span class="pre">DataFrame.load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.coargsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.coargsort()</span></code></a></li>
@@ -1595,7 +1573,6 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame._prep_data">_prep_data</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_hdf">to_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_parquet">to_parquet</a></li>
-<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.save">save</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.load">load</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort">argsort</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.coargsort">coargsort</a></li>

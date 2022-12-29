@@ -26,8 +26,6 @@ Functions
    arkouda.util.expand
    arkouda.util.invert_permutation
    arkouda.util.most_common
-   arkouda.util.arkouda_to_numpy
-   arkouda.util.numpy_to_arkouda
    arkouda.util.convert_if_categorical
    arkouda.util.attach
    arkouda.util.unregister_by_name
@@ -99,16 +97,6 @@ Functions
 
 
 .. py:function:: most_common(g, values)
-
-
-.. py:function:: arkouda_to_numpy(A: arkouda.pdarrayclass.pdarray, tmp_dir: str = '') -> numpy.ndarray
-
-   Convert from arkouda to numpy using disk rather than sockets.
-
-
-.. py:function:: numpy_to_arkouda(A: numpy.ndarray, tmp_dir: str = '') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
-
-   Convert from numpy to arkouda using disk rather than sockets.
 
 
 .. py:function:: convert_if_categorical(values)

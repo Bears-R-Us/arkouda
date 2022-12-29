@@ -283,7 +283,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.index.Index">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id858" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.index.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../index.html#id834" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.Index</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.index.Index" title="arkouda.index.Index"><span class="pre">Index</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="arkouda.index.Index.index">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.index.Index.index" title="Permalink to this definition">#</a></dt>
@@ -422,66 +422,6 @@
 <dt class="sig sig-object py" id="arkouda.index.Index.to_parquet">
 <span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.index.Index.to_parquet" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.index.Index.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compressed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HDF5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.index.Index.save" title="Permalink to this definition">#</a></dt>
-<dd><p>DEPRECATED
-Save the index to HDF5 or Parquet. The result is a collection of files,
-one file per locale of the arkouda server, where each filename starts
-with prefix_path. Each locale saves its chunk of the array to its
-corresponding file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files (must not already exist)</p></li>
-<li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
-If ‘append’, attempt to create new dataset in existing files.</p></li>
-<li><p><strong>compressed</strong> (<em>bool</em>) – Defaults to False. When True, files will be written with Snappy compression
-and RLE bit packing. This is currently only supported on Parquet files and will
-not impact the generated files when writing HDF5 files.</p></li>
-<li><p><strong>file_format</strong> (<em>str {'HDF5'</em><em>, </em><em>'Parquet'}</em>) – By default, saved files will be written to the HDF5 file format. If
-‘Parquet’, the files will be written to the Parquet file format. This
-is case insensitive.</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>&quot;single&quot;</em><em> | </em><em>&quot;distribute&quot;</em><em>)</em>) – Default: “distribute”
-When set to single, dataset is written to a single file.
-When distribute, dataset is written on a file per locale.
-This is only supported by HDF5 files and will have no impact of Parquet Files.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>string message indicating result of save operation</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
-<li><p><strong>ValueError</strong> – Raised if there is an error in parsing the prefix path pointing to
-file write location or if the mode parameter is neither truncate
-nor append</p></li>
-<li><p><strong>TypeError</strong> – Raised if any one of the prefix_path, dataset, or mode parameters
-is not a string</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></p>
-</div>
-<p class="rubric">Notes</p>
-<p>The prefix_path must be visible to the arkouda server and the user must
-have write permission.</p>
-<p>Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
-ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code>. If any of the output files already exist and
-the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
-and the number of output files is less than the number of locales or a
-dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.</p>
-<p>Previously all files saved in Parquet format were saved with a <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> file extension.
-This will require you to use load as if you saved the file with the extension. Try this if
-an older file is not being found.</p>
-<p>Any file extension can be used. The file I/O does not rely on the extension to determine the
-file format.</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -653,7 +593,6 @@ file format.</p>
 <li><a class="reference internal" href="#arkouda.index.Index.lookup"><code class="docutils literal notranslate"><span class="pre">Index.lookup()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_hdf"><code class="docutils literal notranslate"><span class="pre">Index.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_parquet"><code class="docutils literal notranslate"><span class="pre">Index.to_parquet()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.index.Index.save"><code class="docutils literal notranslate"><span class="pre">Index.save()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex"><code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code></a><ul>
@@ -698,7 +637,6 @@ file format.</p>
 <li><a class="reference internal" href="#arkouda.index.Index.lookup">lookup</a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_hdf">to_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.index.Index.to_parquet">to_parquet</a></li>
-<li><a class="reference internal" href="#arkouda.index.Index.save">save</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.index.MultiIndex">MultiIndex</a><ul>
