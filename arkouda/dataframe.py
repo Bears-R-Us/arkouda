@@ -829,8 +829,6 @@ class DataFrame(UserDict):
         """
         return self.head(1)
 
-
-
     @property
     def dtypes(self):
         dtypes = []
