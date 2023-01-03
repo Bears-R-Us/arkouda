@@ -84,5 +84,5 @@ module BigIntMsg {
 
     use CommandMap;
     registerFunction("big_int_creation", bigIntCreationMsg, getModuleName());
-    registerFunction("break_into_arrays", bigintToUintArraysMsg, getModuleName());
+    registerFunction("bigint_to_uint_list", bigintToUintArraysMsg, getModuleName());
 }

@@ -306,7 +306,7 @@ class OperatorsTest(ArkoudaTest):
         ak_uint = ak.arange(10, dtype=ak.uint64)
         ak_bool = ak_uint % 2 == 0
         self.assertListEqual((ak_uint + ak_bool).to_list(), (ak.arange(10) + ak_bool).to_list())
-        
+
     def test_float_uint_binops(self):
         # Test fix for issue #1620
         ak_uint = ak.array([5], dtype=ak.uint64)
@@ -322,80 +322,32 @@ class OperatorsTest(ArkoudaTest):
         ak_floats = [ak_float, scalar_float]
         np_floats = [np_float, scalar_float]
         for aku, akf, npu, npf in zip(ak_uints, ak_floats, np_uints, np_floats):
-            self.assertTrue(
-                np.allclose((ak_uint + akf).to_ndarray(), np_uint + npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf + ak_uint).to_ndarray(), npf + np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float + aku).to_ndarray(), np_float + npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku + ak_float).to_ndarray(), npu + np_float, equal_nan=True)
-            )
+            self.assertTrue(np.allclose((ak_uint + akf).to_ndarray(), np_uint + npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf + ak_uint).to_ndarray(), npf + np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float + aku).to_ndarray(), np_float + npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku + ak_float).to_ndarray(), npu + np_float, equal_nan=True))
 
-            self.assertTrue(
-                np.allclose((ak_uint - akf).to_ndarray(), np_uint - npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf - ak_uint).to_ndarray(), npf - np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float - aku).to_ndarray(), np_float - npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku - ak_float).to_ndarray(), npu - np_float, equal_nan=True)
-            )
+            self.assertTrue(np.allclose((ak_uint - akf).to_ndarray(), np_uint - npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf - ak_uint).to_ndarray(), npf - np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float - aku).to_ndarray(), np_float - npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku - ak_float).to_ndarray(), npu - np_float, equal_nan=True))
 
-            self.assertTrue(
-                np.allclose((ak_uint * akf).to_ndarray(), np_uint * npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf * ak_uint).to_ndarray(), npf * np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float * aku).to_ndarray(), np_float * npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku * ak_float).to_ndarray(), npu * np_float, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_uint / akf).to_ndarray(), np_uint / npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf / ak_uint).to_ndarray(), npf / np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float / aku).to_ndarray(), np_float / npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku / ak_float).to_ndarray(), npu / np_float, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_uint // akf).to_ndarray(), np_uint // npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf // ak_uint).to_ndarray(), npf // np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float // aku).to_ndarray(), np_float // npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku // ak_float).to_ndarray(), npu // np_float, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_uint ** akf).to_ndarray(), np_uint ** npf, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((akf ** ak_uint).to_ndarray(), npf ** np_uint, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((ak_float ** aku).to_ndarray(), np_float ** npu, equal_nan=True)
-            )
-            self.assertTrue(
-                np.allclose((aku ** ak_float).to_ndarray(), npu ** np_float, equal_nan=True)
-            )
+            self.assertTrue(np.allclose((ak_uint * akf).to_ndarray(), np_uint * npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf * ak_uint).to_ndarray(), npf * np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float * aku).to_ndarray(), np_float * npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku * ak_float).to_ndarray(), npu * np_float, equal_nan=True))
+            self.assertTrue(np.allclose((ak_uint / akf).to_ndarray(), np_uint / npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf / ak_uint).to_ndarray(), npf / np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float / aku).to_ndarray(), np_float / npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku / ak_float).to_ndarray(), npu / np_float, equal_nan=True))
+            self.assertTrue(np.allclose((ak_uint // akf).to_ndarray(), np_uint // npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf // ak_uint).to_ndarray(), npf // np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float // aku).to_ndarray(), np_float // npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku // ak_float).to_ndarray(), npu // np_float, equal_nan=True))
+            self.assertTrue(np.allclose((ak_uint**akf).to_ndarray(), np_uint**npf, equal_nan=True))
+            self.assertTrue(np.allclose((akf**ak_uint).to_ndarray(), npf**np_uint, equal_nan=True))
+            self.assertTrue(np.allclose((ak_float**aku).to_ndarray(), np_float**npu, equal_nan=True))
+            self.assertTrue(np.allclose((aku**ak_float).to_ndarray(), npu**np_float, equal_nan=True))
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
@@ -537,8 +489,9 @@ class OperatorsTest(ArkoudaTest):
 
         # Test a singleton with a mixed Boolean argument
         a = ak.arange(10)
-        self.assertListEqual([i if i % 2 else i**2 for i in range(10)],
-                             ak.power(a, 2, a % 2 == 0).to_list())
+        self.assertListEqual(
+            [i if i % 2 else i**2 for i in range(10)], ak.power(a, 2, a % 2 == 0).to_list()
+        )
 
         # Test invalid input, negative
         n = np.array([-1.0, -3.0])
@@ -562,7 +515,9 @@ class OperatorsTest(ArkoudaTest):
 
         # Test with a mixed Boolean array
         a = ak.arange(5)
-        self.assertListEqual([i if i % 2 else i**.5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list())
+        self.assertListEqual(
+            [i if i % 2 else i**0.5 for i in range(5)], ak.sqrt(a, a % 2 == 0).to_list()
+        )
 
     def test_uint_and_bigint_operation_equals(self):
         u_arr = ak.array(
@@ -764,6 +719,145 @@ class OperatorsTest(ArkoudaTest):
         ak.client.pdarrayIterThresh = (
             ak.client.pdarrayIterThreshDefVal
         )  # Don't forget to set this back for other tests.
+
+    def test_bigint_binops(self):
+        # test bigint array with max_bits=64 against an equivalent uint64
+        u = ak.array([0, 1, 2, 2**64 - 3, 2**64 - 2, 2**64 - 1], dtype=ak.uint64)
+        bi = ak.array([0, 1, 2, 2**64 - 3, 2**64 - 2, 2**64 - 1], dtype=ak.bigint, max_bits=64)
+        mod_by = 2**64
+
+        bi_range = ak.arange(6, dtype=ak.bigint)
+        u_range = ak.arange(6, dtype=ak.uint64)
+        i_range = ak.arange(6, dtype=ak.int64)
+        neg_range = -i_range
+        b = u_range % 2 == 0
+        bi_scalar = 2**100
+        i_scalar = -10
+        u_scalar = 10
+
+        # TODO update once to_ndarray supports bigint to not cast into uint
+
+        # logical bit ops: only work if both arguments are bigint
+        self.assertListEqual((u & u_range).to_list(), ak.cast((bi & bi_range), ak.uint64).to_list())
+        self.assertListEqual(
+            [(bi[i] & bi_scalar) % mod_by for i in range(bi.size)],
+            ak.cast((bi & bi_scalar), ak.uint64).to_list(),
+        )
+        self.assertListEqual(
+            [(bi_scalar & bi[i]) % mod_by for i in range(bi.size)],
+            ak.cast((bi_scalar & bi), ak.uint64).to_list(),
+        )
+
+        self.assertListEqual((u | u_range).to_list(), ak.cast((bi | bi_range), ak.uint64).to_list())
+        self.assertListEqual(
+            [(bi[i] | bi_scalar) % mod_by for i in range(bi.size)],
+            ak.cast((bi | bi_scalar), ak.uint64).to_list(),
+        )
+        self.assertListEqual(
+            [(bi_scalar | bi[i]) % mod_by for i in range(bi.size)],
+            ak.cast((bi_scalar | bi), ak.uint64).to_list(),
+        )
+
+        self.assertListEqual((u ^ u_range).to_list(), ak.cast((bi ^ bi_range), ak.uint64).to_list())
+        self.assertListEqual(
+            [(bi[i] ^ bi_scalar) % mod_by for i in range(bi.size)],
+            ak.cast((bi ^ bi_scalar), ak.uint64).to_list(),
+        )
+        self.assertListEqual(
+            [(bi_scalar ^ bi[i]) % mod_by for i in range(bi.size)],
+            ak.cast((bi_scalar ^ bi), ak.uint64).to_list(),
+        )
+
+        # bit shifts: left side must be bigint, right side must be int/uint
+        ans = u << u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi << u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi << i_range), ak.uint64).to_list())
+
+        ans = u >> u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi >> u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi >> i_range), ak.uint64).to_list())
+
+        ans = u.rotl(u_range)
+        self.assertListEqual(ans.to_list(), ak.cast((bi.rotl(u_range)), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi.rotl(i_range)), ak.uint64).to_list())
+        ans = u.rotr(u_range)
+        self.assertListEqual(ans.to_list(), ak.cast((bi.rotr(u_range)), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi.rotr(i_range)), ak.uint64).to_list())
+
+        # ops where left side has to bigint
+        ans = u // u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi // bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi // u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi // i_range), ak.uint64).to_list())
+
+        ans = u % u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi % bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi % u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi % i_range), ak.uint64).to_list())
+
+        ans = u**u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi**bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi**u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi**i_range), ak.uint64).to_list())
+
+        # ops where either side can any of bigint, int, uint, bool
+        ans = u + u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi + bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi + u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi + i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((i_range + bi), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((u_range + bi), ak.uint64).to_list())
+        ans = u + b
+        self.assertListEqual(ans.to_list(), ak.cast((bi + b), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((b + bi), ak.uint64).to_list())
+        for s in [i_scalar, u_scalar, bi_scalar]:
+            self.assertListEqual(
+                [(bi[i] + s) % mod_by for i in range(bi.size)],
+                ak.cast((bi + s), ak.uint64).to_list(),
+            )
+            self.assertListEqual(
+                [(s + bi[i]) % mod_by for i in range(bi.size)],
+                ak.cast((s + bi), ak.uint64).to_list(),
+            )
+
+        ans = u - u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi - bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi - u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi - i_range), ak.uint64).to_list())
+        self.assertListEqual((u - b).to_list(), ak.cast((bi - b), ak.uint64).to_list())
+        self.assertListEqual((b - u).to_list(), ak.cast((b - bi), ak.uint64).to_list())
+
+        for s in [i_scalar, u_scalar, bi_scalar]:
+            self.assertListEqual(
+                [(bi[i] - s) % mod_by for i in range(bi.size)],
+                ak.cast((bi - s), ak.uint64).to_list(),
+            )
+            self.assertListEqual(
+                [(s - bi[i]) % mod_by for i in range(bi.size)],
+                ak.cast((s - bi), ak.uint64).to_list(),
+            )
+
+        self.assertListEqual(
+            ak.cast((bi - neg_range), ak.uint64).to_list(), ak.cast((bi + u_range), ak.uint64).to_list()
+        )
+
+        ans = u * u_range
+        self.assertListEqual(ans.to_list(), ak.cast((bi * bi_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi * u_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((bi * i_range), ak.uint64).to_list())
+        ans = u * b
+        self.assertListEqual(ans.to_list(), ak.cast((bi * b), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), ak.cast((b * bi), ak.uint64).to_list())
+
+        for s in [i_scalar, u_scalar, bi_scalar]:
+            self.assertListEqual(
+                [(bi[i] * s) % mod_by for i in range(bi.size)],
+                ak.cast((bi * s), ak.uint64).to_list(),
+            )
+            self.assertListEqual(
+                [(s * bi[i]) % mod_by for i in range(bi.size)],
+                ak.cast((s * bi), ak.uint64).to_list(),
+            )
 
 
 if __name__ == "__main__":
