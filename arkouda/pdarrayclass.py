@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import contextlib
 from typing import List, Sequence, Union, cast
 
 import numpy as np  # type: ignore
@@ -184,7 +185,6 @@ class pdarray:
         self.shape = shape
         self.itemsize = itemsize
 
-    import contextlib
     @contextlib.contextmanager
     def __del__(self, generic_msg=generic_msg):
         try:
