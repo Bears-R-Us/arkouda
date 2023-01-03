@@ -310,6 +310,9 @@ Functions
    .. py:method:: __itruediv__(other)
 
 
+   .. py:method:: __imod__(other)
+
+
    .. py:method:: __ifloordiv__(other)
 
 
