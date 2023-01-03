@@ -1117,7 +1117,7 @@ class pdarray:
         >>> a.bigint_to_uint_arrays()
         [array([1 1 1 1 1]), array([0 1 2 3 4])]
         """
-        ret_list = json.loads(generic_msg(cmd="break_into_arrays", args={"array": self}))
+        ret_list = json.loads(generic_msg(cmd="bigint_to_uint_list", args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
     def reshape(self, *shape, order="row_major"):

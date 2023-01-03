@@ -1056,8 +1056,6 @@ module BinOp
     ref la = l.a;
     ref ra = r.a;
     var tmp = makeDistArray(la.size, bigint);
-    // i think tmp should be initialized to 0 but just to be sure
-    tmp = 0:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1110,6 +1108,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
+            // should be as simple as the below, see issue #2006
             // return (la << ra) | (la >> (max_bits - ra));
             tmp = la << ra;
             var botBits = la;
@@ -1133,6 +1132,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
+            // should be as simple as the below, see issue #2006
             // return (la >> ra) | (la << (max_bits - ra));
             tmp = la;
             // cant just do tmp >>= ra;
@@ -1248,8 +1248,6 @@ module BinOp
     }
     ref la = l.a;
     var tmp = makeDistArray(la.size, bigint);
-    // i think tmp should be initialized to 0 but just to be sure
-    tmp = 0:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1302,6 +1300,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
+            // should be as simple as the below, see issue #2006
             // return (la << val) | (la >> (max_bits - val));
             tmp = la << val;
             var botBits = la;
@@ -1325,6 +1324,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
+            // should be as simple as the below, see issue #2006
             // return (la >> val) | (la << (max_bits - val));
             tmp = la;
             // cant just do tmp >>= ra;
@@ -1440,8 +1440,6 @@ module BinOp
     }
     ref ra = r.a;
     var tmp = makeDistArray(ra.size, bigint);
-    // i think tmp should be initialized to 0 but just to be sure
-    tmp = 0:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1494,6 +1492,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
+            // should be as simple as the below, see issue #2006
             // return (val << ra) | (val >> (max_bits - ra));
             tmp = val << ra;
             var botBits = makeDistArray(ra.size, bigint);
@@ -1518,6 +1517,7 @@ module BinOp
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
+            // should be as simple as the below, see issue #2006
             // return (val >> ra) | (val << (max_bits - ra));
             tmp = val;
             // cant just do tmp >>= ra;
@@ -1570,7 +1570,7 @@ module BinOp
     if (val.type == bigint && r.etype == bigint) ||
        (val.type == bigint && (r.etype == int || r.etype == uint || r.etype == bool)) ||
        (r.etype == bigint && (val.type == int || val.type == uint || val.type == bool)) {
-      // TODO we have to cast to bigint until #21290 is resolved
+      // TODO we have to cast to bigint until chape issue #21290 is resolved, see issue #2007
       var cast_val = if val.type == bool then val:int:bigint else val:bigint;
       select op {
         when "+" {
