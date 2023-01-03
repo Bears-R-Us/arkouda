@@ -112,7 +112,7 @@ This yielded a >20TB dataframe in Arkouda.
 8. [Versioning](#versioning-ak)
 9. [External Systems Integration](#external-integration)
 10. [Metrics](#metrics)
-11. [Asynchronous Client](#asynchronous_clien)
+11. [Asynchronous Client](#async_client)
 12. [Contributing](#contrib-ak)
 
 <a id="prereqs"></a>
@@ -403,7 +403,7 @@ Integrating Arkouda with cloud environments enables users to access Arkouda from
 
 Arkouda provides a separate, dedicated zmq socket to enable generation and export of a variety of system, locale, user, and request metrics. Arkouda generated metrics in a format compatible with Prometheus, Grafana, and TimescaleDB. An Arkouda Prometheus exporter that serves as a Prometheus scrape target will be made available soon in the [arkouda-contrib](https://github.com/Bears-R-Us/arkouda-contrib) repository. A detailed discussion of Arkouda metrics is located in [METRICS.md](METRICS.md)
 
-<a id="asynchronous_client"></a>
+<a id="async_client"></a>
 ## Asynchronous Client
 
 ### Background
