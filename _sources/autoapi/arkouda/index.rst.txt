@@ -1039,6 +1039,56 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
+
+
    .. py:method:: reshape(*shape, order='row_major')
 
       Gives a new shape to an array without changing its data.
@@ -2295,6 +2345,56 @@ Attributes
       .. rubric:: Notes
 
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
 
 
    .. py:method:: reshape(*shape, order='row_major')
@@ -4963,6 +5063,56 @@ Attributes
       .. rubric:: Notes
 
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
 
 
    .. py:method:: reshape(*shape, order='row_major')
@@ -9150,6 +9300,56 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
+
+
    .. py:method:: reshape(*shape, order='row_major')
 
       Gives a new shape to an array without changing its data.
@@ -10798,6 +10998,56 @@ Attributes
       .. rubric:: Notes
 
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
 
 
    .. py:method:: reshape(*shape, order='row_major')
@@ -13333,6 +13583,56 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
+
+
    .. py:method:: reshape(*shape, order='row_major')
 
       Gives a new shape to an array without changing its data.
@@ -14845,6 +15145,56 @@ Attributes
       .. rubric:: Notes
 
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
+
+
+   .. py:method:: slice_bits(low, high) -> pdarray
+
+      Returns a pdarray containing only bits from low to high of self
+
+      :param low: The lowest bit included in the slice (inclusive)
+      :type low: int
+      :param high: The highest bit included in the slice (inclusive)
+      :type high: int
+
+      :returns: A new pdarray containing the bits of self from low to high
+      :rtype: pdarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. rubric:: Examples
+
+      >>> p = ak.array([2**65 + (2**64 - 1)])
+      >>> bin(p[0])
+      '0b101111111111111111111111111111111111111111111111111111111111111111'
+
+      >>> bin(p.slice_bits(64, 65)[0])
+      '0b10'
+
+
+   .. py:method:: bigint_to_uint_arrays()
+
+      Creates a list of uint pdarrays from a bigint pdarray.
+      The first item in return will be the highest 64 bits of the
+      bigint pdarray and the last item will be the lowest 64 bits.
+
+      :returns: A list of uint pdarrays where:
+                The first item in return will be the highest 64 bits of the
+                bigint pdarray and the last item will be the lowest 64 bits.
+      :rtype: List[pdarrays]
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(2**64, 2**64 + 5)
+      >>> a
+      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
+      "18446744073709551619" "18446744073709551620"])
+
+      >>> a.bigint_to_uint_arrays()
+      [array([1 1 1 1 1]), array([0 1 2 3 4])]
 
 
    .. py:method:: reshape(*shape, order='row_major')

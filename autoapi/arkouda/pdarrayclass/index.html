@@ -1206,6 +1206,75 @@ always a np.float64 or np.int64.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.slice_bits">
+<span class="sig-name descname"><span class="pre">slice_bits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.slice_bits" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a pdarray containing only bits from low to high of self</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>low</strong> (<em>int</em>) – The lowest bit included in the slice (inclusive)</p></li>
+<li><p><strong>high</strong> (<em>int</em>) – The highest bit included in the slice (inclusive)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new pdarray containing the bits of self from low to high</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="o">**</span><span class="mi">65</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">64</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&#39;0b101111111111111111111111111111111111111111111111111111111111111111&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">bin</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">slice_bits</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">65</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&#39;0b10&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.bigint_to_uint_arrays">
+<span class="sig-name descname"><span class="pre">bigint_to_uint_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.bigint_to_uint_arrays" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a list of uint pdarrays from a bigint pdarray.
+The first item in return will be the highest 64 bits of the
+bigint pdarray and the last item will be the lowest 64 bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of uint pdarrays where:
+The first item in return will be the highest 64 bits of the
+bigint pdarray and the last item will be the lowest 64 bits.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[pdarrays]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarraycreation.bigint_from_uint_arrays</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">64</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([&quot;18446744073709551616&quot; &quot;18446744073709551617&quot; &quot;18446744073709551618&quot;</span>
+<span class="go">&quot;18446744073709551619&quot; &quot;18446744073709551620&quot;])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()</span>
+<span class="go">[array([1 1 1 1 1]), array([0 1 2 3 4])]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarrayclass.pdarray.reshape">
 <span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'row_major'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.reshape" title="Permalink to this definition">#</a></dt>
 <dd><p>Gives a new shape to an array without changing its data.</p>
@@ -2541,6 +2610,8 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotl"><code class="docutils literal notranslate"><span class="pre">pdarray.rotl()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotr"><code class="docutils literal notranslate"><span class="pre">pdarray.rotr()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.astype"><code class="docutils literal notranslate"><span class="pre">pdarray.astype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.slice_bits"><code class="docutils literal notranslate"><span class="pre">pdarray.slice_bits()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.bigint_to_uint_arrays"><code class="docutils literal notranslate"><span class="pre">pdarray.bigint_to_uint_arrays()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.reshape"><code class="docutils literal notranslate"><span class="pre">pdarray.reshape()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">pdarray.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.to_list"><code class="docutils literal notranslate"><span class="pre">pdarray.to_list()</span></code></a></li>
@@ -2680,6 +2751,8 @@ they are unregistered.</p>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotl">rotl</a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.rotr">rotr</a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.astype">astype</a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.slice_bits">slice_bits</a></li>
+<li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.bigint_to_uint_arrays">bigint_to_uint_arrays</a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.reshape">reshape</a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.to_ndarray">to_ndarray</a></li>
 <li><a class="reference internal" href="#arkouda.pdarrayclass.pdarray.to_list">to_list</a></li>
