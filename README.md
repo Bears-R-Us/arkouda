@@ -103,10 +103,14 @@ This yielded a >20TB dataframe in Arkouda.
    - [Connecting to Arkouda](#run-ak-connect)
 5. [Logging](#log-ak)
 6. [Type Checking in Arkouda](#typecheck-ak)
-7. [Versioning](#versioning-ak)
-8. [External Systems Integration](#external-integration)
-9. [Metrics](#metrics)
-10. [Contributing](#contrib-ak)
+
+7. [Environment Variables](#env-vars-ak)
+8. [Versioning](#versioning-ak)
+9. [External Systems Integration](#external-integration)
+10. [Metrics](#metrics)
+11. [Asynchronous Client](#async_client)
+12. [Contributing](#contrib-ak)
+
 
 <a id="prereqs"></a>
 ## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -462,6 +466,29 @@ Integrating Arkouda with cloud environments enables users to access Arkouda from
 ## Metrics <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 Arkouda provides a separate, dedicated zmq socket to enable generation and export of a variety of system, locale, user, and request metrics. Arkouda generated metrics in a format compatible with Prometheus, Grafana, and TimescaleDB. An Arkouda Prometheus exporter that serves as a Prometheus scrape target will be made available soon in the [arkouda-contrib](https://github.com/Bears-R-Us/arkouda-contrib) repository. A detailed discussion of Arkouda metrics is located in [METRICS.md](METRICS.md)
+
+<a id="async_client"></a>
+## Asynchronous Client
+
+### Background
+
+Arkouda has an alpha capability for enabling asynchronous client-server communications that provides feedback to users that a request has been submitted and is being processed within the Arkouda server. The initial asynchronous request capability supports multiuser Arkouda use cases where users may experience delays when the Arkouda server is processing requests by 1..n other users.
+
+### Configuration
+
+To enable asynchronous client communications, set the ARKOUDA_REQUEST_MODE environment variable as follows:
+
+```
+export ARKOUDA_REQUEST_MODE=ASYNC
+```
+
+### Exiting the Python shell
+
+As of 01022023, exiting the Python shell in ASYNC request mode requires the following command:
+
+```
+ak.exit()
+```
 
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
