@@ -276,28 +276,28 @@
 <li><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p></li>
 <li><p>Unpack the release</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar xzf chapel-1.29.0.tar.gz
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.29.0.tar.gz
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
 <li><p>Access the directory created when the release was unpacked</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> chapel-1.29.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.29.0
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
 <li><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> util/quickstart/setchplenv.bash
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
 <li><p>Update some environment variables to the recommended settings. <em>If you have not installed LLVM, set <code class="docutils literal notranslate"><span class="pre">CHPL_LLVM=bundled</span></code>. It is recommended to install LLVM using Homebrew, <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">llvm</span></code>.</em></p></li>
 <li><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CHPL_LLVM</span><span class="o">=</span>system
-<span class="nb">export</span> <span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span> <span class="nv">CHPL_GMP</span><span class="o">=</span>system <span class="c1"># set to the same value as CHPL_LLVM</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as CHPL_LLVM</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="6">
@@ -309,7 +309,7 @@
 <ol class="arabic simple" start="7">
 <li><p>Ensure that Chapel was built successfully</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl examples/hello3-datapar.chpl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
 ./hello3-datapar
 </pre></div>
 </div>
@@ -317,7 +317,7 @@
 <section id="homebrew">
 <h3>Homebrew<a class="headerlink" href="#homebrew" title="Permalink to this heading">#</a></h3>
 <p>Chapel and all supporting dependencies will be installed.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew install chapel
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
 </pre></div>
 </div>
 </section>
@@ -326,26 +326,26 @@
 <h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Permalink to this heading">#</a></h2>
 <p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers. The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Works with all Chipsets (including Apple Silicon)</span>
-brew install miniforge
+brew<span class="w"> </span>install<span class="w"> </span>miniforge
 <span class="c1">#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths</span>
 
 <span class="c1">#works with only x86 Architecture (excludes Apple Silicon)</span>
-brew install anaconda3
+brew<span class="w"> </span>install<span class="w"> </span>anaconda3
 <span class="c1">#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths</span>
 
 <span class="c1"># User conda env</span>
-conda env create -f arkouda-env.yml
-conda activate arkouda
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda
 
 <span class="c1"># Developer conda env</span>
-conda env create -f arkouda-env-dev.yml
-conda activate arkouda-dev
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
 
 <span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda install jupyter
+conda<span class="w"> </span>install<span class="w"> </span>jupyter
 
 <span class="c1"># Install the Arkouda Client Package</span>
-pip install -e . --no-deps
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
 </pre></div>
 </div>
 </section>
@@ -356,10 +356,10 @@ pip install -e . --no-deps
 <h3>Anaconda<a class="headerlink" href="#anaconda" title="Permalink to this heading">#</a></h3>
 <p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># developer environment update</span>
-conda env update -n arkouda-dev -f arkouda-env-dev.yml
+conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda-dev<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
 
 <span class="c1"># user environment update</span>
-conda env update -n arkouda -f arkouda-env.yml
+conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
 </pre></div>
 </div>
 </section>

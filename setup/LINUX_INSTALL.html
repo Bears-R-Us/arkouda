@@ -269,58 +269,58 @@
 <section id="install-chapel-ubuntu">
 <h2>Install Chapel (Ubuntu)<a class="headerlink" href="#install-chapel-ubuntu" title="Permalink to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update Linux kernel and install Chapel dependencies</span>
-sudo apt-get update
-sudo apt-get install gcc g++ m4 perl python3 python3-pip python3-venv python3-dev bash make mawk git pkg-config cmake llvm-12-dev llvm-12 llvm-12-tools clang-12 libclang-12-dev libclang-cpp12-dev libedit-dev
+sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>g++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>python3-dev<span class="w"> </span>bash<span class="w"> </span>make<span class="w"> </span>mawk<span class="w"> </span>git<span class="w"> </span>pkg-config<span class="w"> </span>cmake<span class="w"> </span>llvm-12-dev<span class="w"> </span>llvm-12<span class="w"> </span>llvm-12-tools<span class="w"> </span>clang-12<span class="w"> </span>libclang-12-dev<span class="w"> </span>libclang-cpp12-dev<span class="w"> </span>libedit-dev
 
 <span class="c1"># Download latest Chapel release, explode archive, and navigate to source root directory</span>
-wget https://github.com/chapel-lang/chapel/releases/download/1.29.0/chapel-1.29.0.tar.gz
-tar xvf chapel-1.29.0.tar.gz
-<span class="nb">cd</span> chapel-1.29.0/
+wget<span class="w"> </span>https://github.com/chapel-lang/chapel/releases/download/1.29.0/chapel-1.29.0.tar.gz
+tar<span class="w"> </span>xvf<span class="w"> </span>chapel-1.29.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>chapel-1.29.0/
 
 <span class="c1"># Set CHPL_HOME</span>
-<span class="nb">export</span> <span class="nv">CHPL_HOME</span><span class="o">=</span><span class="nv">$PWD</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_HOME</span><span class="o">=</span><span class="nv">$PWD</span>
 
 <span class="c1"># Add chpl to PATH</span>
-<span class="nb">source</span> <span class="nv">$CHPL_HOME</span>/util/setchplenv.bash
+<span class="nb">source</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>/util/setchplenv.bash
 
 <span class="c1"># Set remaining env variables and execute make</span>
 <span class="c1"># It is recommended to add these variables to a ~/.chplconfig file to prevent having </span>
 <span class="c1"># to export them again</span>
-<span class="nb">export</span> <span class="nv">CHPL_COMM</span><span class="o">=</span>gasnet
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>gasnet
 <span class="c1"># If you&#39;re going to be running locally only, use CHPL_COMM=none instead to improve build time</span>
-<span class="nb">export</span> <span class="nv">CHPL_COMM_SUBSTRATE</span><span class="o">=</span>smp
-<span class="nb">export</span> <span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
-<span class="nb">export</span> <span class="nv">GASNET_QUIET</span><span class="o">=</span>Y
-<span class="nb">export</span> <span class="nv">CHPL_RT_OVERSUBSCRIBED</span><span class="o">=</span>yes
-<span class="nb">export</span> <span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span> <span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-<span class="nb">export</span> <span class="nv">CHPL_GMP</span><span class="o">=</span>bundled <span class="c1"># needs to be set to what CHPL_LLVM is</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM_SUBSTRATE</span><span class="o">=</span>smp
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TARGET_CPU</span><span class="o">=</span>native
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_QUIET</span><span class="o">=</span>Y
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RT_OVERSUBSCRIBED</span><span class="o">=</span>yes
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled<span class="w"> </span><span class="c1"># needs to be set to what CHPL_LLVM is</span>
 
 <span class="c1"># Build Chapel</span>
-<span class="nb">cd</span> <span class="nv">$CHPL_HOME</span>
+<span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
 make
 
 <span class="c1"># Build chpldoc to enable generation of Arkouda docs</span>
-make chpldoc
+make<span class="w"> </span>chpldoc
 
 <span class="c1"># Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment</span>
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$CHPL_HOME</span>/bin/linux64-x86_64/:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$CHPL_HOME</span>/bin/linux64-x86_64/:<span class="nv">$PATH</span>
 </pre></div>
 </div>
 </section>
 <section id="install-chapel-rhel">
 <h2>Install Chapel (RHEL)<a class="headerlink" href="#install-chapel-rhel" title="Permalink to this heading">#</a></h2>
 <p>For all RHEL distros, Chapel dependencies are installed as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum update -y <span class="o">&amp;&amp;</span> yum install gcc gcc-c++ m4 perl python3 python3-devel <span class="se">\</span>
-make gawk git cmake llvm-devel clang clang-devel curl-devel -y
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>update<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>gcc-c++<span class="w"> </span>m4<span class="w"> </span>perl<span class="w"> </span>python3<span class="w"> </span>python3-devel<span class="w"> </span><span class="se">\</span>
+make<span class="w"> </span>gawk<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>llvm-devel<span class="w"> </span>clang<span class="w"> </span>clang-devel<span class="w"> </span>curl-devel<span class="w"> </span>-y
 </pre></div>
 </div>
 <p>For older RHEL distros with incompatible gcc compiler versions, the following dependencies must be installed:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum install devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64 centos-release-scl -y
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yum<span class="w"> </span>install<span class="w"> </span>devtoolset-9-gcc-c++-9.1.1-2.6.el7.x86_64<span class="w"> </span>centos-release-scl<span class="w"> </span>-y
 </pre></div>
 </div>
 <p>The RHEL Chapel build instructions are the same for all distros with the exception of older distros such as CentOS 7; for these, the newer gcc compiler must first be enabled:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span> /opt/rh/devtoolset-9/enable
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/opt/rh/devtoolset-9/enable
 </pre></div>
 </div>
 <p>The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.</p>
@@ -328,23 +328,23 @@ make gawk git cmake llvm-devel clang clang-devel curl-devel -y
 <section id="python-environment-anaconda-linux">
 <h2>Python Environment - Anaconda (Linux)<a class="headerlink" href="#python-environment-anaconda-linux" title="Permalink to this heading">#</a></h2>
 <p>As is the case with the MacOS install, it is highly recommended to <a class="reference external" href="https://docs.anaconda.com/anaconda/install/linux/">install Anaconda</a> to provide a Python environment and manage Python dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span> wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
- sh Anaconda3-2020.07-Linux-x86_64.sh
- <span class="nb">source</span> ~/.bashrc
- 
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
+<span class="w"> </span>sh<span class="w"> </span>Anaconda3-2020.07-Linux-x86_64.sh
+<span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/.bashrc
+<span class="w"> </span>
 <span class="c1"># User conda env</span>
-conda env create -f arkouda-env.yml
-conda activate arkouda
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda
 
 <span class="c1"># Developer conda env</span>
-conda env create -f arkouda-env-dev.yml
-conda activate arkouda-dev
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
+conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
 
 <span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda install jupyter
+conda<span class="w"> </span>install<span class="w"> </span>jupyter
 
 <span class="c1"># Install the Arkouda Client Package</span>
-pip install -e . --no-deps
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
 </pre></div>
 </div>
 </section>

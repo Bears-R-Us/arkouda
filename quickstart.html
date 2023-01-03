@@ -270,19 +270,19 @@
 <h2>Launch Arkouda Server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this heading">#</a></h2>
 <p>In a terminal, run the arkouda server program with one locale</p>
 <p>You should see a startup message like</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ./arkouda_server -nl <span class="m">1</span>
-server listening on tcp://&lt;your_machine&gt;.local:5555
-arkouda server <span class="nv">version</span> <span class="o">=</span> 
-memory <span class="nv">limit</span> <span class="o">=</span> <span class="m">15461882265</span>
-bytes of memory <span class="nv">used</span> <span class="o">=</span> <span class="m">0</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">1</span>
+server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>tcp://&lt;your_machine&gt;.local:5555
+arkouda<span class="w"> </span>server<span class="w"> </span><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+memory<span class="w"> </span><span class="nv">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15461882265</span>
+bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 </pre></div>
 </div>
 <p>or with authentication turned on</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ./arkouda_server -nl <span class="m">1</span> --authenticate
-server listening on tcp://&lt;your_machine&gt;:5555?token<span class="o">=</span>&lt;token_string&gt;
- arkouda server <span class="nv">version</span> <span class="o">=</span> 
- memory <span class="nv">limit</span> <span class="o">=</span> <span class="m">15461882265</span>
- bytes of memory <span class="nv">used</span> <span class="o">=</span> <span class="m">0</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">1</span><span class="w"> </span>--authenticate
+server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>tcp://&lt;your_machine&gt;:5555?token<span class="o">=</span>&lt;token_string&gt;
+<span class="w"> </span>arkouda<span class="w"> </span>server<span class="w"> </span><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="w"> </span>memory<span class="w"> </span><span class="nv">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15461882265</span>
+<span class="w"> </span>bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 </pre></div>
 </div>
 <p>The last line is the most important, because it contains the connection url with the hostname and port required for the client to connect to the server.</p>

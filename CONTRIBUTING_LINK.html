@@ -325,16 +325,16 @@ on their own fork.</p>
 Our Continuous Integration workflow has a linter (<code class="docutils literal notranslate"><span class="pre">flake8</span></code>) to verify all our python code meets these requirements.</p>
 <p>We use <code class="docutils literal notranslate"><span class="pre">isort</span></code>, <code class="docutils literal notranslate"><span class="pre">black</span></code>, and <code class="docutils literal notranslate"><span class="pre">flake8</span></code> (typically in that order) to ensure our code is consistent.
 We utilize a line length of 105. When running <code class="docutils literal notranslate"><span class="pre">black</span></code>, be sure to to use the <code class="docutils literal notranslate"><span class="pre">--line-length</span> <span class="pre">105</span></code> parameter.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ isort arkouda/example_feature.py
-Fixing arkouda/example_feature.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>isort<span class="w"> </span>arkouda/example_feature.py
+Fixing<span class="w"> </span>arkouda/example_feature.py
 
-$ black --line-length <span class="m">105</span> arkouda/example_feature.py
-reformatted arkouda/example_feature.py
+$<span class="w"> </span>black<span class="w"> </span>--line-length<span class="w"> </span><span class="m">105</span><span class="w"> </span>arkouda/example_feature.py
+reformatted<span class="w"> </span>arkouda/example_feature.py
 
-All <span class="k">done</span>!
-<span class="m">1</span> file reformatted.
+All<span class="w"> </span><span class="k">done</span>!
+<span class="m">1</span><span class="w"> </span>file<span class="w"> </span>reformatted.
 
-$ flake8 arkouda/example_feature.py
+$<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.py
 </pre></div>
 </div>
 <p>For users of pycharm there is nice <a class="reference external" href="https://black.readthedocs.io/en/stable/integrations/editors.html#pycharm-intellij-idea">interoperability</a> with these tools.</p>
@@ -346,16 +346,16 @@ $ flake8 arkouda/example_feature.py
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">lowerCamelCase</span></code> is used for variable names and procedures</p></li>
 </ul>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">aX</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="mi">0</span><span class="o">..#</span><span class="nx">s</span><span class="p">}]</span><span class="w"> </span><span class="kt">real</span><span class="p">;</span><span class="w"></span>
-<span class="k">proc</span><span class="w"> </span><span class="nf">printIt</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">     </span><span class="nx">writeln</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">aX</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="mi">0</span><span class="o">..#</span><span class="nx">s</span><span class="p">}]</span><span class="w"> </span><span class="kt">real</span><span class="p">;</span>
+<span class="k">proc</span><span class="w"> </span><span class="nf">printIt</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nx">writeln</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">UpperCamelCase</span></code> is used for class names</p></li>
 </ul>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span><span class="w"> </span><span class="nx">FooParent</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span><span class="w"> </span><span class="nx">FooParent</span><span class="w"> </span><span class="p">{}</span>
 </pre></div>
 </div>
 </section>

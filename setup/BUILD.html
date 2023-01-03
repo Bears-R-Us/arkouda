@@ -282,7 +282,7 @@
 <div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="c"># Makefile.paths</span>
 
 <span class="c"># Custom Anaconda environment for Arkouda</span>
-<span class="k">$(</span><span class="nv">eval</span> <span class="k">$(</span><span class="nv">call</span> <span class="nv">add-path</span>,/<span class="nv">home</span>/<span class="nv">user</span>/<span class="nv">anaconda3</span>/<span class="nv">envs</span>/<span class="nv">arkouda</span><span class="k">))</span><span class="w"></span>
+<span class="k">$(</span><span class="nv">eval</span> <span class="k">$(</span><span class="nv">call</span> <span class="nv">add-path</span>,/<span class="nv">home</span>/<span class="nv">user</span>/<span class="nv">anaconda3</span>/<span class="nv">envs</span>/<span class="nv">arkouda</span><span class="k">))</span>
 <span class="c">#                      ^ Note: No space after comma.</span>
 </pre></div>
 </div>
@@ -302,23 +302,23 @@ hdf5                      1.12.1          nompi_hf9525e8_104    conda-forge
 <p>The <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler will be executed with <code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">-L</span></code> and an <code class="docutils literal notranslate"><span class="pre">-rpath</span></code> to each path.</p>
 <p>The minimum cmake version is 3.11.0, which is not supported in older RHEL versions such as CentOS 7; in these cases, cmake must be downloaded, installed, and linked as follows. Note: while any version of cmake &gt;= 3.11.0 should work, we tested exclusively with 3.11.0:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Export version number of cmake binary to be installed</span>
-<span class="nb">export</span> <span class="nv">CM_VERSION</span><span class="o">=</span><span class="m">3</span>.11.0
+<span class="nb">export</span><span class="w"> </span><span class="nv">CM_VERSION</span><span class="o">=</span><span class="m">3</span>.11.0
 
 <span class="c1"># Download cmake</span>
-wget https://github.com/Kitware/CMake/releases/download/v<span class="nv">$CM_VERSION</span>/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh
+wget<span class="w"> </span>https://github.com/Kitware/CMake/releases/download/v<span class="nv">$CM_VERSION</span>/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh
 
 <span class="c1"># Install cmake</span>
-sh /opt/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh --skip-license --include-subdir
+sh<span class="w"> </span>/opt/cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64.sh<span class="w"> </span>--skip-license<span class="w"> </span>--include-subdir
 
 <span class="c1"># Link cmake version</span>
 
-<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>./cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64/bin:<span class="nv">$PATH</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>./cmake-<span class="nv">$CM_VERSION</span>-Linux-x86_64/bin:<span class="nv">$PATH</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">cmake</span></code> can also be installed using conda or pip</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install cmake&gt;<span class="o">=</span><span class="m">3</span>.11.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>cmake&gt;<span class="o">=</span><span class="m">3</span>.11.0
 
-pip install cmake&gt;<span class="o">=</span><span class="m">3</span>.11.0
+pip<span class="w"> </span>install<span class="w"> </span>cmake&gt;<span class="o">=</span><span class="m">3</span>.11.0
 </pre></div>
 </div>
 </section>
@@ -344,19 +344,19 @@ pip install cmake&gt;<span class="o">=</span><span class="m">3</span>.11.0
 <section id="individual-installs">
 <h4>Individual Installs<a class="headerlink" href="#individual-installs" title="Permalink to this heading">#</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install ZMQ Only</span>
-make install-zmq
+make<span class="w"> </span>install-zmq
 
 <span class="c1"># Install HDF5 Only</span>
-make install-hdf5
+make<span class="w"> </span>install-hdf5
 
 <span class="c1"># Install Arrow Only</span>
-make install-arrow
+make<span class="w"> </span>install-arrow
 
 <span class="c1"># Install iconv Only</span>
-make install-iconv
+make<span class="w"> </span>install-iconv
 
 <span class="c1"># Install idn2 Only</span>
-make install-idn2
+make<span class="w"> </span>install-idn2
 </pre></div>
 </div>
 </section>
@@ -364,10 +364,10 @@ make install-idn2
 <h4>Arrow Install Troubleshooting<a class="headerlink" href="#arrow-install-troubleshooting" title="Permalink to this heading">#</a></h4>
 <p>Arrow should be installed without issue, but in some instances it is possible that the install will not always complete using the Chapel dependencies. If that occurs, install the following packages.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#using conda to install</span>
-conda install boost-cpp snappy thrift-cpp re2 utf8proc
+conda<span class="w"> </span>install<span class="w"> </span>boost-cpp<span class="w"> </span>snappy<span class="w"> </span>thrift-cpp<span class="w"> </span>re2<span class="w"> </span>utf8proc
 
 <span class="c1">#using pip</span>
-pip install boost snappy thrift re2 utf8proc
+pip<span class="w"> </span>install<span class="w"> </span>boost<span class="w"> </span>snappy<span class="w"> </span>thrift<span class="w"> </span>re2<span class="w"> </span>utf8proc
 </pre></div>
 </div>
 </section>
@@ -375,20 +375,20 @@ pip install boost snappy thrift re2 utf8proc
 <h4>Distributable Package<a class="headerlink" href="#distributable-package" title="Permalink to this heading">#</a></h4>
 <p>Alternatively you can build a distributable package via</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># We&#39;ll use a virtual environment to build</span>
-python -m venv build-client-env
-<span class="nb">source</span> build-client-env/bin/activate
-python -m pip install --upgrade pip build wheel versioneer
-python setup.py clean --all
-python -m build
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>build-client-env
+<span class="nb">source</span><span class="w"> </span>build-client-env/bin/activate
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>build<span class="w"> </span>wheel<span class="w"> </span>versioneer
+python<span class="w"> </span>setup.py<span class="w"> </span>clean<span class="w"> </span>--all
+python<span class="w"> </span>-m<span class="w"> </span>build
 
 <span class="c1"># Clean up our virtual env</span>
 deactivate
-rm -rf build-client-env
+rm<span class="w"> </span>-rf<span class="w"> </span>build-client-env
 
 <span class="c1"># You should now have 2 files in the dist/ directory which can be installed via pip</span>
-pip install dist/arkouda*.whl
+pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.whl
 <span class="c1"># or</span>
-pip install dist/arkouda*.tar.gz
+pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
 </pre></div>
 </div>
 </section>
@@ -411,18 +411,18 @@ generation of the Chapel docs via the chpldoc executable.</em></p>
 <p>Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for
 generating docs:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># make doc-python generates the Python docs only</span>
-make doc-python
+make<span class="w"> </span>doc-python
 
 <span class="c1"># make doc-server generates the Chapel docs only</span>
-make doc-server
+make<span class="w"> </span>doc-server
 
 <span class="c1"># make doc generates both Python and Chapel documentation</span>
-make doc
+make<span class="w"> </span>doc
 </pre></div>
 </div>
 <p>The Python docs are written out to the <code class="docutils literal notranslate"><span class="pre">arkouda/docs</span></code> directory while the Chapel docs are exported to the <code class="docutils literal notranslate"><span class="pre">arkouda/docs/server</span></code> directory.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>arkouda/docs/ <span class="c1"># Python frontend documentation</span>
-arkouda/docs/server <span class="c1"># Chapel backend server documentation </span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>arkouda/docs/<span class="w"> </span><span class="c1"># Python frontend documentation</span>
+arkouda/docs/server<span class="w"> </span><span class="c1"># Chapel backend server documentation </span>
 </pre></div>
 </div>
 <p>To view the Arkouda documentation locally, type the following url into the browser of choice:

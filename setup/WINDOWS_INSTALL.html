@@ -277,11 +277,11 @@ The general strategy here is to use Linux terminals on WSL to launch the server.
 for installing Chapel &amp; Arkouda.  We also recommend installing Anaconda for windows.</p>
 <p><strong>Note:</strong> When running <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.</p>
 <p>An example of one of these errors found while using Chapel 1.29.0 and Ubuntu 20.04 LTS with WSL is:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../../../bin/llvm-tblgen: error <span class="k">while</span> loading shared libraries: libtinfow.so.6: cannot open shared object file: No such file or directory
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../../../bin/llvm-tblgen:<span class="w"> </span>error<span class="w"> </span><span class="k">while</span><span class="w"> </span>loading<span class="w"> </span>shared<span class="w"> </span>libraries:<span class="w"> </span>libtinfow.so.6:<span class="w"> </span>cannot<span class="w"> </span>open<span class="w"> </span>shared<span class="w"> </span>object<span class="w"> </span>file:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
 </pre></div>
 </div>
 <p>This error can be fixed by the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo ln -s /lib/x86_64-linux-gnu/libtic.so.6.2 /lib/x86_64-linux-gnu/libtinfow.so.6
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/lib/x86_64-linux-gnu/libtic.so.6.2<span class="w"> </span>/lib/x86_64-linux-gnu/libtinfow.so.6
 </pre></div>
 </div>
 <p>The general plan is to compile &amp; run the <code class="docutils literal notranslate"><span class="pre">arkouda-server</span></code> process from a Linux terminal on WSL and then either connect
@@ -290,7 +290,7 @@ to it with the python client using another Linux terminal running on WSL <em>or<
 on Windows such as VcXsrv, X410, or an alternative.  Follow the setup instructions for whichever one you choose, but
 keep in mind you may need to update your Windows firewall to allow the Xserver to connect.  Also, on the Linux side of
 the house we found it necessary to add</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DISPLAY</span><span class="o">=</span><span class="k">$(</span>cat /etc/resolv.conf <span class="p">|</span> grep nameserver <span class="p">|</span> awk <span class="s1">&#39;{print $2; exit;}&#39;</span><span class="k">)</span>:0.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>/etc/resolv.conf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nameserver<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2; exit;}&#39;</span><span class="k">)</span>:0.0
 </pre></div>
 </div>
 <p>to our <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file to get the display correctly forwarded.</p>
