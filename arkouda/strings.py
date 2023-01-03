@@ -373,6 +373,29 @@ class Strings:
         RuntimeError
             Raised if there is a server-side error thrown
         """
+        if (toEncoding.upper() == "IDNA" and fromEncoding.upper() != "UTF-8") or \
+           (toEncoding.upper() != "UTF-8" and fromEncoding.upper() == "IDNA"):
+            # first convert to UTF-8
+            rep_msg = generic_msg(
+                cmd="encode",
+                args={
+                    "toEncoding": "UTF-8",
+                    "fromEncoding": fromEncoding,
+                    "obj": self.entry,
+                },
+            )
+            intermediate = Strings.from_return_msg(rep_msg)
+            # now go to idna
+            rep_msg = generic_msg(
+                cmd="encode",
+                args={
+                    "toEncoding": toEncoding,
+                    "fromEncoding": "UTF-8",
+                    "obj": intermediate,
+                },
+            )
+            return Strings.from_return_msg(rep_msg)
+
         rep_msg = generic_msg(
             cmd="encode",
             args={

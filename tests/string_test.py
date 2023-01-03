@@ -664,6 +664,16 @@ class StringTest(ArkoudaTest):
         a3 = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
         self.assertTrue((a3 == a3.encode('ascii').decode('ascii')).all())
 
+    def test_idna_utf16(self):
+        s = ak.array(['xn--mnchen-3ya', 'xn--zrich-kva', 'example.com'])
+
+        # go from idna -> utf-16
+        result = s.encode(fromEncoding='idna', toEncoding='utf-16')
+
+        # roundtrip to return back to decoded values in UTF-8
+        decoded = result.decode(fromEncoding='utf-16', toEncoding="utf-8")
+        self.assertListEqual(["münchen", "zürich", "example.com"], decoded.to_list())
+
     def test_tondarray(self):
         v1 = ["münchen","zürich", "abc", "123", ""]
         s1 = ak.array(v1)
