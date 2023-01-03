@@ -876,7 +876,7 @@ def to_parquet(
     # append or single column use the old logic
     if mode.lower() == "append" or len(pdarrays) == 1:
         for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-            arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compression)
+            arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
         print(
             cast(
