@@ -205,7 +205,11 @@ class Index:
         return self.values.to_hdf(prefix_path, dataset=dataset, mode=mode, file_type=file_type)
 
     def to_parquet(
-        self, prefix_path: str, dataset: str = "index", mode: str = "truncate", compression: Optional[str] = None
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        mode: str = "truncate",
+        compression: Optional[str] = None,
     ):
         return self.values.to_parquet(prefix_path, dataset=dataset, mode=mode, compression=compression)
 
