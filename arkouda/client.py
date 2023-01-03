@@ -30,6 +30,7 @@ __all__ = [
     "get_server_commands",
     "print_server_commands",
     "ruok",
+    "exit",
 ]
 
 # stuff for zmq connection
