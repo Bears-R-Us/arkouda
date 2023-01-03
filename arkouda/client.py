@@ -269,23 +269,26 @@ def connect(
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
     """
-    try:
-        loop = get_event_loop()
+    if requestMode == RequestMode.ASYNC:
+        try:
+            loop = get_event_loop()
 
-        task = loop.create_task(_run_async_connect(loop,
+            task = loop.create_task(_run_async_connect(loop,
                                        server,
                                        port,
                                        timeout,
                                        access_token,
                                        connect_url))
-        logger.debug(f'connect task created {task}')
-        loop.run_until_complete(task)
-        logger.debug(f'connect task result {task.result()}')
-    except KeyboardInterrupt:
-        logger.debug('connect task interrupted')
-        task.cancel()
-        loop.run_until_complete(loop.create_task(cancel_task()))
-        logger.debug(f'is connect task done {task.done()}')
+            loop.run_until_complete(task)
+        except KeyboardInterrupt:
+            task.cancel()
+            loop.run_until_complete(loop.create_task(cancel_task()))
+    else:
+        _connect(server,
+                 port,
+                 timeout,
+                 access_token,
+                 connect_url)
 
 async def cancel_task() -> None:
     await asyncio.sleep(0)
