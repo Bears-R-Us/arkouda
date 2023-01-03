@@ -158,7 +158,7 @@ def set_defaults() -> None:
     maxTransferBytes = maxTransferBytesDefVal
 
 
-def get_event_loop():
+def get_event_loop() -> asyncio.AbstractEventLoop:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     return loop
@@ -169,8 +169,8 @@ def async_connect(
     timeout: int = 0,
     access_token: str = None,
     connect_url = None,
-    loop: asyncio.BaseEventLoop = None
-) -> asyncio.Future:
+    loop: Optional[asyncio.AbstractEventLoop] = None
+) -> None:
     if not loop:
         loop = get_event_loop()
     loop.run_in_executor(None,
@@ -182,13 +182,13 @@ def async_connect(
                          connect_url)
     
 async def _run_async_connect(
-    loop: asyncio.BaseEventLoop,
+    loop: asyncio.AbstractEventLoop,
     server: str = "localhost",
     port: int = 5555,
     timeout: int = 0,
     access_token: str = None,
     connect_url = None
-) -> None:
+) -> asyncio.Future:
     try: 
         if not loop:
             loop = get_event_loop()
@@ -203,14 +203,16 @@ async def _run_async_connect(
             clientLogger.info("connecting...")
             await asyncio.sleep(5)
     except CancelledError:
-        future.set_result('cancelled')
+        future = asyncio.Future()
+        future.set_result('cancelled')  # type: ignore
         future.cancel()
         import threading
         for t in threading.enumerate():
             if 'asyncio' in t.name:
                 t.join(0)
     except KeyboardInterrupt:
-        future.set_result('interrupted')
+        future = asyncio.Future()
+        future.set_result('interrupted')  # type: ignore
         future.cancel()
     finally:
         #print(f'THE RESULT {future.result()} IS FUTURE DONE {future.done()}')
