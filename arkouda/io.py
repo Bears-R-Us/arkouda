@@ -872,14 +872,10 @@ def to_parquet(
             DeprecationWarning,
         )
 
-    # TODO - ensure that compression is valid
-    # TODO - write method to convert compression string to int
-
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
     # append or single column use the old logic
     if mode.lower() == "append" or len(pdarrays) == 1:
         for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-            # TODO update all other to_parquet calls
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compression)
     else:
         print(
