@@ -184,7 +184,9 @@ class pdarray:
         self.shape = shape
         self.itemsize = itemsize
 
-    def __del__(self):
+    import contextlib
+    @contextlib.contextmanager
+    def __del__(self, generic_msg=generic_msg):
         try:
             logger.debug(f"deleting pdarray with name {self.name}")
             generic_msg(cmd="delete", args={"name": self.name})

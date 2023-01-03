@@ -1,5 +1,8 @@
 import json
 import os
+import asyncio
+from asyncio.exceptions import CancelledError
+import threading
 import warnings
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
@@ -83,6 +86,27 @@ def _mem_get_factor(unit: str) -> int:
 logger = getArkoudaLogger(name="Arkouda Client")
 clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
 
+class RequestMode(Enum):
+    """
+    The RequestMode enum provides controlled vocabulary indicating whether the
+    Arkouda client is submitting a request via asyncio (ASYNC) or via standard, 
+    synchronous (SYNC) flow 
+    """
+
+    ASYNC = "ASYNC"
+    SYNC = "SYNC"
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
+
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value.
+        """
+        return self.value
 
 class ClientMode(Enum):
     """
@@ -107,11 +131,13 @@ class ClientMode(Enum):
         return self.value
 
 
-# Get ClientMode, defaulting to UI
-mode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
+requestMode = RequestMode(os.getenv("ARKOUDA_REQUEST_MODE", 'SYNC').upper())
 
-# Print splash message if in UI mode
-if mode == ClientMode.UI:
+# Get ClientMode, defaulting to UI
+clientMode = ClientMode(os.getenv("ARKOUDA_CLIENT_MODE", "UI").upper())
+
+# Print splash message if in UI clientMode
+if clientMode == ClientMode.UI:
     print("{}".format(pyfiglet.figlet_format("Arkouda")))
     print(f"Client Version: {__version__}")  # type: ignore
 
@@ -132,8 +158,138 @@ def set_defaults() -> None:
     maxTransferBytes = maxTransferBytesDefVal
 
 
-# create context, request end of socket, and connect to it
+def get_event_loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop
+
+def async_connect(
+    server: str = "localhost",
+    port: int = 5555,
+    timeout: int = 0,
+    access_token: str = None,
+    connect_url = None,
+    loop: asyncio.BaseEventLoop = None
+) -> asyncio.Future:
+    if not loop:
+        loop = get_event_loop()
+    loop.run_in_executor(None,
+                         _connect,
+                         server,
+                         port,
+                         timeout,
+                         access_token,
+                         connect_url)
+    
+async def _run_async_connect(
+    loop: asyncio.BaseEventLoop,
+    server: str = "localhost",
+    port: int = 5555,
+    timeout: int = 0,
+    access_token: str = None,
+    connect_url = None
+) -> None:
+    try: 
+        if not loop:
+            loop = get_event_loop()
+        future = loop.run_in_executor(None,
+                                      _connect,
+                                      server,
+                                      port,
+                                      timeout,
+                                      access_token,
+                                      connect_url)
+        while not future.done() and not connected:
+            clientLogger.info("connecting...")
+            await asyncio.sleep(5)
+    except CancelledError:
+        future.set_result('cancelled')
+        future.cancel()
+        import threading
+        for t in threading.enumerate():
+            if 'asyncio' in t.name:
+                t.join(0)
+    except KeyboardInterrupt:
+        future.set_result('interrupted')
+        future.cancel()
+    finally:
+        #print(f'THE RESULT {future.result()} IS FUTURE DONE {future.done()}')
+        #await asyncio.get_running_loop().shutdown_default_executor()
+        return future
+
+def exit():
+    import os
+    os._exit(0)
+          
 def connect(
+    server: str = "localhost",
+    port: int = 5555,
+    timeout: int = 0,
+    access_token: str = None,
+    connect_url=None,
+) -> None:
+    """
+    Connect to a running arkouda server.
+
+    Parameters
+    ----------
+    server : str, optional
+        The hostname of the server (must be visible to the current
+        machine). Defaults to `localhost`.
+    port : int, optional
+        The port of the server. Defaults to 5555.
+    timeout : int, optional
+        The timeout in seconds for client send and receive operations.
+        Defaults to 0 seconds, whicn is interpreted as no timeout.
+    access_token : str, optional
+        The token used to connect to an existing socket to enable access to
+        an Arkouda server where authentication is enabled. Defaults to None.
+    connect_url : str, optional
+        The complete url in the format of tcp://server:port?token=<token_value>
+        where the token is optional
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    ConnectionError
+        Raised if there's an error in connecting to the Arkouda server
+    ValueError
+        Raised if there's an error in parsing the connect_url parameter
+    RuntimeError
+        Raised if there is a server-side error
+
+    Notes
+    -----
+    On success, prints the connected address, as seen by the server. If called
+    with an existing connection, the socket will be re-initialized.
+    """
+    try:
+        loop = get_event_loop()
+
+        task = loop.create_task(_run_async_connect(loop,
+                                       server,
+                                       port,
+                                       timeout,
+                                       access_token,
+                                       connect_url))
+        logger.debug(f'connect task created {task}')
+        loop.run_until_complete(task)
+        logger.debug(f'connect task result {task.result()}')
+    except KeyboardInterrupt:
+        logger.debug('connect task interrupted')
+        task.cancel()
+        loop.run_until_complete(loop.create_task(cancel_task()))
+        logger.debug(f'is connect task done {task.done()}')
+
+async def cancel_task() -> None:
+    await asyncio.sleep(0)
+    logger.debug('task cancelled')
+
+# create context, request end of socket, and connect to it
+def _connect(
     server: str = "localhost",
     port: int = 5555,
     timeout: int = 0,
@@ -394,9 +550,48 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
         raise ConnectionError(e)
 
 
-def _send_string_message(
-    cmd: str, recv_binary: bool = False, args: str = None, size: int = -1
-) -> Union[str, memoryview]:
+async def _async_send_string_message(message: RequestMessage, loop=None) -> Union[str, memoryview]:
+    try: 
+        if not loop:
+            loop = get_event_loop()
+        future = loop.run_in_executor(None,socket.send_string,json.dumps(message.asdict()))
+        while not future.done():
+            clientLogger.info(f"{message.cmd} request sent...")
+            await asyncio.sleep(5)
+        logger.debug(f'future result {future.result()}')
+    except CancelledError:
+        future.set_result('cancelled')
+        future.cancel()
+        for t in threading.enumerate():
+            if 'asyncio' in t.name:
+                t.join(0)
+    except KeyboardInterrupt:
+        future.set_result('interrupted')
+        future.cancel()
+    finally:
+        return future  
+
+def _execute_async_send(message: RequestMessage, loop=None):
+    try:
+        if not loop:
+            loop = get_event_loop()
+
+        task = loop.create_task(_async_send_string_message(message,loop))
+        if not task:
+            logger.error('no task')
+
+        loop.run_until_complete(task)
+        logger.debug(f'task done? {task.done()}')
+        logger.debug(f'task result {task.result()}')
+    except KeyboardInterrupt:
+        logger.debug('interrupted')
+        task.cancel()
+        loop.run_until_complete(loop.create_task(cancel_task()))
+        logger.debug(f'is task done {task.done()}')
+
+def _send_string_message(cmd: str, 
+                         recv_binary: bool = False, 
+                         args: str = None, size: int = -1) -> Union[str, memoryview]:
     """
     Generates a RequestMessage encapsulating command and requesting
     user information, sends it to the Arkouda server, and returns
@@ -438,7 +633,16 @@ def _send_string_message(
 
     logger.debug(f"sending message {message}")
 
-    socket.send_string(json.dumps(message.asdict()))
+    loop = get_event_loop()
+
+    def asyncEligible(cmd: str) -> bool:
+        return cmd not in {'delete','connect','getconfig'}
+
+    if requestMode == RequestMode.ASYNC and asyncEligible(cmd):
+        _execute_async_send(message, loop)
+        
+    else:
+        socket.send_string(json.dumps(message.asdict()))
 
     if recv_binary:
         frame = socket.recv(copy=False)
