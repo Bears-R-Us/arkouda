@@ -26,6 +26,7 @@ IGNORES = {
     "site-packages",
     "__pycache__",
     "docs/_build",
+    "client.py",
 }
 
 
