@@ -922,7 +922,7 @@ class Categorical:
                         prefix_path,
                         dataset=f"{dataset}.{k}",
                         mode=(mode if first else "append"),
-                        compressed=compressed,
+                        compression=compression,
                     )
                 )
                 first = False
