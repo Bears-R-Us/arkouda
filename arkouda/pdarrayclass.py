@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
-from typing import List, Sequence, Union, cast
+from typing import List, Optional, Sequence, Union, cast
 
 import numpy as np  # type: ignore
 from typeguard import typechecked
@@ -1331,7 +1331,11 @@ class pdarray:
 
     @typechecked
     def to_parquet(
-        self, prefix_path: str, dataset: str = "array", mode: str = "truncate", compression: Optional[str] = None
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        mode: str = "truncate",
+        compression: Optional[str] = None,
     ) -> str:
         from arkouda.io import mode_str_to_int
 

@@ -697,7 +697,9 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
     df = DataFrame(df_def)
 
     if write_file:
-        df.to_hdf(write_file, index=index) if filetype == "HDF5" else df.to_parquet(write_file, index=index)
+        df.to_hdf(write_file, index=index) if filetype == "HDF5" else df.to_parquet(
+            write_file, index=index
+        )
 
     if return_obj:
         return df
@@ -880,7 +882,8 @@ def to_parquet(
             # TODO update all other to_parquet calls
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compression)
     else:
-        print(cast(
+        print(
+            cast(
                 str,
                 generic_msg(
                     cmd="toParquet_multi",
@@ -891,7 +894,7 @@ def to_parquet(
                         "num_cols": len(pdarrays),
                         "compression": compression,
                     },
-                )
+                ),
             )
         )
 
