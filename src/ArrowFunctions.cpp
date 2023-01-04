@@ -385,7 +385,7 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
     else if(dtypes_ptr[i] == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtypes_ptr[i] == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     else if(dtypes_ptr[i] == ARROWSTRING)
       fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
   }
@@ -524,7 +524,7 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     else if(dtype == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtype == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
@@ -703,7 +703,7 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
     else if(dtype == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtype == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     else if(dtype == ARROWSTRING)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
     std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
