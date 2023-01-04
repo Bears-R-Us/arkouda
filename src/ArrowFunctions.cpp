@@ -252,6 +252,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet_reader->RowGroup(r);
 
       int64_t values_read = 0;
+      int16_t definition_level; // needed for any type that is nullable
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
@@ -274,11 +275,12 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
+        int64_t value;
 
         while (reader->HasNext() && i < numElems) {
           if((numElems - i) < batchSize)
             batchSize = numElems - i;
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          (void)reader->ReadBatch(1, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
       } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
@@ -312,7 +314,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         }
       } else if(ty == ARROWSTRING) {
         auto chpl_ptr = (unsigned char*)chpl_arr;
-        int16_t definition_level;
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
@@ -329,33 +330,41 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i++; // skip one space so the strings are null terminated with a 0
         }
       } else if(ty == ARROWFLOAT) {
+        std::cout << "Seen as float" << std::endl;
         auto chpl_ptr = (double*)chpl_arr;
         parquet::FloatReader* reader =
           static_cast<parquet::FloatReader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
-
-        float* tmpArr = (float*)malloc(batchSize * sizeof(float));
+        
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
+          float value;
           // Can't read directly into chpl_ptr because it is a double
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-          for (int64_t j = 0; j < values_read; j++)
-            chpl_ptr[i+j] = (double)tmpArr[j];
-          i+=values_read;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = (double)value;
+          }
+          i++;
         }
-        free(tmpArr);
       } else if(ty == ARROWDOUBLE) {
+        std::cout << "Seen as double" << std::endl;
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
           static_cast<parquet::DoubleReader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-          i+=values_read;
+          double value;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = value;
+          }
+          i++;
         }
       }
     }
@@ -379,7 +388,7 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
     else if(dtypes_ptr[i] == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtypes_ptr[i] == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     else if(dtypes_ptr[i] == ARROWSTRING)
       fields.push_back(parquet::schema::PrimitiveNode::Make(cname_ptr[i], parquet::Repetition::REQUIRED, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
   }
@@ -518,7 +527,7 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
     else if(dtype == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtype == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
@@ -697,7 +706,7 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
     else if(dtype == ARROWBOOLEAN)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
     else if(dtype == ARROWDOUBLE)
-      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
+      fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
     else if(dtype == ARROWSTRING)
       fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::OPTIONAL, parquet::Type::BYTE_ARRAY, parquet::ConvertedType::NONE));
     std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
