@@ -66,8 +66,8 @@ module BigIntMsg {
                   var low: [tmp.domain] bigint;
                   // create local copy, needed to work around bug fixed in Chapel, but
                   // needed for backwards compatability for now
-                  forall val in low with (var local_block_size = block_size) {
-                    low = tmp % local_block_size;
+                  forall (lowVal, tmpVal) in zip(low, tmp) with (var local_block_size = block_size) {
+                    lowVal = tmpVal % local_block_size;
                   }
                   var retname = st.nextName();
 
