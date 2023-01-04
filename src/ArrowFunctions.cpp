@@ -275,12 +275,11 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::Int64Reader* reader =
           static_cast<parquet::Int64Reader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
-        int64_t value;
 
         while (reader->HasNext() && i < numElems) {
           if((numElems - i) < batchSize)
             batchSize = numElems - i;
-          (void)reader->ReadBatch(1, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
           i+=values_read;
         }
       } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
@@ -330,7 +329,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i++; // skip one space so the strings are null terminated with a 0
         }
       } else if(ty == ARROWFLOAT) {
-        std::cout << "Seen as float" << std::endl;
         auto chpl_ptr = (double*)chpl_arr;
         parquet::FloatReader* reader =
           static_cast<parquet::FloatReader*>(column_reader.get());
@@ -349,7 +347,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
           i++;
         }
       } else if(ty == ARROWDOUBLE) {
-        std::cout << "Seen as double" << std::endl;
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
           static_cast<parquet::DoubleReader*>(column_reader.get());
