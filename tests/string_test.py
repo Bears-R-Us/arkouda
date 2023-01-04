@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
+import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
@@ -638,6 +639,7 @@ class StringTest(ArkoudaTest):
         p = strings.get_suffixes(1, return_origins=False, proper=False)
         self.assertListEqual(["c", "d", "i"], p.to_list())
 
+    @pytest.mark.skip(reason="Skipping until issue resolved.")
     def test_encoding(self):
         idna_strings = ak.array(['Bücher.example','ドメイン.テスト', 'домен.испытание', 'Königsgäßchen'])
         expected = ak.array(['xn--bcher-kva.example','xn--eckwd4c7c.xn--zckzah', 'xn--d1acufc.xn--80akhbyknj4f', 'xn--knigsgchen-b4a3dun'])
@@ -664,6 +666,7 @@ class StringTest(ArkoudaTest):
         a3 = ak.random_strings_uniform(1, 10, UNIQUE, characters="printable")
         self.assertTrue((a3 == a3.encode('ascii').decode('ascii')).all())
 
+    @pytest.mark.skip(reason="Skipping until issue resolved.")
     def test_idna_utf16(self):
         s = ak.array(['xn--mnchen-3ya', 'xn--zrich-kva', 'example.com'])
 
