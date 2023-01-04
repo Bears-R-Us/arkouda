@@ -325,7 +325,7 @@ Functions
    the same file type, but formatted to be read by Pandas.
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compressed: bool = False) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -339,6 +339,10 @@ Functions
                 If 'append', attempt to create new dataset in existing files.
                 'append' is deprecated, please use the multi-column write
    :type mode: {'truncate' | 'append'}
+   :param compression: Default None
+                       Provide the compression type to use when writing the file.
+                       Supported values: snappy, gzip, brotli, zstd, lz4
+   :type compression: str (Optional)
 
    :rtype: None
 

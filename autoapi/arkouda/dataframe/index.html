@@ -890,7 +890,7 @@ locale number.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.to_parquet">
-<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.to_parquet" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.to_parquet" title="Permalink to this definition">#</a></dt>
 <dd><p>Save DataFrame to disk as parquet, preserving column names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -898,8 +898,9 @@ locale number.</p>
 <li><p><strong>path</strong> (<em>str</em>) – File path to save data</p></li>
 <li><p><strong>index</strong> (<em>bool</em>) – If True, save the index column. By default, do not save the index.</p></li>
 <li><p><strong>columns</strong> (<em>List</em>) – List of columns to include in the file. If None, writes out all columns</p></li>
-<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>single</em><em> | </em><em>distribute</em><em>)</em>) – Default: distribute
-Whether to save to a single file or distribute across Locales</p></li>
+<li><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em>) – Default None
+Provide the compression type to use when writing the file.
+Supported values: snappy, gzip, brotli, zstd, lz4</p></li>
 </ul>
 </dd>
 </dl>

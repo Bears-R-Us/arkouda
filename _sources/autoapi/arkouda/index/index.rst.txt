@@ -108,7 +108,7 @@ Classes
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False)
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
 
 
 

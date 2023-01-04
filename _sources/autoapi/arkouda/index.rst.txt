@@ -1212,7 +1212,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -2520,7 +2520,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -3834,7 +3834,7 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
@@ -3848,9 +3848,10 @@ Attributes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
       :type mode: str {'truncate' | 'append'}
-      :param compressed: Defaults to False. When True, files will be written with Snappy compression
-                         and RLE bit packing.
-      :type compressed: bool
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       :rtype: String message indicating result of save operation
 
@@ -5238,7 +5239,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -8420,7 +8421,7 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
@@ -8434,9 +8435,10 @@ Attributes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
       :type mode: str {'truncate' | 'append'}
-      :param compressed: Defaults to False. When True, files will be written with Snappy compression
-                         and RLE bit packing.
-      :type compressed: bool
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       :rtype: String message indicating result of save operation
 
@@ -9473,7 +9475,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -11173,7 +11175,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -12581,7 +12583,7 @@ Attributes
       locale number.
 
 
-   .. py:method:: to_parquet(path, index=False, columns=None)
+   .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
 
       Save DataFrame to disk as parquet, preserving column names.
 
@@ -12591,9 +12593,10 @@ Attributes
       :type index: bool
       :param columns: List of columns to include in the file. If None, writes out all columns
       :type columns: List
-      :param file_type: Default: distribute
-                        Whether to save to a single file or distribute across Locales
-      :type file_type: str (single | distribute)
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       .. rubric:: Notes
 
@@ -13756,7 +13759,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -14202,7 +14205,7 @@ Attributes
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compressed: bool = False)
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
 
 
 
@@ -15320,7 +15323,7 @@ Attributes
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
@@ -16773,7 +16776,7 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
@@ -16787,9 +16790,10 @@ Attributes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
       :type mode: str {'truncate' | 'append'}
-      :param compressed: Defaults to False. When True, files will be written with Snappy compression
-                         and RLE bit packing.
-      :type compressed: bool
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       :rtype: String message indicating result of save operation
 
@@ -18281,7 +18285,7 @@ Attributes
       This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
       Save the Strings object to Parquet. The result is a collection of Parquet files,
       one file per locale of the arkouda server, where each filename starts
@@ -18295,9 +18299,10 @@ Attributes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
       :type mode: str {'truncate' | 'append'}
-      :param compressed: Defaults to False. When True, files will be written with Snappy compression
-                         and RLE bit packing.
-      :type compressed: bool
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       :rtype: String message indicating result of save operation
 

@@ -485,7 +485,7 @@ Functions
       locale number.
 
 
-   .. py:method:: to_parquet(path, index=False, columns=None)
+   .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
 
       Save DataFrame to disk as parquet, preserving column names.
 
@@ -495,9 +495,10 @@ Functions
       :type index: bool
       :param columns: List of columns to include in the file. If None, writes out all columns
       :type columns: List
-      :param file_type: Default: distribute
-                        Whether to save to a single file or distribute across Locales
-      :type file_type: str (single | distribute)
+      :param compression: Default None
+                          Provide the compression type to use when writing the file.
+                          Supported values: snappy, gzip, brotli, zstd, lz4
+      :type compression: str (Optional)
 
       .. rubric:: Notes
 

@@ -781,7 +781,7 @@ Functions
       numpy.devicendarray
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compressed: bool = False) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
