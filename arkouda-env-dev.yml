@@ -4,14 +4,14 @@ channels:
   - defaults
 dependencies:
   - python>=3.8   # minimum 3.8
-  - numpy>=1.22.2
+  - numpy>=1.24.1
   - pandas>=1.4.0
   - pyzmq>=20.0.0
   - tabulate
   - pyfiglet
   - versioneer
   - matplotlib>=3.3.2
-  - h5py
+  - h5py>=3.7.0
   - pip
   - types-tabulate
   - pytables>=3.7.0

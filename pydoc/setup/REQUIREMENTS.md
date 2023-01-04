@@ -7,7 +7,7 @@ The dependencies listed here have varying installation instructions depending up
 - ``Chapel 1.29.0 or later``
 - `cmake>=3.11.0`
 - `zeromq>=4.2.5`
-- `hdf5`
+- `hdf5>=3.7.0`
 - `python>=3.8`
 - `iconv`
 - `idn2`
@@ -18,7 +18,7 @@ The dependencies listed here have varying installation instructions depending up
 The following python packages are required by the Arkouda client package.
 
 - `python>=3.8`
-- `numpy>=1.22.2`
+- `numpy>=1.24.1`
 - `pandas>=1.4.0`
 - `pyzmq>=20.0.0`
 - `typeguard==2.10.0`
@@ -26,7 +26,7 @@ The following python packages are required by the Arkouda client package.
 - `pyfiglet`
 - `versioneer`
 - `matplotlib>=3.3.2`
-- `h5py`
+- `h5py>=3.7.0`
 - `pip`
 - `types-tabulate`
 - `tables>=3.7.0`
