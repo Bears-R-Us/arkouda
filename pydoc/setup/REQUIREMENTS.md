@@ -7,7 +7,7 @@ The dependencies listed here have varying installation instructions depending up
 - ``Chapel 1.29.0 or later``
 - `cmake>=3.11.0`
 - `zeromq>=4.2.5`
-- `hdf5>=3.7.0`
+- `hdf5`
 - `python>=3.8`
 - `iconv`
 - `idn2`
