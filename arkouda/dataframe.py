@@ -1486,7 +1486,7 @@ class DataFrame(UserDict):
         data = self._prep_data(index=index, columns=columns)
         to_hdf(data, prefix_path=path, file_type=file_type)
 
-    def to_parquet(self, path, index=False, columns=None):
+    def to_parquet(self, path, index=False, columns=None, compression: Optional[str] = None):
         """
         Save DataFrame to disk as parquet, preserving column names.
 
@@ -1498,9 +1498,10 @@ class DataFrame(UserDict):
             If True, save the index column. By default, do not save the index.
         columns: List
             List of columns to include in the file. If None, writes out all columns
-        file_type: str (single | distribute)
-            Default: distribute
-            Whether to save to a single file or distribute across Locales
+        compression : str (Optional)
+            Default None
+            Provide the compression type to use when writing the file.
+            Supported values: snappy, gzip, brotli, zstd, lz4
 
         Notes
         -----
@@ -1510,7 +1511,7 @@ class DataFrame(UserDict):
         """
         from arkouda.io import to_parquet
         data = self._prep_data(index=index, columns=columns)
-        to_parquet(data, prefix_path=path)
+        to_parquet(data, prefix_path=path, compression=compression)
 
     @classmethod
     def load(cls, prefix_path, file_format="INFER"):

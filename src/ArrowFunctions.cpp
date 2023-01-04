@@ -390,7 +390,7 @@ std::shared_ptr<parquet::schema::GroupNode> SetupSchema(void* column_names, void
 int cpp_writeMultiColToParquet(const char* filename, void* column_names, 
                                 void** ptr_arr, void* datatypes,
                                 int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                bool compressed, char** errMsg) {
+                                int64_t compression, char** errMsg) {
   try {
     // initialize the file to write to
     using FileClass = ::arrow::io::FileOutputStream;
@@ -401,8 +401,21 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
     std::shared_ptr<parquet::schema::GroupNode> schema = SetupSchema(column_names, datatypes, colnum);
 
     parquet::WriterProperties::Builder builder;
-    if(compressed) {
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
       builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
@@ -490,7 +503,7 @@ int cpp_writeMultiColToParquet(const char* filename, void* column_names,
 
 int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, int64_t dtype, bool compressed,
+                             int64_t rowGroupSize, int64_t dtype, int64_t compression,
                              char** errMsg) {
   try {
     using FileClass = ::arrow::io::FileOutputStream;
@@ -510,8 +523,21 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
     parquet::WriterProperties::Builder builder;
-    if(compressed) {
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
       builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
@@ -580,7 +606,7 @@ int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
 
 int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
                                 const char* dsetname, int64_t numelems,
-                                int64_t rowGroupSize, int64_t dtype, bool compressed,
+                                int64_t rowGroupSize, int64_t dtype, int64_t compression,
                                 char** errMsg) {
   try {
     using FileClass = ::arrow::io::FileOutputStream;
@@ -594,8 +620,21 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
     parquet::WriterProperties::Builder builder;
-    if(compressed) {
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
       builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
@@ -644,7 +683,7 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
 }
 
 int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
-                               bool compressed, char** errMsg) {
+                               int64_t compression, char** errMsg) {
   try {
     using FileClass = ::arrow::io::FileOutputStream;
     std::shared_ptr<FileClass> out_file;
@@ -665,8 +704,21 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
     parquet::WriterProperties::Builder builder;
-    if(compressed) {
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
       builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
       builder.encoding(parquet::Encoding::RLE);
     }
     std::shared_ptr<parquet::WriterProperties> props = builder.build();
@@ -685,7 +737,7 @@ int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64
 
 int cpp_appendColumnToParquet(const char* filename, void* chpl_arr,
                               const char* dsetname, int64_t numelems,
-                              int64_t dtype, bool compressed,
+                              int64_t dtype, int64_t compression,
                               char** errMsg) {
   try {
     std::shared_ptr<arrow::io::ReadableFile> infile;
@@ -856,33 +908,33 @@ extern "C" {
 
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
                              int64_t colnum, const char* dsetname, int64_t numelems,
-                             int64_t rowGroupSize, int64_t dtype, bool compressed,
+                             int64_t rowGroupSize, int64_t dtype, int64_t compression,
                              char** errMsg) {
     return cpp_writeColumnToParquet(filename, chpl_arr, colnum, dsetname,
-                                    numelems, rowGroupSize, dtype, compressed,
+                                    numelems, rowGroupSize, dtype, compression,
                                     errMsg);
   }
   
   int c_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
                                 const char* dsetname, int64_t numelems,
-                                int64_t rowGroupSize, int64_t dtype, bool compressed,
+                                int64_t rowGroupSize, int64_t dtype, int64_t compression,
                                 char** errMsg) {
     return cpp_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
-                                       dsetname, numelems, rowGroupSize, dtype, compressed, errMsg);
+                                       dsetname, numelems, rowGroupSize, dtype, compression, errMsg);
   }
 
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
-                               bool compressed, char** errMsg) {
-    return cpp_createEmptyParquetFile(filename, dsetname, dtype, compressed, errMsg);
+                               int64_t compression, char** errMsg) {
+    return cpp_createEmptyParquetFile(filename, dsetname, dtype, compression, errMsg);
   }
 
   int c_appendColumnToParquet(const char* filename, void* chpl_arr,
                               const char* dsetname, int64_t numelems,
-                              int64_t dtype, bool compressed,
+                              int64_t dtype, int64_t compression,
                               char** errMsg) {
     return cpp_appendColumnToParquet(filename, chpl_arr,
                                      dsetname, numelems,
-                                     dtype, compressed,
+                                     dtype, compression,
                                      errMsg);
   }
 
@@ -909,7 +961,7 @@ extern "C" {
   int c_writeMultiColToParquet(const char* filename, void* column_names, 
                                 void** ptr_arr, void* datatypes,
                                 int64_t colnum, int64_t numelems, int64_t rowGroupSize,
-                                bool compressed, char** errMsg){
-    return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, datatypes, colnum, numelems, rowGroupSize, compressed, errMsg);
+                                int64_t compression, char** errMsg){
+    return cpp_writeMultiColToParquet(filename, column_names, ptr_arr, datatypes, colnum, numelems, rowGroupSize, compression, errMsg);
   }
 }

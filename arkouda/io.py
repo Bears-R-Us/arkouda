@@ -697,10 +697,9 @@ def import_data(read_path: str, write_file: str = None, return_obj: bool = True,
     df = DataFrame(df_def)
 
     if write_file:
-        if filetype == "HDF5":
-            df.to_hdf(write_file, index=index)
-        elif filetype == "Parquet":
-            df.to_parquet(write_file, index=index)
+        df.to_hdf(write_file, index=index) if filetype == "HDF5" else df.to_parquet(
+            write_file, index=index
+        )
 
     if return_obj:
         return df
@@ -805,7 +804,7 @@ def to_parquet(
     prefix_path: str,
     names: List[str] = None,
     mode: str = "truncate",
-    compressed: bool = False,
+    compression: Optional[str] = None,
 ) -> None:
     """
     Save multiple named pdarrays to Parquet files.
@@ -822,6 +821,10 @@ def to_parquet(
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
         'append' is deprecated, please use the multi-column write
+    compression : str (Optional)
+            Default None
+            Provide the compression type to use when writing the file.
+            Supported values: snappy, gzip, brotli, zstd, lz4
 
 
     Returns
@@ -873,7 +876,7 @@ def to_parquet(
     # append or single column use the old logic
     if mode.lower() == "append" or len(pdarrays) == 1:
         for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-            arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compressed=compressed)
+            arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
         print(
             cast(
@@ -885,7 +888,7 @@ def to_parquet(
                         "col_names": datasetNames,
                         "filename": prefix_path,
                         "num_cols": len(pdarrays),
-                        "compressed": compressed,
+                        "compression": compression,
                     },
                 ),
             )
