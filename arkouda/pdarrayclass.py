@@ -1540,6 +1540,8 @@ class pdarray:
         elif self.dtype in (akint64, akuint64):
             # Integral pdarrays are their own grouping keys
             return [self]
+        elif self.dtype == bigint:
+            return self.bigint_to_uint_arrays()
         else:
             raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
 

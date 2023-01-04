@@ -306,17 +306,19 @@ class SetOpsTest(ArkoudaTest):
     def testIn1d(self):
         pdaOne = ak.array([-1, 0, 1, 3])
         pdaTwo = ak.array([-1, 2, 2, 3])
-        self.assertListEqual(
-            ak.in1d(pdaOne, pdaTwo).to_list(),
-            [True, False, False, True],
-        )
+        bi_one = pdaOne + 2**200
+        bi_two = pdaTwo + 2**200
+        ans = [True, False, False, True]
+        self.assertListEqual(ak.in1d(pdaOne, pdaTwo).to_list(), ans)
+        # test bigint
+        self.assertListEqual(ak.in1d(bi_one, bi_two).to_list(), ans)
+        # test multilevel mixed types (int and bigint)
+        self.assertListEqual(ak.in1d([pdaOne, bi_one], [pdaTwo, bi_two]).to_list(), ans)
+        self.assertListEqual(ak.in1d([bi_one, pdaOne], [bi_two, pdaTwo]).to_list(), ans)
 
-        vals = [i % 3 for i in range(10)]
-        valsTwo = [i % 2 for i in range(10)]
-        stringsOne = ak.array(["String {}".format(i) for i in vals])
-        stringsTwo = ak.array(["String {}".format(i) for i in valsTwo])
-
-        self.assertListEqual([x < 2 for x in vals], ak.in1d(stringsOne, stringsTwo).to_list())
+        stringsOne = ak.array(["String {}".format(i % 3) for i in range(10)])
+        stringsTwo = ak.array(["String {}".format(i % 2) for i in range(10)])
+        self.assertListEqual([(x % 3) < 2 for x in range(10)], ak.in1d(stringsOne, stringsTwo).to_list())
 
         # adding tests for unique dtypes
         a = ak.arange(10)

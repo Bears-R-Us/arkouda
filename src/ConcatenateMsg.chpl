@@ -8,6 +8,7 @@ module ConcatenateMsg
     use ServerErrors;
     use Logging;
     use Message;
+    use BigInteger;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -329,6 +330,37 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
+                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
+                    }
+                    when DType.BigInt {
+                        // create array to copy into
+                        var tmp = makeDistArray(size, bigint);
+                        var start: int = 0;
+                        var max_bits = -1;
+                        for (name, i) in zip(names, 1..) {
+                            // lookup and cast operand to copy from
+                            const o = toSymEntry(getGenericTypedArrayEntry(name, st), bigint);
+                            max_bits = max(max_bits, o.max_bits);
+                            if mode == "interleave" {
+                              coforall loc in Locales {
+                                on loc {
+                                  const size = o.a.domain.localSubdomain().size;
+                                  tmp[{blockstarts[here.id]..#size}] = o.a.localSlice[o.a.domain.localSubdomain()];
+                                  blockstarts[here.id] += size;
+                                }
+                              }
+                            } else {
+                              ref ea = tmp;
+                              // copy array into concatenation array
+                              forall (i, v) in zip(o.a.domain, o.a) {
+                                ea[start+i] = v;
+                              }
+                              // update new start for next array copy
+                              start += o.size;
+                            }
+                        }
+                        st.addEntry(rname, new shared SymEntry(tmp, max_bits));
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                          "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
