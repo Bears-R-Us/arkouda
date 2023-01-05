@@ -31,6 +31,7 @@ __all__ = [
     "print_server_commands",
     "ruok",
     "exit",
+    "async_connect",
 ]
 
 # stuff for zmq connection
