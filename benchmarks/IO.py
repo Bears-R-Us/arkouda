@@ -34,7 +34,7 @@ def time_ak_write(N_per_locale, numfiles, trials, dtype, path, seed, parquet, co
         for j in range(numfiles):
             start = time.time()
             a.to_hdf(f"{path}{j:04}") if not parquet else a.to_parquet(
-                f"{path}{j:04}", compressed=compressed
+                f"{path}{j:04}", compression="snappy" if compressed else None
             )
             end = time.time()
             writetimes.append(end - start)
