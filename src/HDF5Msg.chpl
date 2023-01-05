@@ -1536,7 +1536,7 @@ module HDF5Msg {
         else{
             // work around to handle old formats that do not store meta data.
             // It is assumed that any objects in this case are storing strings or pdarray
-            if C_HDF5.H5Lexists(obj_id, "/values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
+            if C_HDF5.H5Lexists(obj_id, "values".c_str(), C_HDF5.H5P_DEFAULT) > 0{
                 // this means that the obj is a group and contains a strings obj
                 objType_int = ObjType.STRINGS: int;
             }
