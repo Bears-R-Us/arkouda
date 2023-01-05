@@ -252,6 +252,7 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet_reader->RowGroup(r);
 
       int64_t values_read = 0;
+      int16_t definition_level; // needed for any type that is nullable
 
       std::shared_ptr<parquet::ColumnReader> column_reader;
 
@@ -312,7 +313,6 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         }
       } else if(ty == ARROWSTRING) {
         auto chpl_ptr = (unsigned char*)chpl_arr;
-        int16_t definition_level;
         parquet::ByteArrayReader* reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
 
@@ -333,18 +333,19 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         parquet::FloatReader* reader =
           static_cast<parquet::FloatReader*>(column_reader.get());
         startIdx -= reader->Skip(startIdx);
-
-        float* tmpArr = (float*)malloc(batchSize * sizeof(float));
+        
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
+          float value;
           // Can't read directly into chpl_ptr because it is a double
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-          for (int64_t j = 0; j < values_read; j++)
-            chpl_ptr[i+j] = (double)tmpArr[j];
-          i+=values_read;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = (double)value;
+          }
+          i++;
         }
-        free(tmpArr);
       } else if(ty == ARROWDOUBLE) {
         auto chpl_ptr = (double*)chpl_arr;
         parquet::DoubleReader* reader =
@@ -352,10 +353,15 @@ int cpp_readColumnByName(const char* filename, void* chpl_arr, const char* colna
         startIdx -= reader->Skip(startIdx);
 
         while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-          i+=values_read;
+          double value;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = value;
+          }
+          i++;
         }
       }
     }

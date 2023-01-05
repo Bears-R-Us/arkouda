@@ -1,5 +1,6 @@
 import glob
 import os
+import pandas as pd
 import tempfile
 
 import numpy as np
@@ -190,6 +191,20 @@ class ParquetTest(ArkoudaTest):
 
                 # validate the list read out matches the array used to write
                 self.assertListEqual(rd_arr.to_list(), a.to_list())
+
+    def test_gzip_nan_rd(self):
+        # create pandas dataframe
+        pdf = pd.DataFrame({
+            'all_nan': np.array([np.nan, np.nan, np.nan, np.nan]),
+            'some_nan': np.array([3.14, np.nan, 7.12, 4.44])
+        })
+
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            pdf.to_parquet(f"{tmp_dirname}/gzip_pq", engine="pyarrow", compression="gzip")
+
+            ak_data = ak.read_parquet(f"{tmp_dirname}/gzip_pq")
+            rd_df = ak.DataFrame(ak_data)
+            self.assertTrue(pdf.equals(rd_df.to_pandas()))
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
