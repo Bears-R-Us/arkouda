@@ -304,6 +304,7 @@ Attributes
    arkouda.akbool
    arkouda.akfloat64
    arkouda.akint64
+   arkouda.bigint
    arkouda.akfloat64
    arkouda.akint64
    arkouda.akuint64
@@ -14528,6 +14529,11 @@ Attributes
 
 
 
+.. py:data:: bigint
+   
+
+   
+
 .. py:data:: akfloat64
    
 
@@ -17138,9 +17144,19 @@ Attributes
    >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
    >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
    >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
-   >>> ak.search_intervals(vals, (starts, ends))
+   >>> ak.search_intervals(vals, (starts, ends), hierarchical=False)
    array([0 -1 0 0 1 -1 1 -1])
-   >>> ak.search_intervals(vals, (starts, ends), hierarchical=True)
+   >>> ak.search_intervals(vals, (starts, ends))
+   array([0 0 0 0 1 1 1 -1])
+   >>> bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
+   >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
+   >>> bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
+   >>> bi_starts, bi_ends, bi_vals
+   (array(["0" "92233720368547758091"]),
+   array(["92233720368547758090" "166020696663385964564"]),
+   array(["0" "20" "36893488147419103233" "92233720368547758085" "92233720368547758095"
+   "110680464442257309696" "110680464442257309708" "166020696663385964574"]))
+   >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
    array([0 0 0 0 1 1 1 -1])
 
 
