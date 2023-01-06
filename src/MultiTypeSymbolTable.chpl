@@ -100,6 +100,7 @@ module MultiTypeSymbolTable
         */
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
             // check and throw if memory limit would be exceeded
+            // TODO figure out a way to do memory checking for bigint
             if t != bigint {
                 if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
             }

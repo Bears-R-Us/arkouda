@@ -430,6 +430,44 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(u_unique_keys.to_list(), i_unique_keys.to_list())
         self.assertListEqual(u_group_nunique.to_list(), i_group_nunique.to_list())
 
+    def test_bigint_groupby(self):
+        bi = 2**200
+        # these bigint arrays are the int arrays shifted up by 2**200
+        a = ak.array([1, 0, -1, 1, 0, -1])
+        bi_a = a + bi
+        b = ak.full(6, 10, dtype=ak.uint64)
+        bi_b = b + bi
+
+        # single level groupby
+        int_arrays = [a, b]
+        bigint_arrays = [bi_a, bi_b]
+        for i_arr, bi_arr in zip(int_arrays, bigint_arrays):
+            i_unique, i_counts = ak.GroupBy(i_arr).count()
+            bi_unique, bi_counts = ak.GroupBy(bi_arr).count()
+            shift_down = ak.cast(bi_unique - bi, ak.int64)
+            # order isn't guaranteed so argsort and permute
+            i_perm = ak.argsort(i_unique)
+            bi_perm = ak.argsort(shift_down)
+            self.assertListEqual(i_counts[i_perm].to_list(), bi_counts[bi_perm].to_list())
+            self.assertListEqual(i_unique[i_perm].to_list(), shift_down[bi_perm].to_list())
+
+        # multilevel groupby
+        (i1_unique, i2_unique), i_counts = ak.GroupBy(int_arrays).count()
+        (bi1_unique, bi2_unique), bi_counts = ak.GroupBy(bigint_arrays).count()
+        shift_down1 = ak.cast(bi1_unique - bi, ak.int64)
+        shift_down2 = ak.cast(bi2_unique - bi, ak.int64)
+        # order isn't guaranteed so argsort and permute
+        i_perm = ak.coargsort((i1_unique, i2_unique))
+        bi_perm = ak.coargsort((shift_down1, shift_down2))
+        self.assertListEqual(i_counts[i_perm].to_list(), bi_counts[bi_perm].to_list())
+        self.assertListEqual(i1_unique[i_perm].to_list(), shift_down1[bi_perm].to_list())
+        self.assertListEqual(i2_unique[i_perm].to_list(), shift_down2[bi_perm].to_list())
+
+        # verify we can groupby bigint with other typed arrays
+        mixted_types_arrays = [[bi_a, b], [a, bi_b], [bi_b, a], [b, bi_a]]
+        for arrs in mixted_types_arrays:
+            ak.GroupBy(arrs).count()
+
     def test_zero_length_groupby(self):
         """
         This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details

@@ -5,6 +5,7 @@ from warnings import warn
 import numpy as np  # type: ignore
 
 from arkouda.categorical import Categorical
+from arkouda.dtypes import bigint
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
@@ -319,9 +320,19 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
     >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
     >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
-    >>> ak.search_intervals(vals, (starts, ends))
+    >>> ak.search_intervals(vals, (starts, ends), hierarchical=False)
     array([0 -1 0 0 1 -1 1 -1])
-    >>> ak.search_intervals(vals, (starts, ends), hierarchical=True)
+    >>> ak.search_intervals(vals, (starts, ends))
+    array([0 0 0 0 1 1 1 -1])
+    >>> bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
+    >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
+    >>> bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
+    >>> bi_starts, bi_ends, bi_vals
+    (array(["0" "92233720368547758091"]),
+    array(["92233720368547758090" "166020696663385964564"]),
+    array(["0" "20" "36893488147419103233" "92233720368547758085" "92233720368547758095"
+    "110680464442257309696" "110680464442257309708" "166020696663385964574"]))
+    >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
     """
     from arkouda.join import gen_ranges
@@ -338,7 +349,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
 
     if singleton:
         # argument validation for pdarray
-        if vals.dtype not in (akint64, akuint64, akfloat64):
+        if vals.dtype not in (akint64, akuint64, akfloat64, bigint):
             raise TypeError("arguments must be numeric arrays")
 
         if not isinstance(low, pdarray) or not isinstance(high, pdarray):
@@ -349,6 +360,14 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
             raise TypeError(
                 f"vals and intervals must all have the same dtype. "
                 f"Found {low.dtype}, {high.dtype}, and {vals.dtype}"
+            )
+
+        if vals.dtype == bigint:
+            return search_intervals(
+                vals.bigint_to_uint_arrays(),
+                (low.bigint_to_uint_arrays(), high.bigint_to_uint_arrays()),
+                tiebreak=tiebreak,
+                hierarchical=True,
             )
 
         # verify lower and upper bounds are same length

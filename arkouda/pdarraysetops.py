@@ -10,6 +10,7 @@ from arkouda.client_dtypes import BitVector
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import uint64 as akuint64
+from arkouda.dtypes import bigint
 from arkouda.groupbyclass import GroupBy, groupable, groupable_element_type, unique
 from arkouda.logger import getArkoudaLogger
 from arkouda.pdarrayclass import create_pdarray, pdarray
@@ -96,6 +97,8 @@ def _in1d_single(
     if hasattr(pda1, "categories"):
         return cast(Categorical_, pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.dtype == bigint and pda2.dtype == bigint:
+            return in1d(pda1.bigint_to_uint_arrays(), pda2.bigint_to_uint_arrays(), invert=invert)
         repMsg = generic_msg(
             cmd="in1d",
             args={

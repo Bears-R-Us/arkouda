@@ -354,6 +354,8 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
         raise TypeError("Sequence must contain only uint pdarrays")
     if len({a.size for a in arrays}) != 1:
         raise TypeError("All pdarrays must be same size")
+    if not isinstance(arrays, list):
+        arrays = list(arrays)
     return create_pdarray(
         generic_msg(
             cmd="big_int_creation",

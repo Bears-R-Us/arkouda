@@ -11,6 +11,7 @@ import numpy as np  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import bigint
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import int_scalars
@@ -995,7 +996,7 @@ class GroupBy:
         else:
             # Treat as a sequence of groupable arrays
             for v in values:
-                if isinstance(v, pdarray) and v.dtype not in [akint64, akuint64]:
+                if isinstance(v, pdarray) and v.dtype not in [akint64, akuint64, bigint]:
                     raise TypeError("grouping/uniquing unsupported for this dtype")
             togroup = [unique_key_idx] + list(values)
         return togroup
