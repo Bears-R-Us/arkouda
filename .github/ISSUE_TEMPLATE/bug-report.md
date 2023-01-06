@@ -27,8 +27,8 @@ If you are receiving any error messages, please provide them here.
 - Are there any known work-arounds?
 - If a known work around exists, please provide a code block demonstrating it.
 
-**`ak.config()` Output**
-Providing the output of `ak.config()` provides crucial debuggin information.
+**`ak.get_config()` Output**
+Providing the output of `ak.get_config()` provides crucial debugging information.
 
 **Additional context**
 Add any other context about the problem here.
