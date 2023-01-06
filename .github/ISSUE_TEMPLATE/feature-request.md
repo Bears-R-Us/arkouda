@@ -17,4 +17,4 @@ If applicable, please provide a code block showing expected behavior of the feat
 Is there currently a way to achieve the desired functionality (even if it is not ideal)? If so, please provide it for context.
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Add any other context or screenshots about the feature request here. If the requested feature is based on another library (i.e. numpy, pandas, scipy), please provide a link to their supporting documentation for reference.
