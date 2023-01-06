@@ -25,7 +25,7 @@ If you are receiving any error messages, please provide them here.
 
 **Is this a Blocking Issue**
 - Are there any known work-arounds?
-- If a known work
+- If a known work around exists, please provide a code block demonstrating it.
 
 **`ak.config()` Output**
 Providing the output of `ak.config()` provides crucial debuggin information.
