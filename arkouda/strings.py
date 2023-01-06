@@ -373,8 +373,9 @@ class Strings:
         RuntimeError
             Raised if there is a server-side error thrown
         """
-        if (toEncoding.upper() == "IDNA" and fromEncoding.upper() != "UTF-8") or \
-           (toEncoding.upper() != "UTF-8" and fromEncoding.upper() == "IDNA"):
+        if (toEncoding.upper() == "IDNA" and fromEncoding.upper() != "UTF-8") or (
+            toEncoding.upper() != "UTF-8" and fromEncoding.upper() == "IDNA"
+        ):
             # first convert to UTF-8
             rep_msg = generic_msg(
                 cmd="encode",
@@ -1993,6 +1994,75 @@ class Strings:
                 },
             ),
         )
+
+    @typechecked
+    def save(
+        self,
+        prefix_path: str,
+        dataset: str = "strings_array",
+        mode: str = "truncate",
+        save_offsets: bool = True,
+        compression: Optional[str] = None,
+        file_format: str = "HDF5",
+        file_type: str = "distribute",
+    ) -> str:
+        """
+        DEPRECATED
+        Save the Strings object to HDF5 or Parquet. The result is a collection of
+        files, one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Strings dataset within existing files.
+        save_offsets : bool
+            Defaults to True which will instruct the server to save the offsets array to HDF5
+            If False the offsets array will not be save and will be derived from the string values
+            upon load/read. This is not supported for Parquet files.
+        compression : str (Optional)
+            (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+            Sets the compression type used with Parquet files
+        file_format : str
+            By default, saved files will be written to the HDF5 file format. If
+            'Parquet', the files will be written to the Parquet file format. This
+            is case insensitive.
+        file_type: str ("single" | "distribute")
+            Default: Distribute
+            Distribute the dataset over a file per locale.
+            Single file will save the dataset to one file
+        Returns
+        -------
+        String message indicating result of save operation
+        Notes
+        -----
+        Important implementation notes: (1) Strings state is saved as two datasets
+        within an hdf5 group: one for the string characters and one for the
+        segments corresponding to the start of each string, (2) the hdf5 group is named
+        via the dataset parameter.
+        """
+        from warnings import warn
+
+        warn(
+            "ak.Strings.save has been deprecated. Please use ak.Strings.to_hdf or ak.Strings.to_parquet",
+            DeprecationWarning,
+        )
+        if mode.lower() not in ["append", "truncate"]:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        if file_format.lower() == "hdf5":
+            return self.to_hdf(
+                prefix_path, dataset=dataset, mode=mode, save_offsets=save_offsets, file_type=file_type
+            )
+        elif file_format.lower() == "parquet":
+            return self.to_parquet(prefix_path, dataset=dataset, mode=mode, compression=compression)
+        else:
+            raise ValueError("Valid file types are HDF5 or Parquet")
 
     def is_registered(self) -> np.bool_:
         """
