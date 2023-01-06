@@ -909,6 +909,10 @@ class Categorical:
         TypeError
             Raised if prefix_path, dataset, or mode is not a str
         """
+        # due to the possibility that components will be different sizes,
+        # writing to Parquet is not supported at this time
+        raise RuntimeError("Categorical cannot be written to Parquet at this time due to its components "
+                           "potentially having different sizes.")
         result = []
         comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
 
