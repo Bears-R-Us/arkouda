@@ -1018,6 +1018,29 @@ class SegArray:
             prefix_path, dataset=dataset + value_suffix, mode="append", file_type=file_type
         )
 
+    def save(
+        self,
+        prefix_path,
+        dataset="segarray",
+        segment_suffix="_segments",
+        value_suffix="_values",
+        mode="truncate",
+        file_type="distribute",
+    ):
+        from warnings import warn
+        warn(
+            "ak.SegArray.save has been deprecated. Please use ak.SegArray.to_hdf",
+            DeprecationWarning,
+        )
+        return self.to_hdf(
+            prefix_path,
+            dataset,
+            segment_suffix=segment_suffix,
+            value_suffix=value_suffix,
+            mode=mode,
+            file_type=file_type,
+        )
+
     @classmethod
     def load(
         cls,
