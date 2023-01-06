@@ -23,10 +23,7 @@ class SortTest(ArkoudaTest):
         for algo in ak.SortingAlgorithm:
             sorted_pda = ak.sort(pda, algo)
             sorted_bi = ak.sort(shift_up, algo)
-            # TODO remove cast once to_ndarray/list is avail for bigint
-            shift_down = ak.cast((sorted_bi - 2 ** 200), ak.uint64)
-            self.assertListEqual(shift_down.to_list(), sorted_pda.to_list())
-
+            self.assertListEqual((sorted_bi - 2 ** 200).to_list(), sorted_pda.to_list())
 
     def testBitBoundaryHardcode(self):
 

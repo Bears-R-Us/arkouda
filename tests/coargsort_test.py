@@ -107,7 +107,7 @@ def check_int_uint_float_bigint(N, algo):
     assert ak.is_sorted(i[perm])
 
     perm = ak.coargsort([bi, f, u, i], algo)
-    # TODO remove cast once to_ndarray/list is avail for bigint
+    # TODO remove once ak.is_sorted is avail for bigint
     shifted_down = ak.cast(bi[perm] - 2**200, ak.uint64)
     assert ak.is_sorted(shifted_down)
 

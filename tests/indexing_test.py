@@ -29,14 +29,7 @@ class IndexingTest(ArkoudaTest):
         # for every pda in array_dict test indexing with uint array and uint scalar
         for pda in self.array_dict.values():
             self.assertEqual(pda[np.uint(2)], pda[2])
-            # TODO update once we have to_list/ndarray for bigint
-            if pda.dtype != ak.bigint:
-                self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-            else:
-                self.assertListEqual(
-                    ak.cast(pda[self.ukeys], ak.uint64).to_list(),
-                    ak.cast(pda[self.ikeys], ak.uint64).to_list(),
-                )
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
     def test_strings_uint_indexing(self):
         # test Strings array indexing with uint array and uint scalar
@@ -47,7 +40,7 @@ class IndexingTest(ArkoudaTest):
         # test uint array with bool indexing
         self.assertListEqual(self.u[self.b].to_list(), self.i[self.b].to_list())
         # test bigint array with bool indexing
-        self.assertListEqual(self.u[self.b].to_list(), ak.cast(self.bi[self.b], ak.uint64).to_list())
+        self.assertListEqual(self.u[self.b].to_list(), self.bi[self.b].to_list())
 
     def test_set_uint(self):
         # for every pda in array_dict test __setitem__ indexing with uint array and uint scalar
@@ -56,65 +49,34 @@ class IndexingTest(ArkoudaTest):
             pda[np.uint(2)] = np.uint(5)
             self.assertEqual(pda[np.uint(2)], pda[2])
 
-            if t == ak.bigint.name:
-                # make sure bigint arrays can be assigned bigint vals
-                pda[np.uint(2)] = 2**200
-                self.assertEqual(pda[2], 2**200)
+            # set [slice] = scalar/pdarray
+            pda[:10] = np.uint(-2)
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+            pda[:10] = ak.cast(ak.arange(10), t)
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
-            # we won't have to split these sections once we have to_list for bigint
+            # set [pdarray] = scalar/pdarray with uint key pdarray
+            pda[ak.arange(10, dtype=ak.uint64)] = np.uint(3)
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+            pda[ak.arange(10, dtype=ak.uint64)] = ak.cast(ak.arange(10), t)
+            self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+
             if t == ak.bigint.name:
-                # set [slice] = scalar/pdarray
-                pda[:10] = np.uint(-2)
-                self.assertListEqual(
-                    ak.cast(pda[self.ukeys], ak.uint64).to_list(),
-                    ak.cast(pda[self.ikeys], ak.uint64).to_list(),
-                )
-                pda[:10] = ak.cast(ak.arange(10), t)
-                self.assertListEqual(
-                    ak.cast(pda[self.ukeys], ak.uint64).to_list(),
-                    ak.cast(pda[self.ikeys], ak.uint64).to_list(),
-                )
-                # do bigint specific testing
+                # bigint specific set [int] = val with uint key and value
+                pda[np.uint(2)] = 2 ** 200
+                self.assertEqual(pda[2], 2 ** 200)
+
+                # bigint specific set [slice] = scalar/pdarray
                 pda[:10] = 2**200
-                for i in range(10):
-                    self.assertEqual(pda[i], 2**200)
-                pda[:10] = ak.cast(ak.arange(10), ak.bigint)
-                self.assertListEqual(
-                    ak.cast(pda[:10], ak.uint64).to_list(), ak.arange(10, dtype=ak.uint64).to_list()
-                )
+                self.assertListEqual(pda[:10].to_list(), ak.full(10, 2**200, ak.bigint).to_list())
+                pda[:10] = ak.arange(10, dtype=ak.bigint)
+                self.assertListEqual(pda[:10].to_list(), ak.arange(10, dtype=ak.uint64).to_list())
 
-                # set [pdarray] = scalar/pdarray with uint key pdarray
-                pda[ak.arange(10, dtype=ak.uint64)] = np.uint(3)
-                self.assertListEqual(
-                    ak.cast(pda[self.ukeys], ak.uint64).to_list(),
-                    ak.cast(pda[self.ikeys], ak.uint64).to_list(),
-                )
-                pda[ak.arange(10, dtype=ak.uint64)] = ak.cast(ak.arange(10), t)
-                self.assertListEqual(
-                    ak.cast(pda[self.ukeys], ak.uint64).to_list(),
-                    ak.cast(pda[self.ikeys], ak.uint64).to_list(),
-                )
-                # do bigint specific testing
+                # bigint specific set [pdarray] = scalar/pdarray with uint key pdarray
                 pda[ak.arange(10, dtype=ak.uint64)] = 2**200
-                for i in range(10):
-                    self.assertEqual(pda[i], 2**200)
-                pda[ak.arange(10)] = ak.cast(ak.arange(10), ak.bigint)
-                self.assertListEqual(
-                    ak.cast(pda[:10], ak.uint64).to_list(), ak.arange(10, dtype=ak.uint64).to_list()
-                )
-
-            else:
-                # set [slice] = scalar/pdarray
-                pda[:10] = np.uint(-2)
-                self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-                pda[:10] = ak.cast(ak.arange(10), t)
-                self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-
-                # set [pdarray] = scalar/pdarray with uint key pdarray
-                pda[ak.arange(10, dtype=ak.uint64)] = np.uint(3)
-                self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
-                pda[ak.arange(10, dtype=ak.uint64)] = ak.cast(ak.arange(10), t)
-                self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
+                self.assertListEqual(pda[:10].to_list(), ak.full(10, 2**200, ak.bigint).to_list())
+                pda[ak.arange(10)] = ak.arange(10, dtype=ak.bigint)
+                self.assertListEqual(pda[:10].to_list(), ak.arange(10, dtype=ak.uint64).to_list())
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails

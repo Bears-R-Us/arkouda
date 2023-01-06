@@ -376,10 +376,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual(ak.Datetime(pda_concat).to_list(), datetime_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([datetime_one])), ak.Datetime)
-        self.assertListEqual(
-            ak.Datetime(pda_one).to_list(),
-            ak.concatenate([datetime_one]).to_list(),
-        )
+        self.assertListEqual(ak.Datetime(pda_one).to_list(), ak.concatenate([datetime_one]).to_list())
         self.assertEqual(type(ak.concatenate([ak.Datetime(ak.array([], dtype=ak.int64))])), ak.Datetime)
 
         # Timedelta test
@@ -390,10 +387,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual(ak.Timedelta(pda_concat).to_list(), timedelta_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([timedelta_one])), ak.Timedelta)
-        self.assertListEqual(
-            ak.Timedelta(pda_one).to_list(),
-            ak.concatenate([timedelta_one]).to_list(),
-        )
+        self.assertListEqual(ak.Timedelta(pda_one).to_list(), ak.concatenate([timedelta_one]).to_list())
         self.assertEqual(
             type(ak.concatenate([ak.Timedelta(ak.array([], dtype=ak.int64))])), ak.Timedelta
         )
@@ -406,10 +400,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual(ak.BitVector(pda_concat).to_list(), bitvector_concat.to_list())
         # test single and empty
         self.assertEqual(type(ak.concatenate([bitvector_one])), ak.BitVector)
-        self.assertListEqual(
-            ak.BitVector(pda_one).to_list(),
-            ak.concatenate([bitvector_one]).to_list(),
-        )
+        self.assertListEqual(ak.BitVector(pda_one).to_list(), ak.concatenate([bitvector_one]).to_list())
         self.assertEqual(
             type(ak.concatenate([ak.BitVector(ak.array([], dtype=ak.int64))])), ak.BitVector
         )
@@ -546,22 +537,22 @@ class OperatorsTest(ArkoudaTest):
         bi_arr += u
         np_arr += u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr += u_arr
         bi_arr += bi_arr
         np_arr += np_arr
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr -= u
         bi_arr -= u
         np_arr -= u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr -= u_arr
         bi_arr -= bi_arr
         np_arr -= np_arr
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
 
         # redeclare minus self zeroed out
         u_arr = ak.array(
@@ -581,32 +572,32 @@ class OperatorsTest(ArkoudaTest):
         bi_arr *= u
         np_arr *= u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr *= u_arr
         bi_arr *= bi_arr
         np_arr *= np_arr
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr **= u
         bi_arr **= u
         np_arr **= u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr **= u_arr
         bi_arr **= bi_arr
         np_arr **= np_arr
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr %= u
         bi_arr %= u
         np_arr %= u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
         u_arr //= u
         bi_arr //= u
         np_arr //= u
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
 
         # redeclare divide zeroed out
         u_arr = ak.array(
@@ -626,7 +617,7 @@ class OperatorsTest(ArkoudaTest):
         bi_arr //= bi_arr
         np_arr //= np_arr
         self.assertListEqual(u_arr.to_list(), np_arr.tolist())
-        self.assertListEqual(ak.cast(bi_arr, ak.uint64).to_list(), np_arr.tolist())
+        self.assertListEqual(bi_arr.to_list(), np_arr.tolist())
 
         # the only arrays that can be added in place are uint and bool
         # scalars are cast to same type if possible
@@ -640,7 +631,7 @@ class OperatorsTest(ArkoudaTest):
             bi_tmp += v
             i_tmp += v
             self.assertListEqual(u_tmp.to_list(), i_tmp.to_list())
-            self.assertListEqual(u_tmp.to_list(), ak.cast(bi_tmp, ak.uint64).to_list())
+            self.assertListEqual(u_tmp.to_list(), bi_tmp.to_list())
 
         # adding a float or int inplace could have a result which is not a uint
         for e in [i_arr, f_arr]:
@@ -735,129 +726,101 @@ class OperatorsTest(ArkoudaTest):
         i_scalar = -10
         u_scalar = 10
 
-        # TODO update once to_ndarray supports bigint to not cast into uint
-
         # logical bit ops: only work if both arguments are bigint
-        self.assertListEqual((u & u_range).to_list(), ak.cast((bi & bi_range), ak.uint64).to_list())
+        self.assertListEqual((u & u_range).to_list(), (bi & bi_range).to_list())
         self.assertListEqual(
-            [(bi[i] & bi_scalar) % mod_by for i in range(bi.size)],
-            ak.cast((bi & bi_scalar), ak.uint64).to_list(),
+            [(bi[i] & bi_scalar) % mod_by for i in range(bi.size)], (bi & bi_scalar).to_list()
         )
         self.assertListEqual(
-            [(bi_scalar & bi[i]) % mod_by for i in range(bi.size)],
-            ak.cast((bi_scalar & bi), ak.uint64).to_list(),
+            [(bi_scalar & bi[i]) % mod_by for i in range(bi.size)], (bi_scalar & bi).to_list()
         )
 
-        self.assertListEqual((u | u_range).to_list(), ak.cast((bi | bi_range), ak.uint64).to_list())
+        self.assertListEqual((u | u_range).to_list(), (bi | bi_range).to_list())
         self.assertListEqual(
-            [(bi[i] | bi_scalar) % mod_by for i in range(bi.size)],
-            ak.cast((bi | bi_scalar), ak.uint64).to_list(),
+            [(bi[i] | bi_scalar) % mod_by for i in range(bi.size)], (bi | bi_scalar).to_list()
         )
         self.assertListEqual(
-            [(bi_scalar | bi[i]) % mod_by for i in range(bi.size)],
-            ak.cast((bi_scalar | bi), ak.uint64).to_list(),
+            [(bi_scalar | bi[i]) % mod_by for i in range(bi.size)], (bi_scalar | bi).to_list()
         )
 
-        self.assertListEqual((u ^ u_range).to_list(), ak.cast((bi ^ bi_range), ak.uint64).to_list())
+        self.assertListEqual((u ^ u_range).to_list(), (bi ^ bi_range).to_list())
         self.assertListEqual(
-            [(bi[i] ^ bi_scalar) % mod_by for i in range(bi.size)],
-            ak.cast((bi ^ bi_scalar), ak.uint64).to_list(),
+            [(bi[i] ^ bi_scalar) % mod_by for i in range(bi.size)], (bi ^ bi_scalar).to_list()
         )
         self.assertListEqual(
-            [(bi_scalar ^ bi[i]) % mod_by for i in range(bi.size)],
-            ak.cast((bi_scalar ^ bi), ak.uint64).to_list(),
+            [(bi_scalar ^ bi[i]) % mod_by for i in range(bi.size)], (bi_scalar ^ bi).to_list()
         )
 
         # bit shifts: left side must be bigint, right side must be int/uint
         ans = u << u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi << u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi << i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi << u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi << i_range).to_list())
 
         ans = u >> u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi >> u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi >> i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi >> u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi >> i_range).to_list())
 
         ans = u.rotl(u_range)
-        self.assertListEqual(ans.to_list(), ak.cast((bi.rotl(u_range)), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi.rotl(i_range)), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), bi.rotl(u_range).to_list())
+        self.assertListEqual(ans.to_list(), bi.rotl(i_range).to_list())
         ans = u.rotr(u_range)
-        self.assertListEqual(ans.to_list(), ak.cast((bi.rotr(u_range)), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi.rotr(i_range)), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), bi.rotr(u_range).to_list())
+        self.assertListEqual(ans.to_list(), bi.rotr(i_range).to_list())
 
         # ops where left side has to bigint
         ans = u // u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi // bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi // u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi // i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi // bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi // u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi // i_range).to_list())
 
         ans = u % u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi % bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi % u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi % i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi % bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi % u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi % i_range).to_list())
 
         ans = u**u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi**bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi**u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi**i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi**bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi**u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi**i_range).to_list())
 
         # ops where either side can any of bigint, int, uint, bool
         ans = u + u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi + bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi + u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi + i_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((i_range + bi), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((u_range + bi), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi + bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi + u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi + i_range).to_list())
+        self.assertListEqual(ans.to_list(), (i_range + bi).to_list())
+        self.assertListEqual(ans.to_list(), (u_range + bi).to_list())
         ans = u + b
-        self.assertListEqual(ans.to_list(), ak.cast((bi + b), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((b + bi), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi + b).to_list())
+        self.assertListEqual(ans.to_list(), (b + bi).to_list())
         for s in [i_scalar, u_scalar, bi_scalar]:
-            self.assertListEqual(
-                [(bi[i] + s) % mod_by for i in range(bi.size)],
-                ak.cast((bi + s), ak.uint64).to_list(),
-            )
-            self.assertListEqual(
-                [(s + bi[i]) % mod_by for i in range(bi.size)],
-                ak.cast((s + bi), ak.uint64).to_list(),
-            )
+            self.assertListEqual([(bi[i] + s) % mod_by for i in range(bi.size)], (bi + s).to_list())
+            self.assertListEqual([(s + bi[i]) % mod_by for i in range(bi.size)], (s + bi).to_list())
 
         ans = u - u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi - bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi - u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi - i_range), ak.uint64).to_list())
-        self.assertListEqual((u - b).to_list(), ak.cast((bi - b), ak.uint64).to_list())
-        self.assertListEqual((b - u).to_list(), ak.cast((b - bi), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi - bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi - u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi - i_range).to_list())
+        self.assertListEqual((u - b).to_list(), (bi - b).to_list())
+        self.assertListEqual((b - u).to_list(), (b - bi).to_list())
 
         for s in [i_scalar, u_scalar, bi_scalar]:
-            self.assertListEqual(
-                [(bi[i] - s) % mod_by for i in range(bi.size)],
-                ak.cast((bi - s), ak.uint64).to_list(),
-            )
-            self.assertListEqual(
-                [(s - bi[i]) % mod_by for i in range(bi.size)],
-                ak.cast((s - bi), ak.uint64).to_list(),
-            )
+            self.assertListEqual([(bi[i] - s) % mod_by for i in range(bi.size)], (bi - s).to_list())
+            self.assertListEqual([(s - bi[i]) % mod_by for i in range(bi.size)], (s - bi).to_list())
 
-        self.assertListEqual(
-            ak.cast((bi - neg_range), ak.uint64).to_list(), ak.cast((bi + u_range), ak.uint64).to_list()
-        )
+        self.assertListEqual((bi - neg_range).to_list(), (bi + u_range).to_list())
 
         ans = u * u_range
-        self.assertListEqual(ans.to_list(), ak.cast((bi * bi_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi * u_range), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((bi * i_range), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi * bi_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi * u_range).to_list())
+        self.assertListEqual(ans.to_list(), (bi * i_range).to_list())
         ans = u * b
-        self.assertListEqual(ans.to_list(), ak.cast((bi * b), ak.uint64).to_list())
-        self.assertListEqual(ans.to_list(), ak.cast((b * bi), ak.uint64).to_list())
+        self.assertListEqual(ans.to_list(), (bi * b).to_list())
+        self.assertListEqual(ans.to_list(), (b * bi).to_list())
 
         for s in [i_scalar, u_scalar, bi_scalar]:
-            self.assertListEqual(
-                [(bi[i] * s) % mod_by for i in range(bi.size)],
-                ak.cast((bi * s), ak.uint64).to_list(),
-            )
-            self.assertListEqual(
-                [(s * bi[i]) % mod_by for i in range(bi.size)],
-                ak.cast((s * bi), ak.uint64).to_list(),
-            )
+            self.assertListEqual([(bi[i] * s) % mod_by for i in range(bi.size)], (bi * s).to_list())
+            self.assertListEqual([(s * bi[i]) % mod_by for i in range(bi.size)], (s * bi).to_list())
 
 
 if __name__ == "__main__":
