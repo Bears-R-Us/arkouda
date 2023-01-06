@@ -906,6 +906,11 @@ the HDF5 file, not nested under a group.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_values'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.save" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.load">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_values'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.load" title="Permalink to this definition">#</a></dt>
 <dd><p>Load a saved SegArray from HDF5. All arguments must match what
@@ -1080,7 +1085,7 @@ was supplied to SegArray.save()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id426" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1284,6 +1289,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.aggregate"><code class="docutils literal notranslate"><span class="pre">SegArray.aggregate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.save"><code class="docutils literal notranslate"><span class="pre">SegArray.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load"><code class="docutils literal notranslate"><span class="pre">SegArray.load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.intersect"><code class="docutils literal notranslate"><span class="pre">SegArray.intersect()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.union"><code class="docutils literal notranslate"><span class="pre">SegArray.union()</span></code></a></li>
@@ -1345,6 +1351,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.aggregate">aggregate</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique">unique</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf">to_hdf</a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.save">save</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load">load</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.intersect">intersect</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.union">union</a></li>

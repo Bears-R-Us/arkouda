@@ -1143,6 +1143,46 @@ Classes
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of
+      files, one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
    .. py:method:: is_registered() -> numpy.bool_
 
       Return True iff the object is contained in the registry

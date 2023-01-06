@@ -1219,6 +1219,75 @@ Attributes
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
    .. py:method:: register(user_defined_name: str) -> pdarray
 
       Register this pdarray with a user defined name in the arkouda server
@@ -2525,6 +2594,75 @@ Attributes
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
    .. py:method:: register(user_defined_name: str) -> pdarray
@@ -3891,6 +4029,46 @@ Attributes
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of
+      files, one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
    .. py:method:: is_registered() -> numpy.bool_
 
       Return True iff the object is contained in the registry
@@ -5244,6 +5422,75 @@ Attributes
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
    .. py:method:: register(user_defined_name: str) -> pdarray
@@ -8478,6 +8725,46 @@ Attributes
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of
+      files, one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
    .. py:method:: is_registered() -> numpy.bool_
 
       Return True iff the object is contained in the registry
@@ -9480,6 +9767,75 @@ Attributes
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
    .. py:method:: register(user_defined_name: str) -> pdarray
@@ -11182,6 +11538,75 @@ Attributes
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
    .. py:method:: register(user_defined_name: str) -> pdarray
 
       Register this pdarray with a user defined name in the arkouda server
@@ -11933,6 +12358,9 @@ Attributes
       SegArray is not currently supported by Parquet
 
 
+   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_type='distribute')
+
+
    .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values')
       :classmethod:
 
@@ -12604,6 +13032,35 @@ Attributes
       This method saves one file per locale of the arkouda server. All
       files are prefixed by the path argument and suffixed by their
       locale number.
+
+
+   .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)
+
+      DEPRECATED
+      Save DataFrame to disk, preserving column names.
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
+      :type file_format: str
+      :param file_type: ("single" | "distribute")
+                        Defaults to distribute.
+                        If single, will right a single file to locale 0
+      :type file_type: str
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Compression type. Only used for Parquet
+      :type compression: str (Optional)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+      .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`
 
 
    .. py:method:: load(prefix_path, file_format='INFER')
@@ -13766,6 +14223,75 @@ Attributes
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
 
 
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
+
+
    .. py:method:: register(user_defined_name: str) -> pdarray
 
       Register this pdarray with a user defined name in the arkouda server
@@ -14207,6 +14733,60 @@ Attributes
 
 
    .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the index to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used. The file I/O does not rely on the extension to determine the
+      file format.
 
 
 
@@ -15333,6 +15913,75 @@ Attributes
 
 
    .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str {'HDF5', 'Parquet'}
+      :param file_type: Default: "distribute"
+                        When set to single, dataset is written to a single file.
+                        When distribute, dataset is written on a file per locale.
+                        This is only supported by HDF5 files and will have no impact of Parquet Files.
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
+      This will require you to use load as if you saved the file with the extension. Try this if
+      an older file is not being found.
+      Any file extension can be used.The file I/O does not rely on the extension to
+      determine the file format.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(25)
+      >>> # Saving without an extension
+      >>> a.save('path/prefix', dataset='array')
+      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
+      >>> # Saving with an extension (HDF5)
+      >>> a.save('path/prefix.h5', dataset='array')
+      Saves the array to numLocales HDF5 files with the name
+      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
+      >>> # Saving with an extension (Parquet)
+      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
+      Saves the array in numLocales Parquet files with the name
+      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
 
 
    .. py:method:: register(user_defined_name: str) -> pdarray
@@ -16836,6 +17485,46 @@ Attributes
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of
+      files, one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
 
 
    .. py:method:: is_registered() -> numpy.bool_
@@ -18355,6 +19044,46 @@ Attributes
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'
       :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+
+   .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
+
+      DEPRECATED
+      Save the Strings object to HDF5 or Parquet. The result is a collection of
+      files, one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read. This is not supported for Parquet files.
+      :type save_offsets: bool
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Sets the compression type used with Parquet files
+      :type compression: str (Optional)
+      :param file_format: By default, saved files will be written to the HDF5 file format. If
+                          'Parquet', the files will be written to the Parquet file format. This
+                          is case insensitive.
+      :type file_format: str
+      :param file_type: Default: Distribute
+                        Distribute the dataset over a file per locale.
+                        Single file will save the dataset to one file
+      :type file_type: str ("single" | "distribute")
+
+      :rtype: String message indicating result of save operation
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
 
 
    .. py:method:: is_registered() -> numpy.bool_

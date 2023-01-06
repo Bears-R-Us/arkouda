@@ -288,7 +288,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id853" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -299,7 +299,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id853" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id861" title="arkouda.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,7 +421,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id853" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – When values are grouped, the starting offset of each group</p></li>
@@ -467,7 +467,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id853" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
+<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -771,7 +771,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id853" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
@@ -956,6 +956,58 @@ neither ‘truncate’ nor ‘append’</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HDF5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.save" title="Permalink to this definition">#</a></dt>
+<dd><p>DEPRECATED
+Save the Categorical object to HDF5 or Parquet. The result is a collection of HDF5/Parquet files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+corresponding file.
+:param prefix_path: Directory and filename prefix that all output files share
+:type prefix_path: str
+:param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+:type dataset: str
+:param file_format: The format to save the file to.
+:type file_format: str {‘HDF5 | ‘Parquet’}
+:param mode: By default, truncate (overwrite) output files, if they exist.</p>
+<blockquote>
+<div><p>If ‘append’, create a new Categorical dataset within existing files.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>&quot;single&quot;</em><em> | </em><em>&quot;distribute&quot;</em><em>)</em>) – Default: “distribute”
+When set to single, dataset is written to a single file.
+When distribute, dataset is written on a file per locale.
+This is only supported by HDF5 files and will have no impact of Parquet Files.</p></li>
+<li><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em>) – {None | ‘snappy’ | ‘gzip’ | ‘brotli’ | ‘zstd’ | ‘lz4’}
+The compression type to use when writing.
+This is only supported for Parquet files and will not be used with HDF5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>String message indicating result of save operation</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
+neither ‘truncate’ nor ‘append’</p></li>
+<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Important implementation notes: (1) Strings state is saved as two datasets
+within an hdf5 group: one for the string characters and one for the
+segments corresponding to the start of each string, (2) the hdf5 group is named
+via the dataset parameter.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">-</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.register" title="Permalink to this definition">#</a></dt>
 <dd><p>Register this Categorical object and underlying components with the Arkouda server</p>
@@ -976,7 +1028,7 @@ Please note you cannot register two different Categoricals with the same name.</
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id426" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -996,7 +1048,7 @@ they are unregistered.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id426" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1023,7 +1075,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id426" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1143,7 +1195,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id426" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1175,7 +1227,7 @@ constructed for the user.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.save</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.save" title="arkouda.categorical.Categorical.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.save</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></p>
 </div>
 </dd></dl>
 
@@ -1287,6 +1339,7 @@ constructed for the user.</p>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.concatenate"><code class="docutils literal notranslate"><span class="pre">Categorical.concatenate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.to_hdf"><code class="docutils literal notranslate"><span class="pre">Categorical.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.to_parquet"><code class="docutils literal notranslate"><span class="pre">Categorical.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.categorical.Categorical.save"><code class="docutils literal notranslate"><span class="pre">Categorical.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.register"><code class="docutils literal notranslate"><span class="pre">Categorical.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.unregister"><code class="docutils literal notranslate"><span class="pre">Categorical.unregister()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.is_registered"><code class="docutils literal notranslate"><span class="pre">Categorical.is_registered()</span></code></a></li>
@@ -1343,6 +1396,7 @@ constructed for the user.</p>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.concatenate">concatenate</a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.to_hdf">to_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.to_parquet">to_parquet</a></li>
+<li><a class="reference internal" href="#arkouda.categorical.Categorical.save">save</a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.register">register</a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.unregister">unregister</a></li>
 <li><a class="reference internal" href="#arkouda.categorical.Categorical.is_registered">is_registered</a></li>

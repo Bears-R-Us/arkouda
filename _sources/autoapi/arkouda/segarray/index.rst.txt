@@ -475,6 +475,9 @@ Functions
       SegArray is not currently supported by Parquet
 
 
+   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_type='distribute')
+
+
    .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values')
       :classmethod:
 

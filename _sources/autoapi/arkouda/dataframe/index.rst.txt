@@ -507,6 +507,35 @@ Functions
       locale number.
 
 
+   .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)
+
+      DEPRECATED
+      Save DataFrame to disk, preserving column names.
+      :param path: File path to save data
+      :type path: str
+      :param index: If True, save the index column. By default, do not save the index.
+      :type index: bool
+      :param columns: List of columns to include in the file. If None, writes out all columns
+      :type columns: List
+      :param file_format: 'HDF5' or 'Parquet'. Defaults to 'HDF5'
+      :type file_format: str
+      :param file_type: ("single" | "distribute")
+                        Defaults to distribute.
+                        If single, will right a single file to locale 0
+      :type file_type: str
+      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+                          Compression type. Only used for Parquet
+      :type compression: str (Optional)
+
+      .. rubric:: Notes
+
+      This method saves one file per locale of the arkouda server. All
+      files are prefixed by the path argument and suffixed by their
+      locale number.
+
+      .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`
+
+
    .. py:method:: load(prefix_path, file_format='INFER')
       :classmethod:
 

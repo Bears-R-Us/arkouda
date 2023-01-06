@@ -25,6 +25,7 @@ Functions
    arkouda.io.export
    arkouda.io.to_parquet
    arkouda.io.to_hdf
+   arkouda.io.save_all
    arkouda.io.load
    arkouda.io.load_all
    arkouda.io.read
@@ -418,6 +419,58 @@ Functions
 
    >>> # Save using names instead of mapping
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
+
+   DEPRECATED
+   Save multiple named pdarrays to HDF5/Parquet files.
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param file_format: 'HDF5' or 'Parquet'. Defaults to hdf5
+   :type file_format: str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+   :param file_type: Default: distribute
+                     Single writes the dataset to a single file
+                     Distribute writes the dataset to a file per locale
+                     Only used with HDF5
+   :type file_type: str ("single" | "distribute")
+   :param compression: Optional
+                       Select the compression to use with Parquet files.
+                       Only used with Parquet.
+   :type compression: str (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`to_parquet`, :obj:`to_hdf`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the HDF5 dataset names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+   .. rubric:: Examples
+
+   >>> a = ak.arange(25)
+   >>> b = ak.arange(25)
+   >>> # Save with mapping defining dataset names
+   >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
+   >>> # Save using names instead of mapping
+   >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
 
 
 .. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
