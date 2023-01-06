@@ -779,6 +779,8 @@ module ReductionMsg
       var sums;
       var counts;
       if isRealType(t) && skipNan {
+        // first verify that we can make a copy of values
+        overMemLimit(numBytes(t) * values.size);
         // calculate sum and counts with nan values replaced with 0.0
         var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
