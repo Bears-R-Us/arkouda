@@ -252,9 +252,10 @@ module ServerConfig
                 if (total > memHighWater) {
                     memHighWater = total;
                     scLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                    "memory high watermark = %i memory limit = %i".format(
+                    "memory high watermark = %i memory limit = %i percentage used = %i%%".format(
                            memHighWater:uint * numLocales:uint, 
-                           getMemLimit():uint * numLocales:uint));
+                           getMemLimit():uint * numLocales:uint,
+                           AutoMath.round((memHighWater:real / (getMemLimit():real * numLocales)) * 100):uint));
                 }
             }
             if total > getMemLimit() {
