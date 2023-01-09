@@ -30,7 +30,9 @@ cd chapel-1.29.0
 source util/quickstart/setchplenv.bash
 ```
 
-5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.*
+5) Update some environment variables to the recommended settings. 
+- *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.* 
+- *If you have not installed GMP, set `CHPL_GMP=system`. It is recommended to install GMP using Homebrew, `brew install gmp`.*
 
 6) Add the following to your `rc` file.
 
