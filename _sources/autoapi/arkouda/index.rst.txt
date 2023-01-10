@@ -1042,9 +1042,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -1064,7 +1068,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -2419,9 +2423,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -2441,7 +2449,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -5247,9 +5255,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -5269,7 +5281,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -9592,9 +9604,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -9614,7 +9630,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -11361,9 +11377,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -11383,7 +11403,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -14046,9 +14066,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -14068,7 +14092,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
@@ -15738,9 +15762,13 @@ Attributes
 
    .. py:method:: slice_bits(low, high) -> pdarray
 
-      Returns a pdarray containing only bits from low to high of self
+      Returns a pdarray containing only bits from low to high of self.
+
+      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+      pda.slice_bits(0, 63)
 
       :param low: The lowest bit included in the slice (inclusive)
+                  zero indexed, so the first bit is 0
       :type low: int
       :param high: The highest bit included in the slice (inclusive)
       :type high: int
@@ -15760,7 +15788,7 @@ Attributes
       '0b10'
 
 
-   .. py:method:: bigint_to_uint_arrays()
+   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
 
       Creates a list of uint pdarrays from a bigint pdarray.
       The first item in return will be the highest 64 bits of the
