@@ -1057,12 +1057,16 @@ class pdarray:
 
     def slice_bits(self, low, high) -> pdarray:
         """
-        Returns a pdarray containing only bits from low to high of self
+        Returns a pdarray containing only bits from low to high of self.
+
+        This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
+        pda.slice_bits(0, 63)
 
         Parameters
         __________
         low: int
             The lowest bit included in the slice (inclusive)
+            zero indexed, so the first bit is 0
         high: int
             The highest bit included in the slice (inclusive)
 
@@ -1089,7 +1093,8 @@ class pdarray:
             raise ValueError("low must not exceed high")
         return (self >> low) % 2 ** (high - low + 1)
 
-    def bigint_to_uint_arrays(self):
+    @typechecked()
+    def bigint_to_uint_arrays(self) -> List[pdarray]:
         """
         Creates a list of uint pdarrays from a bigint pdarray.
         The first item in return will be the highest 64 bits of the
@@ -1198,6 +1203,11 @@ class pdarray:
         from arkouda.client import maxTransferBytes
 
         dt = dtype(self.dtype)
+
+        if dt == bigint:
+            # convert uint pdarrays into object ndarrays and recombine
+            arrs = [n.to_ndarray().astype("O") for n in self.bigint_to_uint_arrays()]
+            return builtins.sum(n << (64 * (len(arrs) - i - 1)) for i, n in enumerate(arrs))
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
