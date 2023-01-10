@@ -272,47 +272,73 @@
 <section id="build-from-source-recommended">
 <h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Permalink to this heading">#</a></h3>
 <p>For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
-<ol class="arabic simple">
-<li><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p></li>
-<li><p>Unpack the release</p></li>
-</ol>
+<p><strong>Step 1</strong></p>
+<blockquote>
+<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
+</div></blockquote>
+<p><strong>Step 2</strong></p>
+<blockquote>
+<div><p>Unpack the release</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.29.0.tar.gz
 </pre></div>
 </div>
-<ol class="arabic simple" start="3">
-<li><p>Access the directory created when the release was unpacked</p></li>
-</ol>
+</div></blockquote>
+<p><strong>Step 3</strong></p>
+<blockquote>
+<div><p>Access the directory created when the release was unpacked</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.29.0
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
-<li><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p></li>
-</ol>
+</div></blockquote>
+<p><strong>Step 4</strong></p>
+<blockquote>
+<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
 </pre></div>
 </div>
-<ol class="arabic simple" start="5">
-<li><p>Update some environment variables to the recommended settings. <em>If you have not installed LLVM, set <code class="docutils literal notranslate"><span class="pre">CHPL_LLVM=bundled</span></code>. It is recommended to install LLVM using Homebrew, <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">llvm</span></code>.</em></p></li>
-<li><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
+</div></blockquote>
+<p><strong>Step 5</strong></p>
+<blockquote>
+<div><p>Update environment variables to the recommended settings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@14
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
+
+brew<span class="w"> </span>install<span class="w"> </span>gmp
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote>
+<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Step 6</strong></p>
+<blockquote>
+<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in Step 5</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as CHPL_LLVM</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="6">
-<li><p>Use GNU make to build Chapel</p></li>
-</ol>
+</div></blockquote>
+<p><strong>Step 7</strong></p>
+<blockquote>
+<div><p>Use GNU make to build Chapel</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
 </pre></div>
 </div>
-<ol class="arabic simple" start="7">
-<li><p>Ensure that Chapel was built successfully</p></li>
-</ol>
+</div></blockquote>
+<p><strong>Step 8</strong></p>
+<blockquote>
+<div><p>Ensure that Chapel was built successfully</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
 ./hello3-datapar
 </pre></div>
 </div>
+</div></blockquote>
 </section>
 <section id="homebrew">
 <h3>Homebrew<a class="headerlink" href="#homebrew" title="Permalink to this heading">#</a></h3>

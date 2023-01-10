@@ -10,48 +10,63 @@ It is recommended to compile Chapel from source. Alternatively, it can be instal
 
 For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the [Chapel Quickstart Guide](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html).
 
-1) Download the current version of Chapel from [here](https://chapel-lang.org/download.html).
+**Step 1**
+> Download the current version of Chapel from [here](https://chapel-lang.org/download.html).
 
-2) Unpack the release
+**Step 2**
+> Unpack the release
+> ```bash
+> tar xzf chapel-1.29.0.tar.gz
+> ```
 
-```bash
-tar xzf chapel-1.29.0.tar.gz
-```
+**Step 3**
+> Access the directory created when the release was unpacked
+> ```bash
+> cd chapel-1.29.0
+> ```
 
-3) Access the directory created when the release was unpacked
+**Step 4**
+>Configure environment variables. *Please Note: This command assumes the use of `bash` or `zsh`. Please refer to the [Chapel Documentation](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells) if you are using another shell.*
+> ```bash
+> source util/quickstart/setchplenv.bash
+> ```
 
-```bash
-cd chapel-1.29.0
-```
+**Step 5**
+> Update environment variables to the recommended settings. 
+> ```bash
+> brew install llvm@14
+> export CHPL_LLVM=system
+>
+> brew install gmp
+> export CHPL_GMP=system
+> ```
 
-4) Configure environment variables. *Please Note: This command assumes the use of `bash` or `zsh`. Please refer to the [Chapel Documentation](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells) if you are using another shell.*
+> If you choose to use the packages bundled with Chapel, use the following settings.
+> ```bash
+> export CHPL_GMP=bundled
+> export CHPL_LLVM=bundled
+> ```
 
-```bash
-source util/quickstart/setchplenv.bash
-```
+**Step 6**
+> Add the following to your `rc` file.
+> ```bash
+> export CHPL_LLVM=system # set to the same value as in Step 5
+> export CHPL_RE2=bundled
+> export CHPL_GMP=system # set to the same value as CHPL_LLVM
+> ```
 
-5) Update some environment variables to the recommended settings. *If you have not installed LLVM, set `CHPL_LLVM=bundled`. It is recommended to install LLVM using Homebrew, `brew install llvm`.*
+**Step 7**
+> Use GNU make to build Chapel
+> ```bash
+> make
+> ```
 
-6) Add the following to your `rc` file.
-
-```bash
-export CHPL_LLVM=system
-export CHPL_RE2=bundled
-export CHPL_GMP=system # set to the same value as CHPL_LLVM
-```
-
-6) Use GNU make to build Chapel
-
-```bash
-make
-```
-
-7) Ensure that Chapel was built successfully
-
-```bash
-chpl examples/hello3-datapar.chpl
-./hello3-datapar
-```
+**Step 8**
+> Ensure that Chapel was built successfully
+> ```bash
+> chpl examples/hello3-datapar.chpl
+> ./hello3-datapar
+> ```
 
 ### Homebrew
 
