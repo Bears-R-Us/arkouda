@@ -808,10 +808,8 @@ class Categorical:
         file_type: str = "distribute",
     ) -> str:
         """
-        Save the Categorical object to HDF5. The result is a collection of HDF5 files,
-        one file per locale of the arkouda server, where each filename starts
-        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
-        corresponding file.
+        Save the Categorical object to HDF5.
+        The object can be saved to a collection of files or single file.
 
         Parameters
         ----------
@@ -834,18 +832,24 @@ class Categorical:
 
         Raises
         ------
-        ValueError
-            Raised if the lengths of columns and values differ, or the mode is
-            neither 'truncate' nor 'append'
-        TypeError
-            Raised if prefix_path, dataset, or mode is not a str
-
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
         Notes
         -----
-        Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group: one for the string characters and one for the
-        segments corresponding to the start of each string, (2) the hdf5 group is named
-        via the dataset parameter.
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        See Also
+        ---------
+        to_parquet
         """
         result = []
         comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
@@ -878,9 +882,11 @@ class Categorical:
         compression: Optional[str] = None,
     ) -> str:
         """
-        Save the Categorical object to Parquet. The result is a collection of Parquet files,
+        This functionality is currently not supported and will also raise a RuntimeError.
+        Support is in development.
+        Save the Categorical to Parquet. The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+        with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
 
         Parameters
@@ -903,11 +909,24 @@ class Categorical:
 
         Raises
         ------
-        ValueError
-            Raised if the lengths of columns and values differ, or the mode is
-            neither 'truncate' nor 'append'
-        TypeError
-            Raised if prefix_path, dataset, or mode is not a str
+        RuntimeError
+            On run due to compatability issues of Categorical with Parquet.
+        Notes
+        -----
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+        - 'append' write mode is supported, but is not efficient.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        See Also
+        --------
+        to_hdf
         """
         # due to the possibility that components will be different sizes,
         # writing to Parquet is not supported at this time

@@ -1010,6 +1010,10 @@ class SegArray:
         the HDF5 file, not nested under a group.
 
         SegArray is not currently supported by Parquet
+
+        See Also
+        ---------
+        load
         """
         self.segments.to_hdf(
             prefix_path, dataset=dataset + segment_suffix, mode=mode, file_type=file_type
@@ -1027,6 +1031,48 @@ class SegArray:
         mode="truncate",
         file_type="distribute",
     ):
+        """
+        DEPRECATED
+        Save the SegArray to HDF5.
+        The object can be saved to a collection of files or single file.
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', attempt to create new dataset in existing files.
+        file_type: str ("single" | "distribute")
+            Default: "distribute"
+            When set to single, dataset is written to a single file.
+            When distribute, dataset is written on a file per locale.
+            This is only supported by HDF5 files and will have no impact of Parquet Files.
+        Returns
+        -------
+        string message indicating result of save operation
+        Raises
+        -------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        Notes
+        -----
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        See Also
+        --------
+        to_hdf, load
+        """
         from warnings import warn
         warn(
             "ak.SegArray.save has been deprecated. Please use ak.SegArray.to_hdf",

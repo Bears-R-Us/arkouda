@@ -20,7 +20,7 @@ Arkouda Documentation
 
    setup/testing
 
-   FILEIO
+   file_io/io_menu
 
    usage
    examples
