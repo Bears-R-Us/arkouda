@@ -1489,7 +1489,7 @@ class DataFrame(UserDict):
         locale number.
         See Also
         ---------
-        to_hdf, load
+        to_parquet, load
         """
         from arkouda.io import to_hdf
 
