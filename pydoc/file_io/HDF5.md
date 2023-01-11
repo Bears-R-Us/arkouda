@@ -11,7 +11,7 @@ Arkouda supports saving HDF5 files in 2 ways:
 - Single File
   - All data is pulled local to the processing root node and saved into one file
 - Distributed Files (Default)
-  - Each file contains the portion of the data local to the locale where the file is being written are saved. This results in one file per locale.
+  - Each file contains the portion of the data local to the locale where the file is being written. This results in one file per locale.
 
 *It is important to note that the file schemas are the same in both cases.*
 
@@ -122,12 +122,12 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 > When writing to HDF5 in `truncate` mode, any existing HDF5 file with the same name will be overwritten. If no file exists, one will be created. If writing multiple objects, the first is written in `truncate` mode. All subsequent objects will then be appended to the file. The user will be notified of any overwritten files.
 
 **Append**
-> When writting to HDF5 in `append` mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.
+> When writing to HDF5 in `append` mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.
 
 ## Data Distribution
 
 **Single File**
-> If the user elects to write to a single HDF5 file, all data will be pulled to the processing node and saved to ONE file with the supplied file name. It is import to ensure that the object is small enough to prevent memory exhaustion on the node.
+> If the user elects to write to a single HDF5 file, all data will be pulled to the processing node and saved to ONE file with the supplied file name. It is important to ensure that the object is small enough to prevent memory exhaustion on the node.
 
 **Distributed Files**
 > if the user elects to write data to distributed files, data will be written to one file per locale. Each file will contain the data from the object local to the locale of that file. File names will be the name provided by the user with the suffix `_LOCALE####` where `####` will be replaced with the locale number. Because the data is distributed across multiple nodes, there is a much lower risk of memory exhaustion.
