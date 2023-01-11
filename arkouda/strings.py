@@ -357,11 +357,18 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
         )
 
-    # TODO: Store the current encoding for fromEncoding in strings object?
-    def encode(self, toEncoding, fromEncoding="UTF-8"):
+    def encode(self, toEncoding: str, fromEncoding: str ="UTF-8"):
         """
         Return a new strings object in `toEncoding`, expecting that the
         current Strings is encoded in `fromEncoding`
+
+        Parameters
+        ----------
+        toEncoding: str
+            The encoding that the strings will be converted to
+        fromEncoding: str
+            The current encoding of the strings object, default to
+            UTF-8
 
         Returns
         -------
@@ -412,6 +419,14 @@ class Strings:
         Return a new strings object in `fromEncoding`, expecting that the
         current Strings is encoded in `toEncoding`
 
+        Parameters
+        ----------
+        fromEncoding: str
+            The current encoding of the strings object
+        toEncoding: str
+            The encoding that the strings will be converted to,
+            default to UTF-8
+        
         Returns
         -------
         Strings
