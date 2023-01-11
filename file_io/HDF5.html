@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Building the Server" href="BUILD.html" /><link rel="prev" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Parquet" href="PARQUET.html" /><link rel="prev" title="File I/O" href="io_menu.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>MacOS - arkouda documentation</title>
+        <title>HDF5 - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -158,20 +158,20 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="install_menu.html">Installation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="LINUX_INSTALL.html">Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BUILD.html">Building the Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MODULAR.html">Modular Server Builds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/HDF5.html">HDF5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/PARQUET.html">Parquet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="io_menu.html">File I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -267,137 +267,234 @@
           </label>
         </div>
         <article role="main">
-          <section id="macos">
-<h1>MacOS<a class="headerlink" href="#macos" title="Permalink to this heading">#</a></h1>
-<p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually. Both installation methods have variances to account for the chipset being run.</p>
-<section id="install-chapel">
-<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Permalink to this heading">#</a></h2>
-<p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
-<section id="build-from-source-recommended">
-<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Permalink to this heading">#</a></h3>
-<p>For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
-<p><strong>Step 1</strong></p>
+          <section id="hdf5">
+<h1>HDF5<a class="headerlink" href="#hdf5" title="Permalink to this heading">#</a></h1>
+<p>HDF5 is an extremely flexible format. Because of this, it is important to adhere to these specifications in order for a file to be readable by Arkouda.</p>
+<p>More information on HDF5 is available <a class="reference external" href="https://www.hdfgroup.org/solutions/hdf5/">here</a>.</p>
+<section id="file-configuration">
+<h2>File Configuration<a class="headerlink" href="#file-configuration" title="Permalink to this heading">#</a></h2>
+<p>Arkouda supports saving HDF5 files in 2 ways:</p>
+<ul class="simple">
+<li><p>Single File</p>
+<ul>
+<li><p>All data is pulled local to the processing root node and saved into one file</p></li>
+</ul>
+</li>
+<li><p>Distributed Files (Default)</p>
+<ul>
+<li><p>Each file contains the portion of the data local to the locale where the file is being written. This results in one file per locale.</p></li>
+</ul>
+</li>
+</ul>
+<p><em>It is important to note that the file schemas are the same in both cases.</em></p>
+</section>
+<section id="supported-arkouda-data-types">
+<h2>Supported Arkouda Data Types<a class="headerlink" href="#supported-arkouda-data-types" title="Permalink to this heading">#</a></h2>
+<p>While most objects in Arkouda can be saved, there are 3 main datatypes currently supported within HDF5.</p>
+<ul class="simple">
+<li><p>pdarray</p></li>
+<li><p>Strings</p></li>
+<li><p>ArrayView</p></li>
+<li><p>DataFrame</p></li>
+<li><p>Index</p></li>
+<li><p>Categorical</p></li>
+</ul>
+<p>HDF5 is able to contain any number of objects within the same file.</p>
+</section>
+<section id="metadata-attributes">
+<h2>MetaData Attributes<a class="headerlink" href="#metadata-attributes" title="Permalink to this heading">#</a></h2>
+<p>All data within the HDF5 file is expected to contain several attributes that aide in determining the data within the object. These attributes are assigned at the <code class="docutils literal notranslate"><span class="pre">Group</span></code> and <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> levels.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ObjType</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
-<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
+<div><p>Integer representing the type of object stored in the group/dataset. This corresponds to the Chapel <code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">ObjType</span></code>. Required to properly read each object.</p>
+<ul class="simple">
+<li><p>0 = <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code></p></li>
+<li><p>1 = <code class="docutils literal notranslate"><span class="pre">pdarray</span></code></p></li>
+<li><p>2 = <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
+</ul>
 </div></blockquote>
-<p><strong>Step 2</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">isBool</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
-<div><p>Unpack the release</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.29.0.tar.gz
-</pre></div>
-</div>
+<div><p>Integer value (0 or 1) representing a boolean value that indicates if the data stored contains boolean values. This is only required to be set when the dataset contains boolean values.</p>
 </div></blockquote>
-<p><strong>Step 3</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">file_version</span></code>: <code class="docutils literal notranslate"><span class="pre">real(32)</span></code> (Optional)</p>
 <blockquote>
-<div><p>Access the directory created when the release was unpacked</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.29.0
-</pre></div>
-</div>
+<div><p>Real value indicating the formatting version. <code class="docutils literal notranslate"><span class="pre">0.0</span></code> and <code class="docutils literal notranslate"><span class="pre">1.0</span></code> are no longer in use. Should be <code class="docutils literal notranslate"><span class="pre">2.0</span></code>.</p>
 </div></blockquote>
-<p><strong>Step 4</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">arkouda_version</span></code>: <code class="docutils literal notranslate"><span class="pre">c_string</span></code> (Optional)</p>
 <blockquote>
-<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
-</pre></div>
-</div>
+<div><p>String value of the Arkouda version at the time the object was written.</p>
 </div></blockquote>
-<p><strong>Step 5</strong></p>
+<p>The 2 attributes marked <code class="docutils literal notranslate"><span class="pre">Optional</span></code> are not required for data to be read. Thus, if you are reading data into Arkouda from another source, these can be omitted. However, any dataset written out by Arkodua will include this information.</p>
+<p><em>Additional object types are being worked for direct support.</em></p>
+</section>
+<section id="data-schema">
+<h2>Data Schema<a class="headerlink" href="#data-schema" title="Permalink to this heading">#</a></h2>
+<p>This section provides an outline of the expected data schema for each object type. Each example assumes the top level group/dataset is not nested.</p>
+<p>When reading array values, the data type of the values is automatically detected and is therefore not required to be included in the metadata.</p>
+<section id="arrayview">
+<h3>ArrayView<a class="headerlink" href="#arrayview" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> objects require additional attributes to be read properly.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Rank</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
-<div><p>Update environment variables to the recommended settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@14
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
-
-brew<span class="w"> </span>install<span class="w"> </span>gmp
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
-</pre></div>
-</div>
+<div><p>Integer representing the number of dimensions in the dataset. This should be stored as the rank of the <em>unflattened</em> data, even when storing as a flattened array.</p>
 </div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">Shape</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">array</span></code></p>
 <blockquote>
-<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-</pre></div>
-</div>
+<div><p>Integer array storing the size of each dimension. The array should be of length equal to the <code class="docutils literal notranslate"><span class="pre">Rank</span></code>.</p>
 </div></blockquote>
-<p><strong>Step 6</strong></p>
+<p>Providing these attributes allows for the ArrayView object to be reconstructed from its values.</p>
 <blockquote>
-<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in Step 5</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as CHPL_LLVM</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 7</strong></p>
-<blockquote>
-<div><p>Use GNU make to build Chapel</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 8</strong></p>
-<blockquote>
-<div><p>Ensure that Chapel was built successfully</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
-./hello3-datapar
-</pre></div>
-</div>
+<div><ol class="arabic simple">
+<li><p>Dataset (will have a user provided name. Defaults to ‘ArrayView’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 0</p></li>
+<li><p>isBool: 0 or 1</p></li>
+<li><p>Rank: <code class="docutils literal notranslate"><span class="pre">number_of_dimensions</span></code></p></li>
+<li><p>Shape: <code class="docutils literal notranslate"><span class="pre">array_of_size_rank</span></code></p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - values of the ArrayView.</p></li>
+</ol>
+</li>
+</ol>
 </div></blockquote>
 </section>
-<section id="homebrew">
-<h3>Homebrew<a class="headerlink" href="#homebrew" title="Permalink to this heading">#</a></h3>
-<p>Chapel and all supporting dependencies will be installed.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
-</pre></div>
-</div>
+<section id="pdarray">
+<h3>pdarray<a class="headerlink" href="#pdarray" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Dataset (will have a user provided name. Defaults to ‘array’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0 or 1</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - values of the pdarray.</p></li>
+</ol>
+</li>
+</ol>
+</div></blockquote>
+</section>
+<section id="strings">
+<h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects are stored within an HDF5 group. This group contains datasets storing the values and segments separately.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Group (user provided dataset name. Defaults to ‘strings_array’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 2</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Dataset - Values (user provided dataset name with <code class="docutils literal notranslate"><span class="pre">_values</span></code> appended)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0 or 1</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - uint8 values representing our string values. Includes null byte termination.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Offsets (user provided dataset name with <code class="docutils literal notranslate"><span class="pre">_segments</span></code> appended) (Optional)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing in start index of each string value.</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</div></blockquote>
+<p><em>Please Note - The offsets dataset is note required but can be provided. Strings uses null byte termination and is able to calculate the offsets of its components during reads.</em></p>
 </section>
 </section>
-<section id="python-environment-anaconda">
-<h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Permalink to this heading">#</a></h2>
-<p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers. The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Works with all Chipsets (including Apple Silicon)</span>
-brew<span class="w"> </span>install<span class="w"> </span>miniforge
-<span class="c1">#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths</span>
-
-<span class="c1">#works with only x86 Architecture (excludes Apple Silicon)</span>
-brew<span class="w"> </span>install<span class="w"> </span>anaconda3
-<span class="c1">#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths</span>
-
-<span class="c1"># User conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda
-
-<span class="c1"># Developer conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
-
-<span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda<span class="w"> </span>install<span class="w"> </span>jupyter
-
-<span class="c1"># Install the Arkouda Client Package</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
-</pre></div>
-</div>
+<section id="supported-write-modes">
+<h2>Supported Write Modes<a class="headerlink" href="#supported-write-modes" title="Permalink to this heading">#</a></h2>
+<p><strong>Truncate</strong></p>
+<blockquote>
+<div><p>When writing to HDF5 in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode, any existing HDF5 file with the same name will be overwritten. If no file exists, one will be created. If writing multiple objects, the first is written in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode. All subsequent objects will then be appended to the file. The user will be notified of any overwritten files.</p>
+</div></blockquote>
+<p><strong>Append</strong></p>
+<blockquote>
+<div><p>When writing to HDF5 in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.</p>
+</div></blockquote>
 </section>
-<section id="updating-environment">
-<h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Permalink to this heading">#</a></h2>
-<p>As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool.</p>
-<section id="anaconda">
-<h3>Anaconda<a class="headerlink" href="#anaconda" title="Permalink to this heading">#</a></h3>
-<p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># developer environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda-dev<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
-
-<span class="c1"># user environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-</pre></div>
-</div>
+<section id="data-distribution">
+<h2>Data Distribution<a class="headerlink" href="#data-distribution" title="Permalink to this heading">#</a></h2>
+<p><strong>Single File</strong></p>
+<blockquote>
+<div><p>If the user elects to write to a single HDF5 file, all data will be pulled to the processing node and saved to ONE file with the supplied file name. It is important to ensure that the object is small enough to prevent memory exhaustion on the node.</p>
+</div></blockquote>
+<p><strong>Distributed Files</strong></p>
+<blockquote>
+<div><p>if the user elects to write data to distributed files, data will be written to one file per locale. Each file will contain the data from the object local to the locale of that file. File names will be the name provided by the user with the suffix <code class="docutils literal notranslate"><span class="pre">_LOCALE####</span></code> where <code class="docutils literal notranslate"><span class="pre">####</span></code> will be replaced with the locale number. Because the data is distributed across multiple nodes, there is a much lower risk of memory exhaustion.</p>
+</div></blockquote>
 </section>
+<section id="legacy-file-support">
+<h2>Legacy File Support<a class="headerlink" href="#legacy-file-support" title="Permalink to this heading">#</a></h2>
+<p>Older version of Arkouda used different schemas for <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects (<code class="docutils literal notranslate"><span class="pre">ArrayView</span></code> was not supported). This format does not include the explicit <code class="docutils literal notranslate"><span class="pre">ObjType</span></code> attribute and requires the type to be inferred during processing. Reading these files is still supported by Arkouda. When the data type is <code class="docutils literal notranslate"><span class="pre">uint8</span></code> and the object with the name <code class="docutils literal notranslate"><span class="pre">dataset</span></code> (user supplied dataset name) is a group containing a dataset name <code class="docutils literal notranslate"><span class="pre">values</span></code> the object is assumed to be of object type Strings.</p>
 </section>
-<section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
-<p>Now that you have Arkouda and its dependencies installed on your machine, you will need to be sure to have the appropriate environment variables configured. A complete list can be found at <span class="xref myst">ENVIRONMENT.md</span>.</p>
-<p>Once your environment variables are configured, you are ready to build the server. More information on the build process can be found at <a class="reference internal" href="BUILD.html"><span class="doc std std-doc">BUILD.md</span></a></p>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<section id="id1">
+<h3>pdarray<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id930" title="arkouda.pdarray.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id931" title="arkouda.pdarray.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.save()</span></code></a></p></li>
+</ul>
+</section>
+<section id="index">
+<h3>Index<a class="headerlink" href="#index" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.to_hdf" title="arkouda.Index.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.save" title="arkouda.Index.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.save()</span></code></a></p></li>
+</ul>
+</section>
+<section id="dataframe">
+<h3>DataFrame<a class="headerlink" href="#dataframe" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.to_hdf" title="arkouda.DataFrame.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.save" title="arkouda.DataFrame.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.save()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.load" title="arkouda.DataFrame.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.load()</span></code></a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Strings<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_hdf()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.save()</span></code></p></li>
+</ul>
+</section>
+<section id="categorical">
+<h3>Categorical<a class="headerlink" href="#categorical" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id986" title="arkouda.Categorical.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id988" title="arkouda.Categorical.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.save()</span></code></a></p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -406,23 +503,23 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="BUILD.html">
+          <a class="next-page" href="PARQUET.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Building the Server</div>
+                <div class="title">Parquet</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="WINDOWS_INSTALL.html">
+          <a class="prev-page" href="io_menu.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Windows (WSL2)</div>
+                <div class="title">File I/O</div>
                 
               </div>
             </a>
@@ -456,18 +553,27 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">MacOS</a><ul>
-<li><a class="reference internal" href="#install-chapel">Install Chapel</a><ul>
-<li><a class="reference internal" href="#build-from-source-recommended">Build from Source (Recommended)</a></li>
-<li><a class="reference internal" href="#homebrew">Homebrew</a></li>
+<li><a class="reference internal" href="#">HDF5</a><ul>
+<li><a class="reference internal" href="#file-configuration">File Configuration</a></li>
+<li><a class="reference internal" href="#supported-arkouda-data-types">Supported Arkouda Data Types</a></li>
+<li><a class="reference internal" href="#metadata-attributes">MetaData Attributes</a></li>
+<li><a class="reference internal" href="#data-schema">Data Schema</a><ul>
+<li><a class="reference internal" href="#arrayview">ArrayView</a></li>
+<li><a class="reference internal" href="#pdarray">pdarray</a></li>
+<li><a class="reference internal" href="#strings">Strings</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#python-environment-anaconda">Python Environment - Anaconda</a></li>
-<li><a class="reference internal" href="#updating-environment">Updating Environment</a><ul>
-<li><a class="reference internal" href="#anaconda">Anaconda</a></li>
+<li><a class="reference internal" href="#supported-write-modes">Supported Write Modes</a></li>
+<li><a class="reference internal" href="#data-distribution">Data Distribution</a></li>
+<li><a class="reference internal" href="#legacy-file-support">Legacy File Support</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#id1">pdarray</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+<li><a class="reference internal" href="#dataframe">DataFrame</a></li>
+<li><a class="reference internal" href="#id2">Strings</a></li>
+<li><a class="reference internal" href="#categorical">Categorical</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
 </ul>

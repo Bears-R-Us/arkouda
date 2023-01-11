@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Startup" href="usage/startup.html" /><link rel="prev" title="File I/O" href="FILEIO.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Startup" href="usage/startup.html" /><link rel="prev" title="Import/Export" href="file_io/IMPORT_EXPORT.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Usage - arkouda documentation</title>
@@ -168,12 +168,16 @@
 <li class="toctree-l1"><a class="reference internal" href="setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="FILEIO.html">File I/O</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/IO.html">Data I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/indexing.html">Indexing and Assignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/histogram.html">Summarizing Data</a></li>
@@ -188,8 +192,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/arkouda/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/arkouda/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
@@ -339,55 +343,6 @@
 <li class="toctree-l3"><a class="reference internal" href="usage/creation.html#arkouda.linspace">linspace</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/creation.html#arkouda.randint">randint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/creation.html#arkouda.concatenate">concatenate</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage/IO.html">Data I/O</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage/IO.html#between-client-and-server">Between client and server</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.array"><code class="docutils literal notranslate"><span class="pre">array()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.pdarray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.Strings.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/IO.html#large-datasets">Large Datasets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#supported-file-formats">Supported File Formats</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#data-preprocessing">Data Preprocessing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#reading-data-from-disk">Reading data from disk</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.get_datasets"><code class="docutils literal notranslate"><span class="pre">get_datasets()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#persisting-pdarray-data-to-disk">Persisting <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data to disk</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.pdarray.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.save_all"><code class="docutils literal notranslate"><span class="pre">save_all()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#loading-persisted-arrays-from-disk">Loading persisted arrays from disk</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.load_all"><code class="docutils literal notranslate"><span class="pre">load_all()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#persisting-dataframe-data-to-disk">Persisting <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> data to disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#loading-persisted-dataframe-data-from-disk">Loading persisted DataFrame data from disk</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.read">read</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.get_datasets">get_datasets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.pdarray.save">save</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.save_all">save_all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.load">load</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/IO.html#arkouda.load_all">load_all</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/IO.html#import-export">Import/Export</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.import_data"><code class="docutils literal notranslate"><span class="pre">import_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.array">array</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.pdarray.to_ndarray">to_ndarray</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.Strings.to_ndarray">to_ndarray</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.import_data">import_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/IO.html#arkouda.export">export</a></li>
 </ul>
 </li>
 </ul>
@@ -860,14 +815,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="FILEIO.html">
+          <a class="prev-page" href="file_io/IMPORT_EXPORT.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">File I/O</div>
+                <div class="title">Import/Export</div>
                 
               </div>
             </a>

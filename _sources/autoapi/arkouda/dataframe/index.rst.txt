@@ -478,11 +478,17 @@ Functions
                         Whether to save to a single file or distribute across Locales
       :type file_type: str (single | distribute)
 
+      :rtype: None
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
       .. rubric:: Notes
 
       This method saves one file per locale of the arkouda server. All
       files are prefixed by the path argument and suffixed by their
       locale number.
+
+      .. seealso:: :obj:`to_parquet`, :obj:`load`
 
 
    .. py:method:: to_parquet(path, index=False, columns=None, compression: Optional[str] = None)
@@ -500,11 +506,17 @@ Functions
                           Supported values: snappy, gzip, brotli, zstd, lz4
       :type compression: str (Optional)
 
+      :rtype: None
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+
       .. rubric:: Notes
 
       This method saves one file per locale of the arkouda server. All
       files are prefixed by the path argument and suffixed by their
       locale number.
+
+      .. seealso:: :obj:`to_hdf`, :obj:`load`
 
 
    .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Building the Server" href="BUILD.html" /><link rel="prev" title="Windows (WSL2)" href="WINDOWS_INSTALL.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Import/Export" href="IMPORT_EXPORT.html" /><link rel="prev" title="HDF5" href="HDF5.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>MacOS - arkouda documentation</title>
+        <title>Parquet - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -158,20 +158,20 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="install_menu.html">Installation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="LINUX_INSTALL.html">Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BUILD.html">Building the Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MODULAR.html">Modular Server Builds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/HDF5.html">HDF5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/PARQUET.html">Parquet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="io_menu.html">File I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="HDF5.html">HDF5</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -267,137 +267,79 @@
           </label>
         </div>
         <article role="main">
-          <section id="macos">
-<h1>MacOS<a class="headerlink" href="#macos" title="Permalink to this heading">#</a></h1>
-<p>Prerequisites for Arkouda can be installed using <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code> or manually. Both installation methods have variances to account for the chipset being run.</p>
-<section id="install-chapel">
-<h2>Install Chapel<a class="headerlink" href="#install-chapel" title="Permalink to this heading">#</a></h2>
-<p>It is recommended to compile Chapel from source. Alternatively, it can be installed via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>.</p>
-<section id="build-from-source-recommended">
-<h3>Build from Source (Recommended)<a class="headerlink" href="#build-from-source-recommended" title="Permalink to this heading">#</a></h3>
-<p>For convenience, the steps to install Chapel from source are detailed here. If you need more information, please visit the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a>.</p>
-<p><strong>Step 1</strong></p>
+          <section id="parquet">
+<h1>Parquet<a class="headerlink" href="#parquet" title="Permalink to this heading">#</a></h1>
+<p>Parquet is a column-oriented file format that provides more structure than HDF5. While this is extremely beneficial, it does have some limitations within Arkouda at this time due to the requirement that columns have equal sizes.</p>
+<p><em>We are currently working on providing functionality that eliminates these limitations in order to support more data types being saved to Parquet.</em></p>
+<p>More information on Parquet can be found <a class="reference external" href="https://parquet.apache.org/">here</a>.</p>
+<section id="supported-arkouda-data-types">
+<h2>Supported Arkouda Data Types<a class="headerlink" href="#supported-arkouda-data-types" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>pdarray</p></li>
+<li><p>Index</p></li>
+<li><p>DataFrame</p></li>
+<li><p>Strings</p></li>
+</ul>
+</section>
+<section id="compression">
+<h2>Compression<a class="headerlink" href="#compression" title="Permalink to this heading">#</a></h2>
+<p>Parquet supports 5 compression types:</p>
+<ul class="simple">
+<li><p>Snappy</p></li>
+<li><p>GZip</p></li>
+<li><p>Brotli</p></li>
+<li><p>ZSTD</p></li>
+<li><p>LZ4</p></li>
+</ul>
+<p>Data can also be saved using no compression. Arkouda now supports writting Parquet files with all compression types supported by Parquet.</p>
+</section>
+<section id="supported-write-modes">
+<h2>Supported Write Modes<a class="headerlink" href="#supported-write-modes" title="Permalink to this heading">#</a></h2>
+<p><strong>Truncate</strong></p>
 <blockquote>
-<div><p>Download the current version of Chapel from <a class="reference external" href="https://chapel-lang.org/download.html">here</a>.</p>
+<div><p>When writing to Parquet in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode, any existing HDF5 file with the same name will be overwritten. If no file exists, one will be created. If writing multiple objects, all corresponding columns will be written to the Paruqet file at once.</p>
 </div></blockquote>
-<p><strong>Step 2</strong></p>
+<p><strong>Append</strong></p>
 <blockquote>
-<div><p>Unpack the release</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>chapel-1.29.0.tar.gz
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 3</strong></p>
-<blockquote>
-<div><p>Access the directory created when the release was unpacked</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>chapel-1.29.0
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 4</strong></p>
-<blockquote>
-<div><p>Configure environment variables. <em>Please Note: This command assumes the use of <code class="docutils literal notranslate"><span class="pre">bash</span></code> or <code class="docutils literal notranslate"><span class="pre">zsh</span></code>. Please refer to the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells">Chapel Documentation</a> if you are using another shell.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>util/quickstart/setchplenv.bash
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 5</strong></p>
-<blockquote>
-<div><p>Update environment variables to the recommended settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>llvm@14
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system
-
-brew<span class="w"> </span>install<span class="w"> </span>gmp
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
-</pre></div>
-</div>
-</div></blockquote>
-<blockquote>
-<div><p>If you choose to use the packages bundled with Chapel, use the following settings.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>bundled
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 6</strong></p>
-<blockquote>
-<div><p>Add the following to your <code class="docutils literal notranslate"><span class="pre">rc</span></code> file.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_LLVM</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as in Step 5</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RE2</span><span class="o">=</span>bundled
-<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system<span class="w"> </span><span class="c1"># set to the same value as CHPL_LLVM</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 7</strong></p>
-<blockquote>
-<div><p>Use GNU make to build Chapel</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
-</pre></div>
-</div>
-</div></blockquote>
-<p><strong>Step 8</strong></p>
-<blockquote>
-<div><p>Ensure that Chapel was built successfully</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chpl<span class="w"> </span>examples/hello3-datapar.chpl
-./hello3-datapar
-</pre></div>
-</div>
+<div><p>When writting to Parquet in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.
+<em>Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call <code class="docutils literal notranslate"><span class="pre">arkouda.io.to_parquet</span></code> on the output with the additional columns added and then writting in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode.</em></p>
 </div></blockquote>
 </section>
-<section id="homebrew">
-<h3>Homebrew<a class="headerlink" href="#homebrew" title="Permalink to this heading">#</a></h3>
-<p>Chapel and all supporting dependencies will be installed.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>chapel
-</pre></div>
-</div>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<section id="pdarray">
+<h3>pdarray<a class="headerlink" href="#pdarray" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id929" title="arkouda.pdarray.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_parquet()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id931" title="arkouda.pdarray.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.save()</span></code></a></p></li>
+</ul>
 </section>
+<section id="index">
+<h3>Index<a class="headerlink" href="#index" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.to_parquet" title="arkouda.Index.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.to_parquet()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.save" title="arkouda.Index.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.save()</span></code></a></p></li>
+</ul>
 </section>
-<section id="python-environment-anaconda">
-<h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Permalink to this heading">#</a></h2>
-<p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers. The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Works with all Chipsets (including Apple Silicon)</span>
-brew<span class="w"> </span>install<span class="w"> </span>miniforge
-<span class="c1">#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths</span>
-
-<span class="c1">#works with only x86 Architecture (excludes Apple Silicon)</span>
-brew<span class="w"> </span>install<span class="w"> </span>anaconda3
-<span class="c1">#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths</span>
-
-<span class="c1"># User conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda
-
-<span class="c1"># Developer conda env</span>
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
-conda<span class="w"> </span>activate<span class="w"> </span>arkouda-dev
-
-<span class="c1">#These packages are not required, but nice to have (these are included with Anaconda3)</span>
-conda<span class="w"> </span>install<span class="w"> </span>jupyter
-
-<span class="c1"># Install the Arkouda Client Package</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w"> </span>--no-deps
-</pre></div>
-</div>
+<section id="dataframe">
+<h3>DataFrame<a class="headerlink" href="#dataframe" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.to_parquet" title="arkouda.DataFrame.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.to_parquet()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.save" title="arkouda.DataFrame.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.save()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.load" title="arkouda.DataFrame.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.load()</span></code></a></p></li>
+</ul>
 </section>
-<section id="updating-environment">
-<h2>Updating Environment<a class="headerlink" href="#updating-environment" title="Permalink to this heading">#</a></h2>
-<p>As Arkouda progresses through its life-cycle, dependencies may change. As a result, it is recommended that you keep your development environment in sync with the latest dependencies. The instructions vary depending upon you preferred environment management tool.</p>
-<section id="anaconda">
-<h3>Anaconda<a class="headerlink" href="#anaconda" title="Permalink to this heading">#</a></h3>
-<p><em>If you provided a different name when creating the environment, replace <code class="docutils literal notranslate"><span class="pre">arkouda-dev</span></code> or <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> with the name of your Conda environment.</em></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># developer environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda-dev<span class="w"> </span>-f<span class="w"> </span>arkouda-env-dev.yml
-
-<span class="c1"># user environment update</span>
-conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>arkouda<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
-</pre></div>
-</div>
+<section id="strings">
+<h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_parquet()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.save()</span></code></p></li>
+</ul>
 </section>
+<section id="categorical">
+<h3>Categorical<a class="headerlink" href="#categorical" title="Permalink to this heading">#</a></h3>
+<p>Categorical objects cannot currently be written to Parquet Files. This is due to the fact that the components of Categoricals can have different sizes.</p>
 </section>
-<section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
-<p>Now that you have Arkouda and its dependencies installed on your machine, you will need to be sure to have the appropriate environment variables configured. A complete list can be found at <span class="xref myst">ENVIRONMENT.md</span>.</p>
-<p>Once your environment variables are configured, you are ready to build the server. More information on the build process can be found at <a class="reference internal" href="BUILD.html"><span class="doc std std-doc">BUILD.md</span></a></p>
 </section>
 </section>
 
@@ -406,23 +348,23 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="BUILD.html">
+          <a class="next-page" href="IMPORT_EXPORT.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Building the Server</div>
+                <div class="title">Import/Export</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="WINDOWS_INSTALL.html">
+          <a class="prev-page" href="HDF5.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Windows (WSL2)</div>
+                <div class="title">HDF5</div>
                 
               </div>
             </a>
@@ -456,18 +398,18 @@ conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> <
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">MacOS</a><ul>
-<li><a class="reference internal" href="#install-chapel">Install Chapel</a><ul>
-<li><a class="reference internal" href="#build-from-source-recommended">Build from Source (Recommended)</a></li>
-<li><a class="reference internal" href="#homebrew">Homebrew</a></li>
+<li><a class="reference internal" href="#">Parquet</a><ul>
+<li><a class="reference internal" href="#supported-arkouda-data-types">Supported Arkouda Data Types</a></li>
+<li><a class="reference internal" href="#compression">Compression</a></li>
+<li><a class="reference internal" href="#supported-write-modes">Supported Write Modes</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#pdarray">pdarray</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+<li><a class="reference internal" href="#dataframe">DataFrame</a></li>
+<li><a class="reference internal" href="#strings">Strings</a></li>
+<li><a class="reference internal" href="#categorical">Categorical</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#python-environment-anaconda">Python Environment - Anaconda</a></li>
-<li><a class="reference internal" href="#updating-environment">Updating Environment</a><ul>
-<li><a class="reference internal" href="#anaconda">Anaconda</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
 </ul>

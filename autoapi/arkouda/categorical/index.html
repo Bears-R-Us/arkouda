@@ -168,12 +168,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../FILEIO.html">File I/O</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/IO.html">Data I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
@@ -188,8 +192,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
@@ -288,7 +292,7 @@ work in initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – String values to convert to categories</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -299,7 +303,7 @@ work in initialization.</p>
 <dd><p>The set of category labels (determined automatically)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id861" title="arkouda.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,7 +425,7 @@ time. If not, please use the normal constructor.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codes</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – Category indices of each value</p></li>
-<li><p><strong>categories</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
+<li><p><strong>categories</strong> (<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – Unique category labels</p></li>
 <li><p><strong>permutation</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The permutation that groups the values in the same order
 as categories</p></li>
 <li><p><strong>segments</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – When values are grouped, the starting offset of each group</p></li>
@@ -467,7 +471,7 @@ categories is not a Strings object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>new_categories</strong> (<a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
+<li><p><strong>new_categories</strong> (<a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
 <li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
@@ -771,7 +775,7 @@ also present in the test Strings or Categorical object.</p>
 where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#id861" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
@@ -888,10 +892,8 @@ results in non-deterministic ordering of elements.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.to_hdf">
 <span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.to_hdf" title="Permalink to this definition">#</a></dt>
-<dd><p>Save the Categorical object to HDF5. The result is a collection of HDF5 files,
-one file per locale of the arkouda server, where each filename starts
-with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
-corresponding file.</p>
+<dd><p>Save the Categorical object to HDF5.
+The object can be saved to a collection of files or single file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -909,26 +911,37 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 <dd class="field-even"><p>String message indicating result of save operation</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
-neither ‘truncate’ nor ‘append’</p></li>
-<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
-</ul>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Important implementation notes: (1) Strings state is saved as two datasets
-within an hdf5 group: one for the string characters and one for the
-segments corresponding to the start of each string, (2) the hdf5 group is named
-via the dataset parameter.</p>
+<ul class="simple">
+<li><p>The prefix_path must be visible to the arkouda server and the user must</p></li>
+</ul>
+<p>have write permission.
+- Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> for <cite>file_type=’distribute’</cite>. Otherwise,
+the file name will be <cite>prefix_path</cite>.
+- If any of the output files already exist and
+the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
+and the number of output files is less than the number of locales or a
+dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
+- Any file extension can be used.The file I/O does not rely on the extension to
+determine the file format.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.to_parquet" title="arkouda.categorical.Categorical.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.to_parquet">
 <span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.to_parquet" title="Permalink to this definition">#</a></dt>
-<dd><p>Save the Categorical object to Parquet. The result is a collection of Parquet files,
+<dd><p>This functionality is currently not supported and will also raise a RuntimeError.
+Support is in development.
+Save the Categorical to Parquet. The result is a collection of files,
 one file per locale of the arkouda server, where each filename starts
-with prefix_path and dataset. Each locale saves its chunk of the Categorical to its
+with prefix_path. Each locale saves its chunk of the array to its
 corresponding file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -946,13 +959,27 @@ Supported values: snappy, gzip, brotli, zstd, lz4</p></li>
 <dd class="field-even"><p>String message indicating result of save operation</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
-neither ‘truncate’ nor ‘append’</p></li>
-<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
-</ul>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – On run due to compatability issues of Categorical with Parquet.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The prefix_path must be visible to the arkouda server and the user must</p></li>
+</ul>
+<p>have write permission.
+- Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code> for <cite>file_type=’distribute’</cite>.
+- ‘append’ write mode is supported, but is not efficient.
+- If any of the output files already exist and
+the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
+and the number of output files is less than the number of locales or a
+dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.
+- Any file extension can be used.The file I/O does not rely on the extension to
+determine the file format.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.to_hdf" title="arkouda.categorical.Categorical.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1028,7 +1055,7 @@ Please note you cannot register two different Categoricals with the same name.</
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id445" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1048,7 +1075,7 @@ they are unregistered.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id445" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1075,7 +1102,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>numpy.bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id445" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1195,7 +1222,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id445" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>

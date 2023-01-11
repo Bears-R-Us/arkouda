@@ -168,12 +168,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../FILEIO.html">File I/O</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/IO.html">Data I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
@@ -188,8 +192,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
@@ -716,13 +720,16 @@ Supported values: snappy, gzip, brotli, zstd, lz4</p></li>
 <dd class="field-even"><p>None</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
-is not ‘truncate’ or ‘append’</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
+is not ‘truncate’ or ‘append’</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.io.to_hdf" title="arkouda.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.io.load" title="arkouda.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Creates one file per locale containing that locale’s chunk of each pdarray.
@@ -768,13 +775,16 @@ Distribute writes the dataset to a file per locale</p></li>
 <dd class="field-even"><p>None</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
-is not ‘truncate’ or ‘append’</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
+is not ‘truncate’ or ‘append’</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+</ul>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.io.to_parquet" title="arkouda.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>, <a class="reference internal" href="#arkouda.io.load" title="arkouda.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Creates one file per locale containing that locale’s chunk of each pdarray.
@@ -878,7 +888,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 <dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id861" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -892,7 +902,7 @@ one or more of them</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.io.to_parquet" title="arkouda.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>, <a class="reference internal" href="#arkouda.io.to_hdf" title="arkouda.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.io.load_all" title="arkouda.io.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
@@ -947,7 +957,7 @@ one or more of them</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.io.save_all" title="arkouda.io.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>, <a class="reference internal" href="#arkouda.io.load" title="arkouda.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.io.to_parquet" title="arkouda.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>, <a class="reference internal" href="#arkouda.io.to_hdf" title="arkouda.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>, <a class="reference internal" href="#arkouda.io.load" title="arkouda.io.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>This function has been updated to determine the file extension based on the file format variable</p>
@@ -993,7 +1003,7 @@ In the future this option may be set to True as the default.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.io.read" title="arkouda.io.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>, <a class="reference internal" href="#arkouda.io.get_datasets" title="arkouda.io.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.io.ls" title="arkouda.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="#arkouda.io.read_parquet" title="arkouda.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>, <a class="reference internal" href="#arkouda.io.read_hdf" title="arkouda.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.io.get_datasets" title="arkouda.io.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.io.ls" title="arkouda.io.ls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls</span></code></a>, <a class="reference internal" href="#arkouda.io.read_parquet" title="arkouda.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>, <a class="reference internal" href="#arkouda.io.read_hdf" title="arkouda.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>If filenames is a string, it is interpreted as a shell expression

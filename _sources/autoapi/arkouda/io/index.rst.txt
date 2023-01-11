@@ -349,8 +349,9 @@ Functions
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'
+   :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
-   .. seealso:: :obj:`save`, :obj:`load_all`
+   .. seealso:: :obj:`to_hdf`, :obj:`load`, :obj:`load_all`, :obj:`read`
 
    .. rubric:: Notes
 
@@ -396,8 +397,9 @@ Functions
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'
+   :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
 
-   .. seealso:: :obj:`save`, :obj:`load_all`
+   .. seealso:: :obj:`to_parquet`, :obj:`load`, :obj:`load_all`, :obj:`read`
 
    .. rubric:: Notes
 
@@ -497,7 +499,7 @@ Functions
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read`
+   .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`, :obj:`load_all`, :obj:`read`
 
    .. rubric:: Notes
 
@@ -542,7 +544,7 @@ Functions
    :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
        one or more of them
 
-   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`
+   .. seealso:: :obj:`to_parquet`, :obj:`to_hdf`, :obj:`load`, :obj:`read`
 
    .. rubric:: Notes
 
@@ -584,7 +586,7 @@ Functions
 
    :raises RuntimeError: If invalid filetype is detected
 
-   .. seealso:: :obj:`read`, :obj:`get_datasets`, :obj:`ls`, :obj:`read_parquet`, :obj:`read_hdf`
+   .. seealso:: :obj:`get_datasets`, :obj:`ls`, :obj:`read_parquet`, :obj:`read_hdf`
 
    .. rubric:: Notes
 
