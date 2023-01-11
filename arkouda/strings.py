@@ -1884,36 +1884,42 @@ class Strings:
         compression: Optional[str] = None,
     ) -> str:
         """
-        Save the Strings object to Parquet. The result is a collection of Parquet files,
+        Save the Strings object to Parquet. The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the Strings array to its
+        with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
-
         Parameters
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
-            The name of the Strings dataset to be written, defaults to strings_array
+            Name of the dataset to create in files (must not already exist)
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            If 'append', create a new Strings dataset within existing files.
+            If 'append', attempt to create new dataset in existing files.
         compression : str (Optional)
-            Default None
-            Provide the compression type to use when writing the file.
-            Supported values: snappy, gzip, brotli, zstd, lz4
-
+            (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+            Sets the compression type used with Parquet files
         Returns
         -------
-        String message indicating result of save operation
-
+        string message indicating result of save operation
         Raises
         ------
-        ValueError
-            Raised if the lengths of columns and values differ, or the mode is
-            neither 'truncate' nor 'append'
-        TypeError
-            Raised if prefix_path, dataset, or mode is not a str
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        Notes
+        -----
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+        - 'append' write mode is supported, but is not efficient.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
         """
         from arkouda.io import mode_str_to_int
 
@@ -1941,10 +1947,8 @@ class Strings:
         file_type: str = "distribute",
     ) -> str:
         """
-        Save the Strings object to HDF5. The result is a collection of HDF5 files,
-        one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the Strings array to its
-        corresponding file.
+        Save the Strings object to HDF5.
+        The object can be saved to a collection of files or single file.
 
         Parameters
         ----------
@@ -1970,11 +1974,29 @@ class Strings:
 
         Raises
         ------
-        ValueError
-            Raised if the lengths of columns and values differ, or the mode is
-            neither 'truncate' nor 'append'
-        TypeError
-            Raised if prefix_path, dataset, or mode is not a str
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        Notes
+        -----
+        - Parquet files do not store the segments, only the values.
+        - Strings state is saved as two datasets within an hdf5 group:
+        one for the string characters and one for the
+        segments corresponding to the start of each string
+        - the hdf5 group is named via the dataset parameter.
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        See Also
+        ---------
+        to_hdf
         """
         from arkouda.io import file_type_to_int, mode_str_to_int
 
@@ -2008,9 +2030,10 @@ class Strings:
     ) -> str:
         """
         DEPRECATED
-        Save the Strings object to HDF5 or Parquet. The result is a collection of
-        files, one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the Strings array to its
+        Save the Strings object to HDF5 or Parquet. The result is a collection of files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. HDF5 support single files, in which case the file name will
+        only be that provided. Each locale saves its chunk of the array to its
         corresponding file.
         Parameters
         ----------
@@ -2044,7 +2067,8 @@ class Strings:
         Important implementation notes: (1) Strings state is saved as two datasets
         within an hdf5 group: one for the string characters and one for the
         segments corresponding to the start of each string, (2) the hdf5 group is named
-        via the dataset parameter.
+        via the dataset parameter. (3) Parquet files do not store the segments,
+        only the values.
         """
         from warnings import warn
 

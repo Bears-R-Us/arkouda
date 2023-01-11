@@ -837,10 +837,12 @@ def to_parquet(
     ValueError
         Raised if (1) the lengths of columns and values differ or (2) the mode
         is not 'truncate' or 'append'
+    RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
 
     See Also
     --------
-    save, load_all
+    to_hdf, load, load_all, read
 
     Notes
     -----
@@ -931,10 +933,12 @@ def to_hdf(
     ValueError
         Raised if (1) the lengths of columns and values differ or (2) the mode
         is not 'truncate' or 'append'
+    RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
 
     See Also
     --------
-    save, load_all
+    to_parquet, load, load_all, read
 
     Notes
     -----
@@ -1095,7 +1099,7 @@ def load(
 
     See Also
     --------
-    save, load_all, read
+    to_parquet, to_hdf, load_all, read
 
     Notes
     -----
@@ -1172,7 +1176,7 @@ def load_all(
 
     See Also
     --------
-    save_all, load, read
+    to_parquet, to_hdf, load, read
 
     Notes
     _____
@@ -1273,7 +1277,7 @@ def read(
 
     See Also
     --------
-    read, get_datasets, ls, read_parquet, read_hdf
+    get_datasets, ls, read_parquet, read_hdf
 
     Notes
     -----

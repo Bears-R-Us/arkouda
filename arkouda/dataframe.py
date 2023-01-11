@@ -1475,12 +1475,21 @@ class DataFrame(UserDict):
         file_type: str (single | distribute)
             Default: distribute
             Whether to save to a single file or distribute across Locales
-
+        Returns
+        -------
+        None
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
         Notes
         -----
         This method saves one file per locale of the arkouda server. All
         files are prefixed by the path argument and suffixed by their
         locale number.
+        See Also
+        ---------
+        to_hdf, load
         """
         from arkouda.io import to_hdf
 
@@ -1503,12 +1512,21 @@ class DataFrame(UserDict):
             Default None
             Provide the compression type to use when writing the file.
             Supported values: snappy, gzip, brotli, zstd, lz4
-
+        Returns
+        -------
+        None
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
         Notes
         -----
         This method saves one file per locale of the arkouda server. All
         files are prefixed by the path argument and suffixed by their
         locale number.
+        See Also
+        ---------
+        to_hdf, load
         """
         from arkouda.io import to_parquet
 
