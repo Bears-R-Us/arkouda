@@ -4,7 +4,7 @@ import unittest
 
 from context import arkouda as ak
 
-from util.test.util import (
+from server_util.test.server_test_util import (
     TestRunningMode,
     get_arkouda_numlocales,
     start_arkouda_server,

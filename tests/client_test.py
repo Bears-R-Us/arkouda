@@ -4,7 +4,7 @@ from context import arkouda as ak
 """
 Tests basic Arkouda client functionality
 """
-from util.test.util import start_arkouda_server
+from server_util.test.server_test_util import start_arkouda_server
 
 
 class ClientTest(ArkoudaTest):

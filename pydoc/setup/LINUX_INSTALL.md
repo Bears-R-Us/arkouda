@@ -18,7 +18,7 @@ cd chapel-1.29.0/
 export CHPL_HOME=$PWD
 
 # Add chpl to PATH
-source $CHPL_HOME/util/setchplenv.bash
+source $CHPL_HOME/server_util/setchplenv.bash
 
 # Set remaining env variables and execute make
 # It is recommended to add these variables to a ~/.chplconfig file to prevent having 

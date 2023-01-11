@@ -9,13 +9,13 @@ script. Example usage:
 ./runClient tests/check.py
 
 # run stream with 4 locales, passing size to stream
-./util/test/runClient ./benchmarks/stream.py -nl 4 --size=100
+./server_util/test/runClient ./benchmarks/stream.py -nl 4 --size=100
 """
 
 import argparse
 import sys
 
-from util import *
+from server_util import *
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
