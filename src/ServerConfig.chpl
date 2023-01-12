@@ -31,6 +31,11 @@ module ServerConfig
     Global log level flag that defaults to LogLevel.INFO
     */
     config var logLevel = LogLevel.INFO;
+    
+    /*
+    Global log channel flag that defaults to LogChannel.CONSOLE
+    */
+    config var logChannel = LogChannel.CONSOLE;
 
     /*
     Port for zeromq
@@ -116,7 +121,9 @@ module ServerConfig
     config const saveUsedModules : bool = false;
 
     private config const lLevel = ServerConfig.logLevel;
-    const scLogger = new Logger(lLevel);
+    
+    private config const lChannel = ServerConfig.logChannel;
+    const scLogger = new Logger(lLevel,lChannel);
    
     proc createConfig() {
         use CTypes;
@@ -154,6 +161,7 @@ module ServerConfig
             const LocaleConfigs: [LocaleSpace] owned LocaleConfig;
             const authenticate: bool;
             const logLevel: LogLevel;
+            const logChannel: LogChannel;
             const regexMaxCaptures: int;
             const byteorder: string;
             const autoShutdown: bool;
@@ -179,6 +187,7 @@ module ServerConfig
             LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
             authenticate = authenticate,
             logLevel = logLevel,
+            logChannel = logChannel,
             regexMaxCaptures = regexMaxCaptures,
             byteorder = try! getByteorder(),
             autoShutdown = autoShutdown,
