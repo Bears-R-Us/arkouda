@@ -9,7 +9,6 @@ Usage
    usage/startup
    usage/pdarray
    usage/creation
-   usage/IO
    usage/arithmetic
    usage/indexing
    usage/histogram

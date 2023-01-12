@@ -69,35 +69,6 @@ HDF5/Parquet files can be queried via the server for dataset names and sizes.
 
 .. autofunction:: arkouda.ls_any
 
-Persisting ``pdarray`` data to disk
------------------------------------
-
-Arkouda supports saving pdarrays to HDF5/Parquet files. Unfortunately, arkouda does not yet support writing to a single HDF5 file from multiple locales and must create one output file per locale.
-
-.. autofunction:: arkouda.pdarray.save
-
-.. autofunction:: arkouda.save_all
-
-Loading persisted arrays from disk
------------------------------------
-These functions allow loading ``pdarray`` data persisted with ``save()`` and ``save_all()``.
-
-.. autofunction:: arkouda.load
-
-.. autofunction:: arkouda.load_all
-
-Persisting ``DataFrame`` data to disk
--------------------------------------
-Arkouda supports saving ``DataFrame`` objects to HDF5/Parquet files. This is done by creating a dictionary that maps the column name to the pdarray containing the column data. The column names are treated as datasets in the file.
-
-.. autofunction:: arkouda.DataFrame.save_table
-
-Loading persisted DataFrame data from disk
--------------------------------------------
-This functionality allows the columns be loaded as datasets, which creates a mapping of column names to column data. This structure is supported by the ``DataFrame`` constructor and is used to reconstruct the ``DataFrame``
-
-.. autofunction:: arkouda.DataFrame.load_table
-
 Import/Export
 =============
 Import allows users to import data written by pandas into arkouda. Export allows users to write arkouda data into a format pandas can read. The file formats supported are:

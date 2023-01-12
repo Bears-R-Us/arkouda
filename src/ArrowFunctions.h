@@ -10,6 +10,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/column_reader.h>
 #include <parquet/api/writer.h>
+#include <cmath>
 #include <queue>
 extern "C" {
 #endif

@@ -17,7 +17,13 @@ class SortTest(ArkoudaTest):
         pda = ak.randint(0, 100, 100, dtype=ak.uint64)
         for algo in ak.SortingAlgorithm:
             spda = ak.sort(pda, algo)
-            assert ak.is_sorted(spda)
+            self.assertTrue(ak.is_sorted(spda))
+
+        shift_up = pda + 2**200
+        for algo in ak.SortingAlgorithm:
+            sorted_pda = ak.sort(pda, algo)
+            sorted_bi = ak.sort(shift_up, algo)
+            self.assertListEqual((sorted_bi - 2 ** 200).to_list(), sorted_pda.to_list())
 
     def testBitBoundaryHardcode(self):
 

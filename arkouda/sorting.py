@@ -6,7 +6,7 @@ from typing import Sequence, Union, cast
 from typeguard import check_type, typechecked
 
 from arkouda.client import generic_msg
-from arkouda.dtypes import float64, int64, int_scalars, uint64
+from arkouda.dtypes import bigint, float64, int64, int_scalars, uint64
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
@@ -63,11 +63,16 @@ def argsort(
         return cast(Categorical, pda).argsort()
     if pda.size == 0 and hasattr(pda, "dtype"):
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd="argsort", args={
-        "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
-        "algoName": algorithm.name,
-        "objType": pda.objtype,
-    })
+    if isinstance(pda, pdarray) and pda.dtype == bigint:
+        return coargsort(pda.bigint_to_uint_arrays(), algorithm)
+    repMsg = generic_msg(
+        cmd="argsort",
+        args={
+            "name": pda.entry.name if isinstance(pda, Strings) else pda.name,
+            "algoName": algorithm.name,
+            "objType": pda.objtype,
+        },
+    )
     return create_pdarray(cast(str, repMsg))
 
 
@@ -130,7 +135,14 @@ def coargsort(
     size: int_scalars = -1
     anames = []
     atypes = []
+    expanded_arrays = []
     for a in arrays:
+        if isinstance(a, pdarray) and a.dtype == bigint:
+            expanded_arrays.extend(a.bigint_to_uint_arrays())
+        else:
+            expanded_arrays.append(a)
+
+    for a in expanded_arrays:
         if isinstance(a, pdarray):
             anames.append("+".join(a._list_component_names()))
             atypes.append(a.objtype)
@@ -153,7 +165,7 @@ def coargsort(
         cmd="coargsort",
         args={
             "algoName": algorithm.name,
-            "nstr": len(arrays),
+            "nstr": len(expanded_arrays),
             "arr_names": anames,
             "arr_types": atypes,
         },
@@ -201,12 +213,11 @@ def sort(pda: pdarray, algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortL
     >>> a
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
+    if pda.dtype == bigint:
+        return pda[coargsort(pda.bigint_to_uint_arrays(), algorithm)]
     if pda.dtype not in numeric_dtypes:
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(cmd="sort", args={
-        "alg": algorithm.name,
-        "array": pda
-    })
+    repMsg = generic_msg(cmd="sort", args={"alg": algorithm.name, "array": pda})
     return create_pdarray(cast(str, repMsg))

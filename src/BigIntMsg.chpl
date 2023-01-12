@@ -62,18 +62,26 @@ module BigIntMsg {
                 var retList: list(string);
                 var block_size = 1:bigint;
                 block_size <<= 64;
-                while || reduce (tmp!=0) {
-                  var low: [tmp.domain] bigint;
-                  // create local copy, needed to work around bug fixed in Chapel, but
-                  // needed for backwards compatability for now
-                  forall (lowVal, tmpVal) in zip(low, tmp) with (var local_block_size = block_size) {
-                    lowVal = tmpVal % local_block_size;
-                  }
+                if && reduce (tmp == 0) {
+                  // early out if we are already all zeroes
                   var retname = st.nextName();
-
-                  st.addEntry(retname, new shared SymEntry(low:uint));
+                  st.addEntry(retname, new shared SymEntry(tmp:uint));
                   retList.append("created %s".format(st.attrib(retname)));
-                  tmp /= block_size;
+                }
+                else {
+                  while || reduce (tmp!=0) {
+                    var low: [tmp.domain] bigint;
+                    // create local copy, needed to work around bug fixed in Chapel, but
+                    // needed for backwards compatability for now
+                    forall (lowVal, tmpVal) in zip(low, tmp) with (var local_block_size = block_size) {
+                        lowVal = tmpVal % local_block_size;
+                    }
+                    var retname = st.nextName();
+
+                    st.addEntry(retname, new shared SymEntry(low:uint));
+                    retList.append("created %s".format(st.attrib(retname)));
+                    tmp /= block_size;
+                  }
                 }
                 var repMsg = "%jt".format(retList);
                 biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);

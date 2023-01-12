@@ -51,7 +51,7 @@ Filter
 .. autofunction:: arkouda.DataFrame.filter_by_ranges
 
 Permutations
-----------
+-------------
 .. autofunction:: arkouda.DataFrame.apply_permutation
 
 Sorting
@@ -63,13 +63,13 @@ Sorting
 .. autofunction:: arkouda.DataFrame.sort_values
 
 Tail/Head of Data
-----------
+------------------
 .. autofunction:: arkouda.DataFrame.tail
 
 .. autofunction:: arkouda.DataFrame.head
 
 Rename Columns
-----------
+---------------
 .. autofunction:: arkouda.DataFrame.rename
 
 Append
@@ -77,14 +77,13 @@ Append
 .. autofunction:: akrouda.DataFrame.append
 
 Concatenate
-----------
+------------
 .. autofunction:: arkouda.DataFrame.concat
 
 Reset Indexes
-----------
+--------------
 .. autofunction:: arkouda.DataFrame.reset_index
 
 Deduplication
-----------
+--------------
 .. autofunction:: arkouda.DataFrame.drop_duplicates
-

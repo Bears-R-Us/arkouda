@@ -98,7 +98,7 @@ module Codecs {
         var inSize = (inBufSize): c_size_t;
 
         // TODO: this is probably worst way to allocate this
-        var chplRes:bytes = (" "*(inBufSize*4));
+        var chplRes: [0..#(inBufSize*4)] uint(8) = 0x00;
         var origSize = chplRes.size;
         var outSize = chplRes.size: c_size_t;
       

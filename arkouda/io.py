@@ -25,6 +25,7 @@ __all__ = [
     "export",
     "to_hdf",
     "to_parquet",
+    "save_all",
     "load",
     "load_all",
     "file_type_to_int",
@@ -836,10 +837,12 @@ def to_parquet(
     ValueError
         Raised if (1) the lengths of columns and values differ or (2) the mode
         is not 'truncate' or 'append'
+    RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
 
     See Also
     --------
-    save, load_all
+    to_hdf, load, load_all, read
 
     Notes
     -----
@@ -930,10 +933,12 @@ def to_hdf(
     ValueError
         Raised if (1) the lengths of columns and values differ or (2) the mode
         is not 'truncate' or 'append'
+    RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
 
     See Also
     --------
-    save, load_all
+    to_parquet, load, load_all, read
 
     Notes
     -----
@@ -970,6 +975,82 @@ def to_hdf(
         )
         if mode.lower() == "truncate":
             mode = "append"
+
+
+def save_all(
+    columns: Union[Mapping[str, pdarray], List[pdarray]],
+    prefix_path: str,
+    names: List[str] = None,
+    file_format="HDF5",
+    mode: str = "truncate",
+    file_type: str = "distribute",
+    compression: Optional[str] = None,
+) -> None:
+    """
+    DEPRECATED
+    Save multiple named pdarrays to HDF5/Parquet files.
+    Parameters
+    ----------
+    columns : dict or list of pdarrays
+        Collection of arrays to save
+    prefix_path : str
+        Directory and filename prefix for output files
+    names : list of str
+        Dataset names for the pdarrays
+    file_format : str
+        'HDF5' or 'Parquet'. Defaults to hdf5
+    mode : {'truncate' | 'append'}
+        By default, truncate (overwrite) the output files if they exist.
+        If 'append', attempt to create new dataset in existing files.
+    file_type : str ("single" | "distribute")
+        Default: distribute
+        Single writes the dataset to a single file
+        Distribute writes the dataset to a file per locale
+        Only used with HDF5
+    compression: str (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+        Optional
+        Select the compression to use with Parquet files.
+        Only used with Parquet.
+
+    Returns
+    -------
+    None
+    Raises
+    ------
+    ValueError
+        Raised if (1) the lengths of columns and values differ or (2) the mode
+        is not 'truncate' or 'append'
+    See Also
+    --------
+    save, load_all, to_parquet, to_hdf
+    Notes
+    -----
+    Creates one file per locale containing that locale's chunk of each pdarray.
+    If columns is a dictionary, the keys are used as the HDF5 dataset names.
+    Otherwise, if no names are supplied, 0-up integers are used. By default,
+    any existing files at path_prefix will be overwritten, unless the user
+    specifies the 'append' mode, in which case arkouda will attempt to add
+    <columns> as new datasets to existing files. If the wrong number of files
+    is present or dataset names already exist, a RuntimeError is raised.
+    Examples
+    --------
+    >>> a = ak.arange(25)
+    >>> b = ak.arange(25)
+    >>> # Save with mapping defining dataset names
+    >>> ak.save_all({'a': a, 'b': b}, 'path/name_prefix', file_format='Parquet')
+    >>> # Save using names instead of mapping
+    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
+    """
+    warn(
+        "ak.save_all has been deprecated. Please use ak.to_hdf or ak.to_parquet",
+        DeprecationWarning,
+    )
+    if file_format.lower() == "hdf5":
+        to_hdf(columns, prefix_path, names=names, mode=mode, file_type=file_type)
+    elif file_format.lower() == "parquet":
+        to_parquet(columns, prefix_path, names=names, mode=mode, compression=compression)
+    else:
+        raise ValueError("Arkouda only supports HDF5 and Parquet files.")
 
 
 @typechecked
@@ -1018,7 +1099,7 @@ def load(
 
     See Also
     --------
-    save, load_all, read
+    to_parquet, to_hdf, load_all, read
 
     Notes
     -----
@@ -1095,7 +1176,7 @@ def load_all(
 
     See Also
     --------
-    save_all, load, read
+    to_parquet, to_hdf, load, read
 
     Notes
     _____
@@ -1196,7 +1277,7 @@ def read(
 
     See Also
     --------
-    read, get_datasets, ls, read_parquet, read_hdf
+    get_datasets, ls, read_parquet, read_hdf
 
     Notes
     -----

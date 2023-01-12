@@ -714,6 +714,16 @@ class IOTest(ArkoudaTest):
             read_arr = ak.read_hdf(tmp_dirname + "/multi_dim_test*", datasets="MultiDimObj")
             self.assertTrue(np.array_equal(arr.to_ndarray(), read_arr.to_ndarray()))
 
+    def test_legacy_read(self):
+        cwd = os.getcwd()
+        if cwd.endswith("tests"):  # IDEs may launch unit tests from this location
+            cwd = cwd + "/../resources/hdf5-testing"
+        else:  # assume arkouda root dir
+            cwd += "/resources/hdf5-testing"
+        rd_arr = ak.read_hdf(f"{cwd}/Legacy_String.hdf5")
+
+        self.assertListEqual(["ABC", "DEF", "GHI"], rd_arr.to_list())
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):

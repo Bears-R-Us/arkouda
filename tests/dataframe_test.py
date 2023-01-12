@@ -3,13 +3,13 @@ import os
 import random
 import string
 import tempfile
-from shutil import rmtree
-from arkouda import io_util
 
-import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 from base_test import ArkoudaTest
 from context import arkouda as ak
+
+from arkouda import io_util
 
 
 def build_ak_df():
@@ -18,8 +18,9 @@ def build_ak_df():
     item = ak.array([0, 0, 1, 1, 2, 0])
     day = ak.array([5, 5, 6, 5, 6, 6])
     amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+    bi = ak.arange(2**200, 2**200 + 6)
     return ak.DataFrame(
-        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
     )
 
 
@@ -37,8 +38,9 @@ def build_ak_append():
     item = ak.array([0, 2])
     day = ak.array([1, 2])
     amount = ak.array([0.5, 5.1])
+    bi = ak.array([2**200 + 6, 2**200 + 7])
     return ak.DataFrame(
-        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
     )
 
 
@@ -54,8 +56,9 @@ def build_ak_typeerror():
     item = ak.array([0, 0, 1, 1, 2, 0])
     day = ak.array([5, 5, 6, 5, 6, 6])
     amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+    bi = ak.arange(2**200, 2**200 + 6)
     return ak.DataFrame(
-        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
     )
 
 
@@ -65,8 +68,9 @@ def build_pd_df():
     item = [0, 0, 1, 1, 2, 0]
     day = [5, 5, 6, 5, 6, 6]
     amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6]
+    bi = [2**200, 2**200 + 1, 2**200 + 2, 2**200 + 3, 2**200 + 4, 2**200 + 5]
     return pd.DataFrame(
-        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
     )
 
 
@@ -84,8 +88,18 @@ def build_pd_df_append():
     item = [0, 0, 1, 1, 2, 0, 0, 2]
     day = [5, 5, 6, 5, 6, 6, 1, 2]
     amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+    bi = [
+        2**200,
+        2**200 + 1,
+        2**200 + 2,
+        2**200 + 3,
+        2**200 + 4,
+        2**200 + 5,
+        2**200 + 6,
+        2**200 + 7,
+    ]
     return pd.DataFrame(
-        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+        {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount, "bi": bi}
     )
 
 
@@ -104,7 +118,6 @@ class DataFrameTest(ArkoudaTest):
 
         df = build_ak_df()
         ref_df = build_pd_df()
-
         self.assertIsInstance(df, ak.DataFrame)
         self.assertEqual(len(df), 6)
         self.assertTrue(ref_df.equals(df.to_pandas()))
@@ -150,10 +163,11 @@ class DataFrameTest(ArkoudaTest):
         self.assertTrue(isinstance(df.item, ak.Series))
         self.assertTrue(isinstance(df.day, ak.Series))
         self.assertTrue(isinstance(df.amount, ak.Series))
-        for col in ("userName", "userID", "item", "day", "amount"):
+        self.assertTrue(isinstance(df.bi, ak.Series))
+        for col in ("userName", "userID", "item", "day", "amount", "bi"):
             self.assertTrue(isinstance(df[col], (ak.pdarray, ak.Strings, ak.Categorical)))
-        self.assertTrue(isinstance(df[["userName", "amount"]], ak.DataFrame))
-        self.assertTrue(isinstance(df[("userID", "item", "day")], ak.DataFrame))
+        self.assertTrue(isinstance(df[["userName", "amount", "bi"]], ak.DataFrame))
+        self.assertTrue(isinstance(df[("userID", "item", "day", "bi")], ak.DataFrame))
         self.assertTrue(isinstance(df.index, ak.Index))
 
     def test_dtype_prop(self):
@@ -167,6 +181,7 @@ class DataFrameTest(ArkoudaTest):
             "c_3": str_arr,
             "c_4": ak.Categorical(str_arr),
             "c_5": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+            "c_6": ak.arange(2**200, 2**200 + 3),
         }
         akdf = ak.DataFrame(df_dict)
         self.assertEqual(len(akdf.columns), len(akdf.dtypes))
@@ -177,8 +192,17 @@ class DataFrameTest(ArkoudaTest):
         item = [0, 0, 1, 1, 2, 0, 0, 2]
         day = [5, 5, 6, 5, 6, 6, 1, 2]
         amount = [0.5, 0.6, 1.1, 1.2, 4.3, 0.6, 0.5, 5.1]
+        bi = 2**200
+        bi_arr = [bi, bi + 1, bi + 2, bi + 3, bi + 4, bi + 5, bi + 6, bi + 7]
         ref_df = pd.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi_arr,
+            }
         )
 
         df = ak.DataFrame(ref_df)
@@ -245,7 +269,7 @@ class DataFrameTest(ArkoudaTest):
 
         row, col = df.shape
         self.assertEqual(row, 6)
-        self.assertEqual(col, 5)
+        self.assertEqual(col, 6)
 
     def test_reset_index(self):
         df = build_ak_df()
@@ -376,8 +400,16 @@ class DataFrameTest(ArkoudaTest):
         item = ak.array([0, 0, 1, 1, 2, 0])
         day = ak.array([5, 5, 6, 5, 6, 6])
         amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
+        bi = ak.arange(2**200, 2**200 + 6)
         df = ak.DataFrame(
-            {"userName": username, "userID": userid, "item": item, "day": day, "amount": amount}
+            {
+                "userName": username,
+                "userID": userid,
+                "item": item,
+                "day": day,
+                "amount": amount,
+                "bi": bi,
+            }
         )
 
         gb = df.GroupBy("userName", use_series=True)
@@ -388,10 +420,11 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(c.values.to_list(), [2, 3, 1])
 
         # testing counts with IPv4 column
-        s = ak.DataFrame({'a': ak.IPv4(ak.arange(1, 5))}).groupby('a').count()
-        pds = pd.Series(data=np.ones(4, dtype=np.int64), index=pd.Index(data=np.array(['0.0.0.1', '0.0.0.2', '0.0.0.3', '0.0.0.4'], dtype="<U7")))
-        print(pds)
-        print(s.to_pandas())
+        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count()
+        pds = pd.Series(
+            data=np.ones(4, dtype=np.int64),
+            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
+        )
         self.assertTrue(s.to_pandas().equals(other=pds))
 
     def test_to_pandas(self):
@@ -532,12 +565,16 @@ class DataFrameTest(ArkoudaTest):
 
             # test save with index true
             akdf.to_parquet(f"{tmp_dirname}/testName_with_index.pq", index=True)
-            self.assertEqual(len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")), ak.get_config()["numLocales"])
+            self.assertEqual(
+                len(glob.glob(f"{tmp_dirname}/testName_with_index*.pq")), ak.get_config()["numLocales"]
+            )
 
             # Test for df having seg array col
             df = ak.DataFrame({"a": ak.arange(10), "b": ak.segarray(ak.arange(10), ak.arange(10))})
             df.to_hdf(f"{tmp_dirname}/seg_test.h5")
-            self.assertEqual(len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"])
+            self.assertEqual(
+                len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"]
+            )
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
             self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
@@ -562,7 +599,7 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(test_df["col_B"].to_list(), [False, True])
 
         # test against another dataframe
-        other_df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_C": ak.array([0, 9])})
+        other_df = ak.DataFrame({"col_A": ak.array([7, 3], dtype=ak.bigint), "col_C": ak.array([0, 9])})
         test_df = df.isin(other_df)
         self.assertListEqual(test_df["col_A"].to_list(), [True, True])
         self.assertListEqual(test_df["col_B"].to_list(), [False, False])
@@ -575,5 +612,5 @@ class DataFrameTest(ArkoudaTest):
     def test_uint_greediness(self):
         # default to uint when all supportedInt and any value > 2**63
         # to avoid loss of precision see (#1983)
-        df = pd.DataFrame({'Test': [2 ** 64 - 1, 0]})
-        self.assertEqual(df['Test'].dtype, ak.uint64)
+        df = pd.DataFrame({"Test": [2**64 - 1, 0]})
+        self.assertEqual(df["Test"].dtype, ak.uint64)

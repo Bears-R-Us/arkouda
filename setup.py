@@ -131,7 +131,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'numpy>=1.22.2',
+        'numpy>=1.24.1',
         'pandas>=1.4.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
@@ -139,7 +139,7 @@ setup(
         'pyfiglet',
         'versioneer',
         'matplotlib>=3.3.2',
-        'h5py',
+        'h5py>=3.7.0',
         'pip',
         'types-tabulate',
         'tables>=3.7.0',

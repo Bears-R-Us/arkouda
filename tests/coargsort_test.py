@@ -91,19 +91,25 @@ def check_float(N, algo):
     assert ak.is_sorted(n[perm])
 
 
-def check_int_uint_float(N, algo):
+def check_int_uint_float_bigint(N, algo):
     f = ak.randint(0, 2**63, N, dtype=ak.float64)
     u = ak.randint(0, 2**63, N, dtype=ak.uint64)
     i = ak.randint(0, 2**63, N, dtype=ak.int64)
+    bi = u + 2**200
 
-    perm = ak.coargsort([f, u, i], algo)
+    perm = ak.coargsort([f, u, i, bi], algo)
     assert ak.is_sorted(f[perm])
 
-    perm = ak.coargsort([u, i, f], algo)
+    perm = ak.coargsort([u, i, bi, f], algo)
     assert ak.is_sorted(u[perm])
 
-    perm = ak.coargsort([i, f, u], algo)
+    perm = ak.coargsort([i, bi, f, u], algo)
     assert ak.is_sorted(i[perm])
+
+    perm = ak.coargsort([bi, f, u, i], algo)
+    # TODO remove once ak.is_sorted is avail for bigint
+    shifted_down = ak.cast(bi[perm] - 2**200, ak.uint64)
+    assert ak.is_sorted(shifted_down)
 
 
 def check_large(N, algo):
@@ -122,7 +128,7 @@ def check_coargsort(N_per_locale):
         check_integral(N, algo, ak.int64)
         check_integral(N, algo, ak.uint64)
         check_float(N, algo)
-        check_int_uint_float(N, algo)
+        check_int_uint_float_bigint(N, algo)
         check_large(N, algo)
 
 
@@ -139,9 +145,9 @@ class CoargsortTest(ArkoudaTest):
         for algo in ak.SortingAlgorithm:
             check_float(10**3, algo)
 
-    def test_int_uint_float(self):
+    def test_int_uint_float_bigint(self):
         for algo in ak.SortingAlgorithm:
-            check_int_uint_float(10**3, algo)
+            check_int_uint_float_bigint(10**3, algo)
 
     def test_large(self):
         for algo in ak.SortingAlgorithm:

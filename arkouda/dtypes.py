@@ -55,6 +55,9 @@ def dtype(x):
 
 
 class BigInt:
+    # an estimate of the itemsize of bigint (128 bytes)
+    itemsize = 128
+
     def __init__(self):
         self.name = "bigint"
 
