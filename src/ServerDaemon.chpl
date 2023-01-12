@@ -390,6 +390,27 @@ module ServerDaemon {
             }
         }
 
+        proc captureMetrics(user: string, cmd: string, args: MessageArgs) throws {
+            proc getArrayParam(args: MessageArgs) throws {
+                var obj : ParameterObj;
+
+                for item in args.items() {
+                    if item.key == 'a' || item.key == 'array' {
+                        sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "arrayParams: %t".format(item));  
+                    }
+                }
+                
+                return obj;
+            }
+
+            var arrayParams = getArrayParam(args);
+
+            //sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            //                  "arrayParams: %t".format(arrayParams));  
+        }
+
+
         override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
 
@@ -473,6 +494,11 @@ module ServerDaemon {
                     else {
                         msgArgs = new owned MessageArgs();
                     }
+
+                    sdLogger.info(getModuleName(),
+                                  getRoutineName(),
+                                  getLineNumber(),
+                                  "MessageArgs: %t".format(msgArgs));                    
 
                     /*
                      * If authentication is enabled with the --authenticate flag, authenticate
@@ -572,13 +598,15 @@ module ServerDaemon {
                                                               msgFormat=MsgFormat.STRING, user=user));
                 }
 
+                var elapsedTime = getCurrentTime() - s0;
+
                 /*
                  * log that the request message has been handled and reply message has been sent 
                  * along with the time to do so
                  */
                 if trace {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "<<< %s took %.17r sec".format(cmd, getCurrentTime() - s0));
+                                              "<<< %s took %.17r sec".format(cmd, elapsedTime));
                 }
                 if (trace && memTrack) {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
@@ -587,6 +615,7 @@ module ServerDaemon {
                 if metricsEnabled() {
                     userMetrics.incrementPerUserRequestMetrics(user,cmd);
                     requestMetrics.increment(cmd);
+                    captureMetrics(user,cmd,msgArgs);
                 }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
