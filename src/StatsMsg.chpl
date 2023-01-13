@@ -13,7 +13,8 @@ module StatsMsg {
     use Map;
 
     private config const logLevel = ServerConfig.logLevel;
-    const sLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const sLogger = new Logger(logLevel, logChannel);
 
     proc meanMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();

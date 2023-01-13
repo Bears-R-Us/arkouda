@@ -16,7 +16,8 @@ module SegmentedMsg {
   use GenSymIO;
 
   private config const logLevel = ServerConfig.logLevel;
-  const smLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const smLogger = new Logger(logLevel, logChannel);
 
   /**
   * Build a Segmented Array object based on the segments/values specified.

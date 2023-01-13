@@ -17,7 +17,8 @@ module SortMsg
     private use ArgSortMsg;
 
     private config const logLevel = ServerConfig.logLevel;
-    const sortLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const sortLogger = new Logger(logLevel, logChannel);
 
     /* Sort the given pdarray using Radix Sort and
        return sorted keys as a block distributed array */

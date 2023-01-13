@@ -22,7 +22,8 @@ module ReductionMsg
     private config const lBins = 2**25 * numLocales;
 
     private config const logLevel = ServerConfig.logLevel;
-    const rmLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const rmLogger = new Logger(logLevel, logChannel);
 
     // these functions take an array and produce a scalar
     // parse and respond to reduction message

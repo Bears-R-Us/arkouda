@@ -18,8 +18,7 @@ module Logging {
      * are written.
      */
     enum LogChannel {CONSOLE,FILE};
-    
-    
+
     /*
      * The OutputHandler class defines the interface for all derived 
      * classes that write log messages to various channels.
@@ -50,10 +49,13 @@ module Logging {
         }
 
         override proc write(message: string) throws {
-            this.appendFile(this.filePath, message);
+            this.writeToFile(this.filePath, message);
         }
         
-        proc appendFile(filePath : string, line : string) throws {
+        /*
+         * Writes to file, creating file if it does not exist
+         */
+        proc writeToFile(filePath : string, line : string) throws {
             var writer;
             if exists(filePath) {
                 use ArkoudaFileCompat;

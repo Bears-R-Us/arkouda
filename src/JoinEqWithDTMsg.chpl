@@ -20,7 +20,8 @@ module JoinEqWithDTMsg
     param POS_DT = 2;
 
     private config const logLevel = ServerConfig.logLevel;
-    const jeLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const jeLogger = new Logger(logLevel, logChannel);
 
     // operator overloads so + reduce and + scan can work on atomic int arrays
     operator +(x: atomic int, y: atomic int) {

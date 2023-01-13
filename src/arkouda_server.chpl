@@ -9,7 +9,8 @@ use Logging;
 use ServerDaemon;
 
 private config const logLevel = ServerConfig.logLevel;
-const asLogger = new Logger(logLevel);
+private config const logChannel = ServerConfig.logChannel;
+const asLogger = new Logger(logLevel, logChannel);
 
 /**
  * The main method serves as the Arkouda driver that invokes the run 

@@ -12,7 +12,8 @@ module GroupBy {
     use Map;
 
     private config const logLevel = ServerConfig.logLevel;
-    const gbLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const gbLogger = new Logger(logLevel, logChannel);
 
     proc getGroupBy(name: string, st: borrowed SymTab): owned GroupBy throws {
         var abstractEntry = st.lookup(name);

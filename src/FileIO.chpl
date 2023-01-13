@@ -15,7 +15,8 @@ module FileIO {
 
     use ServerConfig, Logging, CommandMap;
     private config const logLevel = ServerConfig.logLevel;
-    const fioLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const fioLogger = new Logger(logLevel, logChannel);
     
     enum FileType {HDF5, ARROW, PARQUET, UNKNOWN};
 

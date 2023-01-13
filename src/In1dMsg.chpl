@@ -15,7 +15,8 @@ module In1dMsg
     use In1d;
 
     private config const logLevel = ServerConfig.logLevel;
-    const iLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const iLogger = new Logger(logLevel, logChannel);
     
     /* in1d takes two pdarray and returns a bool pdarray
        with the "in"/contains for each element tested against the second pdarray.

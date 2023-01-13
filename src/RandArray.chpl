@@ -11,7 +11,8 @@ module RandArray {
   private use IO;
   
   private config const logLevel = ServerConfig.logLevel;
-  const raLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const raLogger = new Logger(logLevel, logChannel);
 
   proc fillInt(a:[] ?t, const aMin: t, const aMax: t, const seedStr:string="None") throws where isIntType(t) {
       if (seedStr.toLower() == "none") {

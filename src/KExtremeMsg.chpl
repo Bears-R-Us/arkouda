@@ -24,7 +24,8 @@ module KExtremeMsg
     use ArraySetopsMsg;
 
     private config const logLevel = ServerConfig.logLevel;
-    const keLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const keLogger = new Logger(logLevel, logChannel);
 
     /*
     Parse, execute, and respond to a mink message

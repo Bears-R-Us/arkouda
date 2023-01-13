@@ -21,7 +21,9 @@ module RegistrationMsg
     use SegmentedMsg;
 
     private config const logLevel = ServerConfig.logLevel;
-    const regLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const regLogger = new Logger(logLevel, logChannel);
+
     private var simpleTypes: list(string) = ["pdarray","int64", "uint8", "uint64", "float64", "bool", "strings", "string", "str"];
 
     /* 

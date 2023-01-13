@@ -14,7 +14,8 @@ module MultiTypeSymbolTable
     use IO;
     
     private config const logLevel = ServerConfig.logLevel;
-    const mtLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const mtLogger = new Logger(logLevel, logChannel);
 
     /* symbol table */
     class SymTab

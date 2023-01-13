@@ -15,7 +15,8 @@ module AryUtil
     private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
     
     private config const logLevel = ServerConfig.logLevel;
-    const auLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const auLogger = new Logger(logLevel, logChannel);
     
     /*
       Threshold for the amount of data that will be printed. 

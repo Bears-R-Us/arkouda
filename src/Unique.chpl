@@ -29,7 +29,8 @@ module Unique
     use Logging;
 
     private config const logLevel = ServerConfig.logLevel;
-    const uLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const uLogger = new Logger(logLevel, logChannel);
 
    /*
     sorting based unique finding procedure
