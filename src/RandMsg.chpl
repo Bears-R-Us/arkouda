@@ -15,7 +15,8 @@ module RandMsg
     use ServerErrorStrings;
 
     private config const logLevel = ServerConfig.logLevel;
-    const randLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const randLogger = new Logger(logLevel, logChannel);
 
     /*
     parse, execute, and respond to randint message

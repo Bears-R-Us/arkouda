@@ -23,7 +23,8 @@ module SegmentedString {
   use FileSystem;
 
   private config const logLevel = ServerConfig.logLevel;
-  const ssLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const ssLogger = new Logger(logLevel, logChannel);
 
   private config param useHash = true;
   param SegmentedStringUseHash = useHash;

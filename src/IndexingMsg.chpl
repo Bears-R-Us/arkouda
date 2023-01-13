@@ -20,7 +20,8 @@ module IndexingMsg
     use Map;
 
     private config const logLevel = ServerConfig.logLevel;
-    const imLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const imLogger = new Logger(logLevel, logChannel);
 
     proc jsonToTuple(json: string, type t) throws {
         var f = openmem(); defer { ensureClose(f); }

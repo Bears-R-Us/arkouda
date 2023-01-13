@@ -18,7 +18,8 @@ module EncodingMsg {
     use SegmentedComputation;
 
     private config const logLevel = ServerConfig.logLevel;
-    const emLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const emLogger = new Logger(logLevel, logChannel);
 
     proc encodeDecodeMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       var repMsg: string;

@@ -14,7 +14,8 @@
     use MultiTypeSymbolTable;
 
     private config const logLevel = ServerConfig.logLevel;
-    const dfiLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const dfiLogger = new Logger(logLevel, logChannel);
 
     // gather indexing by integer index vector
     proc dfIdxHelper(idx: borrowed SymEntry(int), columnVals: borrowed SymEntry(?t), st: borrowed SymTab, col: string, objType: string, rtnName: bool=false): string throws {

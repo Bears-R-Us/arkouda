@@ -11,7 +11,8 @@ module BinOp
   use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
-  const omLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const omLogger = new Logger(logLevel, logChannel);
 
   /*
   Helper function to ensure that floor division cases are handled in accordance with numpy

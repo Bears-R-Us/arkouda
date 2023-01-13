@@ -11,7 +11,8 @@ module SequenceMsg {
     use MultiTypeSymEntry;
     
     private config const logLevel = ServerConfig.logLevel;
-    const smLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const smLogger = new Logger(logLevel, logChannel);
     /*
     Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, stride)
 

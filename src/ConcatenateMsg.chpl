@@ -20,7 +20,8 @@ module ConcatenateMsg
     use AryUtil;
     
     private config const logLevel = ServerConfig.logLevel;
-    const cmLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const cmLogger = new Logger(logLevel, logChannel);
 
     /* Concatenate a list of arrays together
        to form one array

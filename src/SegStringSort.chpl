@@ -22,7 +22,8 @@ module SegStringSort {
   private const PARTITION_LONG_STRING = SSS_PARTITION_LONG_STRING;
 
   private config const logLevel = ServerConfig.logLevel;
-  const ssLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const ssLogger = new Logger(logLevel, logChannel);
 
   record StringIntComparator {
     proc keyPart((a0,_): (string, int), in i: int) {

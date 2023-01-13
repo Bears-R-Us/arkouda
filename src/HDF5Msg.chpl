@@ -27,7 +27,8 @@ module HDF5Msg {
     use Sort;
 
     private config const logLevel = ServerConfig.logLevel;
-    const h5Logger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const h5Logger = new Logger(logLevel, logChannel);
 
     const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata";
     const ARKOUDA_HDF5_ARKOUDA_VERSION_KEY = "arkouda_version"; // see ServerConfig.arkoudaVersion

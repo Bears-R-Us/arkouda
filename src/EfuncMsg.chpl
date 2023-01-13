@@ -18,7 +18,8 @@ module EfuncMsg
     use AryUtil;
 
     private config const logLevel = ServerConfig.logLevel;
-    const eLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const eLogger = new Logger(logLevel, logChannel);
     
     /* These ops are functions which take an array and produce an array.
        

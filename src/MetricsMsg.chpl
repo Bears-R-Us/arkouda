@@ -11,12 +11,14 @@ module MetricsMsg {
     use Message;
     use Memory.Diagnostics;
     use ArkoudaDateTimeCompat;
+    use NumPyDType;
 
     enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
 
     private config const logLevel = ServerConfig.logLevel;
-    const mLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const mLogger = new Logger(logLevel, logChannel);
 
     var metricScope = ServerConfig.getEnv(name='METRIC_SCOPE',default='MetricScope.REQUEST');
     
@@ -360,6 +362,23 @@ module MetricsMsg {
             this.user = user;
         }
 
+    }
+
+    class DataTypeMetric : Metric{
+        var dType: DType;
+        
+        proc init(name: string, category: MetricCategory, 
+                                scope: MetricScope=MetricScope.GLOBAL, 
+                                timestamp: datetime=datetime.now(), 
+                                value: real,
+                                dType: DType) {
+            super.init(name=name,
+                       category = category,
+                       scope = scope,
+                       timestamp = timestamp,
+                       value = value);
+            this.dType = dType;
+        }
     }
 
     class LocaleInfo {

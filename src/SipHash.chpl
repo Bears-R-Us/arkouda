@@ -14,7 +14,8 @@ module SipHash {
   const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
 
   private config const logLevel = ServerConfig.logLevel;
-  const shLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const shLogger = new Logger(logLevel, logChannel);
 
   inline proc ROTL(x, b) {
     return (((x) << (b)) | ((x) >> (64 - (b))));

@@ -19,7 +19,8 @@ module GenSymIO {
     use SegmentedString;
 
     private config const logLevel = ServerConfig.logLevel;
-    const gsLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const gsLogger = new Logger(logLevel, logChannel);
     config const NULL_STRINGS_VALUE = 0:uint(8);
 
     /*

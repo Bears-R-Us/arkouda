@@ -18,7 +18,8 @@ module MsgProcessing
     use AryUtil;
     
     private config const logLevel = ServerConfig.logLevel;
-    const mpLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const mpLogger = new Logger(logLevel, logChannel);
     
     /* 
     Parse, execute, and respond to a create message 

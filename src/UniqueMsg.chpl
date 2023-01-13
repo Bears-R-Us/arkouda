@@ -31,7 +31,8 @@ module UniqueMsg
     use CommAggregation;
     
     private config const logLevel = ServerConfig.logLevel;
-    const umLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const umLogger = new Logger(logLevel, logChannel);
 
     proc uniqueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         // flag to return segments and permutation for GroupBy
