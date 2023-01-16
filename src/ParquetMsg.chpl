@@ -32,7 +32,8 @@ module ParquetMsg {
   require "ArrowFunctions.o";
 
   private config const logLevel = ServerConfig.logLevel;
-  const pqLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const pqLogger = new Logger(logLevel, logChannel);
   config const TRUNCATE: int = 0;
   config const APPEND: int = 1;
   

@@ -9,7 +9,8 @@ module BroadcastMsg {
   use Message;
 
   private config const logLevel = ServerConfig.logLevel;
-  const bmLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const bmLogger = new Logger(logLevel, logChannel);
 
   /* 
    * Broadcast a value per segment of a segmented array to the

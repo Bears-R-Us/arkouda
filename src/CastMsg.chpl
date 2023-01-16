@@ -12,7 +12,8 @@ module CastMsg {
   use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
-  const castLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const castLogger = new Logger(logLevel, logChannel);
 
   proc castMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     param pn = Reflection.getRoutineName();

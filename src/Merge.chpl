@@ -7,7 +7,8 @@ module Merge {
   use Logging;
   
   private config const logLevel = ServerConfig.logLevel;
-  const mLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const mLogger = new Logger(logLevel, logChannel);
   
   /* Given a *sorted*, zero-up array, use binary search to find the index of the first element 
    * that is greater than or equal to a target.

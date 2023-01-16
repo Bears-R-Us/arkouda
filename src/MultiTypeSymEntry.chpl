@@ -13,7 +13,8 @@ module MultiTypeSymEntry
     use MultiTypeSymbolTable;
 
     private config const logLevel = ServerConfig.logLevel;
-    const genLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const genLogger = new Logger(logLevel, logChannel);
 
     /**
      * Internal Types we can use to build our Symbol type hierarchy.

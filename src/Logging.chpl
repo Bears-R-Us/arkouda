@@ -1,6 +1,7 @@
 module Logging {
     use Set;
     use IO;
+    use FileSystem;
     use ArkoudaDateTimeCompat;
     use Reflection;
     use ServerErrors;
@@ -10,6 +11,77 @@ module Logging {
      * configuring the logging level of a Logger object
      */
     enum LogLevel {DEBUG,INFO,WARN,ERROR,CRITICAL};
+    
+    /*
+     * The LogChannel enum is used to provide a strongly-typed means of
+     * configuring the channel such as stdout or file where log messages
+     * are written.
+     */
+    enum LogChannel {CONSOLE,FILE};
+
+    /*
+     * The OutputHandler class defines the interface for all derived 
+     * classes that write log messages to various channels.
+     */
+    class OutputHandler {
+        proc write(message: string) throws {}
+    }
+    
+    /*
+     * The ConsoleOutputHandler writes log messages to the Arkouda console.
+     */
+    class ConsoleOutputHandler : OutputHandler {
+        override proc write(message: string) throws {
+            writeln(message);
+            stdout.flush();
+        }
+    }
+
+    /*
+     * The FileOutputHandler writes log messages to the configured filePath.
+     */    
+    class FileOutputHandler : OutputHandler {
+        var filePath: string;
+        
+        proc init(filePath: string) {
+            super.init();
+            this.filePath = filePath;
+        }
+
+        override proc write(message: string) throws {
+            this.writeToFile(this.filePath, message);
+        }
+        
+        /*
+         * Writes to file, creating file if it does not exist
+         */
+        proc writeToFile(filePath : string, line : string) throws {
+            var writer;
+            if exists(filePath) {
+                use ArkoudaFileCompat;
+                var aFile = open(filePath, iomode.rw);
+                writer = aFile.appendWriter();
+            } else {
+                var aFile = open(filePath, iomode.cwr);
+                writer = aFile.writer();
+            }
+
+            writer.writeln(line);
+            writer.flush();
+            writer.close();
+        }
+    }
+    
+    /*
+     * getOutputHandler is a factory method for OutputHandler implementations.
+     */
+    proc getOutputHandler(channel: LogChannel) : OutputHandler throws {
+        if channel == LogChannel.CONSOLE {
+            return new ConsoleOutputHandler();
+        } else {
+            return new FileOutputHandler("%s/arkouda.log".format(here.cwd()));
+        }
+    }
     
     /*
      * The Logger class provides structured log messages at various levels
@@ -31,18 +103,24 @@ module Logging {
         
         var printDate: bool = true;
         
-        proc init(logLevel : LogLevel) {
-            level = logLevel;
-        }
+        var outputHandler: OutputHandler = try! getOutputHandler(LogChannel.CONSOLE);
         
         proc init() {}
+       
+        proc init(level: LogLevel) {
+            this.level = level;
+        }
         
+        proc init(level: LogLevel, channel: LogChannel) {
+            this.level = level;
+            this.outputHandler = try! getOutputHandler(channel);
+        }
+
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
             try {
-                if level == LogLevel.DEBUG  {
-                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                if this.level == LogLevel.DEBUG  {
+                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "DEBUG"));
-                    stdout.flush();
                 }
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
@@ -52,9 +130,8 @@ module Logging {
         proc info(moduleName, routineName, lineNumber, msg: string) throws {
             try {
                 if infoLevels.contains(level) {
-                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "INFO"));
-                    stdout.flush();
                 }
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
@@ -64,9 +141,8 @@ module Logging {
         proc warn(moduleName, routineName, lineNumber, msg: string) throws {
             try {
                 if warnLevels.contains(level) {
-                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                    this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "WARN"));
-                    stdout.flush();
                 }
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
@@ -75,9 +151,8 @@ module Logging {
         
         proc critical(moduleName, routineName, lineNumber, msg: string) throws {
             try {
-                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "CRITICAL"));
-                stdout.flush();
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }            
@@ -85,9 +160,8 @@ module Logging {
         
         proc error(moduleName, routineName, lineNumber, msg: string) throws {
             try {
-                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                this.outputHandler.write(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "ERROR"));
-                stdout.flush();
             } catch (e: Error) {
                 writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }

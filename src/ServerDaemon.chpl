@@ -29,8 +29,9 @@ module ServerDaemon {
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
     private config const logLevel = ServerConfig.logLevel;
-    const sdLogger = new Logger(logLevel);
-
+    private config const logChannel = ServerConfig.logChannel;
+    const sdLogger = new Logger(logLevel,logChannel);
+    
     private config const daemonTypes = 'ServerDaemonType.DEFAULT';
     
     var serverDaemonTypes = try! getDaemonTypes();

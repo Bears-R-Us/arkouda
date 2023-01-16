@@ -24,7 +24,8 @@ module RadixSortLSD
     use ServerConfig;
 
     private config const logLevel = ServerConfig.logLevel;
-    const rsLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const rsLogger = new Logger(logLevel, logChannel);
 
     record KeysComparator {
       inline proc key(k) { return k; }

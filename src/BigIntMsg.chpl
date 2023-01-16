@@ -13,7 +13,8 @@ module BigIntMsg {
 
 
     private config const logLevel = ServerConfig.logLevel;
-    const biLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const biLogger = new Logger(logLevel, logChannel);
 
     proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();

@@ -15,7 +15,8 @@ module HistogramMsg
     use Message;
  
     private config const logLevel = ServerConfig.logLevel;
-    const hgmLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const hgmLogger = new Logger(logLevel, logChannel);
     
     private config const sBound = 2**12;
     private config const mBound = 2**25;

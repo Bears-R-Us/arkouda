@@ -26,7 +26,8 @@ module ArraySetopsMsg
     use Message;
 
     private config const logLevel = ServerConfig.logLevel;
-    const asLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const asLogger = new Logger(logLevel, logChannel);
     
     /*
     Parse, execute, and respond to a intersect1d message

@@ -14,7 +14,8 @@ module TimeClassMsg {
     use Map;
 
     private config const logLevel = ServerConfig.logLevel;
-    const tLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const tLogger = new Logger(logLevel, logChannel);
 
     // The first 13 entries give the month days elapsed as of the first of month N
     // (or the total number of days in the year for N=13) in non-leap years.

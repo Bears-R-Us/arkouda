@@ -8,7 +8,8 @@ module ExternalIntegration {
     use ServerErrors;
 
     private config const logLevel = ServerConfig.logLevel;
-    const eiLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const eiLogger = new Logger(logLevel, logChannel);
 
     private config const systemType = SystemType.NONE;
     

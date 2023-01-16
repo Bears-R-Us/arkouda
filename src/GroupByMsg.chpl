@@ -17,7 +17,8 @@ module GroupByMsg {
     use GroupBy;
 
     private config const logLevel = ServerConfig.logLevel;
-    const gmLogger = new Logger(logLevel);
+    private config const logChannel = ServerConfig.logChannel;
+    const gmLogger = new Logger(logLevel, logChannel);
 
     proc createGroupByMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const assumeSorted = msgArgs.get("assumeSortedStr").getBoolValue();

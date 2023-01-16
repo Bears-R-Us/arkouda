@@ -10,7 +10,8 @@ module FlattenMsg {
   use Message;
   
   private config const logLevel = ServerConfig.logLevel;
-  const fmLogger = new Logger(logLevel);
+  private config const logChannel = ServerConfig.logChannel;
+  const fmLogger = new Logger(logLevel, logChannel);
 
   proc segFlattenMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     const objtype = msgArgs.getValueOf("objtype");
