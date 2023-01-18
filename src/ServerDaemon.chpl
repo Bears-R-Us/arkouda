@@ -644,7 +644,7 @@ module ServerDaemon {
                                                         user=user));
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, elapsedTime));
+                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, getCurrentTime() - s0));
                 }
             } catch (e: Error) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
