@@ -559,7 +559,7 @@ module CommAggregation {
     record SrcAggregatorBigint {
       type aggType = c_ptr(bigint);
       const bufferSize = srcBuffSize;
-      const uintBufferSize = srcBuffSize * minInlineBigintSize();
+      const uintBufferSize = srcBuffSize * (c_sizeof(mp_size_t) + c_sizeof(mp_limb_t)): int;
       const myLocaleSpace = 0..<numLocales;
       var lastLocale: int;
       var opsUntilYield = yieldFrequency;
@@ -642,72 +642,78 @@ module CommAggregation {
         // Copy local addresses to remote buffer
         myRSrcAddrs.PUT(lSrcAddrs[loc], myBufferIdx);
 
-        var bytesWritten = 0;
-        // Process remote buffer, copying the value of our addresses into a
-        // remote buffer
-        const myBufferSize = uintBufferSize;
-        on Locales[loc] {
+        var bytesValsWritten: 2*int;
+        var addrBufferIdx = 0;
 
-          var addrBufferIdx = 0; // TODO should start at last valu 
-          var valueBufferIdx = 0; // TODO should start at last value
-          while valueBufferIdx < myBufferSize && addrBufferIdx < myBufferIdx {
-            var srcAddr = rSrcAddrPtr[addrBufferIdx];
-            var sign_size = chpl_gmp_mpz_struct_sign_size(srcAddr.deref().getImpl());
-            var src_limbs = chpl_gmp_mpz_struct_limbs(srcAddr.deref().getImpl());
+        while bytesValsWritten(1) < myBufferIdx {
+          // Process remote buffer, copying the value of our addresses into a
+          // remote buffer
+          const cbytesValsWritten = bytesValsWritten;
+          const myBufferSize = uintBufferSize;
+          on Locales[loc] {
+            const mycbytesValsWritten = cbytesValsWritten;
+            var (valueBufferIdx, addrBufferIdx) = mycbytesValsWritten;
+            valueBufferIdx = 0;
 
+            while valueBufferIdx < myBufferSize && addrBufferIdx < myBufferIdx {
+              var srcAddr = rSrcAddrPtr[addrBufferIdx];
+              var sign_size = chpl_gmp_mpz_struct_sign_size(srcAddr.deref().getImpl());
+              var src_limbs = chpl_gmp_mpz_struct_limbs(srcAddr.deref().getImpl());
+
+              var size_bytes = c_sizeof(mp_size_t);
+              var limb_bytes = abs(sign_size) * c_sizeof(mp_limb_t);
+
+              if valueBufferIdx + size_bytes + limb_bytes > myBufferSize {
+                break;
+              }
+
+              // copy value for current address into value array
+              c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), c_ptrTo(sign_size), size_bytes);
+              valueBufferIdx += size_bytes:int;
+              c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), src_limbs, limb_bytes);
+              valueBufferIdx += limb_bytes:int;
+
+              addrBufferIdx += 1;
+            }
+            bytesValsWritten = (valueBufferIdx, addrBufferIdx);
+          }
+
+          // Copy remote values into local buffer
+          myRSrcVals.GET(myLSrcVals, bytesValsWritten(0));
+
+          // Assign the srcVal to the dstAddrs
+          var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
+          var srcValPtr = c_ptrTo(myLSrcVals[0]);
+          var curBufferIdx = 0;
+          while addrBufferIdx < bytesValsWritten(1) {
+            var dstAddr = dstAddrPtr[addrBufferIdx];
+            var sign_size: mp_size_t;
+            var src_limbs: c_ptr(mp_limb_t);
+
+            var addr_bytes = c_sizeof(c_ptr(bigint));
             var size_bytes = c_sizeof(mp_size_t);
-            var limb_bytes = abs(sign_size) * c_sizeof(mp_limb_t);
 
-            // TODO break out if we will exceed capacity
+            // Copy size out of buffer
+            c_memcpy(c_ptrTo(sign_size), c_ptrTo(srcValPtr[curBufferIdx]), size_bytes);
+            curBufferIdx += size_bytes:int;
 
-            // copy value for current address into value array
-            c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), c_ptrTo(sign_size), size_bytes);
-            valueBufferIdx += size_bytes:int;
-            c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), src_limbs, limb_bytes);
-            valueBufferIdx += limb_bytes:int;
+            // extract size from sign+size and compute limb bytes
+            var n = abs(sign_size);
+            var limb_bytes = n * c_sizeof(mp_limb_t);
+
+            // reallocate target bigint
+            _mpz_realloc(dstAddr.deref().mpz, n);
+
+            // extract pointer to target bigint limbs, and copy buffered limbs into it
+            var xp = chpl_gmp_mpz_struct_limbs(dstAddr.deref().getImpl());
+            c_memcpy(xp, c_ptrTo(srcValPtr[curBufferIdx]), limb_bytes);
+            curBufferIdx += limb_bytes:int;
+
+            // update the sign+size of target bigint
+            chpl_gmp_mpz_set_sign_size(dstAddr.deref().mpz, sign_size);
 
             addrBufferIdx += 1;
           }
-          // TODO update something to indicate how many values were copied
-          bytesWritten = valueBufferIdx;
-        }
-
-        // Copy remote values into local buffer
-        myRSrcVals.GET(myLSrcVals, bytesWritten);
-
-        // Assign the srcVal to the dstAddrs
-        var addrBufferIdx = 0;
-        var curBufferIdx = 0;
-        var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
-        var srcValPtr = c_ptrTo(myLSrcVals[0]);
-        while curBufferIdx < myBufferIdx {
-	  var dstAddr = dstAddrPtr[addrBufferIdx];
-	  var sign_size: mp_size_t;
-	  var src_limbs: c_ptr(mp_limb_t);
-
-	  var addr_bytes = c_sizeof(c_ptr(bigint));
-	  var size_bytes = c_sizeof(mp_size_t);
-
-	  // Copy size out of buffer
-	  c_memcpy(c_ptrTo(sign_size), c_ptrTo(srcValPtr[curBufferIdx]), size_bytes);
-	  curBufferIdx += size_bytes:int;
-
-          // extract size from sign+size and compute limb bytes
-	  var n = abs(sign_size);
-	  var limb_bytes = n * c_sizeof(mp_limb_t);
-
-          // reallocate target bigint
-	  _mpz_realloc(dstAddr.deref().mpz, n);
-
-	  // extract pointer to target bigint limbs, and copy buffered limbs into it
-	  var xp = chpl_gmp_mpz_struct_limbs(dstAddr.deref().getImpl());
-	  c_memcpy(xp, c_ptrTo(srcValPtr[curBufferIdx]), limb_bytes);
-	  curBufferIdx += limb_bytes:int;
-
-	  // update the sign+size of target bigint
-	  chpl_gmp_mpz_set_sign_size(dstAddr.deref().mpz, sign_size);
-
-	  addrBufferIdx += 1;
         }
 
         bufferIdx = 0;
