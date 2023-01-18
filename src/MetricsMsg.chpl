@@ -82,10 +82,10 @@ module MetricsMsg {
             var metrics = new list(owned UserMetric?);
             for (metric, value) in userMetrics.items() {
                 metrics.append(new UserMetric(name=metric,
-                                                     scope=MetricScope.USER,
-                                                     category=MetricCategory.NUM_REQUESTS,
-                                                     value=value,
-                                                     user=userName));
+                                              scope=MetricScope.USER,
+                                              category=MetricCategory.NUM_REQUESTS,
+                                              value=value,
+                                              user=userName));
             }
             return metrics;
         }
@@ -275,6 +275,18 @@ module MetricsMsg {
 
         return metrics;
     }
+    
+    proc getArrayOpsResponseTimeMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in responseTimeMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.RESPONSE_TIME,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
 
     proc getSystemMetrics() throws {
         var metrics = new list(owned Metric?);
@@ -364,20 +376,28 @@ module MetricsMsg {
 
     }
 
-    class DataTypeMetric : Metric{
+    class ArrayMetric : Metric {
+        var cmd: string;
         var dType: DType;
+        var size: int;
         
-        proc init(name: string, category: MetricCategory, 
-                                scope: MetricScope=MetricScope.GLOBAL, 
-                                timestamp: datetime=datetime.now(), 
-                                value: real,
-                                dType: DType) {
-            super.init(name=name,
-                       category = category,
-                       scope = scope,
-                       timestamp = timestamp,
-                       value = value);
-            this.dType = dType;
+        proc init(name: string, 
+                  category: MetricCategory, 
+                  scope: MetricScope=MetricScope.GLOBAL, 
+                  timestamp: datetime=datetime.now(), 
+                  value: real,
+                  cmd: string,
+                  dType: DType,
+                  size: int) {
+              super.init(name=name,
+                         category = category,
+                         scope = scope,
+                         timestamp = timestamp,
+                         value = value
+                        );
+              this.cmd = cmd;
+              this.dType = dType;
+              this.size = size;
         }
     }
 

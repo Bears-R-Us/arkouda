@@ -25,6 +25,7 @@ module ServerDaemon {
     use ExternalIntegration;
     use MetricsMsg;
     use BigIntMsg;
+    use NumPyDType;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -391,24 +392,45 @@ module ServerDaemon {
             }
         }
 
-        proc captureMetrics(user: string, cmd: string, args: MessageArgs) throws {
-            proc getArrayParam(args: MessageArgs) throws {
+        proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real) throws {
+            proc getArrayParameterObj(args: MessageArgs) throws {
                 var obj : ParameterObj;
 
                 for item in args.items() {
-                    if item.key == 'a' || item.key == 'array' {
-                        sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "arrayParams: %t".format(item));  
+                    if item.key == 'a' || item.key == 'array' { 
+                        obj = item;
                     }
                 }
                 
                 return obj;
             }
+          
+            proc computeArrayMetrics(obj: ParameterObj): bool {
+               return !obj.key.isEmpty();
+            }
+          
+            // Update Request Metrics
+            requestMetrics.increment(cmd);
+            
+            // Update User-Scoped Request Metrics
+            userMetrics.incrementPerUserRequestMetrics(user,cmd);
 
-            var arrayParams = getArrayParam(args);
+            var apo = getArrayParameterObj(args);
 
-            //sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            //                  "arrayParams: %t".format(arrayParams));  
+            if computeArrayMetrics(apo) {
+                var metric = new ArrayMetric(name=apo.val,
+                                             category=MetricCategory.RESPONSE_TIME,
+                                             scope=MetricScope.REQUEST,
+                                             value=elapsedTime:int(64),
+                                             cmd=cmd,
+                                             dType=str2dtype(apo.dtype),
+                                             size=getGenericTypedArrayEntry(apo.val, st).size
+                                            );
+
+                sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "METRIC %jt".format(metric)); 
+            }
+            
         }
 
 
@@ -614,9 +636,7 @@ module ServerDaemon {
                         "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
                 }
                 if metricsEnabled() {
-                    userMetrics.incrementPerUserRequestMetrics(user,cmd);
-                    requestMetrics.increment(cmd);
-                    captureMetrics(user,cmd,msgArgs);
+                    processMetrics(user, cmd, msgArgs, elapsedTime);
                 }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
@@ -624,7 +644,7 @@ module ServerDaemon {
                                                         user=user));
                 if trace {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, getCurrentTime() - s0));
+                        "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, elapsedTime));
                 }
             } catch (e: Error) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
