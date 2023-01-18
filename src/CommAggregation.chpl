@@ -557,17 +557,17 @@ module CommAggregation {
     }
 
     record SrcAggregatorBigint {
-      type elemType = bigint;
-      type aggType = c_ptr(elemType);
+      type aggType = c_ptr(bigint);
       const bufferSize = srcBuffSize;
+      const uintBufferSize = srcBuffSize * minInlineBigintSize();
       const myLocaleSpace = 0..<numLocales;
       var lastLocale: int;
       var opsUntilYield = yieldFrequency;
       var dstAddrs: c_ptr(c_ptr(aggType));
       var lSrcAddrs: c_ptr(c_ptr(aggType));
-      var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
+      var lSrcVals: [myLocaleSpace][0..#uintBufferSize] uint(8);
       var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
-      var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
+      var rSrcVals: [myLocaleSpace] remoteBuffer(uint(8));
       var bufferIdxs: c_ptr(int);
 
       proc postinit() {
@@ -579,7 +579,7 @@ module CommAggregation {
           lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
           bufferIdxs[loc] = 0;
           rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
-          rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
+          rSrcVals[loc] = new remoteBuffer(uint(8), uintBufferSize, loc);
         }
       }
 
@@ -601,11 +601,7 @@ module CommAggregation {
         }
       }
 
-      inline proc copy(ref dst: elemType, const ref src: elemType) {
-        // TODO aggregation not supported today, just do plain assignment
-        dst = src;
-        return;
-
+      inline proc copy(ref dst: bigint, const ref src: bigint) {
         if boundsChecking {
           assert(dst.locale.id == here.id);
         }
@@ -646,28 +642,72 @@ module CommAggregation {
         // Copy local addresses to remote buffer
         myRSrcAddrs.PUT(lSrcAddrs[loc], myBufferIdx);
 
+        var bytesWritten = 0;
         // Process remote buffer, copying the value of our addresses into a
         // remote buffer
+        const myBufferSize = uintBufferSize;
         on Locales[loc] {
-          for i in 0..<myBufferIdx {
-            rSrcValPtr[i] = rSrcAddrPtr[i].deref();
+
+          var addrBufferIdx = 0; // TODO should start at last valu 
+          var valueBufferIdx = 0; // TODO should start at last value
+          while valueBufferIdx < myBufferSize && addrBufferIdx < myBufferIdx {
+            var srcAddr = rSrcAddrPtr[addrBufferIdx];
+            var sign_size = chpl_gmp_mpz_struct_sign_size(srcAddr.deref().getImpl());
+            var src_limbs = chpl_gmp_mpz_struct_limbs(srcAddr.deref().getImpl());
+
+            var size_bytes = c_sizeof(mp_size_t);
+            var limb_bytes = abs(sign_size) * c_sizeof(mp_limb_t);
+
+            // TODO break out if we will exceed capacity
+
+            // copy value for current address into value array
+            c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), c_ptrTo(sign_size), size_bytes);
+            valueBufferIdx += size_bytes:int;
+            c_memcpy(c_ptrTo(rSrcValPtr[valueBufferIdx]), src_limbs, limb_bytes);
+            valueBufferIdx += limb_bytes:int;
+
+            addrBufferIdx += 1;
           }
-          if freeData {
-            myRSrcAddrs.localFree(rSrcAddrPtr);
-          }
-        }
-        if freeData {
-          myRSrcAddrs.markFreed();
+          // TODO update something to indicate how many values were copied
+          bytesWritten = valueBufferIdx;
         }
 
         // Copy remote values into local buffer
-        myRSrcVals.GET(myLSrcVals, myBufferIdx);
+        myRSrcVals.GET(myLSrcVals, bytesWritten);
 
         // Assign the srcVal to the dstAddrs
+        var addrBufferIdx = 0;
+        var curBufferIdx = 0;
         var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
         var srcValPtr = c_ptrTo(myLSrcVals[0]);
-        for i in 0..<myBufferIdx {
-          dstAddrPtr[i].deref() = srcValPtr[i];
+        while curBufferIdx < myBufferIdx {
+	  var dstAddr = dstAddrPtr[addrBufferIdx];
+	  var sign_size: mp_size_t;
+	  var src_limbs: c_ptr(mp_limb_t);
+
+	  var addr_bytes = c_sizeof(c_ptr(bigint));
+	  var size_bytes = c_sizeof(mp_size_t);
+
+	  // Copy size out of buffer
+	  c_memcpy(c_ptrTo(sign_size), c_ptrTo(srcValPtr[curBufferIdx]), size_bytes);
+	  curBufferIdx += size_bytes:int;
+
+          // extract size from sign+size and compute limb bytes
+	  var n = abs(sign_size);
+	  var limb_bytes = n * c_sizeof(mp_limb_t);
+
+          // reallocate target bigint
+	  _mpz_realloc(dstAddr.deref().mpz, n);
+
+	  // extract pointer to target bigint limbs, and copy buffered limbs into it
+	  var xp = chpl_gmp_mpz_struct_limbs(dstAddr.deref().getImpl());
+	  c_memcpy(xp, c_ptrTo(srcValPtr[curBufferIdx]), limb_bytes);
+	  curBufferIdx += limb_bytes:int;
+
+	  // update the sign+size of target bigint
+	  chpl_gmp_mpz_set_sign_size(dstAddr.deref().mpz, sign_size);
+
+	  addrBufferIdx += 1;
         }
 
         bufferIdx = 0;
