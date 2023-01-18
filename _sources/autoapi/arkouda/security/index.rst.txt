@@ -30,7 +30,6 @@ Attributes
 
 
 .. py:data:: username_tokenizer
-   
 
    
 

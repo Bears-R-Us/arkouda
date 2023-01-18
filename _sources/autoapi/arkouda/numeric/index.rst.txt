@@ -46,17 +46,17 @@ Functions
    Derive from this class to define new enumerations.
 
    .. py:attribute:: strict
-      :annotation: = strict
+      :value: 'strict'
 
       
 
    .. py:attribute:: ignore
-      :annotation: = ignore
+      :value: 'ignore'
 
       
 
    .. py:attribute:: return_validity
-      :annotation: = return_validity
+      :value: 'return_validity'
 
       
 

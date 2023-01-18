@@ -101,7 +101,7 @@ Functions
       Returns a summary string of this dataframe.
 
    .. py:attribute:: COLUMN_CLASSES
-      
+      :value: ()
 
       
 

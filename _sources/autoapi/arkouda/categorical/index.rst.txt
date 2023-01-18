@@ -81,27 +81,22 @@ Classes
 
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: RegisterablePieces
-      
 
       
 
    .. py:attribute:: RequiredPieces
-      
 
       
 
    .. py:attribute:: permutation
-      
 
       
 
    .. py:attribute:: segments
-      
 
       
 

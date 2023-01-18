@@ -42,17 +42,15 @@ Attributes
 
 
 .. py:data:: _BASE_UNIT
-   :annotation: = ns
+   :value: 'ns'
 
    
 
 .. py:data:: _unit2normunit
-   
 
    
 
 .. py:data:: _unit2factor
-   
 
    
 
@@ -374,37 +372,30 @@ Attributes
 
 
    .. py:attribute:: supported_with_datetime
-      
 
       
 
    .. py:attribute:: supported_with_r_datetime
-      
 
       
 
    .. py:attribute:: supported_with_timedelta
-      
 
       
 
    .. py:attribute:: supported_with_r_timedelta
-      
 
       
 
    .. py:attribute:: supported_opeq
-      
 
       
 
    .. py:attribute:: supported_with_pdarray
-      
 
       
 
    .. py:attribute:: supported_with_r_pdarray
-      
 
       
 
@@ -487,37 +478,30 @@ Attributes
 
 
    .. py:attribute:: supported_with_datetime
-      
 
       
 
    .. py:attribute:: supported_with_r_datetime
-      
 
       
 
    .. py:attribute:: supported_with_timedelta
-      
 
       
 
    .. py:attribute:: supported_with_r_timedelta
-      
 
       
 
    .. py:attribute:: supported_opeq
-      
 
       
 
    .. py:attribute:: supported_with_pdarray
-      
 
       
 
    .. py:attribute:: supported_with_r_pdarray
-      
 
       
 

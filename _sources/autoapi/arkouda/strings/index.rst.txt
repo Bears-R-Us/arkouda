@@ -75,12 +75,11 @@ Classes
    raw bytes of all strings, delimited by nulls.
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = str
+      :value: 'str'
 
       
 

@@ -70,7 +70,6 @@ Attributes
 
 
 .. py:data:: GROUPBY_REDUCTION_TYPES
-   
 
    
 
@@ -143,7 +142,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 

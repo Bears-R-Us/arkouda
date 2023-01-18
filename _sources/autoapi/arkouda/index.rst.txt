@@ -345,7 +345,6 @@ Attributes
 
 
 .. py:data:: __version__
-   
 
    
 
@@ -560,22 +559,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -1718,7 +1715,6 @@ Attributes
 
 
 .. py:data:: OrderType
-   
 
    
 
@@ -1880,12 +1876,10 @@ Attributes
 
 
 .. py:data:: bitType
-   
 
    
 
 .. py:data:: intTypes
-   
 
    
 
@@ -1961,7 +1955,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 
@@ -2978,22 +2971,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -4111,7 +4102,6 @@ Attributes
    typically treat this class like a uint64 pdarray.
 
    .. py:attribute:: conserves
-      
 
       
 
@@ -4434,12 +4424,10 @@ Attributes
 
 
 .. py:data:: DTypes
-   
 
    
 
 .. py:data:: DTypeObjects
-   
 
    
 
@@ -4447,47 +4435,38 @@ Attributes
 
 
 .. py:data:: bool
-   
 
    
 
 .. py:data:: int64
-   
 
    
 
 .. py:data:: float64
-   
 
    
 
 .. py:data:: uint8
-   
 
    
 
 .. py:data:: uint64
-   
 
    
 
 .. py:data:: str_
-   
 
    
 
 .. py:data:: bigint
-   
 
    
 
 .. py:data:: intTypes
-   
 
    
 
 .. py:data:: bitType
-   
 
    
 
@@ -4515,42 +4494,34 @@ Attributes
 
 
 .. py:data:: ARKOUDA_SUPPORTED_DTYPES
-   
 
    
 
 .. py:data:: bool_scalars
-   
 
    
 
 .. py:data:: float_scalars
-   
 
    
 
 .. py:data:: int_scalars
-   
 
    
 
 .. py:data:: numeric_scalars
-   
 
    
 
 .. py:data:: numpy_scalars
-   
 
    
 
 .. py:data:: str_scalars
-   
 
    
 
 .. py:data:: all_scalars
-   
 
    The DType enum defines the supported Arkouda data types in string form.
 
@@ -4613,22 +4584,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -6328,7 +6297,6 @@ Attributes
 
 
 .. py:data:: SortingAlgorithm
-   
 
    
 
@@ -7558,17 +7526,17 @@ Attributes
    Derive from this class to define new enumerations.
 
    .. py:attribute:: strict
-      :annotation: = strict
+      :value: 'strict'
 
       
 
    .. py:attribute:: ignore
-      :annotation: = ignore
+      :value: 'ignore'
 
       
 
    .. py:attribute:: return_validity
-      :annotation: = return_validity
+      :value: 'return_validity'
 
       
 
@@ -7677,7 +7645,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 
@@ -8553,7 +8520,6 @@ Attributes
 
 
 .. py:data:: GROUPBY_REDUCTION_TYPES
-   
 
    
 
@@ -8650,27 +8616,22 @@ Attributes
 
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: RegisterablePieces
-      
 
       
 
    .. py:attribute:: RequiredPieces
-      
 
       
 
    .. py:attribute:: permutation
-      
 
       
 
    .. py:attribute:: segments
-      
 
       
 
@@ -9331,17 +9292,14 @@ Attributes
 
 
 .. py:data:: int64
-   
 
    
 
 .. py:data:: int_scalars
-   
 
    
 
 .. py:data:: intTypes
-   
 
    
 
@@ -9477,22 +9435,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -10498,17 +10454,15 @@ Attributes
 
 
 .. py:data:: _BASE_UNIT
-   :annotation: = ns
+   :value: 'ns'
 
    
 
 .. py:data:: _unit2normunit
-   
 
    
 
 .. py:data:: _unit2factor
-   
 
    
 
@@ -10830,37 +10784,30 @@ Attributes
 
 
    .. py:attribute:: supported_with_datetime
-      
 
       
 
    .. py:attribute:: supported_with_r_datetime
-      
 
       
 
    .. py:attribute:: supported_with_timedelta
-      
 
       
 
    .. py:attribute:: supported_with_r_timedelta
-      
 
       
 
    .. py:attribute:: supported_opeq
-      
 
       
 
    .. py:attribute:: supported_with_pdarray
-      
 
       
 
    .. py:attribute:: supported_with_r_pdarray
-      
 
       
 
@@ -10943,37 +10890,30 @@ Attributes
 
 
    .. py:attribute:: supported_with_datetime
-      
 
       
 
    .. py:attribute:: supported_with_r_datetime
-      
 
       
 
    .. py:attribute:: supported_with_timedelta
-      
 
       
 
    .. py:attribute:: supported_with_r_timedelta
-      
 
       
 
    .. py:attribute:: supported_opeq
-      
 
       
 
    .. py:attribute:: supported_with_pdarray
-      
 
       
 
    .. py:attribute:: supported_with_r_pdarray
-      
 
       
 
@@ -11099,12 +11039,12 @@ Attributes
 
 
 .. py:data:: AllSymbols
-   :annotation: = __AllSymbols__
+   :value: '__AllSymbols__'
 
    
 
 .. py:data:: RegisteredSymbols
-   :annotation: = __RegisteredSymbols__
+   :value: '__RegisteredSymbols__'
 
    
 
@@ -11164,12 +11104,10 @@ Attributes
 
 
 .. py:data:: akbool
-   
 
    
 
 .. py:data:: akint64
-   
 
    
 
@@ -11177,7 +11115,6 @@ Attributes
 
 
 .. py:data:: str_
-   
 
    
 
@@ -11259,7 +11196,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 
@@ -12335,22 +12271,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -13554,7 +13488,6 @@ Attributes
       - Caches return value to prevent the need to recompute.
 
    .. py:attribute:: valsize
-      
 
       Note - if lengths is provided, it will need to be sent to the
       server in the future (or deprecated).
@@ -14248,7 +14181,7 @@ Attributes
       Returns a summary string of this dataframe.
 
    .. py:attribute:: COLUMN_CLASSES
-      
+      :value: ()
 
       
 
@@ -15095,17 +15028,14 @@ Attributes
 
 
 .. py:data:: akbool
-   
 
    
 
 .. py:data:: akfloat64
-   
 
    
 
 .. py:data:: akint64
-   
 
    
 
@@ -15178,7 +15108,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 
@@ -16103,22 +16032,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -17611,12 +17538,10 @@ Attributes
 
 
    .. py:attribute:: dt
-      
 
       
 
    .. py:attribute:: str_acc
-      
 
       
 
@@ -17904,27 +17829,22 @@ Attributes
 
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: RegisterablePieces
-      
 
       
 
    .. py:attribute:: RequiredPieces
-      
 
       
 
    .. py:attribute:: permutation
-      
 
       
 
    .. py:attribute:: segments
-      
 
       
 
@@ -18569,22 +18489,18 @@ Attributes
 
 
 .. py:data:: bigint
-   
 
    
 
 .. py:data:: akfloat64
-   
 
    
 
 .. py:data:: akint64
-   
 
    
 
 .. py:data:: akuint64
-   
 
    
 
@@ -18657,7 +18573,6 @@ Attributes
    will be used; otherwise, method 1 will be used.
 
    .. py:attribute:: Reductions
-      
 
       
 
@@ -19665,22 +19580,20 @@ Attributes
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 
@@ -21229,27 +21142,22 @@ Attributes
 
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: RegisterablePieces
-      
 
       
 
    .. py:attribute:: RequiredPieces
-      
 
       
 
    .. py:attribute:: permutation
-      
 
       
 
    .. py:attribute:: segments
-      
 
       
 
@@ -21981,37 +21889,30 @@ Attributes
 
 
    .. py:attribute:: supported_with_datetime
-      
 
       
 
    .. py:attribute:: supported_with_r_datetime
-      
 
       
 
    .. py:attribute:: supported_with_timedelta
-      
 
       
 
    .. py:attribute:: supported_with_r_timedelta
-      
 
       
 
    .. py:attribute:: supported_opeq
-      
 
       
 
    .. py:attribute:: supported_with_pdarray
-      
 
       
 
    .. py:attribute:: supported_with_r_pdarray
-      
 
       
 

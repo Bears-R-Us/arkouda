@@ -30,12 +30,12 @@ Attributes
 
 
 .. py:data:: AllSymbols
-   :annotation: = __AllSymbols__
+   :value: '__AllSymbols__'
 
    
 
 .. py:data:: RegisteredSymbols
-   :annotation: = __RegisteredSymbols__
+   :value: '__RegisteredSymbols__'
 
    
 

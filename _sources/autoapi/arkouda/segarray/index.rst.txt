@@ -89,7 +89,6 @@ Functions
       - Caches return value to prevent the need to recompute.
 
    .. py:attribute:: valsize
-      
 
       Note - if lengths is provided, it will need to be sent to the
       server in the future (or deprecated).

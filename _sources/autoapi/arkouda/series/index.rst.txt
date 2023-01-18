@@ -51,12 +51,10 @@ Classes
 
 
    .. py:attribute:: dt
-      
 
       
 
    .. py:attribute:: str_acc
-      
 
       
 

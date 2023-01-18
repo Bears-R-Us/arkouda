@@ -99,22 +99,20 @@ Functions
       :type: int_scalars
 
    .. py:attribute:: BinOps
-      
 
       
 
    .. py:attribute:: OpEqOps
-      
 
       
 
    .. py:attribute:: objtype
-      :annotation: = pdarray
+      :value: 'pdarray'
 
       
 
    .. py:attribute:: __array_priority__
-      :annotation: = 1000
+      :value: 1000
 
       
 

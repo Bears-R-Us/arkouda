@@ -30,37 +30,37 @@ Classes
    sent to the server for processing
 
    .. py:attribute:: PDARRAY
-      :annotation: = PDARRAY
+      :value: 'PDARRAY'
 
       
 
    .. py:attribute:: STRINGS
-      :annotation: = SEGSTRING
+      :value: 'SEGSTRING'
 
       
 
    .. py:attribute:: LIST
-      :annotation: = LIST
+      :value: 'LIST'
 
       
 
    .. py:attribute:: DICT
-      :annotation: = DICT
+      :value: 'DICT'
 
       
 
    .. py:attribute:: VALUE
-      :annotation: = VALUE
+      :value: 'VALUE'
 
       
 
    .. py:attribute:: DATETIME
-      :annotation: = DATETIME
+      :value: 'DATETIME'
 
       
 
    .. py:attribute:: TIMEDELTA
-      :annotation: = TIMEDELTA
+      :value: 'TIMEDELTA'
 
       
 
@@ -83,27 +83,27 @@ Classes
 
 
    .. py:attribute:: __slots
-      :annotation: = ['key', 'objType', 'dtype', 'val']
+      :value: ('key', 'objType', 'dtype', 'val')
 
       
 
    .. py:attribute:: key
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: objType
-      :annotation: :MessageFormat
+      :type: MessageFormat
 
       
 
    .. py:attribute:: dtype
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: val
-      :annotation: :str
+      :type: str
 
       
 
@@ -190,12 +190,12 @@ Classes
    Derive from this class to define new enumerations.
 
    .. py:attribute:: STRING
-      :annotation: = STRING
+      :value: 'STRING'
 
       
 
    .. py:attribute:: BINARY
-      :annotation: = BINARY
+      :value: 'BINARY'
 
       
 
@@ -221,17 +221,17 @@ Classes
    Derive from this class to define new enumerations.
 
    .. py:attribute:: NORMAL
-      :annotation: = NORMAL
+      :value: 'NORMAL'
 
       
 
    .. py:attribute:: WARNING
-      :annotation: = WARNING
+      :value: 'WARNING'
 
       
 
    .. py:attribute:: ERROR
-      :annotation: = ERROR
+      :value: 'ERROR'
 
       
 
@@ -251,37 +251,37 @@ Classes
 .. py:class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None, size: int = -1)
 
    .. py:attribute:: __slots
-      :annotation: = ['user', 'token', 'cmd', 'format', 'args', 'size']
+      :value: ('user', 'token', 'cmd', 'format', 'args', 'size')
 
       
 
    .. py:attribute:: user
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: token
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: cmd
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: format
-      :annotation: :MessageFormat
+      :type: MessageFormat
 
       
 
    .. py:attribute:: args
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: size
-      :annotation: :str
+      :type: str
 
       
 
@@ -299,22 +299,22 @@ Classes
 .. py:class:: ReplyMessage
 
    .. py:attribute:: __slots__
-      :annotation: = ['msg', 'msgType', 'user']
+      :value: ('msg', 'msgType', 'user')
 
       
 
    .. py:attribute:: msg
-      :annotation: :str
+      :type: str
 
       
 
    .. py:attribute:: msgType
-      :annotation: :MessageType
+      :type: MessageType
 
       
 
    .. py:attribute:: user
-      :annotation: :str
+      :type: str
 
       
 

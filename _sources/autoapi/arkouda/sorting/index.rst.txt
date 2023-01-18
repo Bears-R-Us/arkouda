@@ -28,7 +28,6 @@ Attributes
 
 
 .. py:data:: SortingAlgorithm
-   
 
    
 

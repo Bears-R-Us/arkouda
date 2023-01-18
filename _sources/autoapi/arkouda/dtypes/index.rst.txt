@@ -52,97 +52,78 @@ Attributes
 
 
 .. py:data:: bool
-   
 
    
 
 .. py:data:: int64
-   
 
    
 
 .. py:data:: float64
-   
 
    
 
 .. py:data:: uint8
-   
 
    
 
 .. py:data:: uint64
-   
 
    
 
 .. py:data:: str_
-   
 
    
 
 .. py:data:: bigint
-   
 
    
 
 .. py:data:: intTypes
-   
 
    
 
 .. py:data:: bitType
-   
 
    
 
 .. py:data:: bool_scalars
-   
 
    
 
 .. py:data:: float_scalars
-   
 
    
 
 .. py:data:: int_scalars
-   
 
    
 
 .. py:data:: numeric_scalars
-   
 
    
 
 .. py:data:: numpy_scalars
-   
 
    
 
 .. py:data:: str_scalars
-   
 
    
 
 .. py:data:: all_scalars
-   
 
    The DType enum defines the supported Arkouda data types in string form.
 
 .. py:data:: ARKOUDA_SUPPORTED_DTYPES
-   
 
    
 
 .. py:data:: DTypes
-   
 
    
 
 .. py:data:: DTypeObjects
-   
 
    
 
