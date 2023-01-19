@@ -13,8 +13,9 @@ module MetricsMsg {
     use ArkoudaDateTimeCompat;
     use NumPyDType;
 
-    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
+    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
+    enum MetricDataType{INT,REAL};
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -26,7 +27,7 @@ module MetricsMsg {
     
     var requestMetrics = new CounterTable();
     
-    var responseTimeMetrics = new MeasurementTable();
+    var avgResponseTimeMetrics = new AverageMeasurementTable(MetricDataType.INT);
 
     var users = new Users();
     
@@ -55,6 +56,48 @@ module MetricsMsg {
 
         proc getUsers() {
             return this.users.values();
+        }
+    }
+    
+    class MetricValue {
+        var realValue: real;
+        var intValue: int(64);
+        var dataType: MetricDataType;
+        
+        proc init(realValue : real) {
+            this.realValue = realValue;
+            this.dataType = MetricDataType.REAL;
+        }
+        
+        proc init(intValue : int(64)) {
+            this.intValue = intValue;
+            this.dataType = MetricDataType.INT;
+        }
+        
+        proc update(val) {
+            if this.dataType == MetricDataType.INT {
+                this.intValue += val;
+            } else {
+                this.realValue += val;
+            }
+        }
+    }
+    
+    class AvgMetricValue : MetricValue {
+        var numValues: int;
+        var intTotal: int(64);
+        var realTotal: real;
+        
+        proc update(val) {
+            this.numValues += 1;
+
+            if this.dataType == MetricDataType.INT {
+                this.intTotal += val;
+                this.realValue = this.intTotal/this.numValues;
+            } else {
+                this.realTotal += val;
+                this.realValue = this.realTotal/this.numValues;
+            }   
         }
     }
 
@@ -111,30 +154,128 @@ module MetricsMsg {
         }     
     } 
 
+    /*
+     * The MeasurementTable encapsulates int or real measurements
+     */
     class MeasurementTable {
-        var measurements = new map(string, real);
-    
-        proc get(metric: string) : int {
-            if !this.measurements.contains(metric) {
-                this.measurements.add(metric,0.0);
-                return 0;
+        var realMeasurements: map(string, real);
+        var intMeasurements: map(string, int(64));
+        var dataType: MetricDataType;
+        
+        proc init(dataType: MetricDataType) {
+            if dataType == MetricDataType.INT {
+                this.intMeasurements = new map(string, int(64));
             } else {
-                return try! this.measurements.getValue(metric);
+                this.realMeasurements = new map(string, real);
+            }
+            
+            this.dataType = dataType;
+        }
+
+        proc getMeasurement(metric: string) throws {
+            if this.dataType == MetricDataType.INT {
+                return this.intMeasurements(metric);
+            } else {
+                return this.realMeasurements(metric);
+            }
+        }
+
+        proc get(metric: string) : int throws {
+        
+            if !this.measurements.contains(metric) {
+                if this.dataType == MetricDataType.INT {
+                    var value = 0;
+                    this.intMeasurements.add(metric, value);
+                    return value;      
+                } else {
+                    var value = 0.0;
+                    this.realMeasurements.add(metric, value);
+                    return value;
+                }
+            } else {
+                return this.getMeasurement(metric);
             }
         }   
         
-        proc set(metric: string, measurement: real) {
-            this.measurements.addOrSet(metric, measurement);
+        proc set(metric: string, measurement) {
+            if this.dataType == MetricDataType.INT {
+                this.intMeasurements.addOrSet(metric, measurement);
+            } else {
+                this.realMeasurements.addOrSet(metric, measurement);
+            }
+        }
+        
+        proc set(metric: string, measurement, dataType: MetricDataType) {
+            if dataType == MetricDataType.INT {
+                this.intMeasurements.addOrSet(metric, measurement);
+            } else {
+                this.realMeasurements.addOrSet(metric, measurement);
+            }
+        }
+
+        proc size() {
+            if this.dataType == MetricDataType.INT {
+                return this.intMeasurements.size;
+            } else {
+                return this.realMeasurements.size;
+            }
+        }
+    }
+
+    /* 
+     * The AverageMeasurementTable extends the MeasurementTable by generating
+     * values that are averages of incoming int or real values.
+     */
+    class AverageMeasurementTable : MeasurementTable {
+        //number of recorded measurements
+        var numMeasurements = new map(string, int(64));
+        
+        // total value of measurements to be averaged
+        var intMeasurementTotals: map(string, int(64));
+        var realMeasurementTotals: map(string, real); 
+        
+        proc init(dataType) {
+            super.init(MetricDataType.REAL);
+            
+            if dataType == MetricDataType.INT {
+                this.intMeasurementTotals = new map(string, int(64));
+            } else {
+                this.realMeasurementTotals = new map(string, real);
+            }
+        }
+        
+        proc add(metric: string, measurement, dataType) throws {
+            var numMeasurements: int(64);
+
+            if this.numMeasurements.contains(metric) {
+                numMeasurements = this.numMeasurements(metric) + 1;
+            } else {
+                numMeasurements = 1;
+            }
+
+            this.numMeasurements.addOrSet(metric, numMeasurements);
+            
+            var value: real;
+
+            if dataType == MetricDataType.INT {
+                this.intMeasurementTotals(metric) += measurement;
+                value = this.intMeasurementTotals(metric)/numMeasurements;
+            } else {
+                this.realMeasurementTotals(metric) += measurement;
+                value = this.realMeasurementTotals(metric)/numMeasurements;
+            }
+  
+            this.realMeasurements.addOrSet(metric, value);
+            mLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Added Avg Response Time cmd: %s time %t".format(metric,value));
+            
         }
         
         proc items() {
-            return this.measurements.items();
+           return this.realMeasurements.items();
         }
-        
-        proc size() {
-            return this.measurements.size;
-        }
-    
     }
 
     class CounterTable {
@@ -198,7 +339,7 @@ module MetricsMsg {
         for metric in getNumRequestMetrics() {
             metrics.append(metric);
         }
-        for metric in getResponseTimeMetrics() {
+        for metric in getAvgResponseTimeMetrics() {
             metrics.append(metric);
         }
         for metric in getSystemMetrics() {
@@ -264,24 +405,12 @@ module MetricsMsg {
     }
 
 
-    proc getResponseTimeMetrics() throws {
+    proc getAvgResponseTimeMetrics() throws {
         var metrics = new list(owned Metric?);
 
-        for item in responseTimeMetrics.items() {
+        for item in avgResponseTimeMetrics.items() {
             metrics.append(new Metric(name=item[0], 
-                                      category=MetricCategory.RESPONSE_TIME,
-                                      value=item[1]));
-        }
-
-        return metrics;
-    }
-    
-    proc getArrayOpsResponseTimeMetrics() throws {
-        var metrics = new list(owned Metric?);
-
-        for item in responseTimeMetrics.items() {
-            metrics.append(new Metric(name=item[0], 
-                                      category=MetricCategory.RESPONSE_TIME,
+                                      category=MetricCategory.AVG_RESPONSE_TIME,
                                       value=item[1]));
         }
 
