@@ -17,6 +17,7 @@ util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))
 
 from server_util import *
+from server_util.test.server_test_util import get_arkouda_numlocales
 
 logging.basicConfig(level=logging.INFO)
 
