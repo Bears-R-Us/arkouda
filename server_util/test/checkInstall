@@ -8,7 +8,7 @@ import logging
 import sys
 
 from server_util import *
-from server_util.test.server_test_util import get_arkouda_numlocales, start_arkouda_server
+from server_util.test.server_test_util import get_arkouda_numlocales, start_arkouda_server, run_client_live
 
 logging.basicConfig(level=logging.INFO)
 
