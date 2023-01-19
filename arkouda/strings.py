@@ -357,7 +357,7 @@ class Strings:
             generic_msg(cmd="segmentLengths", args={"objType": self.objtype, "obj": self.entry})
         )
 
-    def encode(self, toEncoding: str, fromEncoding: str ="UTF-8"):
+    def encode(self, toEncoding : str, fromEncoding : str = "UTF-8"):
         """
         Return a new strings object in `toEncoding`, expecting that the
         current Strings is encoded in `fromEncoding`
@@ -392,7 +392,7 @@ class Strings:
                     "obj": self.entry,
                 },
             )
-            intermediate = Strings.from_return_msg(rep_msg)
+            intermediate = Strings.from_return_msg(cast(str, rep_msg))
             # now go to idna
             rep_msg = generic_msg(
                 cmd="encode",
@@ -402,7 +402,7 @@ class Strings:
                     "obj": intermediate,
                 },
             )
-            return Strings.from_return_msg(rep_msg)
+            return Strings.from_return_msg(cast(str, rep_msg))
 
         rep_msg = generic_msg(
             cmd="encode",
@@ -412,7 +412,7 @@ class Strings:
                 "obj": self.entry,
             },
         )
-        return Strings.from_return_msg(rep_msg)
+        return Strings.from_return_msg(cast(str, rep_msg))
 
     def decode(self, fromEncoding, toEncoding="UTF-8"):
         """
@@ -426,7 +426,7 @@ class Strings:
         toEncoding: str
             The encoding that the strings will be converted to,
             default to UTF-8
-        
+
         Returns
         -------
         Strings
