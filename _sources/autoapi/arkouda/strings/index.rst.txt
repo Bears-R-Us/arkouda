@@ -189,10 +189,16 @@ Classes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. py:method:: encode(toEncoding, fromEncoding='UTF-8')
+   .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8')
 
       Return a new strings object in `toEncoding`, expecting that the
       current Strings is encoded in `fromEncoding`
+
+      :param toEncoding: The encoding that the strings will be converted to
+      :type toEncoding: str
+      :param fromEncoding: The current encoding of the strings object, default to
+                           UTF-8
+      :type fromEncoding: str
 
       :returns: A new Strings object in `toEncoding`
       :rtype: Strings
@@ -204,6 +210,12 @@ Classes
 
       Return a new strings object in `fromEncoding`, expecting that the
       current Strings is encoded in `toEncoding`
+
+      :param fromEncoding: The current encoding of the strings object
+      :type fromEncoding: str
+      :param toEncoding: The encoding that the strings will be converted to,
+                         default to UTF-8
+      :type toEncoding: str
 
       :returns: A new Strings object in `toEncoding`
       :rtype: Strings

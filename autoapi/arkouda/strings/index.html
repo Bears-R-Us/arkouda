@@ -529,18 +529,25 @@ binary operation</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.strings.Strings.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.encode" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.strings.Strings.encode" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a new strings object in <cite>toEncoding</cite>, expecting that the
 current Strings is encoded in <cite>fromEncoding</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new Strings object in <cite>toEncoding</cite></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>toEncoding</strong> (<em>str</em>) – The encoding that the strings will be converted to</p></li>
+<li><p><strong>fromEncoding</strong> (<em>str</em>) – The current encoding of the strings object, default to
+UTF-8</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Strings object in <cite>toEncoding</cite></p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
 </dd>
 </dl>
 </dd></dl>
@@ -551,14 +558,21 @@ current Strings is encoded in <cite>fromEncoding</cite></p>
 <dd><p>Return a new strings object in <cite>fromEncoding</cite>, expecting that the
 current Strings is encoded in <cite>toEncoding</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new Strings object in <cite>toEncoding</cite></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fromEncoding</strong> (<em>str</em>) – The current encoding of the strings object</p></li>
+<li><p><strong>toEncoding</strong> (<em>str</em>) – The encoding that the strings will be converted to,
+default to UTF-8</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Strings object in <cite>toEncoding</cite></p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1950,7 +1964,7 @@ Please note you cannot register two different objects with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id445" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
 If the user is attempting to register more than one object with the same name,
 the former should be unregistered first to free up the registration name.</p></li>
 </ul>
