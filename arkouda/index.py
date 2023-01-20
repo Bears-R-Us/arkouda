@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 import pandas as pd  # type: ignore
 from typeguard import typechecked
 
-from arkouda import Strings
+from arkouda import Categorical, Strings
 from arkouda.dtypes import bool as akbool
 from arkouda.dtypes import float64 as akfloat64
 from arkouda.dtypes import int64 as akint64
@@ -19,7 +19,9 @@ from arkouda.util import convert_if_categorical, generic_concat, get_callback, r
 class Index:
     @typechecked
     def __init__(
-        self, values: Union[List, pdarray, Strings, pd.Index, "Index"], name: Optional[str] = None
+        self,
+        values: Union[List, pdarray, Strings, Categorical, pd.Index, "Index"],
+        name: Optional[str] = None,
     ):
         if isinstance(values, Index):
             self.values = values.values
@@ -358,6 +360,7 @@ class Index:
         file format.
         """
         from warnings import warn
+
         warn(
             "ak.Index.save has been deprecated. Please use ak.Index.to_parquet or ak.Index.to_hdf",
             DeprecationWarning,

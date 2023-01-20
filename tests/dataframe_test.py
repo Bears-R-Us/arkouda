@@ -394,6 +394,19 @@ class DataFrameTest(ArkoudaTest):
         self.assertListEqual(keys[1].to_list(), [333, 222, 111])
         self.assertListEqual(count.to_list(), [1, 2, 3])
 
+        # testing counts with IPv4 column
+        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count()
+        pds = pd.Series(
+            data=np.ones(4, dtype=np.int64),
+            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
+        )
+        self.assertTrue(s.to_pandas().equals(other=pds))
+
+        # testing counts with Categorical column
+        s = ak.DataFrame({"a": ak.Categorical(ak.array(["a", "a", "a", "b"]))}).groupby("a").count()
+        pds = pd.Series(data=np.array([3, 1]), index=pd.Index(data=np.array(["a", "b"], dtype="<U7")))
+        self.assertTrue(s.to_pandas().equals(other=pds))
+
     def test_gb_series(self):
         username = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
         userid = ak.array([111, 222, 111, 333, 222, 111])
@@ -418,14 +431,6 @@ class DataFrameTest(ArkoudaTest):
         self.assertIsInstance(c, ak.Series)
         self.assertListEqual(c.index.to_list(), ["Bob", "Alice", "Carol"])
         self.assertListEqual(c.values.to_list(), [2, 3, 1])
-
-        # testing counts with IPv4 column
-        s = ak.DataFrame({"a": ak.IPv4(ak.arange(1, 5))}).groupby("a").count()
-        pds = pd.Series(
-            data=np.ones(4, dtype=np.int64),
-            index=pd.Index(data=np.array(["0.0.0.1", "0.0.0.2", "0.0.0.3", "0.0.0.4"], dtype="<U7")),
-        )
-        self.assertTrue(s.to_pandas().equals(other=pds))
 
     def test_to_pandas(self):
         df = build_ak_df()
