@@ -97,7 +97,10 @@ module Codecs {
         // Add 1 for null terminator
         var inSize = (inBufSize): c_size_t;
 
-        // TODO: this is probably worst way to allocate this
+        // This buffer must be 4x the size of the input
+        // buffer, as that is the maximum number of bytes
+        // that can be allocated for the output (which is
+        // UTF-16, the others are smaller)
         var chplRes: [0..#(inBufSize*4)] uint(8) = 0x00;
         var origSize = chplRes.size;
         var outSize = chplRes.size: c_size_t;
