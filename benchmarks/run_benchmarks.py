@@ -66,7 +66,7 @@ def get_chpl_util_dir():
     if not CHPL_HOME:
         logging.error("$CHPL_HOME not set")
         sys.exit(1)
-    chpl_util_dir = os.path.join(CHPL_HOME, "server_util", "test")
+    chpl_util_dir = os.path.join(CHPL_HOME, "util", "test")
     if not os.path.isdir(chpl_util_dir):
         logging.error("{} does not exist".format(chpl_util_dir))
         sys.exit(1)
