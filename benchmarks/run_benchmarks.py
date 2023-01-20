@@ -16,7 +16,7 @@ benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))
 
-from server_util import *
+from server_util.test import *
 
 logging.basicConfig(level=logging.INFO)
 
