@@ -25,6 +25,7 @@ module ServerDaemon {
     use ExternalIntegration;
     use MetricsMsg;
     use BigIntMsg;
+    use NumPyDType;
 
     enum ServerDaemonType {DEFAULT,INTEGRATION,METRICS}
 
@@ -378,7 +379,6 @@ module ServerDaemon {
             return arkDirectory;
         }
 
-
         /**
          * The overridden shutdown function calls exit(0) if there are multiple 
          * ServerDaemons configured for this Arkouda instance.
@@ -390,6 +390,62 @@ module ServerDaemon {
                 exit(0);
             }
         }
+
+        proc processMetrics(user: string, cmd: string, args: MessageArgs, elapsedTime: real) throws {
+            proc getArrayParameterObj(args: MessageArgs) throws {
+                var obj : ParameterObj;
+
+                for item in args.items() {
+                    if item.key == 'a' || item.key == 'array' { 
+                        obj = item;
+                    }
+                }
+                
+                return obj;
+            }
+          
+            proc computeArrayMetrics(obj: ParameterObj): bool {
+               return !obj.key.isEmpty();
+            }
+          
+            // Update Request Metrics
+            requestMetrics.increment(cmd);
+            
+            // Update User-Scoped Request Metrics
+            userMetrics.incrementPerUserRequestMetrics(user,cmd);
+
+            var apo = getArrayParameterObj(args);
+
+            // Check to see if the incoming request corresponds to a pdarray operation
+            if computeArrayMetrics(apo) {
+                var name = apo.val;
+                var value = elapsedTime;
+                
+                // Add the response time to the avg response time for the corresponding cmd
+                avgResponseTimeMetrics.add(cmd,value);
+            
+                /*
+                 * Create the ArrayMetric object and output the individual response time
+                 * as JSON to the console or arkouda.log for now. In the future, individual  
+                 * values will be output to external channels such as Prometheus, Kafka, etc...
+                 * to enable downstream metrics processing and presentation.
+                 */
+                var metric = new ArrayMetric(name=name,
+                                             category=MetricCategory.RESPONSE_TIME,
+                                             scope=MetricScope.REQUEST,
+                                             value=value,
+                                             cmd=cmd,
+                                             dType=str2dtype(apo.dtype),
+                                             size=getGenericTypedArrayEntry(apo.val, st).size
+                                            );
+                
+                // Log to the console or arkouda.log file
+                sdLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "%jt".format(metric)); 
+            }
+            
+        }
+
 
         override proc run() throws {
             this.arkDirectory = this.initArkoudaDirectory();
@@ -474,6 +530,11 @@ module ServerDaemon {
                     else {
                         msgArgs = new owned MessageArgs();
                     }
+
+                    sdLogger.info(getModuleName(),
+                                  getRoutineName(),
+                                  getLineNumber(),
+                                  "MessageArgs: %t".format(msgArgs));                    
 
                     /*
                      * If authentication is enabled with the --authenticate flag, authenticate
@@ -573,21 +634,22 @@ module ServerDaemon {
                                                               msgFormat=MsgFormat.STRING, user=user));
                 }
 
+                var elapsedTime = getCurrentTime() - s0;
+
                 /*
                  * log that the request message has been handled and reply message has been sent 
                  * along with the time to do so
                  */
                 if trace {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                              "<<< %s took %.17r sec".format(cmd, getCurrentTime() - s0));
+                                              "<<< %s took %.17r sec".format(cmd, elapsedTime));
                 }
                 if (trace && memTrack) {
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                         "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
                 }
                 if metricsEnabled() {
-                    userMetrics.incrementPerUserRequestMetrics(user,cmd);
-                    requestMetrics.increment(cmd);
+                    processMetrics(user, cmd, msgArgs, elapsedTime);
                 }
             } catch (e: ErrorWithMsg) {
                 // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string

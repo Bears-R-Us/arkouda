@@ -13,8 +13,9 @@ module MetricsMsg {
     use ArkoudaDateTimeCompat;
     use NumPyDType;
 
-    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
+    enum MetricCategory{ALL,NUM_REQUESTS,RESPONSE_TIME,AVG_RESPONSE_TIME,SYSTEM,SERVER,SERVER_INFO};
     enum MetricScope{GLOBAL,LOCALE,REQUEST,USER};
+    enum MetricDataType{INT,REAL};
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -26,7 +27,7 @@ module MetricsMsg {
     
     var requestMetrics = new CounterTable();
     
-    var responseTimeMetrics = new MeasurementTable();
+    var avgResponseTimeMetrics = new AverageMeasurementTable();
 
     var users = new Users();
     
@@ -57,6 +58,48 @@ module MetricsMsg {
             return this.users.values();
         }
     }
+    
+    class MetricValue {
+        var realValue: real;
+        var intValue: int(64);
+        var dataType: MetricDataType;
+        
+        proc init(realValue : real) {
+            this.realValue = realValue;
+            this.dataType = MetricDataType.REAL;
+        }
+        
+        proc init(intValue : int(64)) {
+            this.intValue = intValue;
+            this.dataType = MetricDataType.INT;
+        }
+        
+        proc update(val) {
+            if this.dataType == MetricDataType.INT {
+                this.intValue += val;
+            } else {
+                this.realValue += val;
+            }
+        }
+    }
+    
+    class AvgMetricValue : MetricValue {
+        var numValues: int;
+        var intTotal: int(64);
+        var realTotal: real;
+        
+        proc update(val) {
+            this.numValues += 1;
+
+            if this.dataType == MetricDataType.INT {
+                this.intTotal += val;
+                this.realValue = this.intTotal/this.numValues;
+            } else {
+                this.realTotal += val;
+                this.realValue = this.realTotal/this.numValues;
+            }   
+        }
+    }
 
     class UserMetrics {
         var metrics = new map(keyType=User,valType=shared CounterTable);
@@ -82,10 +125,10 @@ module MetricsMsg {
             var metrics = new list(owned UserMetric?);
             for (metric, value) in userMetrics.items() {
                 metrics.append(new UserMetric(name=metric,
-                                                     scope=MetricScope.USER,
-                                                     category=MetricCategory.NUM_REQUESTS,
-                                                     value=value,
-                                                     user=userName));
+                                              scope=MetricScope.USER,
+                                              category=MetricCategory.NUM_REQUESTS,
+                                              value=value,
+                                              user=userName));
             }
             return metrics;
         }
@@ -111,30 +154,83 @@ module MetricsMsg {
         }     
     } 
 
+    /*
+     * The MeasurementTable encapsulates real measurements
+     */
     class MeasurementTable {
         var measurements = new map(string, real);
-    
-        proc get(metric: string) : int {
+
+        proc get(metric: string): real throws {
             if !this.measurements.contains(metric) {
-                this.measurements.add(metric,0.0);
-                return 0;
+                var value = 0.0;
+                    this.measurements.add(metric, value);
+                return value;
             } else {
-                return try! this.measurements.getValue(metric);
+                return this.measurements(metric);
             }
         }   
-        
+
         proc set(metric: string, measurement: real) {
             this.measurements.addOrSet(metric, measurement);
+        }
+
+        proc size() {
+            return this.measurements.size;
         }
         
         proc items() {
             return this.measurements.items();
         }
+    }
+
+    /* 
+     * The AverageMeasurementTable extends the MeasurementTable by generating
+     * values that are averages of incoming values.
+     */
+    class AverageMeasurementTable : MeasurementTable {
+        //number of recorded measurements
+        var numMeasurements = new map(string, int(64));
         
-        proc size() {
-            return this.measurements.size;
+        // total value of measurements to be averaged for each metric measured.s
+        var measurementTotals = new map(string, real);
+
+        proc getNumMeasurements(metric: string) {
+            if this.numMeasurements.contains(metric) {
+                return this.numMeasurements(metric) + 1;
+            } else {
+                return 1;
+            }
         }
-    
+        
+        proc getMeasurementTotal(metric: string) : real {
+            var value: real;
+
+            if !this.measurementTotals.contains(metric) {
+                value = 0.0;
+                this.measurementTotals.addOrSet(metric, value);
+            } else {
+                value = this.measurementTotals(metric);
+            }
+            
+            return value;
+        }
+        
+        proc add(metric: string, measurement) throws {
+            var numMeasurements = getNumMeasurements(metric);
+            var measurementTotal = getMeasurementTotal(metric);
+
+            this.numMeasurements.addOrSet(metric, numMeasurements);
+            this.measurementTotals(metric) += measurement;
+
+            var value: real = this.measurementTotals(metric)/numMeasurements;
+  
+            this.measurements.addOrSet(metric, value);
+
+            mLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Added Avg Response Time cmd: %s time %t".format(metric,value));
+        }
     }
 
     class CounterTable {
@@ -198,7 +294,7 @@ module MetricsMsg {
         for metric in getNumRequestMetrics() {
             metrics.append(metric);
         }
-        for metric in getResponseTimeMetrics() {
+        for metric in getAvgResponseTimeMetrics() {
             metrics.append(metric);
         }
         for metric in getSystemMetrics() {
@@ -264,12 +360,12 @@ module MetricsMsg {
     }
 
 
-    proc getResponseTimeMetrics() throws {
+    proc getAvgResponseTimeMetrics() throws {
         var metrics = new list(owned Metric?);
 
-        for item in responseTimeMetrics.items() {
+        for item in avgResponseTimeMetrics.items() {
             metrics.append(new Metric(name=item[0], 
-                                      category=MetricCategory.RESPONSE_TIME,
+                                      category=MetricCategory.AVG_RESPONSE_TIME,
                                       value=item[1]));
         }
 
@@ -364,20 +460,28 @@ module MetricsMsg {
 
     }
 
-    class DataTypeMetric : Metric{
+    class ArrayMetric : Metric {
+        var cmd: string;
         var dType: DType;
+        var size: int;
         
-        proc init(name: string, category: MetricCategory, 
-                                scope: MetricScope=MetricScope.GLOBAL, 
-                                timestamp: datetime=datetime.now(), 
-                                value: real,
-                                dType: DType) {
-            super.init(name=name,
-                       category = category,
-                       scope = scope,
-                       timestamp = timestamp,
-                       value = value);
-            this.dType = dType;
+        proc init(name: string, 
+                  category: MetricCategory, 
+                  scope: MetricScope=MetricScope.GLOBAL, 
+                  timestamp: datetime=datetime.now(), 
+                  value: real,
+                  cmd: string,
+                  dType: DType,
+                  size: int) {
+              super.init(name=name,
+                         category = category,
+                         scope = scope,
+                         timestamp = timestamp,
+                         value = value
+                        );
+              this.cmd = cmd;
+              this.dType = dType;
+              this.size = size;
         }
     }
 
