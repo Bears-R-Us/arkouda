@@ -113,7 +113,7 @@ module HDF5Msg {
         var extension: string;
         (prefix,extension) = getFileMetadata(filename);
 
-        var filenames: [0..#1] string = ["%s%s".format(prefix, extension)];
+        var filenames: [0..#1] string = ["%s%s".format(prefix, extension), ];
         var matchingFilenames = glob("%s*%s".format(prefix, extension));
 
         const f = filenames[0];
@@ -700,7 +700,7 @@ module HDF5Msg {
     private proc writeNilStringsGroupToHdf(fileId: int, group: string, writeOffsets: bool) throws {
         var dset_id: C_HDF5.hid_t;
         C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/values".format(group).c_str(), 1,
-                c_ptrTo([0:uint(64)]), getHDF5Type(uint(8)), nil);
+                c_ptrTo([0:uint(64), ]), getHDF5Type(uint(8)), nil);
 
         dset_id = C_HDF5.H5Dopen(fileId, "/%s/values".format(group).c_str(), C_HDF5.H5P_DEFAULT);
 
@@ -719,7 +719,7 @@ module HDF5Msg {
 
         if (writeOffsets) {
             C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/segments".format(group).c_str(), 1,
-                c_ptrTo([0:uint(64)]), getHDF5Type(int), nil);
+                c_ptrTo([0:uint(64), ]), getHDF5Type(int), nil);
 
             dset_id = C_HDF5.H5Dopen(fileId, "/%s/segments".format(group).c_str(), C_HDF5.H5P_DEFAULT);
 
@@ -750,7 +750,7 @@ module HDF5Msg {
      */
     private proc writeStringsComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
         C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/%s'.format(group, component).c_str(), 1,
-                c_ptrTo([items.size:uint(64)]), getHDF5Type(etype), c_ptrTo(items));
+                c_ptrTo([items.size:uint(64), ]), getHDF5Type(etype), c_ptrTo(items));
 
         var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(fileId, '/%s/%s'.format(group, component).c_str(), C_HDF5.H5P_DEFAULT);
 
@@ -805,13 +805,13 @@ module HDF5Msg {
 
                 //localize values and write dataset
                 var localVals = new lowLevelLocalizingSlice(segString.values.a, 0..#segString.values.size);
-                var val_dims: [0..#1] C_HDF5.hsize_t = [segString.values.size:C_HDF5.hsize_t];
+                var val_dims: [0..#1] C_HDF5.hsize_t = [segString.values.size:C_HDF5.hsize_t, ];
                 C_HDF5.H5LTmake_dataset(file_id, "/%s/values".format(group).c_str(), 1:c_int, val_dims, getHDF5Type(uint(8)), localVals.ptr);
                 
                 if (writeOffsets) {
                     //localize offsets and write dataset
                     var localOffsets = new lowLevelLocalizingSlice(segString.offsets.a, 0..#segString.size);
-                    var off_dims: [0..#1] C_HDF5.hsize_t = [segString.offsets.size:C_HDF5.hsize_t];
+                    var off_dims: [0..#1] C_HDF5.hsize_t = [segString.offsets.size:C_HDF5.hsize_t, ];
                     C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, off_dims, getHDF5Type(int), localOffsets.ptr);
                 }
                 writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
@@ -1166,14 +1166,14 @@ module HDF5Msg {
                             }
                             // do A[intersection] = file[intersection - offset]
                             var dataspace = C_HDF5.H5Dget_space(dataset);
-                            var dsetOffset = [(intersection.low - filedom.low): C_HDF5.hsize_t];
-                            var dsetStride = [intersection.stride: C_HDF5.hsize_t];
-                            var dsetCount = [intersection.size: C_HDF5.hsize_t];
+                            var dsetOffset = [(intersection.low - filedom.low): C_HDF5.hsize_t, ];
+                            var dsetStride = [intersection.stride: C_HDF5.hsize_t, ];
+                            var dsetCount = [intersection.size: C_HDF5.hsize_t, ];
                             C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(dsetOffset), 
                                                             c_ptrTo(dsetStride), c_ptrTo(dsetCount), nil);
-                            var memOffset = [0: C_HDF5.hsize_t];
-                            var memStride = [1: C_HDF5.hsize_t];
-                            var memCount = [intersection.size: C_HDF5.hsize_t];
+                            var memOffset = [0: C_HDF5.hsize_t, ];
+                            var memStride = [1: C_HDF5.hsize_t, ];
+                            var memCount = [intersection.size: C_HDF5.hsize_t, ];
                             var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
                             C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
                                                             c_ptrTo(memStride), c_ptrTo(memCount), nil);

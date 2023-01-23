@@ -304,14 +304,14 @@ module RegistrationMsg
                             "%s: Collecting DataFrame components for '%s'".format(cmd, name));
 
         var jsonParam = new ParameterObj("name", colName, ObjectType.VALUE, "str");
-        var subArgs1 = new MessageArgs(new list([jsonParam]));
+        var subArgs1 = new MessageArgs(new list([jsonParam, ]));
         // Add columns as a json list
         var cols = stringsToJSONMsg(cmd, subArgs1, st).msg;
         repMsg += "+json %s".format(cols);
 
         // Get index 
         var indParam = new ParameterObj("name", "df_index_%s_key".format(name), ObjectType.VALUE, "");
-        var subArgs2 = new MessageArgs(new list([indParam]));
+        var subArgs2 = new MessageArgs(new list([indParam, ]));
         var ind = attachMsg(cmd, subArgs2, st).msg;
         if ind.startsWith("Error:") { 
             var errorMsg = ind;
@@ -343,12 +343,12 @@ module RegistrationMsg
             select (objtype){
                 when ("pdarray") {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam]));
+                    var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
                 when ("str") {
                     var attParam = new ParameterObj("name", regName, ObjectType.VALUE, "");
-                    var subArgs = new MessageArgs(new list([attParam]));
+                    var subArgs = new MessageArgs(new list([attParam, ]));
                     msg = attachMsg(cmd, subArgs, st).msg;
                 }
                 when ("SegArray") {
@@ -564,7 +564,7 @@ module RegistrationMsg
         select (dtype.toLower()) {
             when ("simple") {
                 // pdarray and strings can use the unregisterMsg method without any other processing
-                var subArgs = new MessageArgs(new list([msgArgs.get("name")]));
+                var subArgs = new MessageArgs(new list([msgArgs.get("name"), ]));
                 return unregisterMsg(cmd, subArgs, st);
             }
             when ("categorical") {
@@ -587,7 +587,7 @@ module RegistrationMsg
                     // Check for "" in case optional components aren't found
                     if n != "" {
                         base_json.setVal(n);
-                        var subArgs = new MessageArgs(new list([base_json]));
+                        var subArgs = new MessageArgs(new list([base_json, ]));
                         var resp = unregisterMsg(cmd, subArgs, st);
                         status += " %s: %s ".format(n, resp.msg);
                     }
@@ -616,7 +616,7 @@ module RegistrationMsg
                 var base_json = msgArgs.get("name");
                 forall n in nameList with (in base_json, + reduce status) {
                     base_json.setVal(n);
-                    var subArgs = new MessageArgs(new list([base_json]));
+                    var subArgs = new MessageArgs(new list([base_json, ]));
                     var resp = unregisterMsg(cmd, subArgs, st);
                     status += " %s: %s ".format(n, resp.msg);
                 }
