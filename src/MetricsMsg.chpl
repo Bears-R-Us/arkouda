@@ -27,7 +27,7 @@ module MetricsMsg {
     
     var requestMetrics = new CounterTable();
     
-    var avgResponseTimeMetrics = new AverageMeasurementTable(MetricDataType.INT);
+    var avgResponseTimeMetrics = new AverageMeasurementTable();
 
     var users = new Users();
     
@@ -155,126 +155,81 @@ module MetricsMsg {
     } 
 
     /*
-     * The MeasurementTable encapsulates int or real measurements
+     * The MeasurementTable encapsulates real measurements
      */
     class MeasurementTable {
-        var realMeasurements: map(string, real);
-        var intMeasurements: map(string, int(64));
-        var dataType: MetricDataType;
-        
-        proc init(dataType: MetricDataType) {
-            if dataType == MetricDataType.INT {
-                this.intMeasurements = new map(string, int(64));
-            } else {
-                this.realMeasurements = new map(string, real);
-            }
-            
-            this.dataType = dataType;
-        }
+        var measurements = new map(string, real);
 
-        proc getMeasurement(metric: string) throws {
-            if this.dataType == MetricDataType.INT {
-                return this.intMeasurements(metric);
-            } else {
-                return this.realMeasurements(metric);
-            }
-        }
-
-        proc get(metric: string) : int throws {
-        
+        proc get(metric: string): real throws {
             if !this.measurements.contains(metric) {
-                if this.dataType == MetricDataType.INT {
-                    var value = 0;
-                    this.intMeasurements.add(metric, value);
-                    return value;      
-                } else {
-                    var value = 0.0;
-                    this.realMeasurements.add(metric, value);
-                    return value;
-                }
+                var value = 0.0;
+                    this.measurements.add(metric, value);
+                return value;
             } else {
-                return this.getMeasurement(metric);
+                return this.measurements(metric);
             }
         }   
-        
-        proc set(metric: string, measurement) {
-            if this.dataType == MetricDataType.INT {
-                this.intMeasurements.addOrSet(metric, measurement);
-            } else {
-                this.realMeasurements.addOrSet(metric, measurement);
-            }
-        }
-        
-        proc set(metric: string, measurement, dataType: MetricDataType) {
-            if dataType == MetricDataType.INT {
-                this.intMeasurements.addOrSet(metric, measurement);
-            } else {
-                this.realMeasurements.addOrSet(metric, measurement);
-            }
+
+        proc set(metric: string, measurement: real) {
+            this.measurements.addOrSet(metric, measurement);
         }
 
         proc size() {
-            if this.dataType == MetricDataType.INT {
-                return this.intMeasurements.size;
-            } else {
-                return this.realMeasurements.size;
-            }
+            return this.measurements.size;
+        }
+        
+        proc items() {
+            return this.measurements.items();
         }
     }
 
     /* 
      * The AverageMeasurementTable extends the MeasurementTable by generating
-     * values that are averages of incoming int or real values.
+     * values that are averages of incoming values.
      */
     class AverageMeasurementTable : MeasurementTable {
         //number of recorded measurements
         var numMeasurements = new map(string, int(64));
         
-        // total value of measurements to be averaged
-        var intMeasurementTotals: map(string, int(64));
-        var realMeasurementTotals: map(string, real); 
-        
-        proc init(dataType) {
-            super.init(MetricDataType.REAL);
-            
-            if dataType == MetricDataType.INT {
-                this.intMeasurementTotals = new map(string, int(64));
+        // total value of measurements to be averaged for each metric measured.s
+        var measurementTotals = new map(string, real);
+
+        proc getNumMeasurements(metric: string) {
+            if this.numMeasurements.contains(metric) {
+                return this.numMeasurements(metric) + 1;
             } else {
-                this.realMeasurementTotals = new map(string, real);
+                return 1;
             }
         }
         
-        proc add(metric: string, measurement, dataType) throws {
-            var numMeasurements: int(64);
-
-            if this.numMeasurements.contains(metric) {
-                numMeasurements = this.numMeasurements(metric) + 1;
-            } else {
-                numMeasurements = 1;
-            }
-
-            this.numMeasurements.addOrSet(metric, numMeasurements);
-            
+        proc getMeasurementTotal(metric: string) : real {
             var value: real;
 
-            if dataType == MetricDataType.INT {
-                this.intMeasurementTotals(metric) += measurement;
-                value = this.intMeasurementTotals(metric)/numMeasurements;
+            if !this.measurementTotals.contains(metric) {
+                value = 0.0;
+                this.measurementTotals.addOrSet(metric, value);
             } else {
-                this.realMeasurementTotals(metric) += measurement;
-                value = this.realMeasurementTotals(metric)/numMeasurements;
+                value = this.measurementTotals(metric);
             }
+            
+            return value;
+        }
+        
+        proc add(metric: string, measurement) throws {
+            var numMeasurements = getNumMeasurements(metric);
+            var measurementTotal = getMeasurementTotal(metric);
+
+            this.numMeasurements.addOrSet(metric, numMeasurements);
+            this.measurementTotals(metric) += measurement;
+
+            var value: real = this.measurementTotals(metric)/numMeasurements;
   
-            this.realMeasurements.addOrSet(metric, value);
+            this.measurements.addOrSet(metric, value);
+
             mLogger.debug(getModuleName(),
                           getRoutineName(),
                           getLineNumber(),
                           "Added Avg Response Time cmd: %s time %t".format(metric,value));
-            
-        }
-        
-        proc items() {
-           return this.realMeasurements.items();
         }
     }
 

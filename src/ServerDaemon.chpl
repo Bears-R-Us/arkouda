@@ -419,12 +419,10 @@ module ServerDaemon {
             // Check to see if the incoming request corresponds to a pdarray operation
             if computeArrayMetrics(apo) {
                 var name = apo.val;
-                var value = elapsedTime:int(64);
+                var value = elapsedTime;
                 
                 // Add the response time to the avg response time for the corresponding cmd
-                avgResponseTimeMetrics.add(cmd,
-                                           value,
-                                           MetricDataType.INT);
+                avgResponseTimeMetrics.add(cmd,value);
             
                 /*
                  * Create the ArrayMetric object and output the individual response time
