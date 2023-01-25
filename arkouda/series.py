@@ -123,8 +123,8 @@ class Series:
     ):
         if isinstance(data, (tuple, list)) and len(data) == 2:
             # handles the previous `ar_tuple` case
-            if not isinstance(data[0], (pdarray, Strings, list, tuple)):
-                raise TypeError("indices must be a pdarray, Strings, List, or Tuple")
+            if not isinstance(data[0], (pdarray, Strings, Categorical, list, tuple)):
+                raise TypeError("indices must be a pdarray, Strings, Categorical, List, or Tuple")
             if not isinstance(data[1], (pdarray, Strings, Categorical)):
                 raise TypeError("values must be a pdarray, Strings, or Categorical")
             self.values = data[1]
@@ -160,7 +160,7 @@ class Series:
             length_str = f"\nLength {len(self)}"
         return (
             prt.to_string(
-                dtype=prt.dtype, min_rows=get_option("display.min_rows"), max_rows=maxrows, length=False,
+                dtype=prt.dtype, min_rows=get_option("display.min_rows"), max_rows=maxrows, length=False
             )
             + length_str
         )
@@ -594,9 +594,7 @@ class Series:
 
     @staticmethod
     @typechecked
-    def pdconcat(
-        arrays: List, axis: int = 0, labels: Strings = None
-    ) -> Union[pd.Series, pd.DataFrame]:
+    def pdconcat(arrays: List, axis: int = 0, labels: Strings = None) -> Union[pd.Series, pd.DataFrame]:
         """Concatenate a list of arkouda Series or grouped arkouda arrays, returning a PANDAS object.
 
         If a list of grouped arkouda arrays is passed they are converted to a series. Each grouping
