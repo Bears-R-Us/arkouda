@@ -409,7 +409,7 @@ class OperatorsTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.concatenate(datetime_one, bitvector_two)
 
-        # verify ak.server_util.concatenate still works
+        # verify ak.util.concatenate still works
         ipv4_akuconcat = akuconcat([ipv4_one, ipv4_two])
         self.assertEqual(type(ipv4_akuconcat), ak.IPv4)
         self.assertListEqual(ak.IPv4(pda_concat).to_list(), ipv4_akuconcat.to_list())

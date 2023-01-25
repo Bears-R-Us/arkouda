@@ -2263,7 +2263,7 @@ class DataFrame(UserDict):
     @staticmethod
     def from_return_msg(repMsg):
         """
-        Creates and returns a DataFrame based on return components from ak.server_util.attach
+        Creates and returns a DataFrame based on return components from ak.util.attach
 
         Parameters
         ----------

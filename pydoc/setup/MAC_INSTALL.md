@@ -28,7 +28,7 @@ For convenience, the steps to install Chapel from source are detailed here. If y
 **Step 4**
 >Configure environment variables. *Please Note: This command assumes the use of `bash` or `zsh`. Please refer to the [Chapel Documentation](https://chapel-lang.org/docs/usingchapel/QUICKSTART.html#quickstart-with-other-shells) if you are using another shell.*
 > ```bash
-> source server_util/quickstart/setchplenv.bash
+> source util/quickstart/setchplenv.bash
 > ```
 
 **Step 5**
