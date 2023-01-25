@@ -321,19 +321,7 @@ module IndexingMsg
                 return sliceHelper(bool);
             }
             when (DType.BigInt) {
-                var e = toSymEntry(gEnt,bigint);
-                var tmp = makeDistArray(slice.size, bigint);
-                ref ea = e.a;
-                // TODO figure out a way to copy more efficiently attempting
-                // to use an aggregator runs into issues with unordered copy
-                forall (elt,j) in zip(tmp, slice) {
-                    elt = ea[j];
-                }
-                var a = st.addEntry(rname, new shared SymEntry(tmp));
-                var repMsg = "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-
+                return sliceHelper(bigint);
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
@@ -504,111 +492,19 @@ module IndexingMsg
                 return ivBoolHelper(bool);
             }
             when (DType.BigInt, DType.Int64) {
-                var e = toSymEntry(gX,bigint);
-                var iv = toSymEntry(gIV,int);
-                if (e.size == 0) && (iv.size == 0) {
-                    var a = st.addEntry(rname, new shared SymEntry(makeDistArray(0, bigint)));
-                    var repMsg = "created " + st.attrib(rname);
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                    return new MsgTuple(repMsg, MsgType.NORMAL);
-                }
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                var tmp = makeDistArray(iv.size, bigint);
-                ref a2 = e.a;
-                ref iva = iv.a;
-                forall (t,idx) in zip(tmp,iva) {
-                    // TODO find a way to use aggregators
-                    t = a2[idx];
-                }
-                var a = st.addEntry(rname, new shared SymEntry(tmp));
-
-                var repMsg =  "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
+                return ivInt64Helper(bigint);
             }
             when (DType.BigInt, DType.UInt64) {
-                var e = toSymEntry(gX,bigint);
-                var iv = toSymEntry(gIV,uint);
-                if (e.size == 0) && (iv.size == 0) {
-                    st.addEntry(rname, new shared SymEntry(makeDistArray(0, bigint)));
-                    var repMsg = "created " + st.attrib(rname);
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                    return new MsgTuple(repMsg, MsgType.NORMAL);
-                }
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                if ivMin < 0 {
-                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                if ivMax >= e.size {
-                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);
-                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg,MsgType.ERROR);
-                }
-                var tmp = makeDistArray(iv.size, bigint);
-                ref a2 = e.a;
-                ref iva = iv.a;
-                forall (t,idx) in zip(tmp,iva) {
-                    // TODO find a way to use aggregators
-                    t = a2[idx:int];
-                }
-                st.addEntry(rname, new shared SymEntry(tmp));
-
-                var repMsg =  "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
+                return ivUInt64Helper(bigint);
             }
             when (DType.BigInt, DType.Bool) {
-                var e = toSymEntry(gX,bigint);
-                var truth = toSymEntry(gIV,bool);
-                if (e.size == 0) && (truth.size == 0) {
-                    st.addEntry(rname, new shared SymEntry(makeDistArray(0, bigint)));
-                    var repMsg = "created " + st.attrib(rname);
-                    imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                    return new MsgTuple(repMsg, MsgType.NORMAL);
-                }
-                // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-                overMemLimit(numBytes(int) * truth.size);
-                var iv: [truth.a.domain] int = (+ scan truth.a);
-                // pop is the number of truths (i.e. length of return array)
-                var pop = iv[iv.size-1];
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-
-                var tmp = makeDistArray(pop, bigint);
-                const ref ead = e.a.domain;
-                ref ea = e.a;
-                ref trutha = truth.a;
-                forall (i, eai) in zip(ead, ea) {
-                    // TODO find a way to use aggregators
-                    if trutha[i] {
-                        tmp[iv[i]-1] = eai;
-                    }
-                }
-                st.addEntry(rname, new shared SymEntry(tmp));
-
-                var repMsg = "created " + st.attrib(rname);
-                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
+                return ivBoolHelper(bigint);
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                        "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR); 
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
     }
