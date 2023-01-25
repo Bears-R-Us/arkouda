@@ -18,13 +18,22 @@ CHPL := chpl
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 
 CHPL_DEBUG_FLAGS += --print-passes
+
 ifdef ARKOUDA_DEVELOPER
-CHPL_FLAGS += --ccflags="-O1"
-else ifdef ARKOUDA_QUICK_COMPILE
+ARKOUDA_QUICK_COMPILE = true
+ARKOUDA_RUNTIME_CHECKS = true
+endif
+
+ifdef ARKOUDA_QUICK_COMPILE
 CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --ccflags="-O0"
 else
 CHPL_FLAGS += --fast
 endif
+
+ifdef ARKOUDA_RUNTIME_CHECKS
+CHPL_FLAGS += --checks
+endif
+
 CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
 
 # We have seen segfaults with cache remote at some node counts
