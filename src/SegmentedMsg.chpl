@@ -14,6 +14,7 @@ module SegmentedMsg {
   use IO;
   use Map;
   use GenSymIO;
+  use BigInteger;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -62,6 +63,11 @@ module SegmentedMsg {
           var segArray = getSegArray(segs.a, vals.a, st);
           segArray.fillReturnMap(rtnmap, st);
         }
+        when (DType.BigInt) {
+          var vals = toSymEntry(values, bigint);
+          var segArray = getSegArray(segs.a, vals.a, st);
+          segArray.fillReturnMap(rtnmap, st);
+        }
         otherwise {
             throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(values.dtype:string),
                                         getLineNumber(),
@@ -105,6 +111,11 @@ module SegmentedMsg {
       }
       when (DType.UInt8){
         var segArr = getSegArray(name, st, uint(8));
+        st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
+        repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
+      }
+      when (DType.BigInt){
+        var segArr = getSegArray(name, st, bigint);
         st.addEntry(neName, new shared SymEntry(segArr.getNonEmpty()));
         repMsg = "created " + st.attrib(neName) + "+" + segArr.getNonEmptyCount():string;
       }
@@ -187,6 +198,8 @@ module SegmentedMsg {
             arrayBytes = distArrToBytes(toSymEntry(entry, bool).a);
         } else if entry.dtype == DType.UInt8 {
             arrayBytes = distArrToBytes(toSymEntry(entry, uint(8)).a);
+        } else if entry.dtype == DType.BigInt {
+            arrayBytes = distArrToBytes(toSymEntry(entry, bigint).a);
         } else {
             var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -836,6 +849,11 @@ module SegmentedMsg {
                 var s = segarr[idx];
                 st.addEntry(rname, new shared SymEntry(s));
               }
+              when (DType.BigInt) { 
+                var segarr = getSegArray(objName, st, bigint);
+                var s = segarr[idx];
+                st.addEntry(rname, new shared SymEntry(s));
+              }
               otherwise {
                 var errorMsg = "Unsupported SegArray DType %s".format(dtype2str(dtype));
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
@@ -925,6 +943,13 @@ module SegmentedMsg {
             }
             when (DType.Bool) { 
               var segarr = getSegArray(objName, st, bool);
+              // Compute the slice
+              var (newSegs, newVals) = segarr[slice];
+              var newSegArr = getSegArray(newSegs, newVals, st);
+              newSegArr.fillReturnMap(rtnmap, st);
+            }
+            when (DType.BigInt) { 
+              var segarr = getSegArray(objName, st, bigint);
               // Compute the slice
               var (newSegs, newVals) = segarr[slice];
               var newSegArr = getSegArray(newSegs, newVals, st);
@@ -1106,6 +1131,35 @@ module SegmentedMsg {
             }
             when DType.Bool {
               var segArr = getSegArray(objName, st, bool);
+              select gIV.dtype {
+                when DType.Int64 {
+                  var iv = toSymEntry(gIV, int);
+                  var (newSegs, newVals) = segArr[iv.a];
+                  var newSegArr = getSegArray(newSegs, newVals, st);
+                  newSegArr.fillReturnMap(rtnmap, st);
+                }
+                when DType.UInt64 {
+                  var iv = toSymEntry(gIV, uint);
+                  var (newSegs, newVals) = segArr[iv.a];
+                  var newSegArr = getSegArray(newSegs, newVals, st);
+                  newSegArr.fillReturnMap(rtnmap, st);
+                }
+                when DType.Bool {
+                  var iv = toSymEntry(gIV, bool);
+                  var (newSegs, newVals) = segArr[iv.a];
+                  var newSegArr = getSegArray(newSegs, newVals, st);
+                  newSegArr.fillReturnMap(rtnmap, st);
+                }
+                otherwise {
+                    var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
+                    smLogger.error(getModuleName(),getRoutineName(),
+                                                  getLineNumber(),errorMsg); 
+                    return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
+                }
+              }
+            }
+            when DType.BigInt {
+              var segArr = getSegArray(objName, st, bigint);
               select gIV.dtype {
                 when DType.Int64 {
                   var iv = toSymEntry(gIV, int);
