@@ -15348,7 +15348,7 @@ Attributes
    with earlier arkouda versions.
 
 
-.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, pandas.Index, Index], name: Optional[str] = None)
+.. py:class:: Index(values: Union[List, arkouda.pdarrayclass.pdarray, arkouda.Strings, arkouda.Categorical, pandas.Index, Index], name: Optional[str] = None)
 
    .. py:property:: index
 
