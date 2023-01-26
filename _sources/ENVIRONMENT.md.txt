@@ -67,7 +67,7 @@ Also see the python tests [README](tests/README.md) for more information on Pyth
 - ARKOUDA_NUMLOCALES : Client unit testing option to set the number of Chpl server locales for unit tests
 - ARKOUDA_SERVER_CONNECTION_INFO : Client env var to specify where the `ak-server-info` file is found
 - ARKOUDA_HOME : This is used by `make check` tests to specify the location of Arkouda's server executable and
-                  util/test module.  **_WARNING_**: The env var is subject to future change since it is mainly an
+                  server_util/test module.  **_WARNING_**: The env var is subject to future change since it is mainly an
                   internal use variable.
 
 ## Python Client
