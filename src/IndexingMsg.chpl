@@ -610,7 +610,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getBigIntValue();
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                    val.mod(val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -618,7 +618,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getIntValue():bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                    val.mod(val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -626,7 +626,7 @@ module IndexingMsg
                 var e = toSymEntry(gEnt,bigint);
                 var val = valueArg.getUIntValue():bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                    val.mod(val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -635,7 +635,7 @@ module IndexingMsg
                 // TODO change once we can cast directly from bool to bigint
                 var val = valueArg.getBoolValue():int:bigint;
                 if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
+                    val.mod(val, e.max_bits);
                 }
                 e.a[idx] = val;
              }
@@ -656,14 +656,12 @@ module IndexingMsg
     proc setPdarrayIndexToValueMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        const dtype = str2dtype(msgArgs.getValueOf("dtype"));
         const name = msgArgs.getValueOf("array");
         const iname = msgArgs.getValueOf("idx");
-        var value = msgArgs.getValueOf("value");
-
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
-        
+        const dtype = if gX.dtype == DType.BigInt then DType.BigInt else str2dtype(msgArgs.getValueOf("dtype"));
+        var value = msgArgs.getValueOf("value");
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "cmd: %s gX: %s gIV: %s value: %s".format(cmd,st.attrib(name),
                                         st.attrib(iname),value));
@@ -761,180 +759,51 @@ module IndexingMsg
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
 
-        // scatter indexing by integer index vector
-        proc bigintIvInt64Helper(type dtype): MsgTuple throws {
-            var e = toSymEntry(gX,bigint);
-            var iv = toSymEntry(gIV,int);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if isBool(dtype) {
-                value = value.replace("True","true"); // chapel to python bool
-                value = value.replace("False","false"); // chapel to python bool
-            }
-            // TODO change once we can cast directly from bool to bigint
-            var val = try! if dtype != bool then value:bigint else value:int:bigint;
-            ref iva = iv.a;
-            ref ea = e.a;
-            if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
-            }
-            forall i in iva {
-                ea[i] = val;
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        // scatter indexing by unsigned integer index vector
-        proc bigintIvUInt64Helper(type dtype): MsgTuple throws {
-            var e = toSymEntry(gX,bigint);
-            var iv = toSymEntry(gIV,uint);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if isBool(dtype) {
-                value = value.replace("True","true"); // chapel to python bool
-                value = value.replace("False","false"); // chapel to python bool
-            }
-            // TODO change once we can cast directly from bool to bigint
-            var val = try! if dtype != bool then value:bigint else value:int:bigint;
-            ref iva = iv.a;
-            ref ea = e.a;
-            if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
-            }
-            forall i in iva {
-              ea[i:int] = val;
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        // // expansion boolean indexing by bool index vector
-        proc bigintIvBoolHelper(type dtype): MsgTuple throws {
-            var e = toSymEntry(gX,bigint);
-            var truth = toSymEntry(gIV,bool);
-            if e.size != truth.size {
-                var errorMsg = "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,
-                                                                                    truth.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if isBool(dtype) {
-                value = value.replace("True","true"); // chapel to python bool
-                value = value.replace("False","false"); // chapel to python bool
-            }
-            // TODO change once we can cast directly from bool to bigint
-            var val = try! if dtype != bool then value:bigint else value:int:bigint;
-            const ref ead = e.a.domain;
-            ref ea = e.a;
-            ref trutha = truth.a;
-            if e.max_bits != -1 {
-                val.mod(val, e.max_bits);
-            }
-            forall i in ead {
-              if trutha[i] {
-                ea[i] = val;
-              }
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-        
         select(gX.dtype, gIV.dtype, dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
-              return ivInt64Helper(int, int);
+                return ivInt64Helper(int, int);
             }
             when (DType.Int64, DType.UInt64, DType.Int64) {
-              return ivUInt64Helper(int, int);
+                return ivUInt64Helper(int, int);
             }
             when (DType.Int64, DType.Bool, DType.Int64) {
-              return ivBoolHelper(int, int);
+                return ivBoolHelper(int, int);
             }
             when (DType.UInt64, DType.Int64, DType.UInt64) {
-              return ivInt64Helper(uint, uint);
+                return ivInt64Helper(uint, uint);
             }
             when (DType.UInt64, DType.UInt64, DType.UInt64) {
-              return ivUInt64Helper(uint, uint);
+                return ivUInt64Helper(uint, uint);
             }
             when (DType.UInt64, DType.Bool, DType.UInt64) {
-              return ivBoolHelper(uint, uint);
+                return ivBoolHelper(uint, uint);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
-              return ivInt64Helper(real, real);
+                return ivInt64Helper(real, real);
             }
             when (DType.Float64, DType.UInt64, DType.Float64) {
-              return ivUInt64Helper(real, real);
+                return ivUInt64Helper(real, real);
             }
             when (DType.Float64, DType.Bool, DType.Float64) {
-              return ivBoolHelper(real, real);
+                return ivBoolHelper(real, real);
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
-              return ivInt64Helper(bool, bool);
+                return ivInt64Helper(bool, bool);
             }
             when (DType.Bool, DType.UInt64, DType.Bool) {
-              return ivUInt64Helper(bool, bool);
+                return ivUInt64Helper(bool, bool);
             }
             when (DType.Bool, DType.Bool, DType.Bool) {
-              return ivBoolHelper(bool, bool);
+                return ivBoolHelper(bool, bool);
             }
             when (DType.BigInt, DType.Int64, DType.BigInt) {
-              return bigintIvInt64Helper(bigint);
-            }
-            when (DType.BigInt, DType.Int64, DType.Int64) {
-              return bigintIvInt64Helper(int);
-            }
-            when (DType.BigInt, DType.Int64, DType.UInt64) {
-              return bigintIvInt64Helper(uint);
-            }
-            when (DType.BigInt, DType.Int64, DType.Bool) {
-              return bigintIvInt64Helper(bool);
+                return ivInt64Helper(bigint, bigint);
             }
             when (DType.BigInt, DType.UInt64, DType.BigInt) {
-              return bigintIvUInt64Helper(bigint);
-            }
-            when (DType.BigInt, DType.UInt64, DType.Int64) {
-              return bigintIvUInt64Helper(int);
-            }
-            when (DType.BigInt, DType.UInt64, DType.UInt64) {
-              return bigintIvUInt64Helper(uint);
-            }
-            when (DType.BigInt, DType.UInt64, DType.Bool) {
-              return bigintIvUInt64Helper(bool);
+                return ivUInt64Helper(bigint, bigint);
             }
             when (DType.BigInt, DType.Bool, DType.BigInt) {
-              return bigintIvBoolHelper(bigint);
-            }
-            when (DType.BigInt, DType.Bool, DType.Int64) {
-              return bigintIvBoolHelper(int);
-            }
-            when (DType.BigInt, DType.Bool, DType.UInt64) {
-              return bigintIvBoolHelper(uint);
-            }
-            when (DType.BigInt, DType.Bool, DType.Bool) {
-              return bigintIvBoolHelper(bool);
+                return ivBoolHelper(bigint, bigint);
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,
@@ -1073,119 +942,6 @@ module IndexingMsg
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
 
-        // scatter indexing by integer index vector
-        proc bigintIvInt64Helper(type dtype): MsgTuple throws {
-            // add check to make sure IV and Y are same size
-            if gIV.size != gY.size {
-                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            var e = toSymEntry(gX,bigint);
-            var iv = toSymEntry(gIV,int);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            var y = toSymEntry(gY,dtype);
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            ref iva = iv.a;
-            var ya = if dtype != bigint then y.a:bigint else y.a;
-            ref ea = e.a;
-            if e.max_bits != -1 {
-                ya.mod(ya, e.max_bits);
-            }
-            forall (i,v) in zip(iva,ya) {
-              ea[i] = v;
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        // scatter indexing by unsigned integer index vector
-        proc bigintIvUInt64Helper(type dtype): MsgTuple throws {
-            // add check to make sure IV and Y are same size
-            if gIV.size != gY.size {
-                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            var e = toSymEntry(gX,bigint);
-            var iv = toSymEntry(gIV,uint);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            var y = toSymEntry(gY,dtype);
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            ref iva = iv.a;
-            var ya = if dtype != bigint then y.a:bigint else y.a;
-            ref ea = e.a;
-            if e.max_bits != -1 {
-                ya.mod(ya, e.max_bits);
-            }
-            forall (i,v) in zip(iva,ya) {
-              ea[i:int] = v;
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
-        // // expansion boolean indexing by bool index vector
-        proc bigintIvBoolHelper(type dtype): MsgTuple throws {
-            // add check to make sure IV and Y are same size
-            if gIV.size != gX.size {
-                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            var e = toSymEntry(gX,bigint);
-            var truth = toSymEntry(gIV,bool);
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * truth.size);
-            var iv: [truth.a.domain] int = (+ scan truth.a);
-            var pop = iv[iv.size-1];
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-            var y = toSymEntry(gY,dtype);
-            if y.size != pop {
-                var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
-            }
-            var ya = if dtype != bigint then y.a:bigint else y.a;
-            const ref ead = e.a.domain;
-            ref ea = e.a;
-            if e.max_bits != -1 {
-                ya.mod(ya, e.max_bits);
-            }
-            ref trutha = truth.a;
-            forall (eai, i) in zip(ea, ead) {
-              if trutha[i] {
-                eai = ya[iv[i]-1];
-              }
-            }
-            var repMsg = "%s success".format(pn);
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return new MsgTuple(repMsg, MsgType.NORMAL);
-        }
-
         select(gX.dtype, gIV.dtype, gY.dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
                 return ivInt64Helper(int);
@@ -1224,31 +980,31 @@ module IndexingMsg
                 return ivBoolHelper(bool);
             }
             when (DType.BigInt, DType.Int64, DType.BigInt) {
-              return bigintIvInt64Helper(bigint);
+                return ivInt64Helper(bigint);
             }
             when (DType.BigInt, DType.Int64, DType.Int64) {
-              return bigintIvInt64Helper(int);
+                return ivInt64Helper(int);
             }
             when (DType.BigInt, DType.Int64, DType.UInt64) {
-              return bigintIvInt64Helper(uint);
+                return ivInt64Helper(uint);
             }
             when (DType.BigInt, DType.UInt64, DType.BigInt) {
-              return bigintIvUInt64Helper(bigint);
+                return ivUInt64Helper(bigint);
             }
             when (DType.BigInt, DType.UInt64, DType.Int64) {
-              return bigintIvUInt64Helper(int);
+                return ivUInt64Helper(int);
             }
             when (DType.BigInt, DType.UInt64, DType.UInt64) {
-              return bigintIvUInt64Helper(uint);
+                return ivUInt64Helper(uint);
             }
             when (DType.BigInt, DType.Bool, DType.BigInt) {
-              return bigintIvBoolHelper(bigint);
+                return ivBoolHelper(bigint);
             }
             when (DType.BigInt, DType.Bool, DType.Int64) {
-              return bigintIvBoolHelper(int);
+                return ivBoolHelper(int);
             }
             when (DType.BigInt, DType.Bool, DType.UInt64) {
-              return bigintIvBoolHelper(uint);
+                return ivBoolHelper(uint);
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,
