@@ -587,3 +587,24 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor.lengths.to_list(), [0, 2])
         self.assertListEqual(xor[0].tolist(), [])
         self.assertListEqual(xor[1].tolist(), [3, 4])
+
+    def bigint_test(self):
+        a = [2**80, 2**81]
+        b = [2**82, 2**83]
+        c = [2**84]
+
+        flat = a + b + c
+        akflat = ak.array(flat)
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        segarr = ak.segarray(segments, akflat)
+
+        self.assertIsInstance(segarr, ak.SegArray)
+        self.assertListEqual(segarr.lengths.to_list(), [2, 2, 1])
+        self.assertEqual(segarr.__str__(), f"SegArray([\n{a}\n{b}\n{c}\n])".replace(",", ""))
+        self.assertEqual(segarr.__getitem__(1).__str__(), str(b).replace(",", ""))
+        self.assertEqual(
+            segarr.__getitem__(ak.array([1, 2])).__str__(), f"SegArray([\n{b}\n{c}\n])".replace(",", "")
+        )
+        self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
+        self.assertTrue(segarr.__eq__(segarr).all())
+        self.assertTrue(segarr.non_empty_count() == 5)
