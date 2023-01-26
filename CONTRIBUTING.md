@@ -114,7 +114,7 @@ make test
 #### Running chapel tests
 
 ```terminal
-python3 util/test/parallel_start_test.py -d test
+python3 server_util/test/parallel_start_test.py -d test
 ```
 
 ### Writing Pull Requests

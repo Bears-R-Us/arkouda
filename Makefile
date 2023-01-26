@@ -442,7 +442,7 @@ doc-clean:
 	$(RM) -r $(DOC_DIR)
 
 check:
-	@$(ARKOUDA_PROJECT_DIR)/util/test/checkInstall
+	@$(ARKOUDA_PROJECT_DIR)/server_util/test/checkInstall
 
 #################
 #### Test.mk ####

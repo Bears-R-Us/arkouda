@@ -6,8 +6,9 @@ Run check.py, automatically starting/stopping the server.
 
 import logging
 import sys
+import os
 
-from util import *
+from server_util.test.server_test_util import *
 
 logging.basicConfig(level=logging.INFO)
 
