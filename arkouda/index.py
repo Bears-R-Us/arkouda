@@ -291,6 +291,57 @@ class Index:
         """
         return self.values.to_parquet(prefix_path, dataset=dataset, mode=mode, compression=compression)
 
+    @typechecked
+    def to_csv(
+        self,
+        prefix_path: str,
+        dataset: str = "array",
+        col_delim: str = ",",
+        overwrite: bool = False,
+    ):
+        """
+        Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+        All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+        Parameters
+        -----------
+        prefix_path: str
+            The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+            when they are written to disk.
+        dataset: str
+            Column name to save the pdarray under. Defaults to "array".
+        col_delim: str
+            Defaults to ",". Value to be used to separate columns within the file.
+            Please be sure that the value used DOES NOT appear in your dataset.
+        overwrite: bool
+            Defaults to False. If True, any existing files matching your provided prefix_path will
+            be overwritten. If False, an error will be returned if existing files are found.
+
+        Returns
+        --------
+        str reponse message
+
+        Raises
+        ------
+        ValueError
+            Raised if all datasets are not present in all parquet files or if one or
+            more of the specified files do not exist
+        RuntimeError
+            Raised if one or more of the specified files cannot be opened.
+            If `allow_errors` is true this may be raised if no values are returned
+            from the server.
+        TypeError
+            Raised if we receive an unknown arkouda_type returned from the server
+
+        Notes
+        ------
+        - CSV format is not currently supported by load/load_all operations
+        - The column delimiter is expected to be the same for column names and data
+        - Be sure that column delimiters are not found within your data.
+        - All CSV files must delimit rows using newline (`\n`) at this time.
+        """
+        return self.values.to_csv(prefix_path, dataset=dataset, col_delim=col_delim, overwrite=overwrite)
+
     def save(
         self,
         prefix_path: str,

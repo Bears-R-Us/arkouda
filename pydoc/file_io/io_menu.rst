@@ -13,6 +13,7 @@ Arkouda also supports importing files written by Pandas.
 
     HDF5
     PARQUET
+    CSV
 
 Import/Export Support
 ----------------------

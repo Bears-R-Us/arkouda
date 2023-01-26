@@ -680,7 +680,12 @@ def read_csv(
     datasets: Optional[Union[str, List[str]]] = None,
     column_delim: str = ",",
     allow_errors: bool = False,
-) -> Union[pdarray, Strings, Mapping[str, Union[pdarray, Strings]],]:
+) -> Union[
+    pdarray,
+    Strings,
+    arkouda.array_view.ArrayView,
+    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
     will be returned in a dictionary mapping the dataset name to the Arkouda object

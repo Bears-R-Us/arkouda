@@ -1591,7 +1591,7 @@ class DataFrame(UserDict):
         from arkouda.io import to_csv
 
         data = self._prep_data(index=index, columns=columns)
-        to_csv(data, path, columns=columns, col_delim=col_delim, overwrite=overwrite)
+        to_csv(data, path, names=columns, col_delim=col_delim, overwrite=overwrite)
 
     @classmethod
     def read_csv(cls, filename: str, col_delim: str = ","):
