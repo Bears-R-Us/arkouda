@@ -495,6 +495,15 @@ class GroupByTest(ArkoudaTest):
         self.assertListEqual(ans, res2[0].to_list())
         self.assertListEqual(ans, res2[1].to_list())
 
+    def test_large_mean_aggregation(self):
+        # reproducer for integer overflow in groupby.mean
+        a = ak.full(10, 2**63 - 1, dtype=ak.int64)
+
+        # since all values of a are the same, all means should be 2**63 - 1
+        _, means = ak.GroupBy(ak.arange(10) % 3).mean(a)
+        for m in means.to_list():
+            self.assertTrue(np.isclose(float(a[0]), m))
+
     def test_unique_aggregation(self):
         keys = ak.array([0, 1, 0, 1, 0, 1, 0, 1])
         vals = ak.array([4, 3, 5, 3, 5, 2, 6, 2])
