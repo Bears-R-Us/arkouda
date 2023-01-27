@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Usage" href="../usage.html" /><link rel="prev" title="Parquet" href="PARQUET.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Developer Documentation" href="dev_menu.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Import/Export - arkouda documentation</title>
+        <title>GASNet Development - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -168,10 +168,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="io_menu.html">File I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="HDF5.html">HDF5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PARQUET.html">Parquet</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Import/Export</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -233,8 +233,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="dev_menu.html">Developer Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">GASNet Development</a></li>
 </ul>
 </li>
 </ul>
@@ -271,25 +271,50 @@
           </label>
         </div>
         <article role="main">
-          <section id="import-export">
-<h1>Import/Export<a class="headerlink" href="#import-export" title="Permalink to this heading">#</a></h1>
-<p>Arkouda allows for importing and exporting data in Pandas format, specifically DataFrames. This functionality is currently performed on the client. As a result it is assumed that the size of data being imported can be handled by the client because it was written by Pandas. Arkouda natively verifies that the size of data being sent to client can be handled.</p>
-<p>During both import and export operations, file type is maintained. Thus, if you import/export an HDf5 file and elect to save an appropriately formatted file during the operation, the resulting file will also be HDF5.</p>
-<p>This functionality should not be required for Parquet files, but is supported for both HDF5 and Parquet.</p>
-<section id="export">
-<h2>Export<a class="headerlink" href="#export" title="Permalink to this heading">#</a></h2>
-<p>Export takes a file that was saved using Arkouda and reads it into Pandas. The user is able to specify if they would like to save the result to a file that can be read by Pandas and/or return the resulting Pandas object.</p>
+          <section id="gasnet-development">
+<h1>GASNet Development<a class="headerlink" href="#gasnet-development" title="Permalink to this heading">#</a></h1>
+<p>Certain features of Arkouda require it to be built with GASNet in order to test or debug. Building Arkouda with GASNet requires some additional configuration. Here we walk through the configuration and steps to take for building Arkouda with GASNet.</p>
+<section id="environment-configuration">
+<h2>Environment Configuration<a class="headerlink" href="#environment-configuration" title="Permalink to this heading">#</a></h2>
+<p>In order to build Arkouda with GASNet, you must first configure some environment variables. The individual commands are listed below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_COMM</span><span class="o">=</span>gasnet
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_SPAWNFN</span><span class="o">=</span>L
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_ROUTE_OUTPUT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GASNET_CFG_OPTIONS</span><span class="o">=</span>--disable-ibv
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_QUIET</span><span class="o">=</span>Y
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_MASTERIP</span><span class="o">=</span><span class="m">127</span>.0.0.1
+<span class="nb">export</span><span class="w"> </span><span class="nv">GASNET_WORKERIP</span><span class="o">=</span><span class="m">127</span>.0.0.0
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_TEST_TIMEOUT</span><span class="o">=</span><span class="m">500</span>
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_RT_OVERSUBSCRIBED</span><span class="o">=</span>yes
+</pre></div>
+</div>
+<p>It is recommended that you place these into an executable file named <code class="docutils literal notranslate"><span class="pre">gasnetSetup</span></code>. This will allow you to quickly set the required environment variables by executing <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">gasnetSetup</span></code> from the directory where they file is saved.</p>
 </section>
-<section id="import">
-<h2>Import<a class="headerlink" href="#import" title="Permalink to this heading">#</a></h2>
-<p>Importing data takes a file that was saved using Pandas and reads it into Arkouda. The user is able to specify if they would like to save the result to a file that can be read by Arkouda and/or return the resulting Arkouda object.</p>
+<section id="build-chapel-with-gasnet">
+<h2>Build Chapel with GASNet<a class="headerlink" href="#build-chapel-with-gasnet" title="Permalink to this heading">#</a></h2>
+<p>Once your environment is configured, you are ready to build Chapel using GASNet. Run the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$CHPL_HOME</span>
+make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
+</pre></div>
+</div>
+<p>Once complete, Chapel has been built with GASNet.</p>
 </section>
-<section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../autoapi/arkouda/io/index.html#arkouda.io.import_data" title="arkouda.io.import_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">arkouda.io.import_data()</span></code></a></p></li>
-<li><p><a class="reference internal" href="../autoapi/arkouda/io/index.html#arkouda.io.export" title="arkouda.io.export"><code class="xref py py-func docutils literal notranslate"><span class="pre">arkouda.io.export()</span></code></a></p></li>
-</ul>
+<section id="build-arkouda">
+<h2>Build Arkouda<a class="headerlink" href="#build-arkouda" title="Permalink to this heading">#</a></h2>
+<p>From your <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> directory run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
+</pre></div>
+</div>
+</section>
+<section id="run-arkouda">
+<h2>Run Arkouda<a class="headerlink" href="#run-arkouda" title="Permalink to this heading">#</a></h2>
+<p>To run arkouda with multiple locales:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p>If you would like to run with more locales, replace <code class="docutils literal notranslate"><span class="pre">2</span></code> with the number of desired locales. <em>Please Note that is is not recommended to run on a standard machine with more than 2 locales.</em></p>
 </section>
 </section>
 
@@ -298,23 +323,15 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../usage.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Usage</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="PARQUET.html">
+          
+          <a class="prev-page" href="dev_menu.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Parquet</div>
+                <div class="title">Developer Documentation</div>
                 
               </div>
             </a>
@@ -348,10 +365,11 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Import/Export</a><ul>
-<li><a class="reference internal" href="#export">Export</a></li>
-<li><a class="reference internal" href="#import">Import</a></li>
-<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+<li><a class="reference internal" href="#">GASNet Development</a><ul>
+<li><a class="reference internal" href="#environment-configuration">Environment Configuration</a></li>
+<li><a class="reference internal" href="#build-chapel-with-gasnet">Build Chapel with GASNet</a></li>
+<li><a class="reference internal" href="#build-arkouda">Build Arkouda</a></li>
+<li><a class="reference internal" href="#run-arkouda">Run Arkouda</a></li>
 </ul>
 </li>
 </ul>
