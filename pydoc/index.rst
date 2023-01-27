@@ -29,6 +29,8 @@ Arkouda Documentation
    server/index
    genindex
 
+   developer/dev_menu
+
 .. image:: ../pictures/arkouda_wide_marker1.png
    :width: 800
    :alt: Arkouda Logo
