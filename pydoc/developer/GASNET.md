@@ -20,7 +20,7 @@ export CHPL_TEST_TIMEOUT=500
 export CHPL_RT_OVERSUBSCRIBED=yes
 ```
 
-It is recommended that you place these into an executable file names `gasnetSetup`. This will allow you to quickly set the required environment variables by executing `source gasnetSetup` from the directory where they file is saved.
+It is recommended that you place these into an executable file named `gasnetSetup`. This will allow you to quickly set the required environment variables by executing `source gasnetSetup` from the directory where they file is saved.
 
 ## Build Chapel with GASNet
 
