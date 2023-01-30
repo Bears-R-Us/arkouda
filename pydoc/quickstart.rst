@@ -87,7 +87,7 @@ In another terminal window, launch an interactive Python 3 session, such as ``ip
 .. code-block:: python
 
    >>> import arkouda as ak
-   >>> default way to connect is
+   # default way to connect is
    >>> ak.connect(connect_url='tcp://node01:5555')
    ...
    connected to tcp://node01:5555
