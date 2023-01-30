@@ -1,8 +1,8 @@
 .. _usage-label:
 
-##########
-Usage
-##########
+#############
+Usage Guide
+#############
 
 .. toctree::
 

@@ -174,7 +174,7 @@
 <li class="toctree-l2"><a class="reference internal" href="file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/creation.html">Creating Arrays</a></li>
@@ -273,14 +273,53 @@
         <article role="main">
           <section id="quickstart">
 <span id="quickstart-label"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h1>
-<p>This guide assumes you have satisfied the <a class="reference external" href="setup/REQUIREMENTS.html">Requirements</a> and followed the <a class="reference internal" href="setup/install_menu.html#installation-label"><span class="std std-ref">Installation</span></a> to build the arkouda server. Also, both your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variables should contain the arkouda root directory.</p>
-<section id="launch-arkouda-server">
-<h2>Launch Arkouda Server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this heading">#</a></h2>
+<p>This guide is intended to instruct users on the installation Arkouda. It will also walk through launching and shutting down the server. For usage information, visit our <a class="reference internal" href="usage.html#usage-label"><span class="std std-ref">Usage Guide</span></a></p>
+<section id="install-dependencies">
+<h2>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Permalink to this heading">#</a></h2>
+<ol class="arabic">
+<li><p>Follow the <a class="reference external" href="https://chapel-lang.org/docs/usingchapel/QUICKSTART.html">Chapel Quickstart Guide</a></p></li>
+<li><p>Follow the <a class="reference external" href="https://docs.anaconda.com/anaconda/install/index.html">Anaconda Installtion Guide</a></p></li>
+<li><p>Configure your conda environment</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="install-arkouda">
+<h2>Install Arkouda<a class="headerlink" href="#install-arkouda" title="Permalink to this heading">#</a></h2>
+<ol class="arabic">
+<li><p>Download Arkouda <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/archive/refs/tags/v2023.01.11.tar.gz">v2023.01.11</a></p></li>
+<li><p>Unpack the source files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xzf<span class="w"> </span>arkouda-2023.01.11.tar.gz
+</pre></div>
+</div>
+</li>
+<li><p>Change to the arkouda directory</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>arkouda-2023.01.11
+</pre></div>
+</div>
+</li>
+<li><p>Build Arkouda</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
+</pre></div>
+</div>
+</li>
+<li><p>Test Arkouda functionality</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nb">test</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="launching-the-server">
+<h2>Launching the Server<a class="headerlink" href="#launching-the-server" title="Permalink to this heading">#</a></h2>
 <p>In a terminal, run the arkouda server program with one locale</p>
 <p>You should see a startup message like</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">1</span>
 server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>tcp://&lt;your_machine&gt;.local:5555
 arkouda<span class="w"> </span>server<span class="w"> </span><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+built<span class="w"> </span>with<span class="w"> </span>chapel<span class="w"> </span>version<span class="w"> </span>&lt;chapel_version&gt;
 memory<span class="w"> </span><span class="nv">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15461882265</span>
 bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 </pre></div>
@@ -288,103 +327,41 @@ bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </
 <p>or with authentication turned on</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./arkouda_server<span class="w"> </span>-nl<span class="w"> </span><span class="m">1</span><span class="w"> </span>--authenticate
 server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"> </span>tcp://&lt;your_machine&gt;:5555?token<span class="o">=</span>&lt;token_string&gt;
-<span class="w"> </span>arkouda<span class="w"> </span>server<span class="w"> </span><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w"> </span>memory<span class="w"> </span><span class="nv">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15461882265</span>
-<span class="w"> </span>bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+arkouda<span class="w"> </span>server<span class="w"> </span><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+built<span class="w"> </span>with<span class="w"> </span>chapel<span class="w"> </span>version<span class="w"> </span>&lt;chapel_version&gt;
+memory<span class="w"> </span><span class="nv">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15461882265</span>
+bytes<span class="w"> </span>of<span class="w"> </span>memory<span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 </pre></div>
 </div>
-<p>The last line is the most important, because it contains the connection url with the hostname and port required for the client to connect to the server.</p>
+<p>The first output line is the most important, because it contains the connection url with the hostname and port required for the client to connect to the server.</p>
 </section>
 <section id="connect-the-python-3-client">
 <h2>Connect the Python 3 Client<a class="headerlink" href="#connect-the-python-3-client" title="Permalink to this heading">#</a></h2>
 <p>In another terminal window, launch an interactive Python 3 session, such as <code class="docutils literal notranslate"><span class="pre">ipython</span></code> or <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">notebook</span></code> (both included with the Anaconda distribution). To connect to the arkouda server, you must import the arkouda module and call connect with the connection url from the server startup messages. In Python, run</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">default</span> <span class="n">way</span> <span class="n">to</span> <span class="n">connect</span> <span class="ow">is</span>
+<span class="go"># default way to connect is</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connect_url</span><span class="o">=</span><span class="s1">&#39;tcp://node01:5555&#39;</span><span class="p">)</span>
 <span class="gp">...</span>
 <span class="go">connected to tcp://node01:5555</span>
 </pre></div>
 </div>
-<p>substituting the hostname and port appropriately (defaults are ‘localhost’ and 5555).</p>
+<p>Substituting the hostname and port appropriately (defaults are ‘localhost’ and 5555).</p>
 </section>
-<section id="simple-computations">
-<h2>Simple Computations<a class="headerlink" href="#simple-computations" title="Permalink to this heading">#</a></h2>
-<section id="create-and-sum-an-array">
-<h3>Create and sum an array<a class="headerlink" href="#create-and-sum-an-array" title="Permalink to this heading">#</a></h3>
-<p>The following code creates an arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> that resides on the arkouda server and performs a server-side computation, returning the result to the Python client.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a server-side array with integers from 1 to N inclusive</span>
-<span class="c1"># This syntax is from NumPy</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="c1"># Sum the array, returning the result to Python</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="c1"># Check the result</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
+<section id="shutdown-disconnect">
+<h2>Shutdown/Disconnect<a class="headerlink" href="#shutdown-disconnect" title="Permalink to this heading">#</a></h2>
+<p>If desired, you can disconnect from the arkouda server from a connected client with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="array-arithmetic">
-<h3>Array arithmetic<a class="headerlink" href="#array-arithmetic" title="Permalink to this heading">#</a></h3>
-<p>Now, we will perform an operation on two <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects to create a new <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>. This time, the result will not be returned to the Python client, but will be stored on the server. In general, only scalar results are automatically returned to Python; <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> results remain on the server unless explicitly transferred by the user (see <a class="reference internal" href="usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_ndarray()</span></code></a>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate two (server-side) arrays of random integers 0-9</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-<span class="c1"># Multiply them (server-side)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">D</span> <span class="o">=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">C</span>
-<span class="c1"># Print a small representation of the array</span>
-<span class="c1"># This does NOT move the array to the client</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
-<span class="c1"># Get the min and max values</span>
-<span class="c1"># Because these are scalars, they live in Python</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">minVal</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">maxVal</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="indexing">
-<h3>Indexing<a class="headerlink" href="#indexing" title="Permalink to this heading">#</a></h3>
-<p>Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects support most of the same indexing and assignment syntax of 1-dimensional NumPy <code class="docutils literal notranslate"><span class="pre">ndarray``s</span> <span class="pre">(arkouda</span> <span class="pre">currently</span> <span class="pre">only</span> <span class="pre">supports</span> <span class="pre">1-D</span> <span class="pre">arrays).</span> <span class="pre">This</span> <span class="pre">code</span> <span class="pre">shows</span> <span class="pre">two</span> <span class="pre">ways</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">the</span> <span class="pre">even</span> <span class="pre">elements</span> <span class="pre">of</span> <span class="pre">``A</span></code> from above: with a slice, and with logical indexing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use a slice</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evens1</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
-<span class="c1"># Create a logical index</span>
-<span class="c1"># Bool pdarray of same size as A</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evenInds</span> <span class="o">=</span> <span class="p">((</span><span class="n">A</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-<span class="c1"># Use it to get the evens</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">evens2</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">evenInds</span><span class="p">]</span>
-<span class="c1"># Compare the two (server-side) arrays</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="p">(</span><span class="n">evens1</span> <span class="o">==</span> <span class="n">evens2</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="sorting">
-<h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading">#</a></h3>
-<p>Sorting arrays is a ubiquitous operation, and it is often useful to use the sorting of one array to order other arrays. Like NumPy, arkouda provides this functionality via the <code class="docutils literal notranslate"><span class="pre">argsort</span></code> function, which returns a permutation vector that can be used as an index to order other arrays. Here, we will order the arrays <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> from above according to the product of their elements (<code class="docutils literal notranslate"><span class="pre">D</span></code>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the permutation that sorts the product array</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">perm</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
-<span class="c1"># Reorder B, C, and D</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">D</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
-<span class="c1"># Check that D is monotonically non-decreasing</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="p">(</span><span class="n">D</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="c1"># Check that reordered B and C still produce D</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="p">((</span><span class="n">B</span> <span class="o">*</span> <span class="n">C</span><span class="p">)</span> <span class="o">==</span> <span class="n">D</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="and-more">
-<h3>And More<a class="headerlink" href="#and-more" title="Permalink to this heading">#</a></h3>
-<p>See the <a class="reference internal" href="usage.html#usage-label"><span class="std std-ref">Usage</span></a> section for the full list of operations supported on arkouda arrays. These operations are quite composable and can be used to implement more complex algorithms as in the <a class="reference internal" href="examples.html#examples-label"><span class="std std-ref">Examples</span></a> section.</p>
-</section>
-</section>
-<section id="shutdown-the-server-optional">
-<h2>Shutdown the server (optional)<a class="headerlink" href="#shutdown-the-server-optional" title="Permalink to this heading">#</a></h2>
-<p>If desired, you can shutdown the arkouda server from a connected client with</p>
+<p>or shutdown</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This command will delete all server-side arrays and cause the <code class="docutils literal notranslate"><span class="pre">arkouda_server</span></code> process in the first terminal to exit.</p>
+</section>
+<section id="using-arkouda">
+<h2>Using Arkouda<a class="headerlink" href="#using-arkouda" title="Permalink to this heading">#</a></h2>
+<p>Want to learn more about using Arkouda? See the <a class="reference internal" href="usage.html#usage-label"><span class="std std-ref">Usage Guide</span></a> section for the full list of operations supported on arkouda arrays. These operations are quite composable and can be used to implement more complex algorithms as in the <a class="reference internal" href="examples.html#examples-label"><span class="std std-ref">Examples</span></a> section.</p>
 </section>
 </section>
 
@@ -444,17 +421,12 @@ server<span class="w"> </span>listening<span class="w"> </span>on<span class="w"
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Quickstart</a><ul>
-<li><a class="reference internal" href="#launch-arkouda-server">Launch Arkouda Server</a></li>
+<li><a class="reference internal" href="#install-dependencies">Install Dependencies</a></li>
+<li><a class="reference internal" href="#install-arkouda">Install Arkouda</a></li>
+<li><a class="reference internal" href="#launching-the-server">Launching the Server</a></li>
 <li><a class="reference internal" href="#connect-the-python-3-client">Connect the Python 3 Client</a></li>
-<li><a class="reference internal" href="#simple-computations">Simple Computations</a><ul>
-<li><a class="reference internal" href="#create-and-sum-an-array">Create and sum an array</a></li>
-<li><a class="reference internal" href="#array-arithmetic">Array arithmetic</a></li>
-<li><a class="reference internal" href="#indexing">Indexing</a></li>
-<li><a class="reference internal" href="#sorting">Sorting</a></li>
-<li><a class="reference internal" href="#and-more">And More</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#shutdown-the-server-optional">Shutdown the server (optional)</a></li>
+<li><a class="reference internal" href="#shutdown-disconnect">Shutdown/Disconnect</a></li>
+<li><a class="reference internal" href="#using-arkouda">Using Arkouda</a></li>
 </ul>
 </li>
 </ul>
