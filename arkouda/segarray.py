@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from typing import cast as type_cast
+from typing import Optional
 
 import numpy as np  # type: ignore
 
@@ -12,6 +13,11 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
+<<<<<<< HEAD
+=======
+
+# from arkouda.io import load
+>>>>>>> 4bda71bf (SegArray read support for Parquet files. Testing to ensure proper functionality.)
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray

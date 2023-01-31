@@ -24,6 +24,7 @@ extern "C" {
 #define ARROWDOUBLE 7
 #define ARROWTIMESTAMP ARROWINT64
 #define ARROWSTRING 6
+#define ARROWLIST 8
 #define ARROWERROR -1
 
 // compression mappings
@@ -47,9 +48,21 @@ extern "C" {
                            const char* colname, int64_t numElems, int64_t startIdx,
                            int64_t batchSize, char** errMsg);
 
+  int c_readListColumnByName(const char* filename, void* chpl_arr, 
+                            const char* colname, int64_t numElems, 
+                            int64_t startIdx, int64_t batchSize, char** errMsg);
+  int cpp_readListColumnByName(const char* filename, void* chpl_arr, 
+                              const char* colname, int64_t numElems, 
+                              int64_t startIdx, int64_t batchSize, char** errMsg);
+
   int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname,
                                       void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
   int64_t c_getStringColumnNumBytes(const char* filename, const char* colname,
+                                    void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+
+  int64_t c_getListColumnSize(const char* filename, const char* colname,
+                                    void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
+  int64_t cpp_getListColumnSize(const char* filename, const char* colname,
                                     void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg);
   
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg);
@@ -57,6 +70,9 @@ extern "C" {
 
   int c_getType(const char* filename, const char* colname, char** errMsg);
   int cpp_getType(const char* filename, const char* colname, char** errMsg);
+
+  int c_getListType(const char* filename, const char* colname, char** errMsg);
+  int cpp_getListType(const char* filename, const char* colname, char** errMsg);
 
   int cpp_writeColumnToParquet(const char* filename, void* chpl_arr,
                                int64_t colnum, const char* dsetname, int64_t numelems,

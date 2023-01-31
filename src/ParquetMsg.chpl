@@ -13,8 +13,10 @@ module ParquetMsg {
   use Sort;
   use CommAggregation;
   use AryUtil;
+  use Map;
 
   use SegmentedString;
+  use SegmentedArray;
 
   enum CompressionType {
     NONE=0,
@@ -48,12 +50,13 @@ module ParquetMsg {
   extern var ARROWBOOLEAN: c_int;
   extern var ARROWSTRING: c_int;
   extern var ARROWFLOAT: c_int;
+  extern var ARROWLIST: c_int;
   extern var ARROWDOUBLE: c_int;
   extern var ARROWERROR: c_int;
 
   enum ArrowTypes { int64, int32, uint64, uint32,
                     stringArr, timestamp, boolean,
-                    double, float, notimplemented };
+                    double, float, list, notimplemented };
 
   record parquetErrorMsg {
     var errMsg: c_ptr(uint(8));
@@ -175,7 +178,66 @@ module ParquetMsg {
     }
   }
 
-  proc calcSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+  proc readListFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+    // TODO - update extern to list call
+    extern proc c_readListColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
+    var (subdoms, length) = getSubdomains(sizes);
+    
+    coforall loc in A.targetLocales() do on loc {
+      var locFiles = filenames;
+      var locFiledoms = subdoms;
+
+      try {
+        forall (filedom, filename) in zip(locFiledoms, locFiles) {
+          for locdom in A.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+
+            if intersection.size > 0 {
+              var pqErr = new parquetErrorMsg();
+              var col: [filedom] t;
+
+              if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
+                                    dsetname.localize().c_str(), intersection.size, 0,
+                                    batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+                pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+              }
+              A[filedom] = col;
+            }
+          }
+        }
+      } catch e {
+        throw e;
+      }
+    }
+  }
+
+  proc calcListSizesandOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+    var (subdoms, length) = getSubdomains(sizes);
+
+    var listSizes: [filenames.domain] int;
+    coforall loc in offsets.targetLocales() do on loc {
+      var locFiles = filenames;
+      var locFiledoms = subdoms;
+      
+      try {
+        forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
+          for locdom in offsets.localSubdomains() {
+            const intersection = domain_intersection(locdom, filedom);
+            if intersection.size > 0 {
+              var col: [filedom] t;
+              listSizes[i] = getListColSize(filename, dsetname, col);
+              offsets[filedom] = col;
+            }
+          }
+        }
+      } catch e {
+        throw e;
+      }
+    }
+    return listSizes;
+  }
+
+  proc calcStrSizesAndOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var (subdoms, length) = getSubdomains(sizes);
 
     var byteSizes: [filenames.domain] int;
@@ -246,6 +308,21 @@ module ParquetMsg {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     return byteSize;
   }
+
+  proc getListColSize(filename: string, dsetname: string, offsets: [] int) throws {
+    extern proc c_getListColumnSize(filename, colname, offsets, numElems, startIdx, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+
+    var listSize = c_getListColumnSize(filename.localize().c_str(),
+                                             dsetname.localize().c_str(),
+                                             c_ptrTo(offsets),
+                                             offsets.size, 0,
+                                             c_ptrTo(pqErr.errMsg));
+    writeln("Offsets: %jt\nSize: %i\n\n".format(offsets, listSize));
+    if listSize == ARROWERROR then
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    return listSize;
+  }
   
   proc getArrSize(filename: string) throws {
     extern proc c_getNumRows(chpl_str, errMsg): int;
@@ -277,6 +354,31 @@ module ParquetMsg {
     else if arrType == ARROWSTRING then return ArrowTypes.stringArr;
     else if arrType == ARROWDOUBLE then return ArrowTypes.double;
     else if arrType == ARROWFLOAT then return ArrowTypes.float;
+    else if arrType == ARROWLIST then return ArrowTypes.list;
+    throw getErrorWithContext(
+                  msg="Unrecognized Parquet data type",
+                  getLineNumber(),
+                  getRoutineName(),
+                  getModuleName(),
+                  errorClass="ParquetError");
+    return ArrowTypes.notimplemented;
+  }
+
+  proc getListData(filename: string, dsetname: string) throws {
+    // TODO - loop filesnames and validate?
+    extern proc c_getListType(filename, dsetname, errMsg): c_int;
+    var pqErr = new parquetErrorMsg();
+    
+    var t = c_getListType(filename.localize().c_str(), dsetname.localize().c_str(), c_ptrTo(pqErr.errMsg));
+    if t == ARROWINT64 then return ArrowTypes.int64;
+    else if t == ARROWINT32 then return ArrowTypes.int32;
+    else if t == ARROWUINT32 then return ArrowTypes.uint32;
+    else if t == ARROWUINT64 then return ArrowTypes.uint64;
+    else if t == ARROWBOOLEAN then return ArrowTypes.boolean;
+    // else if t == ARROWSTRING then return ArrowTypes.stringArr; // TODO - add handling for this case
+    else if t == ARROWDOUBLE then return ArrowTypes.double;
+    else if t == ARROWFLOAT then return ArrowTypes.float;
+    else if t == ARROWLIST then return ArrowTypes.list;
     throw getErrorWithContext(
                   msg="Unrecognized Parquet data type",
                   getLineNumber(),
@@ -539,6 +641,54 @@ module ParquetMsg {
     return writeDistArrayToParquet(A, filename, dsetname, dtype, ROWGROUPS, compression, mode);
   }
 
+  proc parseListDataset(filenames: [] string, dsetname: string, len: int, sizes: [] int, st: borrowed SymTab) throws {
+    // len here is our segment size
+    var ty = getListData(filenames[0], dsetname);
+    var filedom = filenames.domain;
+    var segments = makeDistArray(len, int);
+    var listSizes: [filedom] int = calcListSizesandOffset(segments, filenames, sizes, dsetname);
+    writeln("List has type: ", ty);
+    var rtnmap: map(string, string) = new map(string, string);
+
+    if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
+      var values = makeDistArray((+ reduce listSizes), int);
+      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      var segArray = getSegArray(segments, values, st);
+      segArray.fillReturnMap(rtnmap, st);
+      return "%jt".format(rtnmap);
+    }
+    else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
+      var values = makeDistArray((+ reduce listSizes), uint);
+      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      var segArray = getSegArray(segments, values, st);
+      segArray.fillReturnMap(rtnmap, st);
+      return "%jt".format(rtnmap);
+    }
+    else if ty == ArrowTypes.double || ty == ArrowTypes.float {
+      var values = makeDistArray((+ reduce listSizes), real);
+      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      var segArray = getSegArray(segments, values, st);
+      segArray.fillReturnMap(rtnmap, st);
+      return "%jt".format(rtnmap);
+    }
+    else if ty == ArrowTypes.boolean {
+      var values = makeDistArray((+ reduce listSizes), bool);
+      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      var segArray = getSegArray(segments, values, st);
+      segArray.fillReturnMap(rtnmap, st);
+      return "%jt".format(rtnmap);
+    }
+    // TODO - add handling for Strings
+    else {
+      throw getErrorWithContext(
+                 msg="Invalid Arrow Type",
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='IllegalArgumentError');
+    }
+  }
+
   proc readAllParquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var repMsg: string;
     var strictTypes: bool = msgArgs.get("strict_types").getBoolValue();
@@ -644,6 +794,7 @@ module ParquetMsg {
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
+          writeln("\n\nInt Type: %jt".format(ty));
           var entryVal = new shared SymEntry(len, int);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();
@@ -663,7 +814,7 @@ module ParquetMsg {
           rnames.append((dsetname, "pdarray", valName));
         } else if ty == ArrowTypes.stringArr {
           var entrySeg = new shared SymEntry(len, int);
-          byteSizes = calcSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
+          byteSizes = calcStrSizesAndOffset(entrySeg.a, filenames, sizes, dsetname);
           entrySeg.a = (+ scan entrySeg.a) - entrySeg.a;
           
           var entryVal = new shared SymEntry((+ reduce byteSizes), uint(8));
@@ -677,6 +828,9 @@ module ParquetMsg {
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames.append((dsetname, "pdarray", valName));
+        } else if ty == ArrowTypes.list {
+          var create_str: string = parseListDataset(filenames, dsetname, len, sizes, st);
+          rnames.append((dsetname, "seg_array", create_str));
         } else {
           var errorMsg = "DType %s not supported for Parquet reading".format(ty);
           pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);

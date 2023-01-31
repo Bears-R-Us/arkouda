@@ -13,6 +13,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
+from arkouda.segarray import SegArray
 
 __all__ = [
     "get_filetype",
@@ -383,7 +384,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
         )
 
 
-def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView]:
+def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -403,6 +404,8 @@ def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayVie
     """
     if "seg_string" == obj["arkouda_type"]:
         return Strings.from_return_msg(obj["created"])
+    elif "seg_array" == obj["arkouda_type"]:
+        return SegArray.from_return_msg(obj["created"])
     elif "pdarray" == obj["arkouda_type"]:
         return create_pdarray(obj["created"])
     elif "ArrayView" == obj["arkouda_type"]:
@@ -696,6 +699,7 @@ def read_parquet(
                 "filenames": filenames,
             },
         )
+        print(rep_msg)
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
         _parse_errors(rep, allow_errors)
         return _build_objects(rep)

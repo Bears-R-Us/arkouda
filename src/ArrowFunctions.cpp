@@ -109,10 +109,90 @@ int cpp_getType(const char* filename, const char* colname, char** errMsg) {
       return ARROWFLOAT;
     else if(myType->id() == arrow::Type::DOUBLE)
       return ARROWDOUBLE;
+    else if(myType->id() == arrow::Type::LIST)
+      return ARROWLIST;
     else {
       std::string fname(filename);
       std::string dname(colname);
       std::string msg = "Unsupported type on column: " + dname + " in " + filename; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
+  try {
+    std::shared_ptr<arrow::io::ReadableFile> infile;
+    ARROWRESULT_OK(arrow::io::ReadableFile::Open(filename, arrow::default_memory_pool()),
+                   infile);
+
+    std::unique_ptr<parquet::arrow::FileReader> reader;
+    ARROWSTATUS_OK(parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader));
+
+    std::shared_ptr<arrow::Schema> sc;
+    std::shared_ptr<arrow::Schema>* out = &sc;
+    ARROWSTATUS_OK(reader->GetSchema(out));
+
+    int idx = sc -> GetFieldIndex(colname);
+    // Since this doesn't actually throw a Parquet error, we have to generate
+    // our own error message for this case
+    if(idx == -1) {
+      std::string fname(filename);
+      std::string dname(colname);
+      std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+    auto myType = sc -> field(idx) -> type();
+
+    if (myType->id() == arrow::Type::LIST) {
+      if (myType->num_fields() != 1) {
+        std::string fname(filename);
+        std::string dname(colname);
+        std::string msg = "Column " + dname + " in " + filename + " cannot be read by Arkouda."; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+      else {
+        // fields returns a vector of fields, but here we are expecting lists so should only contain 1 item here
+        auto field = myType->fields()[0];
+        auto f_type = field->type();
+        if(f_type->id() == arrow::Type::INT64)
+          return ARROWINT64;
+        else if(f_type->id() == arrow::Type::INT32)
+          return ARROWINT32;
+        else if(f_type->id() == arrow::Type::UINT64)
+          return ARROWUINT64;
+        else if(f_type->id() == arrow::Type::UINT32)
+          return ARROWUINT32;
+        else if(f_type->id() == arrow::Type::TIMESTAMP)
+          return ARROWTIMESTAMP;
+        else if(f_type->id() == arrow::Type::BOOL)
+          return ARROWBOOLEAN;
+        else if(f_type->id() == arrow::Type::STRING ||
+                f_type->id() == arrow::Type::BINARY)  // Verify that this is functional as expected
+          return ARROWSTRING;
+        else if(f_type->id() == arrow::Type::FLOAT)
+          return ARROWFLOAT;
+        else if(f_type->id() == arrow::Type::DOUBLE)
+          return ARROWDOUBLE;
+        else {
+          std::string fname(filename);
+          std::string dname(colname);
+          std::string msg = "Unsupported type on column: " + dname + " in " + filename; 
+          *errMsg = strdup(msg.c_str());
+          return ARROWERROR;
+        }
+      }
+    }
+    else {
+      std::string fname(filename);
+      std::string dname(colname);
+      std::string msg = "Column " + dname + " in " + filename + " is not a List"; 
       *errMsg = strdup(msg.c_str());
       return ARROWERROR;
     }
@@ -154,6 +234,7 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
           return ARROWERROR;
         }
         column_reader = row_group_reader->Column(idx);
+
         int16_t definition_level;
         parquet::ByteArrayReader* ba_reader =
           static_cast<parquet::ByteArrayReader*>(column_reader.get());
@@ -172,9 +253,147 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
             numRead+=1;
           }
           i++;
+
         }
       }
       return byteSize;
+    }
+    return ARROWERROR;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+  try {
+    int64_t ty = cpp_getType(filename, colname, errMsg);
+    auto offsets = (int64_t*)chpl_offsets;
+    int64_t listSize = 0;
+    // todo - check type is list
+    if (ty == ARROWLIST){
+      int64_t lty = cpp_getListType(filename, colname, errMsg);
+      std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+          parquet::ParquetFileReader::OpenFile(filename, false);
+
+      std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+      int num_row_groups = file_metadata->num_row_groups();
+
+      auto idx = file_metadata -> schema() -> group_node() -> FieldIndex(colname);
+      if(idx < 0) {
+        std::string dname(colname);
+        std::string fname(filename);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
+
+      int64_t i = 0;
+      int64_t vct = 0;
+      int64_t off = 0;
+      for (int r = 0; r < num_row_groups; r++) {
+        std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+          parquet_reader->RowGroup(r);
+
+        int64_t values_read = 0;
+
+        std::shared_ptr<parquet::ColumnReader> column_reader;
+
+        column_reader = row_group_reader->Column(idx);
+        int16_t definition_level;
+        int16_t rep_lvl;
+
+        if(lty == ARROWINT64 || lty == ARROWUINT64) {
+          parquet::Int64Reader* int_reader =
+            static_cast<parquet::Int64Reader*>(column_reader.get());
+
+          while (int_reader->HasNext()) {
+            int64_t value;
+            
+            (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            if (rep_lvl == 0 && vct >0) {
+              i++;
+              offsets[i] = vct;
+              vct++;
+            }
+            else {
+              vct++;
+            }
+          }
+        } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
+          parquet::Int32Reader* int_reader =
+            static_cast<parquet::Int32Reader*>(column_reader.get());
+
+          while (int_reader->HasNext()) {
+            int32_t value;
+            
+            (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            if (rep_lvl == 0 && vct >0) {
+              i++;
+              offsets[i] = vct;
+              vct++;
+            }
+            else {
+              vct++;
+            }
+          }
+        } else if(lty == ARROWBOOLEAN) {
+          parquet::BoolReader* bool_reader =
+            static_cast<parquet::BoolReader*>(column_reader.get());
+
+          while (bool_reader->HasNext()) {
+            bool value;
+            (void)bool_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            if (rep_lvl == 0 && vct >0) {
+              i++;
+              offsets[i] = vct;
+              vct++;
+            }
+            else {
+              vct++;
+            }
+          }
+        } else if (lty == ARROWFLOAT) {
+          parquet::FloatReader* float_reader =
+            static_cast<parquet::FloatReader*>(column_reader.get());
+
+          int64_t numRead = 0;
+          while (float_reader->HasNext()) {
+            float value;
+            
+            (void)float_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            // not worried about NaN here so don't need to check values read.
+            if (rep_lvl == 0 && vct >0) {
+              i++;
+              offsets[i] = vct;
+              vct++;
+            }
+            else {
+              vct++;
+            }
+          }
+        } else if(lty == ARROWDOUBLE) {
+          parquet::DoubleReader* dbl_reader =
+            static_cast<parquet::DoubleReader*>(column_reader.get());
+
+          while (dbl_reader->HasNext()) {
+            double value;
+            
+            (void)dbl_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
+            // not worried about NaN here so don't need to check values read.
+            if (rep_lvl == 0 && vct >0) {
+              i++;
+              offsets[i] = vct;
+              vct++;
+            }
+            else {
+              vct++;
+            }
+          }
+        }
+        // TODO - add string case
+      }
+      return vct;
     }
     return ARROWERROR;
   } catch (const std::exception& e) {
@@ -230,6 +449,119 @@ int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname
       return 0;
     }
     return ARROWERROR;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+  try {
+    int64_t ty = cpp_getListType(filename, colname, errMsg);
+    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+        parquet::ParquetFileReader::OpenFile(filename, false);
+
+    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+    int num_row_groups = file_metadata->num_row_groups();
+
+    auto idx = file_metadata -> schema() -> group_node() -> FieldIndex(colname);
+    if(idx < 0) {
+      std::string dname(colname);
+      std::string fname(filename);
+      std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+      *errMsg = strdup(msg.c_str());
+      return ARROWERROR;
+    }
+
+    int64_t i = 0;
+    for (int r = 0; r < num_row_groups; r++) {
+      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+        parquet_reader->RowGroup(r);
+
+      int64_t values_read = 0;
+      int16_t definition_level; // needed for any type that is nullable
+
+      std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
+
+      if(ty == ARROWINT64 || ty == ARROWUINT64) {
+        auto chpl_ptr = (int64_t*)chpl_arr;
+        parquet::Int64Reader* reader =
+          static_cast<parquet::Int64Reader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          i+=values_read;
+        }
+      } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
+        auto chpl_ptr = (int64_t*)chpl_arr;
+        parquet::Int32Reader* reader =
+          static_cast<parquet::Int32Reader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+
+        int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
+          // Can't read directly into chpl_ptr because it is int64
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+          for (int64_t j = 0; j < values_read; j++)
+            chpl_ptr[i+j] = (int64_t)tmpArr[j];
+          i+=values_read;
+        }
+        free(tmpArr);
+      } else if(ty == ARROWBOOLEAN) {
+        auto chpl_ptr = (bool*)chpl_arr;
+        parquet::BoolReader* reader =
+          static_cast<parquet::BoolReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+
+        while (reader->HasNext() && i < numElems) {
+          if((numElems - i) < batchSize)
+            batchSize = numElems - i;
+          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+          i+=values_read;
+        }
+      } else if(ty == ARROWFLOAT) {
+        auto chpl_ptr = (double*)chpl_arr;
+        parquet::FloatReader* reader =
+          static_cast<parquet::FloatReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+        
+        while (reader->HasNext() && i < numElems) {
+          float value;
+          // Can't read directly into chpl_ptr because it is a double
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = (double)value;
+          }
+          i++;
+        }
+      } else if(ty == ARROWDOUBLE) {
+        auto chpl_ptr = (double*)chpl_arr;
+        parquet::DoubleReader* reader =
+          static_cast<parquet::DoubleReader*>(column_reader.get());
+        startIdx -= reader->Skip(startIdx);
+
+        while (reader->HasNext() && i < numElems) {
+          double value;
+          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+          if(values_read == 0) {
+            chpl_ptr[i] = NAN;
+          }
+          else {
+            chpl_ptr[i] = value;
+          }
+          i++;
+        }
+      }
+    }
+    return 0;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;
@@ -868,7 +1200,9 @@ int cpp_getDatasetNames(const char* filename, char** dsetResult, char** errMsg) 
          sc->field(i)->type()->id() == arrow::Type::STRING ||
          sc->field(i)->type()->id() == arrow::Type::BINARY ||
          sc->field(i)->type()->id() == arrow::Type::FLOAT ||
-         sc->field(i)->type()->id() == arrow::Type::DOUBLE) {
+         sc->field(i)->type()->id() == arrow::Type::DOUBLE ||
+         sc->field(i)->type()->id() == arrow::Type::LIST
+         ) {
         if(!first)
           fields += ("," + sc->field(i)->name());
         else
@@ -904,12 +1238,20 @@ extern "C" {
     return cpp_getNumRows(chpl_str, errMsg);
   }
 
+  int c_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
+    return cpp_readListColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, errMsg);
+  }
+
   int c_readColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
     return cpp_readColumnByName(filename, chpl_arr, colname, numElems, startIdx, batchSize, errMsg);
   }
 
   int c_getType(const char* filename, const char* colname, char** errMsg) {
     return cpp_getType(filename, colname, errMsg);
+  }
+
+  int c_getListType(const char* filename, const char* colname, char** errMsg) {
+    return cpp_getListType(filename, colname, errMsg);
   }
 
   int c_writeColumnToParquet(const char* filename, void* chpl_arr,
@@ -946,6 +1288,10 @@ extern "C" {
 
   int64_t c_getStringColumnNumBytes(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
     return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
+  }
+
+  int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+    return cpp_getListColumnSize(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
   }
 
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg) {
