@@ -10,9 +10,7 @@ Here you will find documentation useful for development in Arkouda.
 
     BUILDING_CHAPEL
     TIPS
-    MODULAR
     USER_BUGS
     MEMORY
-    SAVING_BUILDS
     GASNET
     RELEASE_PROCESS

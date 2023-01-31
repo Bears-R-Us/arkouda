@@ -15,6 +15,6 @@ developers that will work in most cases follows:
 3. `source util/setchplenv.bash` - set up your Chapel environment
 4. Ensure that `CHPL_DEVELOPER` is unset
     - this flag gives the compiler some additional debug output and should only be used to build Chapel when developing in the compiler (which is infrequently for an Arkouda developer)
-5. `make -j 8` - build the Chapel compiler in parallel
+5. `make -j 16` - build the Chapel compiler in parallel
 
 If any issues are encountered during these steps, see https://chapel-lang.org/docs/usingchapel/chplenv.htmlv and https://chapel-lang.org/docs/usingchapel/building.html for more information.
