@@ -754,7 +754,7 @@ def read_csv(
         },
     )
     rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
-    _parse_errors(rep, False)
+    _parse_errors(rep, allow_errors)
     return _build_objects(rep)
 
 
