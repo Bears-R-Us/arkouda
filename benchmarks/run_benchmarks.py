@@ -141,6 +141,12 @@ def create_parser():
         "benchmarks", nargs="*", help="Basename of benchmarks to run with extension stripped"
     )
     parser.add_argument(
+        "--save-data",
+        default=False,
+        action="store_true",
+        help="Save performance data to output files, requires $CHPL_HOME"
+    )
+    parser.add_argument(
         "--gen-graphs", default=False, action="store_true", help="Generate graphs, requires $CHPL_HOME"
     )
     parser.add_argument(
@@ -168,7 +174,7 @@ def main():
     args.graph_dir = args.graph_dir or os.path.join(args.dat_dir, "html")
     config_dat_dir = os.path.join(args.dat_dir, args.description)
 
-    if args.gen_graphs:
+    if args.save_data:
         os.makedirs(config_dat_dir, exist_ok=True)
 
     start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args)
@@ -178,13 +184,13 @@ def main():
         for trial in range(args.numtrials):
             benchmark_py = os.path.join(benchmark_dir, "{}.py".format(benchmark))
             out = run_client(benchmark_py, client_args)
-            if args.gen_graphs:
+            if args.save_data:
                 add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
             print(out)
 
     stop_arkouda_server()
 
-    if args.gen_graphs:
+    if args.save_data:
         comp_file = os.getenv("ARKOUDA_PRINT_PASSES_FILE", "")
         if os.path.isfile(comp_file):
             with open(comp_file, "r") as f:
@@ -195,7 +201,8 @@ def main():
             with open(emitted_code_file, "r") as f:
                 out = f.read()
             add_to_dat("emitted-code-size", out, config_dat_dir, args.graph_infra)
-        generate_graphs(args)
+        if args.gen_graphs:
+            generate_graphs(args)
 
 
 if __name__ == "__main__":
