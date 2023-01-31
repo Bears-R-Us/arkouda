@@ -295,12 +295,12 @@ class Index:
     def to_csv(
         self,
         prefix_path: str,
-        dataset: str = "array",
+        dataset: str = "index",
         col_delim: str = ",",
         overwrite: bool = False,
     ):
         """
-        Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+        Write Index to CSV file(s). File will contain a single column with the pdarray data.
         All CSV Files written by Arkouda include a header denoting data types of the columns.
 
         Parameters

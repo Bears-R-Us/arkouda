@@ -1,6 +1,6 @@
 # CSV
 
-Arkouda now has support for reading and writing CSV file formats. CSV will not perform at the same level as HDF5 and Parquet. It is intended for interacting with smaller datasets and preventing the need to convert files that are already in CSV format to HDF5 or Parquet.
+Arkouda now has support for reading and writing CSV file formats. CSV will not perform at the same level as HDF5 and Parquet. It is intended for interacting with smaller datasets and will prevent the need to convert files already in CSV format to HDF5 or Parquet.
 
 ## Support Arkouda Data Types
 
@@ -11,7 +11,7 @@ Arkouda now has support for reading and writing CSV file formats. CSV will not p
 
 ## File Formatting
 
-Arkouda supports reading CSV files of various formats. There are some limitations currently in place, which are listed below.
+Arkouda supports reading CSV files of various formats. Current limitations include:
 
 - All lines/rows of the CSV file must be newline (`\n`) delimited
 - It is assumed that all files contain column names. The column names should be the first line of data in the file.
@@ -20,7 +20,7 @@ Arkouda supports reading CSV files of various formats. There are some limitation
 
 ### Example Files
 
-In order to provide a clear description of the formats Arkouda supports for CSV files, we have provide an example file written by Arkouda and a file written outside of arkouda that can also be read.
+To give an idea of arkouda supported formats for CSV files, we have provided two example files that Arkouda can read: one written by arkouda and one written outside of Arkouda.
 
 #### Arkouda Formatted File
 
@@ -55,7 +55,7 @@ CSV files have one major difference in how they store data in comparison to HDF5
 
 Due to differences in execution of the CSV format, generic load/read functionality is not currently supported. As a result, the provided `read_csv` methods must be used at this time.
 
-`ls`/`get_dataset` functionality is supported, but is once again separate from the generic implementation. To return a list of columns in the CSV use the `ak.get_columns()` function.
+`ls`/`get_dataset` functionality is supported, but is once again separate from the generic implementation. To return a list of columns in the CSV use the `ls_csv()`/`ak.get_columns()` function.
 
 ### pdarray
 

@@ -204,19 +204,12 @@ module CSVMsg {
 
             // write the header
             writer.write(CSV_HEADER_OPEN + LINE_DELIM);
-            var header_dtypes:[0..#ndsets] string;
-            forall (i, dt) in zip(0..#ndsets, dtypes){
-                header_dtypes[i] = dt;
-            }
-            writer.write(",".join(header_dtypes) + LINE_DELIM);
+            writer.write(",".join(dtypes) + LINE_DELIM);
             writer.write(CSV_HEADER_CLOSE + LINE_DELIM);
 
             // write the column names
             var column_header:[0..#ndsets] string;
-            forall (i, cname) in zip(0..#ndsets, col_names) {
-                column_header[i] = cname;
-            }
-            writer.write(col_delim.join(column_header) + LINE_DELIM);
+            writer.write(col_delim.join(col_names) + LINE_DELIM);
 
             // need to get local subdomain -- should be the same for each element due to sizes being same
             var localSubdomain = getLocalDomain(gse);
@@ -440,16 +433,16 @@ module CSVMsg {
                         var vbytes = tmp_str.bytes();
                         col_lens[i] = vbytes.size;
                     }
-                    var offsets = (+ scan col_lens) - col_lens;
+                    var str_offsets = (+ scan col_lens) - col_lens;
                     var value_size: int = + reduce col_lens;
                     var data = makeDistArray(value_size, uint(8));
                     forall (i, v) in zip(0..#a.size, a) {
                         var tmp_str = v + "\x00";
                         var vbytes = tmp_str.bytes();
-                        ref low = offsets[i];
+                        ref low = str_offsets[i];
                         data[low..#vbytes.size] = vbytes;
                     }
-                    var ss = getSegString(offsets, data, st);
+                    var ss = getSegString(str_offsets, data, st);
                     var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
                     rtnData.append(rst);
                 }
@@ -588,11 +581,6 @@ module CSVMsg {
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(e.message(), MsgType.ERROR); }
-            } catch e: NotHDF5FileError {
-                fileErrorMsg = "The file %s is not an HDF5 file: %s".format(fname,e.message());
-                csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
-                hadError = true;
-                if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e: SegStringError {
                 fileErrorMsg = "SegmentedString error: %s".format(e.message());
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);

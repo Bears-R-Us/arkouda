@@ -2052,7 +2052,7 @@ class Strings:
             The filename prefix to be used for saving files. Files will have _LOCALE#### appended
             when they are written to disk.
         dataset: str
-            Column name to save the pdarray under. Defaults to "strings_array".
+            Column name to save the Strings under. Defaults to "strings_array".
         col_delim: str
             Defaults to ",". Value to be used to separate columns within the file.
             Please be sure that the value used DOES NOT appear in your dataset.

@@ -924,6 +924,9 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
         if names is None:
             datasetNames = [str(column) for column in range(len(columns))]
 
+    if len(pdarrays) == 0:
+        raise RuntimeError("No data was found.")
+
     return datasetNames, pdarrays
 
 
@@ -1140,7 +1143,7 @@ def to_csv(
     Raises
     ------
     ValueError
-        Raised if all datasets are not present in all parquet files or if one or
+        Raised if not all datasets are present in all csv files or if one or
         more of the specified files do not exist
     RuntimeError
         Raised if one or more of the specified files cannot be opened.
@@ -1163,9 +1166,7 @@ def to_csv(
     bytes as uint(8).
     """
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
-    dtypes = []
-    for a in pdarrays:
-        dtypes.append(a.dtype.name)
+    dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
         cmd="writecsv",
