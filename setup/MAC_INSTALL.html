@@ -359,13 +359,14 @@ brew<span class="w"> </span>install<span class="w"> </span>gmp
 <section id="python-environment-anaconda">
 <h2>Python Environment - Anaconda<a class="headerlink" href="#python-environment-anaconda" title="Permalink to this heading">#</a></h2>
 <p>Arkouda provides 2 <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files for configuration, one for users and one for developers. The <code class="docutils literal notranslate"><span class="pre">.yml</span></code> files are configured with a default name for the environment, which is used for example interactions with conda. *Please note that you are able to provide a different name by using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--name</span></code> parameters when calling <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span></code></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Works with all Chipsets (including Apple Silicon)</span>
-brew<span class="w"> </span>install<span class="w"> </span>miniforge
-<span class="c1">#Add /opt/homebrew/Caskroom/miniforge/base/bin as the first line in /etc/paths</span>
-
-<span class="c1">#works with only x86 Architecture (excludes Apple Silicon)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># we recommend running the full Anaconda </span>
 brew<span class="w"> </span>install<span class="w"> </span>anaconda3
-<span class="c1">#Add /opt/homebrew/Caskroom/anaconda3/base/bin as the first line in /etc/paths</span>
+
+<span class="c1"># Note - the exact path may vary based on the release of Anaconda that is current. Run the script to install Anaconda.</span>
+/opt/homebrew/Caskroom/anaconda/2022.10/Anaconda3-2022.10-MacOSX-arm64.sh
+
+<span class="c1"># initialize conda</span>
+conda<span class="w"> </span>init
 
 <span class="c1"># User conda env</span>
 conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>arkouda-env.yml
