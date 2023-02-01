@@ -1143,7 +1143,7 @@ def to_csv(
     Raises
     ------
     ValueError
-        Raised if not all datasets are present in all csv files or if one or
+        Raised if any datasets are present in all csv files or if one or
         more of the specified files do not exist
     RuntimeError
         Raised if one or more of the specified files cannot be opened.

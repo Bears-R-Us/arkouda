@@ -17,6 +17,7 @@ Arkouda supports reading CSV files of various formats. Current limitations inclu
 - It is assumed that all files contain column names. The column names should be the first line of data in the file.
 - Files written by Arkouda will contain a "header" with typing information for the columns. Files without this header will return all read data as Strings objects.
 - Custom column delimiters can be used. The default column delimiter is ",". The column delimiter set for the file will also be used to delimit the column names.
+- Header contents are always comma (`,`) delimited.
 
 ### Example Files
 
