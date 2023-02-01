@@ -774,10 +774,10 @@ class IOTest(ArkoudaTest):
             cols[2]: ak.array([round(float(x), 2) for x in c]),
         }
         with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
-            ak.to_csv(d, f"{tmp_dirname}/non_ak.csv", col_delim="|*|")
+            ak.to_csv(d, f"{tmp_dirname}/non_standard_delim.csv", col_delim="|*|")
 
             # test reading that file with Arkouda
-            data = ak.read_csv(f"{tmp_dirname}/non_ak_LOCALE0000.csv", column_delim="|*|")
+            data = ak.read_csv(f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", column_delim="|*|")
             self.assertListEqual(list(data.keys()), cols)
             self.assertListEqual(data["ColA"].to_list(), a)
             self.assertListEqual(data["ColB"].to_list(), [int(x) for x in b])
@@ -785,7 +785,7 @@ class IOTest(ArkoudaTest):
 
             # test reading subset of columns
             data = ak.read_csv(
-                f"{tmp_dirname}/non_ak_LOCALE0000.csv", datasets="ColB", column_delim="|*|"
+                f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", datasets="ColB", column_delim="|*|"
             )
             self.assertIsInstance(data, ak.pdarray)
             self.assertListEqual(data.to_list(), [int(x) for x in b])

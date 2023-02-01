@@ -475,16 +475,16 @@ module CSVMsg {
                 var vbytes = tmp_str.bytes();
                 col_lens[i] = vbytes.size;
             }
-            var offsets = (+ scan col_lens) - col_lens;
+            var str_offsets = (+ scan col_lens) - col_lens;
             var value_size: int = + reduce col_lens;
             var data = makeDistArray(value_size, uint(8));
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";
                 var vbytes = tmp_str.bytes();
-                ref low = offsets[i];
+                ref low = str_offsets[i];
                 data[low..#vbytes.size] = vbytes;
             }
-            var ss = getSegString(offsets, data, st);
+            var ss = getSegString(str_offsets, data, st);
             var rst = (dset, "seg_string", "%s+%t".format(ss.name, ss.nBytes));
             rtnData.append(rst);
         }
