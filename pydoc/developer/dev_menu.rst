@@ -9,3 +9,4 @@ Here you will find documentation useful for development in Arkouda.
     :maxdepth: 1
 
     GASNET
+    RELEASE_PROCESS
