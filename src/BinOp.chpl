@@ -186,7 +186,10 @@ module BinOp
             [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
           }
           when "<<" {
-            e.a = l.a << r.a;
+            ref ea = e.a;
+            ref la = l.a;
+            ref ra = r.a;
+            [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li << ri;
           }                    
           when ">>" {
             e.a = l.a >> r.a;
@@ -245,7 +248,10 @@ module BinOp
           e.a = l.a >> r.a;
         }
         when "<<" {
-          e.a = l.a << r.a;
+          ref ea = e.a;
+          ref la = l.a;
+          ref ra = r.a;
+          [(ei,li,ri) in zip(ea,la,ra)] if ri < 64 then ei = li << ri;
         }
         when ">>>" {
           e.a = rotr(l.a, r.a);
@@ -540,7 +546,9 @@ module BinOp
             [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
           }
           when "<<" {
-            e.a = l.a << val;
+            if val < 64 {
+              e.a = l.a << val;
+            }
           }                    
           when ">>" {
             e.a = l.a >> val;
@@ -594,7 +602,9 @@ module BinOp
           e.a = l.a >> val:l.etype;
         }
         when "<<" {
-          e.a = l.a << val:l.etype;
+          if val < 64 {
+            e.a = l.a << val:l.etype;
+          }
         }
         when ">>>" {
           e.a = rotr(l.a, val:l.etype);
@@ -857,7 +867,9 @@ module BinOp
             [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
           }
           when "<<" {
-            e.a = val << r.a;
+            ref ea = e.a;
+            ref ra = r.a;
+            [(ei,ri) in zip(ea,ra)] if ri < 64 then ei = val << ri;
           }                    
           when ">>" {
             e.a = val >> r.a;
@@ -914,7 +926,9 @@ module BinOp
           e.a = val:uint >> r.a:uint;
         }
         when "<<" {
-          e.a = val:uint << r.a:uint;
+          ref ea = e.a;
+          ref ra = r.a;
+          [(ei,ri) in zip(ea,r.a)] if ri:uint < 64 then ei = val:uint << ri:uint;
         }
         when ">>>" {
           e.a = rotr(val:uint, r.a:uint);

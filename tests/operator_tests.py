@@ -349,6 +349,14 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((ak_float**aku).to_ndarray(), np_float**npu, equal_nan=True))
             self.assertTrue(np.allclose((aku**ak_float).to_ndarray(), npu**np_float, equal_nan=True))
 
+    def test_left_shift_binop(self):
+        ak_uint = ak.array([2**63 -1], dtype=ak.uint64)
+        np_uint = np.array([2**63 -1], dtype=np.uint64)
+
+        self.assertTrue(np.allclose(ak_uint << 64, np_uint << 64))
+        self.assertTrue(np.allclose(ak_uint << 65, np_uint << 65))
+
+
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
         from arkouda.util import generic_concat as akuconcat
