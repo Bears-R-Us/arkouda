@@ -67,7 +67,7 @@ class ArrayViewTest(ArkoudaTest):
         inav[nind] = -9999
         unav[nind] = 2**64 - 9999
         iav[uind] = -9999
-        uav[iind] = 2**64 - 9999
+        uav[iind] = -9999
         self.assertEqual(iav[uind], inav[nind])
         self.assertEqual(iav[iind], iav[uind])
         self.assertEqual(uav[uind], unav[nind])

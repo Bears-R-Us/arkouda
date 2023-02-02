@@ -213,7 +213,7 @@ class pdarray:
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
-    def format_other(self, other: object) -> str:
+    def format_other(self, other) -> str:
         """
         Attempt to cast scalar other to the element dtype of this pdarray,
         and print the resulting value to a string (e.g. for sending to a
@@ -236,7 +236,10 @@ class pdarray:
 
         """
         try:
-            other = self.dtype.type(other)
+            if self.dtype != bigint:
+                other = np.array([other]).astype(self.dtype)[0]
+            else:
+                other = int(other)
         except Exception:
             raise TypeError(f"Unable to convert {other} to {self.dtype.name}")
         if self.dtype == bool:
@@ -1574,6 +1577,7 @@ class pdarray:
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
         from warnings import warn
+
         warn(
             "ak.pdarray.save has been deprecated. Please use ak.pdarray.to_parquet or ak.pdarray.to_hdf",
             DeprecationWarning,

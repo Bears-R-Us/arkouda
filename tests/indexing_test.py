@@ -50,7 +50,7 @@ class IndexingTest(ArkoudaTest):
             self.assertEqual(pda[np.uint(2)], pda[2])
 
             # set [slice] = scalar/pdarray
-            pda[:10] = np.array([-2]).astype(np.uint)[0]
+            pda[:10] = -2
             self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
             pda[:10] = ak.cast(ak.arange(10), t)
             self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
