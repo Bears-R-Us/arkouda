@@ -583,6 +583,20 @@ class DataFrameTest(ArkoudaTest):
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
             self.assertTrue(df.to_pandas().equals(ak_loaded.to_pandas()))
 
+            # test with segarray with _ in column name
+            df_dict = {
+                "c_1": ak.arange(3, 6),
+                "c_2": ak.arange(6, 9),
+                "c_3": ak.segarray(ak.array([0, 9, 14]), ak.arange(20)),
+            }
+            akdf = ak.DataFrame(df_dict)
+            akdf.to_hdf(f"{tmp_dirname}/seg_test.h5")
+            self.assertEqual(
+                len(glob.glob(f"{tmp_dirname}/seg_test*.h5")), ak.get_config()["numLocales"]
+            )
+            ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
+            self.assertTrue(akdf.to_pandas().equals(ak_loaded.to_pandas()))
+
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})
 

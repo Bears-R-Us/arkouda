@@ -1599,9 +1599,11 @@ class DataFrame(UserDict):
 
         # this assumes segments will always have corresponding values.
         # This should happen due to save config
-        seg_cols = [col.split("_")[0] for col in df_dict.keys() if col.endswith("_segments")]
+        seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
         df_dict_keys = [
-            col.split("_")[0] if col.endswith("_segments") or col.endswith("_values") else col
+            "_".join(col.split("_")[:-1])
+            if col.endswith("_segments") or col.endswith("_values")
+            else col
             for col in df_dict.keys()
         ]
 
