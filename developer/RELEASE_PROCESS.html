@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="MacOS" href="MAC_INSTALL.html" /><link rel="prev" title="Linux" href="LINUX_INSTALL.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="GASNet Development" href="GASNET.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Windows (WSL2) - arkouda documentation</title>
+        <title>Release Process - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -158,16 +158,16 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="install_menu.html">Installation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="LINUX_INSTALL.html">Linux</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Windows (WSL2)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MAC_INSTALL.html">MacOS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setup/MAC_INSTALL.html">MacOS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="BUILD.html">Building the Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MODULAR.html">Modular Server Builds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../file_io/PARQUET.html">Parquet</a></li>
@@ -233,9 +233,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="dev_menu.html">Developer Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Release Process</a></li>
 </ul>
 </li>
 </ul>
@@ -266,43 +266,85 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="windows-wsl2">
-<h1>Windows (WSL2)<a class="headerlink" href="#windows-wsl2" title="Permalink to this heading">#</a></h1>
-<p>It is possible to set up a basic arkouda installation on MS Windows using the Windows Subsystem for Linux (WSL2).
-The general strategy here is to use Linux terminals on WSL to launch the server. If you are going to try this route we suggest using WSL-2 with Ubuntu 20.04 LTS.  There are a number of tutorials available online such has <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">MicroSoft’s</a></p>
-<p>Key installation points:</p>
+          <section id="release-process">
+<h1>Release Process<a class="headerlink" href="#release-process" title="Permalink to this heading">#</a></h1>
+<p><strong>Purpose</strong>: Outline the general steps taken when cutting a new Arkouda release</p>
+<p><em>Our release process is continually evolving.</em>
+When a general consensus forms around cutting a new release a developer should follow these general steps.</p>
+<section id="step-by-step-instructions">
+<h2>Step-by-step instructions<a class="headerlink" href="#step-by-step-instructions" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Make sure to use WSL2</p></li>
-<li><p>Ubuntu 20.04 LTS from the MS app store</p></li>
-<li><p>Don’t forget to create a user account and password as part of the Linux install</p></li>
+<li><p>Gain consensus from the core development team and confirm the current HEAD of the <code class="docutils literal notranslate"><span class="pre">master</span></code>|<code class="docutils literal notranslate"><span class="pre">main</span></code> branch builds and passes all tests on the continuous integration workflow (we use Github’s built in Actions Workflows for this).</p></li>
+<li><p>Navigate to the <code class="docutils literal notranslate"><span class="pre">releases</span></code> page in the Arkouda project (<a class="reference external" href="https://github.com/Bears-R-Us/arkouda/releases">Direct Link</a>).  You can navigate to it from the <code class="docutils literal notranslate"><span class="pre">Code</span></code> tab of the Arkouda project and locating the <code class="docutils literal notranslate"><span class="pre">Releases</span></code> section on the right and side of the page.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Draft</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">release</span></code> button which will bring you to a new page.</p></li>
+<li><p>Select the <code class="docutils literal notranslate"><span class="pre">Choose</span> <span class="pre">a</span> <span class="pre">tag</span></code> drop down button and in the text input box add the new version number.  This tag will be <em>auto-created</em> on the final step when we <em>Publish</em> the release.</p>
+<ul>
+<li><p>As of this writing our versioning scheme is date based following the pattern <code class="docutils literal notranslate"><span class="pre">v&lt;YYYY&gt;.&lt;MM&gt;.&lt;DD&gt;</span></code>.  Example:  <code class="docutils literal notranslate"><span class="pre">v2022.01.31</span></code>.  Please note we zero-pad the month &amp; day as necessary to ensure lexicographic sorting, and we are using a dot <code class="docutils literal notranslate"><span class="pre">.</span></code> as the delimiter.</p></li>
+<li><p>Should it be necessary to tag more than one release on the same day (hey, mistakes happen it’s ok), we use a dash and incrementing whole number, i.e. <code class="docutils literal notranslate"><span class="pre">v2022.01.31-1</span></code>, <code class="docutils literal notranslate"><span class="pre">v2022.01.31-2</span></code>, etc.</p></li>
 </ul>
-<p>Once configured you can follow the basic <a class="reference internal" href="LINUX_INSTALL.html"><span class="doc std std-doc">Linux Install</span></a>
-for installing Chapel &amp; Arkouda.  We also recommend installing Anaconda for windows.</p>
-<p><strong>Note:</strong> When running <code class="docutils literal notranslate"><span class="pre">make</span></code> to build Chapel while using WSL, pathing issues to library dependencies are common. In most cases, a symlink pointing to the correct location or library will fix these errors.</p>
-<p>An example of one of these errors found while using Chapel 1.29.0 and Ubuntu 20.04 LTS with WSL is:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>../../../bin/llvm-tblgen:<span class="w"> </span>error<span class="w"> </span><span class="k">while</span><span class="w"> </span>loading<span class="w"> </span>shared<span class="w"> </span>libraries:<span class="w"> </span>libtinfow.so.6:<span class="w"> </span>cannot<span class="w"> </span>open<span class="w"> </span>shared<span class="w"> </span>object<span class="w"> </span>file:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
-</pre></div>
-</div>
-<p>This error can be fixed by the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/lib/x86_64-linux-gnu/libtic.so.6.2<span class="w"> </span>/lib/x86_64-linux-gnu/libtinfow.so.6
-</pre></div>
-</div>
-<p>The general plan is to compile &amp; run the <code class="docutils literal notranslate"><span class="pre">arkouda-server</span></code> process from a Linux terminal on WSL and then either connect
-to it with the python client using another Linux terminal running on WSL <em>or</em> using the Windows Anaconda-Powershell.</p>
-<p>If running an IDE you can use either the Windows or Linux version, however, you may need to install an X-window system
-on Windows such as VcXsrv, X410, or an alternative.  Follow the setup instructions for whichever one you choose, but
-keep in mind you may need to update your Windows firewall to allow the Xserver to connect.  Also, on the Linux side of
-the house we found it necessary to add</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>/etc/resolv.conf<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nameserver<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2; exit;}&#39;</span><span class="k">)</span>:0.0
-</pre></div>
-</div>
-<p>to our <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file to get the display correctly forwarded.</p>
+</li>
+<li><p>After inputting the new tag string, you can click the button underneath the text input box <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">Create</span> <span class="pre">new</span> <span class="pre">tag:&lt;your</span> <span class="pre">tag&gt;</span> <span class="pre">on</span> <span class="pre">publish</span></code>. You will see an informational note appear under the tag section with the text: <em>“Excellent! This tag will be created from the target when you publish this release.”</em></p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">Release</span> <span class="pre">Title</span></code> in the appropriate text box. We use the tag name.</p></li>
+<li><p>In the larger <code class="docutils literal notranslate"><span class="pre">Describe</span> <span class="pre">the</span> <span class="pre">release</span></code> text box you should add the release notes.  Ideally they should be split into the following. NOTE: We will go into more detail on how to generate the release notes in the next section.</p>
+<ul>
+<li><p>Major changes</p></li>
+<li><p>Minor changes</p></li>
+<li><p>Auto-generated release notes</p></li>
+</ul>
+</li>
+<li><p>When everything has been completed, you can optionally click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">draft</span></code> button at the bottom so someone else can review the release notes etc. Or go straight to the next step.</p></li>
+<li><p>Once everything is ready click the green <code class="docutils literal notranslate"><span class="pre">Publish</span> <span class="pre">release</span></code> button.</p></li>
+<li><p>Post a link and share the news with the community.</p></li>
+</ul>
+</section>
+<section id="generating-release-notes">
+<h2>Generating release notes<a class="headerlink" href="#generating-release-notes" title="Permalink to this heading">#</a></h2>
+<p>We believe it is important to generate good release notes; highlighting significant changes, minor changes, and as a fail-safe using Github’s <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">Auto-generate</span> <span class="pre">release</span> <span class="pre">notes</span></code> feature.  The following steps can be loosely followed to determine what is in the release itself OR you can <code class="docutils literal notranslate"><span class="pre">auto-generate</span></code> them and go through them to determine which change-sets are significant.  When possible add a link to the Issue number and/or PR number.</p>
+<section id="diff-the-git-logs">
+<h3>Diff the git logs<a class="headerlink" href="#diff-the-git-logs" title="Permalink to this heading">#</a></h3>
+<p>We are going to assume you have named the Bears-R-Us remote <code class="docutils literal notranslate"><span class="pre">upstream</span></code> in the following git commands. If you named it something else, replace it as necessary.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">upstream</span> <span class="pre">--tags</span></code> to make sure you have the previous tab from upstream.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-l</span></code> to list the tags; you should see the most recent tab in this list.</p></li>
+<li><p>Use one of the following commands to get an idea of the commit history by comparing the last tag with the current state of the <code class="docutils literal notranslate"><span class="pre">upstream</span></code> remote.  We use git’s ellipse operator <code class="docutils literal notranslate"><span class="pre">..</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">&lt;prev-tag&gt;..upstream/master</span></code> ; for example <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">v2022.01.20..upstream/master</span></code></p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">--online</span></code> option to make the output more concise: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">--oneline</span> <span class="pre">v2022.01.20..upstream/master</span></code></p></li>
+</ul>
+</li>
+<li><p>Alternatively you can use the graphical <code class="docutils literal notranslate"><span class="pre">gitk</span></code> utility to view the history.</p></li>
+<li><p>We have been pushing developers to include the Issue number in their commits which makes it easy to see which issues are associated with the new release. If this is not listed, you should be able to retrieve the pull request number associated with the merged commit(s). You will need to use the Github web interface to find the associated PR and check its description to find any associated issue numbers.  <strong>You should strive to link ALL related issues and/or PRs in the release notes</strong>.  Github generally automates the hyperlink creation using defined patterns like <code class="docutils literal notranslate"><span class="pre">#1234</span></code>.</p></li>
+<li><p>Once you have the Issue &amp; PR numbers, you will need to determine what is considered <em>Major</em> and <em>Minor</em> with respect to new functionality. A reasonable guideline for considering changes</p>
+<ul>
+<li><p>Major</p>
+<ul>
+<li><p>New features (user facing)</p></li>
+<li><p>Substantial, internal design changes for developers</p></li>
+<li><p>Substantial performance improvement</p></li>
+<li><p>Deprecation of an old feature</p></li>
+<li><p>Bug fixes</p></li>
+</ul>
+</li>
+<li><p>Minor</p>
+<ul>
+<li><p>Smaller performance improvements</p></li>
+<li><p>Internal changes with no real user-facing impact</p></li>
+<li><p>(Basically anything which doesn’t fit in the Major category)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Auto-generated changes: As a fail-safe we like to add a third section to the Release notes using Github’s <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">Auto-generate</span> <span class="pre">release</span> <span class="pre">notes</span></code> button on the upper right hand side of the release-notes description text field.</p></li>
+</ul>
+<p>When in doubt look at previous releases to get an idea of what our release notes look like.</p>
+</section>
+</section>
 </section>
 
         </article>
@@ -310,23 +352,15 @@ the house we found it necessary to add</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="MAC_INSTALL.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">MacOS</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="LINUX_INSTALL.html">
+          
+          <a class="prev-page" href="GASNET.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Linux</div>
+                <div class="title">GASNet Development</div>
                 
               </div>
             </a>
@@ -348,8 +382,31 @@ the house we found it necessary to add</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Release Process</a><ul>
+<li><a class="reference internal" href="#step-by-step-instructions">Step-by-step instructions</a></li>
+<li><a class="reference internal" href="#generating-release-notes">Generating release notes</a><ul>
+<li><a class="reference internal" href="#diff-the-git-logs">Diff the git logs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
