@@ -12,7 +12,6 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
-from arkouda.io import load
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
@@ -1074,6 +1073,7 @@ class SegArray:
         to_hdf, load
         """
         from warnings import warn
+
         warn(
             "ak.SegArray.save has been deprecated. Please use ak.SegArray.to_hdf",
             DeprecationWarning,
@@ -1114,6 +1114,8 @@ class SegArray:
         -------
         SegArray
         """
+        from arkouda.io import load
+
         if segment_suffix == value_suffix:
             raise ValueError("Segment suffix and value suffix must be different")
         segments = load(prefix_path, dataset=dataset + segment_suffix)

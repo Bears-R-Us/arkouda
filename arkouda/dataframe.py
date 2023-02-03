@@ -22,7 +22,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
-from arkouda.io import get_filetype, load_all
+from arkouda.io import _dict_recombine_segarrays, get_filetype, load_all
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
@@ -1704,34 +1704,9 @@ class DataFrame(UserDict):
         filetype = get_filetype(first_file) if file_format.lower() == "infer" else file_format
 
         # columns load backwards
-        df_dict = load_all(prefix_path, file_format=filetype)
-
-        # this assumes segments will always have corresponding values.
-        # This should happen due to save config
-        seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
-        df_dict_keys = [
-            "_".join(col.split("_")[:-1])
-            if col.endswith("_segments") or col.endswith("_values")
-            else col
-            for col in df_dict.keys()
-        ]
-
-        # update dict to contain segarrays where applicable if any exist
-        if len(seg_cols) > 0:
-            df_dict = {
-                col: SegArray.from_parts(df_dict[col + "_segments"], df_dict[col + "_values"])
-                if col in seg_cols
-                else df_dict[col]
-                for col in df_dict_keys
-            }
-
-        df = cls(df_dict)
-        if filetype == "HDF5":
-            return df
-        else:
-            # return the dataframe with them reversed so they match what was saved
-            # This is only an issue with parquet
-            return df[df.columns[::-1]]
+        df = cls(_dict_recombine_segarrays(load_all(prefix_path, file_format=filetype)))
+        # if parquet, return reversed dataframe to match what was saved
+        return df if filetype == "HDF5" else df[df.columns[::-1]]
 
     def argsort(self, key, ascending=True):
         """
