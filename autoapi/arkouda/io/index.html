@@ -171,6 +171,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
@@ -299,23 +300,35 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.get_datasets" title="arkouda.io.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(→ List[str])</p></td>
 <td><p>Get the names of the datasets in the provide files</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.ls_csv" title="arkouda.io.ls_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_csv</span></code></a>(→ List[str])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.get_columns" title="arkouda.io.get_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_columns</span></code></a>(→ List[str])</p></td>
+<td><p>Get a list of column names from CSV file(s).</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_hdf" title="arkouda.io.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Read Arkouda objects from HDF5 file/s</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.read_parquet" title="arkouda.io.read_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_parquet</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Read Arkouda objects from Parquet file/s</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.import_data" title="arkouda.io.import_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_data</span></code></a>(read_path[, write_file, return_obj, index])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.read_csv" title="arkouda.io.read_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_csv</span></code></a>(→ Union[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<td><p>Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.import_data" title="arkouda.io.import_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_data</span></code></a>(read_path[, write_file, return_obj, index])</p></td>
 <td><p>Import data from a file saved by Pandas (HDF5/Parquet) to Arkouda object and/or</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.export" title="arkouda.io.export"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export</span></code></a>(read_path[, dataset_name, write_file, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.export" title="arkouda.io.export"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export</span></code></a>(read_path[, dataset_name, write_file, ...])</p></td>
 <td><p>Export data from Arkouda file (Parquet/HDF5) to Pandas object or file formatted to be</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.to_parquet" title="arkouda.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.to_parquet" title="arkouda.io.to_parquet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_parquet</span></code></a>(→ None)</p></td>
 <td><p>Save multiple named pdarrays to Parquet files.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.to_hdf" title="arkouda.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.to_hdf" title="arkouda.io.to_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf</span></code></a>(→ None)</p></td>
 <td><p>Save multiple named pdarrays to HDF5 files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io.to_csv" title="arkouda.io.to_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_csv</span></code></a>(columns, prefix_path[, names, col_delim, overwrite])</p></td>
+<td><p>Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io.save_all" title="arkouda.io.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(→ None)</p></td>
 <td><p>DEPRECATED</p></td>
@@ -499,6 +512,17 @@ Whether or not to allow errors while accessing datasets</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.ls_csv">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">ls_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.io.ls_csv" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.get_columns">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">get_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.io.get_columns" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a list of column names from CSV file(s).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.read_hdf">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_string_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.io.read_hdf" title="Permalink to this definition">#</a></dt>
 <dd><p>Read Arkouda objects from HDF5 file/s</p>
@@ -617,6 +641,55 @@ This will need to be updated once parquets workflow is updated</p>
 Read Glob Expression
 &gt;&gt;&gt; x = ak.read_parquet(‘path/name_prefix*’) # Reads Parquet</p>
 </div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.read_csv">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../array_view/index.html#arkouda.array_view.ArrayView" title="arkouda.array_view.ArrayView"><span class="pre">arkouda.array_view.ArrayView</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.io.read_csv" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+will be returned in a dictionary mapping the dataset name to the Arkouda object
+containing the data. If the file contains the appropriately formatted header, typed
+data will be returned. Otherwise, all data will be returned as a Strings object.</p>
+<dl class="simple">
+<dt>filenames: str or List[str]</dt><dd><p>The filenames to read data from</p>
+</dd>
+<dt>datasets: str or List[str] (Optional)</dt><dd><p>names of the datasets to read. When <cite>None</cite>, all datasets will be read.</p>
+</dd>
+<dt>column_delim: str</dt><dd><p>The delimiter for column names and data. Defaults to “,”.</p>
+</dd>
+<dt>allow_errors: bool</dt><dd><p>Default False, if True will allow files with read errors to be skipped
+instead of failing.  A warning will be included in the return containing
+the total number of files skipped due to failure and up to 10 filenames.</p>
+</dd>
+</dl>
+<p>pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.</p>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>Raised if all datasets are not present in all parquet files or if one or
+more of the specified files do not exist</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>Raised if one or more of the specified files cannot be opened.
+If <cite>allow_errors</cite> is true this may be raised if no values are returned
+from the server.</p>
+</dd>
+<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server</p>
+</dd>
+</dl>
+<p>to_csv</p>
+<ul class="simple">
+<li><p>CSV format is not currently supported by load/load_all operations</p></li>
+<li><p>The column delimiter is expected to be the same for column names and data</p></li>
+<li><p>Be sure that column delimiters are not found within your data.</p></li>
+<li><p>All CSV files must delimit rows using newline (`</p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt><a href="#id1"><span class="problematic" id="id2">`</span></a>) at this time.</dt><dd><ul class="simple">
+<li><p>Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing</p></li>
+</ul>
+<p>bytes as uint(8).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -815,6 +888,58 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.io.to_csv">
+<span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.io.to_csv" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+include a header denoting data types of the columns.</p>
+<dl class="simple">
+<dt>columns: Mapping[str, pdarray] or List[pdarray]</dt><dd><p>The objects to be written to CSV file. If a mapping is used and <cite>names</cite> is None
+the keys of the mapping will be used as the dataset names.</p>
+</dd>
+<dt>prefix_path: str</dt><dd><p>The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+when they are written to disk.</p>
+</dd>
+<dt>names: List[str] (Optional)</dt><dd><p>names of dataset to be written. Order should correspond to the order of data
+provided in <cite>columns</cite>.</p>
+</dd>
+<dt>col_delim: str</dt><dd><p>Defaults to “,”. Value to be used to separate columns within the file.
+Please be sure that the value used DOES NOT appear in your dataset.</p>
+</dd>
+<dt>overwrite: bool</dt><dd><p>Defaults to False. If True, any existing files matching your provided prefix_path will
+be overwritten. If False, an error will be returned if existing files are found.</p>
+</dd>
+</dl>
+<p>None</p>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>Raised if any datasets are present in all csv files or if one or
+more of the specified files do not exist</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>Raised if one or more of the specified files cannot be opened.
+If <cite>allow_errors</cite> is true this may be raised if no values are returned
+from the server.</p>
+</dd>
+<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server</p>
+</dd>
+</dl>
+<p>read_csv</p>
+<ul class="simple">
+<li><p>CSV format is not currently supported by load/load_all operations</p></li>
+<li><p>The column delimiter is expected to be the same for column names and data</p></li>
+<li><p>Be sure that column delimiters are not found within your data.</p></li>
+<li><p>All CSV files must delimit rows using newline (`</p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt><a href="#id3"><span class="problematic" id="id4">`</span></a>) at this time.</dt><dd><ul class="simple">
+<li><p>Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing</p></li>
+</ul>
+<p>bytes as uint(8).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.io.save_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.io.</span></span><span class="sig-name descname"><span class="pre">save_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HDF5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.io.save_all" title="Permalink to this definition">#</a></dt>
 <dd><p>DEPRECATED
@@ -893,7 +1018,7 @@ it from the null-byte terminators.  Defaults to False currently</p></li>
 <dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id789" title="arkouda.Strings">Strings</a>]</p>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#id820" title="arkouda.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1098,12 +1223,16 @@ Read Glob Expression
 <li><a class="reference internal" href="#arkouda.io.file_type_to_int"><code class="docutils literal notranslate"><span class="pre">file_type_to_int()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.mode_str_to_int"><code class="docutils literal notranslate"><span class="pre">mode_str_to_int()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.get_datasets"><code class="docutils literal notranslate"><span class="pre">get_datasets()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.ls_csv"><code class="docutils literal notranslate"><span class="pre">ls_csv()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.get_columns"><code class="docutils literal notranslate"><span class="pre">get_columns()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.read_hdf"><code class="docutils literal notranslate"><span class="pre">read_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.read_parquet"><code class="docutils literal notranslate"><span class="pre">read_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.read_csv"><code class="docutils literal notranslate"><span class="pre">read_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.import_data"><code class="docutils literal notranslate"><span class="pre">import_data()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.to_parquet"><code class="docutils literal notranslate"><span class="pre">to_parquet()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.to_hdf"><code class="docutils literal notranslate"><span class="pre">to_hdf()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.io.to_csv"><code class="docutils literal notranslate"><span class="pre">to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.save_all"><code class="docutils literal notranslate"><span class="pre">save_all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.io.load_all"><code class="docutils literal notranslate"><span class="pre">load_all()</span></code></a></li>
@@ -1114,12 +1243,16 @@ Read Glob Expression
 <li><a class="reference internal" href="#arkouda.io.file_type_to_int">file_type_to_int</a></li>
 <li><a class="reference internal" href="#arkouda.io.mode_str_to_int">mode_str_to_int</a></li>
 <li><a class="reference internal" href="#arkouda.io.get_datasets">get_datasets</a></li>
+<li><a class="reference internal" href="#arkouda.io.ls_csv">ls_csv</a></li>
+<li><a class="reference internal" href="#arkouda.io.get_columns">get_columns</a></li>
 <li><a class="reference internal" href="#arkouda.io.read_hdf">read_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.io.read_parquet">read_parquet</a></li>
+<li><a class="reference internal" href="#arkouda.io.read_csv">read_csv</a></li>
 <li><a class="reference internal" href="#arkouda.io.import_data">import_data</a></li>
 <li><a class="reference internal" href="#arkouda.io.export">export</a></li>
 <li><a class="reference internal" href="#arkouda.io.to_parquet">to_parquet</a></li>
 <li><a class="reference internal" href="#arkouda.io.to_hdf">to_hdf</a></li>
+<li><a class="reference internal" href="#arkouda.io.to_csv">to_csv</a></li>
 <li><a class="reference internal" href="#arkouda.io.save_all">save_all</a></li>
 <li><a class="reference internal" href="#arkouda.io.load">load</a></li>
 <li><a class="reference internal" href="#arkouda.io.load_all">load_all</a></li>

@@ -171,6 +171,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
@@ -940,6 +941,94 @@ locale number.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.to_csv" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
+All CSV Files written by Arkouda include a header denoting data types of the columns.
+Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+bytes as uint(8).</p>
+<dl class="simple">
+<dt>path: str</dt><dd><p>The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+when they are written to disk.</p>
+</dd>
+<dt>index: bool</dt><dd><p>Defaults to False. If True, the index of the DataFrame will be written to the file
+as a column</p>
+</dd>
+<dt>columns: List[str] (Optional)</dt><dd><p>Column names to assign when writing data</p>
+</dd>
+<dt>col_delim: str</dt><dd><p>Defaults to “,”. Value to be used to separate columns within the file.
+Please be sure that the value used DOES NOT appear in your dataset.</p>
+</dd>
+<dt>overwrite: bool</dt><dd><p>Defaults to False. If True, any existing files matching your provided prefix_path will
+be overwritten. If False, an error will be returned if existing files are found.</p>
+</dd>
+</dl>
+<p>None</p>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>Raised if all datasets are not present in all parquet files or if one or
+more of the specified files do not exist</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>Raised if one or more of the specified files cannot be opened.
+If <cite>allow_errors</cite> is true this may be raised if no values are returned
+from the server.</p>
+</dd>
+<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>CSV format is not currently supported by load/load_all operations</p></li>
+<li><p>The column delimiter is expected to be the same for column names and data</p></li>
+<li><p>Be sure that column delimiters are not found within your data.</p></li>
+<li><p>All CSV files must delimit rows using newline (`</p></li>
+</ul>
+</div></blockquote>
+<p><a href="#id1"><span class="problematic" id="id2">`</span></a>) at this time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.read_csv">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.read_csv" title="Permalink to this definition">#</a></dt>
+<dd><blockquote>
+<div><p>Read the columns of a CSV file into an Arkouda DataFrame.
+If the file contains the appropriately formatted header, typed data will be returned.
+Otherwise, all data will be returned as a Strings objects.</p>
+<dl class="simple">
+<dt>filename: str</dt><dd><p>Filename to read data from</p>
+</dd>
+<dt>col_delim: str</dt><dd><p>Defaults to “,”. The delimiter for columns within the data.</p>
+</dd>
+</dl>
+<p>Arkouda DataFrame containing the columns from the CSV file.</p>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>Raised if all datasets are not present in all parquet files or if one or
+more of the specified files do not exist</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>Raised if one or more of the specified files cannot be opened.
+If <cite>allow_errors</cite> is true this may be raised if no values are returned
+from the server.</p>
+</dd>
+<dt>TypeError</dt><dd><p>Raised if we receive an unknown arkouda_type returned from the server</p>
+</dd>
+</dl>
+<p>to_csv</p>
+<ul class="simple">
+<li><p>CSV format is not currently supported by load/load_all operations</p></li>
+<li><p>The column delimiter is expected to be the same for column names and data</p></li>
+<li><p>Be sure that column delimiters are not found within your data.</p></li>
+<li><p>All CSV files must delimit rows using newline (`</p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt><a href="#id3"><span class="problematic" id="id4">`</span></a>) at this time.</dt><dd><ul class="simple">
+<li><p>Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing</p></li>
+</ul>
+<p>bytes as uint(8).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.dataframe.DataFrame.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'HDF5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.dataframe.DataFrame.save" title="Permalink to this definition">#</a></dt>
 <dd><p>DEPRECATED
@@ -1238,7 +1327,7 @@ Please note you cannot register two different DataFrames with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#id446" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the DataFrame with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -1260,7 +1349,7 @@ in attached copies.</p>
 registered using register() and/or attached to using attach()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id446" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
 when attempting to unregister</p>
 </dd>
 </dl>
@@ -1285,7 +1374,7 @@ they are unregistered.</p>
 <dd class="field-even"><p>bool</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#id446" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mismatch of registered components</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1313,7 +1402,7 @@ arkouda server which was registered using register()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame">DataFrame</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id446" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if user_defined_name is not registered</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1334,7 +1423,7 @@ with the arkouda server via register()</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
-<li><p><a class="reference internal" href="../index.html#id430" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+<li><p><a class="reference internal" href="../index.html#id446" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
 </ul>
 </dd>
 </dl>
@@ -1569,6 +1658,8 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame._prep_data"><code class="docutils literal notranslate"><span class="pre">DataFrame._prep_data()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_hdf"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_parquet"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_parquet()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_csv"><code class="docutils literal notranslate"><span class="pre">DataFrame.to_csv()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.read_csv"><code class="docutils literal notranslate"><span class="pre">DataFrame.read_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.save"><code class="docutils literal notranslate"><span class="pre">DataFrame.save()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.load"><code class="docutils literal notranslate"><span class="pre">DataFrame.load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">DataFrame.argsort()</span></code></a></li>
@@ -1638,6 +1729,8 @@ arrays.</p>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame._prep_data">_prep_data</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_hdf">to_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_parquet">to_parquet</a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.to_csv">to_csv</a></li>
+<li><a class="reference internal" href="#arkouda.dataframe.DataFrame.read_csv">read_csv</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.save">save</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.load">load</a></li>
 <li><a class="reference internal" href="#arkouda.dataframe.DataFrame.argsort">argsort</a></li>

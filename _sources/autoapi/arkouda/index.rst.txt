@@ -253,15 +253,19 @@ Functions
    arkouda.plot_dist
    arkouda.get_filetype
    arkouda.ls
+   arkouda.ls_csv
    arkouda.get_null_indices
    arkouda.get_datasets
+   arkouda.get_columns
    arkouda.read_hdf
    arkouda.read_parquet
+   arkouda.read_csv
    arkouda.read
    arkouda.import_data
    arkouda.export
    arkouda.to_hdf
    arkouda.to_parquet
+   arkouda.to_csv
    arkouda.save_all
    arkouda.load
    arkouda.load_all
@@ -1319,6 +1323,51 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -2788,6 +2837,51 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -4262,6 +4356,53 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
+
+              Write Strings to CSV file(s). File will contain a single column with the Strings data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+              bytes as uint(8).
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the Strings under. Defaults to "strings_array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -5731,6 +5872,51 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -9072,6 +9258,53 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
+
+              Write Strings to CSV file(s). File will contain a single column with the Strings data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+              bytes as uint(8).
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the Strings under. Defaults to "strings_array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -10207,6 +10440,51 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -12102,6 +12380,51 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -13648,6 +13971,103 @@ Attributes
       .. seealso:: :obj:`to_hdf`, :obj:`load`
 
 
+   .. py:method:: to_csv(path: str, index: bool = False, columns: Optional[List[str]] = None, col_delim: str = ',', overwrite: bool = False)
+
+              Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+              bytes as uint(8).
+
+              Parameters
+              -----------
+              path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              index: bool
+                  Defaults to False. If True, the index of the DataFrame will be written to the file
+                  as a column
+              columns: List[str] (Optional)
+                  Column names to assign when writing data
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              None
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
+   .. py:method:: read_csv(filename: str, col_delim: str = ',')
+      :classmethod:
+
+              Read the columns of a CSV file into an Arkouda DataFrame.
+              If the file contains the appropriately formatted header, typed data will be returned.
+              Otherwise, all data will be returned as a Strings objects.
+
+              Parameters
+              -----------
+              filename: str
+                  Filename to read data from
+              col_delim: str
+                  Defaults to ",". The delimiter for columns within the data.
+
+              Returns
+              --------
+              Arkouda DataFrame containing the columns from the CSV file.
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              See Also
+              ---------
+              to_csv
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+              - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+              bytes as uint(8).
+
+
+
+
    .. py:method:: save(path, index=False, columns=None, file_format='HDF5', file_type='distribute', compression: Optional[str] = None)
 
       DEPRECATED
@@ -14928,6 +15348,51 @@ Attributes
       ``cwd/path/name_prefix.hdf5``
 
 
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -15505,6 +15970,51 @@ Attributes
       dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
       determine the file format.
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
+
+              Write Index to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -16773,6 +17283,51 @@ Attributes
       >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
       Saves the array in to single hdf5 file on the root node.
       ``cwd/path/name_prefix.hdf5``
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
+
+              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the pdarray under. Defaults to "array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -18386,6 +18941,53 @@ Attributes
       .. seealso:: :obj:`to_hdf`
 
 
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
+
+              Write Strings to CSV file(s). File will contain a single column with the Strings data.
+              All CSV Files written by Arkouda include a header denoting data types of the columns.
+              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+              bytes as uint(8).
+
+              Parameters
+              -----------
+              prefix_path: str
+                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                  when they are written to disk.
+              dataset: str
+                  Column name to save the Strings under. Defaults to "strings_array".
+              col_delim: str
+                  Defaults to ",". Value to be used to separate columns within the file.
+                  Please be sure that the value used DOES NOT appear in your dataset.
+              overwrite: bool
+                  Defaults to False. If True, any existing files matching your provided prefix_path will
+                  be overwritten. If False, an error will be returned if existing files are found.
+
+              Returns
+              --------
+              str reponse message
+
+              Raises
+              ------
+              ValueError
+                  Raised if all datasets are not present in all parquet files or if one or
+                  more of the specified files do not exist
+              RuntimeError
+                  Raised if one or more of the specified files cannot be opened.
+                  If `allow_errors` is true this may be raised if no values are returned
+                  from the server.
+              TypeError
+                  Raised if we receive an unknown arkouda_type returned from the server
+
+              Notes
+              ------
+              - CSV format is not currently supported by load/load_all operations
+              - The column delimiter is expected to be the same for column names and data
+              - Be sure that column delimiters are not found within your data.
+              - All CSV files must delimit rows using newline (`
+      `) at this time.
+
+
+
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
 
       DEPRECATED
@@ -18860,6 +19462,9 @@ Attributes
            Similar functionality will be added for Parquet in the future
 
 
+.. py:function:: ls_csv(filename: str, col_delim: str = ',') -> List[str]
+
+
 .. py:function:: get_null_indices(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None) -> Union[arkouda.pdarrayclass.pdarray, Mapping[str, arkouda.pdarrayclass.pdarray]]
 
    Get null indices of a string column in a Parquet file.
@@ -18902,6 +19507,11 @@ Attributes
    - If a list of files is provided, only the datasets in the first file will be returned
 
    .. seealso:: :obj:`ls`
+
+
+.. py:function:: get_columns(filenames: Union[str, List[str]], col_delim: str = ',', allow_errors: bool = False) -> List[str]
+
+   Get a list of column names from CSV file(s).
 
 
 .. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
@@ -19031,6 +19641,58 @@ Attributes
        >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
        Read Glob Expression
        >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+
+
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+       Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+       will be returned in a dictionary mapping the dataset name to the Arkouda object
+       containing the data. If the file contains the appropriately formatted header, typed
+       data will be returned. Otherwise, all data will be returned as a Strings object.
+
+       Parameters
+       -----------
+       filenames: str or List[str]
+           The filenames to read data from
+       datasets: str or List[str] (Optional)
+           names of the datasets to read. When `None`, all datasets will be read.
+       column_delim: str
+           The delimiter for column names and data. Defaults to ",".
+       allow_errors: bool
+           Default False, if True will allow files with read errors to be skipped
+           instead of failing.  A warning will be included in the return containing
+           the total number of files skipped due to failure and up to 10 filenames.
+
+       Returns
+       --------
+       pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.
+
+       Raises
+       ------
+       ValueError
+           Raised if all datasets are not present in all parquet files or if one or
+           more of the specified files do not exist
+       RuntimeError
+           Raised if one or more of the specified files cannot be opened.
+           If `allow_errors` is true this may be raised if no values are returned
+           from the server.
+       TypeError
+           Raised if we receive an unknown arkouda_type returned from the server
+
+       See Also
+       ---------
+       to_csv
+
+       Notes
+       ------
+       - CSV format is not currently supported by load/load_all operations
+       - The column delimiter is expected to be the same for column names and data
+       - Be sure that column delimiters are not found within your data.
+       - All CSV files must delimit rows using newline (`
+   `) at this time.
+       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+       bytes as uint(8).
+
 
 
 .. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
@@ -19246,6 +19908,61 @@ Attributes
 
    >>> # Save using names instead of mapping
    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: to_csv(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
+
+       Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+       include a header denoting data types of the columns.
+
+       Parameters
+       -----------
+       columns: Mapping[str, pdarray] or List[pdarray]
+           The objects to be written to CSV file. If a mapping is used and `names` is None
+           the keys of the mapping will be used as the dataset names.
+       prefix_path: str
+           The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+           when they are written to disk.
+       names: List[str] (Optional)
+           names of dataset to be written. Order should correspond to the order of data
+           provided in `columns`.
+       col_delim: str
+           Defaults to ",". Value to be used to separate columns within the file.
+           Please be sure that the value used DOES NOT appear in your dataset.
+       overwrite: bool
+           Defaults to False. If True, any existing files matching your provided prefix_path will
+           be overwritten. If False, an error will be returned if existing files are found.
+
+       Returns
+       --------
+       None
+
+       Raises
+       ------
+       ValueError
+           Raised if any datasets are present in all csv files or if one or
+           more of the specified files do not exist
+       RuntimeError
+           Raised if one or more of the specified files cannot be opened.
+           If `allow_errors` is true this may be raised if no values are returned
+           from the server.
+       TypeError
+           Raised if we receive an unknown arkouda_type returned from the server
+
+       See Also
+       ---------
+       read_csv
+
+       Notes
+       ------
+       - CSV format is not currently supported by load/load_all operations
+       - The column delimiter is expected to be the same for column names and data
+       - Be sure that column delimiters are not found within your data.
+       - All CSV files must delimit rows using newline (`
+   `) at this time.
+       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+       bytes as uint(8).
+
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None

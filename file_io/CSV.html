@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Summarizing Data" href="histogram.html" /><link rel="prev" title="Arithmetic and Numeric Operations" href="arithmetic.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Import/Export" href="IMPORT_EXPORT.html" /><link rel="prev" title="Parquet" href="PARQUET.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Indexing and Assignment - arkouda documentation</title>
+        <title>CSV - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -168,27 +168,27 @@
 <li class="toctree-l1"><a class="reference internal" href="../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/HDF5.html">HDF5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/PARQUET.html">Parquet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/CSV.html">CSV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="io_menu.html">File I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PARQUET.html">Parquet</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../usage.html">Usage Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Indexing and Assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
@@ -273,74 +273,88 @@
           </label>
         </div>
         <article role="main">
-          <section id="indexing-and-assignment">
-<span id="indexing-label"></span><h1>Indexing and Assignment<a class="headerlink" href="#indexing-and-assignment" title="Permalink to this heading">#</a></h1>
-<p>Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects support the same indexing and assignment syntax as rank-1 NumPy arrays.</p>
-<section id="integer">
-<h2>Integer<a class="headerlink" href="#integer" title="Permalink to this heading">#</a></h2>
-<p>Indexing and assigment with a single integer work the same as in Python.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-<span class="go">5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-<span class="go">42</span>
+          <section id="csv">
+<h1>CSV<a class="headerlink" href="#csv" title="Permalink to this heading">#</a></h1>
+<p>Arkouda now has support for reading and writing CSV file formats. CSV will not perform at the same level as HDF5 and Parquet. It is intended for interacting with smaller datasets and will prevent the need to convert files already in CSV format to HDF5 or Parquet.</p>
+<section id="support-arkouda-data-types">
+<h2>Support Arkouda Data Types<a class="headerlink" href="#support-arkouda-data-types" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>pdarray</p></li>
+<li><p>Strings</p></li>
+<li><p>Index</p></li>
+<li><p>DataFrame</p></li>
+</ul>
+</section>
+<section id="file-formatting">
+<h2>File Formatting<a class="headerlink" href="#file-formatting" title="Permalink to this heading">#</a></h2>
+<p>Arkouda supports reading CSV files of various formats. Current limitations include:</p>
+<ul class="simple">
+<li><p>All lines/rows of the CSV file must be newline (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) delimited</p></li>
+<li><p>It is assumed that all files contain column names. The column names should be the first line of data in the file.</p></li>
+<li><p>Files written by Arkouda will contain a “header” with typing information for the columns. Files without this header will return all read data as Strings objects.</p></li>
+<li><p>Custom column delimiters can be used. The default column delimiter is “,”. The column delimiter set for the file will also be used to delimit the column names.</p></li>
+<li><p>Header contents are always comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) delimited.</p></li>
+</ul>
+<section id="example-files">
+<h3>Example Files<a class="headerlink" href="#example-files" title="Permalink to this heading">#</a></h3>
+<p>To give an idea of arkouda supported formats for CSV files, we have provided two example files that Arkouda can read: one written by arkouda and one written outside of Arkouda.</p>
+<section id="arkouda-formatted-file">
+<h4>Arkouda Formatted File<a class="headerlink" href="#arkouda-formatted-file" title="Permalink to this heading">#</a></h4>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>**HEADER**
+int64,str,float64
+*/HEADER/*
+ColA,ColB,ColC
+0,ABC,3.14
+1,DEF,5.56
+2,GHI,2.11
 </pre></div>
 </div>
 </section>
-<section id="slice">
-<h2>Slice<a class="headerlink" href="#slice" title="Permalink to this heading">#</a></h2>
-<p>Indexing and assignment are also supported via Python-like slices. A Python slice has a start (inclusive), stop (exclusive), and stride. All three of these parameters can be implied; the default start is the beginning of the array (0 for positive strides, -1 for negative), the default stop is the end of the array (<code class="docutils literal notranslate"><span class="pre">len</span></code> for positive strides, -1 for negative), and the default stride is 1.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
-<span class="go">array([2, 3, 4, 5])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">array([0, 2, 4, 6, 8])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">array([3, 2, 1, 0])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span>
-<span class="go">array([0, 0, 2, 0, 4, 0, 6, 0, 8, 0])</span>
+<section id="file-without-header">
+<h4>File Without Header<a class="headerlink" href="#file-without-header" title="Permalink to this heading">#</a></h4>
+<p>Arkouda can read files without the header. All data will be read out to Strings objects in this case.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ColA,ColB,ColC
+0,ABC,3.14
+1,DEF,5.56
+2,GHI,2.11
 </pre></div>
 </div>
 </section>
-<section id="gather-scatter-pdarray">
-<h2>Gather/Scatter (<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>)<a class="headerlink" href="#gather-scatter-pdarray" title="Permalink to this heading">#</a></h2>
-<p>Gather and scatter operations can be expressed using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> as an index to another <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p>
-<section id="integer-pdarray-index">
-<h3>Integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> index<a class="headerlink" href="#integer-pdarray-index" title="Permalink to this heading">#</a></h3>
-<p>With an integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, you can gather a list of indices from the target array. The indices can be out of order and non-unique. For assignment, the right-hand side must be a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> the same size as the index array.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
-<span class="go">array([18, 12, 15])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span>
-<span class="go">array([10, 11, 0, 13, 14, 0, 16, 17, 0, 19])</span>
-</pre></div>
-</div>
 </section>
-<section id="logical-indexing">
-<h3>Logical indexing<a class="headerlink" href="#logical-indexing" title="Permalink to this heading">#</a></h3>
-<p>Logical indexing is a powerful construct from NumPy (and Matlab). In logical indexing, the index must be a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of type <code class="docutils literal notranslate"><span class="pre">bool</span></code> that is the same size as the outer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> being indexed. The indexing only touches those elements of the outer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> where the corresponding element of the index <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inds</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="c1"># boolean-compression indexing yield values where inds is True</span>
-<span class="go">array([2, 5])</span>
-<span class="go">..</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span> <span class="c1"># boolean-expansion indexing with scalar sets values where inds is True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span>
-<span class="go">array([0, 1, 42, 3, 4, 42, 6, 7, 8, 9])</span>
-<span class="go">..</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lim</span> <span class="o">=</span> <span class="mi">10</span><span class="o">//</span><span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">B</span> <span class="o">&lt;</span> <span class="n">lim</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[:</span><span class="n">lim</span><span class="p">]</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># boolean-expansion indexing with array sets values where True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span>
-<span class="go">array([0, -1, -2, -3, -4, 5, 6, 7, 8, 9])</span>
-</pre></div>
-</div>
+</section>
+<section id="data-formatting">
+<h2>Data Formatting<a class="headerlink" href="#data-formatting" title="Permalink to this heading">#</a></h2>
+<p>Because CSV is a text format, all data is stored as a string. If the header is provided, the pdarray resulting from a read will be the assigned type.</p>
+<p>CSV files have one major difference in how they store data in comparison to HDF5 and Parquet, specifically for Strings objects. CSV stores Strings objects as the actual string, not as a <code class="docutils literal notranslate"><span class="pre">uint(8)</span></code> array as in HDF5 and Parquet.</p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<p>Due to differences in execution of the CSV format, generic load/read functionality is not currently supported. As a result, the provided <code class="docutils literal notranslate"><span class="pre">read_csv</span></code> methods must be used at this time.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ls</span></code>/<code class="docutils literal notranslate"><span class="pre">get_dataset</span></code> functionality is supported, but is once again separate from the generic implementation. To return a list of columns in the CSV use the <code class="docutils literal notranslate"><span class="pre">ls_csv()</span></code>/<code class="docutils literal notranslate"><span class="pre">ak.get_columns()</span></code> function.</p>
+<section id="pdarray">
+<h3>pdarray<a class="headerlink" href="#pdarray" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id804" title="arkouda.pdarray.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_csv()</span></code></a></p></li>
+</ul>
+</section>
+<section id="strings">
+<h3>Strings<a class="headerlink" href="#strings" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id883" title="arkouda.Strings.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Strings.to_csv()</span></code></a></p></li>
+</ul>
+</section>
+<section id="index">
+<h3>Index<a class="headerlink" href="#index" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index.to_csv" title="arkouda.Index.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Index.to_csv()</span></code></a></p></li>
+</ul>
+</section>
+<section id="dataframe">
+<h3>DataFrame<a class="headerlink" href="#dataframe" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame.to_csv" title="arkouda.DataFrame.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.DataFrame.to_csv()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkodua.DataFrame.read_csv()</span></code></p></li>
+</ul>
 </section>
 </section>
 </section>
@@ -350,23 +364,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="histogram.html">
+          <a class="next-page" href="IMPORT_EXPORT.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Summarizing Data</div>
+                <div class="title">Import/Export</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="arithmetic.html">
+          <a class="prev-page" href="PARQUET.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Arithmetic and Numeric Operations</div>
+                <div class="title">Parquet</div>
                 
               </div>
             </a>
@@ -400,12 +414,22 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Indexing and Assignment</a><ul>
-<li><a class="reference internal" href="#integer">Integer</a></li>
-<li><a class="reference internal" href="#slice">Slice</a></li>
-<li><a class="reference internal" href="#gather-scatter-pdarray">Gather/Scatter (<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>)</a><ul>
-<li><a class="reference internal" href="#integer-pdarray-index">Integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> index</a></li>
-<li><a class="reference internal" href="#logical-indexing">Logical indexing</a></li>
+<li><a class="reference internal" href="#">CSV</a><ul>
+<li><a class="reference internal" href="#support-arkouda-data-types">Support Arkouda Data Types</a></li>
+<li><a class="reference internal" href="#file-formatting">File Formatting</a><ul>
+<li><a class="reference internal" href="#example-files">Example Files</a><ul>
+<li><a class="reference internal" href="#arkouda-formatted-file">Arkouda Formatted File</a></li>
+<li><a class="reference internal" href="#file-without-header">File Without Header</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-formatting">Data Formatting</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#pdarray">pdarray</a></li>
+<li><a class="reference internal" href="#strings">Strings</a></li>
+<li><a class="reference internal" href="#index">Index</a></li>
+<li><a class="reference internal" href="#dataframe">DataFrame</a></li>
 </ul>
 </li>
 </ul>

@@ -19,12 +19,16 @@ Functions
    arkouda.io.file_type_to_int
    arkouda.io.mode_str_to_int
    arkouda.io.get_datasets
+   arkouda.io.ls_csv
+   arkouda.io.get_columns
    arkouda.io.read_hdf
    arkouda.io.read_parquet
+   arkouda.io.read_csv
    arkouda.io.import_data
    arkouda.io.export
    arkouda.io.to_parquet
    arkouda.io.to_hdf
+   arkouda.io.to_csv
    arkouda.io.save_all
    arkouda.io.load
    arkouda.io.load_all
@@ -137,6 +141,14 @@ Functions
    - If a list of files is provided, only the datasets in the first file will be returned
 
    .. seealso:: :obj:`ls`
+
+
+.. py:function:: ls_csv(filename: str, col_delim: str = ',') -> List[str]
+
+
+.. py:function:: get_columns(filenames: Union[str, List[str]], col_delim: str = ',', allow_errors: bool = False) -> List[str]
+
+   Get a list of column names from CSV file(s).
 
 
 .. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
@@ -266,6 +278,58 @@ Functions
        >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
        Read Glob Expression
        >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+
+
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+
+       Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+       will be returned in a dictionary mapping the dataset name to the Arkouda object
+       containing the data. If the file contains the appropriately formatted header, typed
+       data will be returned. Otherwise, all data will be returned as a Strings object.
+
+       Parameters
+       -----------
+       filenames: str or List[str]
+           The filenames to read data from
+       datasets: str or List[str] (Optional)
+           names of the datasets to read. When `None`, all datasets will be read.
+       column_delim: str
+           The delimiter for column names and data. Defaults to ",".
+       allow_errors: bool
+           Default False, if True will allow files with read errors to be skipped
+           instead of failing.  A warning will be included in the return containing
+           the total number of files skipped due to failure and up to 10 filenames.
+
+       Returns
+       --------
+       pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.
+
+       Raises
+       ------
+       ValueError
+           Raised if all datasets are not present in all parquet files or if one or
+           more of the specified files do not exist
+       RuntimeError
+           Raised if one or more of the specified files cannot be opened.
+           If `allow_errors` is true this may be raised if no values are returned
+           from the server.
+       TypeError
+           Raised if we receive an unknown arkouda_type returned from the server
+
+       See Also
+       ---------
+       to_csv
+
+       Notes
+       ------
+       - CSV format is not currently supported by load/load_all operations
+       - The column delimiter is expected to be the same for column names and data
+       - Be sure that column delimiters are not found within your data.
+       - All CSV files must delimit rows using newline (`
+   `) at this time.
+       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+       bytes as uint(8).
+
 
 
 .. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
@@ -421,6 +485,61 @@ Functions
 
    >>> # Save using names instead of mapping
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b'])
+
+
+.. py:function:: to_csv(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
+
+       Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+       include a header denoting data types of the columns.
+
+       Parameters
+       -----------
+       columns: Mapping[str, pdarray] or List[pdarray]
+           The objects to be written to CSV file. If a mapping is used and `names` is None
+           the keys of the mapping will be used as the dataset names.
+       prefix_path: str
+           The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+           when they are written to disk.
+       names: List[str] (Optional)
+           names of dataset to be written. Order should correspond to the order of data
+           provided in `columns`.
+       col_delim: str
+           Defaults to ",". Value to be used to separate columns within the file.
+           Please be sure that the value used DOES NOT appear in your dataset.
+       overwrite: bool
+           Defaults to False. If True, any existing files matching your provided prefix_path will
+           be overwritten. If False, an error will be returned if existing files are found.
+
+       Returns
+       --------
+       None
+
+       Raises
+       ------
+       ValueError
+           Raised if any datasets are present in all csv files or if one or
+           more of the specified files do not exist
+       RuntimeError
+           Raised if one or more of the specified files cannot be opened.
+           If `allow_errors` is true this may be raised if no values are returned
+           from the server.
+       TypeError
+           Raised if we receive an unknown arkouda_type returned from the server
+
+       See Also
+       ---------
+       read_csv
+
+       Notes
+       ------
+       - CSV format is not currently supported by load/load_all operations
+       - The column delimiter is expected to be the same for column names and data
+       - Be sure that column delimiters are not found within your data.
+       - All CSV files must delimit rows using newline (`
+   `) at this time.
+       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+       bytes as uint(8).
+
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
