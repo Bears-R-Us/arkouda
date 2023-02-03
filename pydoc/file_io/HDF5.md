@@ -130,7 +130,7 @@ Providing these attributes allows for the ArrayView object to be reconstructed f
 > If the user elects to write to a single HDF5 file, all data will be pulled to the processing node and saved to ONE file with the supplied file name. It is important to ensure that the object is small enough to prevent memory exhaustion on the node.
 
 **Distributed Files**
-> if the user elects to write data to distributed files, data will be written to one file per locale. Each file will contain the data from the object local to the locale of that file. File names will be the name provided by the user with the suffix `_LOCALE####` where `####` will be replaced with the locale number. Because the data is distributed across multiple nodes, there is a much lower risk of memory exhaustion.
+> If the user elects to write data to distributed files, data will be written to one file per locale. Each file will contain the data from the object local to the locale of that file. File names will be the name provided by the user with the suffix `_LOCALE####` where `####` will be replaced with the locale number. Because the data is distributed across multiple nodes, there is a much lower risk of memory exhaustion.
 
 ## Legacy File Support
 

@@ -22,6 +22,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.groupbyclass import GroupBy as akGroupBy
 from arkouda.groupbyclass import unique
 from arkouda.index import Index
+from arkouda.io import get_filetype, load_all
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import cumsum
 from arkouda.numeric import isnan as akisnan
@@ -30,7 +31,6 @@ from arkouda.pdarrayclass import RegistrationError
 from arkouda.pdarrayclass import attach as pd_attach
 from arkouda.pdarrayclass import pdarray, unregister_pdarray_by_name
 from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.io import get_filetype, load_all
 from arkouda.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.row import Row
 from arkouda.segarray import SegArray
@@ -1532,6 +1532,115 @@ class DataFrame(UserDict):
 
         data = self._prep_data(index=index, columns=columns)
         to_parquet(data, prefix_path=path, compression=compression)
+
+    @typechecked
+    def to_csv(
+        self,
+        path: str,
+        index: bool = False,
+        columns: Optional[List[str]] = None,
+        col_delim: str = ",",
+        overwrite: bool = False,
+    ):
+        """
+        Writes DataFrame to CSV file(s). File will contain a column for each column in the DataFrame.
+        All CSV Files written by Arkouda include a header denoting data types of the columns.
+        Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+        bytes as uint(8).
+
+        Parameters
+        -----------
+        path: str
+            The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+            when they are written to disk.
+        index: bool
+            Defaults to False. If True, the index of the DataFrame will be written to the file
+            as a column
+        columns: List[str] (Optional)
+            Column names to assign when writing data
+        col_delim: str
+            Defaults to ",". Value to be used to separate columns within the file.
+            Please be sure that the value used DOES NOT appear in your dataset.
+        overwrite: bool
+            Defaults to False. If True, any existing files matching your provided prefix_path will
+            be overwritten. If False, an error will be returned if existing files are found.
+
+        Returns
+        --------
+        None
+
+        Raises
+        ------
+        ValueError
+            Raised if all datasets are not present in all parquet files or if one or
+            more of the specified files do not exist
+        RuntimeError
+            Raised if one or more of the specified files cannot be opened.
+            If `allow_errors` is true this may be raised if no values are returned
+            from the server.
+        TypeError
+            Raised if we receive an unknown arkouda_type returned from the server
+
+        Notes
+        ------
+        - CSV format is not currently supported by load/load_all operations
+        - The column delimiter is expected to be the same for column names and data
+        - Be sure that column delimiters are not found within your data.
+        - All CSV files must delimit rows using newline (`\n`) at this time.
+        """
+        from arkouda.io import to_csv
+
+        data = self._prep_data(index=index, columns=columns)
+        to_csv(data, path, names=columns, col_delim=col_delim, overwrite=overwrite)
+
+    @classmethod
+    def read_csv(cls, filename: str, col_delim: str = ","):
+        """
+        Read the columns of a CSV file into an Arkouda DataFrame.
+        If the file contains the appropriately formatted header, typed data will be returned.
+        Otherwise, all data will be returned as a Strings objects.
+
+        Parameters
+        -----------
+        filename: str
+            Filename to read data from
+        col_delim: str
+            Defaults to ",". The delimiter for columns within the data.
+
+        Returns
+        --------
+        Arkouda DataFrame containing the columns from the CSV file.
+
+        Raises
+        ------
+        ValueError
+            Raised if all datasets are not present in all parquet files or if one or
+            more of the specified files do not exist
+        RuntimeError
+            Raised if one or more of the specified files cannot be opened.
+            If `allow_errors` is true this may be raised if no values are returned
+            from the server.
+        TypeError
+            Raised if we receive an unknown arkouda_type returned from the server
+
+        See Also
+        ---------
+        to_csv
+
+        Notes
+        ------
+        - CSV format is not currently supported by load/load_all operations
+        - The column delimiter is expected to be the same for column names and data
+        - Be sure that column delimiters are not found within your data.
+        - All CSV files must delimit rows using newline (`\n`) at this time.
+        - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+        bytes as uint(8).
+
+        """
+        from arkouda.io import read_csv
+
+        data = read_csv(filename, column_delim=col_delim)
+        return cls(data)
 
     def save(
         self,

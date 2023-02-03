@@ -724,6 +724,72 @@ class IOTest(ArkoudaTest):
 
         self.assertListEqual(["ABC", "DEF", "GHI"], rd_arr.to_list())
 
+    def test_csv_read_write(self):
+        # first test that can read csv with no header not written by Arkouda
+        cols = ["ColA", "ColB", "ColC"]
+        a = ["ABC", "DEF"]
+        b = ["123", "345"]
+        c = ["3.14", "5.56"]
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            with open(f"{tmp_dirname}/non_ak.csv", "w") as f:
+                f.write(",".join(cols) + "\n")
+                f.write(f"{a[0]},{b[0]},{c[0]}\n")
+                f.write(f"{a[1]},{b[1]},{c[1]}\n")
+
+            data = ak.read_csv(f"{tmp_dirname}/non_ak.csv")
+            self.assertListEqual(list(data.keys()), cols)
+            self.assertListEqual(data["ColA"].to_list(), a)
+            self.assertListEqual(data["ColB"].to_list(), b)
+            self.assertListEqual(data["ColC"].to_list(), c)
+
+            data = ak.read_csv(f"{tmp_dirname}/non_ak.csv", datasets="ColB")
+            self.assertIsInstance(data, ak.Strings)
+            self.assertListEqual(data.to_list(), b)
+
+        # test can read csv with header not written by Arkouda
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            with open(f"{tmp_dirname}/non_ak.csv", "w") as f:
+                f.write("**HEADER**\n")
+                f.write("str,int64,float64\n")
+                f.write("*/HEADER/*\n")
+                f.write(",".join(cols) + "\n")
+                f.write(f"{a[0]},{b[0]},{c[0]}\n")
+                f.write(f"{a[1]},{b[1]},{c[1]}\n")
+
+            data = ak.read_csv(f"{tmp_dirname}/non_ak.csv")
+            self.assertListEqual(list(data.keys()), cols)
+            self.assertListEqual(data["ColA"].to_list(), a)
+            self.assertListEqual(data["ColB"].to_list(), [int(x) for x in b])
+            self.assertListEqual(data["ColC"].to_list(), [round(float(x), 2) for x in c])
+
+            # test reading subset of columns
+            data = ak.read_csv(f"{tmp_dirname}/non_ak.csv", datasets="ColB")
+            self.assertIsInstance(data, ak.pdarray)
+            self.assertListEqual(data.to_list(), [int(x) for x in b])
+
+        # test writing file with Arkouda with non-standard delim
+        d = {
+            cols[0]: ak.array(a),
+            cols[1]: ak.array([int(x) for x in b]),
+            cols[2]: ak.array([round(float(x), 2) for x in c]),
+        }
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            ak.to_csv(d, f"{tmp_dirname}/non_standard_delim.csv", col_delim="|*|")
+
+            # test reading that file with Arkouda
+            data = ak.read_csv(f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", column_delim="|*|")
+            self.assertListEqual(list(data.keys()), cols)
+            self.assertListEqual(data["ColA"].to_list(), a)
+            self.assertListEqual(data["ColB"].to_list(), [int(x) for x in b])
+            self.assertListEqual(data["ColC"].to_list(), [round(float(x), 2) for x in c])
+
+            # test reading subset of columns
+            data = ak.read_csv(
+                f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", datasets="ColB", column_delim="|*|"
+            )
+            self.assertIsInstance(data, ak.pdarray)
+            self.assertListEqual(data.to_list(), [int(x) for x in b])
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob("{}/*".format(IOTest.io_test_dir)):
