@@ -130,11 +130,10 @@ module ExampleModule {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     
-    proc exampleFunction(cmd: string, payload: string, argSize: int, 
+    proc exampleFunction(cmd: string, msgArgs: borrowed MessageArgs,
                                     st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message
 
-        var msgArgs = parseMessageArgs(payload, argSize);
         var arg1 = msgArgs.getValueOf("arg1");
         var arg2 = msgArgs.getIntValue("arg2");
         
