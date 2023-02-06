@@ -1,3 +1,5 @@
+.. _dev-label:
+
 Developer Documentation
 =========================
 
