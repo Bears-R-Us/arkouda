@@ -120,7 +120,7 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.uint64, uint_start_stop_stride.dtype)
 
         # test uint64 handles negatives correctly
-        np_arange_uint = np.arange(-5, -10, -1, dtype=np.uint64)
+        np_arange_uint = np.arange(2**64 - 5, 2**64 - 10, -1, dtype=np.uint64)
         ak_arange_uint = ak.arange(-5, -10, -1, dtype=ak.uint64)
         # np_arange_uint = array([18446744073709551611, 18446744073709551610, 18446744073709551609,
         #        18446744073709551608, 18446744073709551607], dtype=uint64)
@@ -490,8 +490,8 @@ class PdarrayCreationTest(ArkoudaTest):
 
         # Test that int_scalars covers uint8, uint16, uint32
         ak.linspace(np.uint8(0), np.uint16(100), np.uint32(1000))
-        ak.linspace(np.uint32(0), np.uint16(100), np.uint8(1000))
-        ak.linspace(np.uint16(0), np.uint8(100), np.uint8(1000))
+        ak.linspace(np.uint32(0), np.uint16(100), np.uint8(1000 % 256))
+        ak.linspace(np.uint16(0), np.uint8(100), np.uint8(1000 % 256))
 
     def test_standard_normal(self):
         pda = ak.standard_normal(100)
@@ -875,8 +875,10 @@ class PdarrayCreationTest(ArkoudaTest):
     def test_uint_greediness(self):
         # default to uint when all supportedInt and any value > 2**63
         # to avoid loss of precision see (#1297)
-        self.assertEqual(ak.array([2**63, 6, 2**63 - 1, 2**63 + 1]).dtype, ak.uint64)
-        self.assertEqual(ak.array([2**64 - 1, 0, -1]).dtype, ak.uint64)
+        for greedy_list in ([2**63, 6, 2**63 - 1, 2**63 + 1], [2**64 - 1, 0, 2**64 - 1]):
+            greedy_pda = ak.array(greedy_list)
+            self.assertEqual(greedy_pda.dtype, ak.uint64)
+            self.assertListEqual(greedy_list, greedy_pda.to_list())
 
     def randint_randomness(self):
         # THIS TEST DOES NOT RUN, see Issue #1672

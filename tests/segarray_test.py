@@ -607,7 +607,7 @@ class SegArrayTest(ArkoudaTest):
             seg_load = ak.SegArray.load(f"{tmp_dirname}/seg_test*")
             self.assertTrue(ak.all(segarr == seg_load))
 
-    def bigint_test(self):
+    def test_bigint(self):
         a = [2**80, 2**81]
         b = [2**82, 2**83]
         c = [2**84]
@@ -626,4 +626,4 @@ class SegArrayTest(ArkoudaTest):
         )
         self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
         self.assertTrue(segarr.__eq__(segarr).all())
-        self.assertTrue(segarr.non_empty_count() == 5)
+        self.assertTrue(segarr.non_empty_count == 3)

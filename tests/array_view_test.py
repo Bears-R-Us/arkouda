@@ -65,7 +65,7 @@ class ArrayViewTest(ArkoudaTest):
         uind = ak.cast(iind, ak.uint64)
 
         inav[nind] = -9999
-        unav[nind] = -9999
+        unav[nind] = 2**64 - 9999
         iav[uind] = -9999
         uav[iind] = -9999
         self.assertEqual(iav[uind], inav[nind])
