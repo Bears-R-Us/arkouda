@@ -11,6 +11,7 @@ import arkouda.array_view
 from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
+from arkouda.segarray import SegArray
 from arkouda.strings import Strings
 
 __all__ = [
@@ -413,13 +414,34 @@ def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayVie
         raise TypeError(f"Unknown arkouda type:{obj['arkouda_type']}")
 
 
+def _dict_recombine_segarrays(df_dict):
+    # this assumes segments will always have corresponding values.
+    # This should happen due to save config
+    seg_cols = ["_".join(col.split("_")[:-1]) for col in df_dict.keys() if col.endswith("_segments")]
+    df_dict_keys = [
+        "_".join(col.split("_")[:-1]) if col.endswith("_segments") or col.endswith("_values") else col
+        for col in df_dict.keys()
+    ]
+
+    # update dict to contain segarrays where applicable if any exist
+    if len(seg_cols) > 0:
+        df_dict = {
+            col: SegArray.from_parts(df_dict[col + "_segments"], df_dict[col + "_values"])
+            if col in seg_cols
+            else df_dict[col]
+            for col in df_dict_keys
+        }
+    return df_dict
+
+
 def _build_objects(
     rep_msg: Dict,
 ) -> Union[
     Strings,
     pdarray,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[Strings, pdarray, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[Strings, pdarray, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Helper function to create the Arkouda objects from a read operation
@@ -444,7 +466,9 @@ def _build_objects(
     # 2. We have a single pdarray
     # 3. We have a single strings object
     if len(items) > 1:  # DataSets condition
-        return {item["dataset_name"]: _parse_obj(item) for item in items}
+        ds_dict = _dict_recombine_segarrays({item["dataset_name"]: _parse_obj(item) for item in items})
+        # if dict only has 1 element when it had >1 before, the element must be a segarray
+        return next(iter(ds_dict.values())) if len(ds_dict.keys()) == 1 else ds_dict
     elif len(items) == 1:
         return _parse_obj(items[0])
     else:
@@ -461,8 +485,9 @@ def read_hdf(
 ) -> Union[
     pdarray,
     Strings,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Read Arkouda objects from HDF5 file/s
@@ -493,10 +518,10 @@ def read_hdf(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-    and for multiple datasets returns a dictionary of Arkouda pdarrays,
-    Arkouda Strings or Arkouda ArrayView.
-        Dictionary of {datasetName: pdarray or String}
+    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,
+    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,
+    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.
+        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises
     ------
@@ -574,8 +599,9 @@ def read_parquet(
 ) -> Union[
     pdarray,
     Strings,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Read Arkouda objects from Parquet file/s
@@ -683,8 +709,9 @@ def read_csv(
 ) -> Union[
     pdarray,
     Strings,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
@@ -1268,8 +1295,9 @@ def load(
 ) -> Union[
     pdarray,
     Strings,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -1349,9 +1377,10 @@ def load(
 @typechecked
 def load_all(
     path_prefix: str, file_format: str = "INFER"
-) -> Mapping[str, Union[pdarray, Strings, Categorical]]:
+) -> Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]:
     """
-    Load multiple pdarrays or Strings previously saved with ``save_all()``.
+    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
+    saved with ``save_all()``.
 
     Parameters
     ----------
@@ -1364,8 +1393,9 @@ def load_all(
 
     Returns
     -------
-    Mapping[str,pdarray]
-        Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+    Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
+        Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
+        with the previously saved pdarrays, Strings, SegArrays, or Categoricals
 
 
     Raises
@@ -1398,6 +1428,7 @@ def load_all(
             for dataset in get_datasets(firstname)
         }
 
+        result = _dict_recombine_segarrays(result)
         # Check for Categoricals and remove if necessary
         removal_names, categoricals = Categorical.parse_hdf_categoricals(result)
         if removal_names:
@@ -1438,8 +1469,9 @@ def read(
 ) -> Union[
     pdarray,
     Strings,
+    SegArray,
     arkouda.array_view.ArrayView,
-    Mapping[str, Union[pdarray, Strings, arkouda.array_view.ArrayView]],
+    Mapping[str, Union[pdarray, Strings, SegArray, arkouda.array_view.ArrayView]],
 ]:
     """
     Read datasets from files.
@@ -1471,10 +1503,10 @@ def read(
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-    and for multiple datasets returns a dictionary of Arkouda pdarrays,
-    Arkouda Strings or Arkouda ArrayView.
-        Dictionary of {datasetName: pdarray or String}
+    For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,
+    or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,
+    Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.
+        Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
     Raises
     ------

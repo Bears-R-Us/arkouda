@@ -597,6 +597,13 @@ class DataFrameTest(ArkoudaTest):
             ak_loaded = ak.DataFrame.load(f"{tmp_dirname}/seg_test.h5")
             self.assertTrue(akdf.to_pandas().equals(ak_loaded.to_pandas()))
 
+            # test load_all and read workflows
+            ak_load_all = ak.DataFrame(ak.load_all(f"{tmp_dirname}/seg_test.h5"))
+            self.assertTrue(akdf.to_pandas().equals(ak_load_all.to_pandas()))
+
+            ak_read = ak.DataFrame(ak.read(f"{tmp_dirname}/seg_test*"))
+            self.assertTrue(akdf.to_pandas().equals(ak_read.to_pandas()))
+
     def test_isin(self):
         df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})
 
