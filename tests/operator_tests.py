@@ -350,12 +350,39 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((aku**ak_float).to_ndarray(), npu**np_float, equal_nan=True))
 
     def test_left_shift_binop(self):
-        ak_uint = ak.array([2**63 -1], dtype=ak.uint64)
-        np_uint = np.array([2**63 -1], dtype=np.uint64)
+        #This tests for a bug when left shifting by a value >=64 bits for int/uint, Issue #2099
+        #Max bit value
+        maxbits = 2 ** 63 - 1
 
-        self.assertTrue(np.allclose(ak_uint << 64, np_uint << 64))
-        self.assertTrue(np.allclose(ak_uint << 65, np_uint << 65))
+        #Value arrays
+        ak_uint = ak.array([maxbits], dtype=ak.uint64)
+        np_uint = np.array([maxbits], dtype=np.uint64)
+        ak_int = ak.array([maxbits], dtype=ak.int64)
+        np_int = np.array([maxbits], dtype=np.int64)
 
+        #Shifting value arrays
+        ak_uint_array = ak.array([64], dtype=ak.uint64)
+        np_uint_array = np.array([64], dtype=np.uint64)
+        ak_int_array = ak.array([64], dtype=ak.int64)
+        np_int_array = np.array([64], dtype=np.int64)
+
+        #Binopvs case
+        self.assertTrue(np.allclose((ak_uint << 64).to_ndarray(), np_uint << 64))
+        self.assertTrue(np.allclose((ak_uint << 65).to_ndarray(), np_uint << 65))
+        self.assertTrue(np.allclose((ak_int << 64).to_ndarray(), np_int << 64))
+        self.assertTrue(np.allclose((ak_int << 65).to_ndarray(), np_int << 65))
+
+        #Binopsv case
+        self.assertTrue(np.allclose((maxbits << ak_uint_array).to_ndarray(), maxbits << np_uint_array))
+        self.assertTrue(np.allclose((maxbits << ak_int_array).to_ndarray(), maxbits << np_int_array))
+
+        #Binopvv case, Same type
+        self.assertTrue(np.allclose((ak_uint << ak_uint_array).to_ndarray(), np_uint << np_uint_array))
+        self.assertTrue(np.allclose((ak_int << ak_int_array).to_ndarray(), np_int << np_int_array))
+
+        #Binopvv case, Mixed type
+        self.assertTrue(np.allclose((ak_uint << ak_int_array).to_ndarray(), np_uint << np_uint_array))
+        self.assertTrue(np.allclose((ak_int << ak_uint_array).to_ndarray(), np_int << np_int_array))
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
