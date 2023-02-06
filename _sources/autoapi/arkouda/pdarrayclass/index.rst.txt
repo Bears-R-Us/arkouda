@@ -135,7 +135,7 @@ Functions
       Return repr(self).
 
 
-   .. py:method:: format_other(other: object) -> str
+   .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
       and print the resulting value to a string (e.g. for sending to a
