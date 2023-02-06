@@ -374,11 +374,23 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
 <p>If you’re fixing a bug, add a test. Run it first to confirm it fails, then fix the bug, run it again to confirm it’s really fixed.</p>
 <p>If adding a new feature, add a test to make sure it behaves properly.</p>
+<p>Things to note:</p>
+<ul class="simple">
+<li><p>If you make a new test, be sure to include <code class="docutils literal notranslate"><span class="pre">test_</span></code> at the beginning. Otherwise <code class="docutils literal notranslate"><span class="pre">pytest</span></code> will not run it.</p></li>
+<li><p>If you make a new file of tests, be sure to include the file in <code class="docutils literal notranslate"><span class="pre">pytest.ini</span></code>, so it will be run during a <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>.</p></li>
+</ul>
 <p>See our wiki for more info on how to run our tests and create your own:
 <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing">https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing</a></p>
 <section id="running-python-tests">
 <h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Permalink to this heading">#</a></h4>
-<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span>make test
+<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span># Run all tests in pytest.ini
+make test
+
+# Run all tests in the CategoricalTest class (-v will print out the test name)
+python3 -m pytest tests/categorical_test.py::CategoricalTest -v
+
+# Run a single test from CategoricalTest named foo_test
+python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test
 </pre></div>
 </div>
 </section>
@@ -391,6 +403,13 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 </section>
 <section id="writing-pull-requests">
 <h3>Writing Pull Requests<a class="headerlink" href="#writing-pull-requests" title="Permalink to this heading">#</a></h3>
+<p>Before posting a pull request, be sure to test locally to catch common CI failures early.
+This usually includes running:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">mypy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flake8</span> <span class="pre">arkouda</span></code></p></li>
+</ul>
 <p>Every pull request should have at least one associated issue (if there’s not one, create one!).</p>
 <p>The issue number(s) should be listed in the title and the body using <a class="reference external" href="https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue">closing keywords</a>.
 Using github markdown (especially <a class="reference external" href="https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks">code blocks</a>)
@@ -442,8 +461,7 @@ Note:
 <section id="release-process">
 <h3>Release Process<a class="headerlink" href="#release-process" title="Permalink to this heading">#</a></h3>
 <p>New versions should only be released after the core dev team has reached a consensus.
-Instructions on our release process:</p>
-<p><a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Release-Process">https://github.com/Bears-R-Us/arkouda/wiki/Release-Process</a></p>
+Follow our <a class="reference internal" href="developer/RELEASE_PROCESS.html"><span class="doc std std-doc">release process</span></a></p>
 </section>
 </section>
 </section>
