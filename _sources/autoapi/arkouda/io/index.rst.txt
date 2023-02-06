@@ -151,7 +151,7 @@ Functions
    Get a list of column names from CSV file(s).
 
 
-.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: read_hdf(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Read Arkouda objects from HDF5 file/s
 
@@ -177,9 +177,9 @@ Functions
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
-             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
+             * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.* -- Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
    :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
        more of the specified files do not exist
@@ -211,7 +211,7 @@ Functions
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Read Arkouda objects from Parquet file/s
 
@@ -280,7 +280,7 @@ Functions
        >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
 
 
-.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
        Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
        will be returned in a dictionary mapping the dataset name to the Arkouda object
@@ -594,7 +594,7 @@ Functions
    >>> ak.save_all([a, b], 'path/name_prefix', names=['a', 'b'], file_format='Parquet')
 
 
-.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: load(path_prefix: str, file_format: str = 'INFER', dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -642,9 +642,10 @@ Functions
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER') -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.categorical.Categorical]]
 
-   Load multiple pdarrays or Strings previously saved with ``save_all()``.
+   Load multiple pdarrays, Strings, SegArrays, or Categoricals previously
+   saved with ``save_all()``.
 
    :param path_prefix: Filename prefix used to save the original pdarray
    :type path_prefix: str
@@ -653,8 +654,9 @@ Functions
                        Defaults to 'HDF5'
    :type file_format: str
 
-   :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
-   :rtype: Mapping[str,pdarray]
+   :returns: Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
+             with the previously saved pdarrays, Strings, SegArrays, or Categoricals
+   :rtype: Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
 
    :raises TypeError:: Raised if path_prefix is not a str
    :raises ValueError: Raised if file_format/extension is encountered that is not hdf5 or parquet or
@@ -672,7 +674,7 @@ Functions
    This function will be deprecated when glob flags are added to read_* methods
 
 
-.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.array_view.ArrayView]]]
+.. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
    Read datasets from files.
    File Type is determined automatically.
@@ -699,9 +701,9 @@ Functions
                                In the future this option may be set to True as the default.
    :type calc_string_offsets: bool
 
-   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
-             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
-             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, Arkouda Segarrays,*
+             * *or Arkouda ArrayViews. For multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings, Arkouda Segarrays, or Arkouda ArrayViews.* -- Dictionary of {datasetName: pdarray, String, SegArray, or ArrayView}
 
    :raises RuntimeError: If invalid filetype is detected
 
