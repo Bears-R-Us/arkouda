@@ -35,3 +35,5 @@ If you already have a full-server build:
     - can also be specified with the `ARKOUDA_CONFIG_FILE` env variable to override the `ServerModules.cfg` file
 
 Alternatively, if you are doing something like just adding a new module or know what functions you'll need, you can just modify the `ServerModules.cfg` file and comment out with a `#` or just remove the lines of the modules you don't need.
+
+For more general information on using the modular build system, please see the documentation [here](../setup/MODULAR.md).
