@@ -588,7 +588,7 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor[0].tolist(), [])
         self.assertListEqual(xor[1].tolist(), [3, 4])
 
-    def bigint_test(self):
+    def test_bigint(self):
         a = [2**80, 2**81]
         b = [2**82, 2**83]
         c = [2**84]
@@ -607,4 +607,4 @@ class SegArrayTest(ArkoudaTest):
         )
         self.assertEqual(segarr.__eq__(ak.array([1])), NotImplemented)
         self.assertTrue(segarr.__eq__(segarr).all())
-        self.assertTrue(segarr.non_empty_count() == 5)
+        self.assertTrue(segarr.non_empty_count == 3)
