@@ -1074,6 +1074,7 @@ class SegArray:
         to_hdf, load
         """
         from warnings import warn
+
         warn(
             "ak.SegArray.save has been deprecated. Please use ak.SegArray.to_hdf",
             DeprecationWarning,
@@ -1118,7 +1119,7 @@ class SegArray:
             raise ValueError("Segment suffix and value suffix must be different")
         segments = load(prefix_path, dataset=dataset + segment_suffix)
         values = load(prefix_path, dataset=dataset + value_suffix)
-        return cls(segments, values)
+        return SegArray.from_parts(segments, values)
 
     def intersect(self, other):
         """
