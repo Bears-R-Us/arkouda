@@ -970,9 +970,7 @@ class SegArray:
     def to_hdf(
         self,
         prefix_path,
-        dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
+        group_name="segarray",
         mode="truncate",
         file_type="distribute",
     ):
@@ -984,11 +982,11 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files will share
-        dataset : str
+        group_name : str
             Name prefix for saved data within the HDF5 file
-        segment_suffix : str
+        segment_name : str
             Suffix to append to dataset name for segments array
-        value_suffix : str
+        value_name : str
             Suffix to append to dataset name for values array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
@@ -1014,19 +1012,38 @@ class SegArray:
         ---------
         load
         """
-        self.segments.to_hdf(
-            prefix_path, dataset=dataset + segment_suffix, mode=mode, file_type=file_type
-        )
-        self.values.to_hdf(
-            prefix_path, dataset=dataset + value_suffix, mode="append", file_type=file_type
+        # self.segments.to_hdf(
+        #     prefix_path, dataset=group_name + segment_name, mode=mode, file_type=file_type
+        # )
+        # self.values.to_hdf(
+        #     prefix_path, dataset=group_name + value_name, mode="append", file_type=file_type
+        # )
+
+        from arkouda.io import file_type_to_int, mode_str_to_int
+
+        return type_cast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "values": self.values.name,
+                    "segments": self.segments.name,
+                    "dset": group_name,
+                    "write_mode": mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "objType": "segarray",
+                    "file_format": file_type_to_int(file_type),
+                },
+            ),
         )
 
     def save(
         self,
         prefix_path,
-        dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
+        group_name="segarray",
+        segment_name="segments",
+        value_name="values",
         mode="truncate",
         file_type="distribute",
     ):
@@ -1038,7 +1055,7 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        dataset : str
+        group_name : str
             Name of the dataset to create in files (must not already exist)
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
@@ -1080,9 +1097,9 @@ class SegArray:
         )
         return self.to_hdf(
             prefix_path,
-            dataset,
-            segment_suffix=segment_suffix,
-            value_suffix=value_suffix,
+            group_name,
+            segment_name=segment_name,
+            value_name=value_name,
             mode=mode,
             file_type=file_type,
         )
