@@ -28,7 +28,7 @@ class IndexingTest(ArkoudaTest):
     def test_pdarray_uint_indexing(self):
         # for every pda in array_dict test indexing with uint array and uint scalar
         for pda in self.array_dict.values():
-            self.asser tEqual(pda[np.uint(2)], pda[2])
+            self.assertEqual(pda[np.uint(2)], pda[2])
             self.assertListEqual(pda[self.ukeys].to_list(), pda[self.ikeys].to_list())
 
     def test_strings_uint_indexing(self):
