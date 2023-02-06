@@ -958,7 +958,7 @@ module HDF5Msg {
                         //localize segments and write dataset
                         var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         var seg_dims: C_HDF5.hsize_t = segEntry.size:C_HDF5.hsize_t;
-                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getHDF5Type(uint), localSegs.ptr);
+                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getHDF5Type(int), localSegs.ptr);
 
                         writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint));
                     } when (DType.Float64) {
@@ -972,7 +972,7 @@ module HDF5Msg {
                         //localize segments and write dataset
                         var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         var seg_dims: C_HDF5.hsize_t = segEntry.size:C_HDF5.hsize_t;
-                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getHDF5Type(real), localSegs.ptr);
+                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getHDF5Type(int), localSegs.ptr);
 
                         writeArkoudaMetaData(file_id, group, objType, getHDF5Type(real));
                     } when (DType.Bool) {
@@ -986,9 +986,11 @@ module HDF5Msg {
                         //localize segments and write dataset
                         var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         var seg_dims: C_HDF5.hsize_t = segEntry.size:C_HDF5.hsize_t;
-                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getDataType(bool), localSegs.ptr);
+                        C_HDF5.H5LTmake_dataset(file_id, "/%s/segments".format(group).c_str(), 1:c_int, seg_dims, getDataType(int), localSegs.ptr);
 
                         writeArkoudaMetaData(file_id, group, objType, getDataType(bool));
+                        writeArkoudaMetaData(file_id, "%s/segments".format(group), "pdarray", getDataType(int));
+                        writeArkoudaMetaData(file_id, "%s/values".format(group), "pdarray", getDataType(bool));
                     }
                     otherwise {
                         throw getErrorWithContext(
@@ -1236,6 +1238,8 @@ module HDF5Msg {
 
                             // write attributes for arkouda meta info
                             writeArkoudaMetaData(file_id, group, objType, getDataType(bool));
+                            writeArkoudaMetaData(file_id, "%s/segments".format(group), "pdarray", getDataType(int));
+                            writeArkoudaMetaData(file_id, "%s/values".format(group), "pdarray", getDataType(bool));
                         }
                     }
                     otherwise {
@@ -1905,13 +1909,14 @@ module HDF5Msg {
 
         select dataclass {
             when C_HDF5.H5T_INTEGER {
+
                 var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
                 if isSigned {
                     // Load the values
                     var valEntry = new shared SymEntry(len, int);
                     read_files_into_distributed_array(valEntry.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-                    if isBoolDataset(filenames[idx], dset) {
+                    if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var entryBool = new shared SymEntry(len, bool);
                         entryBool.a = valEntry.a:bool;
                         var saEntry = assembleSegArrayFromParts(segEntry, entryBool, st, bool);
@@ -1928,7 +1933,7 @@ module HDF5Msg {
                     var valEntry = new shared SymEntry(len, uint);
                     read_files_into_distributed_array(valEntry.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
-                    if isBoolDataset(filenames[idx], dset) {
+                    if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var entryBool = new shared SymEntry(len, bool);
                         entryBool.a = valEntry.a:bool;
                         var saEntry = assembleSegArrayFromParts(segEntry, entryBool, st, bool);
