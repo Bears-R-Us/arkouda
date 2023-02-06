@@ -23,7 +23,7 @@ Now, we have a full build of the release, so there shouldn't be any reason to ne
 
 ## Reproducing User Bugs Efficiently
 
-This section contains suggestions for effectively reproducing user-reported bugs in combination with the `--saveUsedModules` flag to efficiently figure out which modules are required for testing changes for a specific bug to minimize build times.
+This section contains suggestions for effectively reproducing user-reported bugs in combination with the `--saveUsedModules` flag to efficiently figure out which modules are required for testing changes for a specific bug to minimize build times. See the [modular build documentation](../setup/MODULAR.md) for more information on the `--saveUsedModules` flag.
 
 Now that you've got your one-time Arkouda release built (from the previous section), to reproduce a reported bug:
 1. `./<ak-server-path/arkouda_server --saveUsedModules`
