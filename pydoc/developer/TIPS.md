@@ -1,5 +1,3 @@
-.. _build_tips:
-
 Speeding up Arkouda Compilation
 ===============================
 

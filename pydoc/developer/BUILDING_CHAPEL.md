@@ -1,5 +1,3 @@
-.. _building_chapel:
-
 Building Chapel
 ===============
 

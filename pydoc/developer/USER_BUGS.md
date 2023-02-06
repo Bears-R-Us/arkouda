@@ -1,5 +1,3 @@
-.. _user_bugs:
-
 Tips for Reproducing User Bugs
 ==============================
 

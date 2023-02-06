@@ -1,5 +1,3 @@
-.. _memory_usage:
-
 Reducing Memory Usage of Arkouda Builds
 =======================================
 
