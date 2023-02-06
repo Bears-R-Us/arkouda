@@ -18,7 +18,7 @@ First, when an Arkouda release comes out, check out that tag and build the full 
     - here, we are moving that full server executable to a different place so it sticks around and isn't deleted after doing a different build of Arkouda
     - I just move mine up a single directory (so, `mv arkouda_server ../`, but put it wherever you'll remember and it won't be deleted)
 
-Now, we have a full build of the release, so there shouldn't be any reason to need to rebuild the full server again until the next release. What I would recommend is doing a full `gasnet` build of the server overnight so you don't have to be impacted by the long build times and memory hogging during development. This _will_ take a while, especially for a gasnet build, but you should only have to do it once per release (and it can be done overnight).
+Now, we have a full build of the release, so there shouldn't be any reason to need to rebuild the full server again until the next release. What I would recommend is doing a full [`gasnet` build of the server](GASNET.md) overnight so you don't have to be impacted by the long build times and memory hogging during development. This _will_ take a while, especially for a gasnet build, but you should only have to do it once per release (and it can be done overnight).
 
 
 ## Reproducing User Bugs Efficiently
