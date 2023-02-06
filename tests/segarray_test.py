@@ -1,8 +1,19 @@
+import os
+import tempfile
+
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+from arkouda import io_util
+
 
 class SegArrayTest(ArkoudaTest):
+    @classmethod
+    def setUpClass(cls):
+        super(SegArrayTest, cls).setUpClass()
+        SegArrayTest.seg_test_base_tmp = "{}/seg_test".format(os.getcwd())
+        io_util.get_directory(SegArrayTest.seg_test_base_tmp)
+
     def test_creation(self):
         a = [10, 11, 12, 13, 14, 15]
         b = [20, 21]
@@ -587,6 +598,14 @@ class SegArrayTest(ArkoudaTest):
         self.assertListEqual(xor.lengths.to_list(), [0, 2])
         self.assertListEqual(xor[0].tolist(), [])
         self.assertListEqual(xor[1].tolist(), [3, 4])
+
+    def test_segarray_load(self):
+        segarr = ak.segarray(ak.array([0, 9, 14]), ak.arange(20))
+        with tempfile.TemporaryDirectory(dir=SegArrayTest.seg_test_base_tmp) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/seg_test.h5")
+
+            seg_load = ak.SegArray.load(f"{tmp_dirname}/seg_test*")
+            self.assertTrue(ak.all(segarr == seg_load))
 
     def test_bigint(self):
         a = [2**80, 2**81]
