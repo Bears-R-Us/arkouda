@@ -376,7 +376,7 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((ak_int >> i).to_ndarray(), np_int >> i))
 
         # Binopsv case
-        #Left Shift
+        # Left Shift
         self.assertListEqual((maxbits << ak_uint_array).to_list(), (maxbits << np_uint_array).tolist())
         self.assertListEqual((maxbits << ak_int_array).to_list(), (maxbits << np_int_array).tolist())
         # Right Shift
@@ -384,7 +384,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual((maxbits >> ak_int_array).to_list(), (maxbits >> np_int_array).tolist())
 
         # Binopvv case, Same type
-        #Left Shift
+        # Left Shift
         self.assertListEqual((ak_uint << ak_uint_array).to_list(), (np_uint << np_uint_array).tolist())
         self.assertListEqual((ak_int << ak_int_array).to_list(), (np_int << np_int_array).tolist())
         # Right Shift
@@ -392,7 +392,7 @@ class OperatorsTest(ArkoudaTest):
         self.assertListEqual((ak_int >> ak_int_array).to_list(), (np_int >> np_int_array).tolist())
 
         # Binopvv case, Mixed type
-        #Left Shift
+        # Left Shift
         self.assertListEqual((ak_uint << ak_int_array).to_list(), (np_uint << np_uint_array).tolist())
         self.assertListEqual((ak_int << ak_uint_array).to_list(), (np_int << np_int_array).tolist())
         # Right shift
