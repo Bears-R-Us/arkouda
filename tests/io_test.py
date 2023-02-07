@@ -777,7 +777,7 @@ class IOTest(ArkoudaTest):
             ak.to_csv(d, f"{tmp_dirname}/non_standard_delim.csv", col_delim="|*|")
 
             # test reading that file with Arkouda
-            data = ak.read_csv(f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", column_delim="|*|")
+            data = ak.read_csv(f"{tmp_dirname}/non_standard_delim*", column_delim="|*|")
             self.assertListEqual(list(data.keys()), cols)
             self.assertListEqual(data["ColA"].to_list(), a)
             self.assertListEqual(data["ColB"].to_list(), [int(x) for x in b])
@@ -785,10 +785,25 @@ class IOTest(ArkoudaTest):
 
             # test reading subset of columns
             data = ak.read_csv(
-                f"{tmp_dirname}/non_standard_delim_LOCALE0000.csv", datasets="ColB", column_delim="|*|"
+                f"{tmp_dirname}/non_standard_delim*", datasets="ColB", column_delim="|*|"
             )
             self.assertIsInstance(data, ak.pdarray)
             self.assertListEqual(data.to_list(), [int(x) for x in b])
+
+        # larger data set testing
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            d = {
+                "ColA": ak.randint(0, 50, 101),
+                "ColB": ak.randint(0, 50, 101),
+                "ColC": ak.randint(0, 50, 101)
+            }
+
+            ak.to_csv(d, f"{tmp_dirname}/non_equal_set.csv")
+            data = ak.read_csv(f"{tmp_dirname}/non_equal_set*")
+            self.assertListEqual(data["ColA"].to_list(), d["ColA"].to_list())
+            self.assertListEqual(data["ColB"].to_list(), d["ColB"].to_list())
+            self.assertListEqual(data["ColC"].to_list(), d["ColC"].to_list())
+
 
     def tearDown(self):
         super(IOTest, self).tearDown()

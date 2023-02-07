@@ -319,7 +319,7 @@ module CSVMsg {
         return (row_ct, hasHeader, new list(dtypes));
     }
 
-    proc read_files_into_dist_array(A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string) throws {
+    proc read_files_into_dist_array(A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int) throws {
 
         coforall loc in A.targetLocales() do on loc {
             // Create local copies of args
@@ -327,7 +327,7 @@ module CSVMsg {
             var locFiledoms = filedomains;
             /* On this locale, find all files containing data that belongs in
                 this locale's chunk of A */
-            for (filedom, filename) in zip(locFiledoms, locFiles) {
+            for (filedom, filename, file_idx) in zip(locFiledoms, locFiles, 0..) {
                 if (skips.contains(filename)) {
                     csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                              "File %s does not contain data for this dataset, skipping".format(filename));
@@ -354,8 +354,8 @@ module CSVMsg {
                     for locdom in A.localSubdomains() {
                         const intersection = domain_intersection(locdom, filedom);
                         if intersection.size > 0 {
-                            forall (i, x) in zip(0..#intersection.size, intersection) {
-                                var row = lines[i+data_offset].split(col_delim);
+                            forall x in intersection {
+                                var row = lines[x-offsets[file_idx]+data_offset].split(col_delim);
                                 A[x] = row[colidx]: t;
                             }
                         }
@@ -394,7 +394,7 @@ module CSVMsg {
             select dtype {
                 when DType.Int64 {
                     var a = makeDistArray(record_count, int);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -402,7 +402,7 @@ module CSVMsg {
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -410,7 +410,7 @@ module CSVMsg {
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -418,7 +418,7 @@ module CSVMsg {
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
                     var entry = new shared SymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -426,7 +426,7 @@ module CSVMsg {
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets);
                     var col_lens = makeDistArray(record_count, int);
                     forall (i, v) in zip(0..#a.size, a) {
                         var tmp_str = v + "\x00";
@@ -468,7 +468,7 @@ module CSVMsg {
 
         for (i, dset) in zip(D, datasets) {
             var a = makeDistArray(record_count, string);
-            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim);
+            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets);
             var col_lens = makeDistArray(record_count, int);
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";

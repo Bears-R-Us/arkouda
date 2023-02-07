@@ -915,6 +915,8 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
             raise ValueError("Number of names does not match number of columns")
         else:
             datasetNames = names
+
+    pdarrays = [] # init to avoid undefined errors
     if isinstance(columns, dict):
         pdarrays = list(columns.values())
         if names is None:
