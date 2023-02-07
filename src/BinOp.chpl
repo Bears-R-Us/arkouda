@@ -937,12 +937,12 @@ module BinOp
         when ">>" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,r.a)] if ri:uint < 64 then ei = val:uint >> ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint >> ri:uint;
         }
         when "<<" {
           ref ea = e.a;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,r.a)] if ri:uint < 64 then ei = val:uint << ri:uint;
+          [(ei,ri) in zip(ea,ra)] if ri:uint < 64 then ei = val:uint << ri:uint;
         }
         when ">>>" {
           e.a = rotr(val:uint, r.a:uint);
