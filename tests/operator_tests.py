@@ -349,6 +349,56 @@ class OperatorsTest(ArkoudaTest):
             self.assertTrue(np.allclose((ak_float**aku).to_ndarray(), np_float**npu, equal_nan=True))
             self.assertTrue(np.allclose((aku**ak_float).to_ndarray(), npu**np_float, equal_nan=True))
 
+    def test_shift_binop(self):
+        # This tests for a bug when left shifting by a value >=64 bits for int/uint, Issue #2099
+        # Max bit value
+        maxbits = 2**63 - 1
+
+        # Value arrays
+        ak_uint = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.uint64)
+        np_uint = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.uint64)
+        ak_int = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.int64)
+        np_int = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.int64)
+
+        # Shifting value arrays
+        ak_uint_array = ak.array([62, 63, 64, 65], dtype=ak.uint64)
+        np_uint_array = np.array([62, 63, 64, 65], dtype=np.uint64)
+        ak_int_array = ak.array([62, 63, 64, 65], dtype=ak.int64)
+        np_int_array = np.array([62, 63, 64, 65], dtype=np.int64)
+
+        # Binopvs case
+        for i in range(62, 66):
+            # Left shift
+            self.assertTrue(np.allclose((ak_uint << i).to_ndarray(), np_uint << i))
+            self.assertTrue(np.allclose((ak_int << i).to_ndarray(), np_int << i))
+            # Right shift
+            self.assertTrue(np.allclose((ak_uint >> i).to_ndarray(), np_uint >> i))
+            self.assertTrue(np.allclose((ak_int >> i).to_ndarray(), np_int >> i))
+
+        # Binopsv case
+        # Left Shift
+        self.assertListEqual((maxbits << ak_uint_array).to_list(), (maxbits << np_uint_array).tolist())
+        self.assertListEqual((maxbits << ak_int_array).to_list(), (maxbits << np_int_array).tolist())
+        # Right Shift
+        self.assertListEqual((maxbits >> ak_uint_array).to_list(), (maxbits >> np_uint_array).tolist())
+        self.assertListEqual((maxbits >> ak_int_array).to_list(), (maxbits >> np_int_array).tolist())
+
+        # Binopvv case, Same type
+        # Left Shift
+        self.assertListEqual((ak_uint << ak_uint_array).to_list(), (np_uint << np_uint_array).tolist())
+        self.assertListEqual((ak_int << ak_int_array).to_list(), (np_int << np_int_array).tolist())
+        # Right Shift
+        self.assertListEqual((ak_uint >> ak_uint_array).to_list(), (np_uint >> np_uint_array).tolist())
+        self.assertListEqual((ak_int >> ak_int_array).to_list(), (np_int >> np_int_array).tolist())
+
+        # Binopvv case, Mixed type
+        # Left Shift
+        self.assertListEqual((ak_uint << ak_int_array).to_list(), (np_uint << np_uint_array).tolist())
+        self.assertListEqual((ak_int << ak_uint_array).to_list(), (np_int << np_int_array).tolist())
+        # Right shift
+        self.assertListEqual((ak_uint >> ak_int_array).to_list(), (np_uint >> np_uint_array).tolist())
+        self.assertListEqual((ak_int >> ak_uint_array).to_list(), (np_int >> np_int_array).tolist())
+
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
         from arkouda.util import generic_concat as akuconcat
