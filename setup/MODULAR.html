@@ -235,6 +235,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/RELEASE_PROCESS.html">Release Process</a></li>
 </ul>
@@ -275,6 +278,7 @@
         <article role="main">
           <section id="modular-server-builds">
 <h1>Modular Server Builds<a class="headerlink" href="#modular-server-builds" title="Permalink to this heading">#</a></h1>
+<p>For information specifically about using the modular build system to speed up compilation, please see the developer documentation <a class="reference internal" href="../developer/TIPS.html"><span class="doc std std-doc">here</span></a>.</p>
 <p>The modules that are included in each build of Arkouda can be found in the <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg">ServerModules.cfg</a> file.</p>
 <p>If only a certain subset of the Arkouda funcionality is required, modules can be commented out using a <code class="docutils literal notranslate"><span class="pre">#</span></code> prior to the module name in <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg">ServerModules.cfg</a>. This will exclude those modules from the next build of Arkouda, which can have significant improvements on build times, which can be particularly valuable during development when only a single feature is desired to be tested.</p>
 <section id="specifying-a-custom-configuration-file">

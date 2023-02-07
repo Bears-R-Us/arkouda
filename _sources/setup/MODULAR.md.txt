@@ -1,5 +1,7 @@
 # Modular Server Builds
 
+For information specifically about using the modular build system to speed up compilation, please see the developer documentation [here](../developer/TIPS.md).
+
 The modules that are included in each build of Arkouda can be found in the [ServerModules.cfg](https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg) file.
 
 If only a certain subset of the Arkouda funcionality is required, modules can be commented out using a `#` prior to the module name in [ServerModules.cfg](https://github.com/Bears-R-Us/arkouda/blob/master/ServerModules.cfg). This will exclude those modules from the next build of Arkouda, which can have significant improvements on build times, which can be particularly valuable during development when only a single feature is desired to be tested.

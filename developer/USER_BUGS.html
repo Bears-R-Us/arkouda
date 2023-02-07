@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The pdarray class" href="pdarray.html" /><link rel="prev" title="Usage Guide" href="../usage.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Reducing Memory Usage of Arkouda Builds" href="MEMORY.html" /><link rel="prev" title="Speeding up Arkouda Compilation" href="TIPS.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Startup - arkouda documentation</title>
+        <title>Tips for Reproducing User Bugs - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -175,20 +175,20 @@
 <li class="toctree-l2"><a class="reference internal" href="../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../usage.html">Usage Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Startup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="segarray.html">SegArrays in Arkouda</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arrayview.html">ArrayView in Arkouda</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/segarray.html">SegArrays in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/arrayview.html">ArrayView in Arkouda</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
@@ -234,12 +234,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="dev_menu.html">Developer Documentation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RELEASE_PROCESS.html">Release Process</a></li>
 </ul>
 </li>
 </ul>
@@ -276,65 +276,48 @@
           </label>
         </div>
         <article role="main">
-          <section id="startup">
-<h1>Startup<a class="headerlink" href="#startup" title="Permalink to this heading">#</a></h1>
-<section id="launch-arkouda-server">
-<h2>Launch arkouda server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this heading">#</a></h2>
-<p>Follow the <a class="reference internal" href="../setup/install_menu.html#installation-label"><span class="std std-ref">Installation</span></a> instructions to build the arkouda server program. In a terminal, launch it with</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>arkouda_server -nl &lt;numLocales&gt;
-</pre></div>
-</div>
-<p>Choose a number of locales that is right for your system and data. The <code class="docutils literal notranslate"><span class="pre">-h</span></code> flag gives a detailed usage with additional command-line options added by Chapel.</p>
-<p>The last line of output from the <code class="docutils literal notranslate"><span class="pre">arkouda_server</span></code> command should look like</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>server listening on tcp://node01:5555
-</pre></div>
-</div>
-<p>Use this hostname and port in the next step to connect to the server.</p>
+          <section id="tips-for-reproducing-user-bugs">
+<h1>Tips for Reproducing User Bugs<a class="headerlink" href="#tips-for-reproducing-user-bugs" title="Permalink to this heading">#</a></h1>
+<section id="saving-full-builds">
+<h2>Saving Full Builds<a class="headerlink" href="#saving-full-builds" title="Permalink to this heading">#</a></h2>
+<p>This section contains suggestions for cutting down the number of full module and/or gasnet builds that are needed for debugging.</p>
+<p>When a user reports a bug, that typically comes from the previous release. It can be pretty frustrating to have to go back and rebuild the entire server for the past release just to reproduce that bug that you don’t have a good idea what modules it needs.</p>
+<p>To avoid having to recompile the release to reproduce a bug, here is what I like to do:</p>
+<p>First, when an Arkouda release comes out, check out that tag and build the full server:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span> <span class="pre">--tags</span> <span class="pre">--all</span></code> - get new tags from github</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span></code> - list the tags that you have available</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">&lt;release-tag&gt;</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">v2023.01.11</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span></code> - build the server</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mv</span> <span class="pre">arkouda_server</span> <span class="pre">&lt;ak-server-path&gt;</span></code></p>
+<ul class="simple">
+<li><p>here, we are moving that full server executable to a different place so it sticks around and isn’t deleted after doing a different build of Arkouda</p></li>
+<li><p>I just move mine up a single directory (so, <code class="docutils literal notranslate"><span class="pre">mv</span> <span class="pre">arkouda_server</span> <span class="pre">../</span></code>, but put it wherever you’ll remember and it won’t be deleted)</p></li>
+</ul>
+</li>
+</ol>
+<p>Now, we have a full build of the release, so there shouldn’t be any reason to need to rebuild the full server again until the next release. What I would recommend is doing a full <a class="reference internal" href="GASNET.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gasnet</span></code> build of the server</span></a> overnight so you don’t have to be impacted by the long build times and memory hogging during development. This <em>will</em> take a while, especially for a gasnet build, but you should only have to do it once per release (and it can be done overnight).</p>
 </section>
-<section id="connect-a-python-3-client">
-<h2>Connect a Python 3 client<a class="headerlink" href="#connect-a-python-3-client" title="Permalink to this heading">#</a></h2>
-<p>In Python 3, connect to the arkouda server using the hostname and port shown by the server program (example values shown here)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">connect_url</span><span class="o">=</span><span class="s1">&#39;tcp://node01:5555&#39;</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="go">connected to node01:5555</span>
-</pre></div>
-</div>
-<p>If the output does not say “connected”, then something went wrong (even if the command executes). Check that the hostname and port match what the server printed, and that the hostname is reachable from the machine on which the client is running (e.g. not “localhost” for a remote server)</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.connect">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5555</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#arkouda.connect" title="Permalink to this definition">#</a></dt>
-<dd><p>Connect to a running arkouda server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>server</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the server (must be visible to the current
-machine). Defaults to <cite>localhost</cite>.</p></li>
-<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port of the server. Defaults to 5555.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The timeout in seconds for client send and receive operations.
-Defaults to 0 seconds, whicn is interpreted as no timeout.</p></li>
-<li><p><strong>access_token</strong> (<em>str</em><em>, </em><em>optional</em>) – The token used to connect to an existing socket to enable access to
-an Arkouda server where authentication is enabled. Defaults to None.</p></li>
-<li><p><strong>connect_url</strong> (<em>str</em><em>, </em><em>optional</em>) – The complete url in the format of <a class="reference external" href="tcp://server:port">tcp://server:port</a>?token=&lt;token_value&gt;
-where the token is optional</p></li>
+<section id="reproducing-user-bugs-efficiently">
+<h2>Reproducing User Bugs Efficiently<a class="headerlink" href="#reproducing-user-bugs-efficiently" title="Permalink to this heading">#</a></h2>
+<p>This section contains suggestions for effectively reproducing user-reported bugs in combination with the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag to efficiently figure out which modules are required for testing changes for a specific bug to minimize build times. See the <a class="reference internal" href="../setup/MODULAR.html"><span class="doc std std-doc">modular build documentation</span></a> for more information on the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag.</p>
+<p>Now that you’ve got your one-time Arkouda release built (from the previous section), to reproduce a reported bug:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">./&lt;ak-server-path/arkouda_server</span> <span class="pre">--saveUsedModules</span></code></p>
+<ul class="simple">
+<li><p>run the executable from the location that you saved it to from the previous step</p></li>
+<li><p>don’t forget the <code class="docutils literal notranslate"><span class="pre">--saveUsedModules</span></code> flag</p></li>
 </ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ConnectionError</strong> – Raised if there’s an error in connecting to the Arkouda server</p></li>
-<li><p><strong>ValueError</strong> – Raised if there’s an error in parsing the connect_url parameter</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error</p></li>
+</li>
+<li><p>reproduce the bug</p></li>
+<li><p>shutdown the server with <code class="docutils literal notranslate"><span class="pre">ak.shutdown()</span></code> (to generate the <code class="docutils literal notranslate"><span class="pre">UsedModules.cfg</span></code> file)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mv</span> <span class="pre">UsedModules.cfg</span> <span class="pre">&lt;path-to-arkouda&gt;/ServerModules.cfg</span></code> or other technique mentioned above</p></li>
+<li><p>now, the server can be built and changes can be tested without compiling any unnecessary modules, since the <code class="docutils literal notranslate"><span class="pre">UsedModules.cfg</span></code> file will have only the minimal modules</p>
+<ul class="simple">
+<li><p>note that the <code class="docutils literal notranslate"><span class="pre">UsedModules.cfg</span></code> will be created in the directory that the command to run the server is executed from</p></li>
 </ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>On success, prints the connected address, as seen by the server. If called
-with an existing connection, the socket will be re-initialized.</p>
-</dd></dl>
-
+</li>
+</ol>
 </section>
 </section>
 
@@ -343,23 +326,23 @@ with an existing connection, the socket will be re-initialized.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="pdarray.html">
+          <a class="next-page" href="MEMORY.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</div>
+                <div class="title">Reducing Memory Usage of Arkouda Builds</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../usage.html">
+          <a class="prev-page" href="TIPS.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Usage Guide</div>
+                <div class="title">Speeding up Arkouda Compilation</div>
                 
               </div>
             </a>
@@ -393,13 +376,9 @@ with an existing connection, the socket will be re-initialized.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Startup</a><ul>
-<li><a class="reference internal" href="#launch-arkouda-server">Launch arkouda server</a></li>
-<li><a class="reference internal" href="#connect-a-python-3-client">Connect a Python 3 client</a><ul>
-<li><a class="reference internal" href="#arkouda.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.connect">connect</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Tips for Reproducing User Bugs</a><ul>
+<li><a class="reference internal" href="#saving-full-builds">Saving Full Builds</a></li>
+<li><a class="reference internal" href="#reproducing-user-bugs-efficiently">Reproducing User Bugs Efficiently</a></li>
 </ul>
 </li>
 </ul>

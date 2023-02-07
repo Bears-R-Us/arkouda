@@ -39,6 +39,8 @@ For convenience, the steps to install Chapel from source are detailed here. If y
 >
 > brew install gmp
 > export CHPL_GMP=system
+>
+> unset CHPL_DEVELOPER
 > ```
 
 > If you choose to use the packages bundled with Chapel, use the following settings.
@@ -58,7 +60,7 @@ For convenience, the steps to install Chapel from source are detailed here. If y
 **Step 7**
 > Use GNU make to build Chapel
 > ```bash
-> make
+> make -j 16
 > ```
 
 **Step 8**

@@ -235,6 +235,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/GASNET.html">GASNet Development</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../developer/RELEASE_PROCESS.html">Release Process</a></li>
 </ul>
@@ -315,6 +318,8 @@
 
 brew<span class="w"> </span>install<span class="w"> </span>gmp
 <span class="nb">export</span><span class="w"> </span><span class="nv">CHPL_GMP</span><span class="o">=</span>system
+
+<span class="nb">unset</span><span class="w"> </span>CHPL_DEVELOPER
 </pre></div>
 </div>
 </div></blockquote>
@@ -337,7 +342,7 @@ brew<span class="w"> </span>install<span class="w"> </span>gmp
 <p><strong>Step 7</strong></p>
 <blockquote>
 <div><p>Use GNU make to build Chapel</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">16</span>
 </pre></div>
 </div>
 </div></blockquote>
