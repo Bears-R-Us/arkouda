@@ -608,7 +608,7 @@ module BinOp
       select op {
         when ">>" {
           if val < 64 {
-            e.a = l.a << val:l.etype;
+            e.a = l.a >> val:l.etype;
           }
         }
         when "<<" {
