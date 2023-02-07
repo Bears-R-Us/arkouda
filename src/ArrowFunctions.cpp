@@ -270,7 +270,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
     int64_t ty = cpp_getType(filename, colname, errMsg);
     auto offsets = (int64_t*)chpl_offsets;
     int64_t listSize = 0;
-    // todo - check type is list
+    
     if (ty == ARROWLIST){
       int64_t lty = cpp_getListType(filename, colname, errMsg);
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
@@ -457,111 +457,114 @@ int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname
 
 int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
-    int64_t ty = cpp_getListType(filename, colname, errMsg);
-    std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
-        parquet::ParquetFileReader::OpenFile(filename, false);
+    if (ty == ARROWLIST){
+      int64_t ty = cpp_getListType(filename, colname, errMsg);
+      std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
+          parquet::ParquetFileReader::OpenFile(filename, false);
 
-    std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
-    int num_row_groups = file_metadata->num_row_groups();
+      std::shared_ptr<parquet::FileMetaData> file_metadata = parquet_reader->metadata();
+      int num_row_groups = file_metadata->num_row_groups();
 
-    auto idx = file_metadata -> schema() -> group_node() -> FieldIndex(colname);
-    if(idx < 0) {
-      std::string dname(colname);
-      std::string fname(filename);
-      std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
-      *errMsg = strdup(msg.c_str());
-      return ARROWERROR;
-    }
+      auto idx = file_metadata -> schema() -> group_node() -> FieldIndex(colname);
+      if(idx < 0) {
+        std::string dname(colname);
+        std::string fname(filename);
+        std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
+        *errMsg = strdup(msg.c_str());
+        return ARROWERROR;
+      }
 
-    int64_t i = 0;
-    for (int r = 0; r < num_row_groups; r++) {
-      std::shared_ptr<parquet::RowGroupReader> row_group_reader =
-        parquet_reader->RowGroup(r);
+      int64_t i = 0;
+      for (int r = 0; r < num_row_groups; r++) {
+        std::shared_ptr<parquet::RowGroupReader> row_group_reader =
+          parquet_reader->RowGroup(r);
 
-      int64_t values_read = 0;
-      int16_t definition_level; // needed for any type that is nullable
+        int64_t values_read = 0;
+        int16_t definition_level; // needed for any type that is nullable
 
-      std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
+        std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
 
-      if(ty == ARROWINT64 || ty == ARROWUINT64) {
-        auto chpl_ptr = (int64_t*)chpl_arr;
-        parquet::Int64Reader* reader =
-          static_cast<parquet::Int64Reader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
+        if(ty == ARROWINT64 || ty == ARROWUINT64) {
+          auto chpl_ptr = (int64_t*)chpl_arr;
+          parquet::Int64Reader* reader =
+            static_cast<parquet::Int64Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-        while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-          i+=values_read;
-        }
-      } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
-        auto chpl_ptr = (int64_t*)chpl_arr;
-        parquet::Int32Reader* reader =
-          static_cast<parquet::Int32Reader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
-        while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
-          // Can't read directly into chpl_ptr because it is int64
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
-          for (int64_t j = 0; j < values_read; j++)
-            chpl_ptr[i+j] = (int64_t)tmpArr[j];
-          i+=values_read;
-        }
-        free(tmpArr);
-      } else if(ty == ARROWBOOLEAN) {
-        auto chpl_ptr = (bool*)chpl_arr;
-        parquet::BoolReader* reader =
-          static_cast<parquet::BoolReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-
-        while (reader->HasNext() && i < numElems) {
-          if((numElems - i) < batchSize)
-            batchSize = numElems - i;
-          (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
-          i+=values_read;
-        }
-      } else if(ty == ARROWFLOAT) {
-        auto chpl_ptr = (double*)chpl_arr;
-        parquet::FloatReader* reader =
-          static_cast<parquet::FloatReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
-        
-        while (reader->HasNext() && i < numElems) {
-          float value;
-          // Can't read directly into chpl_ptr because it is a double
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if(values_read == 0) {
-            chpl_ptr[i] = NAN;
+          while (reader->HasNext() && i < numElems) {
+            if((numElems - i) < batchSize)
+              batchSize = numElems - i;
+            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+            i+=values_read;
           }
-          else {
-            chpl_ptr[i] = (double)value;
-          }
-          i++;
-        }
-      } else if(ty == ARROWDOUBLE) {
-        auto chpl_ptr = (double*)chpl_arr;
-        parquet::DoubleReader* reader =
-          static_cast<parquet::DoubleReader*>(column_reader.get());
-        startIdx -= reader->Skip(startIdx);
+        } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
+          auto chpl_ptr = (int64_t*)chpl_arr;
+          parquet::Int32Reader* reader =
+            static_cast<parquet::Int32Reader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
 
-        while (reader->HasNext() && i < numElems) {
-          double value;
-          (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-          if(values_read == 0) {
-            chpl_ptr[i] = NAN;
+          int32_t* tmpArr = (int32_t*)malloc(batchSize * sizeof(int32_t));
+          while (reader->HasNext() && i < numElems) {
+            if((numElems - i) < batchSize)
+              batchSize = numElems - i;
+            // Can't read directly into chpl_ptr because it is int64
+            (void)reader->ReadBatch(batchSize, nullptr, nullptr, tmpArr, &values_read);
+            for (int64_t j = 0; j < values_read; j++)
+              chpl_ptr[i+j] = (int64_t)tmpArr[j];
+            i+=values_read;
           }
-          else {
-            chpl_ptr[i] = value;
+          free(tmpArr);
+        } else if(ty == ARROWBOOLEAN) {
+          auto chpl_ptr = (bool*)chpl_arr;
+          parquet::BoolReader* reader =
+            static_cast<parquet::BoolReader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
+
+          while (reader->HasNext() && i < numElems) {
+            if((numElems - i) < batchSize)
+              batchSize = numElems - i;
+            (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
+            i+=values_read;
           }
-          i++;
+        } else if(ty == ARROWFLOAT) {
+          auto chpl_ptr = (double*)chpl_arr;
+          parquet::FloatReader* reader =
+            static_cast<parquet::FloatReader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
+          
+          while (reader->HasNext() && i < numElems) {
+            float value;
+            // Can't read directly into chpl_ptr because it is a double
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+            if(values_read == 0) {
+              chpl_ptr[i] = NAN;
+            }
+            else {
+              chpl_ptr[i] = (double)value;
+            }
+            i++;
+          }
+        } else if(ty == ARROWDOUBLE) {
+          auto chpl_ptr = (double*)chpl_arr;
+          parquet::DoubleReader* reader =
+            static_cast<parquet::DoubleReader*>(column_reader.get());
+          startIdx -= reader->Skip(startIdx);
+
+          while (reader->HasNext() && i < numElems) {
+            double value;
+            (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
+            if(values_read == 0) {
+              chpl_ptr[i] = NAN;
+            }
+            else {
+              chpl_ptr[i] = value;
+            }
+            i++;
+          }
         }
       }
+      return 0;
     }
-    return 0;
+    return ARROWERROR;
   } catch (const std::exception& e) {
     *errMsg = strdup(e.what());
     return ARROWERROR;

@@ -179,7 +179,6 @@ module ParquetMsg {
   }
 
   proc readListFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
-    // TODO - update extern to list call
     extern proc c_readListColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     
@@ -365,7 +364,6 @@ module ParquetMsg {
   }
 
   proc getListData(filename: string, dsetname: string) throws {
-    // TODO - loop filesnames and validate?
     extern proc c_getListType(filename, dsetname, errMsg): c_int;
     var pqErr = new parquetErrorMsg();
     
@@ -794,7 +792,6 @@ module ParquetMsg {
         // Only integer is implemented for now, do nothing if the Parquet
         // file has a different type
         if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
-          writeln("\n\nInt Type: %jt".format(ty));
           var entryVal = new shared SymEntry(len, int);
           readFilesByName(entryVal.a, filenames, sizes, dsetname, ty);
           var valName = st.nextName();

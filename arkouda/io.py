@@ -698,7 +698,6 @@ def read_parquet(
                 "filenames": filenames,
             },
         )
-        print(rep_msg)
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
         _parse_errors(rep, allow_errors)
         return _build_objects(rep)
