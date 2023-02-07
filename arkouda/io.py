@@ -916,7 +916,7 @@ def _bulk_write_prep(columns: Union[Mapping[str, pdarray], List[pdarray]], names
         else:
             datasetNames = names
 
-    pdarrays = [] # init to avoid undefined errors
+    pdarrays = []  # init to avoid undefined errors
     if isinstance(columns, dict):
         pdarrays = list(columns.values())
         if names is None:
