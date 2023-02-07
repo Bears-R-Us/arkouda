@@ -13,7 +13,6 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.segarray import SegArray
 from arkouda.strings import Strings
-from arkouda.segarray import SegArray
 
 __all__ = [
     "get_filetype",

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 from typing import cast as type_cast
 
 import numpy as np  # type: ignore
