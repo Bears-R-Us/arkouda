@@ -355,19 +355,19 @@ class OperatorsTest(ArkoudaTest):
         maxbits = 2**63 - 1
 
         # Value arrays
-        ak_uint = ak.array([maxbits, maxbits, maxbits], dtype=ak.uint64)
-        np_uint = np.array([maxbits, maxbits, maxbits], dtype=np.uint64)
-        ak_int = ak.array([maxbits, maxbits, maxbits], dtype=ak.int64)
-        np_int = np.array([maxbits, maxbits, maxbits], dtype=np.int64)
+        ak_uint = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.uint64)
+        np_uint = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.uint64)
+        ak_int = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.int64)
+        np_int = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.int64)
 
         # Shifting value arrays
-        ak_uint_array = ak.array([63, 64, 65], dtype=ak.uint64)
-        np_uint_array = np.array([63, 64, 65], dtype=np.uint64)
-        ak_int_array = ak.array([63, 64, 65], dtype=ak.int64)
-        np_int_array = np.array([63, 64, 65], dtype=np.int64)
+        ak_uint_array = ak.array([62, 63, 64, 65], dtype=ak.uint64)
+        np_uint_array = np.array([62, 63, 64, 65], dtype=np.uint64)
+        ak_int_array = ak.array([62, 63, 64, 65], dtype=ak.int64)
+        np_int_array = np.array([62, 63, 64, 65], dtype=np.int64)
 
         # Binopvs case
-        for i in range(63, 66):
+        for i in range(62, 66):
             self.assertTrue(np.allclose((ak_uint << i).to_ndarray(), np_uint << i))
             self.assertTrue(np.allclose((ak_int << i).to_ndarray(), np_int << i))
 
@@ -382,6 +382,40 @@ class OperatorsTest(ArkoudaTest):
         # Binopvv case, Mixed type
         self.assertListEqual((ak_uint << ak_int_array).to_list(), (np_uint << np_uint_array).tolist())
         self.assertListEqual((ak_int << ak_uint_array).to_list(), (np_int << np_int_array).tolist())
+
+    def test_right_shift_binop(self):
+        # This tests for a bug when right shifting by a value >=64 bits for int/uint, Issue #2099
+        # Max bit value
+        maxbits = 2**63 - 1
+
+        # Value arrays
+        ak_uint = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.uint64)
+        np_uint = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.uint64)
+        ak_int = ak.array([maxbits, maxbits, maxbits, maxbits], dtype=ak.int64)
+        np_int = np.array([maxbits, maxbits, maxbits, maxbits], dtype=np.int64)
+
+        # Shifting value arrays
+        ak_uint_array = ak.array([62, 63, 64, 65], dtype=ak.uint64)
+        np_uint_array = np.array([62, 63, 64, 65], dtype=np.uint64)
+        ak_int_array = ak.array([62, 63, 64, 65], dtype=ak.int64)
+        np_int_array = np.array([62, 63, 64, 65], dtype=np.int64)
+
+        # Binopvs case
+        for i in range(62, 66):
+            self.assertTrue(np.allclose((ak_uint >> i).to_ndarray(), np_uint >> i))
+            self.assertTrue(np.allclose((ak_int >> i).to_ndarray(), np_int >> i))
+
+        # Binopsv case
+        self.assertListEqual((maxbits >> ak_uint_array).to_list(), (maxbits >> np_uint_array).tolist())
+        self.assertListEqual((maxbits >> ak_int_array).to_list(), (maxbits >> np_int_array).tolist())
+
+        # # Binopvv case, Same type
+        self.assertListEqual((ak_uint >> ak_uint_array).to_list(), (np_uint >> np_uint_array).tolist())
+        self.assertListEqual((ak_int >> ak_int_array).to_list(), (np_int >> np_int_array).tolist())
+
+        # Binopvv case, Mixed type
+        self.assertListEqual((ak_uint >> ak_int_array).to_list(), (np_uint >> np_uint_array).tolist())
+        self.assertListEqual((ak_int >> ak_uint_array).to_list(), (np_int >> np_int_array).tolist())
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
