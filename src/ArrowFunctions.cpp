@@ -457,8 +457,9 @@ int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname
 
 int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
+    int64_t ty = cpp_getType(filename, colname, errMsg);
     if (ty == ARROWLIST){
-      int64_t ty = cpp_getListType(filename, colname, errMsg);
+      int64_t lty = cpp_getListType(filename, colname, errMsg);
       std::unique_ptr<parquet::ParquetFileReader> parquet_reader =
           parquet::ParquetFileReader::OpenFile(filename, false);
 
@@ -484,7 +485,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
 
         std::shared_ptr<parquet::ColumnReader> column_reader = row_group_reader->Column(idx);
 
-        if(ty == ARROWINT64 || ty == ARROWUINT64) {
+        if(lty == ARROWINT64 || lty == ARROWUINT64) {
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int64Reader* reader =
             static_cast<parquet::Int64Reader*>(column_reader.get());
@@ -496,7 +497,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
             i+=values_read;
           }
-        } else if(ty == ARROWINT32 || ty == ARROWUINT32) {
+        } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
           auto chpl_ptr = (int64_t*)chpl_arr;
           parquet::Int32Reader* reader =
             static_cast<parquet::Int32Reader*>(column_reader.get());
@@ -513,7 +514,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             i+=values_read;
           }
           free(tmpArr);
-        } else if(ty == ARROWBOOLEAN) {
+        } else if(lty == ARROWBOOLEAN) {
           auto chpl_ptr = (bool*)chpl_arr;
           parquet::BoolReader* reader =
             static_cast<parquet::BoolReader*>(column_reader.get());
@@ -525,7 +526,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             (void)reader->ReadBatch(batchSize, nullptr, nullptr, &chpl_ptr[i], &values_read);
             i+=values_read;
           }
-        } else if(ty == ARROWFLOAT) {
+        } else if(lty == ARROWFLOAT) {
           auto chpl_ptr = (double*)chpl_arr;
           parquet::FloatReader* reader =
             static_cast<parquet::FloatReader*>(column_reader.get());
@@ -543,7 +544,7 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
             }
             i++;
           }
-        } else if(ty == ARROWDOUBLE) {
+        } else if(lty == ARROWDOUBLE) {
           auto chpl_ptr = (double*)chpl_arr;
           parquet::DoubleReader* reader =
             static_cast<parquet::DoubleReader*>(column_reader.get());
