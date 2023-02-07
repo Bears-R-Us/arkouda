@@ -324,7 +324,7 @@ module MultiTypeSymEntry
         }
     }
 
-    /**
+    /*
         Base class for any entry that consists of multiple SymEntries that have varying types.
         These entries are related, but do not represent a single object.
         For Example, group by contains multiple SymEntries that are all considered part of the dataset.
