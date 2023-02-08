@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from typing import cast as type_cast
 
 import numpy as np  # type: ignore
@@ -12,6 +13,10 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
+<<<<<<< Updated upstream
+=======
+from arkouda.io import load
+>>>>>>> Stashed changes
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
@@ -984,10 +989,6 @@ class SegArray:
             Directory and filename prefix that all output files will share
         group_name : str
             Name prefix for saved data within the HDF5 file
-        segment_name : str
-            Suffix to append to dataset name for segments array
-        value_name : str
-            Suffix to append to dataset name for values array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
@@ -1012,13 +1013,6 @@ class SegArray:
         ---------
         load
         """
-        # self.segments.to_hdf(
-        #     prefix_path, dataset=group_name + segment_name, mode=mode, file_type=file_type
-        # )
-        # self.values.to_hdf(
-        #     prefix_path, dataset=group_name + value_name, mode="append", file_type=file_type
-        # )
-
         from arkouda.io import file_type_to_int, mode_str_to_int
 
         return type_cast(
@@ -1042,8 +1036,6 @@ class SegArray:
         self,
         prefix_path,
         group_name="segarray",
-        segment_name="segments",
-        value_name="values",
         mode="truncate",
         file_type="distribute",
     ):
@@ -1098,19 +1090,15 @@ class SegArray:
         return self.to_hdf(
             prefix_path,
             group_name,
-            segment_name=segment_name,
-            value_name=value_name,
             mode=mode,
             file_type=file_type,
         )
 
     @classmethod
-    def load(
+    def read_hdf(
         cls,
         prefix_path,
-        dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
+        group_name="segarray"
     ):
         """
         Load a saved SegArray from HDF5. All arguments must match what
@@ -1120,24 +1108,30 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix
-        dataset : str
+        group_name : str
             Name prefix for saved data within the HDF5 files
-        segment_suffix : str
-            Suffix to append to dataset name for segments array
-        value_suffix : str
-            Suffix to append to dataset name for values array
 
         Returns
         -------
         SegArray
         """
-        from arkouda.io import load
 
-        if segment_suffix == value_suffix:
-            raise ValueError("Segment suffix and value suffix must be different")
-        segments = load(prefix_path, dataset=dataset + segment_suffix)
-        values = load(prefix_path, dataset=dataset + value_suffix)
-        return SegArray.from_parts(segments, values)
+        return load(prefix_path, dataset=group_name)
+
+    @classmethod
+    def load(
+        cls,
+        prefix_path,
+        group_name="segarray",
+        segment_name="segments",
+        value_name="values"
+    ):
+        warnings.warn(
+            "ak.SegArray.load() is deprecated. Please use ak.SegArray.read_hdf() instead.",
+            DeprecationWarning
+        )
+        return cls.read_hdf(prefix_path, group_name, segment_name, value_name)
+
 
     def intersect(self, other):
         """
