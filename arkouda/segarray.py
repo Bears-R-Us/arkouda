@@ -13,10 +13,6 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import isSupportedInt, str_, translate_np_dtype
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.infoclass import list_registry
-<<<<<<< Updated upstream
-=======
-from arkouda.io import load
->>>>>>> Stashed changes
 from arkouda.logger import getArkoudaLogger
 from arkouda.numeric import cumsum
 from arkouda.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
@@ -1115,6 +1111,7 @@ class SegArray:
         -------
         SegArray
         """
+        from arkouda.io import load
 
         return load(prefix_path, dataset=group_name)
 
