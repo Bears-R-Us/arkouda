@@ -1,0 +1,380 @@
+.. default-domain:: chpl
+
+.. module:: SegmentedString
+
+SegmentedString
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use SegmentedString;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegmentedString;
+
+.. data:: const ssLogger = new Logger(logLevel, logChannel)
+
+.. data:: param SegmentedStringUseHash = useHash
+
+.. enum:: enum Fixes { prefixes, suffixes }
+
+.. function:: proc getSegString(name: string, st: borrowed SymTab): owned SegString throws
+
+.. function:: proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws
+
+   
+   * This version of the getSegString method takes segments and values arrays as
+   * inputs, generates the SymEntry objects for each and passes the
+   * offset and value SymTab lookup names to the alternate init method
+   
+
+.. function:: proc assembleSegStringFromParts(offsets: GenSymEntry, values: GenSymEntry, st: borrowed SymTab): owned SegString throws
+
+.. function:: proc assembleSegStringFromParts(offsets: SymEntry, values: SymEntry, st: borrowed SymTab): owned SegString throws
+
+.. class:: SegString
+
+   *
+   * Represents an array of strings, implemented as a segmented array of bytes.
+   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
+   * of this class refer to symbol table entries that persist. This class is a
+   * convenience for bundling those persistent objects and defining string-relevant
+   * operations.
+   
+
+
+   .. attribute:: var name: string
+
+   .. attribute:: var composite: borrowed SegStringSymEntry
+
+   .. attribute:: var offsets: shared SymEntry(int)
+
+      *
+      * The pdarray containing the offsets, which are the start indices of
+      * the bytearrays, each of which corresponds to an individual string.
+      
+
+   .. attribute:: var values: shared SymEntry(uint(8))
+
+      *
+      * The pdarray containing the complete byte array composed of bytes
+      * corresponding to each string, joined by nulls. Note: the null byte
+      * is uint(8) value of zero.
+      
+
+   .. attribute:: var size: int
+
+      *
+      * The number of strings in the segmented array
+      
+
+   .. attribute:: var nBytes: int
+
+      *
+      * The total number of bytes in the entire segmented array including
+      * the bytes corresonding to the strings as well as the nulls
+      * separating the string bytes.
+      
+
+   .. method:: proc init(entryName: string, entry: borrowed SegStringSymEntry)
+
+       
+      * This method should not be called directly. Instead, call one of the
+      * getSegString factory methods.
+      
+
+   .. method:: proc show(n: int = 3) throws
+
+   .. method:: proc this(idx: ?t): string throws
+
+      Retrieve one string from the array 
+
+   .. method:: proc this(const slice: range(stridable = false)) throws
+
+      Take a slice of strings from the array. The slice must be a 
+      Chapel range, i.e. low..high by stride, not a Python slice.
+      Returns arrays for the segment offsets and bytes of the slice.
+
+   .. method:: proc this(iv: [?D] ?t) throws
+
+      Gather strings by index. Returns arrays for the segment offsets
+      and bytes of the gathered strings.
+
+   .. method:: proc this(iv: [?D] bool) throws
+
+      Logical indexing (compress) of strings. 
+
+   .. method:: proc siphash() throws
+
+      Apply a hash function to all strings. This is useful for grouping
+      and set membership. The hash used is SipHash128.
+
+   .. method:: proc argGroup() throws
+
+      Return a permutation that groups the strings. Because hashing is used,
+      this permutation will not sort the strings, but all equivalent strings
+      will fall in one contiguous block. 
+
+   .. method:: proc getLengths()
+
+      Return lengths of all strings, including null terminator. 
+
+   .. method:: proc lower() throws
+
+      
+      Given a SegString, return a new SegString with all uppercase characters from the original replaced with their lowercase equivalent
+      :returns: Strings – Substrings with uppercase characters replaced with lowercase equivalent
+      
+
+   .. method:: proc upper() throws
+
+      
+      Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
+      :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent
+      
+
+   .. method:: proc title() throws
+
+      
+      Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
+      and the remaining characters replaced with their lowercase equivalent
+      :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
+      their lowercase equivalent
+      
+
+   .. method:: proc isLower() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase
+      
+
+   .. method:: proc isUpper() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase
+      
+
+   .. method:: proc isTitle() throws
+
+      
+      Returns list of bools where index i indicates whether the string i of the SegString is titlecase
+      :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase
+      
+
+   .. method:: proc bytesToUintArr(const max_bytes: int, st) throws
+
+   .. method:: proc findSubstringInBytes(const substr: string)
+
+   .. method:: proc findMatchLocations(const pattern: string, groupNum: int) throws
+
+      
+      Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
+      :arg pattern: The regex pattern used to find matches
+      :type pattern: string
+      :arg groupNum: The number of the capture group to be returned
+      :type groupNum: int
+      :returns: int64 pdarray – For each original string, the number of pattern matches and int64 pdarray – The start positons of pattern matches and int64 pdarray – The lengths of pattern matches
+      
+
+   .. method:: proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const indicesEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws
+
+      
+      Given a SegString, return a new SegString only containing matches of the regex pattern,
+      If returnMatchOrig is set to True, return a pdarray containing the index of the original string each pattern match is from
+      :arg numMatchesEntry: For each string in SegString, the number of pattern matches
+      :type numMatchesEntry: borrowed SymEntry(int) or borrowed SysmEntry(bool)
+      :arg startsEntry: The starting postions of pattern matches
+      :type startsEntry: borrowed SymEntry(int)
+      :arg lensEntry: The lengths of pattern matches
+      :type lensEntry: borrowed SymEntry(int)
+      :arg returnMatchOrig: If True, return a pdarray containing the index of the original string each pattern match is from
+      :type returnMatchOrig: bool
+      :returns: Strings – Only the portions of Strings which match pattern and (optional) int64 pdarray – For each pattern match, the index of the original string it was in
+      
+
+   .. method:: proc sub(pattern: string, replStr: string, initCount: int, returnNumSubs: bool) throws
+
+      
+      Substitute pattern matches with repl. If count is nonzero, at most count substitutions occur
+      If returnNumSubs is set to True, the number of substitutions per string will be returned
+      
+      :arg pattern: regex pattern used to find matches
+      :type pattern: string
+      
+      :arg replStr: the string to replace pattern matches with
+      :type replStr: string
+      
+      :arg initCount: If count is nonzero, at most count splits occur. If zero, substitute all occurences of pattern
+      :type initCount: int
+      
+      :arg returnNumSubs: If True, also return the number of substitutions per string
+      :type returnNumSubs: bool
+      
+      :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
+      
+
+   .. method:: proc strip(chars: string) throws
+
+      
+      Strip out all of the leading and trailing characters of each element of a segstring that are
+      called out in the "chars" argument.
+      
+      :arg chars: the set of characters to be removed
+      :type chars: string
+      
+      :returns: Strings – substrings with stripped characters from the original string and the offsets into those substrings
+      
+
+   .. method:: proc substringSearch(const pattern: string) throws
+
+      
+      Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+      
+      :arg pattern: regex pattern to be applied to strings in SegString
+      :type pattern: string
+      
+      :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      
+
+   .. method:: proc peelRegex(const delimiter: string, const times: int, const includeDelimiter: bool, const keepPartial: bool, const left: bool) throws
+
+      
+      Peel off one or more fields matching the regular expression, delimiter, from each string (similar
+      to string.partition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+      
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+      
+      :arg delimter: regex delimter where the split in SegString will occur
+      :type delimter: string
+      
+      :arg times: The number of times the delimiter is sought, i.e. skip over the first (times-1) delimiters
+      :type times: int
+      
+      :arg includeDelimiter: If true, append the delimiter to the end of the first return array
+                              By default, it is prepended to the beginning of the second return array.
+      :type includeDelimiter: bool
+      
+      :arg keepPartial: If true, a string that does not contain <times> instances of
+                        the delimiter will be returned in the first array. By default,
+                        such strings are returned in the second array.
+      :type keepPartial: bool
+      
+      :arg left: If true, peel from the left
+      :type left: bool
+      
+      :returns: Components to build 2 SegStrings (leftOffsets, leftVals, rightOffsets, rightVals)
+      
+
+   .. method:: proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) throws
+
+   .. method:: proc stick(other: SegString, delim: string, param right: bool) throws
+
+   .. method:: proc ediff(): [offsets.a.domain] int
+
+   .. method:: proc isSorted(): bool
+
+   .. method:: proc argsort(checkSorted: bool = false): [offsets.a.domain] int throws
+
+   .. method:: proc getFixes(n: int, kind: Fixes, proper: bool)
+
+.. function:: proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int
+
+.. function:: operator ==(lss: SegString, rss: SegString) throws
+
+   Test for equality between two same-length arrays of strings. Returns
+   a boolean vector of the same length. 
+
+.. function:: operator !=(lss: SegString, rss: SegString) throws
+
+   Test for inequality between two same-length arrays of strings. Returns
+   a boolean vector of the same length. 
+
+.. function:: operator ==(ss: SegString, testStr: string) throws
+
+   Test an array of strings for equality against a constant string. Return a boolean
+   vector the same size as the array. 
+
+.. function:: operator !=(ss: SegString, testStr: string) throws
+
+   Test an array of strings for inequality against a constant string. Return a boolean
+   vector the same size as the array. 
+
+.. function:: proc stringCompareLiteralEq(values, rng, testStr)
+
+.. function:: proc stringCompareLiteralNeq(values, rng, testStr)
+
+.. function:: proc compare(ss: SegString, const testStr: string, param function: SegFunction) throws
+
+   Element-wise comparison of an arrays of string against a target string. 
+   The polarity parameter determines whether the comparison checks for 
+   equality (polarity=true, result is true where elements equal target) 
+   or inequality (polarity=false, result is true where elements differ from 
+   target). 
+
+.. function:: proc checkCompile(const pattern: ?t) throws
+
+   
+   Returns Regexp.compile if pattern can be compiled without an error
+   
+
+.. function:: proc _unsafeCompileRegex(const pattern: ?t)
+
+.. function:: proc stringSearch(values, rng, myRegex) throws
+
+.. function:: proc stringIsLower(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isLower
+   
+
+.. function:: proc stringIsUpper(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isUpper
+   
+
+.. function:: proc stringIsTitle(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for isTitle
+   
+
+.. function:: proc stringBytesToUintArr(values, rng) throws
+
+   
+   The SegFunction called by computeOnSegments for bytesToUintArr
+   
+
+.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
+
+   Test array of strings for membership in another array (set) of strings. Returns
+   a boolean vector the same size as the first array. 
+
+.. function:: proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws
+
+.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
+
+.. function:: proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow = false): string
+
+   
+   Interpret a region of a byte array as a Chapel string. If `borrow=false` a
+   new string is returned, otherwise the string borrows memory from the array
+   (reduces memory allocations if the string isn't needed after array)
+   
+
+.. function:: proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow = false): bytes
+
+   
+   Interpret a region of a byte array as bytes. Modeled after interpretAsString
+   
+

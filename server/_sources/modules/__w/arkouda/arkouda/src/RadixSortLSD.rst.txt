@@ -1,0 +1,64 @@
+.. default-domain:: chpl
+
+.. module:: RadixSortLSD
+   :synopsis: Radix Sort Least Significant Digit 
+
+RadixSortLSD
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use RadixSortLSD;
+
+
+or
+
+.. code-block:: chapel
+
+   import RadixSortLSD;
+
+Radix Sort Least Significant Digit 
+
+.. data:: config const RSLSD_vv = false
+
+.. data:: const vv = RSLSD_vv
+
+.. data:: config const RSLSD_numTasks = here.maxTaskPar
+
+.. data:: const numTasks = RSLSD_numTasks
+
+.. data:: const Tasks = {0.. # numTasks}
+
+.. data:: const rsLogger = new Logger(logLevel, logChannel)
+
+.. record:: KeysComparator
+
+   .. method:: proc key(k)
+
+.. record:: KeysRanksComparator
+
+   .. method:: proc key(kr)
+
+.. function:: proc calcBlock(task: int, low: int, high: int)
+
+.. function:: proc calcGlobalIndex(bucket: int, loc: int, task: int): int
+
+.. function:: proc radixSortLSD(a: [?aD] ?t, checkSorted: bool = true): [aD] (t, int)
+
+.. function:: proc radixSortLSD_ranks(a: [?aD] ?t, checkSorted: bool = true): [aD] int
+
+   Radix Sort Least Significant Digit
+   radix sort a block distributed array
+   returning a permutation vector as a block distributed array 
+
+.. function:: proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t
+
+   Radix Sort Least Significant Digit
+   radix sort a block distributed array
+   returning sorted keys as a block distributed array 
+
+.. function:: proc radixSortLSD_memEst(size: int, itemsize: int)
+
+.. function:: proc radixSortLSD_keys_memEst(size: int, itemsize: int)
+

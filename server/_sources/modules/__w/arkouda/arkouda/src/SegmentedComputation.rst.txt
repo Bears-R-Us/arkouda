@@ -1,0 +1,27 @@
+.. default-domain:: chpl
+
+.. module:: SegmentedComputation
+
+SegmentedComputation
+====================
+**Usage**
+
+.. code-block:: chapel
+
+   use SegmentedComputation;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegmentedComputation;
+
+.. function:: proc computeSegmentOwnership(segments: [?D] int, vD)
+
+.. enum:: enum SegFunction { SipHash128, StringToNumericStrict, StringToNumericIgnore, StringToNumericReturnValidity, StringCompareLiteralEq, StringCompareLiteralNeq, StringSearch, StringIsLower, StringIsUpper, StringIsTitle, StringBytesToUintArr }
+
+.. function:: proc computeOnSegments(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
+
+.. function:: proc computeOnSegmentsWithoutAggregation(segments: [?D] int, values: [?vD] ?t, param function: SegFunction, type retType, const strArg: string = "") throws
+

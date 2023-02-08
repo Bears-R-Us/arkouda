@@ -1,0 +1,25 @@
+.. default-domain:: chpl
+
+.. module:: BigIntMsg
+
+BigIntMsg
+=========
+**Usage**
+
+.. code-block:: chapel
+
+   use BigIntMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import BigIntMsg;
+
+.. data:: const biLogger = new Logger(logLevel, logChannel)
+
+.. function:: proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc bigintToUintArraysMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws
+

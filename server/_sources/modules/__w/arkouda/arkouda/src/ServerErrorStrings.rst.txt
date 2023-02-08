@@ -1,0 +1,62 @@
+.. default-domain:: chpl
+
+.. module:: ServerErrorStrings
+   :synopsis: error string to return to client... generate consistent error strings for notImplementedError 
+
+ServerErrorStrings
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ServerErrorStrings;
+
+
+or
+
+.. code-block:: chapel
+
+   import ServerErrorStrings;
+
+error string to return to client... generate consistent error strings for notImplementedError 
+
+.. class:: ErrorWithMsg : Error
+
+   .. attribute:: var msg: string
+
+.. function:: proc notImplementedError(pname: string, ldtype: DType, op: string, rdtype: DType): string
+
+   binary operator is not implemented for DTypes 
+
+.. function:: proc notImplementedError(pname: string, ldtype: string, op: string, rdtype: string): string
+
+.. function:: proc notImplementedError(pname: string, efunc: string, ldtype: DType): string
+
+   efunc is not implemented for DType 
+
+.. function:: proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType, dt3: DType): string
+
+   efunc is not implemented for DTypes 
+
+.. function:: proc notImplementedError(pname: string, dtype: DType): string
+
+   algorthm is not implemented for DType 
+
+.. function:: proc notImplementedError(pname: string, arg: string): string
+
+   proc is not implemented for this kind of argument 
+
+.. function:: proc unrecognizedTypeError(pname: string, stype: string): string
+
+   unrecognized DType 
+
+.. function:: proc unknownSymbolError(pname: string, sname: string): string
+
+   name not found in the symbol table 
+
+.. function:: proc unknownError(pname: string): string
+
+.. function:: proc incompatibleArgumentsError(pname: string, reason: string)
+
+   incompatible arguments 
+

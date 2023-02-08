@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message &mdash; chpldoc 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="MetricsMsg" href="MetricsMsg.html" />
+    <link rel="prev" title="Logging" href="Logging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BigIntMsg.html">BigIntMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cast.html">Cast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation/BigIntegerAggregation.html">BigIntegerAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommandMap.html">CommandMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ExternalIntegration.html">ExternalIntegration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MetricsMsg.html">MetricsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedComputation.html">SegmentedComputation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedString.html">SegmentedString</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerDaemon.html">ServerDaemon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrors.html">ServerErrors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Message</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Message.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="module-Message"></span><div class="section" id="message">
+<h1>Message<a class="headerlink" href="#message" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Message</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Message</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="Message.MsgType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgType</span></span> <span class="pre">{</span> <span class="pre">NORMAL,</span> <span class="pre">WARNING,</span> <span class="pre">ERROR</span> <span class="pre">}</span><a class="headerlink" href="#Message.MsgType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="Message.MsgFormat">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgFormat</span></span> <span class="pre">{</span> <span class="pre">STRING,</span> <span class="pre">BINARY</span> <span class="pre">}</span><a class="headerlink" href="#Message.MsgFormat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl enum">
+<dt class="sig sig-object chpl" id="Message.ObjectType">
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjectType</span></span> <span class="pre">{</span> <span class="pre">PDARRAY,</span> <span class="pre">SEGSTRING,</span> <span class="pre">LIST,</span> <span class="pre">DICT,</span> <span class="pre">VALUE,</span> <span class="pre">DATETIME,</span> <span class="pre">TIMEDELTA</span> <span class="pre">}</span><a class="headerlink" href="#Message.ObjectType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="Message.MsgTuple">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">MsgTuple</span></span><a class="headerlink" href="#Message.MsgTuple" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Encapsulates the message string and message type.</p></li>
+</ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.MsgTuple.msg">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.MsgTuple.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.MsgTuple.msgType">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><span class="pre">:</span> <span class="pre">MsgType</span><a class="headerlink" href="#Message.MsgTuple.msgType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="Message.ReplyMsg">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ReplyMsg</span></span><a class="headerlink" href="#Message.ReplyMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Encapsulates state corresponding to a reply message sent back to</p></li>
+<li><p>the Arkouda client.</p></li>
+</ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msg">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ReplyMsg.msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msgType">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><span class="pre">:</span> <span class="pre">MsgType</span><a class="headerlink" href="#Message.ReplyMsg.msgType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.msgFormat">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgFormat</span></span><span class="pre">:</span> <span class="pre">MsgFormat</span><a class="headerlink" href="#Message.ReplyMsg.msgFormat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ReplyMsg.user">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ReplyMsg.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="Message.RequestMsg">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">RequestMsg</span></span><a class="headerlink" href="#Message.RequestMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Encapsulates state corresponding to a client request sent to the Arkouda server.</p></li>
+</ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.user">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.token">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.cmd">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.cmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.format">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">format</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.args">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">args</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.RequestMsg.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.RequestMsg.size">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#Message.RequestMsg.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl record">
+<dt class="sig sig-object chpl" id="Message.ParameterObj">
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">ParameterObj</span></span><a class="headerlink" href="#Message.ParameterObj" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Encapsulate parameter for a request sent to the Arkouda server</p></li>
+<li><p>Note - Only used when args is in JSON format.</p></li>
+<li><p>Note - during the transition from space delimited string to JSON formated string, this object is not part of RequestMsg,</p></li>
+<li><p>but will be once all messages are transitioned to JSON arguments.</p></li>
+</ul>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.key">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">key</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ParameterObj.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.val">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">val</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ParameterObj.val" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.objType">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">objType</span></span><span class="pre">:</span> <span class="pre">ObjectType</span><a class="headerlink" href="#Message.ParameterObj.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.dtype">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="pre">:</span> <span class="pre">string</span><a class="headerlink" href="#Message.ParameterObj.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjectType</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.asMap">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.asMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getJSON">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getJSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.setKey">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setKey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.setVal">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setVal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setVal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.setObjType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setObjType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">ObjectType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setObjType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.setDType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setDType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getObjType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getObjType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getObjType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the objType value</p></li>
+<li><p>Returns str</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getDType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getDType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the Dtype value as NumpyDtype</p></li>
+<li><p>Returns Dtype</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getValue" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the raw string value</p></li>
+<li><p>Returns string</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getIntValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getIntValue" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the value as int64</p></li>
+<li><p>Returns int</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getUIntValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getUIntValue" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the value as uint64</p></li>
+<li><p>Returns uint</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getUInt8Value">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUInt8Value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">uint(8)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getUInt8Value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getRealValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getRealValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getRealValue" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the value as float64</p></li>
+<li><p>Returns real</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getBoolValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBoolValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getBoolValue" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the value as bool</p></li>
+<li><p>Returns bool</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getBigIntValue">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBigIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bigint</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getBigIntValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getValueAsType">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueAsType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getValueAsType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Return the value as the provided type</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.ParameterObj.getList">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.ParameterObj.getList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse value as a list of strings.
+:size: int: number of values in the list
+Note - not yet able to handle list of pdarray or SegString names</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="chpl class">
+<dt class="sig sig-object chpl" id="Message.MessageArgs">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MessageArgs</span></span><a class="headerlink" href="#Message.MessageArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container class for the message arguments formatted as json
+:param_list:  array of ParameterObj
+:size: int - number of parameters contained in list</p>
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.param_list">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">param_list</span></span><span class="pre">:</span> <span class="pre">list(ParameterObj)</span><a class="headerlink" href="#Message.MessageArgs.param_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.size">
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="pre">:</span> <span class="pre">int</span><a class="headerlink" href="#Message.MessageArgs.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.init">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param_list:</span> <span class="pre">list(ParameterObj)</span></em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.getJSON">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">keys:</span> <span class="pre">list(string)</span> <span class="pre">=</span> <span class="pre">list(string)</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.getJSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.get">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.get" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Identify the parameter with the provided key and return it</p></li>
+<li><p>Returns ParameterObj with the provided key</p></li>
+<li><p>Throws KeyNotFound error if the provide key does not exist.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.getValueOf">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.MessageArgs.getValueOf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.items">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return “iterable” of ParameterObj</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.keys">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all keys</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.vals">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">vals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all values</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="Message.MessageArgs.contains">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">bool</span><a class="headerlink" href="#Message.MessageArgs.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return bool if param_list contains given key name</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.parseParameter">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.parseParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and individual parameter components into a ParameterObj</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.parseMessageArgs">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseMessageArgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json_str:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.parseMessageArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse arguments formatted as json string into objects</p>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.deserialize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">RequestMsg</span></em>, <em class="sig-param"><span class="pre">request:</span> <span class="pre">string</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Deserializes a JSON-formatted string to a RequestMsg object, where the</p></li>
+<li><p>JSON format is as follows (size is only set for json args. Otherwise, -1):</p></li>
+<li></li>
+<li><p>{“user”: “user”, “token”: “token”, “cmd”: “cmd”, “format”: “STRING”, “args”: “arg1 arg2”, “size”: “-1”}</p></li>
+<li></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.serialize">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgType:</span> <span class="pre">MsgType</span></em>, <em class="sig-param"><span class="pre">msgFormat:</span> <span class="pre">MsgFormat</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span><a class="headerlink" href="#Message.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Generates a ReplyMsg object and serializes it into a JSON-formatted reply message</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="Message.jsonToPdArray">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">jsonToPdArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#Message.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Converts the JSON array to a pdarray</p></li>
+</ul>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="MetricsMsg.html" class="btn btn-neutral float-right" title="MetricsMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2015.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+ 
+
+
+
+</body>
+</html>

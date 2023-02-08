@@ -1,0 +1,97 @@
+.. default-domain:: chpl
+
+.. module:: GenSymIO
+
+GenSymIO
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use GenSymIO;
+
+
+or
+
+.. code-block:: chapel
+
+   import GenSymIO;
+
+.. data:: const gsLogger = new Logger(logLevel, logChannel)
+
+.. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
+
+.. function:: proc arrayMsg(cmd: string, msgArgs: borrowed MessageArgs, ref data: bytes, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Creates a pdarray server-side and returns the SymTab name used to
+   * retrieve the pdarray from the SymTab.
+   
+
+.. function:: proc segmentedCalcOffsets(values: [] uint(8), valuesDom: domain): [] int throws
+
+   *
+   * For creating the Strings/SegString object we can calculate the offsets array on the server
+   * by finding the null terminators given the values/bytes array which should have already been
+   * converted to uint8
+   
+
+.. function:: proc tondarrayMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): bytes throws
+
+   
+   * Outputs the pdarray as a Numpy ndarray in the form of a 
+   * Chapel Bytes object
+   
+
+.. function:: proc checkCast(c: string, type toType): bool
+
+   
+   * Utility proc to test casting a string to a specified type
+   * :arg c: String to cast
+   * :type c: string
+   * 
+   * :arg toType: the type to cast into
+   * :type toType: type
+   *
+   * :returns: bool true if the cast was successful, false otherwise
+   
+
+.. function:: proc _buildReadAllMsgJson(rnames: list(3*(string)), allowErrors: bool, fileErrorCount: int, fileErrors: list(string), st: borrowed SymTab): string throws
+
+   *
+   * Construct json object to be returned from readAllMsg
+   * :arg rnames: List of (DataSetName, arkouda_type, id of SymEntry) for items read from files
+   * :type rnames: List of 3*string tuples
+   *
+   * :arg allowErrors: True if we allowed errors when reading files from HDF5
+   * :type allowErros: bool
+   *
+   * :arg fileErrorCount: Number of files which threw errors when being read
+   * :type fileErrorCount: int
+   *
+   * :arg fileErrors: List of the error messages when trying to read HDF5 files
+   * :type fileErrors: list(string)
+   *
+   * :arg st: SymTab used to look up attributes of pdarray/seg_string ids
+   * :type borrowed SymTab:
+   *
+   * :returns: response message string formatted in json
+   *
+   * Example
+   *   {
+   *       "items": [
+   *           {
+   *               "dataset_name": "int_tens_pdarray",
+   *               "arkouda_type": "pdarray",
+   *               "created": "created id_9 int64 1000 1 (1000) 8"
+   *           }
+   *       ],
+   *       "allow_errors": "true",
+   *       "file_error_count": "1",
+   *       "file_errors": [
+   *           "Permission error Operation not permitted (error msg) opening path/to/file"
+   *       ]
+   *   }
+   *  Uses keys:  dataset_name, arkouda_type->[pdarray|seg_string], created->(legacy creation statement)
+   
+
