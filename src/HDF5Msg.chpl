@@ -1042,7 +1042,7 @@ module HDF5Msg {
                             * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
                             * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
                             */
-                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high] - 1;
+                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high + 1] - 1;
                             
                             var valIdxRange = startValIdx..endValIdx;
 
@@ -1099,7 +1099,7 @@ module HDF5Msg {
                             * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
                             * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
                             */
-                           var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high] - 1;
+                           var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high + 1] - 1;
                             
                             var valIdxRange = startValIdx..endValIdx;
 
@@ -1156,7 +1156,7 @@ module HDF5Msg {
                             * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
                             * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
                             */
-                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high] - 1;
+                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high + 1] - 1;
                             
                             var valIdxRange = startValIdx..endValIdx;
 
@@ -1213,7 +1213,7 @@ module HDF5Msg {
                             * If this slice is the tail of the offsets, we set our endValIdx to the last index in the bytes/values array.
                             * Else get the next offset value and back up one to get the ending position of the last string we are responsible for
                             */
-                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high] - 1;
+                            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else A[locDom.high + 1] - 1;
                             
                             var valIdxRange = startValIdx..endValIdx;
 
@@ -1904,17 +1904,19 @@ module HDF5Msg {
 
         var segEntry = new shared SymEntry(nSeg, int);
         read_files_into_distributed_array(segEntry.a, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
+        fixupSegBoundaries(segEntry.a, segSubdoms, subdoms);
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Segment Values: %jt".format(segEntry.a));
 
         var rtnMap: map(string, string) = new map(string, string);
 
         select dataclass {
             when C_HDF5.H5T_INTEGER {
-
                 var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
                 if isSigned {
                     // Load the values
                     var valEntry = new shared SymEntry(len, int);
                     read_files_into_distributed_array(valEntry.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
+                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Values Entry Values: %jt".format(valEntry.a));
 
                     if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
                         var entryBool = new shared SymEntry(len, bool);
