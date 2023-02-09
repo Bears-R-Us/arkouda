@@ -14,7 +14,7 @@ from arkouda.alignment import lookup
 from arkouda.categorical import Categorical
 from arkouda.dtypes import float64, int64
 from arkouda.groupbyclass import GroupBy, groupable_element_type
-from arkouda.index import Index
+from arkouda.index import Index, MultiIndex
 from arkouda.numeric import cast as akcast
 from arkouda.numeric import value_counts
 from arkouda.pdarrayclass import argmaxk, attach_pdarray, create_pdarray, pdarray
@@ -198,7 +198,7 @@ class Series:
         return Series(data=boolean, index=self.index)
 
     @typechecked
-    def locate(self, key: Union[int, pdarray, Series, List, Tuple]) -> Series:
+    def locate(self, key: Union[int, pdarray, Index, Series, List, Tuple]) -> Series:
         """Lookup values by index label
 
         The input can be a scalar, a list of scalers, or a list of lists (if the series has a
@@ -214,6 +214,10 @@ class Series:
         if isinstance(key, Series):
             # special case, keep the index values of the Series, and lookup the values
             return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
+        elif isinstance(key, MultiIndex):
+            idx = self.index.lookup(key.index)
+        elif isinstance(key, Index):
+            idx = self.index.lookup(key.index)
         elif isinstance(key, pdarray):
             idx = self.index.lookup(key)
         elif isinstance(key, (list, tuple)):
