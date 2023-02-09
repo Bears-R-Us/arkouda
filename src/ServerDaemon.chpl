@@ -711,10 +711,6 @@ module ServerDaemon {
         }
 
         override proc run() throws {
-            if integrationEnabled() {
-                register(ServiceEndpoint.METRICS);
-            }
-
             while !this.shutdownDaemon {
                 sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "awaiting message on port %i".format(this.port));
@@ -756,9 +752,6 @@ module ServerDaemon {
                                                 msgFormat=MsgFormat.STRING, user=user));
             }
 
-            if integrationEnabled() {
-                deregisterFromExternalSystem(ServiceEndpoint.METRICS);
-            }
             return;
         }
     }
@@ -775,6 +768,10 @@ module ServerDaemon {
          */
         override proc run() throws {
             register(ServiceEndpoint.ARKOUDA_CLIENT);
+            // if metrics enabled, register the metrics socket
+            if metricsEnabled() {
+                register(ServiceEndpoint.METRICS);
+            }
             super.run();
         }
 
