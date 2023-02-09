@@ -276,7 +276,6 @@ class Series:
 
     @typechecked
     def add(self, b: Series) -> Series:
-
         index = self.index.concat(b.index).index
 
         values = concatenate([self.values, b.values], ordered=False)
@@ -566,7 +565,6 @@ class Series:
                 value_labels = [f"val_{i}" for i in range(len(arrays))]
 
             if Series._all_aligned(arrays):
-
                 data = next(iter(arrays)).index.to_dict(index_labels)
 
                 if value_labels is not None:

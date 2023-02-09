@@ -454,8 +454,6 @@ class MultiIndex(Index):
 
         if isinstance(key, Series):
             key = key.values
-
-
         return MultiIndex([i[key] for i in self.index])
 
     def __repr__(self):
