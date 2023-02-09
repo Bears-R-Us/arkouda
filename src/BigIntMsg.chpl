@@ -26,23 +26,25 @@ module BigIntMsg {
         var max_bits = msgArgs.get("max_bits").getIntValue();
 
         var bigIntArray = makeDistArray(len, bigint);
-        // block size is 2**64
-        var block_size = 1:bigint;
-        block_size <<= 64;
-        forall (name, i) in zip(arrayNames, 0..<num_arrays by -1) with (+ reduce bigIntArray) {
-            var tmp = toSymEntry(getGenericTypedArrayEntry(name, st), uint).a:bigint;
-            tmp <<= (64*i);
-            bigIntArray += tmp;
+        for (name, i) in zip(arrayNames, 0..<num_arrays by -1) {
+            ref uintA = toSymEntry(getGenericTypedArrayEntry(name, st), uint).a;
+            forall (uA, bA) in zip(uintA, bigIntArray) with (var bigUA: bigint) {
+              bigUA = uA;
+              bigUA <<= (64*i);
+              bA += bigUA;
+            }
         }
-        var retname = st.nextName();
 
         if max_bits != -1 {
             // modBy should always be non-zero since we start at 1 and left shift
             var modBy = 1:bigint;
             modBy <<= max_bits;
-            bigIntArray.mod(bigIntArray, modBy);
+            forall bA in bigIntArray with (var local_modBy = modBy) {
+              bA.mod(bA, local_modBy);
+            }
         }
 
+        var retname = st.nextName();
         st.addEntry(retname, new shared SymEntry(bigIntArray, max_bits));
         var syment = toSymEntry(getGenericTypedArrayEntry(retname, st), bigint);
         repMsg = "created %s".format(st.attrib(retname));
