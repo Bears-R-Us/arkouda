@@ -317,7 +317,7 @@ module ParquetMsg {
                                              c_ptrTo(offsets),
                                              offsets.size, 0,
                                              c_ptrTo(pqErr.errMsg));
-    writeln("Offsets: %jt\nSize: %i\n\n".format(offsets, listSize));
+    
     if listSize == ARROWERROR then
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     return listSize;
@@ -645,7 +645,6 @@ module ParquetMsg {
     var filedom = filenames.domain;
     var segments = makeDistArray(len, int);
     var listSizes: [filedom] int = calcListSizesandOffset(segments, filenames, sizes, dsetname);
-    writeln("List has type: ", ty);
     var rtnmap: map(string, string) = new map(string, string);
 
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {

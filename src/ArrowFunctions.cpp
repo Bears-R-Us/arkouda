@@ -143,7 +143,7 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
     if(idx == -1) {
       std::string fname(filename);
       std::string dname(colname);
-      std::string msg = "Dataset: " + dname + " does not exist in file: " + filename; 
+      std::string msg = "Dataset: " + dname + " does not exist in file: " + fname; 
       *errMsg = strdup(msg.c_str());
       return ARROWERROR;
     }
@@ -153,7 +153,7 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
       if (myType->num_fields() != 1) {
         std::string fname(filename);
         std::string dname(colname);
-        std::string msg = "Column " + dname + " in " + filename + " cannot be read by Arkouda."; 
+        std::string msg = "Column " + dname + " in " + fname + " cannot be read by Arkouda."; 
         *errMsg = strdup(msg.c_str());
         return ARROWERROR;
       }
@@ -183,7 +183,7 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
         else {
           std::string fname(filename);
           std::string dname(colname);
-          std::string msg = "Unsupported type on column: " + dname + " in " + filename; 
+          std::string msg = "Unsupported type on column: " + dname + " in " + fname; 
           *errMsg = strdup(msg.c_str());
           return ARROWERROR;
         }
@@ -192,7 +192,7 @@ int cpp_getListType(const char* filename, const char* colname, char** errMsg) {
     else {
       std::string fname(filename);
       std::string dname(colname);
-      std::string msg = "Column " + dname + " in " + filename + " is not a List"; 
+      std::string msg = "Column " + dname + " in " + fname + " is not a List"; 
       *errMsg = strdup(msg.c_str());
       return ARROWERROR;
     }
@@ -309,7 +309,6 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
 
           while (int_reader->HasNext()) {
             int64_t value;
-            
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (rep_lvl == 0 && vct >0) {
               i++;
@@ -534,7 +533,6 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           
           while (reader->HasNext() && i < numElems) {
             float value;
-            // Can't read directly into chpl_ptr because it is a double
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
             if(values_read == 0) {
               chpl_ptr[i] = NAN;
