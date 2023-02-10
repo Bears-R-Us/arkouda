@@ -40,13 +40,6 @@ module SegmentedArray {
         return getSegArray(name, st, segEntry.etype);
     }
 
-    proc assembleSegArrayFromParts(segments:SymEntry, values:SymEntry, st:borrowed SymTab, type eltType): owned SegArray throws {
-        var saEntry = new shared SegArraySymEntry(segments, values, eltType);
-        var name = st.nextName();
-        st.addEntry(name, saEntry);
-        return getSegArray(name, st, eltType);
-    }
-
     class SegArray {
         var name: string;
 

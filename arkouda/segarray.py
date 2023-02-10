@@ -848,7 +848,7 @@ class SegArray:
         ndsegs = self.segments.to_ndarray()
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
-            arr.append(ndvals[ndsegs[-1] :])
+            arr.append(ndvals[ndsegs[-1]:])
         return np.array(arr, dtype=object)
 
     def to_list(self):
@@ -971,7 +971,7 @@ class SegArray:
     def to_hdf(
         self,
         prefix_path,
-        group_name="segarray",
+        dataset="segarray",
         mode="truncate",
         file_type="distribute",
     ):
@@ -983,7 +983,7 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files will share
-        group_name : str
+        dataset : str
             Name prefix for saved data within the HDF5 file
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
@@ -1018,7 +1018,7 @@ class SegArray:
                 args={
                     "values": self.values.name,
                     "segments": self.segments.name,
-                    "dset": group_name,
+                    "dset": dataset,
                     "write_mode": mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
@@ -1031,7 +1031,7 @@ class SegArray:
     def save(
         self,
         prefix_path,
-        group_name="segarray",
+        dataset="segarray",
         mode="truncate",
         file_type="distribute",
     ):
@@ -1043,7 +1043,7 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        group_name : str
+        dataset : str
             Name of the dataset to create in files (must not already exist)
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
@@ -1085,17 +1085,13 @@ class SegArray:
         )
         return self.to_hdf(
             prefix_path,
-            group_name,
+            dataset,
             mode=mode,
             file_type=file_type,
         )
 
     @classmethod
-    def read_hdf(
-        cls,
-        prefix_path,
-        group_name="segarray"
-    ):
+    def read_hdf(cls, prefix_path, dataset="segarray"):
         """
         Load a saved SegArray from HDF5. All arguments must match what
         was supplied to SegArray.save()
@@ -1104,7 +1100,7 @@ class SegArray:
         ----------
         prefix_path : str
             Directory and filename prefix
-        group_name : str
+        dataset : str
             Name prefix for saved data within the HDF5 files
 
         Returns
@@ -1113,22 +1109,15 @@ class SegArray:
         """
         from arkouda.io import load
 
-        return load(prefix_path, dataset=group_name)
+        return load(prefix_path, dataset=dataset)
 
     @classmethod
-    def load(
-        cls,
-        prefix_path,
-        group_name="segarray",
-        segment_name="segments",
-        value_name="values"
-    ):
+    def load(cls, prefix_path, dataset="segarray", segment_name="segments", value_name="values"):
         warnings.warn(
             "ak.SegArray.load() is deprecated. Please use ak.SegArray.read_hdf() instead.",
-            DeprecationWarning
+            DeprecationWarning,
         )
-        return cls.read_hdf(prefix_path, group_name, segment_name, value_name)
-
+        return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):
         """
