@@ -12,6 +12,9 @@ More information on Parquet can be found [here](https://parquet.apache.org/).
 - Index
 - DataFrame
 - Strings
+- SegArray
+  - Read Only (Writes coming soon. Track progress [here](https://github.com/Bears-R-Us/arkouda/issues/2119))
+  - Strings dtype not yet supported. Track [here](https://github.com/Bears-R-Us/arkouda/issues/2121)
 
 ## Compression
 
