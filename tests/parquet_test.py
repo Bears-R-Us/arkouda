@@ -8,6 +8,8 @@ import pytest
 from base_test import ArkoudaTest
 from context import arkouda as ak
 from arkouda import io_util
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 TYPES = ("int64", "uint64", "bool", "float64", "str")
 COMPRESSIONS = ["snappy", "gzip", "brotli", "zstd", "lz4"]
@@ -205,6 +207,79 @@ class ParquetTest(ArkoudaTest):
             ak_data = ak.read_parquet(f"{tmp_dirname}/gzip_pq")
             rd_df = ak.DataFrame(ak_data)
             self.assertTrue(pdf.equals(rd_df.to_pandas()))
+
+    def test_segarray_integration(self):
+        df = pd.DataFrame({
+            "ListCol": [
+                [0, 1, 2],
+                [0, 1],
+                [3, 4, 5, 6],
+                [1, 2, 3]
+            ],
+            "BoolList": [
+                [True, False],
+                [False, False, False],
+                [True],
+                [True, False, True]
+            ],
+            "FloatList": [
+                [3.14, 5.56, 2.23],
+                [3.08],
+                [6.5, 6.8],
+                [7.0]
+            ],
+            "UintList": [
+                np.array([1, 2], np.uint64),
+                np.array([3, 4, 5], np.uint64),
+                np.array([2, 2, 2], np.uint64),
+                np.array([11], np.uint64)
+            ]
+        })
+        table = pa.Table.from_pandas(df)
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            pq.write_table(table, f"{tmp_dirname}/segarray_parquet*")
+
+            # verify full file read with various object types
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*")
+            for k, v in ak_data.items():
+                self.assertIsInstance(v, ak.SegArray)
+                for x, y in zip(df[k].tolist(), v.to_list()):
+                    if isinstance(x, np.ndarray):
+                        x = x.tolist()
+                    self.assertListEqual(x, y)
+
+            # verify individual column selection
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*", datasets="FloatList")
+            self.assertIsInstance(ak_data, ak.SegArray)
+            for x, y in zip(df["FloatList"].tolist(), ak_data.to_list()):
+                self.assertListEqual(x,y)
+
+        df = pd.DataFrame({
+            "IntCol": [0, 1, 2, 3],
+            "ListCol": [
+                [0, 1, 2],
+                [0, 1],
+                [3, 4, 5, 6],
+                [1, 2, 3]
+            ]
+        })
+        table = pa.Table.from_pandas(df)
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet*")
+
+            # read full file
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*")
+            for k, v in ak_data.items():
+                self.assertListEqual(df[k].tolist(), v.to_list())
+
+            # read individual datasets
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="IntCol")
+            self.assertIsInstance(ak_data, ak.pdarray)
+            self.assertListEqual(df["IntCol"].to_list(), ak_data.to_list())
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*", datasets="ListCol")
+            self.assertIsInstance(ak_data, ak.SegArray)
+            self.assertListEqual(df["ListCol"].to_list(), ak_data.to_list())
+
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):

@@ -383,7 +383,7 @@ def _parse_errors(rep_msg, allow_errors: bool = False):
         )
 
 
-def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView]:
+def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayView, SegArray]:
     """
     Helper function to create an Arkouda object from read response
 
@@ -403,6 +403,8 @@ def _parse_obj(obj: Dict) -> Union[Strings, pdarray, arkouda.array_view.ArrayVie
     """
     if "seg_string" == obj["arkouda_type"]:
         return Strings.from_return_msg(obj["created"])
+    elif "seg_array" == obj["arkouda_type"]:
+        return SegArray.from_return_msg(obj["created"])
     elif "pdarray" == obj["arkouda_type"]:
         return create_pdarray(obj["created"])
     elif "ArrayView" == obj["arkouda_type"]:

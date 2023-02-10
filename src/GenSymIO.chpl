@@ -244,6 +244,9 @@ module GenSymIO {
                     var (segName, nBytes) = id.splitMsgToTuple("+", 2);
                     item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created bytes.size " + nBytes + Q + "}";
                 }
+                when ("seg_array") {
+                    item += "," + Q + "created" + QCQ + id.replace(Q, ESCAPED_QUOTES) + Q + "}";
+                }
                 otherwise {
                     item += "}";
                 }
