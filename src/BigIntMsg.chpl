@@ -68,22 +68,21 @@ module BigIntMsg {
                 if && reduce (tmp == 0) {
                   // early out if we are already all zeroes
                   var retname = st.nextName();
-                  st.addEntry(retname, new shared SymEntry(tmp:uint));
+                  st.addEntry(retname, new shared SymEntry(makeDistArray(tmp.size, uint)));
                   retList.append("created %s".format(st.attrib(retname)));
                 }
                 else {
+                  var low: [tmp.domain] uint;
                   while || reduce (tmp!=0) {
-                    var low: [tmp.domain] bigint;
-                    // create local copy, needed to work around bug fixed in Chapel, but
-                    // needed for backwards compatability for now
-                    forall (lowVal, tmpVal) in zip(low, tmp) with (var local_block_size = block_size) {
-                        lowVal = tmpVal % local_block_size;
-                    }
+                    low = tmp:uint;
                     var retname = st.nextName();
 
-                    st.addEntry(retname, new shared SymEntry(low:uint));
+                    st.addEntry(retname, new shared SymEntry(low));
                     retList.append("created %s".format(st.attrib(retname)));
-                    tmp /= block_size;
+                    forall t in tmp with (var local_block_size = block_size) {
+                      // TODO eventually we will likely want to >>= 64 here
+                      t /= local_block_size;
+                    }
                   }
                 }
                 var repMsg = "%jt".format(retList);

@@ -141,3 +141,9 @@ graphkeys: Noop ops/s
 files: noop.dat
 graphtitle: Noop Performance
 ylabel: Performance (ops/s)
+
+perfkeys: bigint_from_uint_arrays Average rate =, bigint_to_uint_arrays Average rate =
+graphkeys: bigint_from_uint_arrays GiB/s, bigint_to_uint_arrays GiB/s
+files: bigint_conversion.dat, bigint_conversion.dat
+graphtitle: Bigint Conversion Performance
+ylabel: Performance (GiB/s)
