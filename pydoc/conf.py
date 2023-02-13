@@ -49,6 +49,11 @@ myst_enable_extensions = ["deflist", "linkify"]
 # path to directory containing files to autogenerate docs from comments
 autoapi_dirs = ['../arkouda']
 
+autoapi_options = ['members', 'undoc-members', 'show-inheritance', 'show-module-summary', 'imported-members', ]
+
+# do not create api reference for
+autoapi_ignore = ['*migrations*', "*_version.py", "*decorators.py", "*message.py"]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

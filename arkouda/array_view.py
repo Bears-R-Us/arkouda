@@ -13,6 +13,8 @@ from arkouda.pdarrayclass import create_pdarray, parse_single_value, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate
 
+__all__ = ["ArrayView"]
+
 OrderType = Enum("OrderType", ["ROW_MAJOR", "COLUMN_MAJOR"])
 
 
@@ -388,7 +390,7 @@ class ArrayView:
             Indicates the format to save the file. Single will store in a single file.
             Distribute will store the date in a file per locale.
         """
-        from arkouda.io import file_type_to_int, mode_str_to_int
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         generic_msg(
             cmd="tohdf",
@@ -397,9 +399,9 @@ class ArrayView:
                 "shape": self.shape,
                 "order": self.order,
                 "filename": filepath,
-                "file_format": file_type_to_int(file_type),
+                "file_format": _file_type_to_int(file_type),
                 "dset": dset,
-                "write_mode": mode_str_to_int(mode),
+                "write_mode": _mode_str_to_int(mode),
                 "objType": "ArrayView",
             },
         )

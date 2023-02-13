@@ -13,7 +13,7 @@ from arkouda.strings import Strings
 
 numeric_dtypes = {int64, uint64, float64}
 
-__all__ = ["argsort", "coargsort", "sort", "SortingAlgorithm"]
+__all__ = ["argsort", "coargsort", "sort"]
 
 SortingAlgorithm = Enum("SortingAlgorithm", ["RadixSortLSD", "TwoArrayRadixSort"])
 

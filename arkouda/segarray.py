@@ -36,9 +36,9 @@ def gen_ranges(starts, ends, stride=1):
     Returns
     -------
     segments : pdarray, int64
-    The starting index of each range in the resulting array
+        The starting index of each range in the resulting array
     ranges : pdarray, int64
-    The actual ranges, flattened into a single array
+        The actual ranges, flattened into a single array
     """
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
