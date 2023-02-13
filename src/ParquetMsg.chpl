@@ -193,14 +193,14 @@ module ParquetMsg {
 
             if intersection.size > 0 {
               var pqErr = new parquetErrorMsg();
-              var col: [filedom] t;
+              var col: [intersection] t;
 
               if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(col),
-                                    dsetname.localize().c_str(), intersection.size, 0,
+                                    dsetname.localize().c_str(), intersection.size, intersection.low,
                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
-              A[filedom] = col;
+              A[locdom] = col;
             }
           }
         }
