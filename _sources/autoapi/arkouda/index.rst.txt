@@ -16142,7 +16142,7 @@ Attributes
       :rtype: Arkouda boolean which is true for elements that are in the list and false otherwise.
 
 
-   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, Series, List, Tuple]) -> Series
+   .. py:method:: locate(key: Union[int, arkouda.pdarrayclass.pdarray, arkouda.index.Index, Series, List, Tuple]) -> Series
 
       Lookup values by index label
 
