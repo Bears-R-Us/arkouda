@@ -317,6 +317,9 @@ module BinOp
           when "**" { 
             e.a= l.a**r.a;
           }
+          when "%" {
+            e.a = AutoMath.mod(l.a, r.a);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -347,6 +350,9 @@ module BinOp
           }
           when "**" { 
             e.a= l.a:real**r.a:real;
+          }
+          when "%" {
+            e.a = AutoMath.mod(l.a:real, r.a:real);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,r.dtype);
@@ -662,6 +668,9 @@ module BinOp
           when "**" { 
             e.a= l.a**val;
           }
+          when "%" {
+            e.a = AutoMath.mod(l.a, val);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -691,6 +700,9 @@ module BinOp
           }
           when "**" { 
             e.a= l.a: real**val: real;
+          }
+          when "%" {
+            e.a = AutoMath.mod(l.a:real, val:real);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,l.dtype,op,dtype);
@@ -990,6 +1002,9 @@ module BinOp
           when "**" { 
             e.a= val**r.a;
           }
+          when "%" {
+            e.a = AutoMath.mod(val, r.a);
+          }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1019,6 +1034,9 @@ module BinOp
           }
           when "**" { 
             e.a= val:real**r.a:real;
+          }
+          when "%" {
+            e.a = AutoMath.mod(val:real, r.a:real);
           }
           otherwise {
             var errorMsg = notImplementedError(pn,dtype,op,r.dtype);
