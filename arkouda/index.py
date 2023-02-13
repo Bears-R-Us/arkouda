@@ -193,7 +193,11 @@ class Index:
 
     def lookup(self, key):
         if not isinstance(key, pdarray):
-            raise TypeError("Lookup must be on an arkouda array")
+            # try to handle single value
+            try:
+                key = array([key])
+            except Exception:
+                raise TypeError("Lookup must be on an arkouda array")
 
         return in1d(self.values, key)
 
@@ -448,7 +452,7 @@ class MultiIndex(Index):
     def __getitem__(self, key):
         from arkouda.series import Series
 
-        if type(key) == Series:
+        if isinstance(key, Series):
             key = key.values
         return MultiIndex([i[key] for i in self.index])
 
@@ -526,7 +530,9 @@ class MultiIndex(Index):
         return MultiIndex(idx)
 
     def lookup(self, key):
-        if type(key) != list and type(key) != tuple:
+        if not isinstance(key, list) and not isinstance(key, tuple):
             raise TypeError("MultiIndex lookup failure")
-
+        # if individual vals convert to pdarrays
+        if not isinstance(key[0], pdarray):
+            key = [array([x]) for x in key]
         return in1d(self.index, key)

@@ -64,6 +64,35 @@ class SeriesTest(ArkoudaTest):
         self.assertEqual(lk.index[1], 2)
         self.assertEqual(lk.values[1], "C")
 
+        # testing index lookup
+        i = ak.Index([1])
+        lk = s.locate(i)
+        self.assertIsInstance(lk, ak.Series)
+        self.assertListEqual(lk.index.to_list(), i.index.to_list())
+        self.assertEqual(lk.values[0], v[1])
+
+        i = ak.Index([0, 2])
+        lk = s.locate(i)
+        self.assertIsInstance(lk, ak.Series)
+        self.assertListEqual(lk.index.to_list(), i.index.to_list())
+        self.assertEqual(lk.values.to_list(), v[ak.array([0,2])].to_list())
+
+        # testing multi-index lookup
+        mi = ak.MultiIndex([ak.arange(3), ak.array([2, 1, 0])])
+        s = ak.Series(data=v, index=mi)
+        lk = s.locate(mi[0])
+        self.assertIsInstance(lk, ak.Series)
+        self.assertListEqual(lk.index.index, mi[0].index)
+        self.assertEqual(lk.values[0], v[0])
+
+        # ensure error with scalar and multi-index
+        with self.assertRaises(TypeError):
+            lk = s.locate(0)
+
+        with self.assertRaises(TypeError):
+            lk = s.locate([0,2])
+
+
     def test_shape(self):
         v = ak.array(["A", "B", "C"])
         i = ak.arange(3)
