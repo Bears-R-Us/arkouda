@@ -3,13 +3,14 @@ import arkouda as ak
 import time
 
 
-def time_bigint_conversion(N, trials, seed, max_bits):
+def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     print(">>> arkouda uint arrays from bigint array")
     cfg = ak.get_config()
+    N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 
-    a = ak.randint(0, 2**32, args.size, dtype=ak.uint64, seed=seed)
-    b = ak.randint(0, 2**32, args.size, dtype=ak.uint64, seed=seed)
+    a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
+    b = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
 
     convert_to_bigint_times = []
     for i in range(trials):
@@ -64,7 +65,12 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument("-n", "--size", type=int, default=10**8, help="Problem size: length of array")
-    parser.add_argument("--max-bits", type=int, default=-1)
+    parser.add_argument(
+        "--max-bits",
+        type=int,
+        default=-1,
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+    )
     parser.add_argument(
         "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
     )
