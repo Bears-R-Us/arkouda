@@ -63,27 +63,20 @@ module BigIntMsg {
                 var tmp = e.a;
                 // take in a bigint sym entry and return list of uint64 symentries
                 var retList: list(string);
-                var block_size = 1:bigint;
-                block_size <<= 64;
-                if && reduce (tmp == 0) {
-                  // early out if we are already all zeroes
+                // default to false because we want to do first loop whether or not tmp is all_zero
+                var all_zero = false;
+                var low: [tmp.domain] uint;
+                const ushift = 64:uint;
+                while !all_zero {
+                  low = tmp:uint;
                   var retname = st.nextName();
-                  st.addEntry(retname, new shared SymEntry(tmp:uint));
+                  st.addEntry(retname, new shared SymEntry(low));
                   retList.append("created %s".format(st.attrib(retname)));
-                }
-                else {
-                  while || reduce (tmp!=0) {
-                    var low: [tmp.domain] bigint;
-                    // create local copy, needed to work around bug fixed in Chapel, but
-                    // needed for backwards compatability for now
-                    forall (lowVal, tmpVal) in zip(low, tmp) with (var local_block_size = block_size) {
-                        lowVal = tmpVal % local_block_size;
-                    }
-                    var retname = st.nextName();
 
-                    st.addEntry(retname, new shared SymEntry(low:uint));
-                    retList.append("created %s".format(st.attrib(retname)));
-                    tmp /= block_size;
+                  all_zero = true;
+                  forall t in tmp with (&& reduce all_zero) {
+                    t >>= ushift;
+                    all_zero &&= (t == 0);
                   }
                 }
                 var repMsg = "%jt".format(retList);
