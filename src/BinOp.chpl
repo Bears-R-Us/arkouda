@@ -1222,7 +1222,7 @@ module BinOp
             [(ei,li,ri) in zip(tmp,la,ra)] ei.powMod(li, ri, max_size);
           }
           else {
-            tmp = la ** ra;
+            tmp = la ** ra:int;
           }
           visted = true;
         }
@@ -1414,7 +1414,7 @@ module BinOp
             [(ei,li) in zip(tmp,la)] ei.powMod(li, val, max_size);
           }
           else {
-            tmp = la ** val;
+            tmp = la ** val:int;
           }
           visted = true;
         }
@@ -1608,7 +1608,7 @@ module BinOp
             [(ei,ri) in zip(tmp,ra)] ei.powMod(val, ri, max_size);
           }
           else {
-            tmp = val ** ra;
+            tmp = val ** ra:int;
           }
           visted = true;
         }
