@@ -532,7 +532,6 @@ int64_t cpp_getStringColumnNullIndices(const char* filename, const char* colname
 
 int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* colname, int64_t numElems, int64_t startIdx, int64_t batchSize, char** errMsg) {
   try {
-    std::cout << "\n\nStartIdx: " << startIdx << "NumElems" << numElems << "\n\n";
     int64_t ty = cpp_getType(filename, colname, errMsg);
     if (ty == ARROWLIST){
       int64_t lty = cpp_getListType(filename, colname, errMsg);

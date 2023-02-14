@@ -182,7 +182,6 @@ module ParquetMsg {
     extern proc c_readListColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
-    writeln("\n\nFilenames: %jt\nSizes: %jt".format(filenames, sizes));
     
     coforall loc in A.targetLocales() do on loc {
       var locFiles = filenames;
@@ -193,7 +192,6 @@ module ParquetMsg {
         forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
           for locdom in A.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
-            writeln("\n\nFileDom: %jt\nLocDom: %jt\nIntersection: %jt\nOffset: %i".format(filedom, locdom, intersection, off));
 
             if intersection.size > 0 {
               var pqErr = new parquetErrorMsg();
@@ -203,7 +201,6 @@ module ParquetMsg {
                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
-              // A[intersection] = col;
             }
           }
         }
@@ -331,11 +328,8 @@ module ParquetMsg {
     extern proc c_getNumRows(chpl_str, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
-    
-    
     var size = c_getNumRows(filename.localize().c_str(),
                             c_ptrTo(pqErr.errMsg));
-    writeln("\n\nFile %s has %i rows".format(filename, size));
     if size == ARROWERROR {
       pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
     }
@@ -652,9 +646,7 @@ module ParquetMsg {
     var filedom = filenames.domain;
     var segments = makeDistArray(len, int);
     var listSizes: [filedom] int = calcListSizesandOffset(segments, filenames, sizes, dsetname);
-    writeln("Segments-PRE: %jt".format(segments));
     segments = (+ scan segments) - segments;
-    writeln("Segments: %jt".format(segments));
     var rtnmap: map(string, string) = new map(string, string);
 
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
