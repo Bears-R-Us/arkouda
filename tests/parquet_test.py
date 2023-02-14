@@ -237,7 +237,7 @@ class ParquetTest(ArkoudaTest):
         })
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            pq.write_table(table, f"{tmp_dirname}/segarray_parquet*")
+            pq.write_table(table, f"{tmp_dirname}/segarray_parquet")
 
             # verify full file read with various object types
             ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_parquet*")
@@ -265,7 +265,7 @@ class ParquetTest(ArkoudaTest):
         })
         table = pa.Table.from_pandas(df)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
-            pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet*")
+            pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet")
 
             # read full file
             ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*")
@@ -280,6 +280,54 @@ class ParquetTest(ArkoudaTest):
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertListEqual(df["ListCol"].to_list(), ak_data.to_list())
 
+        # test for multi-file
+        df = pd.DataFrame({
+            "ListCol": [
+                [0, 1, 2],
+                [0, 1],
+                [3, 4, 5, 6],
+                [1, 2, 3]
+            ]
+        })
+        table = pa.Table.from_pandas(df)
+        df2 = pd.DataFrame({
+            "ListCol": [
+                [0, 1, 11],
+                [0, 1],
+                [3, 4, 5, 6],
+                [1]
+            ]
+        })
+        table2 = pa.Table.from_pandas(df2)
+        combo = pd.concat([df, df2], ignore_index=True)
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            pq.write_table(table, f"{tmp_dirname}/segarray_varied_parquet_LOCALE0000")
+            pq.write_table(table2, f"{tmp_dirname}/segarray_varied_parquet_LOCALE0001")
+            ak_data = ak.read_parquet(f"{tmp_dirname}/segarray_varied_parquet*")
+            self.assertIsInstance(ak_data, ak.SegArray)
+            self.assertEqual(ak_data.size, 8)
+            for i in range(8):
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
+
+        # test for handling empty segments
+        # df = pd.DataFrame({
+        #     "ListCol": [
+        #         [],
+        #         [0, 1],
+        #         []
+        #         [3, 4, 5, 6],
+        #         []
+        #     ]
+        # })
+        # table = pa.Table.from_pandas(df)
+        # with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+        #     pq.write_table(table, f"{tmp_dirname}/empty_segments")
+        #
+        #     ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
+        #     self.assertIsInstance(ak_data, ak.SegArray)
+        #     self.assertEqual(ak_data.size, 4)
+        #     for i in range(4):
+        #         self.assertListEqual(df["ListCol"][i], ak_data[i].tolist())
 
     @pytest.mark.optional_parquet
     def test_against_standard_files(self):
