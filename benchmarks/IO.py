@@ -96,8 +96,7 @@ def check_correctness(dtype, path, seed, parquet, multifile=False):
 
     c = ak.read_hdf(path + "*") if not parquet else ak.read_parquet(path + "*")
 
-    for f in glob(path + "*"):
-        os.remove(f)
+    remove_files(path)
     if not multifile:
         assert (a == c).all()
     else:
@@ -123,7 +122,7 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.getcwd() + "ak-io-test",
+        default=os.path.join(os.getcwd(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(
