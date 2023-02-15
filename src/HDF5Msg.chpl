@@ -885,6 +885,62 @@ module HDF5Msg {
         }
     }
 
+    proc writeLocalSegArray(file_id: C_HDF5.hid_t, group: string, vals, valDim: int, segs, segDim: int, type t) throws {
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "Writing group, %s".format(group));
+
+        var dtype_id: C_HDF5.hid_t = getDataType(t);
+
+        var vd = valDim:C_HDF5.hsize_t;
+        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, vals.ptr);
+        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
+
+        var sd = segDim:C_HDF5.hsize_t;
+        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), segs.ptr);
+        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
+    }
+
+    proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, values, segments, st: borrowed SymTab, type t) throws {
+        const lastSegIdx = segments.domain.high;
+        const lastValIdx = values.domain.high;
+        coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
+            const localeFilename = filenames[idx];
+            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "%s exists? %t".format(localeFilename, exists(localeFilename)));
+
+            var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on scope exit
+                C_HDF5.H5Fclose(file_id);
+            }
+
+            // create the group
+            validateGroup(file_id, localeFilename, group);
+
+            // write the segments
+            const locDom = segments.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+
+            var localSegs = segments[locDom];
+            var startValIdx = localSegs[locDom.low];
+            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else segments[locDom.high + 1] - 1;
+            var valIdxRange = startValIdx..endValIdx;
+
+            var localVals: [valIdxRange] t;
+
+            forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
+                // Copy the remote value at index position valIdx to our local array
+                agg.copy(localVal, values[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+            }
+
+            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
+            localSegs = localSegs - startValIdx;
+            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
+
+            writeArkoudaMetaData(file_id, group, objType, getDataType(t));
+        }
+    }
+
     proc segarray_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
         use C_HDF5.HDF5_WAR;
         var mode: int = msgArgs.get("write_mode").getIntValue();
@@ -918,21 +974,6 @@ module HDF5Msg {
 
                 // create the group
                 validateGroup(file_id, f, group);
-
-                inline proc writeLocalSegArray(file_id: C_HDF5.hid_t, group: string, vals, valDim: int, segs, segDim: int, type t) throws {
-                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "Writing group, %s".format(group));
-
-                    var dtype_id: C_HDF5.hid_t = getDataType(t);
-
-                    var vd = valDim:C_HDF5.hsize_t;
-                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, vals.ptr);
-                    writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
-
-                    var sd = segDim:C_HDF5.hsize_t;
-                    C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), segs.ptr);
-                    writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
-                }
 
                 var dtype: C_HDF5.hid_t;
                 var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
@@ -984,48 +1025,6 @@ module HDF5Msg {
                 var filenames = prepFiles(filename, mode, segEntry.a);
 
                 const lastSegIdx = segEntry.a.domain.high;
-
-                // helper function definition
-                inline proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, values, segments, st: borrowed SymTab, type t) throws {
-                    const lastSegIdx = segments.domain.high;
-                    const lastValIdx = values.domain.high;
-                    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
-                        const localeFilename = filenames[idx];
-                        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                    "%s exists? %t".format(localeFilename, exists(localeFilename)));
-
-                        var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-                        defer { // Close the file on scope exit
-                            C_HDF5.H5Fclose(file_id);
-                        }
-
-                        // create the group
-                        validateGroup(file_id, localeFilename, group);
-
-                        // write the segments
-                        const locDom = segments.localSubdomain();
-                        var dims: [0..#1] C_HDF5.hsize_t;
-                        dims[0] = locDom.size: C_HDF5.hsize_t;
-
-                        var localSegs = segments[locDom];
-                        var startValIdx = localSegs[locDom.low];
-                        var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else locDom.high;
-                        var valIdxRange = startValIdx..endValIdx;
-
-                        var localVals: [valIdxRange] t;
-
-                        forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
-                            // Copy the remote value at index position valIdx to our local array
-                            agg.copy(localVal, values[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
-                        }
-
-                        writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
-                        localSegs = localSegs - startValIdx;
-                        writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
-
-                        writeArkoudaMetaData(file_id, group, objType, getDataType(t));
-                    }
-                }
 
                 select dType {
                     when DType.Int64 {
