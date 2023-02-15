@@ -1936,7 +1936,7 @@ class Strings:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import mode_str_to_int
+        from arkouda.io import _mode_str_to_int
 
         return cast(
             str,
@@ -1945,7 +1945,7 @@ class Strings:
                 {
                     "values": self.entry,
                     "dset": dataset,
-                    "mode": mode_str_to_int(mode),
+                    "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "dtype": self.dtype,
                     "compression": compression,
