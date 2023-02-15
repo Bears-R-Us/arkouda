@@ -29,7 +29,7 @@ def create_parser():
     parser.add_argument(
         "-p",
         "--path",
-        default=os.getcwd() + "ak-io-test",
+        default=os.path.join(os.getcwd(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(
