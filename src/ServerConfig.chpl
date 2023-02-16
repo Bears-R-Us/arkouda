@@ -239,10 +239,14 @@ module ServerConfig
 
     /*
     Get the memory limit for this server run
-    returns a percentage of the physical memory per locale
+    returns either the memMax if set or a percentage of the physical memory per locale
     */
     proc getMemLimit():uint {
-        return ((perLocaleMemLimit:real / 100.0) * getPhysicalMemHere()):uint; // checks on locale-0
+        if memMax:int > 0 {
+            return memMax:uint;
+        } else {
+            return ((perLocaleMemLimit:real / 100.0) * getPhysicalMemHere()):uint; // checks on locale-0
+        }
     }
 
     var memHighWater:uint = 0;
