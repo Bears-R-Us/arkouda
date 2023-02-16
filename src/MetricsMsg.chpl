@@ -372,12 +372,20 @@ module MetricsMsg {
         return metrics;
     }
 
+
+    proc getMaxLocaleMemory(loc) throws {
+       if memMax:real > 0 {
+           return memMax:real;
+       } else {
+           return loc.physicalMemory():real;
+       }
+    }
     proc getSystemMetrics() throws {
         var metrics = new list(owned Metric?);
 
         for loc in Locales {
             var used = memoryUsed():real;
-            var total = loc.physicalMemory():real;
+            var total = getMaxLocaleMemory(loc);
             
             mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               'memoryUsed: %i physicalMemory: %i'.format(used,total));

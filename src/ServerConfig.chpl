@@ -242,7 +242,11 @@ module ServerConfig
     returns a percentage of the physical memory per locale
     */
     proc getMemLimit():uint {
-        return ((perLocaleMemLimit:real / 100.0) * getPhysicalMemHere()):uint; // checks on locale-0
+        if memMax:int > 0 {
+            return memMax:int;
+        } else {
+            return ((perLocaleMemLimit:real / 100.0) * getPhysicalMemHere()):uint; // checks on locale-0
+        }
     }
 
     var memHighWater:uint = 0;

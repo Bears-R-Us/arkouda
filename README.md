@@ -182,10 +182,10 @@ Memory tracking is turned on by default now, you can run server with memory trac
 ./arkouda_server --memTrack=false
 ```
 
+For situations where it is desirable to limit the amount of memory allocated to each locale, the `--memMax=$MEM_MAX_IN_BYTES` flag sets the max per-locale memory in bytes. 
+
 By default, the server listens on port `5555`. This value can be overridden with the command-line flag 
 `--ServerPort=1234`
-
-Memory tracking is turned on by default and turned off by using the  `--memTrack=false` flag
 
 Trace logging messages are turned on by default and turned off by using the `--trace=false` flag
 
