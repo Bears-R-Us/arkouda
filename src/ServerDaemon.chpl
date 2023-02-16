@@ -648,7 +648,7 @@ module ServerDaemon {
                     var memUsed = getMemUsed():uint * numLocales:uint;
                     var pctMemUsed = ((memUsed:real/memMax:real)*100):int;
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                        "bytes of memory %t pct of max memory %t used after command".format(memUsed,
+                        "bytes of memory %t pct of max memory %t%% used after command".format(memUsed,
                                                                                             pctMemUsed));
                 }
                 if metricsEnabled() {
