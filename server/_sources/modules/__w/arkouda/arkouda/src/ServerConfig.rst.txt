@@ -161,7 +161,7 @@ arkouda server config param and config const
 
    
    Get the memory limit for this server run
-   returns a percentage of the physical memory per locale
+   returns either the memMax if set or a percentage of the physical memory per locale
    
 
 .. data:: var memHighWater: uint = 0

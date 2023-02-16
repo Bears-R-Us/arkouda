@@ -160,6 +160,8 @@ or
 
 .. function:: proc getAvgResponseTimeMetrics() throws
 
+.. function:: proc getMaxLocaleMemory(loc) throws
+
 .. function:: proc getSystemMetrics() throws
 
 .. function:: proc getServerInfo() throws
