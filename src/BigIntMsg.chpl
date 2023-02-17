@@ -37,10 +37,11 @@ module BigIntMsg {
 
         if max_bits != -1 {
             // modBy should always be non-zero since we start at 1 and left shift
-            var modBy = 1:bigint;
-            modBy <<= max_bits;
-            forall bA in bigIntArray with (var local_modBy = modBy) {
-              bA.mod(bA, local_modBy);
+            var max_size = 1:bigint;
+            max_size <<= max_bits;
+            max_size -= 1;
+            forall bA in bigIntArray with (var local_max_size = max_size) {
+              bA &= local_max_size;
             }
         }
 
