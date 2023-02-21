@@ -1293,7 +1293,7 @@ def save_all(
 def load(
     path_prefix: str,
     file_format: str = "INFER",
-    dataset: str = "array",
+    dataset: Union[List[str], str] = "array",
     calc_string_offsets: bool = False,
 ) -> Union[
     pdarray,
