@@ -421,15 +421,18 @@ def cos(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def hash(pda: pdarray, full: bool = True) -> Union[Tuple[pdarray, pdarray], pdarray]:
+def hash(
+    pda: Union[pdarray, list[pdarray]], full: bool = True
+) -> Union[list[Tuple], Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    pda : Union[pdarray, list[pdarray]]
 
     full : bool
+        This is only used when a single pdarray is passed into hash
         By default, a 128-bit hash is computed and returned as
         two int64 arrays. If full=False, then a 64-bit hash
         is computed and returned as a single int64 array.
@@ -437,9 +440,11 @@ def hash(pda: pdarray, full: bool = True) -> Union[Tuple[pdarray, pdarray], pdar
     Returns
     -------
     hashes
-        If full=True, a 2-tuple of pdarrays containing the high
+        If full=True or a list of pdarrays is passed,
+        a 2-tuple of pdarrays containing the high
         and low 64 bits of each hash, respectively.
-        If full=False, a single pdarray containing a 64-bit hash
+        If full=False and a single pdarray is passed,
+        a single pdarray containing a 64-bit hash
 
     Raises
     ------
@@ -448,19 +453,47 @@ def hash(pda: pdarray, full: bool = True) -> Union[Tuple[pdarray, pdarray], pdar
 
     Notes
     -----
-    This function uses the SIPhash algorithm, which can output
-    either a 64-bit or 128-bit hash. However, the 64-bit hash
-    runs a significant risk of collisions when applied to more
-    than a few million unique values. Unless the number of unique
-    values is known to be small, the 128-bit hash is strongly
-    recommended.
+    In the case of a single pdarray being passed, this function
+    uses the SIPhash algorithm, which can output either a 64-bit
+    or 128-bit hash. However, the 64-bit hash runs a significant
+    risk of collisions when applied to more than a few million
+    unique values. Unless the number of unique values is known to
+    be small, the 128-bit hash is strongly recommended.
 
     Note that this hash should not be used for security, or for
     any cryptographic application. Not only is SIPhash not
     intended for such uses, but this implementation employs a
     fixed key for the hash, which makes it possible for an
     adversary with control over input to engineer collisions.
+
+    In the case of a list of pdrrays being passed, a non-linear
+    function must be applied to each array since hashes of subsequent
+    arrays cannot be simply XORed because equivalent values will
+    cancel each other out, hence we do a rotation by the ordinal of
+    the array.
     """
+    if isinstance(pda, pdarray):
+        return hash_single(pda, full)
+
+    repMsg = type_cast(
+        str,
+        generic_msg(
+            cmd="efuncArr",
+            args={
+                "nameslist": [n.name for n in pda],
+                "typeslist": [n.objtype for n in pda],
+                "length": len(pda),
+                "size": len(pda[0]),
+            },
+        ),
+    )
+
+    a, b = repMsg.split("+")
+    return create_pdarray(a), create_pdarray(b)
+
+
+@typechecked
+def hash_single(pda: pdarray, full: bool = True):
     repMsg = type_cast(
         str,
         generic_msg(

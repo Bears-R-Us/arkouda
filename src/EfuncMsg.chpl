@@ -14,6 +14,7 @@ module EfuncMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     private use SipHash;
+    use UniqueMsg;
     
     use AryUtil;
 
@@ -742,6 +743,37 @@ module EfuncMsg
         return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
+    proc efuncArrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        var n = msgArgs.get("length").getIntValue();
+        var s = msgArgs.get("size").getIntValue();
+        var namesList = msgArgs.get("nameslist").getList(n);
+        var typesList = msgArgs.get("typeslist").getList(n);
+        var (size, hasStr, names, types) = validateArraysSameLength(n, namesList, typesList, st);
+
+        // Call hashArrays on list of given array names
+        var hashes = hashArrays(size, names, types, st);
+
+        // Init upper and lower 64-bit entries
+        var upper = new shared SymEntry(s, uint);
+        var lower = new shared SymEntry(s, uint);
+
+        // Assign upper and lower bit values to their respective entries
+        forall (i, (up, low)) in zip(0..#s, hashes) {
+            upper.a[i] = up;
+            lower.a[i] = low;
+        }
+
+        var upperName = st.nextName();
+        st.addEntry(upperName, upper);
+        var lowerName = st.nextName();
+        st.addEntry(lowerName, lower);
+
+        var repMsg = "created %s+created %s".format(st.attrib(upperName), st.attrib(lowerName));
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+
     /* The 'where' function takes a boolean array and two other arguments A and B, and 
        returns an array with A where the boolean is true and B where it is false. A and B
        can be vectors or scalars. 
@@ -841,4 +873,5 @@ module EfuncMsg
     registerFunction("efunc3vs", efunc3vsMsg, getModuleName());
     registerFunction("efunc3sv", efunc3svMsg, getModuleName());
     registerFunction("efunc3ss", efunc3ssMsg, getModuleName());
+    registerFunction("efuncArr", efuncArrMsg, getModuleName());
 }
