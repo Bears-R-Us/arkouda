@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import ForwardRef, Optional, Tuple, Union
+from typing import ForwardRef, List, Optional, Tuple, Union
 from typing import cast as type_cast
 
 import numpy as np  # type: ignore
@@ -422,7 +422,7 @@ def cos(pda: pdarray) -> pdarray:
 
 @typechecked
 def hash(
-    pda: Union[pdarray, list[pdarray]], full: bool = True
+    pda: Union[pdarray, List[pdarray]], full: bool = True
 ) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
