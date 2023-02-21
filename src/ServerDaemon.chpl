@@ -646,10 +646,11 @@ module ServerDaemon {
                 }
                 if (trace && memTrack) {
                     var memUsed = getMemUsed():uint * numLocales:uint;
-                    var pctMemUsed = ((memUsed:real/memMax:real)*100):int;
+                    var pctMemUsed = ((memUsed:real/getMemLimit():real)*100):int;
                     sdLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                        "bytes of memory %t pct of max memory %t%% used after command".format(memUsed,
-                                                                                            pctMemUsed));
+                        "bytes of memory %t pct of max memory %t%% used after %s command".format(memUsed,
+                                                                                                 pctMemUsed,
+                                                                                                 cmd));
                 }
                 if metricsEnabled() {
                     processMetrics(user, cmd, msgArgs, elapsedTime);
