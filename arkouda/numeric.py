@@ -423,7 +423,7 @@ def cos(pda: pdarray) -> pdarray:
 @typechecked
 def hash(
     pda: Union[pdarray, list[pdarray]], full: bool = True
-) -> Union[list[Tuple], Tuple[pdarray, pdarray], pdarray]:
+) -> Union[Tuple[pdarray, pdarray], pdarray]:
     """
     Return an element-wise hash of the array.
 
