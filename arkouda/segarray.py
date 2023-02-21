@@ -1117,6 +1117,8 @@ class SegArray:
             "ak.SegArray.load() is deprecated. Please use ak.SegArray.read_hdf() instead.",
             DeprecationWarning,
         )
+        if segment_name != "segments" or value_name != "values":
+            dataset = [dataset+"_"+value_name, dataset+"_"+segment_name]
         return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):
