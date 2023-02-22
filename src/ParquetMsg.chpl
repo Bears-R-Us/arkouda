@@ -179,6 +179,7 @@ module ParquetMsg {
   }
 
   proc computeIdx(offsets: [] int, val: int, lower_bound: bool = false): int throws {
+    // compute the index of the segment containing val
     if lower_bound {
       var (v, idx) = maxloc reduce zip(offsets >= val, offsets.domain);
       return if v then idx else 0;
@@ -190,6 +191,7 @@ module ParquetMsg {
   }
 
   proc computeEmptySegs(seg_sizes: [] int, offsets: [] int, filedom: domain(1), intersection: domain(1), fileoffset: int): int throws {
+    // Compute the number of empty segments preceeding the current chunk
     if (intersection.low-fileoffset == 0){ //starts the file, no shift needed
       return 0;
     }
