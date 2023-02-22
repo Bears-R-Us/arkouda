@@ -202,6 +202,123 @@ module StatsMsg {
         sLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
+    // proc covMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+       
+
+        // select (x.dtype, y.dtype) {
+        //     when (DType.Int64, DType.Int64) {
+        //         var eX = toSymEntry(x,int);
+        //         var eY = toSymEntry(y,int);
+        //         repMsg = "float64 %.17r".format(cov(eX.a, eY.a));
+
+    proc divmodMsg(cmd: string, msgArgs: borrowed MessageArgs, st:borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string;
+
+        var xGenSym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
+        var yGenSym: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
+
+        var xSymEntry = toSymEntry(xGenSym, int);
+        var ySymEntry = toSymEntry(yGenSym, int);
+
+        var x = xSymEntry.a;
+        var y = ySymEntry.a;
+        var divname = st.nextName();
+        var modname = st.nextName();
+
+        var xdivySymentry = st.addEntry(divname, x.size, int);
+        var xmodySymEntry = st.addEntry(modname, x.size, int);
+        ref xmody = xmodySymEntry.a;
+        ref xdivy = xdivySymentry.a;
+
+
+
+        // var xSymEntry = toSymEntry(xGenSym, int);
+        // var ySymEntry = toSymEntry(yGenSym, int);
+
+        // var divname = st.nextName();
+        // var modname = st.nextName();
+        // var x: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("x"), st);
+        // var y: borrowed GenSymEntry = getGenericTypedArrayEntry(msgArgs.getValueOf("y"), st);
+        // var xdivySymentry = st.addEntry(divname, x.size, int);
+        // var xmodySymEntry = st.addEntry(modname, x.size, int);
+        // ref xdivy = xdivySymentry.a;
+        // ref xmody = xmodySymEntry.a;
+        // xdivy, xdivy = divmodHelper(x,y);
+
+        //[(xdivyi, xi, yi) in zip(xdivy, x, y)] xdivyi = if yi != 0 then xi/yi else 0;
+        //[(xmodyi, xi, yi) in zip(xmody, x, y)] xmodyi = if yi != 0 then xi%yi else 0;
+        
+
+    
+        
+        repMsg = "created " + st.attrib(divname)+ "+created " + st.attrib(modname); //st.attrib(modname);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc divmodCombine(x: borrowed GenSymEntry, y: borrowed GenSymEntry): real throws {            
+        param pn = Reflection.getRoutineName();
+        return div(x, y), mod(x, y);
+    }
+
+    proc divmodHelper(x: borrowed GenSymEntry, y: borrowed GenSymEntry): real throws {
+        param pn = Reflection.getRoutineName();
+        select(x, y) {
+            when (DType.Int64, DType.Int64) {
+                return divmodCombine(toSymEntry(x,int).a, toSymEntry(y,int).a);
+            }
+            when (DType.Int64, DType.Float64) {
+                return divmodCombine(toSymEntry(x,int).a, toSymEntry(y,real).a);
+            }
+            when (DType.Int64, DType.Bool) {
+                return divmodCombine(toSymEntry(x,int).a, toSymEntry(y,bool).a);
+            }
+            when (DType.Int64, DType.UInt64) {
+                return divmodCombine(toSymEntry(x,int).a, toSymEntry(y,uint).a);
+            }
+            when (DType.Float64, DType.Float64) {
+                return divmodCombine(toSymEntry(x,real).a, toSymEntry(y,real).a);
+            }
+            when (DType.Float64, DType.Int64) {
+                return divmodCombine(toSymEntry(x,real).a, toSymEntry(y,int).a);
+            }
+            when (DType.Float64, DType.Bool) {
+                return divmodCombine(toSymEntry(x,real).a, toSymEntry(y,bool).a);
+            }
+            when (DType.Float64, DType.UInt64) {
+                return divmodCombine(toSymEntry(x,real).a, toSymEntry(y,uint).a);
+            }
+            when (DType.Bool, DType.Bool) {
+                return divmodCombine(toSymEntry(x,bool).a, toSymEntry(y,bool).a);
+            }
+            when (DType.Bool, DType.Float64) {
+                return divmodCombine(toSymEntry(x,bool).a, toSymEntry(y,real).a);
+            }
+            when (DType.Bool, DType.Int64) {
+                return divmodCombine(toSymEntry(x,bool).a, toSymEntry(y,int).a);
+            }
+            when (DType.Bool, DType.UInt64) {
+                return divmodCombine(toSymEntry(x,bool).a, toSymEntry(y,uint).a);
+            }
+            when (DType.UInt64, DType.UInt64) {
+                return divmodCombine(toSymEntry(x,uint).a, toSymEntry(y,uint).a);
+            }
+            when (DType.UInt64, DType.Int64) {
+                return divmodCombine(toSymEntry(x,uint).a, toSymEntry(y,int).a);
+            }
+            when (DType.UInt64, DType.Float64) {
+                return divmodCombine(toSymEntry(x,uint).a, toSymEntry(y,real).a);
+            }
+            when (DType.UInt64, DType.Bool) {
+                return divmodCombine(toSymEntry(x,uint).a, toSymEntry(y,bool).a);
+            }
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn, "(%s,%s)".format(dtype2str(x.dtype),dtype2str(y.dtype)));
+                sLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw new owned IllegalArgumentError(errorMsg);
+            }
+        }
+    }
 
     proc corrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -306,4 +423,5 @@ module StatsMsg {
     registerFunction("cov", covMsg, getModuleName());
     registerFunction("corr",  corrMsg, getModuleName());
     registerFunction("corrMatrix",  corrMatrixMsg, getModuleName());
+    registerFunction("divmod", divmodMsg, getModuleName());
 }
