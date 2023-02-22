@@ -673,7 +673,6 @@ module ParquetMsg {
     var seg_sizes = makeDistArray(len, int);
     var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
     var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
-    writeln("\n\nSegSizes: %jt, Offsets: %jt".format(seg_sizes, segments));
     var rtnmap: map(string, string) = new map(string, string);
 
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
