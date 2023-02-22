@@ -194,7 +194,7 @@ module MetricsMsg {
         // total value of measurements to be averaged for each metric measured.s
         var measurementTotals = new map(string, real);
 
-        proc getNumMeasurements(metric: string) {
+        proc getNumMeasurements(metric: string) throws {
             if this.numMeasurements.contains(metric) {
                 return this.numMeasurements(metric) + 1;
             } else {
@@ -202,7 +202,7 @@ module MetricsMsg {
             }
         }
         
-        proc getMeasurementTotal(metric: string) : real {
+        proc getMeasurementTotal(metric: string) : real throws {
             var value: real;
 
             if !this.measurementTotals.contains(metric) {
