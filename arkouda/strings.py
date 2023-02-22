@@ -659,7 +659,8 @@ class Strings:
 
         Parameters
         ----------
-        chars : the set of characters to be removed
+        chars
+            the set of characters to be removed
 
         Returns
         -------
@@ -1936,7 +1937,7 @@ class Strings:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.io import mode_str_to_int
+        from arkouda.io import _mode_str_to_int
 
         return cast(
             str,
@@ -1945,7 +1946,7 @@ class Strings:
                 {
                     "values": self.entry,
                     "dset": dataset,
-                    "mode": mode_str_to_int(mode),
+                    "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "dtype": self.dtype,
                     "compression": compression,
@@ -1995,25 +1996,25 @@ class Strings:
         -----
         - Parquet files do not store the segments, only the values.
         - Strings state is saved as two datasets within an hdf5 group:
-        one for the string characters and one for the
-        segments corresponding to the start of each string
+          one for the string characters and one for the
+          segments corresponding to the start of each string
         - the hdf5 group is named via the dataset parameter.
         - The prefix_path must be visible to the arkouda server and the user must
-        have write permission.
+          have write permission.
         - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-        the file name will be `prefix_path`.
+          ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+          the file name will be `prefix_path`.
         - If any of the output files already exist and
-        the mode is 'truncate', they will be overwritten. If the mode is 'append'
-        and the number of output files is less than the number of locales or a
-        dataset with the same name already exists, a ``RuntimeError`` will result.
+          the mode is 'truncate', they will be overwritten. If the mode is 'append'
+          and the number of output files is less than the number of locales or a
+          dataset with the same name already exists, a ``RuntimeError`` will result.
         - Any file extension can be used.The file I/O does not rely on the extension to
-        determine the file format.
+          determine the file format.
         See Also
         ---------
         to_hdf
         """
-        from arkouda.io import file_type_to_int, mode_str_to_int
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -2022,12 +2023,12 @@ class Strings:
                 {
                     "values": self.entry,
                     "dset": dataset,
-                    "write_mode": mode_str_to_int(mode),
+                    "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
                     "save_offsets": save_offsets,
                     "objType": "strings",
-                    "file_format": file_type_to_int(file_type),
+                    "file_format": _file_type_to_int(file_type),
                 },
             ),
         )
@@ -2081,7 +2082,7 @@ class Strings:
         - CSV format is not currently supported by load/load_all operations
         - The column delimiter is expected to be the same for column names and data
         - Be sure that column delimiters are not found within your data.
-        - All CSV files must delimit rows using newline (`\n`) at this time.
+        - All CSV files must delimit rows using newline (``\\n``) at this time.
         """
         return cast(
             str,

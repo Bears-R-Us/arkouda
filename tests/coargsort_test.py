@@ -4,6 +4,7 @@ import argparse
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
+from arkouda.sorting import SortingAlgorithm
 
 
 def check_integral(N, algo, dtype):
@@ -124,7 +125,7 @@ def check_coargsort(N_per_locale):
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 
-    for algo in ak.SortingAlgorithm:
+    for algo in SortingAlgorithm:
         check_integral(N, algo, ak.int64)
         check_integral(N, algo, ak.uint64)
         check_float(N, algo)
@@ -134,34 +135,34 @@ def check_coargsort(N_per_locale):
 
 class CoargsortTest(ArkoudaTest):
     def test_int(self):
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             check_integral(10**3, algo, ak.int64)
 
     def test_uint(self):
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             check_integral(10**3, algo, ak.uint64)
 
     def test_float(self):
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             check_float(10**3, algo)
 
     def test_int_uint_float_bigint(self):
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             check_int_uint_float_bigint(10**3, algo)
 
     def test_large(self):
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             check_large(10**3, algo)
 
     def test_error_handling(self):
         ones = ak.ones(100)
         short_ones = ak.ones(10)
 
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             with self.assertRaises(ValueError):
                 ak.coargsort([ones, short_ones], algo)
 
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             with self.assertRaises(TypeError):
                 ak.coargsort([list(range(0, 10)), [0]], algo)
 
@@ -171,7 +172,7 @@ class CoargsortTest(ArkoudaTest):
         cat_from_codes = ak.Categorical.from_codes(
             codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(["a", "b", "c"])
         )
-        for algo in ak.SortingAlgorithm:
+        for algo in SortingAlgorithm:
             # coargsort on categorical
             # coargsort sorts using codes, the order isn't guaranteed, only grouping
             cat_perm = ak.coargsort([cat], algo)

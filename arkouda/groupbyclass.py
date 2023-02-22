@@ -1387,11 +1387,9 @@ class GroupBy:
         # By default, result is in original order
         >>> g.broadcast(values)
         array([3, 5, 3, 5, 3])
-
         # With permute=False, result is in grouped order
         >>> g.broadcast(values, permute=False)
         array([3, 3, 3, 5, 5]
-
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -1868,6 +1866,7 @@ def broadcast(
 
     Examples
     --------
+    >>>
     # Define a sparse matrix with 3 rows and 7 nonzeros
     >>> row_starts = ak.array([0, 2, 5])
     >>> nnz = 7
@@ -1875,7 +1874,6 @@ def broadcast(
     >>> row_number = ak.arange(3)
     >>> ak.broadcast(row_starts, row_number, nnz)
     array([0 0 1 1 1 2 2])
-
     # If the original nonzeros were in reverse order...
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)

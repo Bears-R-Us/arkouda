@@ -1398,7 +1398,7 @@ class pdarray:
         Saves the array to numLocales HDF5 files with the name
         ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
         """
-        from arkouda.io import mode_str_to_int
+        from arkouda.io import _mode_str_to_int
 
         return cast(
             str,
@@ -1407,7 +1407,7 @@ class pdarray:
                 args={
                     "values": self,
                     "dset": dataset,
-                    "mode": mode_str_to_int(mode),
+                    "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "dtype": self.dtype,
                     "compression": compression,
@@ -1475,7 +1475,7 @@ class pdarray:
         Saves the array in to single hdf5 file on the root node.
         ``cwd/path/name_prefix.hdf5``
         """
-        from arkouda.io import file_type_to_int, mode_str_to_int
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         return cast(
             str,
@@ -1484,11 +1484,11 @@ class pdarray:
                 args={
                     "values": self,
                     "dset": dataset,
-                    "write_mode": mode_str_to_int(mode),
+                    "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
                     "objType": "pdarray",
-                    "file_format": file_type_to_int(file_type),
+                    "file_format": _file_type_to_int(file_type),
                 },
             ),
         )

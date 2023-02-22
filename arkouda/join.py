@@ -14,7 +14,7 @@ from arkouda.pdarrayclass import create_pdarray, pdarray
 from arkouda.pdarraycreation import arange, array, ones, zeros
 from arkouda.pdarraysetops import concatenate, in1d
 
-__all__ = ["join_on_eq_with_dt"]
+__all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
 predicates = {"true_dt": 0, "abs_dt": 1, "pos_dt": 2}
 
@@ -41,7 +41,7 @@ def join_on_eq_with_dt(
         pdarray to be joined
     t1 : pdarray
         timestamps in millis corresponding to the a1 pdarray
-    t2 : pdarray,
+    t2 : pdarray
         timestamps in millis corresponding to the a2 pdarray
     dt : Union[int,np.int64]
         time delta
@@ -117,7 +117,8 @@ def join_on_eq_with_dt(
 
 @typechecked
 def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
-    """Generate a segmented array of variable-length, contiguous
+    """
+    Generate a segmented array of variable-length, contiguous
     ranges between pairs of start- and end-points.
 
     Parameters
@@ -151,7 +152,8 @@ def gen_ranges(starts: pdarray, ends: pdarray) -> Tuple[pdarray, pdarray]:
 
 @typechecked
 def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
-    """Compute the internal size of a hypothetical join between a and b. Returns
+    """
+    Compute the internal size of a hypothetical join between a and b. Returns
     both the number of elements and number of bytes required for the join.
     """
     bya = GroupBy(a)
