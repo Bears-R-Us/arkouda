@@ -17,18 +17,6 @@ Classes
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.array_view.OrderType
-
-
-.. py:data:: OrderType
-
-   
-
 .. py:class:: ArrayView(base: arkouda.pdarrayclass.pdarray, shape, order='row_major')
 
    A multi-dimensional view of a pdarray. Arkouda ``ArraryView`` behaves similarly to numpy's ndarray.
@@ -78,25 +66,6 @@ Attributes
       If 'F'/'column_major', read and write data in column_major order
 
       :type: str {'C'/'row_major' | 'F'/'column_major'}
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
 
    .. py:method:: to_ndarray() -> numpy.ndarray
 

@@ -128,57 +128,6 @@ Classes
       need to instruct the server to assemble the into a composite entity.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__() -> int
-
-
-   .. py:method:: __str__() -> str
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Strings instance and the
-      parameter Strings object and returns the results within
-      a pdarray object.
-
-      :param other: the other object is a Strings object
-      :type other: Strings, str_scalars
-      :param op: name of the binary operation to be performed
-      :type op: str
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match, or (3) the other
-          object is not a Strings object
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other) -> bool
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key)
-
-
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
 
       Return the length of each string in the array.
@@ -363,8 +312,7 @@ Classes
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
 
-      :param chars:
-      :type chars: the set of characters to be removed
+      :param chars: the set of characters to be removed
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -393,14 +341,6 @@ Classes
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
-
-
-   .. py:method:: _empty_pattern_verification(pattern)
-
-
-   .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
-
-      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -875,9 +815,6 @@ Classes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. py:method:: __add__(other: Strings) -> Strings
-
-
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
@@ -904,9 +841,6 @@ Classes
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
       array(['b.a', 'd.c', 'f.e'])
-
-
-   .. py:method:: __radd__(other: Strings) -> Strings
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -989,14 +923,6 @@ Classes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[Strings]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -1055,32 +981,6 @@ Classes
       ['hello', 'my', 'world']
       >>> type(a.to_list())
       list
-
-
-   .. py:method:: _comp_to_ndarray(comp: str) -> numpy.ndarray
-
-      This is an internal helper function to perform the to_ndarray for one
-      of the string components.
-
-      :param comp: The strings component to request
-      :type comp: str
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
 
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
@@ -1163,69 +1063,58 @@ Classes
 
       - Parquet files do not store the segments, only the values.
       - Strings state is saved as two datasets within an hdf5 group:
-      one for the string characters and one for the
-      segments corresponding to the start of each string
+        one for the string characters and one for the
+        segments corresponding to the start of each string
       - the hdf5 group is named via the dataset parameter.
       - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
+        have write permission.
       - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
       - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
+        determine the file format.
 
       .. seealso:: :obj:`to_hdf`
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
-              Write Strings to CSV file(s). File will contain a single column with the Strings data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-              bytes as uint(8).
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the Strings under. Defaults to "strings_array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Returns
-              --------
-              str reponse message
+      :rtype: str reponse message
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      .. rubric:: Notes
 
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -1280,16 +1169,6 @@ Classes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str

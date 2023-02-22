@@ -195,7 +195,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -203,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
@@ -214,7 +212,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
@@ -300,10 +297,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.segarray.gen_ranges" title="arkouda.segarray.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(starts, ends[, stride])</p></td>
 <td><p>Generate a segmented array of variable-length, contiguous ranges between pairs of</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.segarray._aggregator" title="arkouda.segarray._aggregator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_aggregator</span></code></a>(func)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.segarray.segarray" title="arkouda.segarray.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.segarray.segarray" title="arkouda.segarray.segarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segarray</span></code></a>(segments, values[, lengths, grouping])</p></td>
 <td><p>Alias for the from_parts function. Prevents user from needing to call <cite>ak.SegArray.from_parts</cite></p></td>
 </tr>
 </tbody>
@@ -317,30 +311,20 @@ start- and end-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – </p></li>
-<li><p><strong>range</strong> (<em>Difference between successive elements</em><em> of </em><em>each</em>) – </p></li>
-<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – </p></li>
-<li><p><strong>range</strong> – </p></li>
-<li><p><strong>stride</strong> (<em>int</em>) – </p></li>
-<li><p><strong>range</strong> – </p></li>
+<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
+<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
+<li><p><strong>stride</strong> (<em>int</em>) – Difference between successive elements of each range</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>segments</strong> (<em>pdarray, int64</em>)</p></li>
-<li><p><em>The starting index of each range in the resulting array</em></p></li>
-<li><p><strong>ranges</strong> (<em>pdarray, int64</em>)</p></li>
-<li><p><em>The actual ranges, flattened into a single array</em></p></li>
+<li><p><strong>segments</strong> (<em>pdarray, int64</em>) – The starting index of each range in the resulting array</p></li>
+<li><p><strong>ranges</strong> (<em>pdarray, int64</em>) – The actual ranges, flattened into a single array</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.segarray._aggregator">
-<span class="sig-prename descclassname"><span class="pre">arkouda.segarray.</span></span><span class="sig-name descname"><span class="pre">_aggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray._aggregator" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.segarray.segarray">
@@ -429,31 +413,6 @@ attach method.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray._from_attach_return_msg">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_from_attach_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray"><span class="pre">SegArray</span></a></span></span><a class="headerlink" href="#arkouda.segarray.SegArray._from_attach_return_msg" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a SegArray instance pointing to components created by the arkouda server.
-The user should not call this function directly.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>repMsg</strong> (<em>str</em>) – <ul class="simple">
-<li><p>delimited string containing the segments, values, and lengths details</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A SegArray representing a set of pdarray components on the server</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of creating
-the categorical instance</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.from_multi_array">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_multi_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.from_multi_array" title="Permalink to this definition">#</a></dt>
 <dd><p>Construct a SegArray from a list of columns. This essentially transposes the input,
@@ -470,11 +429,6 @@ resulting in an array of rows.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray._compute_non_empty">
-<span class="sig-name descname"><span class="pre">_compute_non_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray._compute_non_empty" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.concat">
@@ -503,29 +457,6 @@ concatenation is not yet supported.</p></li>
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.copy">
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a deep copy.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.__getitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.__eq__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return self==value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.__str__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return str(self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.__repr__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return repr(self).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -603,11 +534,6 @@ each returned n-gram came from.</p></li>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray._normalize_index">
-<span class="sig-name descname"><span class="pre">_normalize_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray._normalize_index" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.get_jth">
@@ -1145,7 +1071,7 @@ was supplied to SegArray.save()</p>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.segarray.SegArray" title="arkouda.segarray.SegArray">SegArray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../index.html#id413" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
+<dd class="field-even"><p><a class="reference internal" href="../index.html#id210" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if the server could not register the SegArray object</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1301,7 +1227,6 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.segarray.gen_ranges"><code class="docutils literal notranslate"><span class="pre">gen_ranges()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray._aggregator"><code class="docutils literal notranslate"><span class="pre">_aggregator()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.segarray"><code class="docutils literal notranslate"><span class="pre">segarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray"><code class="docutils literal notranslate"><span class="pre">SegArray</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.objtype"><code class="docutils literal notranslate"><span class="pre">SegArray.objtype</span></code></a></li>
@@ -1311,19 +1236,12 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.valsize"><code class="docutils literal notranslate"><span class="pre">SegArray.valsize</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_return_msg"><code class="docutils literal notranslate"><span class="pre">SegArray.from_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_parts"><code class="docutils literal notranslate"><span class="pre">SegArray.from_parts()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._from_attach_return_msg"><code class="docutils literal notranslate"><span class="pre">SegArray._from_attach_return_msg()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_multi_array"><code class="docutils literal notranslate"><span class="pre">SegArray.from_multi_array()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._compute_non_empty"><code class="docutils literal notranslate"><span class="pre">SegArray._compute_non_empty()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.concat"><code class="docutils literal notranslate"><span class="pre">SegArray.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.copy"><code class="docutils literal notranslate"><span class="pre">SegArray.copy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__getitem__"><code class="docutils literal notranslate"><span class="pre">SegArray.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__eq__"><code class="docutils literal notranslate"><span class="pre">SegArray.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__str__"><code class="docutils literal notranslate"><span class="pre">SegArray.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__repr__"><code class="docutils literal notranslate"><span class="pre">SegArray.__repr__()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_suffixes"><code class="docutils literal notranslate"><span class="pre">SegArray.get_suffixes()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_prefixes"><code class="docutils literal notranslate"><span class="pre">SegArray.get_prefixes()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_ngrams"><code class="docutils literal notranslate"><span class="pre">SegArray.get_ngrams()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._normalize_index"><code class="docutils literal notranslate"><span class="pre">SegArray._normalize_index()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_jth"><code class="docutils literal notranslate"><span class="pre">SegArray.get_jth()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.set_jth"><code class="docutils literal notranslate"><span class="pre">SegArray.set_jth()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_length_n"><code class="docutils literal notranslate"><span class="pre">SegArray.get_length_n()</span></code></a></li>
@@ -1363,7 +1281,6 @@ was supplied to SegArray.save()</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.segarray.gen_ranges">gen_ranges</a></li>
-<li><a class="reference internal" href="#arkouda.segarray._aggregator">_aggregator</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.segarray">segarray</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray">SegArray</a><ul>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.objtype">objtype</a></li>
@@ -1373,19 +1290,12 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.valsize">valsize</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_return_msg">from_return_msg</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_parts">from_parts</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._from_attach_return_msg">_from_attach_return_msg</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.from_multi_array">from_multi_array</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._compute_non_empty">_compute_non_empty</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.concat">concat</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.copy">copy</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__getitem__">__getitem__</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__eq__">__eq__</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__str__">__str__</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray.__repr__">__repr__</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_suffixes">get_suffixes</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_prefixes">get_prefixes</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_ngrams">get_ngrams</a></li>
-<li><a class="reference internal" href="#arkouda.segarray.SegArray._normalize_index">_normalize_index</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_jth">get_jth</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.set_jth">set_jth</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.get_length_n">get_length_n</a></li>

@@ -629,9 +629,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -834,11 +831,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -864,17 +859,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -1002,6 +986,7 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
    >>> nnz = 7
@@ -1009,7 +994,6 @@ Attributes
    >>> row_number = ak.arange(3)
    >>> ak.broadcast(row_starts, row_number, nnz)
    array([0 0 1 1 1 2 2])
-
    # If the original nonzeros were in reverse order...
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)

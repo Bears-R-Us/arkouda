@@ -44,9 +44,6 @@ Functions
    ``Series``, ``DataFrame`` or ``Index`` as the
    single argument ``data``.
 
-   .. py:method:: __get__(obj, cls)
-
-
 
 .. py:function:: string_operators(cls)
 
@@ -55,10 +52,6 @@ Functions
 
 
 .. py:class:: Properties
-
-   .. py:method:: _make_op(name)
-      :classmethod:
-
 
 
 .. py:class:: DatetimeAccessor(series)

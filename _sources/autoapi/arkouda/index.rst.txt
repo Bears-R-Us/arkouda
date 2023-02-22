@@ -10,7 +10,6 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
-   _version/index.rst
    accessor/index.rst
    alignment/index.rst
    array_view/index.rst
@@ -18,7 +17,6 @@ Submodules
    client/index.rst
    client_dtypes/index.rst
    dataframe/index.rst
-   decorators/index.rst
    dtypes/index.rst
    groupbyclass/index.rst
    index/index.rst
@@ -29,7 +27,6 @@ Submodules
    logger/index.rst
    match/index.rst
    matcher/index.rst
-   message/index.rst
    numeric/index.rst
    pdarrayclass/index.rst
    pdarraycreation/index.rst
@@ -53,7 +50,6 @@ Classes
 
 .. autoapisummary::
 
-   arkouda.pdarray
    arkouda.ArrayView
    arkouda.GroupBy
    arkouda.pdarray
@@ -94,19 +90,6 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.get_versions
-   arkouda.resolve_scalar_dtype
-   arkouda.translate_np_dtype
-   arkouda.akcast
-   arkouda.cumprod
-   arkouda.where
-   arkouda.create_pdarray
-   arkouda.parse_single_value
-   arkouda.arange
-   arkouda.array
-   arkouda.ones
-   arkouda.zeros
-   arkouda.concatenate
    arkouda.isSupportedInt
    arkouda.broadcast
    arkouda.akcast
@@ -124,7 +107,6 @@ Functions
    arkouda.resolve_scalar_dtype
    arkouda.get_byteorder
    arkouda.get_server_byteorder
-   arkouda.objtypedec
    arkouda.clear
    arkouda.any
    arkouda.all
@@ -195,6 +177,8 @@ Functions
    arkouda.unique
    arkouda.broadcast
    arkouda.join_on_eq_with_dt
+   arkouda.gen_ranges
+   arkouda.compute_join_size
    arkouda.enableVerbose
    arkouda.disableVerbose
    arkouda.information
@@ -215,7 +199,6 @@ Functions
    arkouda.zeros
    arkouda.concatenate
    arkouda.gen_ranges
-   arkouda._aggregator
    arkouda.segarray
    arkouda.sorted
    arkouda.intersect
@@ -276,8 +259,6 @@ Functions
    arkouda.save_all
    arkouda.load
    arkouda.load_all
-   arkouda.file_type_to_int
-   arkouda.mode_str_to_int
 
 
 
@@ -286,8 +267,6 @@ Attributes
 
 .. autoapisummary::
 
-   arkouda.__version__
-   arkouda.OrderType
    arkouda.bitType
    arkouda.intTypes
    arkouda.DTypes
@@ -309,7 +288,6 @@ Attributes
    arkouda.numpy_scalars
    arkouda.str_scalars
    arkouda.all_scalars
-   arkouda.SortingAlgorithm
    arkouda.GROUPBY_REDUCTION_TYPES
    arkouda.AllSymbols
    arkouda.RegisteredSymbols
@@ -324,1430 +302,6 @@ Attributes
    arkouda.akint64
    arkouda.akuint64
 
-
-.. py:function:: get_versions()
-
-   Get version information or return default if unable to do so.
-
-
-.. py:data:: __version__
-
-   
-
-.. py:function:: resolve_scalar_dtype(val: object) -> str
-
-   Try to infer what dtype arkouda_server should treat val as.
-
-
-.. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
-
-   Split numpy dtype dt into its kind and byte size, raising
-   TypeError for unsupported dtypes.
-
-   :raises TypeError: Raised if the dtype is not in supported dtypes or if
-       dt is not a np.dtype
-
-
-.. py:function:: akcast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]]
-
-   Cast an array to another dtype.
-
-   :param pda: The array of values to cast
-   :type pda: pdarray or Strings
-   :param dt: The target dtype to cast values to
-   :type dt: np.dtype, type, or str
-   :param errors: Controls how errors are handled when casting strings to a numeric type
-                  (ignored for casts from numeric types).
-                      - strict: raise RuntimeError if *any* string cannot be converted
-                      - ignore: never raise an error. Uninterpretable strings get
-                          converted to NaN (float64), -2**63 (int64), zero (uint64 and
-                          uint8), or False (bool)
-                      - return_validity: in addition to returning the same output as
-                        "ignore", also return a bool array indicating where the cast
-                        was successful.
-   :type errors: {strict, ignore, return_validity}
-
-   :returns: * *pdarray or Strings* -- Array of values cast to desired dtype
-             * **[validity** (*pdarray(bool)]*) -- If errors="return_validity" and input is Strings, a second array is
-               returned with True where the cast succeeded and False where it failed.
-
-   .. rubric:: Notes
-
-   The cast is performed according to Chapel's casting rules and is NOT safe
-   from overflows or underflows. The user must ensure that the target dtype
-   has the precision and capacity to hold the desired result.
-
-   .. rubric:: Examples
-
-   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
-   array([1, 2, 3, 4, 5])
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
-   dtype('float64')
-
-   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
-   array([False, True, True, True, True])
-
-   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
-   array([False, True, True, True, True])
-
-
-.. py:function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
-
-   Return the cumulative product over the array.
-
-   The product is inclusive, such that the ``i`` th element of the
-   result is the product of elements up to and including ``i``.
-
-   :param pda:
-   :type pda: pdarray
-
-   :returns: A pdarray containing cumulative products for each element
-             of the original pdarray
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
-
-   .. rubric:: Examples
-
-   >>> ak.cumprod(ak.arange(1,5))
-   array([1, 2, 6, 24]))
-
-   >>> ak.cumprod(ak.uniform(5,1.0,5.0))
-   array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
-          134.05309592737584, 450.21589865655358])
-
-
-.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
-
-   Returns an array with elements chosen from A and B based upon a
-   conditioning array. As is the case with numpy.where, the return array
-   consists of values from the first array (A) where the conditioning array
-   elements are True and from the second array (B) where the conditioning
-   array elements are False.
-
-   :param condition: Used to choose values from A or B
-   :type condition: pdarray
-   :param A: Value(s) used when condition is True
-   :type A: Union[numeric_scalars, pdarray]
-   :param B: Value(s) used when condition is False
-   :type B: Union[numeric_scalars, pdarray]
-
-   :returns: Values chosen from A where the condition is True and B where
-             the condition is False
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
-       an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes
-       are not supported or do not match, or multiple condition clauses (see
-       Notes section) are applied
-   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
-
-   .. rubric:: Examples
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 2, 3, 4, 1, 1, 1, 1, 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 == 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 1, 1, 1, 5, 1, 1, 1, 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = 10
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1, 2, 3, 4, 10, 10, 10, 10, 10])
-
-   .. rubric:: Notes
-
-   A and B must have the same dtype and only one conditional clause
-   is supported e.g., n < 5, n > 1, which is supported in numpy
-   is not currently supported in Arkouda
-
-
-.. py:function:: create_pdarray(repMsg: str) -> pdarray
-
-   Return a pdarray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
-
-   :param repMsg: space-delimited string containing the pdarray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
-
-   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
-   :rtype: pdarray
-
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
-       values needed to create the pdarray instance
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-       the pdarray instance
-
-
-.. py:function:: parse_single_value(msg: str) -> object
-
-   Attempt to convert a scalar return value from the arkouda server to a
-   numpy scalar in Python. The user should not call this function directly.
-
-   :param msg: scalar value in string form to be converted to a numpy scalar
-   :type msg: str
-
-   :rtype: object numpy scalar
-
-
-.. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
-
-   The basic arkouda array class. This class contains only the
-   attributies of the array; the data resides on the arkouda
-   server. When a server operation results in a new array, arkouda
-   will create a pdarray instance that points to the array data on
-   the server. As such, the user should not initialize pdarray
-   instances directly.
-
-   .. attribute:: name
-
-      The server-side identifier for the array
-
-      :type: str
-
-   .. attribute:: dtype
-
-      The element type of the array
-
-      :type: dtype
-
-   .. attribute:: size
-
-      The number of elements in the array
-
-      :type: int_scalars
-
-   .. attribute:: ndim
-
-      The rank of the array (currently only rank 1 arrays supported)
-
-      :type: int_scalars
-
-   .. attribute:: shape
-
-      A list or tuple containing the sizes of each dimension of the array
-
-      :type: Sequence[int]
-
-   .. attribute:: itemsize
-
-      The size in bytes of each element
-
-      :type: int_scalars
-
-   .. py:attribute:: BinOps
-
-      
-
-   .. py:attribute:: OpEqOps
-
-      
-
-   .. py:attribute:: objtype
-      :value: 'pdarray'
-
-      
-
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: format_other(other) -> str
-
-      Attempt to cast scalar other to the element dtype of this pdarray,
-      and print the resulting value to a string (e.g. for sending to a
-      server command). The user should not call this function directly.
-
-      :param other: The scalar to be cast to the pdarray.dtype
-      :type other: object
-
-      :rtype: string representation of np.dtype corresponding to the other parameter
-
-      :raises TypeError: Raised if the other parameter cannot be converted to
-          Numpy dtype
-
-
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
-   .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
-
-      Fill the array (in place) with a constant value.
-
-      :param value:
-      :type value: numeric_scalars
-
-      :raises TypeError: Raised if value is not an int, int64, float, or float64
-
-
-   .. py:method:: any() -> numpy.bool_
-
-      Return True iff any element of the array evaluates to True.
-
-
-   .. py:method:: all() -> numpy.bool_
-
-      Return True iff all elements of the array evaluate to True.
-
-
-   .. py:method:: is_registered() -> numpy.bool_
-
-      Return True iff the object is contained in the registry
-
-      :param None:
-
-      :returns: Indicates if the object is contained in the registry
-      :rtype: bool
-
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
-
-
-   .. py:method:: info() -> str
-
-      Returns a JSON formatted string containing information about all components of self
-
-      :param None:
-
-      :returns: JSON string containing information about all components of self
-      :rtype: str
-
-
-   .. py:method:: pretty_print_info() -> None
-
-      Prints information about all components of self in a human readable format
-
-      :param None:
-
-      :rtype: None
-
-
-   .. py:method:: is_sorted() -> numpy.bool_
-
-      Return True iff the array is monotonically non-decreasing.
-
-      :param None:
-
-      :returns: Indicates if the array is monotonically non-decreasing
-      :rtype: bool
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: sum() -> arkouda.dtypes.numeric_and_bool_scalars
-
-      Return the sum of all elements in the array.
-
-
-   .. py:method:: prod() -> numpy.float64
-
-      Return the product of all elements in the array. Return value is
-      always a np.float64 or np.int64.
-
-
-   .. py:method:: min() -> arkouda.dtypes.numpy_scalars
-
-      Return the minimum value of the array.
-
-
-   .. py:method:: max() -> arkouda.dtypes.numpy_scalars
-
-      Return the maximum value of the array.
-
-
-   .. py:method:: argmin() -> numpy.int64
-
-      Return the index of the first occurrence of the array min value
-
-
-   .. py:method:: argmax() -> numpy.int64
-
-      Return the index of the first occurrence of the array max value.
-
-
-   .. py:method:: mean() -> numpy.float64
-
-      Return the mean of the array.
-
-
-   .. py:method:: var(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-      Compute the variance. See ``arkouda.var`` for details.
-
-      :param ddof: "Delta Degrees of Freedom" used in calculating var
-      :type ddof: int_scalars
-
-      :returns: The scalar variance of the array
-      :rtype: np.float64
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises ValueError: Raised if the ddof >= pdarray size
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: std(ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
-
-      Compute the standard deviation. See ``arkouda.std`` for details.
-
-      :param ddof: "Delta Degrees of Freedom" used in calculating std
-      :type ddof: int_scalars
-
-      :returns: The scalar standard deviation of the array
-      :rtype: np.float64
-
-      :raises TypeError: Raised if pda is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: cov(y: pdarray) -> numpy.float64
-
-      Compute the covariance between self and y.
-
-      :param y: Other pdarray used to calculate covariance
-      :type y: pdarray
-
-      :returns: The scalar covariance of the two arrays
-      :rtype: np.float64
-
-      :raises TypeError: Raised if y is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: corr(y: pdarray) -> numpy.float64
-
-      Compute the correlation between self and y using pearson correlation coefficient.
-
-      :param y: Other pdarray used to calculate correlation
-      :type y: pdarray
-
-      :returns: The scalar correlation of the two arrays
-      :rtype: np.float64
-
-      :raises TypeError: Raised if y is not a pdarray instance
-      :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: mink(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the minimum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: maxk(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the maximum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: argmink(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Compute the minimum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: Indices corresponding to the maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: argmaxk(k: arkouda.dtypes.int_scalars) -> pdarray
-
-      Finds the indices corresponding to the maximum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: Indices corresponding to the  maximum `k` values, sorted
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: popcount() -> pdarray
-
-      Find the population (number of bits set) in each element. See `ak.popcount`.
-
-
-   .. py:method:: parity() -> pdarray
-
-      Find the parity (XOR of all bits) in each element. See `ak.parity`.
-
-
-   .. py:method:: clz() -> pdarray
-
-      Count the number of leading zeros in each element. See `ak.clz`.
-
-
-   .. py:method:: ctz() -> pdarray
-
-      Count the number of trailing zeros in each element. See `ak.ctz`.
-
-
-   .. py:method:: rotl(other) -> pdarray
-
-      Rotate bits left by <other>.
-
-
-   .. py:method:: rotr(other) -> pdarray
-
-      Rotate bits right by <other>.
-
-
-   .. py:method:: astype(dtype) -> pdarray
-
-      Cast values of pdarray to provided dtype
-
-      :param dtype: Dtype to cast to
-      :type dtype: np.dtype or str
-
-      :returns: An arkouda pdarray with values converted to the specified data type
-      :rtype: ak.pdarray
-
-      .. rubric:: Notes
-
-      This is essentially shorthand for ak.cast(x, '<dtype>') where x is a pdarray.
-
-
-   .. py:method:: slice_bits(low, high) -> pdarray
-
-      Returns a pdarray containing only bits from low to high of self.
-
-      This is zero indexed and inclusive on both ends, so slicing the bottom 64 bits is
-      pda.slice_bits(0, 63)
-
-      :param low: The lowest bit included in the slice (inclusive)
-                  zero indexed, so the first bit is 0
-      :type low: int
-      :param high: The highest bit included in the slice (inclusive)
-      :type high: int
-
-      :returns: A new pdarray containing the bits of self from low to high
-      :rtype: pdarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown
-
-      .. rubric:: Examples
-
-      >>> p = ak.array([2**65 + (2**64 - 1)])
-      >>> bin(p[0])
-      '0b101111111111111111111111111111111111111111111111111111111111111111'
-
-      >>> bin(p.slice_bits(64, 65)[0])
-      '0b10'
-
-
-   .. py:method:: bigint_to_uint_arrays() -> List[pdarray]
-
-      Creates a list of uint pdarrays from a bigint pdarray.
-      The first item in return will be the highest 64 bits of the
-      bigint pdarray and the last item will be the lowest 64 bits.
-
-      :returns: A list of uint pdarrays where:
-                The first item in return will be the highest 64 bits of the
-                bigint pdarray and the last item will be the lowest 64 bits.
-      :rtype: List[pdarrays]
-
-      :raises RuntimeError: Raised if there is a server-side error thrown
-
-      .. seealso:: :obj:`pdarraycreation.bigint_from_uint_arrays`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(2**64, 2**64 + 5)
-      >>> a
-      array(["18446744073709551616" "18446744073709551617" "18446744073709551618"
-      "18446744073709551619" "18446744073709551620"])
-
-      >>> a.bigint_to_uint_arrays()
-      [array([1 1 1 1 1]), array([0 1 2 3 4])]
-
-
-   .. py:method:: reshape(*shape, order='row_major')
-
-      Gives a new shape to an array without changing its data.
-
-      :param shape: The new shape should be compatible with the original shape.
-      :type shape: int, tuple of ints, or pdarray
-      :param order: Read the elements of the pdarray in this index order
-                    By default, read the elements in row_major or C-like order where the last index
-                    changes the fastest
-                    If 'column_major' or 'F', read the elements in column_major or Fortran-like order where the
-                    first index changes the fastest
-      :type order: str {'row_major' | 'C' | 'column_major' | 'F'}
-
-      :returns: An arrayview object with the data from the array but with the new shape
-      :rtype: ArrayView
-
-
-   .. py:method:: to_ndarray() -> numpy.ndarray
-
-      Convert the array to a np.ndarray, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`, :obj:`to_list`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_ndarray()
-      array([0, 1, 2, 3, 4])
-
-      >>> type(a.to_ndarray())
-      numpy.ndarray
-
-
-   .. py:method:: to_list() -> List
-
-      Convert the array to a list, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A list with the same data as the pdarray
-      :rtype: list
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_list()
-      [0, 1, 2, 3, 4]
-
-      >>> type(a.to_list())
-      list
-
-
-   .. py:method:: to_cuda()
-
-      Convert the array to a Numba DeviceND array, transferring array data from the
-      arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
-      a RuntimeError is raised.
-
-      :returns: A Numba ndarray with the same attributes and data as the pdarray; on GPU
-      :rtype: numba.DeviceNDArray
-
-      :raises ImportError: Raised if CUDA is not available
-      :raises ModuleNotFoundError: Raised if Numba is either not installed or not enabled
-      :raises RuntimeError: Raised if there is a server-side error thrown in the course of retrieving
-          the pdarray.
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_cuda()
-      array([0, 1, 2, 3, 4])
-
-      >>> type(a.to_cuda())
-      numpy.devicendarray
-
-
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
-
-      Save the pdarray to Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`.
-      - 'append' write mode is supported, but is not efficient.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_parquet('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_parqet('path/prefix.parquet', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
-
-
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
-
-      Save the pdarray to HDF5.
-      The object can be saved to a collection of files or single file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-
-      .. rubric:: Notes
-
-      - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
-      - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.to_hdf('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.to_hdf('path/prefix.h5', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-      >>> # Saving to a single file
-      >>> a.to_hdf('path/prefix.hdf5', dataset='array', file_type='single')
-      Saves the array in to single hdf5 file on the root node.
-      ``cwd/path/name_prefix.hdf5``
-
-
-   .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
-
-              Write pdarray to CSV file(s). File will contain a single column with the pdarray data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the pdarray under. Defaults to "array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
-
-              Returns
-              --------
-              str reponse message
-
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
-
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
-
-
-
-   .. py:method:: save(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
-
-      DEPRECATED
-      Save the pdarray to HDF5 or Parquet. The result is a collection of files,
-      one file per locale of the arkouda server, where each filename starts
-      with prefix_path. HDF5 support single files, in which case the file name will
-      only be that provided. Each locale saves its chunk of the array to its
-      corresponding file.
-      :param prefix_path: Directory and filename prefix that all output files share
-      :type prefix_path: str
-      :param dataset: Name of the dataset to create in files (must not already exist)
-      :type dataset: str
-      :param mode: By default, truncate (overwrite) output files, if they exist.
-                   If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
-      :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
-                          Sets the compression type used with Parquet files
-      :type compression: str (Optional)
-      :param file_format: By default, saved files will be written to the HDF5 file format. If
-                          'Parquet', the files will be written to the Parquet file format. This
-                          is case insensitive.
-      :type file_format: str {'HDF5', 'Parquet'}
-      :param file_type: Default: "distribute"
-                        When set to single, dataset is written to a single file.
-                        When distribute, dataset is written on a file per locale.
-                        This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
-
-      :rtype: string message indicating result of save operation
-
-      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
-      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
-          file write location or if the mode parameter is neither truncate
-          nor append
-      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
-          is not a string
-
-      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read`, :obj:`to_parquet`, :obj:`to_hdf`
-
-      .. rubric:: Notes
-
-      The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
-      Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales``. If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
-      Previously all files saved in Parquet format were saved with a ``.parquet`` file extension.
-      This will require you to use load as if you saved the file with the extension. Try this if
-      an older file is not being found.
-      Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(25)
-      >>> # Saving without an extension
-      >>> a.save('path/prefix', dataset='array')
-      Saves the array to numLocales HDF5 files with the name ``cwd/path/name_prefix_LOCALE####``
-      >>> # Saving with an extension (HDF5)
-      >>> a.save('path/prefix.h5', dataset='array')
-      Saves the array to numLocales HDF5 files with the name
-      ``cwd/path/name_prefix_LOCALE####.h5`` where #### is replaced by each locale number
-      >>> # Saving with an extension (Parquet)
-      >>> a.save('path/prefix.parquet', dataset='array', file_format='Parquet')
-      Saves the array in numLocales Parquet files with the name
-      ``cwd/path/name_prefix_LOCALE####.parquet`` where #### is replaced by each locale number
-
-
-   .. py:method:: register(user_defined_name: str) -> pdarray
-
-      Register this pdarray with a user defined name in the arkouda server
-      so it can be attached to later using pdarray.attach()
-      This is an in-place operation, registering a pdarray more than once will
-      update the name in the registry and remove the previously registered name.
-      A name can only be registered to one pdarray at a time.
-
-      :param user_defined_name: user defined name array is to be registered under
-      :type user_defined_name: str
-
-      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a
-                fluid programming style.
-                Please note you cannot register two different pdarrays with the same name.
-      :rtype: pdarray
-
-      :raises TypeError: Raised if user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
-          If the user is attempting to register more than one pdarray with the same name,
-          the former should be unregistered first to free up the registration name.
-
-      .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
-
-      .. rubric:: Notes
-
-      Registered names/pdarrays in the server are immune to deletion
-      until they are unregistered.
-
-      .. rubric:: Examples
-
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
-
-
-   .. py:method:: unregister() -> None
-
-      Unregister a pdarray in the arkouda server which was previously
-      registered using register() and/or attahced to using attach()
-
-
-      :rtype: None
-
-      :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
-
-      .. rubric:: Notes
-
-      Registered names/pdarrays in the server are immune to deletion until
-      they are unregistered.
-
-      .. rubric:: Examples
-
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
-
-
-   .. py:method:: attach(user_defined_name: str) -> pdarray
-      :staticmethod:
-
-      class method to return a pdarray attached to the registered name in the arkouda
-      server which was registered using register()
-
-      :param user_defined_name: user defined name which array was registered under
-      :type user_defined_name: str
-
-      :returns: pdarray which is bound to the corresponding server side component which was registered
-                with user_defined_name
-      :rtype: pdarray
-
-      :raises TypeError: Raised if user_defined_name is not a str
-
-      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
-
-      .. rubric:: Notes
-
-      Registered names/pdarrays in the server are immune to deletion
-      until they are unregistered.
-
-      .. rubric:: Examples
-
-      >>> a = zeros(100)
-      >>> a.register("my_zeros")
-      >>> # potentially disconnect from server and reconnect to server
-      >>> b = ak.pdarray.attach("my_zeros")
-      >>> # ...other work...
-      >>> b.unregister()
-
-
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
-
-.. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
-
-   arange([start,] stop[, stride,] dtype=int64)
-
-   Create a pdarray of consecutive integers within the interval [start, stop).
-   If only one arg is given then arg is the stop parameter. If two args are
-   given, then the first arg is start and second is stop. If three args are
-   given, then the first arg is start, second is stop, third is stride.
-
-   The return value is cast to type dtype
-
-   :param start: Starting value (inclusive)
-   :type start: int_scalars, optional
-   :param stop: Stopping value (exclusive)
-   :type stop: int_scalars
-   :param stride: The difference between consecutive elements, the default stride is 1,
-                  if stride is specified then start must also be specified.
-   :type stride: int_scalars, optional
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-
-   :returns: Integers from start (inclusive) to stop (exclusive) by stride
-   :rtype: pdarray, dtype
-
-   :raises TypeError: Raised if start, stop, or stride is not an int object
-   :raises ZeroDivisionError: Raised if stride == 0
-
-   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
-
-   .. rubric:: Notes
-
-   Negative strides result in decreasing values. Currently, only int64
-   pdarrays can be created with this method. For float64 arrays, use
-   the linspace method.
-
-   .. rubric:: Examples
-
-   >>> ak.arange(0, 5, 1)
-   array([0, 1, 2, 3, 4])
-
-   >>> ak.arange(5, 0, -1)
-   array([5, 4, 3, 2, 1])
-
-   >>> ak.arange(0, 10, 2)
-   array([0, 2, 4, 6, 8])
-
-   >>> ak.arange(-5, -10, -1)
-   array([-5, -6, -7, -8, -9])
-
-
-.. py:function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable], dtype: Union[numpy.dtype, type, str] = None, max_bits: int = -1) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
-
-   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
-   the corresponding data to the arkouda server.
-
-   :param a: Rank-1 array of a supported dtype
-   :type a: Union[pdarray, np.ndarray]
-   :param dtype: The target dtype to cast values to
-   :type dtype: np.dtype, type, or str
-   :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
-   :type max_bits: int
-
-   :returns: A pdarray instance stored on arkouda server or Strings instance, which
-             is composed of two pdarrays stored on arkouda server
-   :rtype: pdarray or Strings
-
-   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
-       list, array, tuple, or deque
-   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
-       not supported (not in DTypes), or if the product of a size and
-       a.itemsize > maxTransferBytes
-   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
-       required to generate the array.
-
-   .. seealso:: :obj:`pdarray.to_ndarray`
-
-   .. rubric:: Notes
-
-   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
-   otherwise a RuntimeError will be raised. This is to protect the user
-   from overwhelming the connection between the Python client and the arkouda
-   server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.maxTransferBytes to a larger value,
-   but should proceed with caution.
-
-   If the pdrray or ndarray is of type U, this method is called twice recursively
-   to create the Strings object and the two corresponding pdarrays for string
-   bytes and offsets, respectively.
-
-   .. rubric:: Examples
-
-   >>> ak.array(np.arange(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> ak.array(range(1,10))
-   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-   >>> strings = ak.array([f'string {i}' for i in range(0,5)])
-   >>> type(strings)
-   <class 'arkouda.strings.Strings'>
-
-
-.. py:function:: ones(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with ones.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
-   :param dtype: Resulting array type, default float64
-   :type dtype: Union[float64, int64, bool]
-
-   :returns: Ones of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`zeros`, :obj:`ones_like`
-
-   .. rubric:: Examples
-
-   >>> ak.ones(5, dtype=ak.int64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.float64)
-   array([1, 1, 1, 1, 1])
-
-   >>> ak.ones(5, dtype=ak.bool)
-   array([True, True, True, True, True])
-
-
-.. py:function:: zeros(size: Union[arkouda.dtypes.int_scalars, str], dtype: Union[numpy.dtype, type, str, arkouda.dtypes.BigInt] = float64) -> arkouda.pdarrayclass.pdarray
-
-   Create a pdarray filled with zeros.
-
-   :param size: Size of the array (only rank-1 arrays supported)
-   :type size: int_scalars
-   :param dtype: Type of resulting array, default float64
-   :type dtype: all_scalars
-
-   :returns: Zeros of the requested size and dtype
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the supplied dtype is not supported or if the size
-       parameter is neither an int nor a str that is parseable to an int.
-
-   .. seealso:: :obj:`ones`, :obj:`zeros_like`
-
-   .. rubric:: Examples
-
-   >>> ak.zeros(5, dtype=ak.int64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.float64)
-   array([0, 0, 0, 0, 0])
-
-   >>> ak.zeros(5, dtype=ak.bool)
-   array([False, False, False, False, False])
-
-
-.. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
-
-   Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
-   one ``pdarray`` or ``Strings`` object, respectively.
-
-   :param arrays: The arrays to concatenate. Must all have same dtype.
-   :type arrays: Sequence[Union[pdarray,Strings,Categorical]]
-   :param ordered: If True (default), the arrays will be appended in the
-                   order given. If False, array data may be interleaved
-                   in blocks, which can greatly improve performance but
-                   results in non-deterministic ordering of elements.
-   :type ordered: bool
-
-   :returns: Single pdarray or Strings object containing all values, returned in
-             the original order
-   :rtype: Union[pdarray,Strings,Categorical]
-
-   :raises ValueError: Raised if arrays is empty or if 1..n pdarrays have
-       differing dtypes
-   :raises TypeError: Raised if arrays is not a pdarrays or Strings python Sequence such as a
-       list or tuple
-   :raises RuntimeError: Raised if 1..n array elements are dtypes for which
-       concatenate has not been implemented.
-
-   .. rubric:: Examples
-
-   >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
-   array([1, 2, 3, 4, 5, 6])
-
-   >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
-   array([True, False, True, False, True, True])
-
-   >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
-   array(['one', 'two', 'three', 'four', 'five'])
-
-
-.. py:data:: OrderType
-
-   
 
 .. py:class:: ArrayView(base: arkouda.pdarrayclass.pdarray, shape, order='row_major')
 
@@ -1798,25 +352,6 @@ Attributes
       If 'F'/'column_major', read and write data in column_major order
 
       :type: str {'C'/'row_major' | 'F'/'column_major'}
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
 
    .. py:method:: to_ndarray() -> numpy.ndarray
 
@@ -2473,9 +1008,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -2678,11 +1210,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -2708,17 +1238,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -2846,6 +1365,7 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
    >>> nnz = 7
@@ -2853,7 +1373,6 @@ Attributes
    >>> row_number = ak.arange(3)
    >>> ak.broadcast(row_starts, row_number, nnz)
    array([0 0 1 1 1 2 2])
-
    # If the original nonzeros were in reverse order...
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
@@ -3014,30 +1533,6 @@ Attributes
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -3053,196 +1548,7 @@ Attributes
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -3275,16 +1581,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -3997,14 +2293,6 @@ Attributes
       >>> b.unregister()
 
 
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
@@ -4248,57 +2536,6 @@ Attributes
       need to instruct the server to assemble the into a composite entity.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__() -> int
-
-
-   .. py:method:: __str__() -> str
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Strings instance and the
-      parameter Strings object and returns the results within
-      a pdarray object.
-
-      :param other: the other object is a Strings object
-      :type other: Strings, str_scalars
-      :param op: name of the binary operation to be performed
-      :type op: str
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match, or (3) the other
-          object is not a Strings object
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other) -> bool
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key)
-
-
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
 
       Return the length of each string in the array.
@@ -4483,8 +2720,7 @@ Attributes
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
 
-      :param chars:
-      :type chars: the set of characters to be removed
+      :param chars: the set of characters to be removed
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -4513,14 +2749,6 @@ Attributes
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
-
-
-   .. py:method:: _empty_pattern_verification(pattern)
-
-
-   .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
-
-      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -4995,9 +3223,6 @@ Attributes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. py:method:: __add__(other: Strings) -> Strings
-
-
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
@@ -5024,9 +3249,6 @@ Attributes
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
       array(['b.a', 'd.c', 'f.e'])
-
-
-   .. py:method:: __radd__(other: Strings) -> Strings
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -5109,14 +3331,6 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[Strings]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -5175,32 +3389,6 @@ Attributes
       ['hello', 'my', 'world']
       >>> type(a.to_list())
       list
-
-
-   .. py:method:: _comp_to_ndarray(comp: str) -> numpy.ndarray
-
-      This is an internal helper function to perform the to_ndarray for one
-      of the string components.
-
-      :param comp: The strings component to request
-      :type comp: str
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
 
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
@@ -5283,69 +3471,58 @@ Attributes
 
       - Parquet files do not store the segments, only the values.
       - Strings state is saved as two datasets within an hdf5 group:
-      one for the string characters and one for the
-      segments corresponding to the start of each string
+        one for the string characters and one for the
+        segments corresponding to the start of each string
       - the hdf5 group is named via the dataset parameter.
       - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
+        have write permission.
       - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
       - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
+        determine the file format.
 
       .. seealso:: :obj:`to_hdf`
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
-              Write Strings to CSV file(s). File will contain a single column with the Strings data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-              bytes as uint(8).
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the Strings under. Defaults to "strings_array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Returns
-              --------
-              str reponse message
+      :rtype: str reponse message
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      .. rubric:: Notes
 
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -5400,16 +3577,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -5563,16 +3730,6 @@ Attributes
       Format a single binary vector as a string.
 
 
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: to_ndarray()
 
       Export data to a numpy array of string-formatted bit vectors.
@@ -5581,50 +3738,6 @@ Attributes
    .. py:method:: to_list()
 
       Export data to a list of string-formatted bit vectors.
-
-
-   .. py:method:: _cast(values)
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)
@@ -5669,60 +3782,9 @@ Attributes
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
-   .. py:method:: _convert_strings(s)
-
-      Convert string field names to binary vectors.
-
-
-   .. py:method:: _parse_scalar(s)
-
-      Convert a string of named fields to a binary value.
-
-
    .. py:method:: format(x)
 
       Format a single binary value as a string of named fields.
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _cast(values)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)
@@ -5776,19 +3838,6 @@ Attributes
       and convert it to an integer.
 
 
-   .. py:method:: _is_supported_scalar(x)
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: to_ndarray()
 
       Export array as a numpy array of integers.
@@ -5797,47 +3846,6 @@ Attributes
    .. py:method:: to_list()
 
       Export array as a list of integers.
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)
@@ -5988,9 +3996,6 @@ Attributes
    Get the server's byteorder
 
 
-.. py:function:: objtypedec(orig_cls)
-
-
 .. py:class:: pdarray(name: str, mydtype: Union[numpy.dtype, str], size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
 
    The basic arkouda array class. This class contains only the
@@ -6049,30 +4054,6 @@ Attributes
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -6088,196 +4069,7 @@ Attributes
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -6310,16 +4102,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -7030,14 +4812,6 @@ Attributes
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
-
-
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
 
@@ -7794,10 +5568,6 @@ Attributes
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
-.. py:data:: SortingAlgorithm
-
-   
-
 .. py:function:: in1d(pda1: arkouda.groupbyclass.groupable, pda2: arkouda.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.groupbyclass.groupable]
 
    Test whether each element of a 1-D array is also present in a second array.
@@ -7822,8 +5592,15 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
-             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+   :rtype: True for each row in a that is contained in b
+
+   Return Type
+   ------------
+       pdarray, bool
+
+   .. rubric:: Notes
+
+   Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
@@ -7880,7 +5657,7 @@ Attributes
    :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
    :raises RuntimeError: Raised if the dtype of either array is not supported
 
-   .. seealso:: :obj:`intersect1d`, :obj:`unique`
+   .. seealso:: :obj:`intersect1d`, :obj:`arkouda.groupbyclass.unique`
 
    .. rubric:: Notes
 
@@ -7888,10 +5665,10 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # 1D Example
    >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
    array([-2, -1, 0, 1, 2])
-
    #Multi-Array Example
    >>> a = ak.arange(1, 6)
    >>> b = ak.array([1, 5, 3, 4, 2])
@@ -7923,7 +5700,7 @@ Attributes
    :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :obj:`unique`, :obj:`union1d`
+   .. seealso:: :obj:`arkouda.groupbyclass.unique`, :obj:`union1d`
 
    .. rubric:: Notes
 
@@ -7931,10 +5708,10 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # 1D Example
    >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
    array([1, 3])
-
    # Multi-Array Example
    >>> a = ak.arange(5)
    >>> b = ak.array([1, 5, 3, 4, 2])
@@ -7966,7 +5743,7 @@ Attributes
    :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
-   .. seealso:: :obj:`unique`, :obj:`setxor1d`
+   .. seealso:: :obj:`arkouda.groupbyclass.unique`, :obj:`setxor1d`
 
    .. rubric:: Notes
 
@@ -7978,7 +5755,6 @@ Attributes
    >>> b = ak.array([3, 4, 5, 6])
    >>> ak.setdiff1d(a, b)
    array([1, 2])
-
    #Multi-Array Example
    >>> a = ak.arange(1, 6)
    >>> b = ak.array([1, 5, 3, 4, 2])
@@ -8022,7 +5798,6 @@ Attributes
    >>> b = ak.array([2, 3, 5, 7, 5])
    >>> ak.setxor1d(a,b)
    array([1, 4, 5, 7])
-
    #Multi-Array Example
    >>> a = ak.arange(1, 6)
    >>> b = ak.array([1, 5, 3, 4, 2])
@@ -9630,9 +7405,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -9835,11 +7607,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -9865,17 +7635,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -10003,6 +7762,7 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
    >>> nnz = 7
@@ -10010,7 +7770,6 @@ Attributes
    >>> row_number = ak.arange(3)
    >>> ak.broadcast(row_starts, row_number, nnz)
    array([0 0 1 1 1 2 2])
-
    # If the original nonzeros were in reverse order...
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
@@ -10130,57 +7889,6 @@ Attributes
       object on the client side and transfer the offsets & bytes separately
       to the server.  This results in two entries in the symbol table and we
       need to instruct the server to assemble the into a composite entity.
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__() -> int
-
-
-   .. py:method:: __str__() -> str
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Strings instance and the
-      parameter Strings object and returns the results within
-      a pdarray object.
-
-      :param other: the other object is a Strings object
-      :type other: Strings, str_scalars
-      :param op: name of the binary operation to be performed
-      :type op: str
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match, or (3) the other
-          object is not a Strings object
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other) -> bool
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key)
 
 
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
@@ -10367,8 +8075,7 @@ Attributes
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
 
-      :param chars:
-      :type chars: the set of characters to be removed
+      :param chars: the set of characters to be removed
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -10397,14 +8104,6 @@ Attributes
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
-
-
-   .. py:method:: _empty_pattern_verification(pattern)
-
-
-   .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
-
-      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -10879,9 +8578,6 @@ Attributes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. py:method:: __add__(other: Strings) -> Strings
-
-
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
@@ -10908,9 +8604,6 @@ Attributes
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
       array(['b.a', 'd.c', 'f.e'])
-
-
-   .. py:method:: __radd__(other: Strings) -> Strings
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -10993,14 +8686,6 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[Strings]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -11059,32 +8744,6 @@ Attributes
       ['hello', 'my', 'world']
       >>> type(a.to_list())
       list
-
-
-   .. py:method:: _comp_to_ndarray(comp: str) -> numpy.ndarray
-
-      This is an internal helper function to perform the to_ndarray for one
-      of the string components.
-
-      :param comp: The strings component to request
-      :type comp: str
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
 
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
@@ -11167,69 +8826,58 @@ Attributes
 
       - Parquet files do not store the segments, only the values.
       - Strings state is saved as two datasets within an hdf5 group:
-      one for the string characters and one for the
-      segments corresponding to the start of each string
+        one for the string characters and one for the
+        segments corresponding to the start of each string
       - the hdf5 group is named via the dataset parameter.
       - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
+        have write permission.
       - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
       - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
+        determine the file format.
 
       .. seealso:: :obj:`to_hdf`
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
-              Write Strings to CSV file(s). File will contain a single column with the Strings data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-              bytes as uint(8).
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the Strings under. Defaults to "strings_array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Returns
-              --------
-              str reponse message
+      :rtype: str reponse message
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      .. rubric:: Notes
 
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -11284,16 +8932,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -11410,7 +9048,7 @@ Attributes
    :param t1: timestamps in millis corresponding to the a1 pdarray
    :type t1: pdarray
    :param t2: timestamps in millis corresponding to the a2 pdarray
-   :type t2: pdarray,
+   :type t2: pdarray
    :param dt: time delta
    :type dt: Union[int,np.int64]
    :param pred: time window predicate
@@ -11425,6 +9063,26 @@ Attributes
        result_limit is not an int
    :raises ValueError: if a1, a2, t1, or t2 dtype is not int64, pred is not
        'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
+
+
+.. py:function:: gen_ranges(starts: arkouda.pdarrayclass.pdarray, ends: arkouda.pdarrayclass.pdarray) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+   Generate a segmented array of variable-length, contiguous
+   ranges between pairs of start- and end-points.
+
+   :param starts: The start value of each range
+   :type starts: pdarray, int64
+   :param ends: The end value (exclusive) of each range
+   :type ends: pdarray, int64
+
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
+
+
+.. py:function:: compute_join_size(a: arkouda.pdarrayclass.pdarray, b: arkouda.pdarrayclass.pdarray) -> Tuple[int, int]
+
+   Compute the internal size of a hypothetical join between a and b. Returns
+   both the number of elements and number of bytes required for the join.
 
 
 .. py:class:: Categorical(values, **kwargs)
@@ -11624,74 +9282,6 @@ Attributes
       value, but proceed with caution.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Categorical instance and returns
-      the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: _r_binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested reverse binop on this Categorical instance and
-      returns the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key) -> Categorical
-
-
    .. py:method:: isna()
 
       Find where values are missing or null (as defined by self.NAvalue)
@@ -11832,14 +9422,6 @@ Attributes
       created using from_codes(), this function will be faster than
       Strings.group() because it sorts dense integer values, rather than
       128-bit hash values.
-
-
-   .. py:method:: _get_grouping_keys()
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
    .. py:method:: argsort()
@@ -12050,33 +9632,6 @@ Attributes
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
-
-
-   .. py:method:: _get_components_dict() -> Dict
-
-      Internal function that returns a dictionary with all required or non-None components of self
-
-      Required Categorical components (Codes and Categories) are always included in
-      returned components_dict
-      Optional Categorical components (Permutation and Segments) are only included if
-      they've been set (are not None)
-
-      :returns:
-
-                Dictionary of all required or non-None components of self
-                    Keys: component names (Codes, Categories, Permutation, Segments)
-                    Values: components of self
-      :rtype: Dict
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -12811,9 +10366,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -13016,11 +10568,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -13046,17 +10596,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -13184,6 +10723,7 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
    >>> nnz = 7
@@ -13191,7 +10731,6 @@ Attributes
    >>> row_number = ak.arange(3)
    >>> ak.broadcast(row_starts, row_number, nnz)
    array([0 0 1 1 1 2 2])
-
    # If the original nonzeros were in reverse order...
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
@@ -13363,30 +10902,6 @@ Attributes
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -13402,196 +10917,7 @@ Attributes
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -13624,16 +10950,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -14346,14 +11662,6 @@ Attributes
       >>> b.unregister()
 
 
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
@@ -14556,23 +11864,15 @@ Attributes
    Generate a segmented array of variable-length, contiguous ranges between pairs of
    start- and end-points.
 
-   :param starts:
+   :param starts: The start value of each range
    :type starts: pdarray, int64
-   :param The start value of each range:
-   :param ends:
+   :param ends: The end value (exclusive) of each range
    :type ends: pdarray, int64
-   :param The end value (exclusive) of each range:
-   :param stride:
+   :param stride: Difference between successive elements of each range
    :type stride: int
-   :param Difference between successive elements of each range:
 
-   :returns: * **segments** (*pdarray, int64*)
-             * *The starting index of each range in the resulting array*
-             * **ranges** (*pdarray, int64*)
-             * *The actual ranges, flattened into a single array*
-
-
-.. py:function:: _aggregator(func)
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
 
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
@@ -14646,23 +11946,6 @@ Attributes
       attach method.
 
 
-   .. py:method:: _from_attach_return_msg(repMsg) -> SegArray
-      :classmethod:
-
-      Return a SegArray instance pointing to components created by the arkouda server.
-      The user should not call this function directly.
-
-      :param repMsg:
-                     + delimited string containing the segments, values, and lengths details
-      :type repMsg: str
-
-      :returns: A SegArray representing a set of pdarray components on the server
-      :rtype: SegArray
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the categorical instance
-
-
    .. py:method:: from_multi_array(m)
       :classmethod:
 
@@ -14674,9 +11957,6 @@ Attributes
 
       :returns: Array of rows of input
       :rtype: SegArray
-
-
-   .. py:method:: _compute_non_empty()
 
 
    .. py:method:: concat(x, axis=0, ordered=True)
@@ -14700,24 +11980,6 @@ Attributes
    .. py:method:: copy()
 
       Return a deep copy.
-
-
-   .. py:method:: __getitem__(i)
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
 
 
    .. py:method:: get_suffixes(n, return_origins=True, proper=True)
@@ -14772,9 +12034,6 @@ Attributes
 
       :returns: * **ngrams** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-gram.
                 * **origin_indices** (*pdarray, int*) -- The index of the sub-array from which the corresponding n-gram originated
-
-
-   .. py:method:: _normalize_index(j)
 
 
    .. py:method:: get_jth(j, return_origins=True, compressed=False, default=0)
@@ -15310,80 +12569,8 @@ Attributes
 
       
 
-   .. py:method:: __getattr__(key)
-
-
-   .. py:method:: __dir__()
-
-      Default dir() implementation.
-
-
-   .. py:method:: __delitem__(key)
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: __len__()
-
-      Return the number of rows
-
-
-   .. py:method:: _ncols()
-
-      Number of columns.
-      If index appears, we now want to utilize this
-      because the actual index has been moved to a property
-
-
-   .. py:method:: __str__()
-
-      Returns a summary string of this dataframe.
-
-
-   .. py:method:: _get_head_tail()
-
-
-   .. py:method:: _get_head_tail_server()
-
-
-   .. py:method:: _shape_str()
-
-
-   .. py:method:: __repr__()
-
-      Return ascii-formatted version of the dataframe.
-
-
-   .. py:method:: _repr_html_()
-
-      Return html-formatted version of the dataframe.
-
-
-   .. py:method:: _ipython_key_completions_()
-
-
    .. py:method:: from_pandas(pd_df)
       :classmethod:
-
-
-   .. py:method:: _drop_column(keys)
-
-      Drop a column or columns from the dataframe, in-place.
-
-      keys : list
-          The labels to be dropped on the given axis
-
-
-   .. py:method:: _drop_row(keys)
-
-      Drop a row or rows from the dataframe, in-place.
-
-      keys : list
-          The indexes to be dropped on the given axis
 
 
    .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
@@ -15428,9 +12615,6 @@ Attributes
       :rtype: DataFrame
 
 
-   .. py:method:: _set_index(value)
-
-
    .. py:method:: reset_index(size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
@@ -15458,43 +12642,6 @@ Attributes
    .. py:method:: update_size()
 
       Computes the number of bytes on the arkouda server.
-
-
-   .. py:method:: _rename_column(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
-
-      Rename columns within the dataframe
-
-      :param mapper: Function or dictionary mapping existing columns to new columns.
-                     Nonexistent names will not raise an error.
-      :type mapper: callable or dict-like
-      :param inplace: Default False. When True, perform the operation on the calling object.
-                      When False, return a new object.
-      :type inplace: bool
-
-      :returns: * DateFrame when `inplace=False`
-                * None when `inplace=True`
-
-      .. seealso:: :obj:`ak.DataFrame._rename_index`, :obj:`ak.DataFrame.rename`
-
-
-   .. py:method:: _rename_index(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
-
-      Rename indexes within the dataframe
-
-      :param mapper: Function or dictionary mapping existing indexes to new indexes.
-                     Nonexistent names will not raise an error.
-      :type mapper: callable or dict-like
-      :param inplace: Default False. When True, perform the operation on the calling object.
-                      When False, return a new object.
-      :type inplace: bool
-
-      :returns: * DateFrame when `inplace=False`
-                * None when `inplace=True`
-
-      .. rubric:: Notes
-
-      This does not function exactly like pandas. The replacement value here must be
-      the same type as the existing value.
 
 
    .. py:method:: rename(mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
@@ -15664,9 +12811,6 @@ Attributes
 
       :returns: The result of converting this DataFrame to a pandas DataFrame.
       :rtype: pandas.DataFrame
-
-
-   .. py:method:: _prep_data(index=False, columns=None)
 
 
    .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
@@ -16135,20 +13279,6 @@ Attributes
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
-   .. py:method:: _parse_col_name(entryName, dfName)
-      :staticmethod:
-
-      Helper method used by from_return_msg to parse the registered name of the data component
-      and pull out the column type and column name
-
-      :param entryName: The full registered name of the data component
-      :type entryName: string
-      :param dfName: The name of the DataFrame
-      :type dfName: string
-
-      :rtype: Tuple (columnName, columnType)
-
-
    .. py:method:: from_return_msg(repMsg)
       :staticmethod:
 
@@ -16232,21 +13362,6 @@ Attributes
 
    This class is useful for printing and working with individual rows of a
    of an aku.DataFrame.
-
-   .. py:method:: __str__()
-
-      Return ascii-formatted version of the dataframe.
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _repr_html_()
-
-      Return html-formatted version of the dataframe.
-
 
 
 .. py:data:: akbool
@@ -16817,9 +13932,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -17022,11 +14134,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -17052,17 +14162,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -17266,30 +14365,6 @@ Attributes
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -17305,196 +14380,7 @@ Attributes
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -17527,16 +14413,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -18249,14 +15125,6 @@ Attributes
       >>> b.unregister()
 
 
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
@@ -18440,8 +15308,15 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
-             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+   :rtype: True for each row in a that is contained in b
+
+   Return Type
+   ------------
+       pdarray, bool
+
+   .. rubric:: Notes
+
+   Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
 .. py:function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
@@ -18515,22 +15390,6 @@ Attributes
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __eq__(v)
-
-      Return self==value.
-
-
    .. py:method:: factory(index)
       :staticmethod:
 
@@ -18565,18 +15424,6 @@ Attributes
 
 
    .. py:method:: to_dict(label)
-
-
-   .. py:method:: _check_types(other)
-
-
-   .. py:method:: _merge(other)
-
-
-   .. py:method:: _merge_all(idx_list)
-
-
-   .. py:method:: _check_aligned(other)
 
 
    .. py:method:: argsort(ascending=True)
@@ -18768,22 +15615,6 @@ Attributes
 
       This is maintained to support older code
 
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __eq__(v)
-
-      Return self==value.
-
-
    .. py:method:: to_pandas()
 
 
@@ -18798,12 +15629,6 @@ Attributes
 
 
    .. py:method:: to_dict(labels)
-
-
-   .. py:method:: _merge(other)
-
-
-   .. py:method:: _merge_all(array)
 
 
    .. py:method:: argsort(ascending=True)
@@ -18857,17 +15682,6 @@ Attributes
 
       
 
-   .. py:method:: __len__()
-
-
-   .. py:method:: __repr__()
-
-      Return ascii-formatted version of the series.
-
-
-   .. py:method:: __getitem__(key)
-
-
    .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
 
       Find series elements whose values are in the specified list
@@ -18890,18 +15704,6 @@ Attributes
       Keys will be turned into arkouda arrays as needed.
 
       :rtype: A Series containing the values corresponding to the key.
-
-
-   .. py:method:: _make_binop(operator)
-      :classmethod:
-
-
-   .. py:method:: _make_unaryop(operator)
-      :classmethod:
-
-
-   .. py:method:: _make_aggop(name)
-      :classmethod:
 
 
    .. py:method:: add(b: Series) -> Series
@@ -19022,12 +15824,6 @@ Attributes
 
       :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
           the Series instance
-
-
-   .. py:method:: _all_aligned(array: List) -> bool
-      :staticmethod:
-
-      Is an array of Series indexed aligned?
 
 
    .. py:method:: concat(arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None) -> Union[arkouda.dataframe.DataFrame, Series]
@@ -19274,74 +16070,6 @@ Attributes
       value, but proceed with caution.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Categorical instance and returns
-      the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: _r_binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested reverse binop on this Categorical instance and
-      returns the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key) -> Categorical
-
-
    .. py:method:: isna()
 
       Find where values are missing or null (as defined by self.NAvalue)
@@ -19482,14 +16210,6 @@ Attributes
       created using from_codes(), this function will be faster than
       Strings.group() because it sorts dense integer values, rather than
       128-bit hash values.
-
-
-   .. py:method:: _get_grouping_keys()
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
    .. py:method:: argsort()
@@ -19700,33 +16420,6 @@ Attributes
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
-
-
-   .. py:method:: _get_components_dict() -> Dict
-
-      Internal function that returns a dictionary with all required or non-None components of self
-
-      Required Categorical components (Codes and Categories) are always included in
-      returned components_dict
-      Optional Categorical components (Permutation and Segments) are only included if
-      they've been set (are not None)
-
-      :returns:
-
-                Dictionary of all required or non-None components of self
-                    Keys: component names (Codes, Categories, Permutation, Segments)
-                    Values: components of self
-      :rtype: Dict
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -20372,9 +17065,6 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. py:method:: _nested_grouping_helper(values: groupable) -> groupable
-
-
    .. py:method:: nunique(values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
@@ -20577,11 +17267,9 @@ Attributes
       # By default, result is in original order
       >>> g.broadcast(values)
       array([3, 5, 3, 5, 3])
-
       # With permute=False, result is in grouped order
       >>> g.broadcast(values, permute=False)
       array([3, 3, 3, 5, 5]
-
       >>> a = ak.randint(1,5,10)
       >>> a
       array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
@@ -20607,17 +17295,6 @@ Attributes
 
       :returns: The GroupBy object created by using the given components
       :rtype: GroupBy
-
-
-   .. py:method:: _get_groupby_required_pieces() -> Dict
-
-      Internal function that returns a dictionary with all required components of self
-
-      :returns:
-
-                Dictionary of all required components of self
-                    Components (keys, permutation)
-      :rtype: Dict
 
 
    .. py:method:: register(user_defined_name: str) -> GroupBy
@@ -20745,6 +17422,7 @@ Attributes
 
    .. rubric:: Examples
 
+   >>>
    # Define a sparse matrix with 3 rows and 7 nonzeros
    >>> row_starts = ak.array([0, 2, 5])
    >>> nnz = 7
@@ -20752,7 +17430,6 @@ Attributes
    >>> row_number = ak.arange(3)
    >>> ak.broadcast(row_starts, row_number, nnz)
    array([0 0 1 1 1 2 2])
-
    # If the original nonzeros were in reverse order...
    >>> permutation = ak.arange(6, -1, -1)
    >>> ak.broadcast(row_starts, row_number, permutation=permutation)
@@ -20904,30 +17581,6 @@ Attributes
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -20943,196 +17596,7 @@ Attributes
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -21165,16 +17629,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -21887,14 +18341,6 @@ Attributes
       >>> b.unregister()
 
 
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
 
 .. py:function:: arange(*args, **kwargs) -> arkouda.pdarrayclass.pdarray
 
@@ -22095,8 +18541,15 @@ Attributes
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional
 
-   :returns: * *pdarray, bool* -- True for each row in a that is contained in b
-             * *Notes* -- Only works for pdarrays of int64 dtype, Strings, or Categorical
+   :rtype: True for each row in a that is contained in b
+
+   Return Type
+   ------------
+       pdarray, bool
+
+   .. rubric:: Notes
+
+   Only works for pdarrays of int64 dtype, Strings, or Categorical
 
 
 .. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
@@ -22275,57 +18728,6 @@ Attributes
       object on the client side and transfer the offsets & bytes separately
       to the server.  This results in two entries in the symbol table and we
       need to instruct the server to assemble the into a composite entity.
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__() -> int
-
-
-   .. py:method:: __str__() -> str
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Strings instance and the
-      parameter Strings object and returns the results within
-      a pdarray object.
-
-      :param other: the other object is a Strings object
-      :type other: Strings, str_scalars
-      :param op: name of the binary operation to be performed
-      :type op: str
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match, or (3) the other
-          object is not a Strings object
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other) -> bool
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key)
 
 
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
@@ -22512,8 +18914,7 @@ Attributes
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
 
-      :param chars:
-      :type chars: the set of characters to be removed
+      :param chars: the set of characters to be removed
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -22542,14 +18943,6 @@ Attributes
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
-
-
-   .. py:method:: _empty_pattern_verification(pattern)
-
-
-   .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
-
-      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -23024,9 +19417,6 @@ Attributes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. py:method:: __add__(other: Strings) -> Strings
-
-
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
@@ -23053,9 +19443,6 @@ Attributes
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
       array(['b.a', 'd.c', 'f.e'])
-
-
-   .. py:method:: __radd__(other: Strings) -> Strings
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -23138,14 +19525,6 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[Strings]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -23204,32 +19583,6 @@ Attributes
       ['hello', 'my', 'world']
       >>> type(a.to_list())
       list
-
-
-   .. py:method:: _comp_to_ndarray(comp: str) -> numpy.ndarray
-
-      This is an internal helper function to perform the to_ndarray for one
-      of the string components.
-
-      :param comp: The strings component to request
-      :type comp: str
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
 
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
@@ -23312,69 +19665,58 @@ Attributes
 
       - Parquet files do not store the segments, only the values.
       - Strings state is saved as two datasets within an hdf5 group:
-      one for the string characters and one for the
-      segments corresponding to the start of each string
+        one for the string characters and one for the
+        segments corresponding to the start of each string
       - the hdf5 group is named via the dataset parameter.
       - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
+        have write permission.
       - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
       - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
+        determine the file format.
 
       .. seealso:: :obj:`to_hdf`
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
-              Write Strings to CSV file(s). File will contain a single column with the Strings data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-              bytes as uint(8).
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the Strings under. Defaults to "strings_array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Returns
-              --------
-              str reponse message
+      :rtype: str reponse message
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      .. rubric:: Notes
 
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -23429,16 +19771,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -24009,74 +20341,6 @@ Attributes
       value, but proceed with caution.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Categorical instance and returns
-      the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: _r_binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested reverse binop on this Categorical instance and
-      returns the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key) -> Categorical
-
-
    .. py:method:: isna()
 
       Find where values are missing or null (as defined by self.NAvalue)
@@ -24217,14 +20481,6 @@ Attributes
       created using from_codes(), this function will be faster than
       Strings.group() because it sorts dense integer values, rather than
       128-bit hash values.
-
-
-   .. py:method:: _get_grouping_keys()
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
    .. py:method:: argsort()
@@ -24437,33 +20693,6 @@ Attributes
       they are unregistered.
 
 
-   .. py:method:: _get_components_dict() -> Dict
-
-      Internal function that returns a dictionary with all required or non-None components of self
-
-      Required Categorical components (Codes and Categories) are always included in
-      returned components_dict
-      Optional Categorical components (Permutation and Segments) are only included if
-      they've been set (are not None)
-
-      :returns:
-
-                Dictionary of all required or non-None components of self
-                    Keys: component names (Codes, Categories, Permutation, Segments)
-                    Values: components of self
-      :rtype: Dict
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
-
-
    .. py:method:: info() -> str
 
       Returns a JSON formatted string containing information about all components of self
@@ -24644,57 +20873,6 @@ Attributes
       object on the client side and transfer the offsets & bytes separately
       to the server.  This results in two entries in the symbol table and we
       need to instruct the server to assemble the into a composite entity.
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__() -> int
-
-
-   .. py:method:: __str__() -> str
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Strings instance and the
-      parameter Strings object and returns the results within
-      a pdarray object.
-
-      :param other: the other object is a Strings object
-      :type other: Strings, str_scalars
-      :param op: name of the binary operation to be performed
-      :type op: str
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match, or (3) the other
-          object is not a Strings object
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other) -> bool
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other) -> bool
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key)
 
 
    .. py:method:: get_lengths() -> arkouda.pdarrayclass.pdarray
@@ -24881,8 +21059,7 @@ Attributes
       If omitted, the chars argument defaults to removing whitespace. The chars argument is not a
       prefix or suffix; rather, all combinations of its values are stripped.
 
-      :param chars:
-      :type chars: the set of characters to be removed
+      :param chars: the set of characters to be removed
 
       :returns: Strings object with the leading and trailing characters matching the set of characters in
                 the chars argument removed
@@ -24911,14 +21088,6 @@ Attributes
    .. py:method:: purge_cached_regex_patterns() -> None
 
       purges cached regex patterns
-
-
-   .. py:method:: _empty_pattern_verification(pattern)
-
-
-   .. py:method:: _get_matcher(pattern: Union[bytes, arkouda.dtypes.str_scalars], create: bool = True)
-
-      internal function to fetch cached Matcher objects
 
 
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
@@ -25393,9 +21562,6 @@ Attributes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. py:method:: __add__(other: Strings) -> Strings
-
-
    .. py:method:: lstick(other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
@@ -25422,9 +21588,6 @@ Attributes
       >>> t = ak.array(['b', 'd', 'f'])
       >>> s.lstick(t, delimiter='.')
       array(['b.a', 'd.c', 'f.e'])
-
-
-   .. py:method:: __radd__(other: Strings) -> Strings
 
 
    .. py:method:: get_prefixes(n: arkouda.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.pdarrayclass.pdarray]]
@@ -25507,14 +21670,6 @@ Attributes
           creating the pdarray encapsulating the return message
 
 
-   .. py:method:: _get_grouping_keys() -> List[Strings]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
-
-
    .. py:method:: to_ndarray() -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
@@ -25573,32 +21728,6 @@ Attributes
       ['hello', 'my', 'world']
       >>> type(a.to_list())
       list
-
-
-   .. py:method:: _comp_to_ndarray(comp: str) -> numpy.ndarray
-
-      This is an internal helper function to perform the to_ndarray for one
-      of the string components.
-
-      :param comp: The strings component to request
-      :type comp: str
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
 
 
    .. py:method:: astype(dtype) -> arkouda.pdarrayclass.pdarray
@@ -25681,69 +21810,58 @@ Attributes
 
       - Parquet files do not store the segments, only the values.
       - Strings state is saved as two datasets within an hdf5 group:
-      one for the string characters and one for the
-      segments corresponding to the start of each string
+        one for the string characters and one for the
+        segments corresponding to the start of each string
       - the hdf5 group is named via the dataset parameter.
       - The prefix_path must be visible to the arkouda server and the user must
-      have write permission.
+        have write permission.
       - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
-      ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
-      the file name will be `prefix_path`.
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`. Otherwise,
+        the file name will be `prefix_path`.
       - If any of the output files already exist and
-      the mode is 'truncate', they will be overwritten. If the mode is 'append'
-      and the number of output files is less than the number of locales or a
-      dataset with the same name already exists, a ``RuntimeError`` will result.
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
       - Any file extension can be used.The file I/O does not rely on the extension to
-      determine the file format.
+        determine the file format.
 
       .. seealso:: :obj:`to_hdf`
 
 
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'strings_array', col_delim: str = ',', overwrite: bool = False)
 
-              Write Strings to CSV file(s). File will contain a single column with the Strings data.
-              All CSV Files written by Arkouda include a header denoting data types of the columns.
-              Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-              bytes as uint(8).
+      Write Strings to CSV file(s). File will contain a single column with the Strings data.
+      All CSV Files written by Arkouda include a header denoting data types of the columns.
+      Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+      bytes as uint(8).
 
-              Parameters
-              -----------
-              prefix_path: str
-                  The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-                  when they are written to disk.
-              dataset: str
-                  Column name to save the Strings under. Defaults to "strings_array".
-              col_delim: str
-                  Defaults to ",". Value to be used to separate columns within the file.
-                  Please be sure that the value used DOES NOT appear in your dataset.
-              overwrite: bool
-                  Defaults to False. If True, any existing files matching your provided prefix_path will
-                  be overwritten. If False, an error will be returned if existing files are found.
+      :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                          when they are written to disk.
+      :type prefix_path: str
+      :param dataset: Column name to save the Strings under. Defaults to "strings_array".
+      :type dataset: str
+      :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                        Please be sure that the value used DOES NOT appear in your dataset.
+      :type col_delim: str
+      :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                        be overwritten. If False, an error will be returned if existing files are found.
+      :type overwrite: bool
 
-              Returns
-              --------
-              str reponse message
+      :rtype: str reponse message
 
-              Raises
-              ------
-              ValueError
-                  Raised if all datasets are not present in all parquet files or if one or
-                  more of the specified files do not exist
-              RuntimeError
-                  Raised if one or more of the specified files cannot be opened.
-                  If `allow_errors` is true this may be raised if no values are returned
-                  from the server.
-              TypeError
-                  Raised if we receive an unknown arkouda_type returned from the server
+      :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+          more of the specified files do not exist
+      :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+          If `allow_errors` is true this may be raised if no values are returned
+          from the server.
+      :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-              Notes
-              ------
-              - CSV format is not currently supported by load/load_all operations
-              - The column delimiter is expected to be the same for column names and data
-              - Be sure that column delimiters are not found within your data.
-              - All CSV files must delimit rows using newline (`
-      `) at this time.
+      .. rubric:: Notes
 
+      - CSV format is not currently supported by load/load_all operations
+      - The column delimiter is expected to be the same for column names and data
+      - Be sure that column delimiters are not found within your data.
+      - All CSV files must delimit rows using newline (``\n``) at this time.
 
 
    .. py:method:: save(prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True, compression: Optional[str] = None, file_format: str = 'HDF5', file_type: str = 'distribute') -> str
@@ -25798,16 +21916,6 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -25927,9 +22035,6 @@ Attributes
    ``Series``, ``DataFrame`` or ``Index`` as the
    single argument ``data``.
 
-   .. py:method:: __get__(obj, cls)
-
-
 
 .. py:function:: string_operators(cls)
 
@@ -25938,10 +22043,6 @@ Attributes
 
 
 .. py:class:: Properties
-
-   .. py:method:: _make_op(name)
-      :classmethod:
-
 
 
 .. py:class:: DatetimeAccessor(series)
@@ -26099,9 +22200,10 @@ Attributes
 
    .. rubric:: Examples
 
-   Read with file Extension
+   >>>
+   # Read with file Extension
    >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
-   Read Glob Expression
+   # Read Glob Expression
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
@@ -26109,121 +22211,99 @@ Attributes
 
    Read Arkouda objects from Parquet file/s
 
-       Parameters
-       ----------
-       filenames : str, List[str]
-           Filename/s to read objects from
-       datasets : Optional str, List[str]
-           datasets to read from the provided files
-       iterative : bool
-           Iterative (True) or Single (False) function call(s) to server
-       strict_types: bool
-           If True (default), require all dtypes of a given dataset to have the
-           same precision and sign. If False, allow dtypes of different
-           precision and sign across different files. For example, if one
-           file contains a uint32 dataset and another contains an int64
-           dataset with the same name, the contents of both will be read
-           into an int64 pdarray.
-       allow_errors: bool
-           Default False, if True will allow files with read errors to be skipped
-           instead of failing.  A warning will be included in the return containing
-           the total number of files skipped due to failure and up to 10 filenames.
+   :param filenames: Filename/s to read objects from
+   :type filenames: str, List[str]
+   :param datasets: datasets to read from the provided files
+   :type datasets: Optional str, List[str]
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strict_types: If True (default), require all dtypes of a given dataset to have the
+                        same precision and sign. If False, allow dtypes of different
+                        precision and sign across different files. For example, if one
+                        file contains a uint32 dataset and another contains an int64
+                        dataset with the same name, the contents of both will be read
+                        into an int64 pdarray.
+   :type strict_types: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
 
-       Returns
-       -------
-       For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-       and for multiple datasets returns a dictionary of Arkouda pdarrays,
-       Arkouda Strings or Arkouda ArrayView.
-           Dictionary of {datasetName: pdarray or String}
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
 
-       Raises
-       ------
-       ValueError
-           Raised if all datasets are not present in all parquet files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       Notes
-       -----
-       If filenames is a string, it is interpreted as a shell expression
-       (a single filename is a valid expression, so it will work) and is
-       expanded with glob to read all matching files.
+   .. rubric:: Notes
 
-       If iterative == True each dataset name and file names are passed to
-       the server as independent sequential strings while if iterative == False
-       all dataset names and file names are passed to the server in a single
-       string.
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
 
-       If datasets is None, infer the names of datasets from the first file
-       and read all of them. Use ``get_datasets`` to show the names of datasets
-       to Parquet files.
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
 
-       Parquet always recomputes offsets at this time
-       This will need to be updated once parquets workflow is updated
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to Parquet files.
 
-       Examples
-       --------
-       Read without file Extension
-       >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
-       Read Glob Expression
-       >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+   Parquet always recomputes offsets at this time
+   This will need to be updated once parquets workflow is updated
+
+   .. rubric:: Examples
+
+   Read without file Extension
+   >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
+   Read Glob Expression
+   >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
 
 
 .. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
-       Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
-       will be returned in a dictionary mapping the dataset name to the Arkouda object
-       containing the data. If the file contains the appropriately formatted header, typed
-       data will be returned. Otherwise, all data will be returned as a Strings object.
+   Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+   will be returned in a dictionary mapping the dataset name to the Arkouda object
+   containing the data. If the file contains the appropriately formatted header, typed
+   data will be returned. Otherwise, all data will be returned as a Strings object.
 
-       Parameters
-       -----------
-       filenames: str or List[str]
-           The filenames to read data from
-       datasets: str or List[str] (Optional)
-           names of the datasets to read. When `None`, all datasets will be read.
-       column_delim: str
-           The delimiter for column names and data. Defaults to ",".
-       allow_errors: bool
-           Default False, if True will allow files with read errors to be skipped
-           instead of failing.  A warning will be included in the return containing
-           the total number of files skipped due to failure and up to 10 filenames.
+   :param filenames: The filenames to read data from
+   :type filenames: str or List[str]
+   :param datasets: names of the datasets to read. When `None`, all datasets will be read.
+   :type datasets: str or List[str] (Optional)
+   :param column_delim: The delimiter for column names and data. Defaults to ",".
+   :type column_delim: str
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
 
-       Returns
-       --------
-       pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.
+   :returns: **pdarray, Strings or Mapping {dset_name**
+   :rtype: obj} where obj is a pdarray or Strings.
 
-       Raises
-       ------
-       ValueError
-           Raised if all datasets are not present in all parquet files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       See Also
-       ---------
-       to_csv
+   .. seealso:: :obj:`to_csv`
 
-       Notes
-       ------
-       - CSV format is not currently supported by load/load_all operations
-       - The column delimiter is expected to be the same for column names and data
-       - Be sure that column delimiters are not found within your data.
-       - All CSV files must delimit rows using newline (`
-   `) at this time.
-       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-       bytes as uint(8).
+   .. rubric:: Notes
 
+   - CSV format is not currently supported by load/load_all operations
+   - The column delimiter is expected to be the same for column names and data
+   - Be sure that column delimiters are not found within your data.
+   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+     bytes as uint(8).
 
 
 .. py:function:: read(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
@@ -26339,9 +22419,9 @@ Attributes
    .. rubric:: Notes
 
    - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
-   will remain parquet and hdf5 will remain hdf5.
+     will remain parquet and hdf5 will remain hdf5.
    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
-   the same file type, but formatted to be read by Pandas.
+     the same file type, but formatted to be read by Pandas.
 
 
 .. py:function:: to_hdf(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
@@ -26443,57 +22523,44 @@ Attributes
 
 .. py:function:: to_csv(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
 
-       Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
-       include a header denoting data types of the columns.
+   Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+   include a header denoting data types of the columns.
 
-       Parameters
-       -----------
-       columns: Mapping[str, pdarray] or List[pdarray]
-           The objects to be written to CSV file. If a mapping is used and `names` is None
-           the keys of the mapping will be used as the dataset names.
-       prefix_path: str
-           The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-           when they are written to disk.
-       names: List[str] (Optional)
-           names of dataset to be written. Order should correspond to the order of data
-           provided in `columns`.
-       col_delim: str
-           Defaults to ",". Value to be used to separate columns within the file.
-           Please be sure that the value used DOES NOT appear in your dataset.
-       overwrite: bool
-           Defaults to False. If True, any existing files matching your provided prefix_path will
-           be overwritten. If False, an error will be returned if existing files are found.
+   :param columns: The objects to be written to CSV file. If a mapping is used and `names` is None
+                   the keys of the mapping will be used as the dataset names.
+   :type columns: Mapping[str, pdarray] or List[pdarray]
+   :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                       when they are written to disk.
+   :type prefix_path: str
+   :param names: names of dataset to be written. Order should correspond to the order of data
+                 provided in `columns`.
+   :type names: List[str] (Optional)
+   :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                     Please be sure that the value used DOES NOT appear in your dataset.
+   :type col_delim: str
+   :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                     be overwritten. If False, an error will be returned if existing files are found.
+   :type overwrite: bool
 
-       Returns
-       --------
-       None
+   :rtype: None
 
-       Raises
-       ------
-       ValueError
-           Raised if any datasets are present in all csv files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if any datasets are present in all csv files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       See Also
-       ---------
-       read_csv
+   .. seealso:: :obj:`read_csv`
 
-       Notes
-       ------
-       - CSV format is not currently supported by load/load_all operations
-       - The column delimiter is expected to be the same for column names and data
-       - Be sure that column delimiters are not found within your data.
-       - All CSV files must delimit rows using newline (`
-   `) at this time.
-       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-       bytes as uint(8).
+   .. rubric:: Notes
 
+   - CSV format is not currently supported by load/load_all operations
+   - The column delimiter is expected to be the same for column names and data
+   - Be sure that column delimiters are not found within your data.
+   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+     bytes as uint(8).
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None
@@ -26626,29 +22693,5 @@ Attributes
    This function has been updated to determine the file extension based on the file format variable
 
    This function will be deprecated when glob flags are added to read_* methods
-
-
-.. py:function:: file_type_to_int(file_type: str) -> int
-
-   Convert a string to integer representing the format to save the file in
-
-   :param file_type: The string representation of the format for saving the file
-   :type file_type: str (single | distribute)
-
-   :rtype: int representing the format
-
-   :raises ValueError: - If mode is not 'single' or 'distribute'
-
-
-.. py:function:: mode_str_to_int(mode: str) -> int
-
-   Convert string to integer representing the mode to write
-
-   :param mode: The string representation of the write mode to be converted to integer
-   :type mode: str (truncate | append)
-
-   :rtype: int representing the mode
-
-   :raises ValueError: - If mode is not 'truncate' or 'append'
 
 

@@ -19,18 +19,6 @@ Functions
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.sorting.SortingAlgorithm
-
-
-.. py:data:: SortingAlgorithm
-
-   
-
 .. py:function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.

@@ -111,30 +111,6 @@ Functions
 
       
 
-   .. py:attribute:: __array_priority__
-      :value: 1000
-
-      
-
-   .. py:method:: __del__()
-
-
-   .. py:method:: __bool__() -> bool
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: format_other(other) -> str
 
       Attempt to cast scalar other to the element dtype of this pdarray,
@@ -150,196 +126,7 @@ Functions
           Numpy dtype
 
 
-   .. py:method:: _binop(other: pdarray, op: str) -> pdarray
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other: pdarray, op: str) -> pdarray
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: __add__(other)
-
-
-   .. py:method:: __radd__(other)
-
-
-   .. py:method:: __sub__(other)
-
-
-   .. py:method:: __rsub__(other)
-
-
-   .. py:method:: __mul__(other)
-
-
-   .. py:method:: __rmul__(other)
-
-
-   .. py:method:: __truediv__(other)
-
-
-   .. py:method:: __rtruediv__(other)
-
-
-   .. py:method:: __floordiv__(other)
-
-
-   .. py:method:: __rfloordiv__(other)
-
-
-   .. py:method:: __mod__(other)
-
-
-   .. py:method:: __rmod__(other)
-
-
-   .. py:method:: __lshift__(other)
-
-
-   .. py:method:: __rlshift__(other)
-
-
-   .. py:method:: __rshift__(other)
-
-
-   .. py:method:: __rrshift__(other)
-
-
-   .. py:method:: __and__(other)
-
-
-   .. py:method:: __rand__(other)
-
-
-   .. py:method:: __or__(other)
-
-
-   .. py:method:: __ror__(other)
-
-
-   .. py:method:: __xor__(other)
-
-
-   .. py:method:: __rxor__(other)
-
-
-   .. py:method:: __pow__(other)
-
-
-   .. py:method:: __rpow__(other)
-
-
-   .. py:method:: __lt__(other)
-
-      Return self<value.
-
-
-   .. py:method:: __gt__(other)
-
-      Return self>value.
-
-
-   .. py:method:: __le__(other)
-
-      Return self<=value.
-
-
-   .. py:method:: __ge__(other)
-
-      Return self>=value.
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __neg__()
-
-
-   .. py:method:: __invert__()
-
-
    .. py:method:: opeq(other, op)
-
-
-   .. py:method:: __iadd__(other)
-
-
-   .. py:method:: __isub__(other)
-
-
-   .. py:method:: __imul__(other)
-
-
-   .. py:method:: __itruediv__(other)
-
-
-   .. py:method:: __imod__(other)
-
-
-   .. py:method:: __ifloordiv__(other)
-
-
-   .. py:method:: __ilshift__(other)
-
-
-   .. py:method:: __irshift__(other)
-
-
-   .. py:method:: __iand__(other)
-
-
-   .. py:method:: __ior__(other)
-
-
-   .. py:method:: __ixor__(other)
-
-
-   .. py:method:: __ipow__(other)
-
-
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
 
 
    .. py:method:: fill(value: arkouda.dtypes.numeric_scalars) -> None
@@ -372,16 +159,6 @@ Functions
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal Function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
@@ -1092,14 +869,6 @@ Functions
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
       >>> b.unregister()
-
-
-   .. py:method:: _get_grouping_keys() -> List[pdarray]
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
 

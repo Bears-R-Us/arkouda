@@ -16,8 +16,6 @@ Functions
    arkouda.io.get_filetype
    arkouda.io.ls
    arkouda.io.get_null_indices
-   arkouda.io.file_type_to_int
-   arkouda.io.mode_str_to_int
    arkouda.io.get_datasets
    arkouda.io.ls_csv
    arkouda.io.get_columns
@@ -93,30 +91,6 @@ Functions
    :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
    .. seealso:: :obj:`get_datasets`, :obj:`ls`
-
-
-.. py:function:: file_type_to_int(file_type: str) -> int
-
-   Convert a string to integer representing the format to save the file in
-
-   :param file_type: The string representation of the format for saving the file
-   :type file_type: str (single | distribute)
-
-   :rtype: int representing the format
-
-   :raises ValueError: - If mode is not 'single' or 'distribute'
-
-
-.. py:function:: mode_str_to_int(mode: str) -> int
-
-   Convert string to integer representing the mode to write
-
-   :param mode: The string representation of the write mode to be converted to integer
-   :type mode: str (truncate | append)
-
-   :rtype: int representing the mode
-
-   :raises ValueError: - If mode is not 'truncate' or 'append'
 
 
 .. py:function:: get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False) -> List[str]
@@ -205,9 +179,10 @@ Functions
 
    .. rubric:: Examples
 
-   Read with file Extension
+   >>>
+   # Read with file Extension
    >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
-   Read Glob Expression
+   # Read Glob Expression
    >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
 
 
@@ -215,121 +190,99 @@ Functions
 
    Read Arkouda objects from Parquet file/s
 
-       Parameters
-       ----------
-       filenames : str, List[str]
-           Filename/s to read objects from
-       datasets : Optional str, List[str]
-           datasets to read from the provided files
-       iterative : bool
-           Iterative (True) or Single (False) function call(s) to server
-       strict_types: bool
-           If True (default), require all dtypes of a given dataset to have the
-           same precision and sign. If False, allow dtypes of different
-           precision and sign across different files. For example, if one
-           file contains a uint32 dataset and another contains an int64
-           dataset with the same name, the contents of both will be read
-           into an int64 pdarray.
-       allow_errors: bool
-           Default False, if True will allow files with read errors to be skipped
-           instead of failing.  A warning will be included in the return containing
-           the total number of files skipped due to failure and up to 10 filenames.
+   :param filenames: Filename/s to read objects from
+   :type filenames: str, List[str]
+   :param datasets: datasets to read from the provided files
+   :type datasets: Optional str, List[str]
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strict_types: If True (default), require all dtypes of a given dataset to have the
+                        same precision and sign. If False, allow dtypes of different
+                        precision and sign across different files. For example, if one
+                        file contains a uint32 dataset and another contains an int64
+                        dataset with the same name, the contents of both will be read
+                        into an int64 pdarray.
+   :type strict_types: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
 
-       Returns
-       -------
-       For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-       and for multiple datasets returns a dictionary of Arkouda pdarrays,
-       Arkouda Strings or Arkouda ArrayView.
-           Dictionary of {datasetName: pdarray or String}
+   :returns: * *For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays,*
+             * *Arkouda Strings or Arkouda ArrayView.* -- Dictionary of {datasetName: pdarray or String}
 
-       Raises
-       ------
-       ValueError
-           Raised if all datasets are not present in all parquet files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       Notes
-       -----
-       If filenames is a string, it is interpreted as a shell expression
-       (a single filename is a valid expression, so it will work) and is
-       expanded with glob to read all matching files.
+   .. rubric:: Notes
 
-       If iterative == True each dataset name and file names are passed to
-       the server as independent sequential strings while if iterative == False
-       all dataset names and file names are passed to the server in a single
-       string.
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
 
-       If datasets is None, infer the names of datasets from the first file
-       and read all of them. Use ``get_datasets`` to show the names of datasets
-       to Parquet files.
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
 
-       Parquet always recomputes offsets at this time
-       This will need to be updated once parquets workflow is updated
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to Parquet files.
 
-       Examples
-       --------
-       Read without file Extension
-       >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
-       Read Glob Expression
-       >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+   Parquet always recomputes offsets at this time
+   This will need to be updated once parquets workflow is updated
+
+   .. rubric:: Examples
+
+   Read without file Extension
+   >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
+   Read Glob Expression
+   >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
 
 
 .. py:function:: read_csv(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, column_delim: str = ',', allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray, arkouda.array_view.ArrayView]]]
 
-       Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
-       will be returned in a dictionary mapping the dataset name to the Arkouda object
-       containing the data. If the file contains the appropriately formatted header, typed
-       data will be returned. Otherwise, all data will be returned as a Strings object.
+   Read CSV file(s) into Arkouda objects. If more than one dataset is found, the objects
+   will be returned in a dictionary mapping the dataset name to the Arkouda object
+   containing the data. If the file contains the appropriately formatted header, typed
+   data will be returned. Otherwise, all data will be returned as a Strings object.
 
-       Parameters
-       -----------
-       filenames: str or List[str]
-           The filenames to read data from
-       datasets: str or List[str] (Optional)
-           names of the datasets to read. When `None`, all datasets will be read.
-       column_delim: str
-           The delimiter for column names and data. Defaults to ",".
-       allow_errors: bool
-           Default False, if True will allow files with read errors to be skipped
-           instead of failing.  A warning will be included in the return containing
-           the total number of files skipped due to failure and up to 10 filenames.
+   :param filenames: The filenames to read data from
+   :type filenames: str or List[str]
+   :param datasets: names of the datasets to read. When `None`, all datasets will be read.
+   :type datasets: str or List[str] (Optional)
+   :param column_delim: The delimiter for column names and data. Defaults to ",".
+   :type column_delim: str
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
 
-       Returns
-       --------
-       pdarray, Strings or Mapping {dset_name: obj} where obj is a pdarray or Strings.
+   :returns: **pdarray, Strings or Mapping {dset_name**
+   :rtype: obj} where obj is a pdarray or Strings.
 
-       Raises
-       ------
-       ValueError
-           Raised if all datasets are not present in all parquet files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if all datasets are not present in all parquet files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       See Also
-       ---------
-       to_csv
+   .. seealso:: :obj:`to_csv`
 
-       Notes
-       ------
-       - CSV format is not currently supported by load/load_all operations
-       - The column delimiter is expected to be the same for column names and data
-       - Be sure that column delimiters are not found within your data.
-       - All CSV files must delimit rows using newline (`
-   `) at this time.
-       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-       bytes as uint(8).
+   .. rubric:: Notes
 
+   - CSV format is not currently supported by load/load_all operations
+   - The column delimiter is expected to be the same for column names and data
+   - Be sure that column delimiters are not found within your data.
+   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+     bytes as uint(8).
 
 
 .. py:function:: import_data(read_path: str, write_file: str = None, return_obj: bool = True, index: bool = False)
@@ -385,9 +338,9 @@ Functions
    .. rubric:: Notes
 
    - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
-   will remain parquet and hdf5 will remain hdf5.
+     will remain parquet and hdf5 will remain hdf5.
    - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
-   the same file type, but formatted to be read by Pandas.
+     the same file type, but formatted to be read by Pandas.
 
 
 .. py:function:: to_parquet(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate', compression: Optional[str] = None) -> None
@@ -489,57 +442,44 @@ Functions
 
 .. py:function:: to_csv(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, col_delim: str = ',', overwrite: bool = False)
 
-       Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
-       include a header denoting data types of the columns.
+   Write Arkouda object(s) to CSV file(s). All CSV Files written by Arkouda
+   include a header denoting data types of the columns.
 
-       Parameters
-       -----------
-       columns: Mapping[str, pdarray] or List[pdarray]
-           The objects to be written to CSV file. If a mapping is used and `names` is None
-           the keys of the mapping will be used as the dataset names.
-       prefix_path: str
-           The filename prefix to be used for saving files. Files will have _LOCALE#### appended
-           when they are written to disk.
-       names: List[str] (Optional)
-           names of dataset to be written. Order should correspond to the order of data
-           provided in `columns`.
-       col_delim: str
-           Defaults to ",". Value to be used to separate columns within the file.
-           Please be sure that the value used DOES NOT appear in your dataset.
-       overwrite: bool
-           Defaults to False. If True, any existing files matching your provided prefix_path will
-           be overwritten. If False, an error will be returned if existing files are found.
+   :param columns: The objects to be written to CSV file. If a mapping is used and `names` is None
+                   the keys of the mapping will be used as the dataset names.
+   :type columns: Mapping[str, pdarray] or List[pdarray]
+   :param prefix_path: The filename prefix to be used for saving files. Files will have _LOCALE#### appended
+                       when they are written to disk.
+   :type prefix_path: str
+   :param names: names of dataset to be written. Order should correspond to the order of data
+                 provided in `columns`.
+   :type names: List[str] (Optional)
+   :param col_delim: Defaults to ",". Value to be used to separate columns within the file.
+                     Please be sure that the value used DOES NOT appear in your dataset.
+   :type col_delim: str
+   :param overwrite: Defaults to False. If True, any existing files matching your provided prefix_path will
+                     be overwritten. If False, an error will be returned if existing files are found.
+   :type overwrite: bool
 
-       Returns
-       --------
-       None
+   :rtype: None
 
-       Raises
-       ------
-       ValueError
-           Raised if any datasets are present in all csv files or if one or
-           more of the specified files do not exist
-       RuntimeError
-           Raised if one or more of the specified files cannot be opened.
-           If `allow_errors` is true this may be raised if no values are returned
-           from the server.
-       TypeError
-           Raised if we receive an unknown arkouda_type returned from the server
+   :raises ValueError: Raised if any datasets are present in all csv files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
-       See Also
-       ---------
-       read_csv
+   .. seealso:: :obj:`read_csv`
 
-       Notes
-       ------
-       - CSV format is not currently supported by load/load_all operations
-       - The column delimiter is expected to be the same for column names and data
-       - Be sure that column delimiters are not found within your data.
-       - All CSV files must delimit rows using newline (`
-   `) at this time.
-       - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-       bytes as uint(8).
+   .. rubric:: Notes
 
+   - CSV format is not currently supported by load/load_all operations
+   - The column delimiter is expected to be the same for column names and data
+   - Be sure that column delimiters are not found within your data.
+   - All CSV files must delimit rows using newline (``\n``) at this time.
+   - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
+     bytes as uint(8).
 
 
 .. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, file_format='HDF5', mode: str = 'truncate', file_type: str = 'distribute', compression: Optional[str] = None) -> None

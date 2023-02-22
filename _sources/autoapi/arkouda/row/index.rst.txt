@@ -24,19 +24,4 @@ Classes
    This class is useful for printing and working with individual rows of a
    of an aku.DataFrame.
 
-   .. py:method:: __str__()
-
-      Return ascii-formatted version of the dataframe.
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _repr_html_()
-
-      Return html-formatted version of the dataframe.
-
-
 

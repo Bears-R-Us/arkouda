@@ -32,22 +32,6 @@ Classes
       Property indicating if all values in the index are unique
       :rtype: bool - True if all values are unique, False otherwise.
 
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __eq__(v)
-
-      Return self==value.
-
-
    .. py:method:: factory(index)
       :staticmethod:
 
@@ -82,18 +66,6 @@ Classes
 
 
    .. py:method:: to_dict(label)
-
-
-   .. py:method:: _check_types(other)
-
-
-   .. py:method:: _merge(other)
-
-
-   .. py:method:: _merge_all(idx_list)
-
-
-   .. py:method:: _check_aligned(other)
 
 
    .. py:method:: argsort(ascending=True)
@@ -285,22 +257,6 @@ Classes
 
       This is maintained to support older code
 
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __eq__(v)
-
-      Return self==value.
-
-
    .. py:method:: to_pandas()
 
 
@@ -315,12 +271,6 @@ Classes
 
 
    .. py:method:: to_dict(labels)
-
-
-   .. py:method:: _merge(other)
-
-
-   .. py:method:: _merge_all(array)
 
 
    .. py:method:: argsort(ascending=True)

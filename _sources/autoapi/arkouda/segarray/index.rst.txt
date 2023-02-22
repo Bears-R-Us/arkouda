@@ -22,7 +22,6 @@ Functions
 .. autoapisummary::
 
    arkouda.segarray.gen_ranges
-   arkouda.segarray._aggregator
    arkouda.segarray.segarray
 
 
@@ -32,23 +31,15 @@ Functions
    Generate a segmented array of variable-length, contiguous ranges between pairs of
    start- and end-points.
 
-   :param starts:
+   :param starts: The start value of each range
    :type starts: pdarray, int64
-   :param The start value of each range:
-   :param ends:
+   :param ends: The end value (exclusive) of each range
    :type ends: pdarray, int64
-   :param The end value (exclusive) of each range:
-   :param stride:
+   :param stride: Difference between successive elements of each range
    :type stride: int
-   :param Difference between successive elements of each range:
 
-   :returns: * **segments** (*pdarray, int64*)
-             * *The starting index of each range in the resulting array*
-             * **ranges** (*pdarray, int64*)
-             * *The actual ranges, flattened into a single array*
-
-
-.. py:function:: _aggregator(func)
+   :returns: * **segments** (*pdarray, int64*) -- The starting index of each range in the resulting array
+             * **ranges** (*pdarray, int64*) -- The actual ranges, flattened into a single array
 
 
 .. py:function:: segarray(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, lengths=None, grouping=None)
@@ -122,23 +113,6 @@ Functions
       attach method.
 
 
-   .. py:method:: _from_attach_return_msg(repMsg) -> SegArray
-      :classmethod:
-
-      Return a SegArray instance pointing to components created by the arkouda server.
-      The user should not call this function directly.
-
-      :param repMsg:
-                     + delimited string containing the segments, values, and lengths details
-      :type repMsg: str
-
-      :returns: A SegArray representing a set of pdarray components on the server
-      :rtype: SegArray
-
-      :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the categorical instance
-
-
    .. py:method:: from_multi_array(m)
       :classmethod:
 
@@ -150,9 +124,6 @@ Functions
 
       :returns: Array of rows of input
       :rtype: SegArray
-
-
-   .. py:method:: _compute_non_empty()
 
 
    .. py:method:: concat(x, axis=0, ordered=True)
@@ -176,24 +147,6 @@ Functions
    .. py:method:: copy()
 
       Return a deep copy.
-
-
-   .. py:method:: __getitem__(i)
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
 
 
    .. py:method:: get_suffixes(n, return_origins=True, proper=True)
@@ -248,9 +201,6 @@ Functions
 
       :returns: * **ngrams** (*list of pdarray*) -- An n-long list of pdarrays, essentially a table where each row is an n-gram.
                 * **origin_indices** (*pdarray, int*) -- The index of the sub-array from which the corresponding n-gram originated
-
-
-   .. py:method:: _normalize_index(j)
 
 
    .. py:method:: get_jth(j, return_origins=True, compressed=False, default=0)

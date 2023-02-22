@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.alignment" href="../alignment/index.html" /><link rel="prev" title="arkouda._version" href="../_version/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="arkouda.alignment" href="../alignment/index.html" /><link rel="prev" title="arkouda" href="../index.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>arkouda.accessor - arkouda documentation</title>
@@ -195,7 +195,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -203,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
@@ -214,7 +212,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
@@ -328,11 +325,6 @@ A descriptor for caching accessors.
 <p>For accessor, The class’s __init__ method assumes that one of
 <code class="docutils literal notranslate"><span class="pre">Series</span></code>, <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> or <code class="docutils literal notranslate"><span class="pre">Index</span></code> as the
 single argument <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.accessor.CachedAccessor.__get__">
-<span class="sig-name descname"><span class="pre">__get__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.accessor.CachedAccessor.__get__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py function">
@@ -348,12 +340,7 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.Properties">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="headerlink" href="#arkouda.accessor.Properties" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="arkouda.accessor.Properties._make_op">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.accessor.Properties._make_op" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor">
@@ -385,14 +372,14 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../_version/index.html">
+          <a class="prev-page" href="../index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></div>
+                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></div>
                 
               </div>
             </a>
@@ -430,28 +417,16 @@ single argument <code class="docutils literal notranslate"><span class="pre">dat
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
-<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor"><code class="docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor.__get__"><code class="docutils literal notranslate"><span class="pre">CachedAccessor.__get__()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor"><code class="docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.accessor.string_operators"><code class="docutils literal notranslate"><span class="pre">string_operators()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.accessor.date_operators"><code class="docutils literal notranslate"><span class="pre">date_operators()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.accessor.Properties"><code class="docutils literal notranslate"><span class="pre">Properties</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.accessor.Properties._make_op"><code class="docutils literal notranslate"><span class="pre">Properties._make_op()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#arkouda.accessor.Properties"><code class="docutils literal notranslate"><span class="pre">Properties</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.accessor.StringAccessor"><code class="docutils literal notranslate"><span class="pre">StringAccessor</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor">CachedAccessor</a><ul>
-<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor.__get__">__get__</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#arkouda.accessor.CachedAccessor">CachedAccessor</a></li>
 <li><a class="reference internal" href="#arkouda.accessor.string_operators">string_operators</a></li>
 <li><a class="reference internal" href="#arkouda.accessor.date_operators">date_operators</a></li>
-<li><a class="reference internal" href="#arkouda.accessor.Properties">Properties</a><ul>
-<li><a class="reference internal" href="#arkouda.accessor.Properties._make_op">_make_op</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#arkouda.accessor.Properties">Properties</a></li>
 <li><a class="reference internal" href="#arkouda.accessor.DatetimeAccessor">DatetimeAccessor</a></li>
 <li><a class="reference internal" href="#arkouda.accessor.StringAccessor">StringAccessor</a></li>
 </ul>

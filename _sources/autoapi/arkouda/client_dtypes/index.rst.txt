@@ -79,16 +79,6 @@ Functions
       Format a single binary vector as a string.
 
 
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: to_ndarray()
 
       Export data to a numpy array of string-formatted bit vectors.
@@ -97,50 +87,6 @@ Functions
    .. py:method:: to_list()
 
       Export data to a list of string-formatted bit vectors.
-
-
-   .. py:method:: _cast(values)
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)
@@ -185,60 +131,9 @@ Functions
    how values are displayed to the user. Operators and methods will
    typically treat this class like an int64 pdarray.
 
-   .. py:method:: _convert_strings(s)
-
-      Convert string field names to binary vectors.
-
-
-   .. py:method:: _parse_scalar(s)
-
-      Convert a string of named fields to a binary value.
-
-
    .. py:method:: format(x)
 
       Format a single binary value as a string of named fields.
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _cast(values)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)
@@ -292,19 +187,6 @@ Functions
       and convert it to an integer.
 
 
-   .. py:method:: _is_supported_scalar(x)
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
    .. py:method:: to_ndarray()
 
       Export array as a numpy array of integers.
@@ -313,47 +195,6 @@ Functions
    .. py:method:: to_list()
 
       Export array as a list of integers.
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
 
 
    .. py:method:: opeq(other, op)

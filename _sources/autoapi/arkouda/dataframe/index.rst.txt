@@ -105,80 +105,8 @@ Functions
 
       
 
-   .. py:method:: __getattr__(key)
-
-
-   .. py:method:: __dir__()
-
-      Default dir() implementation.
-
-
-   .. py:method:: __delitem__(key)
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: __len__()
-
-      Return the number of rows
-
-
-   .. py:method:: _ncols()
-
-      Number of columns.
-      If index appears, we now want to utilize this
-      because the actual index has been moved to a property
-
-
-   .. py:method:: __str__()
-
-      Returns a summary string of this dataframe.
-
-
-   .. py:method:: _get_head_tail()
-
-
-   .. py:method:: _get_head_tail_server()
-
-
-   .. py:method:: _shape_str()
-
-
-   .. py:method:: __repr__()
-
-      Return ascii-formatted version of the dataframe.
-
-
-   .. py:method:: _repr_html_()
-
-      Return html-formatted version of the dataframe.
-
-
-   .. py:method:: _ipython_key_completions_()
-
-
    .. py:method:: from_pandas(pd_df)
       :classmethod:
-
-
-   .. py:method:: _drop_column(keys)
-
-      Drop a column or columns from the dataframe, in-place.
-
-      keys : list
-          The labels to be dropped on the given axis
-
-
-   .. py:method:: _drop_row(keys)
-
-      Drop a row or rows from the dataframe, in-place.
-
-      keys : list
-          The indexes to be dropped on the given axis
 
 
    .. py:method:: drop(keys: Union[str, int, List[Union[str, int]]], axis: Union[str, int] = 0, inplace: bool = False) -> Union[None, DataFrame]
@@ -223,9 +151,6 @@ Functions
       :rtype: DataFrame
 
 
-   .. py:method:: _set_index(value)
-
-
    .. py:method:: reset_index(size: bool = False, inplace: bool = False) -> Union[None, DataFrame]
 
       Set the index to an integer range.
@@ -253,43 +178,6 @@ Functions
    .. py:method:: update_size()
 
       Computes the number of bytes on the arkouda server.
-
-
-   .. py:method:: _rename_column(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
-
-      Rename columns within the dataframe
-
-      :param mapper: Function or dictionary mapping existing columns to new columns.
-                     Nonexistent names will not raise an error.
-      :type mapper: callable or dict-like
-      :param inplace: Default False. When True, perform the operation on the calling object.
-                      When False, return a new object.
-      :type inplace: bool
-
-      :returns: * DateFrame when `inplace=False`
-                * None when `inplace=True`
-
-      .. seealso:: :obj:`ak.DataFrame._rename_index`, :obj:`ak.DataFrame.rename`
-
-
-   .. py:method:: _rename_index(mapper: Union[Callable, Dict], inplace: bool = False) -> Optional[DataFrame]
-
-      Rename indexes within the dataframe
-
-      :param mapper: Function or dictionary mapping existing indexes to new indexes.
-                     Nonexistent names will not raise an error.
-      :type mapper: callable or dict-like
-      :param inplace: Default False. When True, perform the operation on the calling object.
-                      When False, return a new object.
-      :type inplace: bool
-
-      :returns: * DateFrame when `inplace=False`
-                * None when `inplace=True`
-
-      .. rubric:: Notes
-
-      This does not function exactly like pandas. The replacement value here must be
-      the same type as the existing value.
 
 
    .. py:method:: rename(mapper: Optional[Union[Callable, Dict]] = None, index: Optional[Union[Callable, Dict]] = None, column: Optional[Union[Callable, Dict]] = None, axis: Union[str, int] = 0, inplace: bool = False) -> Optional[DataFrame]
@@ -459,9 +347,6 @@ Functions
 
       :returns: The result of converting this DataFrame to a pandas DataFrame.
       :rtype: pandas.DataFrame
-
-
-   .. py:method:: _prep_data(index=False, columns=None)
 
 
    .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
@@ -928,20 +813,6 @@ Functions
       :raises RegistrationError: if there is an issue attempting to unregister any underlying components
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
-
-
-   .. py:method:: _parse_col_name(entryName, dfName)
-      :staticmethod:
-
-      Helper method used by from_return_msg to parse the registered name of the data component
-      and pull out the column type and column name
-
-      :param entryName: The full registered name of the data component
-      :type entryName: string
-      :param dfName: The name of the DataFrame
-      :type dfName: string
-
-      :rtype: Tuple (columnName, columnType)
 
 
    .. py:method:: from_return_msg(repMsg)

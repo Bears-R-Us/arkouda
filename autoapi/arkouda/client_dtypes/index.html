@@ -195,7 +195,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -203,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
@@ -214,7 +212,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
@@ -379,18 +376,6 @@ typically treat this class like a uint64 pdarray.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.__str__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return str(self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.__repr__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return repr(self).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.to_ndarray" title="Permalink to this definition">#</a></dt>
 <dd><p>Export data to a numpy array of string-formatted bit vectors.</p>
@@ -400,76 +385,6 @@ typically treat this class like a uint64 pdarray.</p>
 <dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.to_list">
 <span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.to_list" title="Permalink to this definition">#</a></dt>
 <dd><p>Export data to a list of string-formatted bit vectors.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector._cast">
-<span class="sig-name descname"><span class="pre">_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector._cast" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.__getitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector.__setitem__">
-<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector.__setitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector._binop">
-<span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector._binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
-pdarray sizes don’t match</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVector._r_binop">
-<span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.BitVector._r_binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes reverse binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -487,7 +402,7 @@ a supported dtype</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id1057" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
@@ -517,86 +432,9 @@ and to display output.</p></li>
 how values are displayed to the user. Operators and methods will
 typically treat this class like an int64 pdarray.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields._convert_strings">
-<span class="sig-name descname"><span class="pre">_convert_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._convert_strings" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert string field names to binary vectors.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields._parse_scalar">
-<span class="sig-name descname"><span class="pre">_parse_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._parse_scalar" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert a string of named fields to a binary value.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.Fields.format">
 <span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields.format" title="Permalink to this definition">#</a></dt>
 <dd><p>Format a single binary value as a string of named fields.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields.__setitem__">
-<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields.__setitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields._cast">
-<span class="sig-name descname"><span class="pre">_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._cast" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields._binop">
-<span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
-pdarray sizes don’t match</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.Fields._r_binop">
-<span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.Fields._r_binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes reverse binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -662,23 +500,6 @@ and convert it to an integer.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4._is_supported_scalar">
-<span class="sig-name descname"><span class="pre">_is_supported_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4._is_supported_scalar" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.__str__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return str(self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.__repr__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return repr(self).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.to_ndarray">
 <span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.to_ndarray" title="Permalink to this definition">#</a></dt>
 <dd><p>Export array as a numpy array of integers.</p>
@@ -688,71 +509,6 @@ and convert it to an integer.</p>
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.to_list">
 <span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.to_list" title="Permalink to this definition">#</a></dt>
 <dd><p>Export array as a list of integers.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.__getitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.__setitem__">
-<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4.__setitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4._binop">
-<span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4._binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set, or if the
-pdarray sizes don’t match</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4._r_binop">
-<span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.client_dtypes.IPv4._r_binop" title="Permalink to this definition">#</a></dt>
-<dd><p>Executes reverse binary operation specified by the op string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray upon which the reverse binop is to be executed</p></li>
-<li><p><strong>op</strong> (<em>str</em>) – The name of the reverse binop to be executed</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pdarray encapsulating the reverse binop result</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Raised if the op is not within the pdarray.BinOps set</p></li>
-<li><p><strong>TypeError</strong> – Raised if other is not a pdarray or the pdarray.dtype is not
-a supported dtype</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -875,26 +631,13 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector"><code class="docutils literal notranslate"><span class="pre">BitVector</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.conserves"><code class="docutils literal notranslate"><span class="pre">BitVector.conserves</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.format"><code class="docutils literal notranslate"><span class="pre">BitVector.format()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__str__"><code class="docutils literal notranslate"><span class="pre">BitVector.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__repr__"><code class="docutils literal notranslate"><span class="pre">BitVector.__repr__()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_ndarray"><code class="docutils literal notranslate"><span class="pre">BitVector.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_list"><code class="docutils literal notranslate"><span class="pre">BitVector.to_list()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._cast"><code class="docutils literal notranslate"><span class="pre">BitVector._cast()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__getitem__"><code class="docutils literal notranslate"><span class="pre">BitVector.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__setitem__"><code class="docutils literal notranslate"><span class="pre">BitVector.__setitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._binop"><code class="docutils literal notranslate"><span class="pre">BitVector._binop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._r_binop"><code class="docutils literal notranslate"><span class="pre">BitVector._r_binop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.opeq"><code class="docutils literal notranslate"><span class="pre">BitVector.opeq()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields"><code class="docutils literal notranslate"><span class="pre">Fields</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._convert_strings"><code class="docutils literal notranslate"><span class="pre">Fields._convert_strings()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._parse_scalar"><code class="docutils literal notranslate"><span class="pre">Fields._parse_scalar()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.format"><code class="docutils literal notranslate"><span class="pre">Fields.format()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields.__setitem__"><code class="docutils literal notranslate"><span class="pre">Fields.__setitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._cast"><code class="docutils literal notranslate"><span class="pre">Fields._cast()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._binop"><code class="docutils literal notranslate"><span class="pre">Fields._binop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._r_binop"><code class="docutils literal notranslate"><span class="pre">Fields._r_binop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.opeq"><code class="docutils literal notranslate"><span class="pre">Fields.opeq()</span></code></a></li>
 </ul>
 </li>
@@ -902,15 +645,8 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4"><code class="docutils literal notranslate"><span class="pre">IPv4</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.format"><code class="docutils literal notranslate"><span class="pre">IPv4.format()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.normalize"><code class="docutils literal notranslate"><span class="pre">IPv4.normalize()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._is_supported_scalar"><code class="docutils literal notranslate"><span class="pre">IPv4._is_supported_scalar()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__str__"><code class="docutils literal notranslate"><span class="pre">IPv4.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__repr__"><code class="docutils literal notranslate"><span class="pre">IPv4.__repr__()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_ndarray"><code class="docutils literal notranslate"><span class="pre">IPv4.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_list"><code class="docutils literal notranslate"><span class="pre">IPv4.to_list()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__getitem__"><code class="docutils literal notranslate"><span class="pre">IPv4.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__setitem__"><code class="docutils literal notranslate"><span class="pre">IPv4.__setitem__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._binop"><code class="docutils literal notranslate"><span class="pre">IPv4._binop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._r_binop"><code class="docutils literal notranslate"><span class="pre">IPv4._r_binop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.opeq"><code class="docutils literal notranslate"><span class="pre">IPv4.opeq()</span></code></a></li>
 </ul>
 </li>
@@ -920,26 +656,13 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector">BitVector</a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.conserves">conserves</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.format">format</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__str__">__str__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__repr__">__repr__</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_ndarray">to_ndarray</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.to_list">to_list</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._cast">_cast</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__getitem__">__getitem__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.__setitem__">__setitem__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._binop">_binop</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVector._r_binop">_r_binop</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.opeq">opeq</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields">Fields</a><ul>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._convert_strings">_convert_strings</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._parse_scalar">_parse_scalar</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.format">format</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields.__setitem__">__setitem__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._cast">_cast</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._binop">_binop</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.Fields._r_binop">_r_binop</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.opeq">opeq</a></li>
 </ul>
 </li>
@@ -947,15 +670,8 @@ a supported dtype</p></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4">IPv4</a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.format">format</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.normalize">normalize</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._is_supported_scalar">_is_supported_scalar</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__str__">__str__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__repr__">__repr__</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_ndarray">to_ndarray</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.to_list">to_list</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__getitem__">__getitem__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.__setitem__">__setitem__</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._binop">_binop</a></li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.IPv4._r_binop">_r_binop</a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.opeq">opeq</a></li>
 </ul>
 </li>

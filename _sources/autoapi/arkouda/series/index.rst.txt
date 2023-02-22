@@ -58,17 +58,6 @@ Classes
 
       
 
-   .. py:method:: __len__()
-
-
-   .. py:method:: __repr__()
-
-      Return ascii-formatted version of the series.
-
-
-   .. py:method:: __getitem__(key)
-
-
    .. py:method:: isin(lst: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List]) -> Series
 
       Find series elements whose values are in the specified list
@@ -91,18 +80,6 @@ Classes
       Keys will be turned into arkouda arrays as needed.
 
       :rtype: A Series containing the values corresponding to the key.
-
-
-   .. py:method:: _make_binop(operator)
-      :classmethod:
-
-
-   .. py:method:: _make_unaryop(operator)
-      :classmethod:
-
-
-   .. py:method:: _make_aggop(name)
-      :classmethod:
 
 
    .. py:method:: add(b: Series) -> Series
@@ -223,12 +200,6 @@ Classes
 
       :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
           the Series instance
-
-
-   .. py:method:: _all_aligned(array: List) -> bool
-      :staticmethod:
-
-      Is an array of Series indexed aligned?
 
 
    .. py:method:: concat(arrays: List, axis: int = 0, index_labels: List[str] = None, value_labels: List[str] = None) -> Union[arkouda.dataframe.DataFrame, Series]

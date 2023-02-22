@@ -17,32 +17,7 @@ Classes
 
 
 
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.match.MatchType
-
-
-.. py:data:: MatchType
-
-   
-
 .. py:class:: Match(matched: arkouda.pdarrayclass.pdarray, starts: arkouda.pdarrayclass.pdarray, lengths: arkouda.pdarrayclass.pdarray, indices: arkouda.pdarrayclass.pdarray, parent_entry_name: str, match_type: MatchType, pattern: str)
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __getitem__(item)
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
 
    .. py:method:: matched() -> arkouda.pdarrayclass.pdarray
 

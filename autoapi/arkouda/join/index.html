@@ -195,7 +195,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -203,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
@@ -214,7 +212,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
@@ -288,6 +285,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt" title="arkouda.join.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(...)</p></td>
 <td><p>Performs an inner-join on equality between two integer arrays where</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join.gen_ranges" title="arkouda.join.gen_ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ranges</span></code></a>(→ Tuple[arkouda.pdarrayclass.pdarray, ...)</p></td>
+<td><p>Generate a segmented array of variable-length, contiguous</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join.compute_join_size" title="arkouda.join.compute_join_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_join_size</span></code></a>(→ Tuple[int, int])</p></td>
+<td><p>Compute the internal size of a hypothetical join between a and b. Returns</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -302,7 +305,7 @@ the time-window predicate is also true</p>
 <li><p><strong>a1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – pdarray to be joined</p></li>
 <li><p><strong>a2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – pdarray to be joined</p></li>
 <li><p><strong>t1</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a1 pdarray</p></li>
-<li><p><strong>t2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>,</em>) – timestamps in millis corresponding to the a2 pdarray</p></li>
+<li><p><strong>t2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – timestamps in millis corresponding to the a2 pdarray</p></li>
 <li><p><strong>dt</strong> (<em>Union</em><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – time delta</p></li>
 <li><p><strong>pred</strong> (<em>str</em>) – time window predicate</p></li>
 <li><p><strong>result_limit</strong> (<em>Union</em><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – size limit for returned result</p></li>
@@ -324,6 +327,35 @@ result_limit is not an int</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.join.gen_ranges">
+<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">gen_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ends</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.join.gen_ranges" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate a segmented array of variable-length, contiguous
+ranges between pairs of start- and end-points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>starts</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The start value of each range</p></li>
+<li><p><strong>ends</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The end value (exclusive) of each range</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>segments</strong> (<em>pdarray, int64</em>) – The starting index of each range in the resulting array</p></li>
+<li><p><strong>ranges</strong> (<em>pdarray, int64</em>) – The actual ranges, flattened into a single array</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.join.compute_join_size">
+<span class="sig-prename descclassname"><span class="pre">arkouda.join.</span></span><span class="sig-name descname"><span class="pre">compute_join_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.join.compute_join_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the internal size of a hypothetical join between a and b. Returns
+both the number of elements and number of bytes required for the join.</p>
 </dd></dl>
 
 </section>
@@ -389,7 +421,11 @@ result_limit is not an int</p></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt"><code class="docutils literal notranslate"><span class="pre">join_on_eq_with_dt()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.join.gen_ranges"><code class="docutils literal notranslate"><span class="pre">gen_ranges()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.join.compute_join_size"><code class="docutils literal notranslate"><span class="pre">compute_join_size()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.join.join_on_eq_with_dt">join_on_eq_with_dt</a></li>
+<li><a class="reference internal" href="#arkouda.join.gen_ranges">gen_ranges</a></li>
+<li><a class="reference internal" href="#arkouda.join.compute_join_size">compute_join_size</a></li>
 </ul>
 </li>
 </ul>

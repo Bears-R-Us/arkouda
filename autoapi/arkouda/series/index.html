@@ -195,7 +195,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../_version/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.accessor</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.alignment</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array_view/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.array_view</span></code></a></li>
@@ -203,7 +202,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client_dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dataframe</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../decorators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.decorators</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtypes/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.index</span></code></a></li>
@@ -214,7 +212,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.logger</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../match/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.match</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../matcher/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.matcher</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numeric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarrayclass/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pdarraycreation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarraycreation</span></code></a></li>
@@ -298,7 +295,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id1057" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#id640" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
 <li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em>) – a 1D array. Must not be None.</p></li>
@@ -347,22 +344,6 @@ If entering keywords,</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series.__len__">
-<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.__len__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.__repr__" title="Permalink to this definition">#</a></dt>
-<dd><p>Return ascii-formatted version of the series.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series.__getitem__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.isin">
 <span class="sig-name descname"><span class="pre">isin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">Series</span></a></span></span><a class="headerlink" href="#arkouda.series.Series.isin" title="Permalink to this definition">#</a></dt>
 <dd><p>Find series elements whose values are in the specified list</p>
@@ -391,21 +372,6 @@ preserved with its values use as the key.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series._make_binop">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series._make_binop" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series._make_unaryop">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make_unaryop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series._make_unaryop" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series._make_aggop">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make_aggop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.series.Series._make_aggop" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.add">
@@ -575,12 +541,6 @@ the Series instance</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.series.Series._all_aligned">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_all_aligned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#arkouda.series.Series._all_aligned" title="Permalink to this definition">#</a></dt>
-<dd><p>Is an array of Series indexed aligned?</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.series.Series.concat">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dataframe/index.html#arkouda.dataframe.DataFrame" title="arkouda.dataframe.DataFrame"><span class="pre">arkouda.dataframe.DataFrame</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.series.Series" title="arkouda.series.Series"><span class="pre">Series</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.series.Series.concat" title="Permalink to this definition">#</a></dt>
 <dd><p>Concatenate in arkouda a list of arkouda Series or grouped arkouda arrays horizontally or
@@ -703,14 +663,8 @@ converted to a column.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.shape"><code class="docutils literal notranslate"><span class="pre">Series.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.dt"><code class="docutils literal notranslate"><span class="pre">Series.dt</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.str_acc"><code class="docutils literal notranslate"><span class="pre">Series.str_acc</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__len__"><code class="docutils literal notranslate"><span class="pre">Series.__len__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__repr__"><code class="docutils literal notranslate"><span class="pre">Series.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__getitem__"><code class="docutils literal notranslate"><span class="pre">Series.__getitem__()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.isin"><code class="docutils literal notranslate"><span class="pre">Series.isin()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.locate"><code class="docutils literal notranslate"><span class="pre">Series.locate()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_binop"><code class="docutils literal notranslate"><span class="pre">Series._make_binop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_unaryop"><code class="docutils literal notranslate"><span class="pre">Series._make_unaryop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_aggop"><code class="docutils literal notranslate"><span class="pre">Series._make_aggop()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.add"><code class="docutils literal notranslate"><span class="pre">Series.add()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.topn"><code class="docutils literal notranslate"><span class="pre">Series.topn()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.sort_index"><code class="docutils literal notranslate"><span class="pre">Series.sort_index()</span></code></a></li>
@@ -725,7 +679,6 @@ converted to a column.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.attach"><code class="docutils literal notranslate"><span class="pre">Series.attach()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.is_registered"><code class="docutils literal notranslate"><span class="pre">Series.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Series.from_return_msg()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._all_aligned"><code class="docutils literal notranslate"><span class="pre">Series._all_aligned()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.concat"><code class="docutils literal notranslate"><span class="pre">Series.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.pdconcat"><code class="docutils literal notranslate"><span class="pre">Series.pdconcat()</span></code></a></li>
 </ul>
@@ -734,14 +687,8 @@ converted to a column.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.shape">shape</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.dt">dt</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.str_acc">str_acc</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__len__">__len__</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__repr__">__repr__</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series.__getitem__">__getitem__</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.isin">isin</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.locate">locate</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_binop">_make_binop</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_unaryop">_make_unaryop</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._make_aggop">_make_aggop</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.add">add</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.topn">topn</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.sort_index">sort_index</a></li>
@@ -756,7 +703,6 @@ converted to a column.</p>
 <li><a class="reference internal" href="#arkouda.series.Series.attach">attach</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.is_registered">is_registered</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.from_return_msg">from_return_msg</a></li>
-<li><a class="reference internal" href="#arkouda.series.Series._all_aligned">_all_aligned</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.concat">concat</a></li>
 <li><a class="reference internal" href="#arkouda.series.Series.pdconcat">pdconcat</a></li>
 </ul>

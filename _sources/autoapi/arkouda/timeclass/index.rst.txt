@@ -12,8 +12,6 @@ Classes
 
 .. autoapisummary::
 
-   arkouda.timeclass._Timescalar
-   arkouda.timeclass._AbstractBaseTime
    arkouda.timeclass.Datetime
    arkouda.timeclass.Timedelta
 
@@ -24,263 +22,8 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.timeclass._get_factor
-   arkouda.timeclass._identity
    arkouda.timeclass.date_range
    arkouda.timeclass.timedelta_range
-
-
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   arkouda.timeclass._BASE_UNIT
-   arkouda.timeclass._unit2normunit
-   arkouda.timeclass._unit2factor
-
-
-.. py:data:: _BASE_UNIT
-   :value: 'ns'
-
-   
-
-.. py:data:: _unit2normunit
-
-   
-
-.. py:data:: _unit2factor
-
-   
-
-.. py:function:: _get_factor(unit: str) -> int
-
-
-.. py:function:: _identity(x, **kwargs)
-
-
-.. py:class:: _Timescalar(scalar)
-
-
-.. py:class:: _AbstractBaseTime(pda, unit: str = _BASE_UNIT)
-
-   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
-
-   Base class for Datetime and Timedelta; not user-facing. Arkouda handles
-   time similar to Pandas (albeit with less functionality), in that all absolute
-   and relative times are represented in nanoseconds as int64 behind the scenes.
-   Datetime and Timedelta can be constructed from Arkouda, NumPy, or Pandas arrays;
-   in each case, the input values are normalized to nanoseconds on initialization,
-   so that all resulting operations are transparent.
-
-   .. py:method:: _get_callback(other, op)
-      :classmethod:
-
-
-   .. py:method:: floor(freq)
-
-      Round times down to the nearest integer of a given frequency.
-
-      :param freq: Frequency to round to
-      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
-
-      :returns: Values rounded down to nearest frequency
-      :rtype: self.__class__
-
-
-   .. py:method:: ceil(freq)
-
-      Round times up to the nearest integer of a given frequency.
-
-      :param freq: Frequency to round to
-      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
-
-      :returns: Values rounded up to nearest frequency
-      :rtype: self.__class__
-
-
-   .. py:method:: round(freq)
-
-      Round times to the nearest integer of a given frequency. Midpoint
-      values will be rounded to nearest even integer.
-
-      :param freq: Frequency to round to
-      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
-
-      :returns: Values rounded to nearest frequency
-      :rtype: self.__class__
-
-
-   .. py:method:: to_ndarray()
-
-      Convert the array to a np.ndarray, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A numpy ndarray with the same attributes and data as the pdarray
-      :rtype: np.ndarray
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`array`, :obj:`to_list`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_ndarray()
-      array([0, 1, 2, 3, 4])
-
-      >>> type(a.to_ndarray())
-      numpy.ndarray
-
-
-   .. py:method:: to_list()
-
-      Convert the array to a list, transferring array data from the
-      Arkouda server to client-side Python. Note: if the pdarray size exceeds
-      client.maxTransferBytes, a RuntimeError is raised.
-
-      :returns: A list with the same data as the pdarray
-      :rtype: list
-
-      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
-          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
-          received does not match expected number of bytes
-
-      .. rubric:: Notes
-
-      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
-      otherwise a ``RuntimeError`` will be raised. This is to protect the user
-      from overflowing the memory of the system on which the Python client
-      is running, under the assumption that the server is running on a
-      distributed system with much more memory than the client. The user
-      may override this limit by setting client.maxTransferBytes to a larger
-      value, but proceed with caution.
-
-      .. seealso:: :obj:`to_ndarray`
-
-      .. rubric:: Examples
-
-      >>> a = ak.arange(0, 5, 1)
-      >>> a.to_list()
-      [0, 1, 2, 3, 4]
-
-      >>> type(a.to_list())
-      list
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__() -> str
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other, op)
-
-      Executes binary operation specified by the op string
-
-      :param other: The pdarray upon which the binop is to be executed
-      :type other: pdarray
-      :param op: The binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
-          pdarray sizes don't match
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: _r_binop(other, op)
-
-      Executes reverse binary operation specified by the op string
-
-      :param other: The pdarray upon which the reverse binop is to be executed
-      :type other: pdarray
-      :param op: The name of the reverse binop to be executed
-      :type op: str
-
-      :returns: A pdarray encapsulating the reverse binop result
-      :rtype: pdarray
-
-      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
-      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
-          a supported dtype
-
-
-   .. py:method:: opeq(other, op)
-
-
-   .. py:method:: _is_datetime_scalar(scalar)
-      :staticmethod:
-
-
-   .. py:method:: _is_timedelta_scalar(scalar)
-      :staticmethod:
-
-
-   .. py:method:: _scalar_callback(key)
-
-
-   .. py:method:: __getitem__(key)
-
-
-   .. py:method:: __setitem__(key, value)
-
-
-   .. py:method:: min()
-
-      Return the minimum value of the array.
-
-
-   .. py:method:: max()
-
-      Return the maximum value of the array.
-
-
-   .. py:method:: mink(k)
-
-      Compute the minimum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
-
-
-   .. py:method:: maxk(k)
-
-      Compute the maximum "k" values.
-
-      :param k: The desired count of maximum values to be returned by the output.
-      :type k: int_scalars
-
-      :returns: The maximum `k` values from pda
-      :rtype: pdarray, int
-
-      :raises TypeError: Raised if pda is not a pdarray
 
 
 
@@ -399,21 +142,7 @@ Attributes
 
       
 
-   .. py:method:: _ensure_components()
-
-
    .. py:method:: isocalendar()
-
-
-   .. py:method:: _get_callback(otherclass, op)
-      :classmethod:
-
-
-   .. py:method:: _scalar_callback(scalar)
-
-
-   .. py:method:: _is_supported_scalar(self, scalar)
-      :staticmethod:
 
 
    .. py:method:: to_pandas()
@@ -505,21 +234,7 @@ Attributes
 
       
 
-   .. py:method:: _ensure_components()
-
-
    .. py:method:: total_seconds()
-
-
-   .. py:method:: _get_callback(otherclass, op)
-      :classmethod:
-
-
-   .. py:method:: _scalar_callback(scalar)
-
-
-   .. py:method:: _is_supported_scalar(self, scalar)
-      :staticmethod:
 
 
    .. py:method:: to_pandas()

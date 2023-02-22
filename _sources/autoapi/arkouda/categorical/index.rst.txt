@@ -214,74 +214,6 @@ Classes
       value, but proceed with caution.
 
 
-   .. py:method:: __iter__()
-      :abstractmethod:
-
-
-   .. py:method:: __len__()
-
-
-   .. py:method:: __str__()
-
-      Return str(self).
-
-
-   .. py:method:: __repr__()
-
-      Return repr(self).
-
-
-   .. py:method:: _binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested binop on this Categorical instance and returns
-      the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: _r_binop(other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
-
-      Executes the requested reverse binop on this Categorical instance and
-      returns the results within a pdarray object.
-
-      :param other: the other object is a Categorical object or string scalar
-      :type other: Union[Categorical,str_scalars]
-      :param op: name of the binary operation to be performed
-      :type op: str_scalars
-
-      :returns: encapsulating the results of the requested binop
-      :rtype: pdarray
-
-      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
-          sizes of this and the other instance don't match
-      :raises RuntimeError: Raised if a server-side error is thrown while executing the
-          binary operation
-
-
-   .. py:method:: __eq__(other)
-
-      Return self==value.
-
-
-   .. py:method:: __ne__(other)
-
-      Return self!=value.
-
-
-   .. py:method:: __getitem__(key) -> Categorical
-
-
    .. py:method:: isna()
 
       Find where values are missing or null (as defined by self.NAvalue)
@@ -422,14 +354,6 @@ Classes
       created using from_codes(), this function will be faster than
       Strings.group() because it sorts dense integer values, rather than
       128-bit hash values.
-
-
-   .. py:method:: _get_grouping_keys()
-
-      Private method for generating grouping keys used by GroupBy.
-
-      API: this method must be defined by all groupable arrays, and it
-      must return a list of arrays that can be (co)argsorted.
 
 
    .. py:method:: argsort()
@@ -640,33 +564,6 @@ Classes
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
-
-
-   .. py:method:: _get_components_dict() -> Dict
-
-      Internal function that returns a dictionary with all required or non-None components of self
-
-      Required Categorical components (Codes and Categories) are always included in
-      returned components_dict
-      Optional Categorical components (Permutation and Segments) are only included if
-      they've been set (are not None)
-
-      :returns:
-
-                Dictionary of all required or non-None components of self
-                    Keys: component names (Codes, Categories, Permutation, Segments)
-                    Values: components of self
-      :rtype: Dict
-
-
-   .. py:method:: _list_component_names() -> List[str]
-
-      Internal function that returns a list of all component names
-
-      :param None:
-
-      :returns: List of all component names
-      :rtype: List[str]
 
 
    .. py:method:: info() -> str
