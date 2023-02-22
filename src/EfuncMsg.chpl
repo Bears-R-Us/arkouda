@@ -752,21 +752,18 @@ module EfuncMsg
 
         // Call hashArrays on list of given array names
         var hashes = hashArrays(size, names, types, st);
-
-        // Init upper and lower 64-bit entries
-        var upper = new shared SymEntry(s, uint);
-        var lower = new shared SymEntry(s, uint);
+        var upper = makeDistArray(s, uint);
+        var lower = makeDistArray(s, uint);
 
         // Assign upper and lower bit values to their respective entries
-        forall (i, (up, low)) in zip(0..#s, hashes) {
-            upper.a[i] = up;
-            lower.a[i] = low;
+        forall (up, low, h) in zip(upper, lower, hashes) {
+            (up, low) = h;
         }
 
         var upperName = st.nextName();
-        st.addEntry(upperName, upper);
+        st.addEntry(upperName, new shared SymEntry(upper));
         var lowerName = st.nextName();
-        st.addEntry(lowerName, lower);
+        st.addEntry(lowerName, new shared SymEntry(lower));
 
         var repMsg = "created %s+created %s".format(st.attrib(upperName), st.attrib(lowerName));
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
