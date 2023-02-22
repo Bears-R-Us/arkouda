@@ -1387,11 +1387,9 @@ class GroupBy:
         # By default, result is in original order
         >>> g.broadcast(values)
         array([3, 5, 3, 5, 3])
-
         # With permute=False, result is in grouped order
         >>> g.broadcast(values, permute=False)
         array([3, 3, 3, 5, 5]
-
         >>> a = ak.randint(1,5,10)
         >>> a
         array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])

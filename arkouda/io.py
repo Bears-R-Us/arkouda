@@ -758,7 +758,7 @@ def read_csv(
     - Be sure that column delimiters are not found within your data.
     - All CSV files must delimit rows using newline (``\\n``) at this time.
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-    bytes as uint(8).
+      bytes as uint(8).
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -1191,7 +1191,7 @@ def to_csv(
     - Be sure that column delimiters are not found within your data.
     - All CSV files must delimit rows using newline (``\\n``) at this time.
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-    bytes as uint(8).
+      bytes as uint(8).
     """
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
     dtypes = [a.dtype.name for a in pdarrays]

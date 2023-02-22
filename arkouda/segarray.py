@@ -27,11 +27,11 @@ def gen_ranges(starts, ends, stride=1):
     Parameters
     ----------
     starts : pdarray, int64
-    The start value of each range
+        The start value of each range
     ends : pdarray, int64
-    The end value (exclusive) of each range
+        The end value (exclusive) of each range
     stride: int
-    Difference between successive elements of each range
+        Difference between successive elements of each range
 
     Returns
     -------

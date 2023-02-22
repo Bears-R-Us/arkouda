@@ -64,7 +64,7 @@ def _in1d_single(
 
     See Also
     --------
-    unique, intersect1d, union1d
+    arkouda.groupbyclass.unique, intersect1d, union1d
 
     Notes
     -----
@@ -410,7 +410,7 @@ def union1d(
 
     See Also
     --------
-    intersect1d, unique
+    intersect1d, arkouda.groupbyclass.unique
 
     Notes
     -----
@@ -501,7 +501,7 @@ def intersect1d(
 
     See Also
     --------
-    unique, union1d
+    arkouda.groupbyclass.unique, union1d
 
     Notes
     -----
@@ -613,7 +613,7 @@ def setdiff1d(
 
     See Also
     --------
-    unique, setxor1d
+    arkouda.groupbyclass.unique, setxor1d
 
     Notes
     -----
