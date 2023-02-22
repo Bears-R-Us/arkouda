@@ -122,9 +122,9 @@ or
 
    .. attribute:: var measurementTotals = new map(string, real)
 
-   .. method:: proc getNumMeasurements(metric: string)
+   .. method:: proc getNumMeasurements(metric: string) throws
 
-   .. method:: proc getMeasurementTotal(metric: string): real
+   .. method:: proc getMeasurementTotal(metric: string): real throws
 
    .. method:: proc add(metric: string, measurement) throws
 
