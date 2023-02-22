@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 from typing import cast as type_cast
+from typing import Optional
 
 import numpy as np  # type: ignore
 
@@ -1030,6 +1031,24 @@ class SegArray:
                     "dtype": self.dtype,
                     "objType": "segarray",
                     "file_format": _file_type_to_int(file_type),
+                },
+            ),
+        )
+
+    def to_parquet(self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None):
+        from arkouda.io import mode_str_to_int
+        return type_cast(
+            str,
+            generic_msg(
+                "writeParquet",
+                {
+                    "values": self.name,
+                    "dset": dataset,
+                    "mode": mode_str_to_int(mode),
+                    "prefix": prefix_path,
+                    "objType": "segarray",
+                    "dtype": self.dtype,
+                    "compression": compression,
                 },
             ),
         )

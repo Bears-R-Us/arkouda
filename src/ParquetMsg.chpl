@@ -27,6 +27,13 @@ module ParquetMsg {
     LZ4=5
   };
 
+  enum ObjType {
+      ARRAYVIEW=0,
+      PDARRAY=1,
+      STRINGS=2,
+      SEGARRAY=3
+    };
+
 
   // Use reflection for error information
   use Reflection;
@@ -879,8 +886,125 @@ module ParquetMsg {
     try! datasets = createStringWithNewBuffer(res, strlen(res));
     return new list(datasets.split(","));
   }
-  
+
+  proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = str2dtype(msgArgs.getValueOf("dtype"));
+    var dtypestr = msgArgs.getValueOf("dtype");
+    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+
+    // TODO - should we validate symentry type??
+    // TODO - add error handling
+    var warnFlag: bool; // TODO - do we need this?? If so handle. Otherwise, remove and update functions called to
+    select dataType {
+      when DType.Int64 {
+        var e = toSymEntry(toGenSymEntry(entry), int);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      }
+      when DType.UInt64 {
+        var e = toSymEntry(toGenSymEntry(entry), uint);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      }
+      when DType.Bool {
+        var e = toSymEntry(toGenSymEntry(entry), bool);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      } when DType.Float64 {
+        var e = toSymEntry(toGenSymEntry(entry), real);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      } otherwise {
+        var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        //return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+  }
+
+  proc strings_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = msgArgs.getValueOf("dtype");
+    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+
+    // TODO - should we ensure that the entry has the correct dtype can can be cast to SegStringSymEntry???
+
+    // TODO - add error handling
+    var warnFlag: bool; // TODO - do we need this?? If so, handle
+    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+    warnFlag = write1DDistStringsAggregators(filename, mode, dsetname, segString, compression:int);
+  }
+
+  proc writeSegArrayParquet(filename: string, mode: int, dsetname: string, segArray, compression: CompressionType) throws {
+    writeln("\n\nIn function for write SegArray\n\n");
+  }
+
+  proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = str2dtype(msgArgs.getValueOf("dtype"));
+    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+    
+    // TODO - if we need a warnflag, we need to implement it here
+    // TODO - should we validate the cast of the symentry???
+
+    // TODO - add error handling
+    select dataType {
+      when DType.Int64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, int);
+        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+      }
+      when DType.UInt64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, uint);
+        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+      }
+      when DType.Bool {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, bool);
+        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+      } when DType.Float64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, real);
+        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+      } otherwise {
+        var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        // return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+
+  }
+
   proc toparquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType; // pdarray, Strings, SegArray
+    // TODO - should we just wrap this block in error handling instead of each call out?
+    select objType {
+      when ObjType.PDARRAY {
+          // call handler for pdarray write
+          pdarray_toParquetMsg(msgArgs, st);
+      }
+      when ObjType.STRINGS {
+          // call handler for strings write
+          strings_toParquetMsg(msgArgs, st);
+      }
+      when ObjType.SEGARRAY {
+          // call handler for strings write
+          segarray_toParquetMsg(msgArgs, st);
+      }
+      otherwise {
+          var errorMsg = "Unable to write object type %s to Parquet file.".format(objType);
+          pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
+    }
+    var repMsg: string = "Dataset written successfully!";
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+  
+  proc toparquetMsg_OLD(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
     var entry = st.lookup(msgArgs.getValueOf("values"));
