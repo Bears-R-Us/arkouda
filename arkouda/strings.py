@@ -659,7 +659,8 @@ class Strings:
 
         Parameters
         ----------
-        chars : the set of characters to be removed
+        chars
+            the set of characters to be removed
 
         Returns
         -------
