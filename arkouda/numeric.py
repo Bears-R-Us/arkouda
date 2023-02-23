@@ -473,7 +473,7 @@ def hash(
     the array.
     """
     if isinstance(pda, pdarray):
-        return hash_single(pda, full)
+        return _hash_single(pda, full)
 
     repMsg = type_cast(
         str,
@@ -493,7 +493,7 @@ def hash(
 
 
 @typechecked
-def hash_single(pda: pdarray, full: bool = True):
+def _hash_single(pda: pdarray, full: bool = True):
     repMsg = type_cast(
         str,
         generic_msg(
