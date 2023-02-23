@@ -210,11 +210,18 @@ module ServerConfig
     }
 
     /*
-    Get the physical memory available on this locale
+    Get an estimate for how much memory can be allocated. Based on runtime with
+    chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
     */ 
     proc getPhysicalMemHere() {
-        use Memory.Diagnostics;
-        return here.physicalMemory();
+        use Memory.Diagnostics, CTypes;
+        extern proc chpl_comm_regMemHeapInfo(start: c_ptr(c_void_ptr), size: c_ptr(c_size_t)): void;
+        var unused: c_void_ptr;
+        var heap_size: c_size_t;
+        chpl_comm_regMemHeapInfo(c_ptrTo(unused), c_ptrTo(heap_size));
+        if heap_size != 0 then
+            return heap_size.safeCast(int);
+        return here.physicalMemory(unit = MemUnits.Bytes);
     }
 
     /*
