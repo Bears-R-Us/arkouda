@@ -980,6 +980,12 @@ module IndexingMsg
             when (DType.Bool, DType.Bool, DType.Bool) {
                 return ivBoolHelper(bool);
             }
+            when (DType.BigInt, DType.Int64, DType.BigInt) {
+                return ivInt64Helper(bigint);
+            }
+            when (DType.BigInt, DType.UInt64, DType.BigInt) {
+                return ivUInt64Helper(bigint);
+            }
             when (DType.BigInt, DType.Int64, DType.Int64) {
                 return ivInt64Helper(int);
             }
@@ -991,6 +997,9 @@ module IndexingMsg
             }
             when (DType.BigInt, DType.UInt64, DType.UInt64) {
                 return ivUInt64Helper(uint);
+            }
+            when (DType.BigInt, DType.Bool, DType.BigInt) {
+                return ivBoolHelper(bigint);
             }
             when (DType.BigInt, DType.Bool, DType.Int64) {
                 return ivBoolHelper(int);
