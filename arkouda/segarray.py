@@ -1009,7 +1009,7 @@ class SegArray:
         ---------
         load
         """
-        from arkouda.io import file_type_to_int, mode_str_to_int
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
 
         return type_cast(
             str,
@@ -1018,11 +1018,11 @@ class SegArray:
                 args={
                     "seg_name": self.name,
                     "dset": dataset,
-                    "write_mode": mode_str_to_int(mode),
+                    "write_mode": _mode_str_to_int(mode),
                     "filename": prefix_path,
                     "dtype": self.dtype,
                     "objType": "segarray",
-                    "file_format": file_type_to_int(file_type),
+                    "file_format": _file_type_to_int(file_type),
                 },
             ),
         )
