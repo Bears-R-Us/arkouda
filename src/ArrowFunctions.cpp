@@ -265,10 +265,10 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
   }
 }
 
-int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
-    auto offsets = (int64_t*)chpl_offsets;
+    auto seg_sizes = (int64_t*)chpl_seg_sizes;
     int64_t listSize = 0;
     
     if (ty == ARROWLIST){
@@ -313,7 +313,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             int64_t value;
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (values_read == 0 || (!first && rep_lvl == 0)) {
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
@@ -325,7 +325,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!int_reader->HasNext()){
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
@@ -336,7 +336,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             int32_t value;
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (values_read == 0 || (!first && rep_lvl == 0)) {
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
@@ -348,7 +348,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!int_reader->HasNext()){
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWBOOLEAN) {
@@ -359,7 +359,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             bool value;
             (void)bool_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             if (values_read == 0 || (!first && rep_lvl == 0)) {
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
@@ -371,7 +371,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!bool_reader->HasNext()){
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
             }
           }
         } else if (lty == ARROWFLOAT) {
@@ -384,7 +384,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             (void)float_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             // not worried about NaN here so don't need to check values read.
             if (values_read == 0 || (!first && rep_lvl == 0)) {
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
@@ -396,7 +396,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!float_reader->HasNext()){
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWDOUBLE) {
@@ -408,7 +408,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
             (void)dbl_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             // not worried about NaN here so don't need to check values read.
             if (values_read == 0 || (!first && rep_lvl == 0)) {
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
               i++;
               seg_size = 0;
             }
@@ -420,7 +420,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
               }
             }
             if (!dbl_reader->HasNext()){
-              offsets[i] = seg_size;
+              seg_sizes[i] = seg_size;
             }
           }
         }
@@ -1326,8 +1326,8 @@ extern "C" {
     return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
   }
 
-  int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
-    return cpp_getListColumnSize(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
+  int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
+    return cpp_getListColumnSize(filename, colname, chpl_seg_sizes, numElems, startIdx, errMsg);
   }
 
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg) {

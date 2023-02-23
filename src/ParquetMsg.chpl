@@ -182,7 +182,7 @@ module ParquetMsg {
     // compute the index of the segment containing val
     if lower_bound {
       var (v, idx) = maxloc reduce zip(offsets >= val, offsets.domain);
-      return if v then idx else 0;
+      return idx;
     }
     else {
       var (v, idx) = maxloc reduce zip(offsets > val, offsets.domain);
@@ -236,23 +236,23 @@ module ParquetMsg {
     }
   }
 
-  proc calcListSizesandOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+  proc calcListSizesandOffset(seg_sizes: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var (subdoms, length) = getSubdomains(sizes);
 
     var listSizes: [filenames.domain] int;
     var file_offset: int = 0;
-    coforall loc in offsets.targetLocales() do on loc{
+    coforall loc in seg_sizes.targetLocales() do on loc{
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
       try {
         forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-          for locdom in offsets.localSubdomains() {
+          for locdom in seg_sizes.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
               var col: [filedom] t;
               listSizes[i] = getListColSize(filename, dsetname, col);
-              offsets[filedom] = col; // this is actually segment sizes here
+              seg_sizes[filedom] = col; // this is actually segment sizes here
             }
           }
         }
@@ -335,14 +335,14 @@ module ParquetMsg {
     return byteSize;
   }
 
-  proc getListColSize(filename: string, dsetname: string, offsets: [] int) throws {
-    extern proc c_getListColumnSize(filename, colname, offsets, numElems, startIdx, errMsg): int;
+  proc getListColSize(filename: string, dsetname: string, seg_sizes: [] int) throws {
+    extern proc c_getListColumnSize(filename, colname, seg_sizes, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var listSize = c_getListColumnSize(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
-                                             c_ptrTo(offsets),
-                                             offsets.size, 0,
+                                             c_ptrTo(seg_sizes),
+                                             seg_sizes.size, 0,
                                              c_ptrTo(pqErr.errMsg));
     
     if listSize == ARROWERROR then

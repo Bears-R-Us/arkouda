@@ -369,16 +369,16 @@ class ParquetTest(ArkoudaTest):
         })
         table = pa.Table.from_pandas(df)
         table2 = pa.Table.from_pandas(df2)
+        combo = pd.concat([df, df2], ignore_index=True)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments_LOCALE0000")
             pq.write_table(table2, f"{tmp_dirname}/empty_segments_LOCALE0001")
 
             ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
-            print(ak_data.to_list())
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
-            for i in range(5):
-                self.assertListEqual(df["ListCol"][i], ak_data[i].tolist())
+            for i in range(9):
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
 
         # multi-file with empty segs
         df = pd.DataFrame({
@@ -400,16 +400,16 @@ class ParquetTest(ArkoudaTest):
         })
         table = pa.Table.from_pandas(df)
         table2 = pa.Table.from_pandas(df2)
+        combo = pd.concat([df, df2], ignore_index=True)
         with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
             pq.write_table(table, f"{tmp_dirname}/empty_segments_LOCALE0000")
             pq.write_table(table2, f"{tmp_dirname}/empty_segments_LOCALE0001")
 
             ak_data = ak.read_parquet(f"{tmp_dirname}/empty_segments*")
-            print(ak_data.to_list())
             self.assertIsInstance(ak_data, ak.SegArray)
             self.assertEqual(ak_data.size, 9)
-            for i in range(5):
-                self.assertListEqual(df["ListCol"][i], ak_data[i].tolist())
+            for i in range(9):
+                self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
 
 
 
