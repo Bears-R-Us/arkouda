@@ -803,9 +803,9 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["ColC"].to_list(), d["ColC"].to_list())
 
     def test_segarray_hdf(self):
-        a = [1, 2, 3]
-        b = [4, 5, 6, 7, 8]
-        c = [9, 0]
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
 
         # int64 test
         flat = a + b + c
@@ -856,6 +856,25 @@ class IOTest(ArkoudaTest):
             seg2 = ak.load(f"{tmp_dirname}/segarray_bool", dataset="segarray")
             self.assertListEqual(segarr.segments.to_list(), seg2.segments.to_list())
             self.assertListEqual(segarr.values.to_list(), seg2.values.to_list())
+
+    def test_dataframe_segarr(self):
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
+
+        # int64 test
+        flat = a + b + c
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        dtype = ak.dtypes.int64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        s = ak.array(["abc","def","ghi"])
+        df = ak.DataFrame([segarr, s])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/dataframe_segarr")
+            df_load = ak.DataFrame.load(f"{tmp_dirname}/dataframe_segarr")
+            self.assertTrue(df.to_pandas().equals(df_load.to_pandas()))
 
     def tearDown(self):
         super(IOTest, self).tearDown()

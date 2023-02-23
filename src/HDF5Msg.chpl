@@ -949,12 +949,7 @@ module HDF5Msg {
         var file_format = msgArgs.get("file_format").getIntValue();
         var group = msgArgs.getValueOf("dset");
         var dType = str2dtype(msgArgs.getValueOf("dtype"));
-
-        var vals = st.lookup(msgArgs.getValueOf("values"));
-
-        var segs = st.lookup(msgArgs.getValueOf("segments"));
-        var segEntry:SymEntry = toSymEntry(toGenSymEntry(segs), int);
-
+        var segarr = msgArgs.getValueOf("seg_name");
         const objType = msgArgs.getValueOf("objType");
 
         select file_format {
@@ -974,37 +969,47 @@ module HDF5Msg {
 
                 // create the group
                 validateGroup(file_id, f, group);
-
                 var dtype: C_HDF5.hid_t;
-                var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
 
                 select dType {
                     when (DType.Int64) {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), int);
+                        var sa:SegArray = getSegArray(segarr, st, int);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
 
                         //localize values and write dataset
                         var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, int);
                         dtype = getDataType(int);
                     } when (DType.UInt64) {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), uint);
+                        var sa:SegArray = getSegArray(segarr, st, uint);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
 
                          //localize values and write dataset
                         var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, uint);
                         dtype = getDataType(uint);
                     } when (DType.Float64) {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), real);
+                        var sa:SegArray = getSegArray(segarr, st, real);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
 
                          //localize values and write dataset
                         var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, real);
                         dtype = getDataType(real);
                     } when (DType.Bool) {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), bool);
+                        var sa:SegArray = getSegArray(segarr, st, bool);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
 
                          //localize values and write dataset
                         var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
                         writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, bool);
                         dtype = getDataType(bool);
                     }
@@ -1022,25 +1027,33 @@ module HDF5Msg {
                 C_HDF5.H5Fclose(file_id);
             }
             when MULTI_FILE {
-                var filenames = prepFiles(filename, mode, segEntry.a);
-
-                const lastSegIdx = segEntry.a.domain.high;
-
                 select dType {
                     when DType.Int64 {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), int);
+                        var sa:SegArray = getSegArray(segarr, st, int);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
                         writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, int);
                     }
                     when DType.UInt64 {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), uint);
+                        var sa:SegArray = getSegArray(segarr, st, uint);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
                         writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, uint);
                     }
                     when DType.Float64 {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), real);
+                        var sa:SegArray = getSegArray(segarr, st, real);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
                         writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, real);
                     }
                     when DType.Bool {
-                        var valEntry:SymEntry = toSymEntry(toGenSymEntry(vals), bool);
+                        var sa:SegArray = getSegArray(segarr, st, bool);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
                         writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, bool);
                     }
                     otherwise {

@@ -1016,8 +1016,7 @@ class SegArray:
             generic_msg(
                 cmd="tohdf",
                 args={
-                    "values": self.values.name,
-                    "segments": self.segments.name,
+                    "seg_name": self.name,
                     "dset": dataset,
                     "write_mode": mode_str_to_int(mode),
                     "filename": prefix_path,
