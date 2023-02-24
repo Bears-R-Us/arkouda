@@ -294,6 +294,13 @@ class GroupBy:
             else:
                 self.unique_keys = tuple(a[uki] for a in self.keys)
 
+    def __del__(self):
+        try:
+            if self.name:
+                generic_msg(cmd="delete", args={"name": self.name})
+        except RuntimeError:
+            pass
+
     def size(self) -> Tuple[groupable, pdarray]:
         """
         Count the number of elements in each group, i.e. the number of times

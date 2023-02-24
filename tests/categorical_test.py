@@ -384,6 +384,17 @@ class CategoricalTest(ArkoudaTest):
         ret = ak.lookup(keys, values, args)
         self.assertListEqual(ret.to_list(), ["C", "B", "A", "N/A"])
 
+    def test_deletion(self):
+        cat = ak.Categorical(ak.array(["a", "b", "c"]))
+
+        # validate registration with server
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+
+        # set to none and validate no entries in symbol table
+        cat = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+
     def tearDown(self):
         super(CategoricalTest, self).tearDown()
         for f in glob.glob("{}/*".format(CategoricalTest.cat_test_base_tmp)):
