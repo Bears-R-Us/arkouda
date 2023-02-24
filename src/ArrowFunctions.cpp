@@ -265,10 +265,10 @@ int64_t cpp_getStringColumnNumBytes(const char* filename, const char* colname, v
   }
 }
 
-int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
+int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
   try {
     int64_t ty = cpp_getType(filename, colname, errMsg);
-    auto offsets = (int64_t*)chpl_offsets;
+    auto seg_sizes = (int64_t*)chpl_seg_sizes;
     int64_t listSize = 0;
     
     if (ty == ARROWLIST){
@@ -303,6 +303,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
         column_reader = row_group_reader->Column(idx);
         int16_t definition_level;
         int16_t rep_lvl;
+        bool first = true;
 
         if(lty == ARROWINT64 || lty == ARROWUINT64) {
           parquet::Int64Reader* int_reader =
@@ -311,28 +312,20 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
           while (int_reader->HasNext()) {
             int64_t value;
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
-            if (values_read == 0){ // empty segment
-              if (!int_reader->HasNext()){ // last value 
-                offsets[i] = seg_size;
-              }
-              else {
-                i++;
-              }
-            } else {
-              // new segment starts. This has to be before increment to avoid false empty on first segment.
-              if (rep_lvl == 0 && seg_size >0) {
-                offsets[i] = seg_size;
-                i++;
-                seg_size = 0;
-              }
-              // increment counters
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
               seg_size++;
               vct++;
-              
-              // if this is the last value in the iterator, assign the value in order to set last offset
-              if (!int_reader->HasNext()){
-                offsets[i] = seg_size;
+              if (first) {
+                first = false;
               }
+            }
+            if (!int_reader->HasNext()){
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWINT32 || lty == ARROWUINT32) {
@@ -341,30 +334,21 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
 
           while (int_reader->HasNext()) {
             int32_t value;
-            
             (void)int_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
-            if (values_read == 0){ // empty segment
-              if (!int_reader->HasNext()){ // last value 
-                offsets[i] = seg_size;
-              }
-              else {
-                i++;
-              }
-            } else {
-              // new segment starts. This has to be before increment to avoid false empty on first segment.
-              if (rep_lvl == 0 && seg_size >0) {
-                offsets[i] = seg_size;
-                i++;
-                seg_size = 0;
-              }
-              // increment counters
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
               seg_size++;
               vct++;
-              
-              // if this is the last value in the iterator, assign the value in order to set last offset
-              if (!int_reader->HasNext()){
-                offsets[i] = seg_size;
+              if (first) {
+                first = false;
               }
+            }
+            if (!int_reader->HasNext()){
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWBOOLEAN) {
@@ -374,28 +358,20 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
           while (bool_reader->HasNext()) {
             bool value;
             (void)bool_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
-            if (values_read == 0){ // empty segment
-              if (!bool_reader->HasNext()){ // last value 
-                offsets[i] = seg_size;
-              }
-              else {
-                i++;
-              }
-            } else {
-              // new segment starts. This has to be before increment to avoid false empty on first segment.
-              if (rep_lvl == 0 && seg_size >0) {
-                offsets[i] = seg_size;
-                i++;
-                seg_size = 0;
-              }
-              // increment counters
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
               seg_size++;
               vct++;
-              
-              // if this is the last value in the iterator, assign the value in order to set last offset
-              if (!bool_reader->HasNext()){
-                offsets[i] = seg_size;
+              if (first) {
+                first = false;
               }
+            }
+            if (!bool_reader->HasNext()){
+              seg_sizes[i] = seg_size;
             }
           }
         } else if (lty == ARROWFLOAT) {
@@ -405,31 +381,22 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
           int64_t numRead = 0;
           while (float_reader->HasNext()) {
             float value;
-            
             (void)float_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             // not worried about NaN here so don't need to check values read.
-            if (values_read == 0){ // empty segment
-              if (!float_reader->HasNext()){ // last value 
-                offsets[i] = seg_size;
-              }
-              else {
-                i++;
-              }
-            } else {
-              // new segment starts. This has to be before increment to avoid false empty on first segment.
-              if (rep_lvl == 0 && seg_size >0) {
-                offsets[i] = seg_size;
-                i++;
-                seg_size = 0;
-              }
-              // increment counters
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
               seg_size++;
               vct++;
-              
-              // if this is the last value in the iterator, assign the value in order to set last offset
-              if (!float_reader->HasNext()){
-                offsets[i] = seg_size;
+              if (first) {
+                first = false;
               }
+            }
+            if (!float_reader->HasNext()){
+              seg_sizes[i] = seg_size;
             }
           }
         } else if(lty == ARROWDOUBLE) {
@@ -438,31 +405,22 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
 
           while (dbl_reader->HasNext()) {
             double value;
-            
             (void)dbl_reader->ReadBatch(1, &definition_level, &rep_lvl, &value, &values_read);
             // not worried about NaN here so don't need to check values read.
-            if (values_read == 0){ // empty segment
-              if (!dbl_reader->HasNext()){ // last value 
-                offsets[i] = seg_size;
-              }
-              else {
-                i++;
-              }
-            } else {
-              // new segment starts. This has to be before increment to avoid false empty on first segment.
-              if (rep_lvl == 0 && seg_size >0) {
-                offsets[i] = seg_size;
-                i++;
-                seg_size = 0;
-              }
-              // increment counters
+            if (values_read == 0 || (!first && rep_lvl == 0)) {
+              seg_sizes[i] = seg_size;
+              i++;
+              seg_size = 0;
+            }
+            if (values_read != 0) {
               seg_size++;
               vct++;
-              
-              // if this is the last value in the iterator, assign the value in order to set last offset
-              if (!dbl_reader->HasNext()){
-                offsets[i] = seg_size;
+              if (first) {
+                first = false;
               }
+            }
+            if (!dbl_reader->HasNext()){
+              seg_sizes[i] = seg_size;
             }
           }
         }
@@ -1368,8 +1326,8 @@ extern "C" {
     return cpp_getStringColumnNumBytes(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
   }
 
-  int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_offsets, int64_t numElems, int64_t startIdx, char** errMsg) {
-    return cpp_getListColumnSize(filename, colname, chpl_offsets, numElems, startIdx, errMsg);
+  int64_t c_getListColumnSize(const char* filename, const char* colname, void* chpl_seg_sizes, int64_t numElems, int64_t startIdx, char** errMsg) {
+    return cpp_getListColumnSize(filename, colname, chpl_seg_sizes, numElems, startIdx, errMsg);
   }
 
   int64_t c_getStringColumnNullIndices(const char* filename, const char* colname, void* chpl_nulls, char** errMsg) {

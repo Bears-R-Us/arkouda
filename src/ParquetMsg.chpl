@@ -178,26 +178,47 @@ module ParquetMsg {
     }
   }
 
-  proc readListFilesByName(A: [] ?t, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
+  proc computeIdx(offsets: [] int, val: int): int throws {
+    var (v, idx) = maxloc reduce zip(offsets > val, offsets.domain);
+    return if v then idx-1 else offsets.size-1;
+  }
+
+  proc computeEmptySegs(seg_sizes: [] int, offsets: [] int, s: int, intersection: domain(1), fileoffset: int): int throws {
+    // Compute the number of empty segments preceeding the current chunk
+    if (intersection.low-fileoffset == 0){ //starts the file, no shift needed
+      return 0;
+    }
+    var highidx = computeIdx(offsets, intersection.low);
+    var sub_segs = seg_sizes[s..highidx];
+    var empty_segs = sub_segs == 0;
+    return (+ reduce empty_segs);
+  }
+
+  proc readListFilesByName(A: [] ?t, rows_per_file: [] int, seg_sizes: [] int, offsets: [] int, filenames: [] string, sizes: [] int, dsetname: string, ty) throws {
     extern proc c_readListColumnByName(filename, chpl_arr, colNum, numElems, startIdx, batchSize, errMsg): int;
     var (subdoms, length) = getSubdomains(sizes);
     var fileOffsets = (+ scan sizes) - sizes;
+    var segmentOffsets = (+ scan rows_per_file) - rows_per_file;
     
     coforall loc in A.targetLocales() do on loc {
       var locFiles = filenames;
       var locFiledoms = subdoms;
-      var locOffsets = fileOffsets;
+      var locOffsets = fileOffsets; // value count offset
+      var locSegOffsets = segmentOffsets; // indicates which segment index is first for the file
 
       try {
-        forall (off, filedom, filename) in zip(locOffsets, locFiledoms, locFiles) {
+        forall (s, off, filedom, filename) in zip(locSegOffsets, locOffsets, locFiledoms, locFiles) {
           for locdom in A.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
 
             if intersection.size > 0 {
               var pqErr = new parquetErrorMsg();
 
+              var shift = computeEmptySegs(seg_sizes, offsets, s, intersection, off); // compute the shift to account for any empty segments in the file before the current section.
+
+
               if c_readListColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]),
-                                    dsetname.localize().c_str(), intersection.size, intersection.low - off,
+                                    dsetname.localize().c_str(), intersection.size, (intersection.low - off) + shift,
                                     batchSize, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
                 pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
               }
@@ -210,23 +231,23 @@ module ParquetMsg {
     }
   }
 
-  proc calcListSizesandOffset(offsets: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
+  proc calcListSizesandOffset(seg_sizes: [] ?t, filenames: [] string, sizes: [] int, dsetname: string) throws {
     var (subdoms, length) = getSubdomains(sizes);
 
     var listSizes: [filenames.domain] int;
     var file_offset: int = 0;
-    coforall loc in offsets.targetLocales() do on loc{
+    coforall loc in seg_sizes.targetLocales() do on loc{
       var locFiles = filenames;
       var locFiledoms = subdoms;
       
       try {
         forall (i, filedom, filename) in zip(sizes.domain, locFiledoms, locFiles) {
-          for locdom in offsets.localSubdomains() {
+          for locdom in seg_sizes.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
               var col: [filedom] t;
               listSizes[i] = getListColSize(filename, dsetname, col);
-              offsets[filedom] = col;
+              seg_sizes[filedom] = col; // this is actually segment sizes here
             }
           }
         }
@@ -309,14 +330,14 @@ module ParquetMsg {
     return byteSize;
   }
 
-  proc getListColSize(filename: string, dsetname: string, offsets: [] int) throws {
-    extern proc c_getListColumnSize(filename, colname, offsets, numElems, startIdx, errMsg): int;
+  proc getListColSize(filename: string, dsetname: string, seg_sizes: [] int) throws {
+    extern proc c_getListColumnSize(filename, colname, seg_sizes, numElems, startIdx, errMsg): int;
     var pqErr = new parquetErrorMsg();
 
     var listSize = c_getListColumnSize(filename.localize().c_str(),
                                              dsetname.localize().c_str(),
-                                             c_ptrTo(offsets),
-                                             offsets.size, 0,
+                                             c_ptrTo(seg_sizes),
+                                             seg_sizes.size, 0,
                                              c_ptrTo(pqErr.errMsg));
     
     if listSize == ARROWERROR then
@@ -644,35 +665,35 @@ module ParquetMsg {
     // len here is our segment size
     var ty = getListData(filenames[0], dsetname);
     var filedom = filenames.domain;
-    var segments = makeDistArray(len, int);
-    var listSizes: [filedom] int = calcListSizesandOffset(segments, filenames, sizes, dsetname);
-    segments = (+ scan segments) - segments;
+    var seg_sizes = makeDistArray(len, int);
+    var listSizes: [filedom] int = calcListSizesandOffset(seg_sizes, filenames, sizes, dsetname);
+    var segments = (+ scan seg_sizes) - seg_sizes; // converts segment sizes into offsets
     var rtnmap: map(string, string) = new map(string, string);
 
     if ty == ArrowTypes.int64 || ty == ArrowTypes.int32 {
       var values = makeDistArray((+ reduce listSizes), int);
-      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       var segArray = getSegArray(segments, values, st);
       segArray.fillReturnMap(rtnmap, st);
       return "%jt".format(rtnmap);
     }
     else if ty == ArrowTypes.uint64 || ty == ArrowTypes.uint32 {
       var values = makeDistArray((+ reduce listSizes), uint);
-      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       var segArray = getSegArray(segments, values, st);
       segArray.fillReturnMap(rtnmap, st);
       return "%jt".format(rtnmap);
     }
     else if ty == ArrowTypes.double || ty == ArrowTypes.float {
       var values = makeDistArray((+ reduce listSizes), real);
-      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       var segArray = getSegArray(segments, values, st);
       segArray.fillReturnMap(rtnmap, st);
       return "%jt".format(rtnmap);
     }
     else if ty == ArrowTypes.boolean {
       var values = makeDistArray((+ reduce listSizes), bool);
-      readListFilesByName(values, filenames, listSizes, dsetname, ty);
+      readListFilesByName(values, sizes, seg_sizes, segments, filenames, listSizes, dsetname, ty);
       var segArray = getSegArray(segments, values, st);
       segArray.fillReturnMap(rtnmap, st);
       return "%jt".format(rtnmap);
