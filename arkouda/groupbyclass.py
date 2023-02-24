@@ -246,6 +246,7 @@ class GroupBy:
         # This prevents non-bool values that can be evaluated to true (ie non-empty arrays)
         # from causing unexpected results. Experienced when forgetting to wrap multiple key arrays in [].
         # See Issue #1267
+        self.name = None
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
@@ -293,6 +294,13 @@ class GroupBy:
                 self.unique_keys = self.keys[uki]
             else:
                 self.unique_keys = tuple(a[uki] for a in self.keys)
+
+    def __del__(self):
+        try:
+            if self.name:
+                generic_msg(cmd="delete", args={"name": self.name})
+        except RuntimeError:
+            pass
 
     def size(self) -> Tuple[groupable, pdarray]:
         """
