@@ -1115,57 +1115,37 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t &= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t &= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t &= ri;
             }
           }
           visted = true;
         }
         when "|" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t |= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t |= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t |= ri;
             }
           }
           visted = true;
         }
         when "^" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t ^= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t ^= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t ^= ri;
             }
           }
           visted = true;
         }
         when "/" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t /= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t /= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t /= ri;
             }
           }
           visted = true;
@@ -1179,15 +1159,10 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            if has_max_bits {
-              forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-                t <<= ri;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t <<= ri;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, ri) in zip(tmp, ra) {
-                t <<= ri;
               }
             }
             visted = true;
@@ -1199,15 +1174,10 @@ module BinOp
             var divideBy = makeDistArray(la.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= ra;
-            if has_max_bits {
-              forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
-                t /= dB;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, dB) in zip(tmp, divideBy) {
-                t /= dB;
               }
             }
             visted = true;
@@ -1265,25 +1235,15 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if ri != 0 {
-                t /= ri;
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t /= ri;
             }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              if ri != 0 {
-                t /= ri;
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
@@ -1291,25 +1251,15 @@ module BinOp
         when "%" { // modulo
           // we only do in place mod when ri != 0, tmp will be 0 in other locations
           // we can't use ei = li % ri because this can result in negatives
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if ri != 0 {
-                t.mod(t, ri);
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t.mod(t, ri);
             }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              if ri != 0 {
-                t.mod(t, ri);
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
@@ -1337,43 +1287,28 @@ module BinOp
        (r.etype == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
       select op {
         when "+" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t += ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t += ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t += ri;
             }
           }
           visted = true;
         }
         when "-" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t -= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t -= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t -= ri;
             }
           }
           visted = true;
         }
         when "*" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t *= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t *= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t *= ri;
             }
           }
           visted = true;
@@ -1435,57 +1370,37 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t &= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t &= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t &= local_val;
             }
           }
           visted = true;
         }
         when "|" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t |= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t |= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t |= local_val;
             }
           }
           visted = true;
         }
         when "^" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t ^= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t ^= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t ^= local_val;
             }
           }
           visted = true;
         }
         when "/" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t /= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t /= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t /= local_val;
             }
           }
           visted = true;
@@ -1499,15 +1414,10 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            if has_max_bits {
-              forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-                t <<= local_val;
+            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+              t <<= local_val;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall t in tmp with (var local_val = val) {
-                t <<= local_val;
               }
             }
             visted = true;
@@ -1519,15 +1429,10 @@ module BinOp
             var divideBy = makeDistArray(la.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= val;
-            if has_max_bits {
-              forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
-                t /= dB;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, dB) in zip(tmp, divideBy) {
-                t /= dB;
               }
             }
             visted = true;
@@ -1585,25 +1490,15 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              if local_val != 0 {
-                t /= local_val;
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 {
+              t /= local_val;
             }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              if local_val != 0 {
-                t /= local_val;
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
@@ -1611,25 +1506,15 @@ module BinOp
         when "%" { // modulo
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
-          if has_max_bits {
-            forall (t, li) in zip(tmp, la) with (var local_val = val, var local_max_size = max_size) {
-              if local_val != 0 {
-                t.mod(t, local_val);
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall (t, li) in zip(tmp, la) with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 {
+              t.mod(t, local_val);
             }
-          }
-          else {
-            forall (t, li) in zip(tmp, la) with (var local_val = val) {
-              if local_val != 0 {
-                t.mod(t, local_val);
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
@@ -1657,43 +1542,28 @@ module BinOp
        (val.type == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
       select op {
         when "+" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t += local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t += local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t += local_val;
             }
           }
           visted = true;
         }
         when "-" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t -= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t -= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t -= local_val;
             }
           }
           visted = true;
         }
         when "*" {
-          if has_max_bits {
-            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
-              t *= local_val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t *= local_val;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall t in tmp with (var local_val = val) {
-              t *= local_val;
             }
           }
           visted = true;
@@ -1772,57 +1642,37 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t &= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t &= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t &= ri;
             }
           }
           visted = true;
         }
         when "|" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t |= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t |= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t |= ri;
             }
           }
           visted = true;
         }
         when "^" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t ^= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t ^= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t ^= ri;
             }
           }
           visted = true;
         }
         when "/" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t /= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t /= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t /= ri;
             }
           }
           visted = true;
@@ -1836,15 +1686,10 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            if has_max_bits {
-              forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-                t <<= ri;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t <<= ri;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, ri) in zip(tmp, ra) {
-                t <<= ri;
               }
             }
             visted = true;
@@ -1856,15 +1701,10 @@ module BinOp
             var divideBy = makeDistArray(ra.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= ra;
-            if has_max_bits {
-              forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
-                t /= dB;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
                 t &= local_max_size;
-              }
-            }
-            else {
-              forall (t, dB) in zip(tmp, divideBy) {
-                t /= dB;
               }
             }
             visted = true;
@@ -1924,49 +1764,29 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if ri != 0 {
-                t /= ri;
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t /= ri;
             }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              if ri != 0 {
-                t /= ri;
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
         }
         when "%" { // modulo
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if ri != 0 {
-                t.mod(t, ri);
-              }
-              else {
-                t = 0:bigint;
-              }
-              t &= local_max_size;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t.mod(t, ri);
             }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              if ri != 0 {
-                t.mod(t, ri);
-              }
-              else {
-                t = 0:bigint;
-              }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
             }
           }
           visted = true;
@@ -1994,43 +1814,28 @@ module BinOp
        (r.etype == bigint && (val.type == int || val.type == uint || val.type == bool)) {
       select op {
         when "+" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t += ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t += ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t += ri;
             }
           }
           visted = true;
         }
         when "-" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t -= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t -= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t -= ri;
             }
           }
           visted = true;
         }
         when "*" {
-          if has_max_bits {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              t *= ri;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t *= ri;
+            if has_max_bits {
               t &= local_max_size;
-            }
-          }
-          else {
-            forall (t, ri) in zip(tmp, ra) {
-              t *= ri;
             }
           }
           visted = true;
