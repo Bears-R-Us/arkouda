@@ -142,7 +142,8 @@ arkouda server config param and config const
 .. function:: proc getPhysicalMemHere()
 
    
-   Get the physical memory available on this locale
+   Get an estimate for how much memory can be allocated. Based on runtime with
+   chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory
    
 
 .. function:: proc getByteorder() throws

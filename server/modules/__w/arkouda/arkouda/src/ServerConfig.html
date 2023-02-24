@@ -258,7 +258,8 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getPhysicalMemHere">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPhysicalMemHere</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getPhysicalMemHere" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the physical memory available on this locale</p>
+<dd><p>Get an estimate for how much memory can be allocated. Based on runtime with
+chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory</p>
 </dd></dl>
 
 <dl class="chpl function">
