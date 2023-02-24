@@ -784,9 +784,7 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["ColC"].to_list(), [round(float(x), 2) for x in c])
 
             # test reading subset of columns
-            data = ak.read_csv(
-                f"{tmp_dirname}/non_standard_delim*", datasets="ColB", column_delim="|*|"
-            )
+            data = ak.read_csv(f"{tmp_dirname}/non_standard_delim*", datasets="ColB", column_delim="|*|")
             self.assertIsInstance(data, ak.pdarray)
             self.assertListEqual(data.to_list(), [int(x) for x in b])
 
@@ -795,7 +793,7 @@ class IOTest(ArkoudaTest):
             d = {
                 "ColA": ak.randint(0, 50, 101),
                 "ColB": ak.randint(0, 50, 101),
-                "ColC": ak.randint(0, 50, 101)
+                "ColC": ak.randint(0, 50, 101),
             }
 
             ak.to_csv(d, f"{tmp_dirname}/non_equal_set.csv")
@@ -804,6 +802,79 @@ class IOTest(ArkoudaTest):
             self.assertListEqual(data["ColB"].to_list(), d["ColB"].to_list())
             self.assertListEqual(data["ColC"].to_list(), d["ColC"].to_list())
 
+    def test_segarray_hdf(self):
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
+
+        # int64 test
+        flat = a + b + c
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        dtype = ak.dtypes.int64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_int")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_int", dataset="segarray")
+            self.assertListEqual(segarr.segments.to_list(), seg2.segments.to_list())
+            self.assertListEqual(segarr.values.to_list(), seg2.values.to_list())
+
+        # uint64 test
+        dtype = ak.dtypes.uint64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_uint")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_uint", dataset="segarray")
+            self.assertListEqual(segarr.segments.to_list(), seg2.segments.to_list())
+            self.assertListEqual(segarr.values.to_list(), seg2.values.to_list())
+
+        # float64 test
+        dtype = ak.dtypes.float64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_float")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_float", dataset="segarray")
+            self.assertListEqual(segarr.segments.to_list(), seg2.segments.to_list())
+            self.assertListEqual(segarr.values.to_list(), seg2.values.to_list())
+
+        # bool test
+        dtype = ak.dtypes.bool
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            segarr.to_hdf(f"{tmp_dirname}/segarray_bool")
+            # Now load it back in
+            seg2 = ak.load(f"{tmp_dirname}/segarray_bool", dataset="segarray")
+            self.assertListEqual(segarr.segments.to_list(), seg2.segments.to_list())
+            self.assertListEqual(segarr.values.to_list(), seg2.values.to_list())
+
+    def test_dataframe_segarr(self):
+        a = [0, 1, 2, 3]
+        b = [4, 0, 5, 6, 0, 7, 8, 0]
+        c = [9, 0, 0]
+
+        # int64 test
+        flat = a + b + c
+        segments = ak.array([0, len(a), len(a) + len(b)])
+        dtype = ak.dtypes.int64
+        akflat = ak.array(flat, dtype)
+        segarr = ak.segarray(segments, akflat)
+
+        s = ak.array(["abc","def","ghi"])
+        df = ak.DataFrame([segarr, s])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            df.to_hdf(f"{tmp_dirname}/dataframe_segarr")
+            df_load = ak.DataFrame.load(f"{tmp_dirname}/dataframe_segarr")
+            self.assertTrue(df.to_pandas().equals(df_load.to_pandas()))
 
     def tearDown(self):
         super(IOTest, self).tearDown()
