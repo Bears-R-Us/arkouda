@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request, merge_group]
+on: [pull_request, merge_group]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
