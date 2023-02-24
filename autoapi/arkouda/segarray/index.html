@@ -816,7 +816,7 @@ are unique and in sorted order.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.to_hdf">
-<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_values'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.to_hdf" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.to_hdf" title="Permalink to this definition">#</a></dt>
 <dd><p>Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
 per locale of the arkouda server, where each filename starts with prefix_path.</p>
 <dl class="field-list simple">
@@ -824,8 +824,6 @@ per locale of the arkouda server, where each filename starts with prefix_path.</
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files will share</p></li>
 <li><p><strong>dataset</strong> (<em>str</em>) – Name prefix for saved data within the HDF5 file</p></li>
-<li><p><strong>segment_suffix</strong> (<em>str</em>) – Suffix to append to dataset name for segments array</p></li>
-<li><p><strong>value_suffix</strong> (<em>str</em>) – Suffix to append to dataset name for values array</p></li>
 <li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, add data as a new column to existing files.</p></li>
 <li><p><strong>file_type</strong> (<em>str</em><em> (</em><em>&quot;single&quot;</em><em> | </em><em>&quot;distribute&quot;</em><em>)</em>) – Default: “distribute”
@@ -850,7 +848,7 @@ the HDF5 file, not nested under a group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_values'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.save" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.save" title="Permalink to this definition">#</a></dt>
 <dd><p>DEPRECATED
 Save the SegArray to HDF5.
 The object can be saved to a collection of files or single file.
@@ -897,8 +895,8 @@ determine the file format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.segarray.SegArray.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_values'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.load" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.read_hdf">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.read_hdf" title="Permalink to this definition">#</a></dt>
 <dd><p>Load a saved SegArray from HDF5. All arguments must match what
 was supplied to SegArray.save()</p>
 <dl class="field-list simple">
@@ -906,8 +904,6 @@ was supplied to SegArray.save()</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix</p></li>
 <li><p><strong>dataset</strong> (<em>str</em>) – Name prefix for saved data within the HDF5 files</p></li>
-<li><p><strong>segment_suffix</strong> (<em>str</em>) – Suffix to append to dataset name for segments array</p></li>
-<li><p><strong>value_suffix</strong> (<em>str</em>) – Suffix to append to dataset name for values array</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -915,6 +911,11 @@ was supplied to SegArray.save()</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.segarray.SegArray.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'segments'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'values'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.segarray.SegArray.load" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.segarray.SegArray.intersect">
@@ -1268,6 +1269,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique"><code class="docutils literal notranslate"><span class="pre">SegArray.unique()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.to_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save"><code class="docutils literal notranslate"><span class="pre">SegArray.save()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf"><code class="docutils literal notranslate"><span class="pre">SegArray.read_hdf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load"><code class="docutils literal notranslate"><span class="pre">SegArray.load()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.intersect"><code class="docutils literal notranslate"><span class="pre">SegArray.intersect()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.union"><code class="docutils literal notranslate"><span class="pre">SegArray.union()</span></code></a></li>
@@ -1322,6 +1324,7 @@ was supplied to SegArray.save()</p>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.unique">unique</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.to_hdf">to_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.save">save</a></li>
+<li><a class="reference internal" href="#arkouda.segarray.SegArray.read_hdf">read_hdf</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.load">load</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.intersect">intersect</a></li>
 <li><a class="reference internal" href="#arkouda.segarray.SegArray.union">union</a></li>

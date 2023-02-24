@@ -309,12 +309,12 @@
 <h2>Supported Write Modes<a class="headerlink" href="#supported-write-modes" title="Permalink to this heading">#</a></h2>
 <p><strong>Truncate</strong></p>
 <blockquote>
-<div><p>When writing to Parquet in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode, any existing HDF5 file with the same name will be overwritten. If no file exists, one will be created. If writing multiple objects, all corresponding columns will be written to the Paruqet file at once.</p>
+<div><p>When writing to Parquet in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode, any existing Parquet file with the same name will be overwritten. If no file exists, one will be created. If writing multiple objects, all corresponding columns will be written to the Paruqet file at once.</p>
 </div></blockquote>
 <p><strong>Append</strong></p>
 <blockquote>
-<div><p>When writting to Parquet in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.
-<em>Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call <code class="docutils literal notranslate"><span class="pre">arkouda.io.to_parquet</span></code> on the output with the additional columns added and then writting in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode.</em></p>
+<div><p>When writting to Parquet in <code class="docutils literal notranslate"><span class="pre">append</span></code> mode, all datasets will be appended to the file. If no file with the supplied name exists, one will be created. If any datasets being written have a name that is already the name of a dataset within the file, an error will be generated.</p>
+<p><em>Please Note: appending to a Parquet file is not natively support and is extremely ineffiecent. It is recommended to read the file out and call <code class="docutils literal notranslate"><span class="pre">arkouda.io.to_parquet</span></code> on the output with the additional columns added and then writting in <code class="docutils literal notranslate"><span class="pre">truncate</span></code> mode.</em></p>
 </div></blockquote>
 </section>
 <section id="api-reference">

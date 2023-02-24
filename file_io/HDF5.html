@@ -304,6 +304,7 @@
 <li><p>DataFrame</p></li>
 <li><p>Index</p></li>
 <li><p>Categorical</p></li>
+<li><p>SegArray</p></li>
 </ul>
 <p>HDF5 is able to contain any number of objects within the same file.</p>
 </section>
@@ -313,12 +314,13 @@
 <p><code class="docutils literal notranslate"><span class="pre">ObjType</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
 <div><p>Integer representing the type of object stored in the group/dataset. This corresponds to the Chapel <code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">ObjType</span></code>. Required to properly read each object.</p>
+</div></blockquote>
 <ul class="simple">
 <li><p>0 = <code class="docutils literal notranslate"><span class="pre">ArrayView</span></code></p></li>
 <li><p>1 = <code class="docutils literal notranslate"><span class="pre">pdarray</span></code></p></li>
 <li><p>2 = <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
+<li><p>3 = <code class="docutils literal notranslate"><span class="pre">SegArray</span></code></p></li>
 </ul>
-</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">isBool</span></code>: <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
 <blockquote>
 <div><p>Integer value (0 or 1) representing a boolean value that indicates if the data stored contains boolean values. This is only required to be set when the dataset contains boolean values.</p>
@@ -434,7 +436,52 @@
 </li>
 </ol>
 </div></blockquote>
-<p><em>Please Note - The offsets dataset is note required but can be provided. Strings uses null byte termination and is able to calculate the offsets of its components during reads.</em></p>
+<p><em>Please Note - The offsets dataset is not required but can be provided. Strings uses null byte termination and is able to calculate the offsets of its components during reads.</em></p>
+</section>
+<section id="segarray">
+<h3>SegArray<a class="headerlink" href="#segarray" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects are stored within an HDF5 group. This group contains datasets storing the values and segments separately.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Group (user provided dataset name. Defaults to ‘segarray’)</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 3</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Dataset - Values</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0 or 1</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - numeric values representing our string values. int64, uint64, float64, or bool.</p></li>
+</ol>
+</li>
+<li><p>Dataset - Offsets</p>
+<ol class="arabic simple">
+<li><p>Attributes</p>
+<ol class="arabic simple">
+<li><p>ObjType: 1</p></li>
+<li><p>isBool: 0</p></li>
+<li><p>file_version: 2.0 (Optional)</p></li>
+<li><p>arkouda_version: ‘current_arkouda_version’ (Optional)</p></li>
+</ol>
+</li>
+<li><p>Data - int64 values representing the start index of each segmented value.</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</div></blockquote>
 </section>
 </section>
 <section id="supported-write-modes">
@@ -499,6 +546,13 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id629" title="arkouda.Categorical.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.to_hdf()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../autoapi/arkouda/index.html#id631" title="arkouda.Categorical.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.Categorical.save()</span></code></a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>SegArray<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.to_hdf" title="arkouda.SegArray.to_hdf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.SegArray.to_hdf()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray.load" title="arkouda.SegArray.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.SegArray.load()</span></code></a></p></li>
 </ul>
 </section>
 </section>
@@ -567,6 +621,7 @@
 <li><a class="reference internal" href="#arrayview">ArrayView</a></li>
 <li><a class="reference internal" href="#pdarray">pdarray</a></li>
 <li><a class="reference internal" href="#strings">Strings</a></li>
+<li><a class="reference internal" href="#segarray">SegArray</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#supported-write-modes">Supported Write Modes</a></li>
@@ -578,6 +633,7 @@
 <li><a class="reference internal" href="#dataframe">DataFrame</a></li>
 <li><a class="reference internal" href="#id2">Strings</a></li>
 <li><a class="reference internal" href="#categorical">Categorical</a></li>
+<li><a class="reference internal" href="#id3">SegArray</a></li>
 </ul>
 </li>
 </ul>

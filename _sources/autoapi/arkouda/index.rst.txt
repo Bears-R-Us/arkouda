@@ -12234,7 +12234,7 @@ Attributes
       :rtype: SegArray
 
 
-   .. py:method:: to_hdf(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_type='distribute')
+   .. py:method:: to_hdf(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
 
       Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
       per locale of the arkouda server, where each filename starts with prefix_path.
@@ -12243,10 +12243,6 @@ Attributes
       :type prefix_path: str
       :param dataset: Name prefix for saved data within the HDF5 file
       :type dataset: str
-      :param segment_suffix: Suffix to append to dataset name for segments array
-      :type segment_suffix: str
-      :param value_suffix: Suffix to append to dataset name for values array
-      :type value_suffix: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', add data as a new column to existing files.
       :type mode: str {'truncate' | 'append'}
@@ -12268,7 +12264,7 @@ Attributes
       .. seealso:: :obj:`load`
 
 
-   .. py:method:: save(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values', mode='truncate', file_type='distribute')
+   .. py:method:: save(prefix_path, dataset='segarray', mode='truncate', file_type='distribute')
 
       DEPRECATED
       Save the SegArray to HDF5.
@@ -12307,7 +12303,7 @@ Attributes
       .. seealso:: :obj:`to_hdf`, :obj:`load`
 
 
-   .. py:method:: load(prefix_path, dataset='segarray', segment_suffix='_segments', value_suffix='_values')
+   .. py:method:: read_hdf(prefix_path, dataset='segarray')
       :classmethod:
 
       Load a saved SegArray from HDF5. All arguments must match what
@@ -12317,12 +12313,12 @@ Attributes
       :type prefix_path: str
       :param dataset: Name prefix for saved data within the HDF5 files
       :type dataset: str
-      :param segment_suffix: Suffix to append to dataset name for segments array
-      :type segment_suffix: str
-      :param value_suffix: Suffix to append to dataset name for values array
-      :type value_suffix: str
 
       :rtype: SegArray
+
+
+   .. py:method:: load(prefix_path, dataset='segarray', segment_name='segments', value_name='values')
+      :classmethod:
 
 
    .. py:method:: intersect(other)
