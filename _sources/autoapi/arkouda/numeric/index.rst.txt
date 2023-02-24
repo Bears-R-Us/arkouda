@@ -263,38 +263,47 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. py:function:: hash(pda: arkouda.pdarrayclass.pdarray, full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+.. py:function:: hash(pda: Union[arkouda.pdarrayclass.pdarray, List[arkouda.pdarrayclass.pdarray]], full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
 
    Return an element-wise hash of the array.
 
    :param pda:
-   :type pda: pdarray
-   :param full: By default, a 128-bit hash is computed and returned as
+   :type pda: Union[pdarray, list[pdarray]]
+   :param full: This is only used when a single pdarray is passed into hash
+                By default, a 128-bit hash is computed and returned as
                 two int64 arrays. If full=False, then a 64-bit hash
                 is computed and returned as a single int64 array.
    :type full: bool
 
-   :returns: If full=True, a 2-tuple of pdarrays containing the high
+   :returns: If full=True or a list of pdarrays is passed,
+             a 2-tuple of pdarrays containing the high
              and low 64 bits of each hash, respectively.
-             If full=False, a single pdarray containing a 64-bit hash
+             If full=False and a single pdarray is passed,
+             a single pdarray containing a 64-bit hash
    :rtype: hashes
 
    :raises TypeError: Raised if the parameter is not a pdarray
 
    .. rubric:: Notes
 
-   This function uses the SIPhash algorithm, which can output
-   either a 64-bit or 128-bit hash. However, the 64-bit hash
-   runs a significant risk of collisions when applied to more
-   than a few million unique values. Unless the number of unique
-   values is known to be small, the 128-bit hash is strongly
-   recommended.
+   In the case of a single pdarray being passed, this function
+   uses the SIPhash algorithm, which can output either a 64-bit
+   or 128-bit hash. However, the 64-bit hash runs a significant
+   risk of collisions when applied to more than a few million
+   unique values. Unless the number of unique values is known to
+   be small, the 128-bit hash is strongly recommended.
 
    Note that this hash should not be used for security, or for
    any cryptographic application. Not only is SIPhash not
    intended for such uses, but this implementation employs a
    fixed key for the hash, which makes it possible for an
    adversary with control over input to engineer collisions.
+
+   In the case of a list of pdrrays being passed, a non-linear
+   function must be applied to each array since hashes of subsequent
+   arrays cannot be simply XORed because equivalent values will
+   cancel each other out, hence we do a rotation by the ordinal of
+   the array.
 
 
 .. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
