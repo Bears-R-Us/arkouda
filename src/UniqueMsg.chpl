@@ -165,7 +165,7 @@ module UniqueMsg
       }
 
       inline proc cleanup(str_names: [] string, st) throws {
-        forall name in str_names {
+        for name in str_names {
           st.deleteEntry(name);
         }
       }
