@@ -413,17 +413,16 @@ module ServerDaemon {
             
             // Update User-Scoped Request Metrics
             userMetrics.incrementPerUserRequestMetrics(user,cmd);
+            
+            // Add the response time to the avg response time for the corresponding cmd
+            avgResponseTimeMetrics.add(cmd,elapsedTime);
 
             var apo = getArrayParameterObj(args);
 
             // Check to see if the incoming request corresponds to a pdarray operation
             if computeArrayMetrics(apo) {
                 var name = apo.val;
-                var value = elapsedTime;
-                
-                // Add the response time to the avg response time for the corresponding cmd
-                avgResponseTimeMetrics.add(cmd,value);
-            
+
                 /*
                  * Create the ArrayMetric object and output the individual response time
                  * as JSON to the console or arkouda.log for now. In the future, individual  
@@ -433,7 +432,7 @@ module ServerDaemon {
                 var metric = new ArrayMetric(name=name,
                                              category=MetricCategory.RESPONSE_TIME,
                                              scope=MetricScope.REQUEST,
-                                             value=value,
+                                             value=elapsedTime,
                                              cmd=cmd,
                                              dType=str2dtype(apo.dtype),
                                              size=getGenericTypedArrayEntry(apo.val, st).size
