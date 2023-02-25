@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from typing import cast as type_cast
 
 import numpy as np  # type: ignore
@@ -27,18 +28,18 @@ def gen_ranges(starts, ends, stride=1):
     Parameters
     ----------
     starts : pdarray, int64
-    The start value of each range
+        The start value of each range
     ends : pdarray, int64
-    The end value (exclusive) of each range
+        The end value (exclusive) of each range
     stride: int
-    Difference between successive elements of each range
+        Difference between successive elements of each range
 
     Returns
     -------
     segments : pdarray, int64
-    The starting index of each range in the resulting array
+        The starting index of each range in the resulting array
     ranges : pdarray, int64
-    The actual ranges, flattened into a single array
+        The actual ranges, flattened into a single array
     """
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
@@ -847,7 +848,7 @@ class SegArray:
         ndsegs = self.segments.to_ndarray()
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
-            arr.append(ndvals[ndsegs[-1] :])
+            arr.append(ndvals[ndsegs[-1]:])
         return np.array(arr, dtype=object)
 
     def to_list(self):
@@ -971,8 +972,6 @@ class SegArray:
         self,
         prefix_path,
         dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
         mode="truncate",
         file_type="distribute",
     ):
@@ -986,10 +985,6 @@ class SegArray:
             Directory and filename prefix that all output files will share
         dataset : str
             Name prefix for saved data within the HDF5 file
-        segment_suffix : str
-            Suffix to append to dataset name for segments array
-        value_suffix : str
-            Suffix to append to dataset name for values array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
@@ -1014,19 +1009,28 @@ class SegArray:
         ---------
         load
         """
-        self.segments.to_hdf(
-            prefix_path, dataset=dataset + segment_suffix, mode=mode, file_type=file_type
-        )
-        self.values.to_hdf(
-            prefix_path, dataset=dataset + value_suffix, mode="append", file_type=file_type
+        from arkouda.io import _file_type_to_int, _mode_str_to_int
+
+        return type_cast(
+            str,
+            generic_msg(
+                cmd="tohdf",
+                args={
+                    "seg_name": self.name,
+                    "dset": dataset,
+                    "write_mode": _mode_str_to_int(mode),
+                    "filename": prefix_path,
+                    "dtype": self.dtype,
+                    "objType": "segarray",
+                    "file_format": _file_type_to_int(file_type),
+                },
+            ),
         )
 
     def save(
         self,
         prefix_path,
         dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
         mode="truncate",
         file_type="distribute",
     ):
@@ -1081,20 +1085,12 @@ class SegArray:
         return self.to_hdf(
             prefix_path,
             dataset,
-            segment_suffix=segment_suffix,
-            value_suffix=value_suffix,
             mode=mode,
             file_type=file_type,
         )
 
     @classmethod
-    def load(
-        cls,
-        prefix_path,
-        dataset="segarray",
-        segment_suffix="_segments",
-        value_suffix="_values",
-    ):
+    def read_hdf(cls, prefix_path, dataset="segarray"):
         """
         Load a saved SegArray from HDF5. All arguments must match what
         was supplied to SegArray.save()
@@ -1105,10 +1101,6 @@ class SegArray:
             Directory and filename prefix
         dataset : str
             Name prefix for saved data within the HDF5 files
-        segment_suffix : str
-            Suffix to append to dataset name for segments array
-        value_suffix : str
-            Suffix to append to dataset name for values array
 
         Returns
         -------
@@ -1116,11 +1108,17 @@ class SegArray:
         """
         from arkouda.io import load
 
-        if segment_suffix == value_suffix:
-            raise ValueError("Segment suffix and value suffix must be different")
-        segments = load(prefix_path, dataset=dataset + segment_suffix)
-        values = load(prefix_path, dataset=dataset + value_suffix)
-        return SegArray.from_parts(segments, values)
+        return load(prefix_path, dataset=dataset)
+
+    @classmethod
+    def load(cls, prefix_path, dataset="segarray", segment_name="segments", value_name="values"):
+        warnings.warn(
+            "ak.SegArray.load() is deprecated. Please use ak.SegArray.read_hdf() instead.",
+            DeprecationWarning,
+        )
+        if segment_name != "segments" or value_name != "values":
+            dataset = [dataset+"_"+value_name, dataset+"_"+segment_name]
+        return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):
         """

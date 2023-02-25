@@ -64,7 +64,6 @@ class Properties:
 @date_operators
 class DatetimeAccessor(Properties):
     def __init__(self, series):
-
         data = series.values
         if not isinstance(data, Datetime):
             raise AttributeError("Can only use .dt accessor with datetimelike values")
@@ -75,7 +74,6 @@ class DatetimeAccessor(Properties):
 @string_operators
 class StringAccessor(Properties):
     def __init__(self, series):
-
         data = series.values
         if not (isinstance(data, Categorical) or isinstance(data, Strings)):
             raise AttributeError("Can only use .str accessor with string like values")

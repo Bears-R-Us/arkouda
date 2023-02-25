@@ -24,6 +24,7 @@ module HDF5Msg {
     use ServerErrors;
     use ServerErrorStrings;
     use SegmentedString;
+    use SegmentedArray;
     use Sort;
 
     private config const logLevel = ServerConfig.logLevel;
@@ -36,13 +37,14 @@ module HDF5Msg {
     const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
     const ARKOUDA_HDF5_FILE_VERSION_VAL = 2.0:real(32);
     type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
-    config const SEGSTRING_OFFSET_NAME = "segments";
-    config const SEGSTRING_VALUE_NAME = "values";
+    config const SEGMENTED_OFFSET_NAME = "segments";
+    config const SEGMENTED_VALUE_NAME = "values";
 
     enum ObjType {
       ARRAYVIEW=0,
       PDARRAY=1,
-      STRINGS=2
+      STRINGS=2,
+      SEGARRAY=3
     };
 
     config const TRUNCATE: int = 0;
@@ -746,25 +748,12 @@ module HDF5Msg {
      * :arg items: the array containing the data to be written for te specified Strings array component
      * :type items: [] ?etype
      */
-    private proc writeStringsComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
+    private proc writeSegmentedComponentToHdf(fileId: int, group: string, component: string, items: [] ?etype) throws {
         var numItems = items.size: uint(64);
-        C_HDF5.H5LTmake_dataset_WAR(fileId, '/%s/%s'.format(group, component).c_str(), 1,
-                c_ptrTo(numItems), getHDF5Type(etype), c_ptrTo(items));
+        C_HDF5.H5LTmake_dataset_WAR(fileId, "/%s/%s".format(group, component).c_str(), 1,
+                c_ptrTo(numItems), getDataType(etype), c_ptrTo(items));
 
-        var dset_id: C_HDF5.hid_t = C_HDF5.H5Dopen(fileId, '/%s/%s'.format(group, component).c_str(), C_HDF5.H5P_DEFAULT);
-
-        // Create the attribute space
-        var attrSpaceId: C_HDF5.hid_t = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
-        var attr_id: C_HDF5.hid_t;
-
-        // Create the objectType. This will be important when merging with other read/write functionality.
-        attr_id = C_HDF5.H5Acreate2(dset_id, "ObjType".c_str(), getHDF5Type(int), attrSpaceId, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        var t: ObjType = ObjType.PDARRAY;
-        var t_int: int = t: int;
-        C_HDF5.H5Awrite(attr_id, getHDF5Type(int), c_ptrTo(t_int));
-        C_HDF5.H5Sclose(attrSpaceId);
-        C_HDF5.H5Aclose(attr_id);
-        C_HDF5.H5Dclose(dset_id);
+        writeArkoudaMetaData(fileId, "%s/%s".format(group, component), "pdarray", getDataType(etype));
     }
 
     /*
@@ -873,15 +862,207 @@ module HDF5Msg {
                         }
 
                         // localVals is now a local copy of the gathered string bytes, write that component to HDF5
-                        writeStringsComponentToHdf(file_id, group, "values", localVals);
+                        writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
                         
                         if (writeOffsets) { // if specified write the offsets component to HDF5
                             // Re-zero offsets so local file is zero based see also fixupSegBoundaries performed during read
                             localOffsets = localOffsets - startValIdx;
-                            writeStringsComponentToHdf(file_id, group, "segments", localOffsets);
+                            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localOffsets);
                         }
                         // write attributes for arkouda meta info
                         writeArkoudaMetaData(file_id, group, objType, getHDF5Type(uint(8)));
+                    }
+                }
+            }
+            otherwise {
+                throw getErrorWithContext(
+                           msg="Unknown file format. Expecting 0 (single file) or 1 (file per locale). Found %i".format(file_format),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+            }
+        }
+    }
+
+    proc writeLocalSegArray(file_id: C_HDF5.hid_t, group: string, vals, valDim: int, segs, segDim: int, type t) throws {
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "Writing group, %s".format(group));
+
+        var dtype_id: C_HDF5.hid_t = getDataType(t);
+
+        var vd = valDim:C_HDF5.hsize_t;
+        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_VALUE_NAME).c_str(), 1:c_int, vd, dtype_id, vals.ptr);
+        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_VALUE_NAME), "pdarray", dtype_id);
+
+        var sd = segDim:C_HDF5.hsize_t;
+        C_HDF5.H5LTmake_dataset(file_id, "/%s/%s".format(group, SEGMENTED_OFFSET_NAME).c_str(), 1:c_int, sd, getDataType(int), segs.ptr);
+        writeArkoudaMetaData(file_id, "%s/%s".format(group, SEGMENTED_OFFSET_NAME), "pdarray", getDataType(int));
+    }
+
+    proc writeSegmentedDistDset(filenames: [] string, group: string, objType: string, values, segments, st: borrowed SymTab, type t) throws {
+        const lastSegIdx = segments.domain.high;
+        const lastValIdx = values.domain.high;
+        coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) do on loc {
+            const localeFilename = filenames[idx];
+            h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "%s exists? %t".format(localeFilename, exists(localeFilename)));
+
+            var file_id = C_HDF5.H5Fopen(localeFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on scope exit
+                C_HDF5.H5Fclose(file_id);
+            }
+
+            // create the group
+            validateGroup(file_id, localeFilename, group);
+
+            // write the segments
+            const locDom = segments.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+
+            var localSegs = segments[locDom];
+            var startValIdx = localSegs[locDom.low];
+            var endValIdx = if (lastSegIdx == locDom.high) then lastValIdx else segments[locDom.high + 1] - 1;
+            var valIdxRange = startValIdx..endValIdx;
+
+            var localVals: [valIdxRange] t;
+
+            forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
+                // Copy the remote value at index position valIdx to our local array
+                agg.copy(localVal, values[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+            }
+
+            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_VALUE_NAME, localVals);
+            localSegs = localSegs - startValIdx;
+            writeSegmentedComponentToHdf(file_id, group, SEGMENTED_OFFSET_NAME, localSegs);
+
+            writeArkoudaMetaData(file_id, group, objType, getDataType(t));
+        }
+    }
+
+    proc segarray_tohdfMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
+        use C_HDF5.HDF5_WAR;
+        var mode: int = msgArgs.get("write_mode").getIntValue();
+
+        var filename: string = msgArgs.getValueOf("filename");
+        var file_format = msgArgs.get("file_format").getIntValue();
+        var group = msgArgs.getValueOf("dset");
+        var dType = str2dtype(msgArgs.getValueOf("dtype"));
+        var segarr = msgArgs.getValueOf("seg_name");
+        const objType = msgArgs.getValueOf("objType");
+
+        select file_format {
+            when SINGLE_FILE {
+                var f = prepFiles(filename, mode);
+                var file_id = C_HDF5.H5Fopen(f.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+                if file_id < 0 { // HF5open returns negative value on failure
+                    C_HDF5.H5Fclose(file_id);
+                    var errorMsg = "Failure accessing file %s.".format(f);
+                    throw getErrorWithContext(
+                           msg=errorMsg,
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="FileNotFoundError");
+                }
+
+                // create the group
+                validateGroup(file_id, f, group);
+                var dtype: C_HDF5.hid_t;
+
+                select dType {
+                    when (DType.Int64) {
+                        var sa:SegArray = getSegArray(segarr, st, int);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+
+                        //localize values and write dataset
+                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
+                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, int);
+                        dtype = getDataType(int);
+                    } when (DType.UInt64) {
+                        var sa:SegArray = getSegArray(segarr, st, uint);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+
+                         //localize values and write dataset
+                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
+                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, uint);
+                        dtype = getDataType(uint);
+                    } when (DType.Float64) {
+                        var sa:SegArray = getSegArray(segarr, st, real);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+
+                         //localize values and write dataset
+                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
+                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, real);
+                        dtype = getDataType(real);
+                    } when (DType.Bool) {
+                        var sa:SegArray = getSegArray(segarr, st, bool);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+
+                         //localize values and write dataset
+                        var localVals = new lowLevelLocalizingSlice(valEntry.a, 0..#valEntry.size);
+                        var localSegs = new lowLevelLocalizingSlice(segEntry.a, 0..#segEntry.size);
+                        writeLocalSegArray(file_id, group, localVals, valEntry.size, localSegs, segEntry.size, bool);
+                        dtype = getDataType(bool);
+                    }
+                    otherwise {
+                        throw getErrorWithContext(
+                           msg="Unsupported SegArray DType %s".format(dtype2str(dType)),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
+                    }
+                }
+                
+                writeArkoudaMetaData(file_id, group, objType, dtype);
+                C_HDF5.H5Fclose(file_id);
+            }
+            when MULTI_FILE {
+                select dType {
+                    when DType.Int64 {
+                        var sa:SegArray = getSegArray(segarr, st, int);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
+                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, int);
+                    }
+                    when DType.UInt64 {
+                        var sa:SegArray = getSegArray(segarr, st, uint);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
+                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, uint);
+                    }
+                    when DType.Float64 {
+                        var sa:SegArray = getSegArray(segarr, st, real);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
+                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, real);
+                    }
+                    when DType.Bool {
+                        var sa:SegArray = getSegArray(segarr, st, bool);
+                        var valEntry = sa.values;
+                        var segEntry = sa.segments;
+                        var filenames = prepFiles(filename, mode, segEntry.a);
+                        writeSegmentedDistDset(filenames, group, objType, valEntry.a, segEntry.a, st, bool);
+                    }
+                    otherwise {
+                        throw getErrorWithContext(
+                           msg="Unsupported SegArray DType %s".format(dtype2str(dType)),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="IllegalArgumentError");
                     }
                 }
             }
@@ -915,6 +1096,10 @@ module HDF5Msg {
             when ObjType.STRINGS {
                 // call handler for strings write
                 strings_tohdfMsg(msgArgs, st);
+            }
+            when ObjType.SEGARRAY {
+                // call handler for segarray write
+                segarray_tohdfMsg(msgArgs, st);
             }
             otherwise {
                 var errorMsg = "Unable to write object type %s to HDF5 file.".format(objType);
@@ -1472,9 +1657,9 @@ module HDF5Msg {
         var len: int;
         var nSeg: int;
         if (!calcStringOffsets) {
-            (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGSTRING_OFFSET_NAME, validFiles);
+            (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
         }
-        (subdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGSTRING_VALUE_NAME, validFiles);
+        (subdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_VALUE_NAME, validFiles);
 
         if (bytesize != 1) || isSigned {
             var errorMsg = "Error: detected unhandled datatype: objType? SegString, class %i, size %i, signed? %t".format(
@@ -1490,7 +1675,7 @@ module HDF5Msg {
 
         // Load the strings bytes/values first
         var entryVal = new shared SymEntry(len, uint(8));
-        read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGSTRING_VALUE_NAME, skips);
+        read_files_into_distributed_array(entryVal.a, subdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
 
         proc _buildEntryCalcOffsets(): shared SymEntry throws {
             var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.a.domain);
@@ -1499,7 +1684,7 @@ module HDF5Msg {
 
         proc _buildEntryLoadOffsets() throws {
             var offsetsEntry = new shared SymEntry(nSeg, int);
-            read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dset + "/" + SEGSTRING_OFFSET_NAME, skips);
+            read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
             fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
             return offsetsEntry;
         }
@@ -1508,6 +1693,91 @@ module HDF5Msg {
 
         var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
         return (dset, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes));
+    }
+
+    proc segarray_readhdfMsg(filenames: [?fD] string, dset: string, dataclass, bytesize: int, isSigned: bool, validFiles: [] bool, st: borrowed SymTab): (string, string, string) throws {
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "Filename: %jt, dset: %s, dataclass: %i, bytesize: %i, isSigned: %i, validFiles: %jt".format(
+                filenames,
+                dset,
+                dataclass,
+                bytesize,
+                isSigned,
+                validFiles
+            )
+        );
+        
+        var valSubdoms: [fD] domain(1);
+        var segSubdoms: [fD] domain(1);
+        var skips = new set(string);
+        var len: int;
+        var nSeg: int;
+
+        (segSubdoms, nSeg, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_OFFSET_NAME, validFiles);
+        (valSubdoms, len, skips) = get_subdoms(filenames, dset + "/" + SEGMENTED_VALUE_NAME, validFiles);
+
+        var segDist = makeDistArray(nSeg, int);
+        read_files_into_distributed_array(segDist, segSubdoms, filenames, dset + "/" + SEGMENTED_OFFSET_NAME, skips);
+        fixupSegBoundaries(segDist, segSubdoms, valSubdoms);
+        h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Segment Values: %jt".format(segDist));
+
+        var rtnMap: map(string, string) = new map(string, string);
+
+        select dataclass {
+            when C_HDF5.H5T_INTEGER {
+                var (v, idx) = maxloc reduce zip(validFiles, validFiles.domain);
+                if isSigned {
+                    // Load the values
+                    var valDist = makeDistArray(len, int);
+                    read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
+                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Values Entry Values: %jt".format(valDist));
+
+                    if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
+                        var boolDist = makeDistArray(len, bool);
+                        boolDist = valDist:bool;
+                        var saEntry = getSegArray(segDist, boolDist, st);
+                        saEntry.fillReturnMap(rtnMap, st);
+                    } else {
+                        var saEntry = getSegArray(segDist, valDist, st);
+                        saEntry.fillReturnMap(rtnMap, st);
+                    }                   
+                } else {
+                    var valDist = makeDistArray(len, uint);
+                    read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
+                    h5Logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Values Entry Values: %jt".format(valDist));
+
+                    if isBoolDataset(filenames[idx], dset + "/" + SEGMENTED_VALUE_NAME) {
+                        var boolDist = makeDistArray(len, bool);
+                        boolDist = valDist:bool;
+                        var saEntry = getSegArray(segDist, boolDist, st);
+                        saEntry.fillReturnMap(rtnMap, st);
+                    } else {
+                        var saEntry = getSegArray(segDist, valDist, st);
+                        saEntry.fillReturnMap(rtnMap, st);
+                    } 
+                }
+            }
+            when C_HDF5.H5T_FLOAT {
+                var valDist = makeDistArray(len, real);
+                read_files_into_distributed_array(valDist, valSubdoms, filenames, dset + "/" + SEGMENTED_VALUE_NAME, skips);
+
+                var saEntry = getSegArray(segDist, valDist, st);
+                saEntry.fillReturnMap(rtnMap, st);
+            }
+            otherwise {
+                var errorMsg = "detected unhandled datatype: objType? segarray, class %i, size %i, " +
+                                "signed? %t".format(dataclass, bytesize, isSigned);
+                h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                throw getErrorWithContext(
+                            msg=errorMsg,
+                            lineNumber=getLineNumber(), 
+                            routineName=getRoutineName(), 
+                            moduleName=getModuleName(), 
+                            errorClass='UnhandledDatatypeError');
+            }
+        }
+        
+        return (dset, "seg_array", "%jt".format(rtnMap));
     }
 
     /*
@@ -1633,22 +1903,22 @@ module HDF5Msg {
         var isSigned: bool;
         try {
             objType = getObjType(file_id, dsetName);
-            if objType == ObjType.STRINGS {
+            if objType == ObjType.STRINGS || objType == ObjType.SEGARRAY {
                 if ( !calcStringOffsets ) {
-                    var offsetDset = dsetName + "/" + SEGSTRING_OFFSET_NAME;
+                    var offsetDset = dsetName + "/" + SEGMENTED_OFFSET_NAME;
                     var (offsetClass, offsetByteSize, offsetSign) = 
                                             try get_dataset_info(file_id, offsetDset);
                     if (offsetClass != C_HDF5.H5T_INTEGER) {
                         throw getErrorWithContext(
                             msg="dataset %s has incorrect one or more sub-datasets" +
-                            " %s %s".format(dsetName,SEGSTRING_OFFSET_NAME,SEGSTRING_VALUE_NAME), 
+                            " %s %s".format(dsetName,SEGMENTED_OFFSET_NAME,SEGMENTED_VALUE_NAME), 
                             lineNumber=getLineNumber(),
                             routineName=getRoutineName(),
                             moduleName=getModuleName(),
                             errorClass='SegStringError');                    
                     }
                 }
-                var valueDset = dsetName + "/" + SEGSTRING_VALUE_NAME;
+                var valueDset = dsetName + "/" + SEGMENTED_VALUE_NAME;
                 try (dataclass, bytesize, isSigned) = 
                                            try get_dataset_info(file_id, valueDset);           
             } else {
@@ -1837,8 +2107,11 @@ module HDF5Msg {
                 when ObjType.STRINGS {
                     rtnData.append(strings_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, calcStringOffsets, validFiles, st));
                 }
+                when ObjType.SEGARRAY {
+                    rtnData.append(segarray_readhdfMsg(filenames, dsetName, dataclass, bytesize, isSigned, validFiles, st));
+                }
                 otherwise {
-                    var errorMsg = "Unkwown object type found";
+                    var errorMsg = "Unknown object type found";
                     h5Logger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }

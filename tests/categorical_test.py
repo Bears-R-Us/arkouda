@@ -362,6 +362,8 @@ class CategoricalTest(ArkoudaTest):
         c2 = ak.Categorical.attach("my_categorical")
         self.assertEqual(c2.NAvalue, "C")
 
+        c.unregister()
+
         # default NAval not present in categories
         c = ak.Categorical(s)
         self.assertTrue(not c.isna().any())
@@ -383,6 +385,16 @@ class CategoricalTest(ArkoudaTest):
         args = ak.array([3, 2, 1, 0])
         ret = ak.lookup(keys, values, args)
         self.assertListEqual(ret.to_list(), ["C", "B", "A", "N/A"])
+
+    def test_deletion(self):
+        cat = ak.Categorical(ak.array(["a", "b", "c"]))
+        # validate registration with server
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+
+        # set to none and validate no entries in symbol table
+        cat = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
 
     def tearDown(self):
         super(CategoricalTest, self).tearDown()

@@ -104,11 +104,13 @@ module RandArray {
   }
 
   var charBounds: map(keyType=charSet, valType=2*int, parSafe=false);
-  charBounds[charSet.Uppercase] = (65, 91);
-  charBounds[charSet.Lowercase] = (97, 123);
-  charBounds[charSet.Numeric] = (48, 58);
-  charBounds[charSet.Printable] = (32, 127);
-  charBounds[charSet.Binary] = (0, 0);
+  try! {
+    charBounds[charSet.Uppercase] = (65, 91);
+    charBounds[charSet.Lowercase] = (97, 123);
+    charBounds[charSet.Numeric] = (48, 58);
+    charBounds[charSet.Printable] = (32, 127);
+    charBounds[charSet.Binary] = (0, 0);
+  }
 
   proc newRandStringsUniformLength(const n: int,
                                    const minLen: int, 

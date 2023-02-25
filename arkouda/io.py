@@ -33,8 +33,6 @@ __all__ = [
     "save_all",
     "load",
     "load_all",
-    "file_type_to_int",
-    "mode_str_to_int",
 ]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
@@ -174,7 +172,7 @@ def get_null_indices(
 
 
 @typechecked
-def file_type_to_int(file_type: str) -> int:
+def _file_type_to_int(file_type: str) -> int:
     """
     Convert a string to integer representing the format to save the file in
 
@@ -190,7 +188,7 @@ def file_type_to_int(file_type: str) -> int:
     Raises
     ------
     ValueError
-        - If mode is not 'single' or 'distribute'
+        If mode is not 'single' or 'distribute'
     """
     if file_type.lower() == "single":
         return 0
@@ -201,7 +199,7 @@ def file_type_to_int(file_type: str) -> int:
 
 
 @typechecked
-def mode_str_to_int(mode: str) -> int:
+def _mode_str_to_int(mode: str) -> int:
     """
     Convert string to integer representing the mode to write
 
@@ -217,7 +215,7 @@ def mode_str_to_int(mode: str) -> int:
     Raises
     ------
     ValueError
-        - If mode is not 'truncate' or 'append'
+        If mode is not 'truncate' or 'append'
     """
     if mode.lower() == "truncate":
         return 0
@@ -554,9 +552,10 @@ def read_hdf(
 
     Examples
     --------
-    Read with file Extension
+    >>>
+    # Read with file Extension
     >>> x = ak.read_hdf('path/name_prefix.h5') # load HDF5
-    Read Glob Expression
+    # Read Glob Expression
     >>> x = ak.read_hdf('path/name_prefix*') # Reads HDF5
     """
     if isinstance(filenames, str):
@@ -608,69 +607,69 @@ def read_parquet(
     """
     Read Arkouda objects from Parquet file/s
 
-        Parameters
-        ----------
-        filenames : str, List[str]
-            Filename/s to read objects from
-        datasets : Optional str, List[str]
-            datasets to read from the provided files
-        iterative : bool
-            Iterative (True) or Single (False) function call(s) to server
-        strict_types: bool
-            If True (default), require all dtypes of a given dataset to have the
-            same precision and sign. If False, allow dtypes of different
-            precision and sign across different files. For example, if one
-            file contains a uint32 dataset and another contains an int64
-            dataset with the same name, the contents of both will be read
-            into an int64 pdarray.
-        allow_errors: bool
-            Default False, if True will allow files with read errors to be skipped
-            instead of failing.  A warning will be included in the return containing
-            the total number of files skipped due to failure and up to 10 filenames.
+    Parameters
+    ----------
+    filenames : str, List[str]
+        Filename/s to read objects from
+    datasets : Optional str, List[str]
+        datasets to read from the provided files
+    iterative : bool
+        Iterative (True) or Single (False) function call(s) to server
+    strict_types: bool
+        If True (default), require all dtypes of a given dataset to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one
+        file contains a uint32 dataset and another contains an int64
+        dataset with the same name, the contents of both will be read
+        into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
 
-        Returns
-        -------
-        For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
-        and for multiple datasets returns a dictionary of Arkouda pdarrays,
-        Arkouda Strings or Arkouda ArrayView.
-            Dictionary of {datasetName: pdarray or String}
+    Returns
+    -------
+    For a single dataset returns an Arkouda pdarray, Arkouda Strings, or Arkouda ArrayView object
+    and for multiple datasets returns a dictionary of Arkouda pdarrays,
+    Arkouda Strings or Arkouda ArrayView.
+        Dictionary of {datasetName: pdarray or String}
 
-        Raises
-        ------
-        ValueError
-            Raised if all datasets are not present in all parquet files or if one or
-            more of the specified files do not exist
-        RuntimeError
-            Raised if one or more of the specified files cannot be opened.
-            If `allow_errors` is true this may be raised if no values are returned
-            from the server.
-        TypeError
-            Raised if we receive an unknown arkouda_type returned from the server
+    Raises
+    ------
+    ValueError
+        Raised if all datasets are not present in all parquet files or if one or
+        more of the specified files do not exist
+    RuntimeError
+        Raised if one or more of the specified files cannot be opened.
+        If `allow_errors` is true this may be raised if no values are returned
+        from the server.
+    TypeError
+        Raised if we receive an unknown arkouda_type returned from the server
 
-        Notes
-        -----
-        If filenames is a string, it is interpreted as a shell expression
-        (a single filename is a valid expression, so it will work) and is
-        expanded with glob to read all matching files.
+    Notes
+    -----
+    If filenames is a string, it is interpreted as a shell expression
+    (a single filename is a valid expression, so it will work) and is
+    expanded with glob to read all matching files.
 
-        If iterative == True each dataset name and file names are passed to
-        the server as independent sequential strings while if iterative == False
-        all dataset names and file names are passed to the server in a single
-        string.
+    If iterative == True each dataset name and file names are passed to
+    the server as independent sequential strings while if iterative == False
+    all dataset names and file names are passed to the server in a single
+    string.
 
-        If datasets is None, infer the names of datasets from the first file
-        and read all of them. Use ``get_datasets`` to show the names of datasets
-        to Parquet files.
+    If datasets is None, infer the names of datasets from the first file
+    and read all of them. Use ``get_datasets`` to show the names of datasets
+    to Parquet files.
 
-        Parquet always recomputes offsets at this time
-        This will need to be updated once parquets workflow is updated
+    Parquet always recomputes offsets at this time
+    This will need to be updated once parquets workflow is updated
 
-        Examples
-        --------
-        Read without file Extension
-        >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
-        Read Glob Expression
-        >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
+    Examples
+    --------
+    Read without file Extension
+    >>> x = ak.read_parquet('path/name_prefix.parquet') # load Parquet
+    Read Glob Expression
+    >>> x = ak.read_parquet('path/name_prefix*') # Reads Parquet
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -759,9 +758,9 @@ def read_csv(
     - CSV format is not currently supported by load/load_all operations
     - The column delimiter is expected to be the same for column names and data
     - Be sure that column delimiters are not found within your data.
-    - All CSV files must delimit rows using newline (`\n`) at this time.
+    - All CSV files must delimit rows using newline (``\\n``) at this time.
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-    bytes as uint(8).
+      bytes as uint(8).
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -906,9 +905,9 @@ def export(
     Notes
     _____
     - If Arkouda file is exported for pandas, the format will not change. This mean parquet files
-    will remain parquet and hdf5 will remain hdf5.
+      will remain parquet and hdf5 will remain hdf5.
     - Export can only be performed from hdf5 or parquet files written by Arkouda. The result will be
-    the same file type, but formatted to be read by Pandas.
+      the same file type, but formatted to be read by Pandas.
     """
     from arkouda.dataframe import DataFrame
 
@@ -1192,9 +1191,9 @@ def to_csv(
     - CSV format is not currently supported by load/load_all operations
     - The column delimiter is expected to be the same for column names and data
     - Be sure that column delimiters are not found within your data.
-    - All CSV files must delimit rows using newline (`\n`) at this time.
+    - All CSV files must delimit rows using newline (``\\n``) at this time.
     - Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing
-    bytes as uint(8).
+      bytes as uint(8).
     """
     datasetNames, pdarrays = _bulk_write_prep(columns, names)
     dtypes = [a.dtype.name for a in pdarrays]

@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 import arkouda as ak
+from arkouda.sorting import SortingAlgorithm
 
 
 def is_cosorted(data):
@@ -53,7 +54,7 @@ def check_correctness(data):
     """
     Only check accuracy of sorting, do not measure performance
     """
-    for algo in ak.SortingAlgorithm:
+    for algo in SortingAlgorithm:
         perm = do_argsort(data, algo)
         s = apply_perm(data, perm)
         assert check_sorted(s)
@@ -63,7 +64,7 @@ def time_sort(name, data, trials):
     """
     Measure both performance and correctness of sorting
     """
-    for algo in ak.SortingAlgorithm:
+    for algo in SortingAlgorithm:
         timings = []
         for i in range(trials):
             start = time.time()

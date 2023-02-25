@@ -64,7 +64,7 @@ def _in1d_single(
 
     See Also
     --------
-    unique, intersect1d, union1d
+    arkouda.groupbyclass.unique, intersect1d, union1d
 
     Notes
     -----
@@ -158,10 +158,14 @@ def in1d(
         to (but is faster than) ``~ak.in1d(a, b)``.
     Returns
     -------
-    pdarray, bool
         True for each row in a that is contained in b
 
-    Notes:
+    Return Type
+    ------------
+        pdarray, bool
+
+    Notes
+    ------
         Only works for pdarrays of int64 dtype, Strings, or Categorical
     """
     from arkouda.alignment import NonUniqueError
@@ -406,7 +410,7 @@ def union1d(
 
     See Also
     --------
-    intersect1d, unique
+    intersect1d, arkouda.groupbyclass.unique
 
     Notes
     -----
@@ -414,10 +418,10 @@ def union1d(
 
     Examples
     --------
+    >>>
     # 1D Example
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2, -1, 0, 1, 2])
-
     #Multi-Array Example
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
@@ -497,7 +501,7 @@ def intersect1d(
 
     See Also
     --------
-    unique, union1d
+    arkouda.groupbyclass.unique, union1d
 
     Notes
     -----
@@ -505,10 +509,10 @@ def intersect1d(
 
     Examples
     --------
+    >>>
     # 1D Example
     >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
     array([1, 3])
-
     # Multi-Array Example
     >>> a = ak.arange(5)
     >>> b = ak.array([1, 5, 3, 4, 2])
@@ -609,7 +613,7 @@ def setdiff1d(
 
     See Also
     --------
-    unique, setxor1d
+    arkouda.groupbyclass.unique, setxor1d
 
     Notes
     -----
@@ -621,7 +625,6 @@ def setdiff1d(
     >>> b = ak.array([3, 4, 5, 6])
     >>> ak.setdiff1d(a, b)
     array([1, 2])
-
     #Multi-Array Example
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
@@ -730,7 +733,6 @@ def setxor1d(pda1: groupable, pda2: groupable, assume_unique: bool = False) -> U
     >>> b = ak.array([2, 3, 5, 7, 5])
     >>> ak.setxor1d(a,b)
     array([1, 4, 5, 7])
-
     #Multi-Array Example
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
