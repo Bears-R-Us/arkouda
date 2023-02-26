@@ -28,6 +28,8 @@ module MetricsMsg {
     var requestMetrics = new CounterTable();
     
     var avgResponseTimeMetrics = new AverageMeasurementTable();
+    
+    var responseTimeMetrics = new MeasurementTable();
 
     var users = new Users();
     
@@ -170,8 +172,13 @@ module MetricsMsg {
             }
         }   
 
-        proc set(metric: string, measurement: real) {
+        proc set(metric: string, measurement: real) throws {
             this.measurements.addOrSet(metric, measurement);
+            
+            mLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Set Response Time cmd: %s time %t".format(metric,measurement));
         }
 
         proc size() {
@@ -294,6 +301,9 @@ module MetricsMsg {
         for metric in getNumRequestMetrics() {
             metrics.append(metric);
         }
+        for metric in getResponseTimeMetrics() {
+            metrics.append(metric);
+        }        
         for metric in getAvgResponseTimeMetrics() {
             metrics.append(metric);
         }
@@ -359,6 +369,18 @@ module MetricsMsg {
         return metrics;
     }
 
+
+    proc getResponseTimeMetrics() throws {
+        var metrics = new list(owned Metric?);
+
+        for item in responseTimeMetrics.items() {
+            metrics.append(new Metric(name=item[0], 
+                                      category=MetricCategory.RESPONSE_TIME,
+                                      value=item[1]));
+        }
+
+        return metrics;
+    }
 
     proc getAvgResponseTimeMetrics() throws {
         var metrics = new list(owned Metric?);

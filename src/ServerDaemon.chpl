@@ -408,13 +408,16 @@ module ServerDaemon {
                return !obj.key.isEmpty();
             }
           
-            // Update Request Metrics
+            // Update request metrics for the cmd
             requestMetrics.increment(cmd);
             
-            // Update User-Scoped Request Metrics
+            // Update user-scoped request metrics for the cmd
             userMetrics.incrementPerUserRequestMetrics(user,cmd);
+
+            // Update response time metric for the cmd
+            responseTimeMetrics.set(cmd,elapsedTime);
             
-            // Add the response time to the avg response time for the corresponding cmd
+            // Add response time to the avg response time for the cmd
             avgResponseTimeMetrics.add(cmd,elapsedTime);
 
             var apo = getArrayParameterObj(args);
