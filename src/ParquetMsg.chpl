@@ -1031,32 +1031,40 @@ module ParquetMsg {
             var e = toSymEntry(toGenSymEntry(entry), int);
             var locDom = e.a.localSubdomain();
             // set the pointer to the entry array in the list of Pointers
-            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-            datatypes[i] = ARROWINT64;
-            sizeList[i] = locDom.size;
+            if locDom.size > 0 {
+              ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+              datatypes[i] = ARROWINT64;
+              sizeList[i] = locDom.size;
+            }
           }
           when DType.UInt64 {
             var e = toSymEntry(toGenSymEntry(entry), uint);
             var locDom = e.a.localSubdomain();
             // set the pointer to the entry array in the list of Pointers
-            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-            datatypes[i] = ARROWUINT64;
-            sizeList[i] = locDom.size;
+            if locDom.size > 0 {
+              ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+              datatypes[i] = ARROWUINT64;
+              sizeList[i] = locDom.size;
+            }
           }
           when DType.Bool {
             var e = toSymEntry(toGenSymEntry(entry), bool);
             var locDom = e.a.localSubdomain();
             // set the pointer to the entry array in the list of Pointers
-            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-            datatypes[i] = ARROWBOOLEAN;
-            sizeList[i] = locDom.size;
+            if locDom.size > 0 {
+              ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+              datatypes[i] = ARROWBOOLEAN;
+              sizeList[i] = locDom.size;
+            }
           } when DType.Float64 {
             var e = toSymEntry(toGenSymEntry(entry), real);
             var locDom = e.a.localSubdomain();
             // set the pointer to the entry array in the list of Pointers
-            ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
-            datatypes[i] = ARROWDOUBLE;
-            sizeList[i] = locDom.size;
+            if locDom.size > 0 {
+              ptrList[i] = c_ptrTo(e.a[locDom]): c_void_ptr;
+              datatypes[i] = ARROWDOUBLE;
+              sizeList[i] = locDom.size;
+            }
           } when DType.Strings {
             var e: SegStringSymEntry = toSegStringSymEntry(entry);
             var segStr = new SegString("", e);
