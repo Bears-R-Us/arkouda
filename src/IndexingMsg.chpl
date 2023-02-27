@@ -825,7 +825,7 @@ module IndexingMsg
         var gX: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
         var gIV: borrowed GenSymEntry = getGenericTypedArrayEntry(iname, st);
         var gY: borrowed GenSymEntry = getGenericTypedArrayEntry(yname, st);
-        const dtype = if gX.dtype == DType.BigInt then DType.BigInt else gY.dtype;
+        // const dtype = if gX.dtype == DType.BigInt then DType.BigInt else gY.dtype;
 
         if logLevel == LogLevel.DEBUG {
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -844,28 +844,66 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
-            var e = toSymEntry(gX,t);
-            var iv = toSymEntry(gIV,int);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            var y = toSymEntry(gY,t);
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+            if gX.dtype == DType.BigInt {
+                var e = toSymEntry(gX, bigint);
+                var iv = toSymEntry(gIV,int);
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                var y = toSymEntry(gY,t);
+                if ivMin < 0 {
+                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                if ivMax >= e.size {
+                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                ref iva = iv.a;
+                writeln("gX.dtype == DType.BigInt");
+                ref ya = y.a;
+                // writeln(y.etype);
+                writeln(ya);
+                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                writeln(tmp);
+                // writeln(tmp.type);
+
+
+                // var bigint_ya = if ya.type == bigint then ya else ya:bigint;
+                // var ya = if y.a.type == bigint then y.a else y.a:bigint;
+                ref ea = e.a;
+                forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
+                    writeln("idx ", i);
+                    writeln("val ", v);
+                    writeln();
+                    agg.copy(ea[i],v);
+                }
             }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+            else {
+                var e = toSymEntry(gX,t);
+                var iv = toSymEntry(gIV,int);
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                var y = toSymEntry(gY,t);
+                if ivMin < 0 {
+                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                if ivMax >= e.size {
+                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                ref iva = iv.a;
+                var ya = y.a;
+                ref ea = e.a;
+                forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+                    agg.copy(ea[i],v);
+                }
             }
-            //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
-            ref iva = iv.a;
-            ref ya = y.a;
-            ref ea = e.a;
-            forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
-              agg.copy(ea[i],v);
-            }
+            writeln("surely we didn't get this far");
             var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -879,28 +917,79 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
-            var e = toSymEntry(gX,t);
-            var iv = toSymEntry(gIV,uint);
-            var ivMin = min reduce iv.a;
-            var ivMax = max reduce iv.a;
-            var y = toSymEntry(gY,t);
-            if ivMin < 0 {
-                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+            // var e = toSymEntry(gX,t);
+            if t == bigint {
+                var e = toSymEntry(gX, bigint);
+                var iv = toSymEntry(gIV,uint);
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                var y = toSymEntry(gY,t);
+                if ivMin < 0 {
+                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                if ivMax >= e.size {
+                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                ref iva = iv.a;
+                ref ya = y.a;
+                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                // var ya = if y.a.type == bigint then y.a else if y.a.type == bool then y.a:int:bigint else y.a:bigint;
+                ref ea = e.a;
+                forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
+                    agg.copy(ea[i:int],v);
+                }
+                // if gY.dtype == DType.BigInt {
+                //     ref ya = y.a;
+                //     ref ea = e.a;
+                //     forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+                //         agg.copy(ea[i],v);
+                //     }
+                // }
+                // else if gY.dtype == DType.Bool {
+                //     var ya = y.a:int:bigint;
+                //     ref ea = e.a;
+                //     forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+                //         agg.copy(ea[i]:int,v);
+                //     }
+                // }
+                // else {
+                //     var ya = y.a:bigint;
+                //     ref ea = e.a;
+                //     forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+                //         agg.copy(ea[i:int],v);
+                //     }
+                // }
             }
-            if ivMax >= e.size {
-                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+            else {
+                var e = toSymEntry(gX,t);
+                var iv = toSymEntry(gIV,uint);
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                var y = toSymEntry(gY,t);
+                if ivMin < 0 {
+                    var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                if ivMax >= e.size {
+                    var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                ref iva = iv.a;
+                var ya = y.a;
+                ref ea = e.a;
+                forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+                    agg.copy(ea[i:int],v);
+                }
             }
-            //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
-            ref iva = iv.a;
-            ref ya = y.a;
-            ref ea = e.a;
-            forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
-              agg.copy(ea[i:int],v);
-            }
+
             var repMsg = "%s success".format(pn);
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -914,28 +1003,101 @@ module IndexingMsg
                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg,MsgType.ERROR);
             }
-            var e = toSymEntry(gX,t);
-            var truth = toSymEntry(gIV,bool);
-            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-            overMemLimit(numBytes(int) * truth.size);
-            var iv: [truth.a.domain] int = (+ scan truth.a);
-            var pop = iv[iv.size-1];
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                         "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
-            var y = toSymEntry(gY,t);
-            if (y.size != pop) {
-                var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg,MsgType.ERROR);
+            // var e = toSymEntry(gX,t);
+            // var ya = if gY.dtype == DType.BigInt then y.a else if gY.dtype == DType.Bool then y.a:int:bigint else y.a:bigint;
+            // //ref ya = y.a;
+            // const ref ead = e.a.domain;
+            // ref ea = e.a;
+            // ref trutha = truth.a;
+            // forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+            //   if (trutha[i] == true) {
+            //     agg.copy(eai,ya[iv[i]-1]);
+            //   }
+            // }
+            if t == bigint {
+                var e = toSymEntry(gX, bigint);
+                var truth = toSymEntry(gIV,bool);
+                // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                overMemLimit(numBytes(int) * truth.size);
+                var iv: [truth.a.domain] int = (+ scan truth.a);
+                var pop = iv[iv.size-1];
+                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                            "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
+                var y = toSymEntry(gY,t);
+                if (y.size != pop) {
+                    var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                ref ya = y.a;
+                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                // var ya = if y.a.type == bigint then y.a else if y.a.type == bool then y.a:int:bigint else y.a:bigint;
+                ref ea = e.a;
+                const ref ead = ea.domain;
+                ref trutha = truth.a;
+                forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(bigint)) {
+                    if trutha[i] {
+                        agg.copy(eai,tmp[iv[i]-1]);
+                    }
+                }
+                // if gY.dtype == DType.BigInt {
+                //     ref ya = y.a;
+                //     const ref ead = e.a.domain;
+                //     ref ea = e.a;
+                //     ref trutha = truth.a;
+                //     forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+                //         if (trutha[i] == true) {
+                //             agg.copy(eai,ya[iv[i]-1]);
+                //         }
+                //     }
+                // }
+                // else if gY.dtype == DType.Bool {
+                //     var ya = y.a:int:bigint;
+                //     const ref ead = e.a.domain;
+                //     ref ea = e.a;
+                //     ref trutha = truth.a;
+                //     forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+                //         if (trutha[i] == true) {
+                //             agg.copy(eai,ya[iv[i]-1]);
+                //         }
+                //     }
+                // }
+                // else {
+                //     var ya = y.a:bigint;
+                //     const ref ead = e.a.domain;
+                //     ref ea = e.a;
+                //     ref trutha = truth.a;
+                //     forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+                //         if (trutha[i] == true) {
+                //             agg.copy(eai,ya[iv[i]-1]);
+                //         }
+                //     }
+                // }
             }
-            ref ya = y.a;
-            const ref ead = e.a.domain;
-            ref ea = e.a;
-            ref trutha = truth.a;
-            forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
-              if (trutha[i] == true) {
-                agg.copy(eai,ya[iv[i]-1]);
-              }
+            else {
+                var e = toSymEntry(gX,t);
+                var truth = toSymEntry(gIV,bool);
+                // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                overMemLimit(numBytes(int) * truth.size);
+                var iv: [truth.a.domain] int = (+ scan truth.a);
+                var pop = iv[iv.size-1];
+                imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                            "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
+                var y = toSymEntry(gY,t);
+                if (y.size != pop) {
+                    var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
+                    imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
+                }
+                var ya = y.a;
+                const ref ead = e.a.domain;
+                ref ea = e.a;
+                ref trutha = truth.a;
+                forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+                    if trutha[i] {
+                        agg.copy(eai,ya[iv[i]-1]);
+                    }
+                }
             }
 
             var repMsg = "%s success".format(pn);
@@ -943,7 +1105,7 @@ module IndexingMsg
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
 
-        select(gX.dtype, gIV.dtype, dtype) {
+        select(gX.dtype, gIV.dtype, gY.dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
                 return ivInt64Helper(int);
             }
@@ -981,6 +1143,7 @@ module IndexingMsg
                 return ivBoolHelper(bool);
             }
             when (DType.BigInt, DType.Int64, DType.BigInt) {
+                writeln("did i get here?");
                 return ivInt64Helper(bigint);
             }
             when (DType.BigInt, DType.UInt64, DType.BigInt) {
