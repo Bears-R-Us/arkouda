@@ -1171,10 +1171,9 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = la >> ra;
-            var divideBy = makeDistArray(la.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= ra;
-            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              var dB = 1:bigint;
+              dB <<= ri;
               t /= dB;
               if has_max_bits {
                 t &= local_max_size;
@@ -1426,10 +1425,7 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = la >> ra;
-            var divideBy = makeDistArray(la.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= val;
-            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+            forall t in tmp with (var dB = (1:bigint) << val, var local_max_size = max_size) {
               t /= dB;
               if has_max_bits {
                 t &= local_max_size;
@@ -1698,10 +1694,9 @@ module BinOp
             // workaround for right shift until chapel issue #21206
             // makes it into a release, eventually we can just do
             // tmp = val >> ra;
-            var divideBy = makeDistArray(ra.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= ra;
-            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              var dB = 1:bigint;
+              dB <<= ri;
               t /= dB;
               if has_max_bits {
                 t &= local_max_size;
