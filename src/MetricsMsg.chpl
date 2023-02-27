@@ -174,11 +174,6 @@ module MetricsMsg {
 
         proc set(metric: string, measurement: real) throws {
             this.measurements.addOrSet(metric, measurement);
-            
-            mLogger.debug(getModuleName(),
-                          getRoutineName(),
-                          getLineNumber(),
-                          "Set Response Time cmd: %s time %t".format(metric,measurement));
         }
 
         proc size() {
@@ -230,13 +225,8 @@ module MetricsMsg {
             this.measurementTotals(metric) += measurement;
 
             var value: real = this.measurementTotals(metric)/numMeasurements;
-  
-            this.measurements.addOrSet(metric, value);
 
-            mLogger.debug(getModuleName(),
-                          getRoutineName(),
-                          getLineNumber(),
-                          "Added Avg Response Time cmd: %s time %t".format(metric,value));
+            this.measurements.addOrSet(metric, value);
         }
     }
 

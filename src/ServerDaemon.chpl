@@ -417,8 +417,18 @@ module ServerDaemon {
             // Update response time metric for the cmd
             responseTimeMetrics.set(cmd,elapsedTime);
             
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Set Response Time cmd: %s time %t".format(cmd,elapsedTime));
+            
             // Add response time to the avg response time for the cmd
             avgResponseTimeMetrics.add(cmd,elapsedTime);
+            
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Added Avg Response Time cmd: %s time %t".format(cmd,elapsedTime));
 
             var apo = getArrayParameterObj(args);
 
