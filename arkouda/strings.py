@@ -187,15 +187,12 @@ class Strings:
         self._regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
 
-    """
-    NOTE:
-         The Strings.__del__() method should NOT be implemented.
-         Python will invoke the __del__() of any components by default.
-         Overriding this default behavior with an explicitly specified Strings.__del__() method may
-         introduce errors in the event that additional components are added to Strings
-         and the method is not updated.
-         By allowing Python's garbage collecting to handle this automatically, we avoid extra maintenance
-    """
+    def __del__(self):
+        try:
+            if self.name:
+                generic_msg(cmd="delete", args={"name": self.name})
+        except RuntimeError:
+            pass
 
     def __iter__(self):
         raise NotImplementedError(

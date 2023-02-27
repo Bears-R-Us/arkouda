@@ -403,8 +403,8 @@ class RegistrationTest(ArkoudaTest):
         # registered objects are not deleted from symbol table
         a.register("keep")
         self.assertEqual(
-            ak.client.generic_msg(cmd="delete", args={"name": a.name}), f"registered symbol, "
-                                                                        f"{a.name}, not deleted"
+            ak.client.generic_msg(cmd="delete", args={"name": a.name}),
+            f"registered symbol, " f"{a.name}, not deleted",
         )
         self.assertTrue(a.name in ak.list_symbol_table())
 
@@ -687,7 +687,6 @@ class RegistrationTest(ArkoudaTest):
         segarr.unregister()
         self.assertFalse(segarr.is_registered())
 
-
     def test_unregister_by_name(self):
         a = [1, 2, 3]
         b = [6, 7, 8]
@@ -704,6 +703,52 @@ class RegistrationTest(ArkoudaTest):
 
         # Verify no registered components remain
         self.assertFalse(segarr.is_registered())
+
+    def test_symentry_cleanup(self):
+        cleanup()
+        pda = ak.arange(10)
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        pda = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+        s = ak.array(["a", "b", "c"])
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        s = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+        cat = ak.Categorical(ak.array(["a", "b", "c"]))
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        cat = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+        seg = ak.segarray(
+            ak.array([0, 6, 8]), ak.array([10, 11, 12, 13, 14, 15, 20, 21, 30, 31, 32, 33])
+        )
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        seg = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+        g = ak.GroupBy(
+            [ak.arange(3), ak.array(["a", "b", "c"]), ak.Categorical(ak.array(["a", "b", "c"]))]
+        )
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        g = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
+        d = ak.DataFrame(
+            {
+                "pda": ak.arange(3),
+                "s": ak.array(["a", "b", "c"]),
+                "cat": ak.Categorical(ak.array(["a", "b", "c"])),
+                "seg": ak.segarray(
+                    ak.array([0, 6, 8]), ak.array([10, 11, 12, 13, 14, 15, 20, 21, 30, 31, 32, 33])
+                ),
+            }
+        )
+        self.assertTrue(len(ak.list_symbol_table()) > 0)
+        d = None
+        self.assertEqual(len(ak.list_symbol_table()), 0)
+
 
 def cleanup():
     ak.clear()
