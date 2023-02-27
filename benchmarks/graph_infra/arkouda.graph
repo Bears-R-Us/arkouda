@@ -147,3 +147,15 @@ graphkeys: bigint_from_uint_arrays GiB/s, bigint_to_uint_arrays GiB/s
 files: bigint_conversion.dat, bigint_conversion.dat
 graphtitle: Bigint Conversion Performance
 ylabel: Performance (GiB/s)
+
+perfkeys: Average bigint stream rate =
+graphkeys: bigint stream GiB/s
+files: bigint_stream.dat
+graphtitle: Bigint Stream Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average bigint AND rate =, Average bigint OR rate =, Average bigint SHIFT rate =
+graphkeys: bigint AND GiB/s, bigint OR GiB/s, bigint SHIFT GiB/s
+files: bigint_bitwise_binops.dat, bigint_bitwise_binops.dat, bigint_bitwise_binops.dat
+graphtitle: Bigint Bitwise Binops Performance
+ylabel: Performance (GiB/s)

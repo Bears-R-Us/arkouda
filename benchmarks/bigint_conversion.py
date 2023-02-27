@@ -43,8 +43,15 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
             (2 * a.size * a.itemsize) / 2**30 / avg_conversion
         )
     )
-    assert ak.all(a == u_arrays[0])
-    assert ak.all(b == u_arrays[1])
+    if max_bits == -1 or max_bits > 128:
+        assert ak.all(a == u_arrays[0])
+        assert ak.all(b == u_arrays[1])
+    elif max_bits <= 64:
+        assert ak.all(b % (2**max_bits - 1) == u_arrays[0])
+    else:
+        max_bits -= 64
+        assert ak.all(a & (2**max_bits - 1) == u_arrays[0])
+        assert ak.all(b == u_arrays[1])
 
 
 def check_correctness(seed, max_bits):
@@ -54,8 +61,15 @@ def check_correctness(seed, max_bits):
     b = ak.randint(0, N, N, dtype=ak.uint64, seed=seed)
     u_arrays = ak.bigint_from_uint_arrays([a, b], max_bits=max_bits).bigint_to_uint_arrays()
 
-    assert ak.all(a == u_arrays[0])
-    assert ak.all(b == u_arrays[1])
+    if max_bits == -1 or max_bits > 128:
+        assert ak.all(a == u_arrays[0])
+        assert ak.all(b == u_arrays[1])
+    elif max_bits <= 64:
+        assert ak.all(b % (2**max_bits - 1) == u_arrays[0])
+    else:
+        max_bits -= 64
+        assert ak.all(a & (2**max_bits - 1) == u_arrays[0])
+        assert ak.all(b == u_arrays[1])
 
 
 def create_parser():

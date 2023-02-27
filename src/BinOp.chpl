@@ -1099,10 +1099,11 @@ module BinOp
     var has_max_bits = max_bits != -1;
     if has_max_bits {
       max_size <<= max_bits;
+      max_size -= 1;
     }
     ref la = l.a;
     ref ra = r.a;
-    var tmp = makeDistArray(la.size, bigint);
+    var tmp = if l.etype == bigint then la else if l.etype == bool then la:int:bigint else la:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1114,19 +1115,39 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          tmp = la & ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t &= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "|" {
-          tmp = la | ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t |= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "^" {
-          tmp = la ^ ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t ^= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "/" {
-          tmp = la / ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t /= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1138,7 +1159,12 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            tmp = la << ra;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t <<= ri;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when ">>" {
@@ -1148,7 +1174,12 @@ module BinOp
             var divideBy = makeDistArray(la.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= ra;
-            tmp = la / divideBy;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when "<<<" {
@@ -1157,21 +1188,27 @@ module BinOp
             }
             // should be as simple as the below, see issue #2006
             // return (la << ra) | (la >> (max_bits - ra));
-            tmp = la << ra;
             var botBits = la;
             if r.etype == int {
-              var shift_amt = max_bits - ra;
               // cant just do botBits >>= shift_amt;
-              var divideBy = makeDistArray(la.size, bigint);
-              divideBy = 1:bigint;
-              divideBy <<= shift_amt;
-              botBits = botBits / divideBy;
-              tmp += botBits;
+              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+                t <<= ri;
+                var div_by = 1:bigint;
+                var shift_amt = max_bits - ri;
+                div_by <<= shift_amt;
+                bot_bits /= div_by;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             else {
-              var shift_amt = max_bits:uint - ra;
-              botBits >>= shift_amt;
-              tmp += botBits;
+              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+                t <<= ri;
+                var shift_amt = max_bits:uint - ri;
+                bot_bits >>= shift_amt;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             visted = true;
           }
@@ -1181,23 +1218,16 @@ module BinOp
             }
             // should be as simple as the below, see issue #2006
             // return (la >> ra) | (la << (max_bits - ra));
-            tmp = la;
             // cant just do tmp >>= ra;
-            var divideBy = makeDistArray(la.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= ra;
-            tmp = tmp / divideBy;
-
             var topBits = la;
-            if r.etype == int {
-              var shift_amt = max_bits - ra;
-              topBits <<= shift_amt;
-              tmp += topBits;
-            }
-            else {
-              var shift_amt = max_bits:uint - ra;
-              topBits <<= shift_amt;
-              tmp += topBits;
+            forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
+              var div_by = 1:bigint;
+              div_by <<= ri;
+              t /= div_by;
+              var shift_amt = if r.etype == int then max_bits - ri else max_bits:uint - ri;
+              tB <<= shift_amt;
+              t += tB;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1205,13 +1235,33 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          [(ei,li,ri) in zip(tmp,la,ra)] ei = if ri != 0 then li/ri else 0:bigint;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t /= ri;
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "%" { // modulo
           // we only do in place mod when ri != 0, tmp will be 0 in other locations
           // we can't use ei = li % ri because this can result in negatives
-          [(ei,li,ri) in zip(tmp,la,ra)] if ri != 0 then ei.mod(li, ri);
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t.mod(t, ri);
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "**" {
@@ -1219,10 +1269,14 @@ module BinOp
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
           if has_max_bits {
-            [(ei,li,ri) in zip(tmp,la,ra)] ei.powMod(li, ri, max_size);
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t.powMod(t, ri, local_max_size + 1);
+            }
           }
           else {
-            tmp = la ** ra:int;
+            forall (t, ri) in zip(tmp, ra) {
+              t **= ri:uint;
+            }
           }
           visted = true;
         }
@@ -1233,15 +1287,30 @@ module BinOp
        (r.etype == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
       select op {
         when "+" {
-          tmp = la + ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t += ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "-" {
-          tmp = l.a - r.a;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t -= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "*" {
-          tmp = l.a * r.a;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t *= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1249,13 +1318,7 @@ module BinOp
     if !visted {
       throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ r.etype:string);
     }
-    else {
-      if has_max_bits {
-        // max_size should always be non-zero since we start at 1 and left shift
-        tmp.mod(tmp, max_size);
-      }
-      return (tmp, max_bits);
-    }
+    return (tmp, max_bits);
   }
 
   proc doBigIntBinOpvvBoolReturn(l, r, op: string) throws {
@@ -1292,9 +1355,10 @@ module BinOp
     var has_max_bits = max_bits != -1;
     if has_max_bits {
       max_size <<= max_bits;
+      max_size -= 1;
     }
     ref la = l.a;
-    var tmp = makeDistArray(la.size, bigint);
+    var tmp = if l.etype == bigint then la else if l.etype == bool then la:int:bigint else la:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1306,19 +1370,39 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          tmp = la & val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t &= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "|" {
-          tmp = la | val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t |= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "^" {
-          tmp = la ^ val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t ^= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "/" {
-          tmp = la / val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t /= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1330,7 +1414,12 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            tmp = la << val;
+            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+              t <<= local_val;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when ">>" {
@@ -1340,7 +1429,12 @@ module BinOp
             var divideBy = makeDistArray(la.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= val;
-            tmp = la / divideBy;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when "<<<" {
@@ -1349,21 +1443,27 @@ module BinOp
             }
             // should be as simple as the below, see issue #2006
             // return (la << val) | (la >> (max_bits - val));
-            tmp = la << val;
             var botBits = la;
             if val.type == int {
               var shift_amt = max_bits - val;
               // cant just do botBits >>= shift_amt;
-              var divideBy = makeDistArray(la.size, bigint);
-              divideBy = 1:bigint;
-              divideBy <<= shift_amt;
-              botBits = botBits / divideBy;
-              tmp += botBits;
+              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+                t <<= local_val;
+                var div_by = 1:bigint;
+                div_by <<= local_shift_amt;
+                bot_bits /= div_by;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             else {
               var shift_amt = max_bits:uint - val;
-              botBits >>= shift_amt;
-              tmp += botBits;
+              forall (t, bot_bits) in zip(tmp, botBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+                t <<= local_val;
+                bot_bits >>= local_shift_amt;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             visted = true;
           }
@@ -1373,23 +1473,16 @@ module BinOp
             }
             // should be as simple as the below, see issue #2006
             // return (la >> val) | (la << (max_bits - val));
-            tmp = la;
             // cant just do tmp >>= ra;
-            var divideBy = makeDistArray(la.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= val;
-            tmp = tmp / divideBy;
-
             var topBits = la;
-            if val.type == int {
-              var shift_amt = max_bits - val;
-              topBits <<= shift_amt;
-              tmp += topBits;
-            }
-            else {
-              var shift_amt = max_bits:uint - val;
-              topBits <<= shift_amt;
-              tmp += topBits;
+            var shift_amt = if val.type == int then max_bits - val else max_bits:uint - val;
+            forall (t, tB) in zip(tmp, topBits) with (var local_val = val, var local_shift_amt = shift_amt, var local_max_size = max_size) {
+              var div_by = 1:bigint;
+              div_by <<= local_val;
+              t /= div_by;
+              tB <<= local_shift_amt;
+              t += tB;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1397,13 +1490,33 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          [(ei,li) in zip(tmp,la)] ei = if val != 0 then li/val else 0:bigint;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 {
+              t /= local_val;
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "%" { // modulo
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
-          [(ei,li) in zip(tmp,la)] if val != 0 then ei.mod(li, val);
+          forall (t, li) in zip(tmp, la) with (var local_val = val, var local_max_size = max_size) {
+            if local_val != 0 {
+              t.mod(t, local_val);
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "**" {
@@ -1411,10 +1524,14 @@ module BinOp
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
           if has_max_bits {
-            [(ei,li) in zip(tmp,la)] ei.powMod(li, val, max_size);
+            forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+              t.powMod(t, local_val, local_max_size + 1);
+            }
           }
           else {
-            tmp = la ** val:int;
+            forall t in tmp with (var local_val = val) {
+              t **= local_val:uint;
+            }
           }
           visted = true;
         }
@@ -1425,15 +1542,30 @@ module BinOp
        (val.type == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
       select op {
         when "+" {
-          tmp = la + val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t += local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "-" {
-          tmp = l.a - val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t -= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "*" {
-          tmp = l.a * val;
+          forall t in tmp with (var local_val = val, var local_max_size = max_size) {
+            t *= local_val;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1441,34 +1573,42 @@ module BinOp
     if !visted {
       throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ val.type:string);
     }
-    else {
-      if has_max_bits {
-        // max_size should always be non-zero since we start at 1 and left shift
-        tmp.mod(tmp, max_size);
-      }
-      return (tmp, max_bits);
-    }
+    return (tmp, max_bits);
   }
 
   proc doBigIntBinOpvsBoolReturn(l, val, op: string) throws {
+    ref la = l.a;
+    var tmp = makeDistArray(la.size, bool);
     select op {
       when "<" {
-        return l.a < val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li < local_val);
+        }
       }
       when ">" {
-        return l.a > val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li > local_val);
+        }
       }
       when "<=" {
-        return l.a <= val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li <= local_val);
+        }
       }
       when ">=" {
-        return l.a >= val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li >= local_val);
+        }
       }
       when "==" {
-        return l.a == val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li == local_val);
+        }
       }
       when "!=" {
-        return l.a != val;
+        forall (t, li) in zip(tmp, la) with (var local_val = val) {
+          t = (li != local_val);
+        }
       }
       otherwise {
         // we should never reach this since we only enter this proc
@@ -1476,6 +1616,7 @@ module BinOp
         throw new Error("Unsupported operation: " +" "+ l.etype:string + op +" "+ val.type:string);
       }
     }
+    return tmp;
   }
 
   proc doBigIntBinOpsv(val, r, op: string) throws {
@@ -1484,9 +1625,12 @@ module BinOp
     var has_max_bits = max_bits != -1;
     if has_max_bits {
       max_size <<= max_bits;
+      max_size -= 1;
     }
     ref ra = r.a;
     var tmp = makeDistArray(ra.size, bigint);
+    // TODO we have to cast to bigint until chape issue #21290 is resolved, see issue #2007
+    tmp = if val.type == bool then val:int:bigint else val:bigint;
     // these cases are not mutually exclusive,
     // so we have a flag to track if tmp is ever populated
     var visted = false;
@@ -1498,19 +1642,39 @@ module BinOp
       // both being bigint
       select op {
         when "&" {
-          tmp = val & ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t &= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "|" {
-          tmp = val | ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t |= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "^" {
-          tmp = val ^ ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t ^= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "/" {
-          tmp = val / ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t /= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1522,7 +1686,12 @@ module BinOp
         // can't shift a bigint by a bigint
         select op {
           when "<<" {
-            tmp = val << ra;
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t <<= ri;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when ">>" {
@@ -1532,7 +1701,12 @@ module BinOp
             var divideBy = makeDistArray(ra.size, bigint);
             divideBy = 1:bigint;
             divideBy <<= ra;
-            tmp = val / divideBy;
+            forall (t, dB) in zip(tmp, divideBy) with (var local_max_size = max_size) {
+              t /= dB;
+              if has_max_bits {
+                t &= local_max_size;
+              }
+            }
             visted = true;
           }
           when "<<<" {
@@ -1540,23 +1714,29 @@ module BinOp
               throw new Error("Must set max_bits to rotl");
             }
             // should be as simple as the below, see issue #2006
-            // return (val << ra) | (val >> (max_bits - ra));
-            tmp = val << ra;
+            // return (la << ra) | (la >> (max_bits - ra));
             var botBits = makeDistArray(ra.size, bigint);
             botBits = val;
             if r.etype == int {
-              var shift_amt = max_bits - ra;
               // cant just do botBits >>= shift_amt;
-              var divideBy = makeDistArray(ra.size, bigint);
-              divideBy = 1:bigint;
-              divideBy <<= shift_amt;
-              botBits = botBits / divideBy;
-              tmp += botBits;
+              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+                t <<= ri;
+                var div_by = 1:bigint;
+                var shift_amt = max_bits - ri;
+                div_by <<= shift_amt;
+                bot_bits /= div_by;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             else {
-              var shift_amt = max_bits:uint - ra;
-              botBits >>= shift_amt;
-              tmp += botBits;
+              forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
+                t <<= ri;
+                var shift_amt = max_bits:uint - ri;
+                bot_bits >>= shift_amt;
+                t += bot_bits;
+                t &= local_max_size;
+              }
             }
             visted = true;
           }
@@ -1565,25 +1745,18 @@ module BinOp
               throw new Error("Must set max_bits to rotr");
             }
             // should be as simple as the below, see issue #2006
-            // return (val >> ra) | (val << (max_bits - ra));
-            tmp = val;
+            // return (la >> ra) | (la << (max_bits - ra));
             // cant just do tmp >>= ra;
-            var divideBy = makeDistArray(ra.size, bigint);
-            divideBy = 1:bigint;
-            divideBy <<= ra;
-            tmp = tmp / divideBy;
-
             var topBits = makeDistArray(ra.size, bigint);
             topBits = val;
-            if r.etype == int {
-              var shift_amt = max_bits - ra;
-              topBits <<= shift_amt;
-              tmp += topBits;
-            }
-            else {
-              var shift_amt = max_bits:uint - ra;
-              topBits <<= shift_amt;
-              tmp += topBits;
+            forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
+              var div_by = 1:bigint;
+              div_by <<= ri;
+              t /= div_by;
+              var shift_amt = if r.etype == int then max_bits - ri else max_bits:uint - ri;
+              tB <<= shift_amt;
+              t += tB;
+              t &= local_max_size;
             }
             visted = true;
           }
@@ -1591,24 +1764,46 @@ module BinOp
       }
       select op {
         when "//" { // floordiv
-          [(ei,ri) in zip(tmp,ra)] ei = if ri != 0 then val/ri else 0:bigint;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t /= ri;
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "%" { // modulo
-          // we only do in place mod when val != 0, tmp will be 0 in other locations
-          // we can't use ei = li % val because this can result in negatives
-          [(ei,ri) in zip(tmp,ra)] if ri != 0 then ei.mod(val, ri);
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            if ri != 0 {
+              t.mod(t, ri);
+            }
+            else {
+              t = 0:bigint;
+            }
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "**" {
-          if || reduce(ra<0) {
+          if || reduce (ra<0) {
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
           if has_max_bits {
-            [(ei,ri) in zip(tmp,ra)] ei.powMod(val, ri, max_size);
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              t.powMod(t, ri, local_max_size + 1);
+            }
           }
           else {
-            tmp = val ** ra:int;
+            forall (t, ri) in zip(tmp, ra) {
+              t **= ri:uint;
+            }
           }
           visted = true;
         }
@@ -1617,19 +1812,32 @@ module BinOp
     if (val.type == bigint && r.etype == bigint) ||
        (val.type == bigint && (r.etype == int || r.etype == uint || r.etype == bool)) ||
        (r.etype == bigint && (val.type == int || val.type == uint || val.type == bool)) {
-      // TODO we have to cast to bigint until chape issue #21290 is resolved, see issue #2007
-      var cast_val = if val.type == bool then val:int:bigint else val:bigint;
       select op {
         when "+" {
-          tmp = cast_val + ra;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t += ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "-" {
-          tmp = cast_val - r.a;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t -= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
         when "*" {
-          tmp = cast_val * r.a;
+          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+            t *= ri;
+            if has_max_bits {
+              t &= local_max_size;
+            }
+          }
           visted = true;
         }
       }
@@ -1637,34 +1845,42 @@ module BinOp
     if !visted {
       throw new Error("Unsupported operation: " + val.type:string +" "+ op +" "+ r.etype:string);
     }
-    else {
-      if has_max_bits {
-        // max_size should always be non-zero since we start at 1 and left shift
-        tmp.mod(tmp, max_size);
-      }
-      return (tmp, max_bits);
-    }
+    return (tmp, max_bits);
   }
 
   proc doBigIntBinOpsvBoolReturn(val, r, op: string) throws {
+    ref ra = r.a;
+    var tmp = makeDistArray(ra.size, bool);
     select op {
       when "<" {
-        return val < r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val < ri);
+        }
       }
       when ">" {
-        return val > r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val > ri);
+        }
       }
       when "<=" {
-        return val <= r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val <= ri);
+        }
       }
       when ">=" {
-        return val >= r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val >= ri);
+        }
       }
       when "==" {
-        return val == r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val == ri);
+        }
       }
       when "!=" {
-        return val != r.a;
+        forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
+          t = (local_val != ri);
+        }
       }
       otherwise {
         // we should never reach this since we only enter this proc
@@ -1672,5 +1888,6 @@ module BinOp
         throw new Error("Unsupported operation: " + val.type:string +" "+ op +" "+ r.etype:string);
       }
     }
+    return tmp;
   }
 }
