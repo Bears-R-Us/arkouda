@@ -404,6 +404,13 @@ class SegArray:
         """
         return SegArray.from_parts(self.segments, self.values)
 
+    def __del__(self):
+        try:
+            if self.name:
+                generic_msg(cmd="delete", args={"name": self.name})
+        except RuntimeError:
+            pass
+
     def __getitem__(self, i):
         if isSupportedInt(i):
             orig_key = i  # used for error message if out of bounds on negative index
