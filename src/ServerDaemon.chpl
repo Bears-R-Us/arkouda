@@ -408,22 +408,34 @@ module ServerDaemon {
                return !obj.key.isEmpty();
             }
           
-            // Update Request Metrics
+            // Update request metrics for the cmd
             requestMetrics.increment(cmd);
             
-            // Update User-Scoped Request Metrics
+            // Update user-scoped request metrics for the cmd
             userMetrics.incrementPerUserRequestMetrics(user,cmd);
+
+            // Update response time metric for the cmd
+            responseTimeMetrics.set(cmd,elapsedTime);
+            
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Set Response Time cmd: %s time %t".format(cmd,elapsedTime));
+            
+            // Add response time to the avg response time for the cmd
+            avgResponseTimeMetrics.add(cmd,elapsedTime);
+            
+            sdLogger.debug(getModuleName(),
+                          getRoutineName(),
+                          getLineNumber(),
+                          "Added Avg Response Time cmd: %s time %t".format(cmd,elapsedTime));
 
             var apo = getArrayParameterObj(args);
 
             // Check to see if the incoming request corresponds to a pdarray operation
             if computeArrayMetrics(apo) {
                 var name = apo.val;
-                var value = elapsedTime;
-                
-                // Add the response time to the avg response time for the corresponding cmd
-                avgResponseTimeMetrics.add(cmd,value);
-            
+
                 /*
                  * Create the ArrayMetric object and output the individual response time
                  * as JSON to the console or arkouda.log for now. In the future, individual  
@@ -433,7 +445,7 @@ module ServerDaemon {
                 var metric = new ArrayMetric(name=name,
                                              category=MetricCategory.RESPONSE_TIME,
                                              scope=MetricScope.REQUEST,
-                                             value=value,
+                                             value=elapsedTime,
                                              cmd=cmd,
                                              dType=str2dtype(apo.dtype),
                                              size=getGenericTypedArrayEntry(apo.val, st).size
