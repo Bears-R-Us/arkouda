@@ -19,7 +19,7 @@ Because strings are a variable-width data type, and because of the way Arkouda r
 I/O
 ===========
 
-Arrays of strings can be transferred between the Arkouda client and server using the ``arkouda.array`` and ``Strings.to_ndarray`` functions (see :ref:`IO-label`). The former converts a Python list or NumPy ``ndarray`` of strings to an Arkouda ``Strings`` object, whereas the latter converts an Arkouda ``Strings`` object to a NumPy ``ndarray``. As with numeric arrays, if the size of the data exceeds the threshold set by ``arkouda.maxTransferBytes``, the client will raise an exception.
+Arrays of strings can be transferred between the Arkouda client and server using the ``arkouda.array`` and ``Strings.to_ndarray`` functions (see :ref:`IO-label`). The former converts a Python list or NumPy ``ndarray`` of strings to an Arkouda ``Strings`` object, whereas the latter converts an Arkouda ``Strings`` object to a NumPy ``ndarray``. As with numeric arrays, if the size of the data exceeds the threshold set by ``ak.client.maxTransferBytes``, the client will raise an exception.
 
 Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 ``group`` containing two datasets: ``segments`` (an integer array corresponding to ``offsets`` above) and ``values`` (a ``uint8`` array corresponding to ``bytes`` above). See :ref:`data-preprocessing-label` for more information and guidelines.
 
