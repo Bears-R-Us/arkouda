@@ -865,7 +865,8 @@ module IndexingMsg
                 ref ya = y.a;
                 // writeln(y.etype);
                 writeln(ya);
-                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                // NOTE y.etype will never be real when gX.dtype is bigint, but the compiler doesn't know that
+                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 writeln(tmp);
                 // writeln(tmp.type);
 
@@ -937,7 +938,7 @@ module IndexingMsg
                 //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
                 ref iva = iv.a;
                 ref ya = y.a;
-                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 // var ya = if y.a.type == bigint then y.a else if y.a.type == bool then y.a:int:bigint else y.a:bigint;
                 ref ea = e.a;
                 forall (i,v) in zip(iva,tmp) with (var agg = newDstAggregator(bigint)) {
@@ -1030,7 +1031,7 @@ module IndexingMsg
                     return new MsgTuple(errorMsg,MsgType.ERROR);
                 }
                 ref ya = y.a;
-                var tmp = if y.etype == bigint then ya else if y.etype == bool then ya:int:bigint else ya:bigint;
+                var tmp = if y.etype == bigint then ya else if (y.etype == bool || y.etype == real) then ya:int:bigint else ya:bigint;
                 // var ya = if y.a.type == bigint then y.a else if y.a.type == bool then y.a:int:bigint else y.a:bigint;
                 ref ea = e.a;
                 const ref ead = ea.domain;
@@ -1143,7 +1144,7 @@ module IndexingMsg
                 return ivBoolHelper(bool);
             }
             when (DType.BigInt, DType.Int64, DType.BigInt) {
-                writeln("did i get here?");
+                writeln("did i get here?"); 
                 return ivInt64Helper(bigint);
             }
             when (DType.BigInt, DType.UInt64, DType.BigInt) {
