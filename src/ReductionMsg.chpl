@@ -1163,7 +1163,7 @@ module ReductionMsg
       // Because XOR has an inverse (itself), this can be
       // done with a scan like segSum
       var res: [D] t;
-      if (D.size == 0) {return res; }
+      if (D.size == 0) { return res; }
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
       overMemLimit(numBytes(t) * values.size);
       var cumxor = ^ scan values;
