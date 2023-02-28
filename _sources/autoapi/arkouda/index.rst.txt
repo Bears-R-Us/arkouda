@@ -2372,11 +2372,11 @@ Attributes
 
    .. rubric:: Notes
 
-   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
    otherwise a RuntimeError will be raised. This is to protect the user
    from overwhelming the connection between the Python client and the arkouda
    server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.maxTransferBytes to a larger value,
+   may override this limit by setting ak.client.maxTransferBytes to a larger value,
    but should proceed with caution.
 
    If the pdrray or ndarray is of type U, this method is called twice recursively
@@ -3342,12 +3342,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`array`, :obj:`to_list`
@@ -3372,12 +3372,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`to_ndarray`
@@ -5837,11 +5837,11 @@ Attributes
 
    .. rubric:: Notes
 
-   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
    otherwise a RuntimeError will be raised. This is to protect the user
    from overwhelming the connection between the Python client and the arkouda
    server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.maxTransferBytes to a larger value,
+   may override this limit by setting ak.client.maxTransferBytes to a larger value,
    but should proceed with caution.
 
    If the pdrray or ndarray is of type U, this method is called twice recursively
@@ -8706,12 +8706,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`array`, :obj:`to_list`
@@ -8736,12 +8736,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`to_ndarray`
@@ -9260,12 +9260,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -9282,12 +9282,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the Categorical cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -11750,11 +11750,11 @@ Attributes
 
    .. rubric:: Notes
 
-   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
    otherwise a RuntimeError will be raised. This is to protect the user
    from overwhelming the connection between the Python client and the arkouda
    server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.maxTransferBytes to a larger value,
+   may override this limit by setting ak.client.maxTransferBytes to a larger value,
    but should proceed with caution.
 
    If the pdrray or ndarray is of type U, this method is called twice recursively
@@ -15209,11 +15209,11 @@ Attributes
 
    .. rubric:: Notes
 
-   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
    otherwise a RuntimeError will be raised. This is to protect the user
    from overwhelming the connection between the Python client and the arkouda
    server, under the assumption that it is a low-bandwidth connection. The user
-   may override this limit by setting ak.maxTransferBytes to a larger value,
+   may override this limit by setting ak.client.maxTransferBytes to a larger value,
    but should proceed with caution.
 
    If the pdrray or ndarray is of type U, this method is called twice recursively
@@ -16044,12 +16044,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -16066,12 +16066,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the Categorical cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -19541,12 +19541,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`array`, :obj:`to_list`
@@ -19571,12 +19571,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`to_ndarray`
@@ -20315,12 +20315,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -20337,12 +20337,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the Categorical cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
 
@@ -21686,12 +21686,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`array`, :obj:`to_list`
@@ -21716,12 +21716,12 @@ Attributes
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.maxTransferBytes to a larger
+      may override this limit by setting ak.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :obj:`to_ndarray`

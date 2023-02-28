@@ -518,7 +518,7 @@ instead of the full array.</p>
 </section>
 <section id="iteration">
 <h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this heading">#</a></h2>
-<p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">categorical</span></code> is not supported to discourage transferring all the <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> object’s data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">categorical</span></code> as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>.</p>
+<p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">categorical</span></code> is not supported to discourage transferring all the <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> object’s data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">categorical</span></code> as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.Categorical.to_ndarray">
 <span class="sig-prename descclassname"><span class="pre">arkouda.Categorical.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#arkouda.Categorical.to_ndarray" title="Permalink to this definition">#</a></dt>
@@ -536,12 +536,12 @@ this array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 

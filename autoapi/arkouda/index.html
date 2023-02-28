@@ -3752,11 +3752,11 @@ required to generate the array.</p></li>
 <p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
 otherwise a RuntimeError will be raised. This is to protect the user
 from overwhelming the connection between the Python client and the arkouda
 server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.maxTransferBytes to a larger value,
+may override this limit by setting ak.client.maxTransferBytes to a larger value,
 but should proceed with caution.</p>
 <p>If the pdrray or ndarray is of type U, this method is called twice recursively
 to create the Strings object and the two corresponding pdarrays for string
@@ -5061,12 +5061,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -5097,12 +5097,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -8260,11 +8260,11 @@ required to generate the array.</p></li>
 <p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
 otherwise a RuntimeError will be raised. This is to protect the user
 from overwhelming the connection between the Python client and the arkouda
 server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.maxTransferBytes to a larger value,
+may override this limit by setting ak.client.maxTransferBytes to a larger value,
 but should proceed with caution.</p>
 <p>If the pdrray or ndarray is of type U, this method is called twice recursively
 to create the Strings object and the two corresponding pdarrays for string
@@ -12009,12 +12009,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -12045,12 +12045,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -12733,12 +12733,12 @@ this array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -12759,12 +12759,12 @@ this Categorical</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -15994,11 +15994,11 @@ required to generate the array.</p></li>
 <p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
 otherwise a RuntimeError will be raised. This is to protect the user
 from overwhelming the connection between the Python client and the arkouda
 server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.maxTransferBytes to a larger value,
+may override this limit by setting ak.client.maxTransferBytes to a larger value,
 but should proceed with caution.</p>
 <p>If the pdrray or ndarray is of type U, this method is called twice recursively
 to create the Strings object and the two corresponding pdarrays for string
@@ -20486,11 +20486,11 @@ required to generate the array.</p></li>
 <p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
 otherwise a RuntimeError will be raised. This is to protect the user
 from overwhelming the connection between the Python client and the arkouda
 server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.maxTransferBytes to a larger value,
+may override this limit by setting ak.client.maxTransferBytes to a larger value,
 but should proceed with caution.</p>
 <p>If the pdrray or ndarray is of type U, this method is called twice recursively
 to create the Strings object and the two corresponding pdarrays for string
@@ -21575,12 +21575,12 @@ this array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -21601,12 +21601,12 @@ this Categorical</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -26162,12 +26162,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -26198,12 +26198,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -27148,12 +27148,12 @@ this array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -27174,12 +27174,12 @@ this Categorical</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the Categorical cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 </dd></dl>
 
@@ -28980,12 +28980,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -29016,12 +29016,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>

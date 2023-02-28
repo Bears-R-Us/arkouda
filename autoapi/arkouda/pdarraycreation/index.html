@@ -441,11 +441,11 @@ required to generate the array.</p></li>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+<p>The number of bytes in the input array cannot exceed <cite>ak.client.maxTransferBytes</cite>,
 otherwise a RuntimeError will be raised. This is to protect the user
 from overwhelming the connection between the Python client and the arkouda
 server, under the assumption that it is a low-bandwidth connection. The user
-may override this limit by setting ak.maxTransferBytes to a larger value,
+may override this limit by setting ak.client.maxTransferBytes to a larger value,
 but should proceed with caution.</p>
 <p>If the pdrray or ndarray is of type U, this method is called twice recursively
 to create the Strings object and the two corresponding pdarrays for string

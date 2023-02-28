@@ -287,7 +287,7 @@
 </section>
 <section id="i-o">
 <span id="string-io-label"></span><h2>I/O<a class="headerlink" href="#i-o" title="Permalink to this heading">#</a></h2>
-<p>Arrays of strings can be transferred between the Arkouda client and server using the <code class="docutils literal notranslate"><span class="pre">arkouda.array</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray</span></code> functions (see <a class="reference internal" href="IO.html#io-label"><span class="std std-ref">Data I/O</span></a>). The former converts a Python list or NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of strings to an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, whereas the latter converts an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object to a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. As with numeric arrays, if the size of the data exceeds the threshold set by <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>, the client will raise an exception.</p>
+<p>Arrays of strings can be transferred between the Arkouda client and server using the <code class="docutils literal notranslate"><span class="pre">arkouda.array</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray</span></code> functions (see <a class="reference internal" href="IO.html#io-label"><span class="std std-ref">Data I/O</span></a>). The former converts a Python list or NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of strings to an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, whereas the latter converts an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object to a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. As with numeric arrays, if the size of the data exceeds the threshold set by <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>, the client will raise an exception.</p>
 <p>Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 <code class="docutils literal notranslate"><span class="pre">group</span></code> containing two datasets: <code class="docutils literal notranslate"><span class="pre">segments</span></code> (an integer array corresponding to <code class="docutils literal notranslate"><span class="pre">offsets</span></code> above) and <code class="docutils literal notranslate"><span class="pre">values</span></code> (a <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array corresponding to <code class="docutils literal notranslate"><span class="pre">bytes</span></code> above). See <a class="reference internal" href="IO.html#data-preprocessing-label"><span class="std std-ref">Supported File Formats</span></a> for more information and guidelines.</p>
 </section>
 <section id="iteration">
@@ -308,12 +308,12 @@ a RuntimeError is raised.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>,
 otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
 from overflowing the memory of the system on which the Python client
 is running, under the assumption that the server is running on a
 distributed system with much more memory than the client. The user
-may override this limit by setting ak.maxTransferBytes to a larger
+may override this limit by setting ak.client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
