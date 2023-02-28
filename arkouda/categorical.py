@@ -344,12 +344,12 @@ class Categorical:
 
         Notes
         -----
-        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting ak.client.maxTransferBytes to a larger
         value, but proceed with caution.
         """
         if self.categories.size > self.codes.size:
@@ -376,12 +376,12 @@ class Categorical:
 
         Notes
         -----
-        The number of bytes in the Categorical cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the Categorical cannot exceed ``ak.client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting ak.client.maxTransferBytes to a larger
         value, but proceed with caution.
         """
         return self.to_ndarray().tolist()

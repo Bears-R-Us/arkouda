@@ -179,11 +179,11 @@ def array(
 
     Notes
     -----
-    The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+    The number of bytes in the input array cannot exceed `ak.client.maxTransferBytes`,
     otherwise a RuntimeError will be raised. This is to protect the user
     from overwhelming the connection between the Python client and the arkouda
     server, under the assumption that it is a low-bandwidth connection. The user
-    may override this limit by setting ak.maxTransferBytes to a larger value,
+    may override this limit by setting ak.client.maxTransferBytes to a larger value,
     but should proceed with caution.
 
     If the pdrray or ndarray is of type U, this method is called twice recursively
@@ -245,7 +245,7 @@ def array(
         if nbytes > maxTransferBytes:
             raise RuntimeError(
                 f"Creating pdarray would require transferring {nbytes} bytes, which exceeds "
-                f"allowed transfer size. Increase ak.maxTransferBytes to force."
+                f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
             )
         encoded_np = np.array(encoded, dtype=np.uint8)
         rep_msg = generic_msg(
@@ -280,7 +280,7 @@ def array(
         size = a.size
         if (size * a.itemsize) > maxTransferBytes:
             raise RuntimeError(
-                "Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow"
+                "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
             )
         # Pack binary array data into a bytes object with a command header
         # including the dtype and size. If the server has a different byteorder

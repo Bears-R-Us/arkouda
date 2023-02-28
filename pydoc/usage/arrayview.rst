@@ -67,6 +67,6 @@ so ``n[:, :]`` gets indices ``[0,0], [0,1], [1,0], [1,1]`` whereas ``n[[0,1],[0,
 
 Iteration
 ===========
-Iterating directly over an ``ArrayView`` with ``for x in array_view`` is not supported to discourage transferring all array data from the arkouda server to the Python client. To force this transfer, use the ``to_ndarray`` function to return the ``ArrayView`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``.
+Iterating directly over an ``ArrayView`` with ``for x in array_view`` is not supported to discourage transferring all array data from the arkouda server to the Python client. To force this transfer, use the ``to_ndarray`` function to return the ``ArrayView`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
 .. autofunction:: arkouda.ArrayView.to_ndarray

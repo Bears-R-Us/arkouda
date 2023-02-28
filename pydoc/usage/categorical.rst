@@ -37,6 +37,6 @@ Arkouda ``Categorical`` objects support all operations that ``Strings`` support,
 Iteration
 =========
 
-Iterating directly over a ``Categorical`` with ``for x in categorical`` is not supported to discourage transferring all the ``Categorical`` object's data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``categorical`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``.
+Iterating directly over a ``Categorical`` with ``for x in categorical`` is not supported to discourage transferring all the ``Categorical`` object's data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``categorical`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
 .. autofunction:: arkouda.Categorical.to_ndarray
