@@ -1036,7 +1036,7 @@ class SegArray:
         )
 
     def to_parquet(self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None):
-        from arkouda.io import mode_str_to_int
+        from arkouda.io import _mode_str_to_int
         return type_cast(
             str,
             generic_msg(
@@ -1044,7 +1044,7 @@ class SegArray:
                 {
                     "values": self.name,
                     "dset": dataset,
-                    "mode": mode_str_to_int(mode),
+                    "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
                     "objType": "segarray",
                     "dtype": self.dtype,

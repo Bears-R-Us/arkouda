@@ -938,8 +938,128 @@ module ParquetMsg {
     warnFlag = write1DDistStringsAggregators(filename, mode, dsetname, segString, compression:int);
   }
 
-  proc writeSegArrayParquet(filename: string, mode: int, dsetname: string, segArray, compression: CompressionType) throws {
-    writeln("\n\nIn function for write SegArray\n\n");
+  // TODO - get rid of this. Using as model until decision on Append made
+  private proc writeSegArrayComponentToParquet(filename, dsetname, values: [] ?t, offsets: [] int, rowGroupSize, compression, mode, filesExist, dtype) throws {
+    extern proc c_writeStrColumnToParquet(filename, chpl_arr, chpl_offsets,
+                                          dsetname, numelems, rowGroupSize,
+                                          dtype, compression, errMsg): int;
+    extern proc c_appendColumnToParquet(filename, chpl_arr,
+                                        dsetname, numelems,
+                                        dtype, compression,
+                                        errMsg): int;
+    var pqErr = new parquetErrorMsg();
+    var dtypeRep = toCDtype(dtype);
+    if mode == TRUNCATE || !filesExist {
+      if c_writeStrColumnToParquet(filename.localize().c_str(), c_ptrTo(values), c_ptrTo(offsets),
+                                   dsetname.localize().c_str(), offsets.size-1, rowGroupSize,
+                                   dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
+    } else if mode == APPEND {
+      if c_appendColumnToParquet(filename.localize().c_str(), c_ptrTo(values),
+                                 dsetname.localize().c_str(), offsets.size-1,
+                                 dtypeRep, compression, c_ptrTo(pqErr.errMsg)) {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
+    }
+  }
+
+  // TODO - update to pass information that needs to be sent to writeSegArrayComponentToParquet and add call. Or move code into this function
+  // TODO - could we just drop append support?
+  proc writeSegArrayComponent(filename: string, dsetname: string, const ref distVals: [] ?t, valIdxRange, segments, locDom, 
+                              extraOffset, lastOffset, lastValId, dtype, compression) throws {
+    extern proc c_writeListColumnToParquet(filename, chpl_arr, chpl_offsets,
+                                          dsetname, numelems, rowGroupSize,
+                                          dtype, compression, errMsg): int;
+    var localVals: [valIdxRange] t;
+    forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
+      // Copy the remote value at index position valIdx to our local array
+      agg.copy(localVal, distVals[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+    }
+    var locOffsets: [0..#locDom.size+1] int;
+    locOffsets[0..#locDom.size] = segments[locDom];
+    if locDom.high == segments.domain.high then
+      locOffsets[locOffsets.domain.high] = extraOffset;
+    else
+      locOffsets[locOffsets.domain.high] = segments[locDom.high+1];
+
+    // TODO - if we want to maintain Append, add here
+    var pqErr = new parquetErrorMsg();
+    var dtypeRep = toCDtype(dtype);
+
+    if c_writeListColumnToParquet(filename.localize().c_str(), c_ptrTo(localVals), c_ptrTo(locOffsets),
+                                   dsetname.localize().c_str(), localVals.size, ROWGROUPS,
+                                   dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
+  }
+
+  proc writeSegArrayParquet(filename: string, mode: int, dsetName: string, dtype: string, entry, compression: int) throws {
+    var segArray = new SegArray("", entry, entry.etype);
+    // get the array of segments 
+    ref sa = segArray;
+    var segments = sa.segments.a;
+
+    var prefix: string;
+    var extension: string;
+  
+    (prefix, extension) = getFileMetadata(filename);
+
+    // Generate the filenames based upon the number of targetLocales.
+    var filenames = generateFilenames(prefix, extension, segments.targetLocales().size);
+
+    //Generate a list of matching filenames to test against. 
+    var matchingFilenames = getMatchingFilenames(prefix, extension);
+
+    var filesExist = processParquetFilenames(filenames, matchingFilenames, mode);
+
+    if mode == APPEND {
+      if filesExist {
+        var datasets = getDatasets(filenames[0]);
+        if datasets.contains(dsetName) then
+          throw getErrorWithContext(
+                   msg="A column with name " + dsetName + " already exists in Parquet file",
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='WriteModeError');
+      }
+    }
+    
+    const extraOffset = sa.values.size;
+    const lastOffset = segments[segments.domain.high];
+    const lastValIdx = sa.values.a.domain.high;
+
+    // TODO - loop locales and write segments
+    // pull values to the locale of the offset
+
+    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref sa) do on loc {
+      const myFilename = filenames[idx];
+
+      const locDom = segments.localSubdomain();
+      var dims: [0..#1] int;
+      dims[0] = locDom.size: int;
+
+      if (locDom.isEmpty() || locDom.size <= 0) {
+        if mode == APPEND && filesExist then
+          throw getErrorWithContext(
+                msg="Parquet columns must each have the same length: " + myFilename,
+                lineNumber=getLineNumber(), 
+                routineName=getRoutineName(), 
+                moduleName=getModuleName(), 
+                errorClass='WriteModeError');
+        createEmptyParquetFile(myFilename, dsetName, ARROWSTRING, compression); // TODO - fix this for SegArray
+      } else {
+        var localSegments = segments[locDom];
+        var startValIdx = localSegments[locDom.low];
+
+        var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
+              
+        var valIdxRange = startValIdx..endValIdx;
+        ref olda = sa.values.a;
+        writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, dtype, compression);
+      }
+    }
   }
 
   proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab) throws {
@@ -947,28 +1067,29 @@ module ParquetMsg {
     var filename: string = msgArgs.getValueOf("prefix");
     var entry = st.lookup(msgArgs.getValueOf("values"));
     var dsetname = msgArgs.getValueOf("dset");
-    var dataType = str2dtype(msgArgs.getValueOf("dtype"));
+    var dataType = msgArgs.getValueOf("dtype");
+    var dtype = str2dtype(msgArgs.getValueOf("dtype"));
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
     
     // TODO - if we need a warnflag, we need to implement it here
     // TODO - should we validate the cast of the symentry???
 
     // TODO - add error handling
-    select dataType {
+    select dtype {
       when DType.Int64 {
         var segArray:SegArraySymEntry = toSegArraySymEntry(entry, int);
-        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+        writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
       }
       when DType.UInt64 {
         var segArray:SegArraySymEntry = toSegArraySymEntry(entry, uint);
-        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+        writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
       }
       when DType.Bool {
         var segArray:SegArraySymEntry = toSegArraySymEntry(entry, bool);
-        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+        writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
       } when DType.Float64 {
         var segArray:SegArraySymEntry = toSegArraySymEntry(entry, real);
-        writeSegArrayParquet(filename, mode, dsetname, segArray, compression);
+        writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
       } otherwise {
         var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
