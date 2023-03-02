@@ -1028,7 +1028,9 @@ module ReductionMsg
       */
       var value = if eltType == (bool, int) then (false, 0) else (false, 0:uint);
 
-      proc identity return if eltType == (bool, int) then (false, 0) else (false, 0:uint);
+      proc identity {
+        return if eltType == (bool, int) then (false, 0) else (false, 0:uint);
+      }
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and
@@ -1111,7 +1113,9 @@ module ReductionMsg
       */
       var value = if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
 
-      proc identity return if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
+      proc identity {
+        return if eltType == (bool, int) then (false, 0xffffffffffffffff:int) else (false, 0xffffffffffffffff:uint);
+      }
 
       proc accumulate(x) {
         // Assume x is an element that has not yet been scanned, and
