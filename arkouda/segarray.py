@@ -856,7 +856,7 @@ class SegArray:
         ndsegs = self.segments.to_ndarray()
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
-            arr.append(ndvals[ndsegs[-1]:])
+            arr.append(ndvals[ndsegs[-1] :])
         return np.array(arr, dtype=object)
 
     def to_list(self):
@@ -1035,7 +1035,9 @@ class SegArray:
             ),
         )
 
-    def to_parquet(self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None):
+    def to_parquet(
+        self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None
+    ):
         """
         Save the SegArray object to Parquet. The result is a collection of files,
         one file per locale of the arkouda server, where each filename starts
@@ -1083,7 +1085,7 @@ class SegArray:
         from arkouda.io import _mode_str_to_int
 
         if mode.lower() == "append":
-            raise ValueError(f"Append mode is not supported for SegArray.")
+            raise ValueError("Append mode is not supported for SegArray.")
 
         return type_cast(
             str,
@@ -1191,7 +1193,7 @@ class SegArray:
             DeprecationWarning,
         )
         if segment_name != "segments" or value_name != "values":
-            dataset = [dataset+"_"+value_name, dataset+"_"+segment_name]
+            dataset = [dataset + "_" + value_name, dataset + "_" + segment_name]
         return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):
