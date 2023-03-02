@@ -1409,6 +1409,7 @@ class pdarray:
                     "dset": dataset,
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
+                    "objType": "pdarray",
                     "dtype": self.dtype,
                     "compression": compression,
                 },
