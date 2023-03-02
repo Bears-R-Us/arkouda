@@ -569,13 +569,14 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             float value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0) {
+            if(values_read == 0 && definition_level == 3) {
               chpl_ptr[i] = NAN;
+              i++;
             }
-            else {
-              chpl_ptr[i] = (double)value;
+            else if (values_read != 0){
+              chpl_ptr[i] = value;
+              i++;
             }
-            i++;
           }
         } else if(lty == ARROWDOUBLE) {
           auto chpl_ptr = (double*)chpl_arr;
@@ -586,13 +587,14 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             double value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0) {
+            if(values_read == 0 && definition_level == 3) {
               chpl_ptr[i] = NAN;
+              i++;
             }
-            else {
+            else if (values_read != 0){
               chpl_ptr[i] = value;
+              i++;
             }
-            i++;
           }
         }
       }
