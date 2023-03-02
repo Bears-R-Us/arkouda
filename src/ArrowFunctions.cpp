@@ -1057,7 +1057,6 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
   }
 }
 
-// TODO - make magic happen
 int cpp_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
                                 const char* dsetname, int64_t numelems,
                                 int64_t rowGroupSize, int64_t dtype, int64_t compression,
@@ -1069,22 +1068,26 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chp
 
     parquet::schema::NodeVector fields;
 
-    // if(dtype == ARROWINT64)
-    //   fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::NONE));
-    // else if(dtype == ARROWUINT64)
-    //   fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::INT64, parquet::ConvertedType::UINT_64));
-    // else if(dtype == ARROWBOOLEAN)
-    //   fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE));
-    // else if(dtype == ARROWDOUBLE)
-    //   fields.push_back(parquet::schema::PrimitiveNode::Make(dsetname, parquet::Repetition::REQUIRED, parquet::Type::DOUBLE, parquet::ConvertedType::NONE));
-    // std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
-    //   (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields, parquet::ConvertedType::LIST));
-
-    // TODO - configure list for different types
-
-    auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::NONE);
-    auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
-    fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    if (dtype == ARROWINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWUINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::UINT_64);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWBOOLEAN) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
     std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
       (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
 
@@ -1122,32 +1125,160 @@ int cpp_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chp
       
       while(numLeft > 0) {
         parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
-        parquet::Int64Writer* int64_writer =
+        parquet::Int64Writer* writer =
           static_cast<parquet::Int64Writer*>(rg_writer->NextColumn());
 
         while (numLeft > 0 && offIdx < rowGroupSize) {
           int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
-          int16_t* def_lvl = new int16_t[batchSize] { 3 };
-          int16_t* rep_lvl = new int16_t[batchSize] { 0 };
           if (batchSize > 0) {
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
             for (int64_t x = 0; x < batchSize; x++){
               rep_lvl[x] = (x == 0) ? 0 : 1;
-              def_lvl[x] = 3; // TODO - can this be removed??
+              def_lvl[x] = 3;
             }
-            int64_writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
             valIdx += batchSize;
-            numLeft -= batchSize;
           }
           else {
             batchSize = 1;
-            def_lvl[0] = 1;
-            int64_writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
           }
           offIdx++;
+          numLeft--;
         }
       }
     }
-    // TODO - add calls for other types
+    else if (dtype == ARROWBOOLEAN) {
+      auto chpl_ptr = (bool*)chpl_arr;
+      
+      while(numLeft > 0) {
+        parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+        parquet::BoolWriter* writer =
+          static_cast<parquet::BoolWriter*>(rg_writer->NextColumn());
+
+        while (numLeft > 0 && offIdx < rowGroupSize) {
+          int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
+          if (batchSize > 0) {
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            for (int64_t x = 0; x < batchSize; x++){
+              rep_lvl[x] = (x == 0) ? 0 : 1;
+              def_lvl[x] = 3;
+            }
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            valIdx += batchSize;
+          }
+          else {
+            batchSize = 1;
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+          }
+          offIdx++;
+          numLeft--;
+        }
+      }
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto chpl_ptr = (double*)chpl_arr;
+      
+      while(numLeft > 0) {
+        parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+        parquet::DoubleWriter* writer =
+          static_cast<parquet::DoubleWriter*>(rg_writer->NextColumn());
+
+        while (numLeft > 0 && offIdx < rowGroupSize) {
+          int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
+          if (batchSize > 0) {
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            for (int64_t x = 0; x < batchSize; x++){
+              rep_lvl[x] = (x == 0) ? 0 : 1;
+              def_lvl[x] = 3;
+            }
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            valIdx += batchSize;
+          }
+          else {
+            batchSize = 1;
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+          }
+          offIdx++;
+          numLeft--;
+        }
+      }
+    }
+    else {
+      return ARROWERROR;
+    }
+
+    file_writer->Close();
+    ARROWSTATUS_OK(out_file->Close());
+
+    return 0;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int cpp_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg) {
+  try {
+    using FileClass = ::arrow::io::FileOutputStream;
+    std::shared_ptr<FileClass> out_file;
+    PARQUET_ASSIGN_OR_THROW(out_file, FileClass::Open(filename));
+
+    parquet::schema::NodeVector fields;
+    if (dtype == ARROWINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWUINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::UINT_64);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWBOOLEAN) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
+      (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
+
+    parquet::WriterProperties::Builder builder;
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
+      builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
+      builder.encoding(parquet::Encoding::RLE);
+    }
+    std::shared_ptr<parquet::WriterProperties> props = builder.build();
+    std::shared_ptr<parquet::ParquetFileWriter> file_writer =
+      parquet::ParquetFileWriter::Open(out_file, schema, props);
 
     file_writer->Close();
     ARROWSTATUS_OK(out_file->Close());
@@ -1421,6 +1552,11 @@ extern "C" {
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                int64_t compression, char** errMsg) {
     return cpp_createEmptyParquetFile(filename, dsetname, dtype, compression, errMsg);
+  }
+
+  int c_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg) {
+    return cpp_createEmptyListParquetFile(filename, dsetname, dtype, compression, errMsg);
   }
 
   int c_appendColumnToParquet(const char* filename, void* chpl_arr,

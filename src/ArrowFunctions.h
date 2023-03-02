@@ -90,6 +90,11 @@ extern "C" {
                                   const char* dsetname, int64_t numelems,
                                   int64_t rowGroupSize, int64_t dtype, int64_t compression,
                                   char** errMsg);
+  
+  int c_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg);
+  int cpp_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg);
 
   int c_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
                                   const char* dsetname, int64_t numelems,
