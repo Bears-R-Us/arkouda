@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import warnings
 from typing import cast as type_cast
+from typing import Optional
 
 import numpy as np  # type: ignore
 
@@ -855,7 +856,7 @@ class SegArray:
         ndsegs = self.segments.to_ndarray()
         arr = [ndvals[start:end] for start, end in zip(ndsegs, ndsegs[1:])]
         if self.size > 0:
-            arr.append(ndvals[ndsegs[-1]:])
+            arr.append(ndvals[ndsegs[-1] :])
         return np.array(arr, dtype=object)
 
     def to_list(self):
@@ -1034,6 +1035,73 @@ class SegArray:
             ),
         )
 
+    def to_parquet(
+        self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None
+    ):
+        """
+        Save the SegArray object to Parquet. The result is a collection of files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the object to its
+        corresponding file.
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            Deprecated.
+            Parameter kept to maintain functionality of other calls. Only Truncate
+            supported.
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', attempt to create new dataset in existing files.
+        compression : str (Optional)
+            (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
+            Sets the compression type used with Parquet files
+        Returns
+        -------
+        string message indicating result of save operation
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        ValueError
+            If write mode is not Truncate.
+        Notes
+        -----
+        - Append mode for Parquet has been deprecated. It was not implemented for SegArray.
+        - The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
+        - Output files have names of the form ``<prefix_path>_LOCALE<i>``, where ``<i>``
+        ranges from 0 to ``numLocales`` for `file_type='distribute'`.
+        - If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a ``RuntimeError`` will result.
+        - Any file extension can be used.The file I/O does not rely on the extension to
+        determine the file format.
+        """
+        from arkouda.io import _mode_str_to_int
+
+        if mode.lower() == "append":
+            raise ValueError("Append mode is not supported for SegArray.")
+
+        return type_cast(
+            str,
+            generic_msg(
+                "writeParquet",
+                {
+                    "values": self.name,
+                    "dset": dataset,
+                    "mode": _mode_str_to_int(mode),
+                    "prefix": prefix_path,
+                    "objType": "segarray",
+                    "dtype": self.dtype,
+                    "compression": compression,
+                },
+            ),
+        )
+
     def save(
         self,
         prefix_path,
@@ -1124,7 +1192,7 @@ class SegArray:
             DeprecationWarning,
         )
         if segment_name != "segments" or value_name != "values":
-            dataset = [dataset+"_"+value_name, dataset+"_"+segment_name]
+            dataset = [dataset + "_" + value_name, dataset + "_" + segment_name]
         return cls.read_hdf(prefix_path, dataset)
 
     def intersect(self, other):

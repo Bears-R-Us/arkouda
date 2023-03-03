@@ -292,6 +292,7 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
       int64_t vct = 0;
       int64_t seg_size = 0;
       int64_t off = 0;
+      bool first = true;
       for (int r = 0; r < num_row_groups; r++) {
         std::shared_ptr<parquet::RowGroupReader> row_group_reader =
           parquet_reader->RowGroup(r);
@@ -303,7 +304,6 @@ int64_t cpp_getListColumnSize(const char* filename, const char* colname, void* c
         column_reader = row_group_reader->Column(idx);
         int16_t definition_level;
         int16_t rep_lvl;
-        bool first = true;
 
         if(lty == ARROWINT64 || lty == ARROWUINT64) {
           parquet::Int64Reader* int_reader =
@@ -568,13 +568,14 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             float value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0) {
+            if(values_read == 0 && definition_level == 3) { // ensure null value and not empty segment
               chpl_ptr[i] = NAN;
+              i++;
             }
-            else {
-              chpl_ptr[i] = (double)value;
+            else if (values_read != 0){
+              chpl_ptr[i] = value;
+              i++;
             }
-            i++;
           }
         } else if(lty == ARROWDOUBLE) {
           auto chpl_ptr = (double*)chpl_arr;
@@ -585,13 +586,14 @@ int cpp_readListColumnByName(const char* filename, void* chpl_arr, const char* c
           while (reader->HasNext() && i < numElems) {
             double value;
             (void)reader->ReadBatch(1, &definition_level, nullptr, &value, &values_read);
-            if(values_read == 0) {
+            if(values_read == 0 && definition_level == 3) { // ensure null value and not empty segment
               chpl_ptr[i] = NAN;
+              i++;
             }
-            else {
+            else if (values_read != 0){
               chpl_ptr[i] = value;
+              i++;
             }
-            i++;
           }
         }
       }
@@ -1056,6 +1058,249 @@ int cpp_writeStrColumnToParquet(const char* filename, void* chpl_arr, void* chpl
   }
 }
 
+int cpp_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
+                                const char* dsetname, int64_t numelems,
+                                int64_t rowGroupSize, int64_t dtype, int64_t compression,
+                                char** errMsg) {
+  try {
+    using FileClass = ::arrow::io::FileOutputStream;
+    std::shared_ptr<FileClass> out_file;
+    PARQUET_ASSIGN_OR_THROW(out_file, FileClass::Open(filename));
+
+    parquet::schema::NodeVector fields;
+
+    // create the list schema. List containing the dtype
+    if (dtype == ARROWINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWUINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::UINT_64);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWBOOLEAN) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
+      (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
+
+    parquet::WriterProperties::Builder builder;
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
+      builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
+      builder.encoding(parquet::Encoding::RLE);
+    }
+    std::shared_ptr<parquet::WriterProperties> props = builder.build();
+
+    std::shared_ptr<parquet::ParquetFileWriter> file_writer =
+      parquet::ParquetFileWriter::Open(out_file, schema, props);
+
+    int64_t i = 0;
+    int64_t numLeft = numelems;
+    auto offsets = (int64_t*)chpl_offsets;
+    int64_t valIdx = 0; // index into chpl_arr
+    int64_t offIdx = 0; // index into offsets
+
+    if(dtype == ARROWINT64 || dtype == ARROWUINT64) {
+      auto chpl_ptr = (int64_t*)chpl_arr;
+      
+      while(numLeft > 0) { // write all local values to the file
+        parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+        parquet::Int64Writer* writer =
+          static_cast<parquet::Int64Writer*>(rg_writer->NextColumn());
+
+        while (numLeft > 0 && offIdx < rowGroupSize) { // ensures rowGroupSize maintained
+          int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
+          if (batchSize > 0) {
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            for (int64_t x = 0; x < batchSize; x++){
+              // if the value is first in the segment rep_lvl = 0, otherwise 1
+              // all values defined at the item level (3)
+              rep_lvl[x] = (x == 0) ? 0 : 1;
+              def_lvl[x] = 3;
+            }
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            valIdx += batchSize;
+          }
+          else {
+            // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
+            batchSize = 1; // even though segment is length=0, write null to hold the empty segment
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+          }
+          offIdx++;
+          numLeft--;
+        }
+      }
+    }
+    else if (dtype == ARROWBOOLEAN) {
+      auto chpl_ptr = (bool*)chpl_arr;
+      
+      while(numLeft > 0) {
+        parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+        parquet::BoolWriter* writer =
+          static_cast<parquet::BoolWriter*>(rg_writer->NextColumn());
+
+        while (numLeft > 0 && offIdx < rowGroupSize) {
+          int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
+          if (batchSize > 0) {
+            // if the value is first in the segment rep_lvl = 0, otherwise 1
+            // all values defined at the item level (3)
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            for (int64_t x = 0; x < batchSize; x++){
+              rep_lvl[x] = (x == 0) ? 0 : 1;
+              def_lvl[x] = 3;
+            }
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            valIdx += batchSize;
+          }
+          else {
+            // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
+            batchSize = 1; // even though segment is length=0, write null to hold the empty segment
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+          }
+          offIdx++;
+          numLeft--;
+        }
+      }
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto chpl_ptr = (double*)chpl_arr;
+      
+      while(numLeft > 0) {
+        parquet::RowGroupWriter* rg_writer = file_writer->AppendRowGroup();
+        parquet::DoubleWriter* writer =
+          static_cast<parquet::DoubleWriter*>(rg_writer->NextColumn());
+
+        while (numLeft > 0 && offIdx < rowGroupSize) {
+          int64_t batchSize = offsets[offIdx+1] - offsets[offIdx];
+          if (batchSize > 0) {
+            // if the value is first in the segment rep_lvl = 0, otherwise 1
+            // all values defined at the item level (3)
+            int16_t* def_lvl = new int16_t[batchSize] { 3 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            for (int64_t x = 0; x < batchSize; x++){
+              rep_lvl[x] = (x == 0) ? 0 : 1;
+              def_lvl[x] = 3;
+            }
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, &chpl_ptr[valIdx]);
+            valIdx += batchSize;
+          }
+          else {
+            // empty segment denoted by null value that is not repeated (first of segment) defined at the list level (1)
+            batchSize = 1; // even though segment is length=0, write null to hold the empty segment
+            int16_t* def_lvl = new int16_t[batchSize] { 1 };
+            int16_t* rep_lvl = new int16_t[batchSize] { 0 };
+            writer->WriteBatch(batchSize, def_lvl, rep_lvl, nullptr);
+          }
+          offIdx++;
+          numLeft--;
+        }
+      }
+    }
+    else {
+      return ARROWERROR;
+    }
+
+    file_writer->Close();
+    ARROWSTATUS_OK(out_file->Close());
+
+    return 0;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
+int cpp_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg) {
+  try {
+    using FileClass = ::arrow::io::FileOutputStream;
+    std::shared_ptr<FileClass> out_file;
+    PARQUET_ASSIGN_OR_THROW(out_file, FileClass::Open(filename));
+
+    parquet::schema::NodeVector fields;
+    if (dtype == ARROWINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWUINT64) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::INT64, parquet::ConvertedType::UINT_64);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWBOOLEAN) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::BOOLEAN, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    else if (dtype == ARROWDOUBLE) {
+      auto element = parquet::schema::PrimitiveNode::Make("item", parquet::Repetition::OPTIONAL, parquet::Type::DOUBLE, parquet::ConvertedType::NONE);
+      auto list = parquet::schema::GroupNode::Make("list", parquet::Repetition::REPEATED, {element});
+      fields.push_back(parquet::schema::GroupNode::Make(dsetname, parquet::Repetition::OPTIONAL, {list}, parquet::ConvertedType::LIST));
+    }
+    std::shared_ptr<parquet::schema::GroupNode> schema = std::static_pointer_cast<parquet::schema::GroupNode>
+      (parquet::schema::GroupNode::Make("schema", parquet::Repetition::REQUIRED, fields));
+
+    parquet::WriterProperties::Builder builder;
+    // assign the proper compression
+    if(compression == SNAPPY_COMP) {
+      builder.compression(parquet::Compression::SNAPPY);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == GZIP_COMP) {
+      builder.compression(parquet::Compression::GZIP);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == BROTLI_COMP) {
+      builder.compression(parquet::Compression::BROTLI);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == ZSTD_COMP) {
+      builder.compression(parquet::Compression::ZSTD);
+      builder.encoding(parquet::Encoding::RLE);
+    } else if (compression == LZ4_COMP) {
+      builder.compression(parquet::Compression::LZ4);
+      builder.encoding(parquet::Encoding::RLE);
+    }
+    std::shared_ptr<parquet::WriterProperties> props = builder.build();
+    std::shared_ptr<parquet::ParquetFileWriter> file_writer =
+      parquet::ParquetFileWriter::Open(out_file, schema, props);
+
+    file_writer->Close();
+    ARROWSTATUS_OK(out_file->Close());
+
+    return 0;
+  } catch (const std::exception& e) {
+    *errMsg = strdup(e.what());
+    return ARROWERROR;
+  }
+}
+
 int cpp_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                int64_t compression, char** errMsg) {
   try {
@@ -1307,9 +1552,22 @@ extern "C" {
                                        dsetname, numelems, rowGroupSize, dtype, compression, errMsg);
   }
 
+  int c_writeListColumnToParquet(const char* filename, void* chpl_arr, void* chpl_offsets,
+                                const char* dsetname, int64_t numelems,
+                                int64_t rowGroupSize, int64_t dtype, int64_t compression,
+                                char** errMsg) {
+    return cpp_writeListColumnToParquet(filename, chpl_arr, chpl_offsets,
+                                       dsetname, numelems, rowGroupSize, dtype, compression, errMsg);
+  }
+
   int c_createEmptyParquetFile(const char* filename, const char* dsetname, int64_t dtype,
                                int64_t compression, char** errMsg) {
     return cpp_createEmptyParquetFile(filename, dsetname, dtype, compression, errMsg);
+  }
+
+  int c_createEmptyListParquetFile(const char* filename, const char* dsetname, int64_t dtype,
+                               int64_t compression, char** errMsg) {
+    return cpp_createEmptyListParquetFile(filename, dsetname, dtype, compression, errMsg);
   }
 
   int c_appendColumnToParquet(const char* filename, void* chpl_arr,

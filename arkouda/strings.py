@@ -1945,6 +1945,7 @@ class Strings:
                     "dset": dataset,
                     "mode": _mode_str_to_int(mode),
                     "prefix": prefix_path,
+                    "objType": "strings",
                     "dtype": self.dtype,
                     "compression": compression,
                 },

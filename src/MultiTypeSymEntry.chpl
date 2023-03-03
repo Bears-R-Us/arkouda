@@ -491,6 +491,10 @@ module MultiTypeSymEntry
         return (entry: borrowed SegStringSymEntry);
     }
 
+    proc toSegArraySymEntry(entry: borrowed AbstractSymEntry, type t) throws {
+        return (entry: borrowed SegArraySymEntry(t));
+    }
+
     /**
      * Temporary shim to ease transition to Typed Symbol Table Entries.
      * This attempts to retrieve the Dtype, size/array-length, and itemsize from a SymbolTable

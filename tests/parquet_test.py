@@ -208,7 +208,7 @@ class ParquetTest(ArkoudaTest):
             rd_df = ak.DataFrame(ak_data)
             self.assertTrue(pdf.equals(rd_df.to_pandas()))
 
-    def test_segarray_integration(self):
+    def test_segarray_read(self):
         df = pd.DataFrame({
             "ListCol": [
                 [0, 1, 2],
@@ -411,6 +411,99 @@ class ParquetTest(ArkoudaTest):
             for i in range(9):
                 self.assertListEqual(combo["ListCol"][i], ak_data[i].tolist())
 
+    def test_segarray_write(self):
+        # integer test
+        a = [0, 1, 2]
+        b = [1]
+        c = [15, 21]
+        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(3):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # integer with empty segments
+        a = [0, 1, 2]
+        c = [15, 21]
+        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a)+len(c)]), ak.array(a + c))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(6):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # uint test
+        a = [0, 1, 2]
+        b = [1]
+        c = [15, 21]
+        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.uint64))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(3):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # uint with empty segments
+        a = [0, 1, 2]
+        c = [15, 21]
+        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c, dtype=ak.uint64))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(6):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # bool test
+        a = [0, 1, 1]
+        b = [0]
+        c = [1, 0]
+        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c, dtype=ak.bool))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(3):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # bool with empty segments
+        a = [0, 1, 1]
+        c = [1, 0]
+        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c,
+                                   dtype=ak.bool))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(6):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # float test
+        a = [1.1, 1.1, 2.7]
+        b = [1.99]
+        c = [15.2, 21.0]
+        s = ak.SegArray.from_parts(ak.array([0, len(a), len(a) + len(b)]), ak.array(a + b + c))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(3):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
+
+        # float with empty segments
+        a = [1.1, 1.1, 2.7]
+        c = [15.2, 21.0]
+        s = ak.SegArray.from_parts(ak.array([0, 0, len(a), len(a), len(a), len(a) + len(c)]), ak.array(a + c))
+        with tempfile.TemporaryDirectory(dir=ParquetTest.par_test_base_tmp) as tmp_dirname:
+            s.to_parquet(f"{tmp_dirname}/int_test")
+
+            rd_data = ak.read_parquet(f"{tmp_dirname}/int_test*")
+            for i in range(6):
+                self.assertListEqual(s[i].tolist(), rd_data[i].tolist())
 
 
     @pytest.mark.optional_parquet

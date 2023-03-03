@@ -27,6 +27,13 @@ module ParquetMsg {
     LZ4=5
   };
 
+  enum ObjType {
+      ARRAYVIEW=0,
+      PDARRAY=1,
+      STRINGS=2,
+      SEGARRAY=3
+    };
+
 
   // Use reflection for error information
   use Reflection;
@@ -879,55 +886,257 @@ module ParquetMsg {
     try! datasets = createStringWithNewBuffer(res, strlen(res));
     return new list(datasets.split(","));
   }
-  
-  proc toparquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+
+  proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = str2dtype(msgArgs.getValueOf("dtype"));
+    var dtypestr = msgArgs.getValueOf("dtype");
+    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+
+    if (!entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
+      var errorMsg = "ObjType (PDARRAY) does not match SymEntry Type: %s".format(entry.entryType);
+      throw getErrorWithContext(
+                   msg=errorMsg,
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='TypeError');
+    }
+
+    var warnFlag: bool;
+    select dataType {
+      when DType.Int64 {
+        var e = toSymEntry(toGenSymEntry(entry), int);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      }
+      when DType.UInt64 {
+        var e = toSymEntry(toGenSymEntry(entry), uint);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      }
+      when DType.Bool {
+        var e = toSymEntry(toGenSymEntry(entry), bool);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      } when DType.Float64 {
+        var e = toSymEntry(toGenSymEntry(entry), real);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+      } otherwise {
+        var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        throw getErrorWithContext(
+                   msg=errorMsg,
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='DataTypeError');
+      }
+    }
+    return warnFlag;
+  }
+
+  proc strings_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
     var entry = st.lookup(msgArgs.getValueOf("values"));
     var dsetname = msgArgs.getValueOf("dset");
     var dataType = msgArgs.getValueOf("dtype");
-    
-    var entryDtype = DType.UNDEF;
-    if (entry.isAssignableTo(SymbolEntryType.TypedArraySymEntry)) {
-      entryDtype = (entry: borrowed GenSymEntry).dtype;
-    } else if (entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
-      entryDtype = (entry: borrowed SegStringSymEntry).dtype;
-    } else {
-      var errorMsg = "toparquetMsg Unsupported SymbolEntryType:%t".format(entry.entryType);
-      return new MsgTuple(errorMsg, MsgType.ERROR);
-    }
-
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
-    var warnFlag: bool;
+    if (!entry.isAssignableTo(SymbolEntryType.SegStringSymEntry)) {
+      var errorMsg = "ObjType (STRINGS) does not match SymEntry Type: %s".format(entry.entryType);
+      throw getErrorWithContext(
+                   msg=errorMsg,
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='TypeError');
+    }
 
+    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+    var warnFlag: bool = write1DDistStringsAggregators(filename, mode, dsetname, segString, compression:int);
+    return warnFlag;
+  }
+
+  proc createEmptyListParquetFile(filename: string, dsetname: string, dtype: int, compression: int) throws {
+    extern proc c_createEmptyListParquetFile(filename, dsetname, dtype,
+                                         compression, errMsg): int;
+    var pqErr = new parquetErrorMsg();
+    if c_createEmptyListParquetFile(filename.localize().c_str(), dsetname.localize().c_str(),
+                                dtype, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+      pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+    }
+  }
+
+  proc writeSegArrayComponent(filename: string, dsetname: string, const ref distVals: [] ?t, valIdxRange, segments, locDom, 
+                              extraOffset, lastOffset, lastValId, dtype, compression) throws {
+    extern proc c_writeListColumnToParquet(filename, chpl_arr, chpl_offsets,
+                                          dsetname, numelems, rowGroupSize,
+                                          dtype, compression, errMsg): int;
+    var localVals: [valIdxRange] t;
+    forall (localVal, valIdx) in zip(localVals, valIdxRange) with (var agg = newSrcAggregator(t)) {
+      // Copy the remote value at index position valIdx to our local array
+      agg.copy(localVal, distVals[valIdx]); // in SrcAgg, the Right Hand Side is REMOTE
+    }
+    var locOffsets: [0..#locDom.size+1] int;
+    locOffsets[0..#locDom.size] = segments[locDom];
+    if locDom.high == segments.domain.high then
+      locOffsets[locOffsets.domain.high] = extraOffset;
+    else
+      locOffsets[locOffsets.domain.high] = segments[locDom.high+1];
+
+    var pqErr = new parquetErrorMsg();
+    var dtypeRep = toCDtype(dtype);
+
+    if c_writeListColumnToParquet(filename.localize().c_str(), c_ptrTo(localVals), c_ptrTo(locOffsets),
+                                   dsetname.localize().c_str(), locOffsets.size-1, ROWGROUPS,
+                                   dtypeRep, compression, c_ptrTo(pqErr.errMsg)) == ARROWERROR {
+        pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
+      }
+  }
+
+  proc writeSegArrayParquet(filename: string, mode: int, dsetName: string, dtype: string, entry, compression: int): bool throws {
+    var segArray = new SegArray("", entry, entry.etype);
+    // get the array of segments 
+    ref sa = segArray;
+    var segments = sa.segments.a;
+
+    var prefix: string;
+    var extension: string;
+  
+    (prefix, extension) = getFileMetadata(filename);
+
+    // Generate the filenames based upon the number of targetLocales.
+    var filenames = generateFilenames(prefix, extension, segments.targetLocales().size);
+
+    //Generate a list of matching filenames to test against. 
+    var matchingFilenames = getMatchingFilenames(prefix, extension);
+
+    var filesExist = processParquetFilenames(filenames, matchingFilenames, mode);
+
+    // because append has been depreacted, support is not being added for SegArray. 
+    if mode == APPEND {
+      throw getErrorWithContext(
+                msg="APPEND write mode is not supported for SegArray.",
+                lineNumber=getLineNumber(), 
+                routineName=getRoutineName(), 
+                moduleName=getModuleName(), 
+                errorClass='WriteModeError');
+    }
+    
+    const extraOffset = sa.values.size;
+    const lastOffset = segments[segments.domain.high];
+    const lastValIdx = sa.values.a.domain.high;
+
+    // pull values to the locale of the offset
+    coforall (loc, idx) in zip(segments.targetLocales(), filenames.domain) with (ref sa) do on loc {
+      const myFilename = filenames[idx];
+
+      const locDom = segments.localSubdomain();
+      var dims: [0..#1] int;
+      dims[0] = locDom.size: int;
+
+      if (locDom.isEmpty() || locDom.size <= 0) {
+        if mode == APPEND && filesExist then
+          throw getErrorWithContext(
+                msg="Parquet columns must each have the same length: " + myFilename,
+                lineNumber=getLineNumber(), 
+                routineName=getRoutineName(), 
+                moduleName=getModuleName(), 
+                errorClass='WriteModeError');
+        var c_dtype = toCDtype(dtype);
+        createEmptyListParquetFile(myFilename, dsetName, c_dtype, compression);
+      } else {
+        var localSegments = segments[locDom];
+        var startValIdx = localSegments[locDom.low];
+
+        var endValIdx = if (lastOffset == localSegments[locDom.high]) then lastValIdx else segments[locDom.high + 1] - 1;
+              
+        var valIdxRange = startValIdx..endValIdx;
+        ref olda = sa.values.a;
+        writeSegArrayComponent(myFilename, dsetName, olda, valIdxRange, segments, locDom, extraOffset, lastOffset, lastValIdx, dtype, compression);
+      }
+    }
+    return filesExist; // trigger warning if overwrite occuring
+  }
+
+  proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
+    var mode = msgArgs.get("mode").getIntValue();
+    var filename: string = msgArgs.getValueOf("prefix");
+    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var dsetname = msgArgs.getValueOf("dset");
+    var dataType = msgArgs.getValueOf("dtype");
+    var dtype = str2dtype(msgArgs.getValueOf("dtype"));
+    var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
+
+    // ensure proper symentry configuration
+    if (!entry.isAssignableTo(SymbolEntryType.SegArraySymEntry)) {
+      var errorMsg = "ObjType (SEGARRAY) does not match SymEntry Type: %s".format(entry.entryType);
+      throw getErrorWithContext(
+                   msg=errorMsg,
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='TypeError');
+    }
+    
+    var warnFlag: bool;
+    select dtype {
+      when DType.Int64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, int);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+      }
+      when DType.UInt64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, uint);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+      }
+      when DType.Bool {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, bool);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+      } when DType.Float64 {
+        var segArray:SegArraySymEntry = toSegArraySymEntry(entry, real);
+        warnFlag = writeSegArrayParquet(filename, mode, dsetname, dataType, segArray, compression:int);
+      } otherwise {
+        var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
+        pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        throw getErrorWithContext(
+                   msg=errorMsg,
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='DataTypeError');
+      }
+    }
+    return warnFlag;
+  }
+
+  proc toparquetMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    var objType: ObjType = msgArgs.getValueOf("objType").toUpper(): ObjType; // pdarray, Strings, SegArray
+    
+    var warnFlag: bool;
     try {
-      select entryDtype {
-          when DType.Int64 {
-            var e = toSymEntry(toGenSymEntry(entry), int);
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compression:int, mode, e.a);
-          }
-          when DType.UInt64 {
-            var e = toSymEntry(toGenSymEntry(entry), uint);
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compression:int, mode, e.a);
-          }
-          when DType.Bool {
-            var e = toSymEntry(toGenSymEntry(entry), bool);
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compression:int, mode, e.a);
-          } when DType.Float64 {
-            var e = toSymEntry(toGenSymEntry(entry), real);
-            warnFlag = write1DDistArrayParquet(filename, dsetname, dataType, compression:int, mode, e.a);
-          } when DType.Strings {
-            var segString:SegStringSymEntry = toSegStringSymEntry(entry);
-            warnFlag = write1DDistStringsAggregators(filename, mode, dsetname, segString, compression:int);
-          } otherwise {
-            var errorMsg = "Writing Parquet files is only supported for int arrays";
+      select objType {
+        when ObjType.PDARRAY {
+          // call handler for pdarray write
+          warnFlag = pdarray_toParquetMsg(msgArgs, st);
+        }
+        when ObjType.STRINGS {
+          // call handler for strings write
+          warnFlag = strings_toParquetMsg(msgArgs, st);
+        }
+        when ObjType.SEGARRAY {
+          // call handler for strings write
+          warnFlag = segarray_toParquetMsg(msgArgs, st);
+        }
+        otherwise {
+            var errorMsg = "Unable to write object type %s to Parquet file.".format(objType);
             pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
-          }
         }
+      }
     } catch e: FileNotFoundError {
-      var errorMsg = "Unable to open %s for writing: %s".format(filename,e.message());
+      var errorMsg = "Unable to open %s for writing: %s".format(msgArgs.getValueOf("filename"),e.message());
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: MismatchedAppendError {
@@ -943,11 +1152,13 @@ module ParquetMsg {
       pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
       return new MsgTuple(errorMsg, MsgType.ERROR);
     }
+
     if warnFlag {
-      var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
+      var warnMsg: string = "Warning: possibly overwriting existing files matching filename pattern";
+      pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),warnMsg);
       return new MsgTuple(warnMsg, MsgType.WARNING);
     } else {
-      var repMsg = "wrote array to file";
+      var repMsg: string = "Dataset written successfully!";
       pqLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
