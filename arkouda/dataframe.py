@@ -385,7 +385,7 @@ class DataFrame(UserDict):
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
             # To stay consistent with numpy, provide the old index values
-            return DataFrame(initialdata=result, index=key)
+            return DataFrame(initialdata=result, index=self.index.index[key])
 
         # Select rows or columns using a list
         if isinstance(key, (list, tuple)):
@@ -427,7 +427,7 @@ class DataFrame(UserDict):
             s = key
             for k in self._columns:
                 rtn_data[k] = UserDict.__getitem__(self, k)[s]
-            return DataFrame(initialdata=rtn_data, index=arange(self.size)[s])
+            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self.size)[s]])
         else:
             raise IndexError("Invalid selector: unknown error.")
 
@@ -550,7 +550,7 @@ class DataFrame(UserDict):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
                 newdf[col] = self[col][idx]
-        newdf._set_index(idx)
+        newdf._set_index(self.index.index[idx])
         return newdf.to_pandas(retain_index=True)
 
     def _get_head_tail_server(self):
@@ -634,7 +634,7 @@ class DataFrame(UserDict):
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
         new_df = DataFrame(df_dict)
-        new_df._set_index(idx)
+        new_df._set_index(self.index.index[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
 
     def _shape_str(self):
