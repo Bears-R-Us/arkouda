@@ -121,10 +121,7 @@ def ls(filename: str, col_delim: str = ",") -> List[str]:
             str,
             generic_msg(
                 cmd=cmd,
-                args={
-                    "filename": filename,
-                    "col_delim": col_delim
-                },
+                args={"filename": filename, "col_delim": col_delim},
             ),
         )
     )
@@ -234,7 +231,9 @@ def _mode_str_to_int(mode: str) -> int:
         raise ValueError(f"Write Mode expected to be 'truncate' or 'append'. Got {mode}.")
 
 
-def get_datasets(filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ",") -> List[str]:
+def get_datasets(
+    filenames: Union[str, List[str]], allow_errors: bool = False, column_delim: str = ","
+) -> List[str]:
     """
     Get the names of the datasets in the provide files
 
@@ -1326,7 +1325,7 @@ def load(
     file_format: str = "INFER",
     dataset: str = "array",
     calc_string_offsets: bool = False,
-    column_delim: str = ","
+    column_delim: str = ",",
 ) -> Union[
     pdarray,
     Strings,
@@ -1470,7 +1469,7 @@ def load_all(
     try:
         result = {
             dataset: load(prefix, file_format=file_format, dataset=dataset)
-            for dataset in get_datasets(firstname, column_delim)
+            for dataset in get_datasets(firstname, column_delim=column_delim)
         }
 
         result = _dict_recombine_segarrays(result)
@@ -1511,7 +1510,7 @@ def read(
     strictTypes: bool = True,
     allow_errors: bool = False,
     calc_string_offsets=False,
-    column_delim: str = ","
+    column_delim: str = ",",
 ) -> Union[
     pdarray,
     Strings,
@@ -1613,11 +1612,6 @@ def read(
             allow_errors=allow_errors,
         )
     elif ftype.lower() == "csv":
-        return read_csv(
-            filenames,
-            datasets=datasets,
-            column_delim=",",
-            allow_errors=allow_errors
-        )
+        return read_csv(filenames, datasets=datasets, column_delim=",", allow_errors=allow_errors)
     else:
         raise RuntimeError(f"Invalid File Type detected, {ftype}")
