@@ -587,7 +587,6 @@ def read_hdf(
             },
         )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllMsgJson for json structure
-        print(rep)
         _parse_errors(rep, allow_errors)
         return _build_objects(rep)
 
